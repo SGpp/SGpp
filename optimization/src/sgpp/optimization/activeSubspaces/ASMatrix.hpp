@@ -6,9 +6,8 @@
 #pragma once
 //#ifdef USE_EIGEN
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Eigenvalues>
-
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 
 #include <iostream>
@@ -32,7 +31,8 @@ class ASMatrix {
    *
    * @param objectiveFunc the objective function
    */
-  ASMatrix(WrapperScalarFunction objectiveFunc) : objectiveFunc(objectiveFunc) {}
+  ASMatrix(WrapperScalarFunction objectiveFunc)
+      : objectiveFunc(objectiveFunc), numDim(objectiveFunc.getNumberOfParameters()) {}
 
   /**
    * Destructor
@@ -56,48 +56,37 @@ class ASMatrix {
 
   Eigen::VectorXd getEigenvalues() { return this->eigenvalues; };
 
+  Eigen::MatrixXd getEigenvectors() { return this->W; };
+
+  sgpp::base::DataMatrix getEvaluationPoints() { return this->evaluationPoints; }
+
+  sgpp::base::DataVector getFunctionValues() { return this->functionValues; }
+
   /**
-   * The Matrix W_1 containing the n first columns of W spans the active subset
+   * The Matrix W_1 containing the n last columns of W spans the active subset
    *
-   * @param n active subspace indicator (active variables: x_0,\dots , x_{n-1}
+   * @param n active subspace indicator (active variables: x_n,\dots , x_D
    * @return matrix W1
    */
   Eigen::MatrixXd getTransformationMatrix(size_t n) {
-    return this->W.block(0, 0, this->W.cols(), n);
+    return this->W.block(0, n, this->W.cols(), this->numDim - n);
   };
 
  protected:
-  /**
-   * converts a SG++ DataVector to Eigen vector
-   *
-   * @param v SG++ DataVector
-   * @return Eigen library vector containing the elements of v
-   */
-  Eigen::VectorXd DataVectorToEigen(sgpp::base::DataVector v) {
-    return Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(v.data(), v.size());
-  }
-
-  /**
-   * converts an Eigen vector to a SG++ DataVector
-   *
-   * @param v Eigen library vector
-   * @return  SG++ DataVector containing the elements of v
-   */
-  sgpp::base::DataVector EigenToDataVector(Eigen::VectorXd e) {
-    sgpp::base::DataVector v;
-    v.resize(e.size());
-    Eigen::VectorXd::Map(&v[0], e.size()) = e;
-    return v;
-  }
-
   // objective function
   WrapperScalarFunction objectiveFunc;
-  // active subspace matrix C = \int \nabla f \nabla f^T dx
+  // dimensionality
+  size_t numDim;
+  // active subspace matrix C = \int \nabla f \nabla f^T dx \in R^{numDim x numDim}
   Eigen::MatrixXd C;
   // eigenvectors of C (one per column)
   Eigen::MatrixXd W;
   // eigenvalues of C
   Eigen::VectorXd eigenvalues;
+  // points the objective function is evaluated at (each row is one point)
+  sgpp::base::DataMatrix evaluationPoints;
+  // evaluations of the objective function
+  sgpp::base::DataVector functionValues;
 };
 
 }  // namespace optimization

@@ -22,6 +22,10 @@
 namespace sgpp {
 namespace combigrid {
 
+/*
+ * Calcualtes the integrals \int b_i b_j f dx for weight functions f.
+ * In UQ context f are probability density functions
+ */
 class LTwoScalarProductNakBsplineBoundary {
  public:
   LTwoScalarProductNakBsplineBoundary() {
@@ -34,8 +38,7 @@ class LTwoScalarProductNakBsplineBoundary {
 
   /**
    * Constructor
-   *
-   * @param grid sparse grid created by converting a expUniformBoundaryGrid to a sgpp::base::Grid
+   * @param grid sparse grid created by converting an expUniformBoundaryGrid to a sgpp::base::Grid
    */
   explicit LTwoScalarProductNakBsplineBoundary(sgpp::base::Grid* grid);
 

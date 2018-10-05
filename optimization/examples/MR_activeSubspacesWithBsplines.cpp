@@ -11,6 +11,7 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
+#include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
@@ -23,9 +24,6 @@
 #include <iostream>
 #include <random>
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Eigenvalues>
-
 class objectiveFunction {
  public:
   objectiveFunction() {
@@ -34,8 +32,8 @@ class objectiveFunction {
   }
 
   double eval(sgpp::base::DataVector x) {
-    double res = alpha * (x[0] * x[0] + x[2] * x[2]) + beta * (x[1] * x[1] + x[3] * x[3]);
-    //    double res = exp(0.7 * x[0] + 0.3 * x[1]);
+    //    double res = alpha * (x[0] * x[0] + x[2] * x[2]) + beta * (x[1] * x[1] + x[3] * x[3]);
+    double res = exp(0.7 * x[0] + 0.3 * x[1]);
     return res;
   }
 
@@ -55,16 +53,6 @@ class objectiveFunction {
   double beta;
 };
 
-Eigen::VectorXd DataVectorToEigen(sgpp::base::DataVector v) {
-  return Eigen::Map<Eigen::VectorXd, Eigen::Unaligned>(v.data(), v.size());
-}
-
-sgpp::base::DataVector EigenToDataVector(Eigen::VectorXd v1) {
-  sgpp::base::DataVector v2;
-  v2.resize(v1.size());
-  Eigen::VectorXd::Map(&v2[0], v1.size()) = v1;
-  return v2;
-}
 class reducedInterpolant {
  public:
   reducedInterpolant(std::shared_ptr<sgpp::base::Grid> grid, Eigen::MatrixXd W1,
@@ -72,9 +60,10 @@ class reducedInterpolant {
       : grid(grid), I(*grid, coefficients), W1T(W1.transpose()), coefficients(coefficients) {}
 
   double eval(sgpp::base::DataVector v) {
-    Eigen::VectorXd v_Eigen = DataVectorToEigen(v);
+    Eigen::VectorXd v_Eigen = sgpp::optimization::DataVectorToEigen(v);
     Eigen::VectorXd trans_v_Eigen = W1T * v_Eigen;
-    sgpp::base::DataVector trans_v_DataVector = EigenToDataVector(trans_v_Eigen);
+    sgpp::base::DataVector trans_v_DataVector =
+        sgpp::optimization::EigenToDataVector(trans_v_Eigen);
     return I.eval(trans_v_DataVector);
   }
 
@@ -129,11 +118,30 @@ void sortEigenValuesAndVectors(Eigen::VectorXd& eigenvalues, Eigen::MatrixXd& ei
   eigenvectors = tempEigenvectors;
 }
 
+void saveEigenValuesAndVectors(Eigen::VectorXd& eigenvalues, Eigen::MatrixXd& eigenvectors) {
+  std::fstream dataFile;
+  dataFile.open("/home/rehmemk/git/activeSubspaceSGpp/activeSubSpaces_Python/data/eigenvalues.dat",
+                std::ofstream::out | std::ofstream::trunc);
+  for (unsigned int i = 0; i < eigenvalues.rows(); i++) {
+    dataFile << eigenvalues[i] << "\n";
+  }
+  dataFile.close();
+  dataFile.open("/home/rehmemk/git/activeSubspaceSGpp/activeSubSpaces_Python/data/eigenvectors.dat",
+                std::ofstream::out | std::ofstream::trunc);
+  for (unsigned int i = 0; i < eigenvectors.rows(); i++) {
+    for (unsigned int j = 0; j < eigenvectors.cols() - 1; j++) {
+      dataFile << eigenvectors(i, j) << ", ";
+    }
+    dataFile << eigenvectors(i, eigenvectors.cols() - 1) << "\n";
+  }
+  dataFile.close();
+}
+
 int main() {
-  size_t numDim = 4;
+  size_t numDim = 2;
   size_t degree = 3;
   size_t level = 5;
-  objectiveFunction objectiveFunc;
+  size_t reducedGridLevel = 5;
   // specify active subspace
   // active variables: x_0,...,x_{n-1} inactive variables x_{n},...,x_m
   size_t n = 1;
@@ -146,6 +154,7 @@ int main() {
   size_t M = alpha * k * static_cast<size_t>(ceil(log(static_cast<double>(numDim))));
 
   // build sparse grid B-spline interpolant
+  objectiveFunction objectiveFunc;
   std::unique_ptr<sgpp::base::Grid> detectionGrid(
       sgpp::base::Grid::createNakBsplineGrid(numDim, degree));
   sgpp::base::GridStorage& detectionGridStorage = detectionGrid->getStorage();
@@ -186,7 +195,7 @@ int main() {
     //    sgpp::base::DataVector gradient = objectiveFunc.grad(randomVector);
     sgpp::base::DataVector gradient(numDim);
     detectionInterpolantGradient.eval(randomVector, gradient);
-    Eigen::VectorXd e = DataVectorToEigen(gradient);
+    Eigen::VectorXd e = sgpp::optimization::DataVectorToEigen(gradient);
     C += e * e.transpose();
   }
   C /= static_cast<double>(M);
@@ -196,51 +205,23 @@ int main() {
   if (eigensolver.info() != Eigen::Success) abort();
   Eigen::VectorXd eigenvalues = eigensolver.eigenvalues();
   Eigen::MatrixXd eigenvectors = eigensolver.eigenvectors();
-  std::cout << "EW:\n" << eigenvalues << std::endl;
-  std::cout << "EV(columns):\n" << eigenvectors << std::endl;
+  std::cout << "EV:\n" << std::scientific << eigenvalues << std::endl;
+  std::cout << std::defaultfloat;
 
   // is this necessary or are eigenvalues always in ascending order?
   sortEigenValuesAndVectors(eigenvalues, eigenvectors);
-  std::cout << "EW sorted:\n" << eigenvalues << std::endl;
-  std::cout << "EV sorted:\n" << eigenvectors << std::endl;
-
-  //  // write EW and EV to file
-  //  std::fstream dataFile;
-  //  dataFile.open("/home/rehmemk/git/activeSubspaceSGpp/activeSubSpaces_Python/data/eigenvalues.dat",
-  //                std::ofstream::out | std::ofstream::trunc);
-  //  for (unsigned int i = 0; i < eigenvalues.rows(); i++) {
-  //    dataFile << eigenvalues[i] << "\n";
-  //  }
-  //  dataFile.close();
-  //  dataFile.open("/home/rehmemk/git/activeSubspaceSGpp/activeSubSpaces_Python/data/eigenvectors.dat",
-  //                std::ofstream::out | std::ofstream::trunc);
-  //  for (unsigned int i = 0; i < eigenvectors.rows(); i++) {
-  //    for (unsigned int j = 0; j < eigenvectors.cols() - 1; j++) {
-  //      dataFile << eigenvectors(i, j) << ", ";
-  //    }
-  //    dataFile << eigenvectors(i, eigenvectors.cols() - 1) << "\n";
-  //  }
-  //  dataFile.close();
 
   Eigen::MatrixXd W1 = eigenvectors.block(0, 0, eigenvectors.cols(), n);
   Eigen::MatrixXd W2 = eigenvectors.block(0, n, eigenvectors.cols(), numDim - n);
 
-  std::cout << "W1:\n" << W1 << std::endl;
-  std::cout << "W2:\n" << W2 << std::endl;
-
-  // Use actual values for debugging
-  //  W1(0) = 0.7;
-  //  W1(1) = 0.3;
-
   // create dimension reduced interpolant
-  // use grid points of original iterpolant used for active subspace detection
-  size_t reducedGridLevel = 5;
+  // use grid points of original detection iterpolant (function values are already calculated)
+
   auto reducedGrid = std::make_shared<sgpp::base::NakBsplineGrid>(n, degree);
   sgpp::base::SNakBsplineBase reducedBasis(degree);
   sgpp::base::GridStorage& reducedGridStorage = reducedGrid->getStorage();
   reducedGrid->getGenerator().regular(reducedGridLevel);
 
-  std::cout << "building reduced Matrix" << std::endl;
   Eigen::MatrixXd reducedInterpolationMatrix(detectionGridStorage.getSize(),
                                              reducedGridStorage.getSize());
   for (size_t i = 0; i < detectionGridStorage.getSize(); i++) {
@@ -253,33 +234,34 @@ int main() {
     gpPoint_trans_Eigen = W1.transpose() * gpPoint_trans_Eigen;
     for (size_t j = 0; j < reducedGridStorage.getSize(); j++) {
       sgpp::base::GridPoint& gpreducedBasis = reducedGridStorage.getPoint(j);
-      double basisEval = 1;
+      double reducedBasisEval = 1;
       for (size_t t = 0; t < reducedGridStorage.getDimension(); t++) {
         double basisEval1D = reducedBasis.eval(gpreducedBasis.getLevel(t),
                                                gpreducedBasis.getIndex(t), gpPoint_trans_Eigen(t));
         if (basisEval1D == 0) {
-          basisEval = 0;
+          reducedBasisEval = 0;
           break;
         } else {
-          basisEval *= basisEval1D;
+          reducedBasisEval *= basisEval1D;
         }
       }
-      reducedInterpolationMatrix(i, j) = basisEval;
+      reducedInterpolationMatrix(i, j) = reducedBasisEval;
     }
   }
-  Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
+  Eigen::VectorXd functionValues_Eigen = sgpp::optimization::DataVectorToEigen(functionValues);
   // Least Squares Fit
   Eigen::VectorXd reducedCoefficients_Eigen =
       reducedInterpolationMatrix.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
           .solve(functionValues_Eigen);
 
-  sgpp::base::DataVector reducedCoefficients = EigenToDataVector(reducedCoefficients_Eigen);
+  sgpp::base::DataVector reducedCoefficients =
+      sgpp::optimization::EigenToDataVector(reducedCoefficients_Eigen);
   reducedInterpolant rI(reducedGrid, W1, reducedCoefficients);
 
   sgpp::base::DataVector x(numDim, 0.5);
-  std::cout << objectiveFunc.eval(x) << std::endl;
-  std::cout << detectionInterpolant.eval(x) << std::endl;
-  std::cout << rI.eval(x) << std::endl;
+  std::cout << "f(x) = " << objectiveFunc.eval(x) << std::endl;
+  std::cout << "I(x) = " << detectionInterpolant.eval(x) << std::endl;
+  std::cout << "Ir(x)= " << rI.eval(x) << std::endl;
 
   return 0;
 }
