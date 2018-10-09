@@ -741,7 +741,7 @@ class NakBsplineBasis : public Basis<LT, IT> {
    * @param l     level of basis function
    * @param i     index of basis function
    * @param x     evaluation point
-   * @return      value of 2nd derivative of B-spline basis function
+   * @return      value of derivative of B-spline basis function
    */
   inline double evalDx(LT l, IT i, double x) {
     const IT hInv = static_cast<IT>(1) << l;

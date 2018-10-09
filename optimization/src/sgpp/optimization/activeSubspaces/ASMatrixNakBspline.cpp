@@ -186,6 +186,10 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
       func1 = [&](double x) {
         return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l1, i1, x);
       };
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      func1 = [&](double x) {
+        return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l1, i1, x);
+      };
     } else {
       throw sgpp::base::generation_exception(
           "ASMatrixNakBspline: gridType does not support evalDx.");
@@ -197,11 +201,15 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
   if (dx2) {
     if (gridType == sgpp::base::GridType::NakBspline) {
       func2 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l1, i1, x);
+        return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l2, i2, x);
       };
     } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
       func2 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l1, i1, x);
+        return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l2, i2, x);
+      };
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      func2 = [&](double x) {
+        return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l2, i2, x);
       };
     } else {
       throw sgpp::base::generation_exception(
