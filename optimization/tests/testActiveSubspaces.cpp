@@ -76,6 +76,7 @@ sgpp::base::DataVector interpolateRegular1D(
 }
 
 double objectiveFunction(sgpp::base::DataVector v) { return v[0] * v[0] * v[0]; }
+double objectiveFunction2(sgpp::base::DataVector v) { return sin(v[0]); }
 double dummyFunction(sgpp::base::DataVector v) { return 777; }
 
 BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
@@ -90,24 +91,34 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   size_t numDim = 1;
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   sgpp::base::Grid* grid;
+  sgpp::base::Grid* grid2;
   if (gridType == sgpp::base::GridType::NakBspline) {
     grid = new sgpp::base::NakBsplineGrid(numDim, degree);
+    grid2 = new sgpp::base::NakBsplineGrid(numDim, degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
     grid = new sgpp::base::NakBsplineModifiedGrid(numDim, degree);
+    grid2 = new sgpp::base::NakBsplineModifiedGrid(numDim, degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     grid = new sgpp::base::NakBsplineBoundaryGrid(numDim, degree);
+    grid2 = new sgpp::base::NakBsplineBoundaryGrid(numDim, degree);
   } else {
     throw sgpp::base::generation_exception(
         "testASMatrixNakBsplineBoundaryScalarProducte: gridType not supported.");
   }
   sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunction);
+  sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunction2);
   sgpp::base::DataVector alpha = interpolateRegular1D(objectiveFunc, gridType, degree, level, grid);
+  sgpp::base::DataVector alpha2 =
+      interpolateRegular1D(objectiveFunc2, gridType, degree, level, grid2);
   sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
 
+  // as long as grid1 and grid2 are of the same grid type and regular level it does not matter from
+  // which the levels and indices are taken
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double result_ff = 0.0;
   double result_dff = 0.0;
   double result_dfdf = 0.0;
+  double result_fg = 0.0;
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& basisI = gridStorage.getPoint(i);
     size_t levelI = basisI.getLevel(0);
@@ -122,21 +133,27 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
                     ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true);
       result_dfdf += alpha[i] * alpha[j] *
                      ASM.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true);
+      result_fg += alpha[i] * alpha2[j] *
+                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
     }
   }
   double epsilon = 1e-15;
   double correctResult_ff = 1.0 / 7.0;
   double correctResult_dff = 1.0 / 2.0;
   double correctResult_dfdf = 9.0 / 5.0;
+  double correctResult_fg = 0.177098574917009067047176;
   double err_ff = abs(result_ff - correctResult_ff);
   double err_dff = abs(result_dff - correctResult_dff);
   double err_dfdf = abs(result_dfdf - correctResult_dfdf);
+  double err_fg = abs(result_fg - correctResult_fg);
   //  std::cout << "res ff   =" << result_ff << " err =" << err_ff << std::endl;
   //  std::cout << "res dff  =" << result_dff << " err =" << err_dff << std::endl;
   //  std::cout << "res dfdf =" << result_dfdf << " err =" << err_dfdf << std::endl;
+  //  std::cout << "res fg   =" << result_fg << " err =" << err_fg << std::endl;
   BOOST_CHECK_SMALL(err_ff, epsilon);
   BOOST_CHECK_SMALL(err_dff, epsilon);
   BOOST_CHECK_SMALL(err_dfdf, epsilon);
+  BOOST_CHECK_SMALL(err_fg, 1e-6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
