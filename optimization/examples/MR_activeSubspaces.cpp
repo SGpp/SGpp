@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
-#include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBsplineBoundary.hpp"
+#include "../src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBsplineModified.hpp"
 
 double f(sgpp::base::DataVector v) { return exp(0.7 * v[0] + 0.3 * v[1]); }
 
 int main() {
   size_t numDim = 2;
   size_t degree = 3;
-  size_t level = 5;
+  size_t level = 3;
   // active subspace specifier
   size_t n = 1;
   // set k to one more than the desired reduced dimensionality
@@ -25,7 +25,7 @@ int main() {
   numMCPoints = 2000;
 
   sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, f);
-  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, degree);
+  sgpp::optimization::ASMatrixNakBsplineBoundary ASM(objectiveFunc, degree);
   ASM.buildRegularInterpolant(level);
   ASM.createMatrix(numMCPoints);
   ASM.evDecomposition();
@@ -37,7 +37,14 @@ int main() {
   Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
   std::cout << "W1:\n" << W1 << std::endl;
 
+  //----------------------------
+  Eigen::MatrixXd M = ASM.getMatrix();
+  std::cout << "MC:\n" << M << std::endl;
+
   ASM.createMatrixGauss();
+  M = ASM.getMatrix();
+  std::cout << "Gauss:\n" << M << std::endl;
+  //----------------------------
 
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();

@@ -72,6 +72,8 @@ class ASMatrix {
     return this->W.block(0, n, this->W.cols(), this->numDim - n);
   };
 
+  Eigen::MatrixXd getMatrix() { return C; }
+
  protected:
   // objective function
   WrapperScalarFunction objectiveFunc;

@@ -15,7 +15,7 @@ namespace optimization {
 /**
  * calculates \int_a^b f(x) dx
  */
-double quad(std::function<double(double)> f, double a, double b, size_t quadOrder);
+double gaussQuad(std::function<double(double)> f, double a, double b, size_t quadOrder);
 
 }  // namespace optimization
 }  // namespace sgpp
