@@ -12,7 +12,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBsplineBoundary.hpp"
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp"
 
 #include <functional>
 
@@ -83,7 +83,8 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   }
 
   sgpp::optimization::WrapperScalarFunction dummyFunc(numDim, dummyFunction);
-  sgpp::optimization::ASMatrixNakBsplineBoundary ASM(dummyFunc, degree);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  sgpp::optimization::ASMatrixNakBspline ASM(dummyFunc, gridType, degree);
 
   double result = 0.0;
   for (size_t i = 0; i < gridStorage.getSize(); i++) {

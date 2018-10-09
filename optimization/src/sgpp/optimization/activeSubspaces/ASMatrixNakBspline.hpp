@@ -7,7 +7,9 @@
 //#ifdef USE_EIGEN
 
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -19,10 +21,22 @@
 namespace sgpp {
 namespace optimization {
 
-class ASMatrixNakBsplineBoundary : public ASMatrix {
+class ASMatrixNakBspline : public ASMatrix {
  public:
-  ASMatrixNakBsplineBoundary(WrapperScalarFunction objectiveFunc, size_t degree)
-      : ASMatrix(objectiveFunc), degree(degree) {}
+  ASMatrixNakBspline(WrapperScalarFunction objectiveFunc, sgpp::base::GridType gridType,
+                     size_t degree)
+      : ASMatrix(objectiveFunc), gridType(gridType), degree(degree) {
+    if (gridType == sgpp::base::GridType::NakBspline) {
+      grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      std::cout << "numDim " << numDim << std::endl;
+      grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+      grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    } else {
+      throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+    }
+  }
   void buildRegularInterpolant(size_t level);
   void createMatrix(size_t numPoints);
   void createMatrixMonteCarlo(size_t numPoints);
@@ -73,6 +87,7 @@ class ASMatrixNakBsplineBoundary : public ASMatrix {
   sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
 
  private:
+  sgpp::base::GridType gridType;
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;

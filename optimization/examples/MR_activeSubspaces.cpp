@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBsplineBoundary.hpp"
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp"
 #include "../src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBsplineModified.hpp"
 
 double f(sgpp::base::DataVector v) { return exp(0.7 * v[0] + 0.3 * v[1]); }
@@ -25,7 +25,8 @@ int main() {
   numMCPoints = 2000;
 
   sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, f);
-  sgpp::optimization::ASMatrixNakBsplineBoundary ASM(objectiveFunc, degree);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
   ASM.buildRegularInterpolant(level);
   ASM.createMatrix(numMCPoints);
   ASM.evDecomposition();
