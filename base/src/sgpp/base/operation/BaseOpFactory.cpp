@@ -180,6 +180,8 @@
 #include <sgpp/base/operation/hash/OperationEvalGradientModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModFundamentalSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModWaveletNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineModifiedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletNaive.hpp>
@@ -685,6 +687,12 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
   } else if (grid.getType() == base::GridType::NakBspline) {
     return new base::OperationEvalGradientNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::NakBsplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineModified) {
+    return new base::OperationEvalGradientNakBsplineModifiedNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineModifiedGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationEvalGradientNakBsplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalGradient is not implemented for this grid type.");
