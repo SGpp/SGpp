@@ -5,9 +5,9 @@
 
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp"
-#include "../src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBsplineModified.hpp"
+#include "../src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
 
-double f(sgpp::base::DataVector v) { return exp(0.7 * v[0] + 0.3 * v[1]); }
+double f(sgpp::base::DataVector v) { return v[0] + 2 * v[1]; }  // exp(0.7 * v[0] + 0.3 * v[1]); }
 
 int main() {
   size_t numDim = 2;
@@ -39,25 +39,26 @@ int main() {
   std::cout << "W1:\n" << W1 << std::endl;
 
   //----------------------------
-  Eigen::MatrixXd M = ASM.getMatrix();
-  std::cout << "MC:\n" << M << std::endl;
-
-  ASM.createMatrixGauss();
-  M = ASM.getMatrix();
-  std::cout << "Gauss:\n" << M << std::endl;
+  //  Eigen::MatrixXd M = ASM.getMatrix();
+  //  std::cout << "MC:\n" << M << std::endl;
+  //
+  //  ASM.createMatrixGauss();
+  //  M = ASM.getMatrix();
+  //  std::cout << "Gauss:\n" << M << std::endl;
   //----------------------------
 
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
 
-  //  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1);
-  //  size_t responseLevel = 5;
-  //  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
-  //                                                       responseLevel);
-  //
-  //  sgpp::base::DataVector v(numDim, 0.5);
-  //  std::cout << "f(v)  = " << f(v) << std::endl;
-  //  std::cout << "rI(v) = " << responseSurf.eval(v) << std::endl;
+  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
+  size_t responseLevel = 3;
+  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
+                                                       responseLevel);
+
+  sgpp::base::DataVector v(numDim, 0.5);
+  double responseSurfEval = responseSurf.eval(v);
+  std::cout << "f(v)  = " << f(v) << std::endl;
+  std::cout << "rI(v) = " << responseSurfEval << std::endl;
 
   return 0;
 }

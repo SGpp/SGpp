@@ -29,7 +29,6 @@ class ASMatrixNakBspline : public ASMatrix {
     if (gridType == sgpp::base::GridType::NakBspline) {
       grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
     } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      std::cout << "numDim " << numDim << std::endl;
       grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
     } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
       grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
