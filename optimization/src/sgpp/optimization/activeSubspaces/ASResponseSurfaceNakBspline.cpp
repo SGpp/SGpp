@@ -46,11 +46,9 @@ void ASResponseSurfaceNakBspline::createRegularSurfaceFromDetectionPoints(
           basisEval *= basisEval1D;
         }
       }
-      interpolationMatrix(i, j) = basisEval;  // Is this matrix is symmetrical?
+      interpolationMatrix(i, j) = basisEval;
     }
   }
-
-  std::cout << "The matrix: " << interpolationMatrix << std::endl;
 
   Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
   // Least Squares Fit
