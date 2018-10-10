@@ -5,7 +5,7 @@
 
 //#ifdef USE_EIGEN
 
-#include "ASMatrixNakBspline.hpp"
+#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 
 class Rand_double {
  public:
@@ -56,11 +56,11 @@ void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numPoints) {
                                                                             this->coefficients);
 
   //  RandomNumberGenerator::getInstance().setSeed();
-  this->C.resize(this->numDim, this->numDim);
-  this->C.setZero();
+  C.resize(numDim, numDim);
+  C.setZero();
   Rand_double rd{0, 1};
   for (size_t i = 0; i < numPoints; ++i) {
-    sgpp::base::DataVector randomVector(this->numDim, 1);
+    sgpp::base::DataVector randomVector(numDim, 1);
     // todo (rehmemk) somehow the randomnumbergenerator results are much worse than the Rand_double
     // result
     RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
@@ -68,7 +68,7 @@ void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numPoints) {
     //      randomVector[d] = rd();
     //    }
     //    std::cout << randomVector.toString() << std::endl;
-    sgpp::base::DataVector gradient(this->numDim);
+    sgpp::base::DataVector gradient(numDim);
     interpolantGradient.eval(randomVector, gradient);
     Eigen::VectorXd e = DataVectorToEigen(gradient);
     this->C += e * e.transpose();
