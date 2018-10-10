@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
   double diff1 = abs(Cev1(0) - e1ev1(0)) + abs(Cev1(1) - e1ev1(1)) + abs(Cev1(2) - e1ev1(2));
   double diff2 = abs(Cev2(0) - e2ev2(0)) + abs(Cev2(1) - e2ev2(1)) + abs(Cev2(2) - e2ev2(2));
   double diff3 = abs(Cev3(0) - e3ev3(0)) + abs(Cev3(1) - e3ev3(1)) + abs(Cev3(2) - e3ev3(2));
-  double epsilon = 1e-15;
+  double epsilon = 1e-14;
   BOOST_CHECK_SMALL(diff1, epsilon);
   BOOST_CHECK_SMALL(diff2, epsilon);
   BOOST_CHECK_SMALL(diff3, epsilon);
@@ -231,7 +231,6 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
 BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {}
 
 /* ToDo (rehmemk)
- * -Test eigenvalues, eigenvectors in ASMatrix
  * -Test response surface
  */
 
