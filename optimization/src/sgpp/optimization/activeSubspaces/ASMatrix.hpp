@@ -52,15 +52,15 @@ class ASMatrix {
    * with \Lambda = diag(\lambda_1, \dots , \lambda_m} the eigenvalues and W the matrix of (column
    * wise) eigen vectors
    */
-  void evDecomposition();
+  void evDecompositionForSymmetricMatrices();
 
-  Eigen::VectorXd getEigenvalues() { return this->eigenvalues; };
+  Eigen::VectorXd getEigenvalues() { return eigenvalues; };
 
-  Eigen::MatrixXd getEigenvectors() { return this->W; };
+  Eigen::MatrixXd getEigenvectors() { return W; };
 
-  sgpp::base::DataMatrix getEvaluationPoints() { return this->evaluationPoints; }
+  sgpp::base::DataMatrix getEvaluationPoints() { return evaluationPoints; }
 
-  sgpp::base::DataVector getFunctionValues() { return this->functionValues; }
+  sgpp::base::DataVector getFunctionValues() { return functionValues; }
 
   /**
    * The Matrix W_1 containing the n last columns of W spans the active subset
@@ -68,11 +68,11 @@ class ASMatrix {
    * @param n active subspace indicator (active variables: x_n,\dots , x_D
    * @return matrix W1
    */
-  Eigen::MatrixXd getTransformationMatrix(size_t n) {
-    return this->W.block(0, n, this->W.cols(), this->numDim - n);
-  };
+  Eigen::MatrixXd getTransformationMatrix(size_t n) { return W.block(0, n, W.cols(), numDim - n); };
 
   Eigen::MatrixXd getMatrix() { return C; }
+
+  void setMatrix(Eigen::MatrixXd newC);
 
  protected:
   // objective function

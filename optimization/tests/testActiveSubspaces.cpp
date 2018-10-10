@@ -8,11 +8,12 @@
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
+#include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
-#include "../src/sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp"
 
 #include <functional>
 
@@ -23,6 +24,38 @@ double xFunction(double x) { return x; }
 double x6Function(double x) { return x * x * x * x * x * x; }
 
 BOOST_AUTO_TEST_SUITE(testActiveSubspaces)
+
+//#ifdef USE_EIGEN
+BOOST_AUTO_TEST_CASE(testEigenFunctionalities) {
+  sgpp::base::DataVector v(3);
+  v[0] = 1;
+  v[1] = -17.3;
+  v[2] = 23;
+  Eigen::VectorXd e = sgpp::optimization::DataVectorToEigen(v);
+  //  std::cout << v.getSize() << " " << e.rows() << std::endl;
+  //  std::cout << v[0] << " " << e(0) << std::endl;
+  //  std::cout << v[1] << " " << e(1) << std::endl;
+  //  std::cout << v[2] << " " << e(2) << std::endl;
+  BOOST_CHECK_EQUAL(v.getSize(), e.rows());
+  BOOST_CHECK_EQUAL(v[0], e(0));
+  BOOST_CHECK_EQUAL(v[1], e(1));
+  BOOST_CHECK_EQUAL(v[2], e(2));
+
+  Eigen::VectorXd e2(3);
+  e2(0) = -2;
+  e2(1) = 11.1;
+  e2(2) = 342;
+  sgpp::base::DataVector v2 = sgpp::optimization::EigenToDataVector(e2);
+  //  std::cout << v2.getSize() << " " << e2.rows() << std::endl;
+  //  std::cout << v2[0] << " " << e2(0) << std::endl;
+  //  std::cout << v2[1] << " " << e2(1) << std::endl;
+  //  std::cout << v2[2] << " " << e2(2) << std::endl;
+  BOOST_CHECK_EQUAL(v2.getSize(), e2.rows());
+  BOOST_CHECK_EQUAL(v2[0], e2(0));
+  BOOST_CHECK_EQUAL(v2[1], e2(1));
+  BOOST_CHECK_EQUAL(v2[2], e2(2));
+}
+//#endif /* USE_EIGEN */
 
 BOOST_AUTO_TEST_CASE(testQuad) {
   double epsilon = 1e-15;
@@ -155,5 +188,51 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   BOOST_CHECK_SMALL(err_dfdf, epsilon);
   BOOST_CHECK_SMALL(err_fg, 1e-6);
 }
+
+BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
+  Eigen::MatrixXd C(3, 3);
+  C(0, 0) = 1;
+  C(0, 1) = 2;
+  C(0, 2) = -1;
+  C(1, 0) = 2;
+  C(1, 1) = 5;
+  C(1, 2) = 0;
+  C(2, 0) = -1;
+  C(2, 1) = 0;
+  C(2, 2) = 3;
+  sgpp::optimization::WrapperScalarFunction dummyFunc(3, objectiveFunction);
+  sgpp::base::GridType dummyGridType = sgpp::base::GridType::NakBspline;
+  size_t dummyDegree = 3;
+  sgpp::optimization::ASMatrixNakBspline ASM(dummyFunc, dummyGridType, dummyDegree);
+  ASM.setMatrix(C);
+  ASM.evDecompositionForSymmetricMatrices();
+  Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
+  Eigen::MatrixXd eigenvectors = ASM.getEigenvectors();
+  Eigen::VectorXd ev1 = eigenvectors.col(0);
+  Eigen::VectorXd ev2 = eigenvectors.col(1);
+  Eigen::VectorXd ev3 = eigenvectors.col(2);
+
+  Eigen::VectorXd Cev1 = C * ev1;
+  Eigen::VectorXd e1ev1 = eigenvalues[0] * ev1;
+  Eigen::VectorXd Cev2 = C * ev2;
+  Eigen::VectorXd e2ev2 = eigenvalues[1] * ev2;
+  Eigen::VectorXd Cev3 = C * ev3;
+  Eigen::VectorXd e3ev3 = eigenvalues[2] * ev3;
+
+  double diff1 = abs(Cev1(0) - e1ev1(0)) + abs(Cev1(1) - e1ev1(1)) + abs(Cev1(2) - e1ev1(2));
+  double diff2 = abs(Cev2(0) - e2ev2(0)) + abs(Cev2(1) - e2ev2(1)) + abs(Cev2(2) - e2ev2(2));
+  double diff3 = abs(Cev3(0) - e3ev3(0)) + abs(Cev3(1) - e3ev3(1)) + abs(Cev3(2) - e3ev3(2));
+  double epsilon = 1e-15;
+  BOOST_CHECK_SMALL(diff1, epsilon);
+  BOOST_CHECK_SMALL(diff2, epsilon);
+  BOOST_CHECK_SMALL(diff3, epsilon);
+}
+
+BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {}
+
+/* ToDo (rehmemk)
+ * -Test eigenvalues, eigenvectors in ASMatrix
+ * -Test response surface
+ */
 
 BOOST_AUTO_TEST_SUITE_END()

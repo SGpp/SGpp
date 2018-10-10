@@ -8,11 +8,21 @@
 namespace sgpp {
 namespace optimization {
 
-void ASMatrix::evDecomposition() {
-  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(this->C);
+void ASMatrix::evDecompositionForSymmetricMatrices() {
+  Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(C);
   if (eigensolver.info() != Eigen::Success) abort();
   this->eigenvalues = eigensolver.eigenvalues();
+
   this->W = eigensolver.eigenvectors();
+}
+
+void ASMatrix::setMatrix(Eigen::MatrixXd newC) {
+  if ((newC.cols() == static_cast<unsigned int>(numDim)) &&
+      (newC.rows() == static_cast<unsigned int>(numDim))) {
+    C = newC;
+  } else {
+    std::cout << "ASMatrix: matrix size does not match objective function" << std::endl;
+  }
 }
 
 }  // namespace optimization
