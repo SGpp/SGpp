@@ -25,6 +25,8 @@ void ASMatrixGradientMC::createMatrixMonteCarlo(size_t numPoints) {
   //  RandomNumberGenerator::getInstance().setSeed();
   C.resize(numDim, numDim);
   C.setZero();
+  evaluationPoints.resizeZero(numPoints, numDim);
+  functionValues.resizeZero(numPoints);
   Rand_double rd{0, 1};
   for (size_t i = 0; i < numPoints; ++i) {
     sgpp::base::DataVector randomVector(numDim, 1);
@@ -36,7 +38,8 @@ void ASMatrixGradientMC::createMatrixMonteCarlo(size_t numPoints) {
     //    }
     //    std::cout << randomVector.toString() << std::endl;
     sgpp::base::DataVector gradient(numDim);
-    objectiveFuncGradient.eval(randomVector, gradient);
+    functionValues[i] = objectiveFuncGradient.eval(randomVector, gradient);
+    evaluationPoints.setRow(i, randomVector);
     Eigen::VectorXd e = DataVectorToEigen(gradient);
     this->C += e * e.transpose();
   }
