@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
+#include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -17,10 +18,10 @@
 
 #include <functional>
 
+double dummyFunction(sgpp::base::DataVector v) { return 777; }
+
 double oneFunction(double x) { return 1; }
-
 double xFunction(double x) { return x; }
-
 double x6Function(double x) { return x * x * x * x * x * x; }
 
 BOOST_AUTO_TEST_SUITE(testActiveSubspaces)
@@ -108,9 +109,8 @@ sgpp::base::DataVector interpolateRegular1D(
   return alpha;
 }
 
-double objectiveFunction(sgpp::base::DataVector v) { return v[0] * v[0] * v[0]; }
-double objectiveFunction2(sgpp::base::DataVector v) { return sin(v[0]); }
-double dummyFunction(sgpp::base::DataVector v) { return 777; }
+double objectiveFunctionScalarProduct(sgpp::base::DataVector v) { return v[0] * v[0] * v[0]; }
+double objectiveFunctionScalarProduct2(sgpp::base::DataVector v) { return sin(v[0]); }
 
 BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   // interpolate function f = x^3  and calculate
@@ -138,8 +138,8 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
     throw sgpp::base::generation_exception(
         "testASMatrixNakBsplineBoundaryScalarProducte: gridType not supported.");
   }
-  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunction);
-  sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunction2);
+  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionScalarProduct);
+  sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunctionScalarProduct2);
   sgpp::base::DataVector alpha = interpolateRegular1D(objectiveFunc, gridType, degree, level, grid);
   sgpp::base::DataVector alpha2 =
       interpolateRegular1D(objectiveFunc2, gridType, degree, level, grid2);
@@ -200,7 +200,7 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
   C(2, 0) = -1;
   C(2, 1) = 0;
   C(2, 2) = 3;
-  sgpp::optimization::WrapperScalarFunction dummyFunc(3, objectiveFunction);
+  sgpp::optimization::WrapperScalarFunction dummyFunc(3, dummyFunction);
   sgpp::base::GridType dummyGridType = sgpp::base::GridType::NakBspline;
   size_t dummyDegree = 3;
   sgpp::optimization::ASMatrixNakBspline ASM(dummyFunc, dummyGridType, dummyDegree);
@@ -228,7 +228,38 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
   BOOST_CHECK_SMALL(diff3, epsilon);
 }
 
-BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {}
+double objectiveFunctionResponseSurface(sgpp::base::DataVector v) { return v[0] + 2 * v[1]; }
+
+BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
+  size_t numDim = 2;
+  size_t degree = 3;
+  size_t level = 3;
+  size_t numMCPoints = 2000;
+
+  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionResponseSurface);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
+  ASM.buildRegularInterpolant(level);
+  ASM.createMatrixMonteCarlo(numMCPoints);
+  ASM.evDecompositionForSymmetricMatrices();
+  Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
+  Eigen::MatrixXd eigenvectors = ASM.getEigenvectors();
+  // active subspace specifier
+  size_t n = 1;
+  Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
+
+  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
+  sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
+  sgpp::base::DataVector functionValues = ASM.getFunctionValues();
+  size_t responseLevel = 3;
+  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
+                                                       responseLevel);
+  sgpp::base::DataVector v(numDim, 0.3371);
+  double objectiveFunctionEval = objectiveFunctionResponseSurface(v);
+  double responseSurfEval = responseSurf.eval(v);
+  double epsilon = 1e-15;
+  BOOST_CHECK_SMALL(fabs(objectiveFunctionEval - responseSurfEval), epsilon);
+}
 
 /* ToDo (rehmemk)
  * -Test response surface
