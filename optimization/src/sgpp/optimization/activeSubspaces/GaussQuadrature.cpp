@@ -7,6 +7,7 @@
 
 namespace sgpp {
 namespace optimization {
+
 double gaussQuad(std::function<double(double)> f, double a, double b, size_t quadOrder) {
   base::DataVector coordinates, weights;
   base::GaussLegendreQuadRule1D gauss;

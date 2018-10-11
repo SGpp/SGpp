@@ -62,8 +62,9 @@ class ASMatrixNakBspline : public ASMatrix {
    * Create a spatially adaptive interpolant of the objective function f
    *
    * @param maxNumGridPoints	upper threshold for the number of grid points
+   * @param initialLevel		the refinement needs an initial regular grid of initialLevel
    */
-  void buildAdaptiveInterpolant(size_t maxNumGridPoints);
+  void buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel = 1);
 
   /**
    * General routine to create the Matrix C, currently simply wraps createMatrixMonteCarlo.
@@ -106,9 +107,12 @@ class ASMatrixNakBspline : public ASMatrix {
    *
    * @param i row
    * @param j column
+   * @param coordinates coordinates for the Gauss quadrature
+   * @param weights weights for the Gauss quadrature
    * @return matrix entry C_{i,j}
    */
-  double matrixEntryGauss(size_t i, size_t j);
+  double matrixEntryGauss(size_t i, size_t j, base::DataVector coordinates,
+                          base::DataVector weights);
 
   /**
    * calculates \int d/dx_i b_k(x) d/dx_j b_l(x) dx
@@ -119,10 +123,12 @@ class ASMatrixNakBspline : public ASMatrix {
    *@param j index of matrix column
    *@param k index of first basis function
    *@param l index of second basis function
-   *
+   *@param coordinates coordinates for the Gauss quadrature
+   * @param weights weights for the Gauss quadrature
    * @return integral \int d/dx_i b_k(x) d/dx_j b_l(x) dx
    */
-  double scalarProductDxbiDxbj(size_t i, size_t j, size_t k, size_t l);
+  double scalarProductDxbiDxbj(size_t i, size_t j, size_t k, size_t l, base::DataVector coordinates,
+                               base::DataVector weights);
 
   /**
    * calculates the one diensional integral \int f*g dx where f and g are B-spline basis functions
@@ -133,12 +139,15 @@ class ASMatrixNakBspline : public ASMatrix {
    * @param dx1 evaluate B-spline if False, evaluate d/dx B-spline if True
    * @param level2 level of the second B-spline
    * @param index2 index of the second B-spline
+   * @param coordinates coordinates for the Gauss quadrature
+   * @param weights weights for the Gauss quadrature
    * @param dx2 evaluate B-spline if False, evaluate d/dx B-spline if True
    *
    * @return  integral (derivative of) first basis function * (derivative of) second basis function
    */
   double univariateScalarProduct(size_t level1, size_t index1, bool dx1, size_t level2,
-                                 size_t index2, bool dx2);
+                                 size_t index2, bool dx2, base::DataVector coordinates,
+                                 base::DataVector weights);
 
   /**
    * used to get the support segments of a b-splien basis functions. Needed for Gauss quadrature

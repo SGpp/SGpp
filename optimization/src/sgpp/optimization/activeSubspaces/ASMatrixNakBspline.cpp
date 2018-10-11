@@ -44,10 +44,15 @@ void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numMCPoints) {
 }
 
 void ASMatrixNakBspline::createMatrixGauss() {
+  // prepare gauss quadrature rule
+  base::DataVector coordinates, weights;
+  base::GaussLegendreQuadRule1D gauss;
+  size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   C.resize(numDim, numDim);
   for (unsigned int i = 0; i <= C.cols(); i++) {
     for (unsigned int j = i; j < C.rows(); j++) {
-      double entry = matrixEntryGauss(i, j);
+      double entry = matrixEntryGauss(i, j, coordinates, weights);
       // todo (rehmemk) Can the Eigen library take advantage of C being symmetrical? If so initilize
       // it as such
       C(i, j) = entry;
@@ -88,17 +93,21 @@ void ASMatrixNakBspline::calculateInterpolationCoefficients() {
   coefficients = alpha;
 }
 
-double ASMatrixNakBspline::matrixEntryGauss(size_t i, size_t j) {
+double ASMatrixNakBspline::matrixEntryGauss(size_t i, size_t j, base::DataVector coordinates,
+                                            base::DataVector weights) {
   double entry = 0.0;
   for (size_t k = 0; k < coefficients.getSize(); k++) {
     for (size_t l = 0; l < coefficients.getSize(); l++) {
-      entry += coefficients[k] * coefficients[l] * scalarProductDxbiDxbj(i, j, k, l);
+      entry += coefficients[k] * coefficients[l] *
+               scalarProductDxbiDxbj(i, j, k, l, coordinates, weights);
     }
   }
   return entry;
 }
 
-double ASMatrixNakBspline::scalarProductDxbiDxbj(size_t i, size_t j, size_t k, size_t l) {
+double ASMatrixNakBspline::scalarProductDxbiDxbj(size_t i, size_t j, size_t k, size_t l,
+                                                 base::DataVector coordinates,
+                                                 base::DataVector weights) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double integral = 1.0;
   for (size_t d = 0; d < numDim; d++) {
@@ -113,16 +122,20 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(size_t i, size_t j, size_t k, s
     double integral1D = 0.0;
     if ((d == i && i != j)) {
       // int d/dxi b_{k_i} (x_i) b_{l_i} (x_i) dxi
-      integral1D = univariateScalarProduct(levelk, indexk, true, levell, indexl, false);
+      integral1D = univariateScalarProduct(levelk, indexk, true, levell, indexl, false, coordinates,
+                                           weights);
     } else if (d == j && i != j) {
       // int b_{k_j} (x_j) d/dxj b_{l_j} (x_j) dxj
-      integral1D = univariateScalarProduct(levelk, indexk, false, levell, indexl, true);
+      integral1D = univariateScalarProduct(levelk, indexk, false, levell, indexl, true, coordinates,
+                                           weights);
     } else if (d == i && i == j) {
       // int d/dxi b_{k_i} (xi) d/dxi b_{l_i} (xi) dxi
-      integral1D = univariateScalarProduct(levelk, indexk, true, levell, indexl, true);
+      integral1D =
+          univariateScalarProduct(levelk, indexk, true, levell, indexl, true, coordinates, weights);
     } else {
       // int b_{k_d} (x_d) b_{l_d} (x_d) dxd
-      integral1D = univariateScalarProduct(levelk, indexk, false, levell, indexl, false);
+      integral1D = univariateScalarProduct(levelk, indexk, false, levell, indexl, false,
+                                           coordinates, weights);
     }
     if (integral1D == 0) return 0.0;
     integral *= integral1D;
@@ -131,7 +144,9 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(size_t i, size_t j, size_t k, s
 }
 
 double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1, bool dx1,
-                                                   size_t level2, size_t index2, bool dx2) {
+                                                   size_t level2, size_t index2, bool dx2,
+                                                   base::DataVector coordinates,
+                                                   base::DataVector weights) {
   sgpp::base::DataVector supp1 = nakBSplineSupport(level1, index1);
   sgpp::base::DataVector supp2 = nakBSplineSupport(level2, index2);
   sgpp::base::DataVector commonSupport;
@@ -151,7 +166,6 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
   sgpp::base::SBasis* basis;
   basis = &(grid->getBasis());
 
-  size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
   unsigned int l1 = static_cast<unsigned int>(level1);
   unsigned int i1 = static_cast<unsigned int>(index1);
   unsigned int l2 = static_cast<unsigned int>(level2);
@@ -202,8 +216,17 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
 
   double result = 0.0;
   for (size_t i = 0; i < commonSupport.getSize() - 1; i++) {
-    double segmentIntegral =
-        sgpp::optimization::gaussQuad(func, commonSupport[i], commonSupport[i + 1], quadOrder);
+    // scale coordinates from [0,1] to [commonSupport[i],commonSupport[i+1]]
+    sgpp::base::DataVector segmentCoordinates = coordinates;
+    sgpp::base::DataVector segmentWeights = weights;
+    segmentCoordinates.mult(commonSupport[i + 1] - commonSupport[i]);
+    base::DataVector leftVector(segmentCoordinates.getSize(), commonSupport[i]);
+    segmentCoordinates.add(leftVector);
+    double segmentIntegral = 0;
+    for (size_t i = 0; i < segmentCoordinates.getSize(); i++) {
+      segmentIntegral += segmentWeights[i] * func(segmentCoordinates[i]);
+    }
+    segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
     result += segmentIntegral;
   }
 
