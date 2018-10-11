@@ -10,9 +10,62 @@
 namespace sgpp {
 namespace optimization {
 void ASMatrixNakBspline::buildRegularInterpolant(size_t level) {
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
+  this->calculateInterpolationCoefficients();
+}
+
+void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints) {
+  // number of points to be refined in each step
+  size_t refinementsNum = 3;
+  while (grid->getSize() < maxNumGridPoints) {
+    this->refineSurplusAdaptive(refinementsNum);
+  }
+}
+
+void ASMatrixNakBspline::createMatrix(size_t numPoints) { this->createMatrixMonteCarlo(numPoints); }
+
+void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numMCPoints) {
+  sgpp::optimization::InterpolantScalarFunctionGradient interpolantGradient(*grid, coefficients);
+
+  RandomNumberGenerator::getInstance().setSeed();
+  C.resize(numDim, numDim);
+  C.setZero();
+  for (size_t i = 0; i < numMCPoints; ++i) {
+    sgpp::base::DataVector randomVector(numDim, 1);
+    RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::DataVector gradient(numDim);
+    interpolantGradient.eval(randomVector, gradient);
+    Eigen::VectorXd e = DataVectorToEigen(gradient);
+    this->C += e * e.transpose();
+  }
+  this->C /= static_cast<double>(numMCPoints);
+}
+
+void ASMatrixNakBspline::createMatrixGauss() {
+  C.resize(numDim, numDim);
+  for (unsigned int i = 0; i <= C.cols(); i++) {
+    for (unsigned int j = i; j < C.rows(); j++) {
+      double entry = matrixEntryGauss(i, j);
+      // todo (rehmemk) Can the Eigen library take advantage of C being symmetrical? If so initilize
+      // it as such
+      C(i, j) = entry;
+      C(j, i) = entry;
+    }
+  }
+}
+
+// ----------------- auxiliary routines -----------
+
+void ASMatrixNakBspline::refineSurplusAdaptive(size_t refinementsNum) {
+  sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
+  grid->getGenerator().refine(functor);
+  this->calculateInterpolationCoefficients();
+}
+
+void ASMatrixNakBspline::calculateInterpolationCoefficients() {
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
   evaluationPoints.resizeZero(gridStorage.getSize(), numDim);
+  // ToDo (rehmemk) when refining iteratively use the function values from the last steps!
   functionValues.resizeZero(gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
@@ -30,32 +83,7 @@ void ASMatrixNakBspline::buildRegularInterpolant(size_t level) {
     std::cout << "ASMatrixNakBspline: Solving failed.\n";
     return;
   }
-  this->coefficients = alpha;
-  this->interpolantFlag = 1;
-}
-
-void ASMatrixNakBspline::createMatrix(size_t numPoints) { this->createMatrixMonteCarlo(numPoints); }
-
-void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numPoints) {
-  if (interpolantFlag == 0) {
-    std::cout << "ASMatrixNakBspline: cannot create Matrix without interpolant!\n";
-    return;
-  }
-  sgpp::optimization::InterpolantScalarFunctionGradient interpolantGradient(*(this->grid),
-                                                                            this->coefficients);
-
-  RandomNumberGenerator::getInstance().setSeed();
-  C.resize(numDim, numDim);
-  C.setZero();
-  for (size_t i = 0; i < numPoints; ++i) {
-    sgpp::base::DataVector randomVector(numDim, 1);
-    RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
-    sgpp::base::DataVector gradient(numDim);
-    interpolantGradient.eval(randomVector, gradient);
-    Eigen::VectorXd e = DataVectorToEigen(gradient);
-    this->C += e * e.transpose();
-  }
-  this->C /= static_cast<double>(numPoints);
+  coefficients = alpha;
 }
 
 double ASMatrixNakBspline::matrixEntryGauss(size_t i, size_t j) {
@@ -98,38 +126,6 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(size_t i, size_t j, size_t k, s
     integral *= integral1D;
   }
   return integral;
-}
-
-sgpp::base::DataVector ASMatrixNakBspline::nakBSplineSupport(size_t level, size_t index) {
-  double indexD = static_cast<double>(index);
-  double levelD = static_cast<double>(level);
-  double pp1h = floor((static_cast<double>(degree) + 1.0) / 2.0);
-  double width = 1.0 / (std::pow(2.0, levelD));
-  double lindex = indexD - pp1h;
-  double rindex = indexD + pp1h;
-
-  if ((indexD == 1) || (indexD == 3) || levelD <= 2) {
-    lindex = 0;
-  }
-  if ((indexD == std::pow(2.0, levelD) - 3) || (indexD == std::pow(2.0, levelD) - 1) ||
-      levelD <= 2) {
-    rindex = std::pow(2.0, level);
-  }
-
-  if (degree == 5) {  // everything above is for degree 3 and 5
-    if ((indexD == 5) || (levelD == 3)) {
-      lindex = 0;
-    }
-    if ((indexD == std::pow(2.0, levelD) - 5) || (levelD == 3)) {
-      rindex = std::pow(2.0, levelD);
-    }
-  }
-
-  sgpp::base::DataVector support(static_cast<int>(rindex - lindex) + 1);
-  for (size_t j = 0; j < support.getSize(); j++) {
-    support[j] = (lindex + static_cast<double>(j)) * width;
-  }
-  return support;
 }
 
 double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1, bool dx1,
@@ -212,17 +208,36 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
   return result;
 }
 
-void ASMatrixNakBspline::createMatrixGauss() {
-  C.resize(numDim, numDim);
-  for (unsigned int i = 0; i <= C.cols(); i++) {
-    for (unsigned int j = i; j < C.rows(); j++) {
-      double entry = matrixEntryGauss(i, j);
-      // todo (rehmemk) Can the Eigen library take advantage of C being symmetrical? If so initilize
-      // it as such
-      C(i, j) = entry;
-      C(j, i) = entry;
+sgpp::base::DataVector ASMatrixNakBspline::nakBSplineSupport(size_t level, size_t index) {
+  double indexD = static_cast<double>(index);
+  double levelD = static_cast<double>(level);
+  double pp1h = floor((static_cast<double>(degree) + 1.0) / 2.0);
+  double width = 1.0 / (std::pow(2.0, levelD));
+  double lindex = indexD - pp1h;
+  double rindex = indexD + pp1h;
+
+  if ((indexD == 1) || (indexD == 3) || levelD <= 2) {
+    lindex = 0;
+  }
+  if ((indexD == std::pow(2.0, levelD) - 3) || (indexD == std::pow(2.0, levelD) - 1) ||
+      levelD <= 2) {
+    rindex = std::pow(2.0, level);
+  }
+
+  if (degree == 5) {  // everything above is for degree 3 and 5
+    if ((indexD == 5) || (levelD == 3)) {
+      lindex = 0;
+    }
+    if ((indexD == std::pow(2.0, levelD) - 5) || (levelD == 3)) {
+      rindex = std::pow(2.0, levelD);
     }
   }
+
+  sgpp::base::DataVector support(static_cast<int>(rindex - lindex) + 1);
+  for (size_t j = 0; j < support.getSize(); j++) {
+    support[j] = (lindex + static_cast<double>(j)) * width;
+  }
+  return support;
 }
 
 }  // namespace optimization

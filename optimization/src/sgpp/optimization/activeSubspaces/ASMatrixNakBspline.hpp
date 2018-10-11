@@ -6,6 +6,7 @@
 #pragma once
 //#ifdef USE_EIGEN
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -21,8 +22,21 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * Used to create, store and use the matrix C for the detection of active subspaces using a B-spline
+ * interpolant. So
+ * C_{i,j} = \int \nabla f \nabla f^T dx \approx \int \nabla \hat{f} \nabla \hat{f}^T dx
+ * where \hat{f} is a B-splien interpolant for f
+ */
 class ASMatrixNakBspline : public ASMatrix {
  public:
+  /**
+   * Constructor
+   *
+   * @param objectiveFunction objective Function f
+   * @param gridType          type of the grid for the interpolant
+   * @param degree            degree for the B-spline basis functions
+   */
   ASMatrixNakBspline(WrapperScalarFunction objectiveFunc, sgpp::base::GridType gridType,
                      size_t degree)
       : ASMatrix(objectiveFunc), gridType(gridType), degree(degree) {
@@ -36,12 +50,55 @@ class ASMatrixNakBspline : public ASMatrix {
       throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
     }
   }
+
+  /**
+   * Create a regular interpolant of the objective function f
+   *
+   * @param level	level of the underlying grid
+   */
   void buildRegularInterpolant(size_t level);
+
+  /**
+   * Create a spatially adaptive interpolant of the objective function f
+   *
+   * @param maxNumGridPoints	upper threshold for the number of grid points
+   */
+  void buildAdaptiveInterpolant(size_t maxNumGridPoints);
+
+  /**
+   * General routine to create the Matrix C, currently simply wraps createMatrixMonteCarlo.
+   * Usually createMatrixGauss() is better and should be preferred
+   */
   void createMatrix(size_t numPoints);
-  void createMatrixMonteCarlo(size_t numPoints);
+
+  /**
+   * creates the matrix C from the interpolant by using Monte Carlo quadrature
+   *
+   * @param numPoints	number of Monte Carlo points
+   */
+  void createMatrixMonteCarlo(size_t numMCPoints);
+
+  /**
+   * creates the matrix C using the exact integrals of the underlying B-spline functions from a
+   * Gauss quadrature of sufficient degree
+   */
   void createMatrixGauss();
 
   // auxiliary routines
+
+  /**
+   * refine the current interpolant surplus adaptive by ading the children of <= refinementsNum
+   * points
+   *
+   * @param refinementsNum maximum number of points to be refined
+   */
+  void refineSurplusAdaptive(size_t refinementsNum);
+
+  /**
+   * calculates the coefficients for the interpolant based on the objective function and grid.
+   * Must be called after every change to the grid!
+   */
+  void calculateInterpolationCoefficients();
 
   /**
    * calculates the entry C_{i,j} of the matrix,
@@ -83,6 +140,14 @@ class ASMatrixNakBspline : public ASMatrix {
   double univariateScalarProduct(size_t level1, size_t index1, bool dx1, size_t level2,
                                  size_t index2, bool dx2);
 
+  /**
+   * used to get the support segments of a b-splien basis functions. Needed for Gauss quadrature
+   *
+   * @param level	level of the B-spline basis function
+   * @param index	index of the B-spline basis function
+   *
+   * @return the indices of the segments of the B-spline basis functions support
+   */
   sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
 
  private:
@@ -90,7 +155,6 @@ class ASMatrixNakBspline : public ASMatrix {
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;
-  bool interpolantFlag = 0;
 };
 
 }  // namespace optimization

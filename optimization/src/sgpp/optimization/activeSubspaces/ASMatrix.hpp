@@ -19,9 +19,7 @@ namespace optimization {
  * Class that creates and holds the matrix C for active subspace detection for objective function f
  * C = \int \nabla f \nabla f^T dx
  *
- * Currently only a B-Spline based version exists.
- * It would be desireable to create a Monte Carlo one
- * Also does not yet take probability density functions into account
+ * Does not yet take probability density functions into account
  * <=> assumes only equally distributed random variables are used
  */
 class ASMatrix {
