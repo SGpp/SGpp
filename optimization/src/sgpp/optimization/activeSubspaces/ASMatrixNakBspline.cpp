@@ -14,9 +14,11 @@ void ASMatrixNakBspline::buildRegularInterpolant(size_t level) {
   this->calculateInterpolationCoefficients();
 }
 
-void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints) {
+void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel) {
   // number of points to be refined in each step
   size_t refinementsNum = 3;
+  grid->getGenerator().regular(initialLevel);
+  this->calculateInterpolationCoefficients();
   while (grid->getSize() < maxNumGridPoints) {
     this->refineSurplusAdaptive(refinementsNum);
   }
