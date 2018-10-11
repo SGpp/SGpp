@@ -138,6 +138,13 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
     throw sgpp::base::generation_exception(
         "testASMatrixNakBsplineBoundaryScalarProducte: gridType not supported.");
   }
+
+  // prepare gauss quadrature rule
+  sgpp::base::DataVector coordinates, weights;
+  sgpp::base::GaussLegendreQuadRule1D gauss;
+  size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+
   sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionScalarProduct);
   sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunctionScalarProduct2);
   sgpp::base::DataVector alpha = interpolateRegular1D(objectiveFunc, gridType, degree, level, grid);
@@ -145,8 +152,8 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
       interpolateRegular1D(objectiveFunc2, gridType, degree, level, grid2);
   sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
 
-  // as long as grid1 and grid2 are of the same grid type and regular level it does not matter from
-  // which the levels and indices are taken
+  // as long as grid1 and grid2 are of the same grid type and regular level it does not matter
+  //  from which the levels and indices are taken
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double result_ff = 0.0;
   double result_dff = 0.0;
@@ -161,13 +168,17 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
       size_t levelJ = basisJ.getLevel(0);
       size_t indexJ = basisJ.getIndex(0);
       result_ff += alpha[i] * alpha[j] *
-                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
+                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
+                                               coordinates, weights);
       result_dff += alpha[i] * alpha[j] *
-                    ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true);
+                    ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true,
+                                                coordinates, weights);
       result_dfdf += alpha[i] * alpha[j] *
-                     ASM.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true);
+                     ASM.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true,
+                                                 coordinates, weights);
       result_fg += alpha[i] * alpha2[j] *
-                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
+                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
+                                               coordinates, weights);
     }
   }
   double epsilon = 1e-15;
