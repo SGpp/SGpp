@@ -44,12 +44,20 @@ size_t FileSampleDecorator::getDim() const { return fileSampleProvider->getDim()
 
 size_t FileSampleDecorator::getNumSamples() const { return fileSampleProvider->getNumSamples(); }
 
-void FileSampleDecorator::readFile(const std::string &fileName, bool hasTargets) {
-  fileSampleProvider->readFile(fileName, hasTargets);
+void FileSampleDecorator::readFile(const std::string &fileName,
+                                   bool hasTargets,
+                                   size_t readinCutoff,
+                                   std::vector<size_t> readinColumns,
+                                   std::vector<double> readinClasses) {
+  fileSampleProvider->readFile(fileName, hasTargets, readinCutoff, readinColumns, readinClasses);
 }
 
-void FileSampleDecorator::readString(const std::string &input, bool hasTargets) {
-  fileSampleProvider->readString(input, hasTargets);
+void FileSampleDecorator::readString(const std::string &input,
+                                     bool hasTargets,
+                                     size_t readinCutoff,
+                                     std::vector<size_t> readinColumns,
+                                     std::vector<double> readinClasses) {
+  fileSampleProvider->readString(input, hasTargets, readinCutoff, readinColumns, readinClasses);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
