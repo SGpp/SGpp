@@ -502,6 +502,7 @@ class PM1D_MC_Ranking(Ranking):
             ranking = np.abs(v[ix]) * np.sqrt(secondMoment)
         elif self.refinementType == 'exp':
             ranking = np.abs(v[ix]*secondMoment)
+            
         return ranking
 
 # ------------------------------------------------------------------------------

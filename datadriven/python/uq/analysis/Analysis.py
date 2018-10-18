@@ -170,8 +170,8 @@ class Analysis(object):
     def computeMoments(self, iterations=None, ts=None):
         raise NotImplementedError()
 
-    def writeMoments(self, filename, *args, **kws):
-        stats = self.computeMoments(*args, **kws)
+    def writeMoments(self, filename,iterations=None, *args, **kws):
+        stats = self.computeMoments(iterations,*args, **kws)
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
 
