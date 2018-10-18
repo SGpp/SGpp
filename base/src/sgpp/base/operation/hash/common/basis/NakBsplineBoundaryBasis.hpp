@@ -7,7 +7,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-//#include <sgpp/combigrid/GeneralFunction.hpp>
+#include <sgpp/combigrid/GeneralFunction.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -252,7 +252,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     return integral;
   }
 
-#ifdef SG_COMBIGRID
+  //#ifdef SG_COMBIGRID
   /**
    * @param l     				level of basis function
    * @param i     				index of basis function
@@ -336,7 +336,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     double integral = temp_res * scaling;
     return integral;
   }
-#endif
+  //#endif
 
   /**
    * @return      B-spline degree
@@ -364,7 +364,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     return temp_res;
   }
 
-#ifdef SG_COMBIGRID
+  //#ifdef SG_COMBIGRID
   double integrateWeightedBspline(LT l, IT i, size_t start, size_t stop, double offset,
                                   double scaling, base::DataVector quadCoordinates,
                                   base::DataVector quadWeights,
@@ -380,7 +380,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     }
     return temp_res;
   }
-#endif
+  //#endif
 };
 
 // default type-def (unsigned int for level and index)
