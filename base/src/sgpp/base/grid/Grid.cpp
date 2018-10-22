@@ -590,6 +590,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
     tMap->insert(
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("nakbsplineboundary", NakBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("nakbsplinemodified", NakBsplineModifiedGrid::unserialize));
 #endif
   }
 
