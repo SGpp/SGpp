@@ -139,7 +139,7 @@ int main() {
   // active subspace specifier
   size_t n = 1;
   size_t responseLevel = 5;  // How to choose this? Adaptivity ?
-  size_t errorGridLevel = 5;
+  size_t numMCErrorPoints = 1000;
   objectiveFunction2 objectiveFuncInstance;
   sgpp::optimization::WrapperScalarFunction objectiveFunc =
       objectiveFuncInstance.getObjectiveFunction();
@@ -150,7 +150,8 @@ int main() {
   std::vector<size_t> numPointsVector{10, 100, 300};
   for (auto& numPoints : numPointsVector) {
     std::cout << "num points: " << numPoints << std::endl;
-    // adaptive B-spline
+
+    // adaptive B-spline matrix - regular Bspline response surface
     sgpp::optimization::ASMatrixNakBspline ASM_Bspline(objectiveFunc, gridType, degree);
     ASM_Bspline.buildAdaptiveInterpolant(numPoints);
     ASM_Bspline.createMatrixGauss();
@@ -161,25 +162,34 @@ int main() {
     Eigen::MatrixXd C_adaptiveBspline = ASM_Bspline.getMatrix();
     sgpp::base::DataMatrix evaluationPoints_adaptiveBspline = ASM_Bspline.getEvaluationPoints();
     sgpp::base::DataVector functionValues_adaptiveBspline = ASM_Bspline.getFunctionValues();
+    auto responseSurf_regularBspline =
+        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
+                                                                          gridType, degree);
+    responseSurf_regularBspline->createRegularSurfaceFromDetectionPoints(
+        evaluationPoints_adaptiveBspline, functionValues_adaptiveBspline, responseLevel);
+    std::cout << "B  | l2 err: "
+              << responseSurf_regularBspline->l2Error(objectiveFunc, numMCErrorPoints)
+              << " matrix err: "
+              << (C_adaptiveBspline - objectiveFuncInstance.getActiveSubspaceMatrix()).norm()
+              << " eigenval err: "
+              << (eigenvalues_adaptiveBspline - objectiveFuncInstance.getEigenValues()).norm()
+              << " eigenvec err: "
+              << (eigenvectors_adaptiveBspline - objectiveFuncInstance.getEigenVectors()).norm()
+              << std::endl;
+
+    // adaptive B-spline matrix - regular Bspline response surface
+    size_t maxNumGridPoints = functionValues_adaptiveBspline.getSize();
+    size_t initialLevel = 1;
     auto responseSurf_adaptiveBspline =
         std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
                                                                           gridType, degree);
-    responseSurf_adaptiveBspline->createRegularSurfaceFromDetectionPoints(
-        evaluationPoints_adaptiveBspline, functionValues_adaptiveBspline, responseLevel);
-    double error_adaptiveBspline =
-        l2InterpolationError(objectiveFunc, responseSurf_adaptiveBspline, errorGridLevel);
-    double matrixError_adaptiveBspline =
-        (C_adaptiveBspline - objectiveFuncInstance.getActiveSubspaceMatrix()).norm();
-    double eigenvalError_adaptiveBspline =
-        (eigenvalues_adaptiveBspline - objectiveFuncInstance.getEigenValues()).norm();
-    double eigenvecError_adaptiveBspline =
-        (eigenvectors_adaptiveBspline - objectiveFuncInstance.getEigenVectors()).norm();
-    std::cout << "B  | l2 err: " << error_adaptiveBspline
-              << " matrix err: " << matrixError_adaptiveBspline
-              << " eigenval err: " << eigenvalError_adaptiveBspline
-              << " eigenvec err: " << eigenvecError_adaptiveBspline << std::endl;
+    responseSurf_adaptiveBspline->createAdaptiveResponseSurfaceWithPseudoInverse(
+        maxNumGridPoints, objectiveFunc, initialLevel);
+    std::cout << "B a | l2 err: "
+              << responseSurf_adaptiveBspline->l2Error(objectiveFunc, numMCErrorPoints)
+              << std::endl;
 
-    // MC
+    // MC matrix - regular Bspline response surface
     sgpp::optimization::ASMatrixGradientMC ASM_GradientMC(objectiveFunc, objectiveFuncGradient);
     ASM_GradientMC.createMatrix(numPoints);
     ASM_GradientMC.evDecompositionForSymmetricMatrices();
@@ -194,17 +204,15 @@ int main() {
                                                                           degree);
     responseSurf_gradientMC->createRegularSurfaceFromDetectionPoints(
         evaluationPoints_gradientMC, functionValues_gradientMC, responseLevel);
-    double error_gradientMC =
-        l2InterpolationError(objectiveFunc, responseSurf_gradientMC, errorGridLevel);
-    double matrixError_gradientMC =
-        (C_gradientMC - objectiveFuncInstance.getActiveSubspaceMatrix()).norm();
-    double eigenvalError_gradientMC =
-        (eigenvalues_gradientMC - objectiveFuncInstance.getEigenValues()).norm();
-    double eigenvecError_gradientMC =
-        (eigenvectors_gradientMC - objectiveFuncInstance.getEigenVectors()).norm();
-    std::cout << "MC | l2 err: " << error_gradientMC << " matrix err: " << matrixError_gradientMC
-              << " eigenval err: " << eigenvalError_gradientMC
-              << " eigenvec err: " << eigenvecError_gradientMC << std::endl;
+    std::cout << "MC | l2 err: "
+              << responseSurf_gradientMC->l2Error(objectiveFunc, numMCErrorPoints)
+              << " matrix err: "
+              << (C_gradientMC - objectiveFuncInstance.getActiveSubspaceMatrix()).norm()
+              << " eigenval err: "
+              << (eigenvalues_gradientMC - objectiveFuncInstance.getEigenValues()).norm()
+              << " eigenvec err: "
+              << (eigenvectors_gradientMC - objectiveFuncInstance.getEigenVectors()).norm()
+              << std::endl;
   }
   return 0;
 }

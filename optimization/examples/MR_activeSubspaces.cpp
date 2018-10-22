@@ -11,16 +11,20 @@
 
 double f(sgpp::base::DataVector v) {
   //  return v[0] + 2 * v[1];
-  return exp(0.7 * v[0] + 0.3 * v[1]);
+  return v[0] * v[0] + v[0] * v[1];
+  //  return exp(0.7 * v[0] + 0.3 * v[1]);
 }
 double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
   gradient.resizeZero(2);
   //  gradient[0] = 1;
   //  gradient[1] = 2;
   //  return v[0] + 2 * v[1];
-  gradient[0] = 0.7 * exp(0.7 * v[0] + 0.3 * v[1]);
-  gradient[1] = 0.3 * exp(0.7 * v[0] + 0.3 * v[1]);
-  return exp(0.7 * v[0] + 0.3 * v[1]);
+  gradient[0] = 2 * v[0] + v[1];
+  gradient[1] = v[0];
+  return v[0] * v[0] + v[0] * v[1];
+  //  gradient[0] = 0.7 * exp(0.7 * v[0] + 0.3 * v[1]);
+  //  gradient[1] = 0.3 * exp(0.7 * v[0] + 0.3 * v[1]);
+  //  return exp(0.7 * v[0] + 0.3 * v[1]);
 }
 
 int main() {
@@ -49,37 +53,40 @@ int main() {
   Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
   std::cout << "EVal:\n" << eigenvalues << std::endl;
   Eigen::MatrixXd eigenvectors = ASM.getEigenvectors();
-  std::cout << "EVec:\n" << eigenvectors << std::endl;
+  //  std::cout << "EVec:\n" << eigenvectors << std::endl;
   Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
-  std::cout << "W1:\n" << W1 << std::endl;
+  //  std::cout << "W1:\n" << W1 << std::endl;
 
   //----------------------------
   Eigen::MatrixXd M = ASM.getMatrix();
-  std::cout << "MC:\n" << M << std::endl;
+  std::cout << "MC (B-spline):\n" << M << std::endl;
 
   ASM.createMatrixGauss();
   M = ASM.getMatrix();
-  std::cout << "Gauss:\n" << M << std::endl;
+  std::cout << "Gauss (B-spline):\n" << M << std::endl;
 
   sgpp::optimization::WrapperScalarFunctionGradient objectiveFuncGradient(numDim, df);
   sgpp::optimization::ASMatrixGradientMC ASMGradient(objectiveFunc, objectiveFuncGradient);
   ASMGradient.createMatrixMonteCarlo(numMCPoints);
   M = ASMGradient.getMatrix();
-  std::cout << "Gradient:\n" << M << std::endl;
+  std::cout << "MC (Gradient):\n" << M << std::endl;
   //----------------------------
 
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
 
   sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
-  size_t responseLevel = 3;
-  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
-                                                       responseLevel);
+  size_t responseLevel = 5;
+  //  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
+  //                                                       responseLevel);
+  responseSurf.createRegularResponseSurfaceWithPseudoInverse(responseLevel, objectiveFunc);
 
   sgpp::base::DataVector v(numDim, 0.3371);
   double responseSurfEval = responseSurf.eval(v);
   std::cout << "f(v)  = " << f(v) << std::endl;
   std::cout << "rI(v) = " << responseSurfEval << std::endl;
+
+  std::cout << "err: " << responseSurf.l2Error(objectiveFunc) << std::endl;
 
   return 0;
 }

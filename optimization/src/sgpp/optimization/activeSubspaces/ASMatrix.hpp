@@ -61,7 +61,7 @@ class ASMatrix {
   sgpp::base::DataVector getFunctionValues() { return functionValues; }
 
   /**
-   * The Matrix W_1 containing the n last columns of W spans the active subset
+   * The Matrix W_1, containing the n last columns of W, spans the active subset
    *
    * @param n active subspace indicator (active variables: x_n,\dots , x_D
    * @return matrix W1
