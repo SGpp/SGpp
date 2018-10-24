@@ -164,6 +164,8 @@ class ASMatrixNakBspline : public ASMatrix {
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;
+  typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
+  std::map<asMatrixHashType, double> innerProducts;
 };
 
 }  // namespace optimization

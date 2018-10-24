@@ -147,90 +147,99 @@ double ASMatrixNakBspline::univariateScalarProduct(size_t level1, size_t index1,
                                                    size_t level2, size_t index2, bool dx2,
                                                    base::DataVector coordinates,
                                                    base::DataVector weights) {
-  sgpp::base::DataVector supp1 = nakBSplineSupport(level1, index1);
-  sgpp::base::DataVector supp2 = nakBSplineSupport(level2, index2);
-  sgpp::base::DataVector commonSupport;
-
-  // if supports do not overlap
-  if ((supp1[0] >= supp2.back()) || (supp1.back() <= supp2[0]))
-    return 0;
-  else {
-    if (level1 > level2)
-      commonSupport = supp1;
-    else if (level1 < level2)
-      commonSupport = supp2;
-    else
-      commonSupport = supp1;
-  }
-
-  sgpp::base::SBasis* basis;
-  basis = &(grid->getBasis());
-
-  unsigned int l1 = static_cast<unsigned int>(level1);
-  unsigned int i1 = static_cast<unsigned int>(index1);
-  unsigned int l2 = static_cast<unsigned int>(level2);
-  unsigned int i2 = static_cast<unsigned int>(index2);
-  std::function<double(double)> func1;
-  if (dx1) {
-    if (gridType == sgpp::base::GridType::NakBspline) {
-      func1 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l1, i1, x);
-      };
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-      func1 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l1, i1, x);
-      };
-    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      func1 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l1, i1, x);
-      };
-    } else {
-      throw sgpp::base::generation_exception(
-          "ASMatrixNakBspline: gridType does not support evalDx.");
-    }
+  std::map<asMatrixHashType, double>::iterator it;
+  asMatrixHashType hashKey = std::make_tuple(level1, index1, dx1, level2, index2, dx2);
+  it = innerProducts.find(hashKey);
+  if (it != innerProducts.end()) {
+    return it->second;
   } else {
-    func1 = [&](double x) { return basis->eval(l1, i1, x); };
-  }
-  std::function<double(double)> func2;
-  if (dx2) {
-    if (gridType == sgpp::base::GridType::NakBspline) {
-      func2 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l2, i2, x);
-      };
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-      func2 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l2, i2, x);
-      };
-    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      func2 = [&](double x) {
-        return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l2, i2, x);
-      };
+    sgpp::base::DataVector supp1 = nakBSplineSupport(level1, index1);
+    sgpp::base::DataVector supp2 = nakBSplineSupport(level2, index2);
+    sgpp::base::DataVector commonSupport;
+
+    // if supports do not overlap
+    if ((supp1[0] >= supp2.back()) || (supp1.back() <= supp2[0]))
+      return 0;
+    else {
+      if (level1 > level2)
+        commonSupport = supp1;
+      else if (level1 < level2)
+        commonSupport = supp2;
+      else
+        commonSupport = supp1;
+    }
+
+    sgpp::base::SBasis* basis;
+    basis = &(grid->getBasis());
+
+    unsigned int l1 = static_cast<unsigned int>(level1);
+    unsigned int i1 = static_cast<unsigned int>(index1);
+    unsigned int l2 = static_cast<unsigned int>(level2);
+    unsigned int i2 = static_cast<unsigned int>(index2);
+    std::function<double(double)> func1;
+    if (dx1) {
+      if (gridType == sgpp::base::GridType::NakBspline) {
+        func1 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l1, i1, x);
+        };
+      } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+        func1 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l1, i1, x);
+        };
+      } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+        func1 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l1, i1, x);
+        };
+      } else {
+        throw sgpp::base::generation_exception(
+            "ASMatrixNakBspline: gridType does not support evalDx.");
+      }
     } else {
-      throw sgpp::base::generation_exception(
-          "ASMatrixNakBspline: gridType does not support evalDx.");
+      func1 = [&](double x) { return basis->eval(l1, i1, x); };
     }
-  } else {
-    func2 = [&](double x) { return basis->eval(l2, i2, x); };
-  }
-  std::function<double(double)> func = [&](double x) { return func1(x) * func2(x); };
-
-  double result = 0.0;
-  for (size_t i = 0; i < commonSupport.getSize() - 1; i++) {
-    // scale coordinates from [0,1] to [commonSupport[i],commonSupport[i+1]]
-    sgpp::base::DataVector segmentCoordinates = coordinates;
-    sgpp::base::DataVector segmentWeights = weights;
-    segmentCoordinates.mult(commonSupport[i + 1] - commonSupport[i]);
-    base::DataVector leftVector(segmentCoordinates.getSize(), commonSupport[i]);
-    segmentCoordinates.add(leftVector);
-    double segmentIntegral = 0;
-    for (size_t i = 0; i < segmentCoordinates.getSize(); i++) {
-      segmentIntegral += segmentWeights[i] * func(segmentCoordinates[i]);
+    std::function<double(double)> func2;
+    if (dx2) {
+      if (gridType == sgpp::base::GridType::NakBspline) {
+        func2 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineBase*>(basis)->evalDx(l2, i2, x);
+        };
+      } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+        func2 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineModifiedBase*>(basis)->evalDx(l2, i2, x);
+        };
+      } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+        func2 = [&](double x) {
+          return static_cast<sgpp::base::SNakBsplineBoundaryBase*>(basis)->evalDx(l2, i2, x);
+        };
+      } else {
+        throw sgpp::base::generation_exception(
+            "ASMatrixNakBspline: gridType does not support evalDx.");
+      }
+    } else {
+      func2 = [&](double x) { return basis->eval(l2, i2, x); };
     }
-    segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
-    result += segmentIntegral;
-  }
+    std::function<double(double)> func = [&](double x) { return func1(x) * func2(x); };
 
-  return result;
+    double result = 0.0;
+    for (size_t i = 0; i < commonSupport.getSize() - 1; i++) {
+      // scale coordinates from [0,1] to [commonSupport[i],commonSupport[i+1]]
+      sgpp::base::DataVector segmentCoordinates = coordinates;
+      sgpp::base::DataVector segmentWeights = weights;
+      segmentCoordinates.mult(commonSupport[i + 1] - commonSupport[i]);
+      base::DataVector leftVector(segmentCoordinates.getSize(), commonSupport[i]);
+      segmentCoordinates.add(leftVector);
+      double segmentIntegral = 0;
+      for (size_t i = 0; i < segmentCoordinates.getSize(); i++) {
+        segmentIntegral += segmentWeights[i] * func(segmentCoordinates[i]);
+      }
+      segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
+      result += segmentIntegral;
+    }
+
+    innerProducts.insert(std::pair<asMatrixHashType, double>(hashKey, result));
+    it->second = result;
+    return result;
+  }
 }
 
 sgpp::base::DataVector ASMatrixNakBspline::nakBSplineSupport(size_t level, size_t index) {
