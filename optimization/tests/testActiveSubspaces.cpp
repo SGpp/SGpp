@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
   size_t responseLevel = 3;
-  responseSurf.createRegularSurfaceFromDetectionPoints(evaluationPoints, functionValues,
+  responseSurf.createRegularReducedSurfaceFromDetectionPoints(evaluationPoints, functionValues,
                                                        responseLevel);
   sgpp::base::DataVector v(numDim, 0.3371);
   double objectiveFunctionEval = objectiveFunctionResponseSurface(v);
