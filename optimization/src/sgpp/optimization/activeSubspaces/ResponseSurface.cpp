@@ -5,18 +5,18 @@
 
 //#ifdef USE_EIGEN
 
-#include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
+#include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 
 namespace sgpp {
 namespace optimization {
 
-double ASResponseSurface::l2Error(sgpp::optimization::WrapperScalarFunction objectiveFunc,
-                                  size_t numMCPoints) {
+double ResponseSurface::l2Error(sgpp::optimization::WrapperScalarFunction objectiveFunc,
+                                size_t numMCPoints) {
   double l2Err = 0.0;
   sgpp::base::DataVector randomVector(objectiveFunc.getNumberOfParameters());
   for (size_t i = 0; i < numMCPoints; i++) {
     sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
-    double evalInterpolant = interpolant->eval(randomVector);
+    double evalInterpolant = this->eval(randomVector);
     double evalObjectiveFunc = objectiveFunc.eval(randomVector);
     l2Err += std::pow(evalInterpolant - evalObjectiveFunc, 2.0);
   }

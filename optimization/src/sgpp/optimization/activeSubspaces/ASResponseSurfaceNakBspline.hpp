@@ -20,7 +20,7 @@ namespace optimization {
 class ASResponseSurfaceNakBspline : public ASResponseSurface {
  public:
   ASResponseSurfaceNakBspline(Eigen::MatrixXd W1, sgpp::base::GridType gridType, size_t degree = 3)
-      : ASResponseSurface(W1), degree(degree), gridType(gridType) {
+      : ASResponseSurface(W1), gridType(gridType), degree(degree) {
     initialize();
   };
 
@@ -34,8 +34,9 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * then performs regression for the B-spline coefficients with the given evaluationPoints and
    * functionValues. These usually come from the detection of the active  subspace
    */
-  void createRegularSurfaceFromDetectionPoints(sgpp::base::DataMatrix evaluationPoints,
-                                               sgpp::base::DataVector functionValues, size_t level);
+  void createRegularReducedSurfaceFromDetectionPoints(sgpp::base::DataMatrix evaluationPoints,
+                                                      sgpp::base::DataVector functionValues,
+                                                      size_t level);
 
   /**
    * creates a regular grid of the dimension of the reduced space ( = # columns of W1)
@@ -43,7 +44,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * Moore-Penrose (pseudo-) inverse of W1, pinvW1. So for a point x the right hand side is
    * f(pinvW1 x)
    */
-  void createRegularResponseSurfaceWithPseudoInverse(
+  void createRegularReducedSurfaceWithPseudoInverse(
       size_t level, sgpp::optimization::WrapperScalarFunction objectiveFunc);
 
   /**
@@ -52,7 +53,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * Moore-Penrose (pseudo-) inverse of W1, pinvW1. So for a point x the right hand side is
    * f(pinvW1 x)
    */
-  void createAdaptiveResponseSurfaceWithPseudoInverse(
+  void createAdaptiveReducedSurfaceWithPseudoInverse(
       size_t maxNumGridPoints, sgpp::optimization::WrapperScalarFunction objectiveFunc,
       size_t initialLevel = 1);
 
@@ -60,8 +61,8 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
  private:
-  size_t degree = 3;
   sgpp::base::GridType gridType;
+  size_t degree;
   size_t numDim;
   std::unique_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;

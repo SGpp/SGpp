@@ -24,7 +24,7 @@ void ASResponseSurfaceNakBspline::initialize() {
   }
 }
 
-void ASResponseSurfaceNakBspline::createRegularSurfaceFromDetectionPoints(
+void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints(
     sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
@@ -63,7 +63,7 @@ void ASResponseSurfaceNakBspline::createRegularSurfaceFromDetectionPoints(
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
 }
 
-void ASResponseSurfaceNakBspline::createRegularResponseSurfaceWithPseudoInverse(
+void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
     size_t level, sgpp::optimization::WrapperScalarFunction objectiveFunc) {
   grid->getGenerator().regular(level);
   sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
@@ -72,7 +72,7 @@ void ASResponseSurfaceNakBspline::createRegularResponseSurfaceWithPseudoInverse(
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
 }
 
-void ASResponseSurfaceNakBspline::createAdaptiveResponseSurfaceWithPseudoInverse(
+void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
     size_t maxNumGridPoints, sgpp::optimization::WrapperScalarFunction objectiveFunc,
     size_t initialLevel) {
   // number of points to be refined in each step

@@ -80,6 +80,11 @@ class ASInterpolantScalarFunction : public ScalarFunction {
    */
   void setAlpha(const base::DataVector& alpha) { this->alpha = alpha; }
 
+  /**
+   * @return number of grid points
+   */
+  size_t getSize() { return this->grid.getSize(); }
+
  protected:
   /// sparse grid
   base::Grid& grid;
