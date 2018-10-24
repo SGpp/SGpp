@@ -10,7 +10,8 @@
 namespace sgpp {
 namespace optimization {
 
-void ASMatrixGradientMC::createMatrixMonteCarlo(size_t numPoints) {
+void ASMatrixGradientMC::createMatrixMonteCarlo(
+    size_t numPoints, WrapperScalarFunctionGradient objectiveFuncGradient) {
   RandomNumberGenerator::getInstance().setSeed();
   C.resize(numDim, numDim);
   C.setZero();
@@ -21,6 +22,28 @@ void ASMatrixGradientMC::createMatrixMonteCarlo(size_t numPoints) {
     RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     sgpp::base::DataVector gradient(numDim);
     functionValues[i] = objectiveFuncGradient.eval(randomVector, gradient);
+    evaluationPoints.setRow(i, randomVector);
+    Eigen::VectorXd e = DataVectorToEigen(gradient);
+    this->C += e * e.transpose();
+  }
+  this->C /= static_cast<double>(numPoints);
+}
+
+void ASMatrixGradientMC::createMatrixMonteCarloFiniteDifference(size_t numPoints, double h) {
+  RandomNumberGenerator::getInstance().setSeed();
+  C.resize(numDim, numDim);
+  C.setZero();
+  evaluationPoints.resizeZero(numPoints, numDim);
+  functionValues.resizeZero(numPoints);
+  for (size_t i = 0; i < numPoints; ++i) {
+    sgpp::base::DataVector randomVector(numDim, 1);
+    RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::DataVector gradient(numDim);
+    functionValues[i] = objectiveFunc.eval(randomVector);
+    for (size_t d = 0; d < numDim; d++) {
+      randomVector[d] += h;
+      gradient[d] = (objectiveFunc.eval(randomVector) - functionValues[i]) / h;
+    }
     evaluationPoints.setRow(i, randomVector);
     Eigen::VectorXd e = DataVectorToEigen(gradient);
     this->C += e * e.transpose();

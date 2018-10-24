@@ -15,15 +15,13 @@ namespace optimization {
 
 class ASMatrixGradientMC : public ASMatrix {
  public:
-  ASMatrixGradientMC(WrapperScalarFunction objectiveFunc,
-                     WrapperScalarFunctionGradient objectiveFuncGradient)
-      : ASMatrix(objectiveFunc), objectiveFuncGradient(objectiveFuncGradient) {}
-  void createMatrix(size_t numPoints) { createMatrixMonteCarlo(numPoints); };
-  void createMatrixMonteCarlo(size_t numPoints);
+  ASMatrixGradientMC(WrapperScalarFunction objectiveFunc) : ASMatrix(objectiveFunc) {}
+  void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); };
+  void createMatrixMonteCarlo(size_t numPoints,
+                              WrapperScalarFunctionGradient objectiveFuncGradient);
+  void createMatrixMonteCarloFiniteDifference(size_t numPoints, double h = 1e-08);
 
  private:
-  // gradients objective function
-  WrapperScalarFunctionGradient objectiveFuncGradient;
 };
 
 }  // namespace optimization
