@@ -79,6 +79,9 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
   size_t refinementsNum = 3;
   grid->getGenerator().regular(initialLevel);
   sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
+  interpolantGradient =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
   while (grid->getSize() < maxNumGridPoints) {
     this->refineSurplusAdaptive(refinementsNum, objectiveFunc, alpha);
     interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);

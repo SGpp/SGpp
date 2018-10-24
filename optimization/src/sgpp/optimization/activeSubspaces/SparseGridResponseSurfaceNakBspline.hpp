@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
@@ -12,6 +13,7 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -40,6 +42,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   void initialize();
 
   void createRegularResponseSurface(size_t level);
+  void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel);
   double eval(sgpp::base::DataVector v);
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
@@ -50,6 +53,9 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   size_t numDim;
   std::unique_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;
+
+  void refineSurplusAdaptive(size_t refinementsNum, sgpp::base::DataVector& alpha);
+  sgpp::base::DataVector calculateInterpolationCoefficients();
 };
 
 }  // namespace optimization

@@ -26,6 +26,47 @@ void SparseGridResponseSurfaceNakBspline::initialize() {
 
 void SparseGridResponseSurfaceNakBspline::createRegularResponseSurface(size_t level) {
   grid->getGenerator().regular(level);
+  sgpp::base::DataVector alpha = calculateInterpolationCoefficients();
+  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
+  interpolantGradient =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+}
+
+double SparseGridResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {
+  return interpolant->eval(v);
+}
+double SparseGridResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
+                                                         sgpp::base::DataVector& gradient) {
+  return interpolantGradient->eval(v, gradient);
+}
+
+void SparseGridResponseSurfaceNakBspline::createSurplusAdaptiveResponseSurface(
+    size_t maxNumGridPoints, size_t initialLevel) {
+  // number of points to be refined in each step
+  size_t refinementsNum = 3;
+  grid->getGenerator().regular(initialLevel);
+  sgpp::base::DataVector alpha = calculateInterpolationCoefficients();
+  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
+  interpolantGradient =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+  while (grid->getSize() < maxNumGridPoints) {
+    this->refineSurplusAdaptive(refinementsNum, alpha);
+    interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
+    interpolantGradient =
+        std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+  }
+}
+
+// ----------------- auxiliary routines -----------
+
+void SparseGridResponseSurfaceNakBspline::refineSurplusAdaptive(size_t refinementsNum,
+                                                                sgpp::base::DataVector& alpha) {
+  sgpp::base::SurplusRefinementFunctor functor(alpha, refinementsNum);
+  grid->getGenerator().refine(functor);
+  alpha = calculateInterpolationCoefficients();
+}
+
+sgpp::base::DataVector SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
@@ -43,17 +84,7 @@ void SparseGridResponseSurfaceNakBspline::createRegularResponseSurface(size_t le
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;
   }
-  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
-  interpolantGradient =
-      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
-}
-
-double SparseGridResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {
-  return interpolant->eval(v);
-}
-double SparseGridResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
-                                                         sgpp::base::DataVector& gradient) {
-  return interpolantGradient->eval(v, gradient);
+  return alpha;
 }
 
 }  // namespace optimization

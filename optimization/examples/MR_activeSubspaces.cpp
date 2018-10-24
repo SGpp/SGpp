@@ -10,12 +10,9 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 
 double f(sgpp::base::DataVector v) {
-  //  return v[0] + 2 * v[1];
-  //  return v[0] * v[0] + v[0] * v[1];
   //  return exp(0.7 * v[0] + 0.3 * v[1]);
-  //  return v[0] + sin(v[1] * v[2]) + 0 * v[3];
-  //  return 100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3];
-  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
+  //  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
+  return sin(10 * v[0] + v[1]);
 }
 double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
   gradient.resizeZero(4);
@@ -28,7 +25,7 @@ double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
 
 int main() {
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  size_t numDim = 4;
+  size_t numDim = 2;
   size_t degree = 3;
   // active subspace specifier
   size_t n = 1;
@@ -65,23 +62,24 @@ int main() {
 
   std::cout << "err: " << responseSurf.l2Error(objectiveFunc) << std::endl;
 
-  std::cout << "--------- MC ---------" << std::endl;
-  size_t numMCpoints = 100;
-  sgpp::optimization::ASMatrixGradientMC ASM_GradientMC(objectiveFunc);
-  ASM_GradientMC.createMatrixMonteCarlo(numMCpoints, objectiveFuncGradient);
-  ASM_GradientMC.evDecompositionForSymmetricMatrices();
-  Eigen::VectorXd eigenvalues_gradientMC = ASM_GradientMC.getEigenvalues();
-  Eigen::MatrixXd eigenvectors_gradientMC = ASM_GradientMC.getEigenvectors();
-  Eigen::MatrixXd W1_gradientMC = ASM_GradientMC.getTransformationMatrix(n);
-  std::cout << "EVal\n" << eigenvalues_gradientMC << std::endl;
-  std::cout << "EVec\n" << eigenvectors_gradientMC << std::endl;
-  std::cout << "W1\n" << W1_gradientMC << std::endl;
-  sgpp::base::DataMatrix evaluationPoints_gradientMC = ASM_GradientMC.getEvaluationPoints();
-  sgpp::base::DataVector functionValues_gradientMC = ASM_GradientMC.getFunctionValues();
-  auto responseSurf_gradientMC = std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
-      W1_gradientMC, gridType, degree);
-  responseSurf_gradientMC->createAdaptiveReducedSurfaceWithPseudoInverse(
-      maxNumGridPointsResponseSurface, objectiveFunc, initialLevel);
-  std::cout << "err: " << responseSurf_gradientMC->l2Error(objectiveFunc) << std::endl;
+  //  std::cout << "--------- MC ---------" << std::endl;
+  //  size_t numMCpoints = 100;
+  //  sgpp::optimization::ASMatrixGradientMC ASM_GradientMC(objectiveFunc);
+  //  ASM_GradientMC.createMatrixMonteCarlo(numMCpoints, objectiveFuncGradient);
+  //  ASM_GradientMC.evDecompositionForSymmetricMatrices();
+  //  Eigen::VectorXd eigenvalues_gradientMC = ASM_GradientMC.getEigenvalues();
+  //  Eigen::MatrixXd eigenvectors_gradientMC = ASM_GradientMC.getEigenvectors();
+  //  Eigen::MatrixXd W1_gradientMC = ASM_GradientMC.getTransformationMatrix(n);
+  //  std::cout << "EVal\n" << eigenvalues_gradientMC << std::endl;
+  //  std::cout << "EVec\n" << eigenvectors_gradientMC << std::endl;
+  //  std::cout << "W1\n" << W1_gradientMC << std::endl;
+  //  sgpp::base::DataMatrix evaluationPoints_gradientMC = ASM_GradientMC.getEvaluationPoints();
+  //  sgpp::base::DataVector functionValues_gradientMC = ASM_GradientMC.getFunctionValues();
+  //  auto responseSurf_gradientMC =
+  //  std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
+  //      W1_gradientMC, gridType, degree);
+  //  responseSurf_gradientMC->createAdaptiveReducedSurfaceWithPseudoInverse(
+  //      maxNumGridPointsResponseSurface, objectiveFunc, initialLevel);
+  //  std::cout << "err: " << responseSurf_gradientMC->l2Error(objectiveFunc) << std::endl;
   return 0;
 }
