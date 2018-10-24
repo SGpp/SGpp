@@ -66,7 +66,11 @@ class ASMatrix {
    * @param n active subspace indicator (active variables: x_n,\dots , x_D
    * @return matrix W1
    */
-  Eigen::MatrixXd getTransformationMatrix(size_t n) { return W.block(0, n, W.cols(), numDim - n); };
+  //  Eigen::MatrixXd getTransformationMatrix(size_t n) { return W.block(0, n, W.cols(), numDim -
+  //  n); };
+  Eigen::MatrixXd getTransformationMatrix(size_t n) {
+    return W.block(0, W.cols() - n, W.rows(), n);
+  };
 
   Eigen::MatrixXd getMatrix() { return C; }
 
