@@ -144,6 +144,8 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   sgpp::base::GaussLegendreQuadRule1D gauss;
   size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
+  auto pCoordinates = std::make_shared<sgpp::base::DataVector>(coordinates);
+  auto pWeights = std::make_shared<sgpp::base::DataVector>(weights);
 
   sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionScalarProduct);
   sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunctionScalarProduct2);
@@ -169,16 +171,16 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
       size_t indexJ = basisJ.getIndex(0);
       result_ff += alpha[i] * alpha[j] *
                    ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
-                                               coordinates, weights);
+                                               pCoordinates, pWeights);
       result_dff += alpha[i] * alpha[j] *
                     ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true,
-                                                coordinates, weights);
+                                                pCoordinates, pWeights);
       result_dfdf += alpha[i] * alpha[j] *
                      ASM.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true,
-                                                 coordinates, weights);
+                                                 pCoordinates, pWeights);
       result_fg += alpha[i] * alpha2[j] *
                    ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
-                                               coordinates, weights);
+                                               pCoordinates, pWeights);
     }
   }
   double epsilon = 1e-15;
@@ -264,7 +266,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
   size_t responseLevel = 3;
   responseSurf.createRegularReducedSurfaceFromDetectionPoints(evaluationPoints, functionValues,
-                                                       responseLevel);
+                                                              responseLevel);
   sgpp::base::DataVector v(numDim, 0.3371);
   double objectiveFunctionEval = objectiveFunctionResponseSurface(v);
   double responseSurfEval = responseSurf.eval(v);

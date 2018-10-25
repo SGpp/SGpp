@@ -70,6 +70,20 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
   interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
   interpolantGradient =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+
+  // Check interpolation property g(p) = f(pinvW1' * p) for all grid points p
+  //  Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
+  //  double diff = 0;
+  //  for (size_t i = 0; i < grid->getSize(); i++) {
+  //    auto gp = grid->getStorage().getPoint(i);
+  //    Eigen::VectorXd p(grid->getDimension());
+  //    for (size_t d = 0; d < grid->getDimension(); d++) {
+  //      p[d] = gp.getStandardCoordinate(d);
+  //    }
+  //    sgpp::base::DataVector pinv = EigenToDataVector(pinvW1 * p);
+  //    diff += fabs(objectiveFunc.eval(pinv) - interpolant->eval(EigenToDataVector(p)));
+  //  }
+  //  std::cout << "total diff: " << diff << std::endl;
 }
 
 void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
@@ -118,7 +132,7 @@ void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
 sgpp::base::DataVector
 ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
     sgpp::optimization::WrapperScalarFunction objectiveFunc) {
-  Eigen::MatrixXd pinvW1 = W1.completeOrthogonalDecomposition().pseudoInverse();
+  Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   Eigen::MatrixXd interpolationMatrix(gridStorage.getSize(), gridStorage.getSize());
   Eigen::VectorXd functionValues(gridStorage.getSize());
@@ -144,14 +158,20 @@ ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse
     }
 
     sgpp::base::DataVector pinv =
-        EigenToDataVector(pinvW1.transpose() * p);  // introduce a wrapper for eigen functinos so we
-                                                    // don't have to transform here every time?
+        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functinos so
+                                        // we don't have to transform here every time?
     functionValues(i) = objectiveFunc.eval(pinv);
   }
   Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
   Eigen::VectorXd alpha_Eigen = dec.solve(functionValues);
-  //  Eigen::VectorXf alpha_Eigen = interpolationMatrix.colPivHouseholderQr().solve(functionValues);
+  //  Eigen::VectorXf alpha_Eigen =
+  //  interpolationMatrix.colPivHouseholderQr().solve(functionValues);
   sgpp::base::DataVector alpha = EigenToDataVector(alpha_Eigen);
+
+  //  std::cout << "f\n"
+  //            << functionValues << " M*a\n"
+  //            << interpolationMatrix * alpha_Eigen << std::endl;
+
   return alpha;
 }
 
