@@ -25,9 +25,9 @@ namespace optimization {
 
 class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
  public:
-  SparseGridResponseSurfaceNakBspline(size_t dim,
-                                      sgpp::optimization::WrapperScalarFunction objectiveFunc,
-                                      sgpp::base::GridType gridType, size_t degree = 3)
+  SparseGridResponseSurfaceNakBspline(
+      size_t dim, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
+      sgpp::base::GridType gridType, size_t degree = 3)
       : ResponseSurface(dim), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
     initialize();
   };
@@ -48,7 +48,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
  private:
-  sgpp::optimization::WrapperScalarFunction objectiveFunc;
+  std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc;
   sgpp::base::GridType gridType;
   size_t degree;
   size_t numDim;

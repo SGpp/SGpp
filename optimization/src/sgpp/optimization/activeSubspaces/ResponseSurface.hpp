@@ -32,7 +32,7 @@ class ResponseSurface {
   // evaluates gradient AND function
   virtual double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) = 0;
 
-  double l2Error(sgpp::optimization::WrapperScalarFunction objectiveFunc,
+  double l2Error(std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
                  size_t numMCPoints = 1000);
 
   size_t getSize() { return interpolant->getSize(); }

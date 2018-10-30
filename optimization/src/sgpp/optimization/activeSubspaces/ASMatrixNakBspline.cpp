@@ -81,7 +81,7 @@ void ASMatrixNakBspline::calculateInterpolationCoefficients() {
     sgpp::base::DataVector gridPointVector(gridStorage.getDimension());
     gp.getStandardCoordinates(gridPointVector);
     evaluationPoints.setRow(i, gridPointVector);
-    functionValues[i] = objectiveFunc.eval(gridPointVector);
+    functionValues[i] = objectiveFunc->eval(gridPointVector);
   }
 
   // solve linear system

@@ -15,7 +15,8 @@ namespace optimization {
 
 class ASMatrixGradientMC : public ASMatrix {
  public:
-  ASMatrixGradientMC(WrapperScalarFunction objectiveFunc) : ASMatrix(objectiveFunc) {}
+  ASMatrixGradientMC(std::shared_ptr<WrapperScalarFunction> objectiveFunc)
+      : ASMatrix(objectiveFunc) {}
   void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); };
   void createMatrixMonteCarlo(size_t numPoints,
                               WrapperScalarFunctionGradient objectiveFuncGradient);

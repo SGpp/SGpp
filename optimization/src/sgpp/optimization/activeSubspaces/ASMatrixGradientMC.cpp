@@ -39,10 +39,10 @@ void ASMatrixGradientMC::createMatrixMonteCarloFiniteDifference(size_t numPoints
     sgpp::base::DataVector randomVector(numDim, 1);
     RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     sgpp::base::DataVector gradient(numDim);
-    functionValues[i] = objectiveFunc.eval(randomVector);
+    functionValues[i] = objectiveFunc->eval(randomVector);
     for (size_t d = 0; d < numDim; d++) {
       randomVector[d] += h;
-      gradient[d] = (objectiveFunc.eval(randomVector) - functionValues[i]) / h;
+      gradient[d] = (objectiveFunc->eval(randomVector) - functionValues[i]) / h;
     }
     evaluationPoints.setRow(i, randomVector);
     Eigen::VectorXd e = DataVectorToEigen(gradient);

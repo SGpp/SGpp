@@ -87,8 +87,8 @@ BOOST_AUTO_TEST_CASE(testQuad) {
 }
 
 sgpp::base::DataVector interpolateRegular1D(
-    sgpp::optimization::WrapperScalarFunction objectiveFunction, sgpp::base::GridType gridType,
-    size_t degree, size_t level, sgpp::base::Grid* grid) {
+    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunction,
+    sgpp::base::GridType gridType, size_t degree, size_t level, sgpp::base::Grid* grid) {
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
@@ -96,7 +96,7 @@ sgpp::base::DataVector interpolateRegular1D(
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     functionValues[i] =
-        objectiveFunction.eval(sgpp::base::DataVector(1, gp.getStandardCoordinate(0)));
+        objectiveFunction->eval(sgpp::base::DataVector(1, gp.getStandardCoordinate(0)));
   }
 
   // solve linear system
@@ -147,8 +147,10 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   auto pCoordinates = std::make_shared<sgpp::base::DataVector>(coordinates);
   auto pWeights = std::make_shared<sgpp::base::DataVector>(weights);
 
-  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionScalarProduct);
-  sgpp::optimization::WrapperScalarFunction objectiveFunc2(numDim, objectiveFunctionScalarProduct2);
+  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+      numDim, objectiveFunctionScalarProduct);
+  auto objectiveFunc2 = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+      numDim, objectiveFunctionScalarProduct2);
   sgpp::base::DataVector alpha = interpolateRegular1D(objectiveFunc, gridType, degree, level, grid);
   sgpp::base::DataVector alpha2 =
       interpolateRegular1D(objectiveFunc2, gridType, degree, level, grid2);
@@ -213,7 +215,7 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
   C(2, 0) = -1;
   C(2, 1) = 0;
   C(2, 2) = 3;
-  sgpp::optimization::WrapperScalarFunction dummyFunc(3, dummyFunction);
+  auto dummyFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(3, dummyFunction);
   sgpp::base::GridType dummyGridType = sgpp::base::GridType::NakBspline;
   size_t dummyDegree = 3;
   sgpp::optimization::ASMatrixNakBspline ASM(dummyFunc, dummyGridType, dummyDegree);
@@ -249,7 +251,8 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   size_t level = 3;
   size_t numMCPoints = 2000;
 
-  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, objectiveFunctionResponseSurface);
+  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+      numDim, objectiveFunctionResponseSurface);
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
   ASM.buildRegularInterpolant(level);

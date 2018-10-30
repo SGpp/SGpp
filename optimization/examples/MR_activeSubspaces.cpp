@@ -30,8 +30,9 @@ int main() {
   // active subspace specifier
   size_t n = 1;
 
-  sgpp::optimization::WrapperScalarFunction objectiveFunc(numDim, f);
-  sgpp::optimization::WrapperScalarFunctionGradient objectiveFuncGradient(numDim, df);
+  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
+  auto objectiveFuncGradient =
+      std::make_shared<sgpp::optimization::WrapperScalarFunctionGradient>(numDim, df);
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
   size_t maxNumGridPointsMatrix = 200;
@@ -64,6 +65,7 @@ int main() {
     //    std::cout << "f(v)  = " << f(v) << std::endl;
     //    std::cout << "rI(v) = " << responseSurfEval << std::endl;
   }
+
   //  sgpp::base::DataVector v(numDim, 0.3371);
   //  double responseSurfEval = responseSurf.eval(v);
   //  std::cout << "f(v)  = " << f(v) << std::endl;

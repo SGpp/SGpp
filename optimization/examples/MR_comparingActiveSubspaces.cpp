@@ -158,7 +158,7 @@ class objectiveFunctionMaximumAS {
  public:
   objectiveFunctionMaximumAS() {}
   ~objectiveFunctionMaximumAS() {}
-  static double f(sgpp::base::DataVector v) { return sin(10 * v[0] + v[1]); }
+  static double f(sgpp::base::DataVector v) { return exp(5 * v[0] + v[1]); }
   sgpp::optimization::WrapperScalarFunction getObjectiveFunction() {
     size_t numDim = 2;
     return sgpp::optimization::WrapperScalarFunction(numDim, f);
@@ -172,13 +172,13 @@ int main() {
   size_t n = 1;
   size_t numMCErrorPoints = 1000;
   objectiveFunctionMaximumAS objectiveFuncInstance;
-  sgpp::optimization::WrapperScalarFunction objectiveFunc =
-      objectiveFuncInstance.getObjectiveFunction();
+  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+      objectiveFuncInstance.getObjectiveFunction());
   //  sgpp::optimization::WrapperScalarFunctionGradient objectiveFuncGradient =
   //      objectiveFuncInstance.getObjectiveFunctionGradient();
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
 
-  size_t numDim = objectiveFunc.getNumberOfParameters();
+  size_t numDim = objectiveFunc->getNumberOfParameters();
   for (size_t level = 1; level < 5; level++) {
     // regular sparse grid interpolant
     auto regularResponseSurf =
@@ -233,8 +233,8 @@ int main() {
     auto responseSurf_regularPinvBspline =
         std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
             numDim, W1_adaptiveBspline, gridType, degree);
-    responseSurf_regularPinvBspline->createAdaptiveReducedSurfaceWithPseudoInverse(
-        maxNumGridPoints, objectiveFunc, initialLevel);
+    responseSurf_regularPinvBspline->createRegularReducedSurfaceWithPseudoInverse(level,
+                                                                                  objectiveFunc);
     std::cout << "B r  | l2 err: "
               << responseSurf_regularPinvBspline->l2Error(objectiveFunc, numMCErrorPoints)
               << std::endl;

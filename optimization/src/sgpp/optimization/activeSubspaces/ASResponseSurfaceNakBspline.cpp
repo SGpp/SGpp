@@ -64,7 +64,7 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
-    size_t level, sgpp::optimization::WrapperScalarFunction objectiveFunc) {
+    size_t level, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc) {
   grid->getGenerator().regular(level);
   sgpp::base::DataVector alpha(grid->getSize());
   // Special case one dimensional active subspace allows for reasonable response grid structure.
@@ -72,20 +72,8 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
   // the detection points
   if (W1.cols() == 1) {
-    // find maximum value "rightBound" of W1^T * x for all corners x of [0,1]^d,
-    // then set up an interpolant on [0,rightBound]
-    Eigen::MatrixXd corners = hypercubeVertices(dim);
-    for (unsigned int j = 0; j < corners.cols(); j++) {
-      double tempRight = (W1.transpose() * corners.col(j))(0, 0);
-      rightBound1D = tempRight > rightBound1D ? tempRight : rightBound1D;
-    }
-    std::function<double(const base::DataVector&)> auxFunc =
-        [this, &objectiveFunc](sgpp::base::DataVector v) {
-          v.mult(rightBound1D);
-          return objectiveFunc.eval(v);
-        };
-    sgpp::optimization::WrapperScalarFunction transformedObjectiveFunc(1, auxFunc);
-
+    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> transformedObjectiveFunc =
+        transformationfor1DActiveSubspace(objectiveFunc);
     alpha = calculateInterpolationCoefficientsWithPseudoInverse(transformedObjectiveFunc);
   } else {
     alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
@@ -110,17 +98,32 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
 }
 
 void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
-    size_t maxNumGridPoints, sgpp::optimization::WrapperScalarFunction objectiveFunc,
-    size_t initialLevel) {
+    size_t maxNumGridPoints,
+    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc, size_t initialLevel) {
   // number of points to be refined in each step
   size_t refinementsNum = 3;
   grid->getGenerator().regular(initialLevel);
-  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  sgpp::base::DataVector alpha(grid->getSize());
+  std::shared_ptr<sgpp::optimization::WrapperScalarFunction> transformedObjectiveFunc;
+  // Special case one dimensional active subspace allows for reasonable response grid structure.
+  // (Transform the one dimensional grid to an interval of according size). For active subspace
+  // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
+  // the detection points
+  if (W1.cols() == 1) {
+    transformedObjectiveFunc = transformationfor1DActiveSubspace(objectiveFunc);
+    alpha = calculateInterpolationCoefficientsWithPseudoInverse(transformedObjectiveFunc);
+  } else {
+    alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  }
   interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
   interpolantGradient =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
   while (grid->getSize() < maxNumGridPoints) {
-    this->refineSurplusAdaptive(refinementsNum, objectiveFunc, alpha);
+    if (W1.cols() == 1) {
+      this->refineSurplusAdaptive(refinementsNum, transformedObjectiveFunc, alpha);
+    } else {
+      this->refineSurplusAdaptive(refinementsNum, objectiveFunc, alpha);
+    }
     interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
     interpolantGradient =
         std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
@@ -152,7 +155,7 @@ double ASResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
 // ----------------- auxiliary routines -----------
 
 void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
-    size_t refinementsNum, sgpp::optimization::WrapperScalarFunction objectiveFunc,
+    size_t refinementsNum, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
     sgpp::base::DataVector& alpha) {
   sgpp::base::SurplusRefinementFunctor functor(alpha, refinementsNum);
   grid->getGenerator().refine(functor);
@@ -161,7 +164,7 @@ void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
 
 sgpp::base::DataVector
 ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
-    sgpp::optimization::WrapperScalarFunction objectiveFunc) {
+    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc) {
   Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   Eigen::MatrixXd interpolationMatrix(gridStorage.getSize(), gridStorage.getSize());
@@ -190,7 +193,7 @@ ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse
     sgpp::base::DataVector pinv =
         EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functinos so
                                         // we don't have to transform here every time?
-    functionValues(i) = objectiveFunc.eval(pinv);
+    functionValues(i) = objectiveFunc->eval(pinv);
   }
 
   Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
@@ -228,5 +231,26 @@ Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension)
   }
   return corners;
 }
+
+std::shared_ptr<sgpp::optimization::WrapperScalarFunction>
+ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace(
+    std::shared_ptr<sgpp::optimization::WrapperScalarFunction>& objectiveFunc) {
+  // find maximum value "rightBound" of W1^T * x for all corners x of [0,1]^d,
+  // then set up an interpolant on [0,rightBound]
+  Eigen::MatrixXd corners = hypercubeVertices(dim);
+  for (unsigned int j = 0; j < corners.cols(); j++) {
+    double tempRight = (W1.transpose() * corners.col(j))(0, 0);
+    rightBound1D = tempRight > rightBound1D ? tempRight : rightBound1D;
+  }
+  std::function<double(const base::DataVector&)> auxFunc =
+      [this, &objectiveFunc](sgpp::base::DataVector v) {
+        v.mult(rightBound1D);
+        return objectiveFunc->eval(v);
+      };
+  auto transformedObjectiveFunc =
+      std::make_shared<sgpp::optimization::WrapperScalarFunction>(1, auxFunc);
+  return transformedObjectiveFunc;
+}
+
 }  // namespace optimization
 }  // namespace sgpp

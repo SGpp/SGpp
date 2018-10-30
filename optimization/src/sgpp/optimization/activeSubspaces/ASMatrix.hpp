@@ -29,8 +29,8 @@ class ASMatrix {
    *
    * @param objectiveFunc the objective function
    */
-  ASMatrix(WrapperScalarFunction objectiveFunc)
-      : objectiveFunc(objectiveFunc), numDim(objectiveFunc.getNumberOfParameters()) {}
+  ASMatrix(std::shared_ptr<WrapperScalarFunction> objectiveFunc)
+      : objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
 
   /**
    * Destructor
@@ -78,7 +78,7 @@ class ASMatrix {
 
  protected:
   // objective function
-  WrapperScalarFunction objectiveFunc;
+  std::shared_ptr<WrapperScalarFunction> objectiveFunc;
   // dimensionality
   size_t numDim;
   // active subspace matrix C = \int \nabla f \nabla f^T dx \in R^{numDim x numDim}

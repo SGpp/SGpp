@@ -9,7 +9,7 @@ namespace sgpp {
 namespace optimization {
 
 void SparseGridResponseSurfaceNakBspline::initialize() {
-  numDim = objectiveFunc.getNumberOfParameters();
+  numDim = objectiveFunc->getNumberOfParameters();
   if (gridType == sgpp::base::GridType::NakBspline) {
     grid = std::make_unique<sgpp::base::NakBsplineGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
@@ -75,7 +75,7 @@ sgpp::base::DataVector SparseGridResponseSurfaceNakBspline::calculateInterpolati
     for (size_t j = 0; j < gridStorage.getDimension(); j++) {
       p[j] = gp.getStandardCoordinate(j);
     }
-    f_values[i] = objectiveFunc.eval(p);
+    f_values[i] = objectiveFunc->eval(p);
   }
   sgpp::optimization::sle_solver::Auto sleSolver;
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
