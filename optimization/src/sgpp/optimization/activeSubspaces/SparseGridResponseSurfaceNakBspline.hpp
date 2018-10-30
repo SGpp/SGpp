@@ -25,9 +25,10 @@ namespace optimization {
 
 class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
  public:
-  SparseGridResponseSurfaceNakBspline(sgpp::optimization::WrapperScalarFunction objectiveFunc,
+  SparseGridResponseSurfaceNakBspline(size_t dim,
+                                      sgpp::optimization::WrapperScalarFunction objectiveFunc,
                                       sgpp::base::GridType gridType, size_t degree = 3)
-      : objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
+      : ResponseSurface(dim), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
     initialize();
   };
 

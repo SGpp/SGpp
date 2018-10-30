@@ -15,7 +15,7 @@ namespace optimization {
 
 class ASResponseSurface : public ResponseSurface {
  public:
-  ASResponseSurface(Eigen::MatrixXd W1) : W1(W1){};
+  ASResponseSurface(size_t dim, Eigen::MatrixXd W1) : ResponseSurface(dim), W1(W1){};
 
   /**
    * Destructor

@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   size_t n = 1;
   Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
 
-  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
+  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(numDim, W1, gridType, degree);
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
   size_t responseLevel = 3;

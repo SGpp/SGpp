@@ -21,7 +21,7 @@ namespace optimization {
 
 class ResponseSurface {
  public:
-  ResponseSurface(){};
+  ResponseSurface(size_t dim) : dim(dim){};
 
   /**
    * Destructor
@@ -38,6 +38,7 @@ class ResponseSurface {
   size_t getSize() { return interpolant->getSize(); }
 
  protected:
+  size_t dim;
   std::unique_ptr<sgpp::optimization::ASInterpolantScalarFunction> interpolant;
   std::unique_ptr<sgpp::optimization::ASInterpolantScalarFunctionGradient> interpolantGradient;
 };

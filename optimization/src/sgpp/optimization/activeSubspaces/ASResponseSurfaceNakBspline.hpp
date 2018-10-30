@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -13,14 +14,16 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
+#include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 class ASResponseSurfaceNakBspline : public ASResponseSurface {
  public:
-  ASResponseSurfaceNakBspline(Eigen::MatrixXd W1, sgpp::base::GridType gridType, size_t degree = 3)
-      : ASResponseSurface(W1), gridType(gridType), degree(degree) {
+  ASResponseSurfaceNakBspline(size_t dim, Eigen::MatrixXd W1, sgpp::base::GridType gridType,
+                              size_t degree = 3)
+      : ASResponseSurface(dim, W1), gridType(gridType), degree(degree) {
     initialize();
   };
 
@@ -63,9 +66,10 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
  private:
   sgpp::base::GridType gridType;
   size_t degree;
-  size_t numDim;
+  size_t activeDim;
   std::unique_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;
+  double rightBound1D = 0.0;
 
   void refineSurplusAdaptive(size_t refinementsNum,
                              sgpp::optimization::WrapperScalarFunction objectiveFunc,
@@ -73,6 +77,8 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   sgpp::base::DataVector calculateInterpolationCoefficientsWithPseudoInverse(
       sgpp::optimization::WrapperScalarFunction objectiveFunc);
+
+  Eigen::MatrixXd hypercubeVertices(size_t dimension);
 };
 
 }  // namespace optimization

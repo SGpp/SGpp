@@ -9,15 +9,15 @@ namespace sgpp {
 namespace optimization {
 
 void ASResponseSurfaceNakBspline::initialize() {
-  numDim = W1.cols();
+  activeDim = W1.cols();
   if (gridType == sgpp::base::GridType::NakBspline) {
-    grid = std::make_unique<sgpp::base::NakBsplineGrid>(numDim, degree);
+    grid = std::make_unique<sgpp::base::NakBsplineGrid>(activeDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    grid = std::make_unique<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+    grid = std::make_unique<sgpp::base::NakBsplineBoundaryGrid>(activeDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-    grid = std::make_unique<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    grid = std::make_unique<sgpp::base::NakBsplineModifiedGrid>(activeDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else {
     throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
@@ -66,7 +66,30 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
     size_t level, sgpp::optimization::WrapperScalarFunction objectiveFunc) {
   grid->getGenerator().regular(level);
-  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  sgpp::base::DataVector alpha(grid->getSize());
+  // Special case one dimensional active subspace allows for reasonable response grid structure.
+  // (Transform the one dimensional grid to an interval of according size). For active subspace
+  // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
+  // the detection points
+  if (W1.cols() == 1) {
+    // find maximum value "rightBound" of W1^T * x for all corners x of [0,1]^d,
+    // then set up an interpolant on [0,rightBound]
+    Eigen::MatrixXd corners = hypercubeVertices(dim);
+    for (unsigned int j = 0; j < corners.cols(); j++) {
+      double tempRight = (W1.transpose() * corners.col(j))(0, 0);
+      rightBound1D = tempRight > rightBound1D ? tempRight : rightBound1D;
+    }
+    std::function<double(const base::DataVector&)> auxFunc =
+        [this, &objectiveFunc](sgpp::base::DataVector v) {
+          v.mult(rightBound1D);
+          return objectiveFunc.eval(v);
+        };
+    sgpp::optimization::WrapperScalarFunction transformedObjectiveFunc(1, auxFunc);
+
+    alpha = calculateInterpolationCoefficientsWithPseudoInverse(transformedObjectiveFunc);
+  } else {
+    alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  }
   interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
   interpolantGradient =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
@@ -106,7 +129,14 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
 
 double ASResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {
   Eigen::VectorXd v_Eigen = sgpp::optimization::DataVectorToEigen(v);
-  Eigen::VectorXd trans_v_Eigen = W1.transpose() * v_Eigen;
+  Eigen::VectorXd trans_v_Eigen;
+  // Special case one dimensional active subspace allows for reasonable response grid structure.
+  // (Transform the one dimensional grid to an interval of according size).
+  if (W1.cols() == 1) {
+    trans_v_Eigen = W1.transpose() * v_Eigen / rightBound1D;
+  } else {
+    trans_v_Eigen = W1.transpose() * v_Eigen;
+  }
   sgpp::base::DataVector trans_v_DataVector = EigenToDataVector(trans_v_Eigen);
   return interpolant->eval(trans_v_DataVector);
 }
@@ -162,18 +192,41 @@ ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse
                                         // we don't have to transform here every time?
     functionValues(i) = objectiveFunc.eval(pinv);
   }
+
   Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
   Eigen::VectorXd alpha_Eigen = dec.solve(functionValues);
   //  Eigen::VectorXf alpha_Eigen =
   //  interpolationMatrix.colPivHouseholderQr().solve(functionValues);
   sgpp::base::DataVector alpha = EigenToDataVector(alpha_Eigen);
-
-  //  std::cout << "f\n"
-  //            << functionValues << " M*a\n"
-  //            << interpolationMatrix * alpha_Eigen << std::endl;
-
   return alpha;
 }
 
+Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension) {
+  size_t twoDim = static_cast<size_t>(std::pow(2, dimension));
+  Eigen::MatrixXd corners = Eigen::MatrixXd::Zero(
+      static_cast<unsigned int>(dimension), static_cast<unsigned int>(std::pow(2, dimension)));
+  if (dimension <= 0) {
+    throw sgpp::base::algorithm_exception("ASResponseSurfaceNakBspline: dimension must be > 0!");
+  } else if (dimension == 1) {
+    corners(0, 0) = 1;
+    corners(0, 1) = 0;
+    return corners;
+  }
+  size_t jump = static_cast<size_t>(std::pow(2, dimension - 1));
+  for (size_t i = 0; i < dimension; i++) {
+    size_t j = 0;
+    while (j < twoDim) {
+      for (size_t n = 0; n < jump; n++) {
+        if (j + n >= twoDim) {
+          break;
+        }
+        corners(i, j + n) = 1;
+      }
+      j = j + 2 * jump;
+    }
+    jump = jump / 2;
+  }
+  return corners;
+}
 }  // namespace optimization
 }  // namespace sgpp
