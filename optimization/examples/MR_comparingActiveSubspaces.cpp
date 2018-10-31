@@ -158,7 +158,7 @@ class objectiveFunctionMaximumAS {
  public:
   objectiveFunctionMaximumAS() {}
   ~objectiveFunctionMaximumAS() {}
-  static double f(sgpp::base::DataVector v) { return exp(5 * v[0] + v[1]); }
+  static double f(sgpp::base::DataVector v) { return sin(v[0] + v[1]) * cos(v[0] + v[1]); }
   sgpp::optimization::WrapperScalarFunction getObjectiveFunction() {
     size_t numDim = 2;
     return sgpp::optimization::WrapperScalarFunction(numDim, f);
@@ -307,6 +307,8 @@ int main() {
     //        << std::endl;
 
     std::cout << "EVal:\n" << eigenvalues_adaptiveBspline << std::endl;
+    std::cout << "EVec:\n" << eigenvectors_adaptiveBspline << std::endl;
+    std::cout << "W1: " << W1_adaptiveBspline << std::endl;
   }
   return 0;
 }

@@ -16,6 +16,8 @@
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 
@@ -71,6 +73,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   std::unique_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;
   double rightBound1D = 1.0;
+  double leftBound1D = 0.0;
 
   void refineSurplusAdaptive(
       size_t refinementsNum,
@@ -82,7 +85,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   Eigen::MatrixXd hypercubeVertices(size_t dimension);
 
-  std::shared_ptr<sgpp::optimization::WrapperScalarFunction> transformationfor1DActiveSubspace(
+  void transformationfor1DActiveSubspace(
       std::shared_ptr<sgpp::optimization::WrapperScalarFunction>& objectiveFunc);
 };
 

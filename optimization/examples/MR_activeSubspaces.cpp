@@ -13,6 +13,7 @@ double f(sgpp::base::DataVector v) {
   //    return exp(0.7 * v[0] + 0.3 * v[1]);
   //  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
   return exp(5 * v[0] + v[1]);
+  //  return sin(v[0] + v[1]) * cos(v[0] + v[1]);
 }
 double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
   gradient.resizeZero(4);
@@ -52,7 +53,7 @@ int main() {
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
 
-  for (size_t responseLevel = 1; responseLevel < 6; responseLevel++) {
+  for (size_t responseLevel = 1; responseLevel < 9; responseLevel++) {
     sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(numDim, W1, gridType, degree);
     //  size_t maxNumGridPointsResponseSurface = 500;
     //  responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(maxNumGridPointsResponseSurface,
