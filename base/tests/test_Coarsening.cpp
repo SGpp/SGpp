@@ -17,6 +17,7 @@
 
 #include <vector>
 #include <cmath>
+#include <climits>
 
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
@@ -106,6 +107,22 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
   }
 }
 
+/**
+ * Test that makes sure the issue with bad_alloc in coarsening does not
+ * occur anymore
+ */
+BOOST_AUTO_TEST_CASE(testBadAllocIssue) {
+  size_t dim = 3;
+  size_t level = 3;
+  std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim));
+  GridStorage& gridStorage = grid->getStorage();
+  grid->getGenerator().regular(level);
+  DataVector alpha(gridStorage.getSize());
+  alpha.setAll(0.5);
+  HashCoarsening coarsen;
+  SurplusCoarseningFunctor functor(alpha, INT_MAX, 1.0);
+  coarsen.free_coarsen(gridStorage, functor, alpha);
+}
 
 /**
  * Test that points with absoulte surplus above the threshold are not coarsed
