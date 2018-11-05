@@ -14,9 +14,9 @@ void ASMatrixNakBspline::buildRegularInterpolant(size_t level) {
   this->calculateInterpolationCoefficients();
 }
 
-void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel) {
+void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel,
+                                                  size_t refinementsNum) {
   // number of points to be refined in each step
-  size_t refinementsNum = 3;
   grid->getGenerator().regular(initialLevel);
   this->calculateInterpolationCoefficients();
   while (grid->getSize() < maxNumGridPoints) {
@@ -108,6 +108,8 @@ double ASMatrixNakBspline::matrixEntryGauss(size_t i, size_t j,
   return entry;
 }
 
+// Todo (rehmemk) Check already here if (multidimensional) B-spline supports overlap and return 0 if
+// so
 double ASMatrixNakBspline::scalarProductDxbiDxbj(
     size_t i, size_t j, size_t k, size_t l, std::shared_ptr<sgpp::base::DataVector> pCoordinates,
     std::shared_ptr<sgpp::base::DataVector> pWeights) {

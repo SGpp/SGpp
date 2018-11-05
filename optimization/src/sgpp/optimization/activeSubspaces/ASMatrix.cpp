@@ -10,7 +10,10 @@ namespace optimization {
 
 void ASMatrix::evDecompositionForSymmetricMatrices() {
   Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eigensolver(C);
-  if (eigensolver.info() != Eigen::Success) abort();
+  if (eigensolver.info() != Eigen::Success) {
+    std::cout << "ASMatrix: eigenvalue decomposition failed\n";
+    abort();
+  }
   this->eigenvalues = eigensolver.eigenvalues();
 
   this->W = eigensolver.eigenvectors();

@@ -75,6 +75,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double rightBound1D = 1.0;
   double leftBound1D = 0.0;
 
+  // ----------------- auxiliary routines -----------
   void refineSurplusAdaptive(
       size_t refinementsNum,
       std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
@@ -85,8 +86,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   Eigen::MatrixXd hypercubeVertices(size_t dimension);
 
-  void transformationfor1DActiveSubspace(
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunction>& objectiveFunc);
+  void transformationfor1DActiveSubspace();
 };
 
 }  // namespace optimization

@@ -71,7 +71,7 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
   // the detection points
   if (W1.cols() == 1) {
-    transformationfor1DActiveSubspace(objectiveFunc);
+    transformationfor1DActiveSubspace();
   }
   sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
   interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
@@ -105,7 +105,7 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
   // the detection points
   if (W1.cols() == 1) {
-    transformationfor1DActiveSubspace(objectiveFunc);
+    transformationfor1DActiveSubspace();
   }
   sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
   interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
@@ -193,15 +193,13 @@ ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse
       p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
     }
     sgpp::base::DataVector pinv =
-        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functinos so
+        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
                                         // we don't have to transform here every time?
     functionValues(i) = objectiveFunc->eval(pinv);
   }
 
   Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
   Eigen::VectorXd alpha_Eigen = dec.solve(functionValues);
-  //  Eigen::VectorXf alpha_Eigen =
-  //  interpolationMatrix.colPivHouseholderQr().solve(functionValues);
   sgpp::base::DataVector alpha = EigenToDataVector(alpha_Eigen);
   return alpha;
 }
@@ -234,8 +232,7 @@ Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension)
   return corners;
 }
 
-void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace(
-    std::shared_ptr<sgpp::optimization::WrapperScalarFunction>& objectiveFunc) {
+void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace() {
   // find maximum value "rightBound" of W1^T * x for all corners x of [0,1]^d,
   // then set up an interpolant on [0,rightBound]
   Eigen::MatrixXd corners = hypercubeVertices(dim);
@@ -246,14 +243,6 @@ void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace(
     rightBound1D = tempBound > rightBound1D ? tempBound : rightBound1D;
     leftBound1D = tempBound < leftBound1D ? tempBound : leftBound1D;
   }
-  //  std::function<double(const base::DataVector&)> auxFunc =
-  //      [this, &objectiveFunc](sgpp::base::DataVector v) {
-  //        v.mult(rightBound1D);
-  //        return objectiveFunc->eval(v);
-  //      };
-  //  auto transformedObjectiveFunc =
-  //      std::make_shared<sgpp::optimization::WrapperScalarFunction>(1, auxFunc);
-  //  return transformedObjectiveFunc;
 }
 
 }  // namespace optimization

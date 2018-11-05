@@ -117,7 +117,10 @@ class objectiveFunctionPoly {
  public:
   objectiveFunctionPoly() {}
   ~objectiveFunctionPoly() {}
-  static double f(sgpp::base::DataVector v) { return sin(10 * v[0] + 1 * v[1] + 0 * v[2]); }
+  static double f(sgpp::base::DataVector v) {
+    return exp(5 * v[0] + v[1]);
+    //  return sin(10 * v[0] + 1 * v[1] + 0 * v[2]);
+  }
   static double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
     gradient.resizeZero(3);
     gradient[0] = cos(10 * v[0] + 1 * v[1] + 0 * v[2]) * 10;
@@ -154,10 +157,10 @@ class objectiveFunctionJeff {
   }
 };
 
-class objectiveFunctionMaximumAS {
+class objectiveFunctionVarious {
  public:
-  objectiveFunctionMaximumAS() {}
-  ~objectiveFunctionMaximumAS() {}
+  objectiveFunctionVarious() {}
+  ~objectiveFunctionVarious() {}
   static double f(sgpp::base::DataVector v) { return sin(v[0] + v[1]) * cos(v[0] + v[1]); }
   sgpp::optimization::WrapperScalarFunction getObjectiveFunction() {
     size_t numDim = 2;
@@ -171,7 +174,7 @@ int main() {
   // active subspace specifier
   size_t n = 1;
   size_t numMCErrorPoints = 1000;
-  objectiveFunctionMaximumAS objectiveFuncInstance;
+  objectiveFunctionVarious objectiveFuncInstance;
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
       objectiveFuncInstance.getObjectiveFunction());
   //  sgpp::optimization::WrapperScalarFunctionGradient objectiveFuncGradient =

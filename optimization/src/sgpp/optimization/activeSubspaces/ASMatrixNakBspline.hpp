@@ -63,8 +63,10 @@ class ASMatrixNakBspline : public ASMatrix {
    *
    * @param maxNumGridPoints	upper threshold for the number of grid points
    * @param initialLevel		the refinement needs an initial regular grid of initialLevel
+   * @param refinementsNum		maximum number of points refined in one step
    */
-  void buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel = 1);
+  void buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel = 1,
+                                size_t refinementsNum = 3);
 
   /**
    * General routine to create the Matrix C, currently simply wraps createMatrixMonteCarlo.
