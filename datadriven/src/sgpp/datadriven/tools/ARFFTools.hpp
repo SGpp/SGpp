@@ -39,11 +39,11 @@ class ARFFTools {
    *        with respect to selectedTargets.
    *        If empty all targets are admissible and all rows are considered as instances.
    */
-   static void readARFFSize(std::istream& stream,
-                            size_t& numberInstances,
-                            size_t& dimension,
-                            bool hasTargets,
-                            std::vector<double> selectedTargets);
+  static void readARFFSize(std::istream& stream,
+                           size_t& numberInstances,
+                           size_t& dimension,
+                           bool hasTargets,
+                           std::vector<double> selectedTargets);
 
   /**
    * Sequentially reads a ARFF file.
@@ -74,53 +74,53 @@ class ARFFTools {
    *        written as rows (instances) in the dataset.
    * @return ARFF as Dataset
    */
-   static Dataset readARFF(std::istream& stream,
-                           bool hasTargets = true,
-                           size_t instanceCutoff = -1,
-                           std::vector<size_t> selectedCols = std::vector<size_t>(),
-                           std::vector<double> selectedTargets = std::vector<double>());
+  static Dataset readARFF(std::istream& stream,
+                          bool hasTargets = true,
+                          size_t instanceCutoff = -1,
+                          std::vector<size_t> selectedCols = std::vector<size_t>(),
+                          std::vector<double> selectedTargets = std::vector<double>());
 
-   /**
-    * Wrapper from input type: File. See readARFFSize for more details
-    */
-   static void readARFFSizeFromFile(const std::string& filename,
-                                    size_t& numberInstances,
-                                    size_t& dimension,
-                                    bool hasTargets = true,
-                                    std::vector<double> selectedTargets = std::vector<double>());
-
-   /**
-    * Wrapper from input type: String. See readARFFSize for more details
-    */
-   static void readARFFSizeFromString(const std::string& content,
-                                      size_t& numberInstances,
-                                      size_t& dimension,
-                                      bool hasTargets = true,
-                                      std::vector<double> selectedTargets = std::vector<double>());
-
-   /**
-    * Wrapper from input type: File. See readARFF for more details
-    */
-   static Dataset readARFFFromFile(const std::string& filename,
+  /**
+   * Wrapper from input type: File. See readARFFSize for more details
+   */
+  static void readARFFSizeFromFile(const std::string& filename,
+                                   size_t& numberInstances,
+                                   size_t& dimension,
                                    bool hasTargets = true,
-                                   size_t instanceCutoff = -1,
-                                   std::vector<size_t> selectedCols = std::vector<size_t>(),
                                    std::vector<double> selectedTargets = std::vector<double>());
 
-   /**
-    * Wrapper from input type: String. See readARFF for more details
-    */
-   static Dataset readARFFFromString(const std::string& content,
+  /**
+   * Wrapper from input type: String. See readARFFSize for more details
+   */
+  static void readARFFSizeFromString(const std::string& content,
+                                     size_t& numberInstances,
+                                     size_t& dimension,
                                      bool hasTargets = true,
-                                     size_t instanceCutoff = -1,
-                                     std::vector<size_t> selectedCols = std::vector<size_t>(),
                                      std::vector<double> selectedTargets = std::vector<double>());
+
+  /**
+   * Wrapper from input type: File. See readARFF for more details
+   */
+  static Dataset readARFFFromFile(const std::string& filename,
+                                  bool hasTargets = true,
+                                  size_t instanceCutoff = -1,
+                                  std::vector<size_t> selectedCols = std::vector<size_t>(),
+                                  std::vector<double> selectedTargets = std::vector<double>());
+
+  /**
+   * Wrapper from input type: String. See readARFF for more details
+   */
+  static Dataset readARFFFromString(const std::string& content,
+                                    bool hasTargets = true,
+                                    size_t instanceCutoff = -1,
+                                    std::vector<size_t> selectedCols = std::vector<size_t>(),
+                                    std::vector<double> selectedTargets = std::vector<double>());
 
 
  private:
-   /**
-   * Take a comma-sererated line and return its values as double values
-   */
+  /**
+  * Take a comma-sererated line and return its values as double values
+  */
   static std::vector<double> tokenizeLine(const std::string& line);
 };
 

@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 
@@ -46,7 +47,7 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string& fileName, 
+void ArffFileSampleProvider::readFile(const std::string& fileName,
                                       bool hasTargets,
                                       size_t readinCutoff,
                                       std::vector<size_t> readinColumns,
@@ -84,7 +85,7 @@ void ArffFileSampleProvider::readString(const std::string& input,
                                         std::vector<size_t> readinColumns,
                                         std::vector<double> readinClasses) {
   try {
-    dataset = ARFFTools::readARFFFromString(input, hasTargets, readinCutoff, 
+    dataset = ARFFTools::readARFFFromString(input, hasTargets, readinCutoff,
         readinColumns, readinClasses);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with

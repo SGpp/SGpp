@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 

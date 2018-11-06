@@ -594,7 +594,7 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict,
   if (dict.contains(key)) {
     try {
       std::vector<double> array;
-      for(size_t i = 0; i < dict[key].size(); ++i) {
+      for (size_t i = 0; i < dict[key].size(); ++i) {
         array.push_back(dict[key][i].getDouble());
       }
       return array;
@@ -618,7 +618,7 @@ std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict,
   if (dict.contains(key)) {
     try {
       std::vector<size_t> array;
-      for(size_t i = 0; i < dict[key].size(); ++i) {
+      for (size_t i = 0; i < dict[key].size(); ++i) {
         array.push_back(dict[key][i].getUInt());
       }
       return array;
