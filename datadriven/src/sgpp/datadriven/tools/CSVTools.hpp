@@ -71,9 +71,10 @@ class CSVTools {
    *        stream will be at eof. For further use it should be cleared and 
    *        reset
    * @param[out] numberInstances number of instances in the dataset
-   * @param[out] number of columns (dimensions) in the dataset
+   * @param[out] dimension number of columns (dimensions) in the dataset
+   * @param skipFirstLine set to true if the first line of the CSV file is not a data line
    * @param hasTargets whether the csv has a columns for targets
-   *        (supervised learning). If true, dimension = #columns - 1
+   *        (supervised learning). If true, dimension = number of columns - 1
    * @param selectedTargets (see readCSVPartial). If this vector is not empty (default)
    *        numberIstances reflects only the number of instance which are admissible
    *        with respect to selectedTargets.
