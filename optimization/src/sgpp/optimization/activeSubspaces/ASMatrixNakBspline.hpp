@@ -37,8 +37,8 @@ class ASMatrixNakBspline : public ASMatrix {
    * @param gridType          type of the grid for the interpolant
    * @param degree            degree for the B-spline basis functions
    */
-  ASMatrixNakBspline(std::shared_ptr<WrapperScalarFunction> objectiveFunc,
-                     sgpp::base::GridType gridType, size_t degree)
+  ASMatrixNakBspline(std::shared_ptr<ScalarFunction> objectiveFunc, sgpp::base::GridType gridType,
+                     size_t degree)
       : ASMatrix(objectiveFunc), gridType(gridType), degree(degree) {
     if (gridType == sgpp::base::GridType::NakBspline) {
       grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);

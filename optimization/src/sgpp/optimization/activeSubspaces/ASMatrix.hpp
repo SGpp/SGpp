@@ -8,7 +8,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <iostream>
 
@@ -29,7 +29,7 @@ class ASMatrix {
    *
    * @param objectiveFunc the objective function
    */
-  ASMatrix(std::shared_ptr<WrapperScalarFunction> objectiveFunc)
+  ASMatrix(std::shared_ptr<ScalarFunction> objectiveFunc)
       : objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
 
   /**
@@ -53,8 +53,10 @@ class ASMatrix {
   void evDecompositionForSymmetricMatrices();
 
   Eigen::VectorXd getEigenvalues() { return eigenvalues; };
+  sgpp::base::DataVector getEigenvaluesDataVector() { return EigenToDataVector(eigenvalues); };
 
   Eigen::MatrixXd getEigenvectors() { return W; };
+  sgpp::base::DataMatrix getEigenvectorsDataMatrix() { return EigenToDataMatrix(W); };
 
   sgpp::base::DataMatrix getEvaluationPoints() { return evaluationPoints; }
 
@@ -71,6 +73,10 @@ class ASMatrix {
   Eigen::MatrixXd getTransformationMatrix(size_t n) {
     return W.block(0, W.cols() - n, W.rows(), n);
   };
+  sgpp::base::DataMatrix getTransformationMatrixDataMatrix(size_t n) {
+    Eigen::MatrixXd W1 = W.block(0, W.cols() - n, W.rows(), n);
+    return EigenToDataMatrix(W1);
+  };
 
   Eigen::MatrixXd getMatrix() { return C; }
 
@@ -78,7 +84,7 @@ class ASMatrix {
 
  protected:
   // objective function
-  std::shared_ptr<WrapperScalarFunction> objectiveFunc;
+  std::shared_ptr<ScalarFunction> objectiveFunc;
   // dimensionality
   size_t numDim;
   // active subspace matrix C = \int \nabla f \nabla f^T dx \in R^{numDim x numDim}
