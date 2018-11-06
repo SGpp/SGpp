@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(testReadARFF) {
 
   double testValues[10] = {-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.};
 
-  sgpp::datadriven::Dataset dataSet = 
+  sgpp::datadriven::Dataset dataSet =
     sgpp::datadriven::ARFFTools::readARFFFromFile(
       "datadriven/tests/datasets/liver-disorders_normalized.arff");
 

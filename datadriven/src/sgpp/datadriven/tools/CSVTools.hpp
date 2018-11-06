@@ -26,8 +26,7 @@ namespace datadriven {
  */
 class CSVTools {
  public:
-
-   /**
+  /**
    * Sequentially reads a CSV file.
    *
    * @param stream constains the raw data. Note: After this function exists,
@@ -108,7 +107,6 @@ class CSVTools {
                                   std::vector<double> selectedTargets = std::vector<double>());
 
  private:
-
   /**
    * Take a comma-sererated line and return its values as double values
    */

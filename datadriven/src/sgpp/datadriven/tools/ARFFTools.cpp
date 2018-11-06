@@ -9,13 +9,14 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <math.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <cstring>
-#include <math.h>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -25,8 +26,7 @@ void ARFFTools::readARFFSizeFromFile(const std::string& filename,
                              size_t& numberInstances,
                              size_t& dimension,
                              bool hasTargets,
-                             std::vector<double> selectedTargets)
-{
+                             std::vector<double> selectedTargets) {
   std::ifstream stream(filename.c_str());
   if (!stream) {
     std::string msg = "readARFFSizeFromFile: Unable to open file: " + filename;
@@ -73,8 +73,7 @@ void ARFFTools::readARFFSize(std::istream& stream,
                              size_t& numberInstances,
                              size_t& dimension,
                              bool hasTargets,
-                             std::vector<double> selectedTargets)
-{
+                             std::vector<double> selectedTargets) {
   std::string line;
   dimension = 0;
   numberInstances = 0;
@@ -84,11 +83,11 @@ void ARFFTools::readARFFSize(std::istream& stream,
     if (line.find("%", 0) != line.npos || line.find("@", 0) != line.npos) {
       continue;
     }
-    if(line.empty()) {
+    if (line.empty()) {
       continue;
     }
     // Relies on first line being a correct instance line
-    if(dimension == 0) {
+    if (dimension == 0) {
       dimension = std::count(line.begin(), line.end(), ',');
       dimension += hasTargets ? 0 : 1;
     } else if (dimension - std::count(line.begin(), line.end(), ',') !=
@@ -97,13 +96,13 @@ void ARFFTools::readARFFSize(std::istream& stream,
       msg.append(std::to_string(numberInstances));
       throw sgpp::base::file_exception(msg.c_str());
     }
-    if(hasTargets && selectedTargets.size() > 0) {
+    if (hasTargets && selectedTargets.size() > 0) {
       size_t cur_pos = line.find_last_of(",");
       std::string cur_value = line.substr(cur_pos + 1);
       double cl = atof(cur_value.c_str());
-      for(size_t i = 0; i < selectedTargets.size(); i++) {
-        //TODO(sebastian): Find better solution for float comp
-        if(fabs(cl - selectedTargets.at(i)) < 0.001) {
+      for (size_t i = 0; i < selectedTargets.size(); i++) {
+        // TODO(sebastian): Find better solution for float comp
+        if (fabs(cl - selectedTargets.at(i)) < 0.001) {
           numberInstances++;
           break;
         }
@@ -128,8 +127,8 @@ Dataset ARFFTools::readARFF(std::istream& stream,
   stream.clear();
   stream.seekg(0, std::ios::beg);
   // make sure selectedCols has admissible values if it is not empty
-  if(selectedCols.size() > 0) {
-    if(*std::max_element(selectedCols.begin(), selectedCols.end()) >= maxDim) {
+  if (selectedCols.size() > 0) {
+    if (*std::max_element(selectedCols.begin(), selectedCols.end()) >= maxDim) {
       throw sgpp::base::file_exception("readCSVPartial invalid col selection");
     }
     dimension = selectedCols.size();
@@ -141,27 +140,27 @@ Dataset ARFFTools::readARFF(std::istream& stream,
   std::string line;
   size_t rowIndex = 0;
   std::vector<double> rowEntries;
-  while(!stream.eof()) {
+  while (!stream.eof()) {
     std::getline(stream, line);
     if (line.find("%", 0) != line.npos || line.find("@", 0) != line.npos) {
       continue;
     }
-    if(line.empty()) {
+    if (line.empty()) {
       continue;
     }
     rowEntries = tokenizeLine(line);
     // if we want a target, we remove it from line as we process it
-    if(hasTargets) {
+    if (hasTargets) {
       double cl = rowEntries.back();
-      rowEntries.pop_back(); // removes last element from vector
+      rowEntries.pop_back();  // removes last element from vector
       // if no classes are specified, always accept the line
       bool isSelectedClass = selectedTargets.size() == 0;
       // TODO(sebastian): this float comp is probably implemented in SGPP
-      for(size_t i = 0; i < selectedTargets.size(); i++) {
+      for (size_t i = 0; i < selectedTargets.size(); i++) {
         isSelectedClass = isSelectedClass ||
           (fabs(cl - selectedTargets.at(i)) < 0.001);
       }
-      if(isSelectedClass) {
+      if (isSelectedClass) {
         dataset.getTargets().set(rowIndex, cl);
       } else {
         // line has class which is not in selectedTargets
@@ -169,18 +168,18 @@ Dataset ARFFTools::readARFF(std::istream& stream,
       }
     }
     // We want all columns as dimensions
-    if(selectedCols.size() == 0) {
-      for(size_t i = 0; i < rowEntries.size(); i++) {
+    if (selectedCols.size() == 0) {
+      for (size_t i = 0; i < rowEntries.size(); i++) {
         dataset.getData().set(rowIndex, i, rowEntries.at(i));
       }
     } else {
        // only write dimensions specified in selectedCols
-      for(size_t i = 0; i < selectedCols.size(); i++) {
+      for (size_t i = 0; i < selectedCols.size(); i++) {
         dataset.getData().set(rowIndex, i, rowEntries.at(selectedCols.at(i)));
       }
     }
     rowIndex++;
-    if(rowIndex >= numberInstances) {
+    if (rowIndex >= numberInstances) {
       break;
     }
   }
@@ -192,7 +191,7 @@ std::vector<double> ARFFTools::tokenizeLine(const std::string& line) {
   std::vector<std::string> toks;
   tokenizer.tokenize(line, ",", toks);
   std::vector<double> vals;
-  for(size_t i = 0; i < toks.size(); i++) {
+  for (size_t i = 0; i < toks.size(); i++) {
     vals.push_back(atof(toks.at(i).c_str()));
   }
   return vals;
