@@ -42,10 +42,13 @@ class ASMatrixNakBspline : public ASMatrix {
       : ASMatrix(objectiveFunc), gridType(gridType), degree(degree) {
     if (gridType == sgpp::base::GridType::NakBspline) {
       grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
     } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
       grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
     } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
       grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
     } else {
       throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
     }
@@ -168,6 +171,7 @@ class ASMatrixNakBspline : public ASMatrix {
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;
+  std::unique_ptr<sgpp::base::SBasis> basis;
   typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
   std::map<asMatrixHashType, double> innerProducts;
 };
