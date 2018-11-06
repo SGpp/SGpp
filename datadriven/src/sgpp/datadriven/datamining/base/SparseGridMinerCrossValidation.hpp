@@ -77,7 +77,7 @@ class SparseGridMinerCrossValidation : public SparseGridMiner {
    */
   double learn(bool verbose) override;
 
- //private:
+ private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to
    * validate and assess model robustness.
