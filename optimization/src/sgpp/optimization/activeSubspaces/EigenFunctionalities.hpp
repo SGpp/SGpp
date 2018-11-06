@@ -6,6 +6,7 @@
 #pragma once
 //#ifdef USE_EIGEN
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <eigen3/Eigen/Dense>
@@ -28,6 +29,14 @@ Eigen::VectorXd DataVectorToEigen(sgpp::base::DataVector v);
  * @return  SG++ DataVector containing the elements of v
  */
 sgpp::base::DataVector EigenToDataVector(Eigen::VectorXd e);
+
+/**
+ * converts an Eigen matrix to a SG++ DataMatrix
+ *
+ * @param m Eigen library matrix
+ * @return  SG++ DataMatrix containing the elements of m
+ */
+sgpp::base::DataMatrix EigenToDataMatrix(Eigen::MatrixXd m);
 
 }  // namespace optimization
 }  // namespace sgpp

@@ -21,6 +21,17 @@ sgpp::base::DataVector EigenToDataVector(Eigen::VectorXd e) {
   return v;
 }
 
+// This is inefficient!
+sgpp::base::DataMatrix EigenToDataMatrix(Eigen::MatrixXd m) {
+  sgpp::base::DataMatrix d(m.rows(), m.cols());
+  for (size_t i = 0; i < static_cast<size_t>(m.rows()); i++) {
+    for (size_t j = 0; j < static_cast<size_t>(m.cols()); j++) {
+      d.set(i, j, m(i, j));
+    }
+  }
+  return d;
+}
+
 }  // namespace optimization
 }  // namespace sgpp
 
