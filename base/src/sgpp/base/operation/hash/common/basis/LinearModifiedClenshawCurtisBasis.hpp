@@ -5,15 +5,15 @@
 
 #pragma once
 
-#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <iostream>
 #include <cmath>
+#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -63,6 +63,11 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
     // scale p in [offset, offset + width] linearly to [0, 1] and do simple
     // evaluation
     return eval(level, index, (p - offset) / width);
+  }
+
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearModifiedClenshawCurtisBasis: evalDx not implemented" << std::endl;
+    return -1;
   }
 
   double getIntegral(LT level, IT index) override {

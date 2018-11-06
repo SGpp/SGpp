@@ -52,6 +52,11 @@ class LinearModifiedBasis : public Basis<LT, IT> {
     }
   }
 
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearModifiedBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
   inline size_t getDegree() const override { return 1; }
 
   double getIntegral(LT level, IT index) override {

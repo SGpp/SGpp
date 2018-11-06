@@ -584,6 +584,11 @@ class NakBsplineBoundaryCombigridBasis : public Basis<LT, IT> {
   //  }
   //#endif
 
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "NakBsplineBoundaryCombigridBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
   /**
    * @return      B-spline degree
    */

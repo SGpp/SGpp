@@ -11,8 +11,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 
 namespace sgpp {
 namespace base {
@@ -45,6 +45,11 @@ class LinearStretchedBasis : public LinearBasis<LT, IT> {
    * support position
    */
   double stretchedEval(double p, double pos0, double pos1) { return (p - pos0) / (pos1 - pos0); }
+
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearStretchedBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
 
   inline size_t getDegree() const override { return 1; }
 };
