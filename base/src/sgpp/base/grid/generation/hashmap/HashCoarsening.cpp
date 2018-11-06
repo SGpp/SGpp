@@ -11,7 +11,7 @@
 #include <list>
 #include <utility>
 #include <vector>
-
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
