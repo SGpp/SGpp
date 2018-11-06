@@ -39,18 +39,18 @@
 
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
@@ -65,9 +65,9 @@
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
@@ -112,8 +112,8 @@
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
@@ -136,5 +136,14 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>
+
+// active subspaces
+#include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
+#include <sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp>
+#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
+#include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
+#include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
+#include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
+#include <sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
 
 #endif /* SGPP_OPTIMIZATION_HPP */

@@ -45,6 +45,81 @@ const bool UMFPACK_ENABLED;
 %rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
 %include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
+// shared pointer compatibility for ScalarFunction (needs to know about all derived classes too)
+%include <std_shared_ptr.i>
+%shared_ptr(sgpp::optimization::ScalarFunction)
+%shared_ptr(sgpp::optimization::ExampleFunction)
+%shared_ptr(sgpp::optimization::G3ObjectiveFunction)
+%shared_ptr(sgpp::optimization::G8ObjectiveFunction)
+%shared_ptr(sgpp::optimization::ScalarTestFunction)
+%shared_ptr(sgpp::optimization::ASInterpolantScalarFunction)
+%shared_ptr(sgpp::optimization::ComponentScalarFunction)
+%shared_ptr(sgpp::optimization::InterpolantScalarFunction)
+%shared_ptr(sgpp::optimization::WrapperScalarFunction)
+%shared_ptr(sgpp::optimization::test_problems::TestScalarFunction)
+%shared_ptr(sgpp::optimization::test_problems::AbsoluteValueObjective)
+%shared_ptr(sgpp::optimization::test_problems::AbsoluteValue)
+%shared_ptr(sgpp::optimization::test_problems::UnconstrainedTestProblem)
+%shared_ptr(sgpp::optimization::test_problems::SolandObjective)
+//%shared_ptr(sgpp::optimization::test_problems::ConstrainedTestProblem)
+%shared_ptr(sgpp::optimization::test_problems::AckleyObjective)
+%shared_ptr(sgpp::optimization::test_problems::Ackley)
+%shared_ptr(sgpp::optimization::test_problems::BealeObjective)
+%shared_ptr(sgpp::optimization::test_problems::Beale)
+%shared_ptr(sgpp::optimization::test_problems::BraninObjective)
+%shared_ptr(sgpp::optimization::test_problems::Branin)
+%shared_ptr(sgpp::optimization::test_problems::BubbleWrapObjective)
+%shared_ptr(sgpp::optimization::test_problems::BubbleWrap)
+%shared_ptr(sgpp::optimization::test_problems::EasomYangObjective)
+%shared_ptr(sgpp::optimization::test_problems::EasomYang)
+%shared_ptr(sgpp::optimization::test_problems::EggholderObjective)
+%shared_ptr(sgpp::optimization::test_problems::Eggholder)
+%shared_ptr(sgpp::optimization::test_problems::GoldsteinPrice)
+%shared_ptr(sgpp::optimization::test_problems::GoldsteinPriceObjective)
+%shared_ptr(sgpp::optimization::test_problems::GriewankObjective)
+%shared_ptr(sgpp::optimization::test_problems::Griewank)
+%shared_ptr(sgpp::optimization::test_problems::Hartman3Objective)
+%shared_ptr(sgpp::optimization::test_problems::Hartman3)
+%shared_ptr(sgpp::optimization::test_problems::Hartman6Objective)
+%shared_ptr(sgpp::optimization::test_problems::Hartman6)
+%shared_ptr(sgpp::optimization::test_problems::HimmelblauObjective)
+%shared_ptr(sgpp::optimization::test_problems::Himmelblau)
+%shared_ptr(sgpp::optimization::test_problems::HoelderTableObjective)
+%shared_ptr(sgpp::optimization::test_problems::HoelderTable)
+%shared_ptr(sgpp::optimization::test_problems::IncreasingPowerObjective)
+%shared_ptr(sgpp::optimization::test_problems::IncreasingPower)
+%shared_ptr(sgpp::optimization::test_problems::MichalewiczObjective)
+%shared_ptr(sgpp::optimization::test_problems::Michalewicz)
+%shared_ptr(sgpp::optimization::test_problems::MladineoObjective)
+%shared_ptr(sgpp::optimization::test_problems::Mladineo)
+%shared_ptr(sgpp::optimization::test_problems::PermObjective)
+%shared_ptr(sgpp::optimization::test_problems::Perm)
+%shared_ptr(sgpp::optimization::test_problems::RastriginObjective)
+%shared_ptr(sgpp::optimization::test_problems::Rastrigin)
+%shared_ptr(sgpp::optimization::test_problems::RosenbrockObjective)
+%shared_ptr(sgpp::optimization::test_problems::Rosenbrock)
+%shared_ptr(sgpp::optimization::test_problems::SHCBObjective)
+%shared_ptr(sgpp::optimization::test_problems::SHCB)
+%shared_ptr(sgpp::optimization::test_problems::SchwefelObjective)
+%shared_ptr(sgpp::optimization::test_problems::Schwefel)
+%shared_ptr(sgpp::optimization::test_problems::SphereObjective)
+%shared_ptr(sgpp::optimization::test_problems::Sphere)
+%shared_ptr(sgpp::optimization::test_problems::TremblingParabolaObjective)
+%shared_ptr(sgpp::optimization::test_problems::TremblingParabola)
+%shared_ptr(sgpp::optimization::test_problems::FloudasObjective)
+%shared_ptr(sgpp::optimization::test_problems::G03Objective)
+%shared_ptr(sgpp::optimization::test_problems::G04Objective)
+%shared_ptr(sgpp::optimization::test_problems::G05Objective)
+%shared_ptr(sgpp::optimization::test_problems::G06Objective)
+%shared_ptr(sgpp::optimization::test_problems::G08Objective)
+%shared_ptr(sgpp::optimization::test_problems::G09Objective)
+%shared_ptr(sgpp::optimization::test_problems::G10Objective)
+%shared_ptr(sgpp::optimization::test_problems::G11Objective)
+%shared_ptr(sgpp::optimization::test_problems::G12Objective)
+%shared_ptr(sgpp::optimization::test_problems::G13Objective)
+%shared_ptr(sgpp::optimization::test_problems::SimionescuObjective)
+%shared_ptr(sgpp::optimization::test_problems::SolandObjective)
+
 // renames
 %rename(OptScalarFunction)                      sgpp::optimization::ScalarFunction;
 %rename(OptScalarFunctionGradient)              sgpp::optimization::ScalarFunctionGradient;
@@ -435,6 +510,15 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"
 %include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
 %include "optimization/src/sgpp/optimization/tools/Printer.hpp"
+
+//Active Subspaces
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrix.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ResponseSurface.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASResponseSurface.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp"
 
 %include "OpFactory.i"
 
