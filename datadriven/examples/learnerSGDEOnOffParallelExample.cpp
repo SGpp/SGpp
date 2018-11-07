@@ -303,7 +303,7 @@ int main(int argc, char *argv[]) {
 sgpp::datadriven::Dataset loadDataset(const std::string &filename) {
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = 
+  sgpp::datadriven::Dataset dataset =
     sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
 
   if (dataset.getDimension() <= 0) {
