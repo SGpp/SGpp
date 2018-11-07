@@ -625,7 +625,7 @@ int main(int argc, char* argv[]) {
                 << " nodes)." << std::endl;
 
     } else {
-      sgpp::datadriven::ARFFTools::readARFFSize(tfileTrain, nInstancesNo, nDim);
+      sgpp::datadriven::ARFFTools::readARFFSizeFromFile(tfileTrain, nInstancesNo, nDim);
     }
 
     nInstancesTestNo = testdataset.getNumberInstances();
