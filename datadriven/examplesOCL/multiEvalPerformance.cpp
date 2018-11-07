@@ -17,7 +17,7 @@ int main(int argc, char** argv) {
   std::string fileName = "debugging.arff";
 
   sgpp::datadriven::ARFFTools arffTools;
-  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromeFile(fileName);
 
   // sgpp::base::DataVector *classes = dataset.getClasses();
   sgpp::base::DataMatrix& trainingData = dataset.getData();
