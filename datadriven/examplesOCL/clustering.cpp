@@ -31,7 +31,8 @@ int main() {
   start = std::chrono::system_clock::now();
 
   std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset data =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
   sgpp::base::DataMatrix& dataset = data.getData();
   dimension = dataset.getNcols();
   std::cout << "Loaded " << dataset.getNcols() << " dimensional dataset with " << dataset.getNrows()
