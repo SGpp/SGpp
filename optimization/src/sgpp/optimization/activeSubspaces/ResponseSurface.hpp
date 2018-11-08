@@ -11,7 +11,7 @@
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <iostream>
@@ -32,7 +32,7 @@ class ResponseSurface {
   // evaluates gradient AND function
   virtual double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) = 0;
 
-  double l2Error(std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
+  double l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
                  size_t numMCPoints = 1000);
 
   size_t getSize() { return interpolant->getSize(); }

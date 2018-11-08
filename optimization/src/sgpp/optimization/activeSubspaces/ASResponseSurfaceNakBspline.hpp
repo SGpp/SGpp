@@ -50,7 +50,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * f(pinvW1 x)
    */
   void createRegularReducedSurfaceWithPseudoInverse(
-      size_t level, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc);
+      size_t level, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
 
   /**
    * creates a surplus adaptive grid of the dimension of the reduced space ( = # columns of W1)
@@ -59,8 +59,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * f(pinvW1 x)
    */
   void createAdaptiveReducedSurfaceWithPseudoInverse(
-      size_t maxNumGridPoints,
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
+      size_t maxNumGridPoints, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
       size_t initialLevel = 1);
 
   double eval(sgpp::base::DataVector v);
@@ -76,13 +75,12 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double leftBound1D = 0.0;
 
   // ----------------- auxiliary routines -----------
-  void refineSurplusAdaptive(
-      size_t refinementsNum,
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
-      sgpp::base::DataVector& alpha);
+  void refineSurplusAdaptive(size_t refinementsNum,
+                             std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+                             sgpp::base::DataVector& alpha);
 
   sgpp::base::DataVector calculateInterpolationCoefficientsWithPseudoInverse(
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc);
+      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
 
   Eigen::MatrixXd hypercubeVertices(size_t dimension);
 

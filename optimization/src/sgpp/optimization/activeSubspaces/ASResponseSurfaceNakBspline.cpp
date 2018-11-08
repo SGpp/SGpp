@@ -64,7 +64,7 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
-    size_t level, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc) {
+    size_t level, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
   grid->getGenerator().regular(level);
   // Special case one dimensional active subspace allows for reasonable response grid structure.
   // (Transform the one dimensional grid to an interval of according size). For active subspace
@@ -94,12 +94,12 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
 }
 
 void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
-    size_t maxNumGridPoints,
-    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc, size_t initialLevel) {
+    size_t maxNumGridPoints, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+    size_t initialLevel) {
   // number of points to be refined in each step
   size_t refinementsNum = 3;
   grid->getGenerator().regular(initialLevel);
-  std::shared_ptr<sgpp::optimization::WrapperScalarFunction> transformedObjectiveFunc;
+  std::shared_ptr<sgpp::optimization::ScalarFunction> transformedObjectiveFunc;
   // Special case one dimensional active subspace allows for reasonable response grid structure.
   // (Transform the one dimensional grid to an interval of according size). For active subspace
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
@@ -153,7 +153,7 @@ double ASResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
 // ----------------- auxiliary routines -----------
 
 void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
-    size_t refinementsNum, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
+    size_t refinementsNum, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
     sgpp::base::DataVector& alpha) {
   sgpp::base::SurplusRefinementFunctor functor(alpha, refinementsNum);
   grid->getGenerator().refine(functor);
@@ -162,7 +162,7 @@ void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
 
 sgpp::base::DataVector
 ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
-    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc) {
+    std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
   Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   Eigen::MatrixXd interpolationMatrix(gridStorage.getSize(), gridStorage.getSize());

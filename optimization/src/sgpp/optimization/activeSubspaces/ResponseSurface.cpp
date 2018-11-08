@@ -10,8 +10,8 @@
 namespace sgpp {
 namespace optimization {
 
-double ResponseSurface::l2Error(
-    std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc, size_t numMCPoints) {
+double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+                                size_t numMCPoints) {
   double l2Err = 0.0;
   sgpp::base::DataVector randomVector(objectiveFunc->getNumberOfParameters());
   for (size_t i = 0; i < numMCPoints; i++) {
