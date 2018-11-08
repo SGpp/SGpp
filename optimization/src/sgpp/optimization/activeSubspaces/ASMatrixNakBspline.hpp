@@ -15,6 +15,7 @@
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
@@ -165,6 +166,11 @@ class ASMatrixNakBspline : public ASMatrix {
    * @return the indices of the segments of the B-spline basis functions support
    */
   sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
+
+  double l2InterpolationError(size_t numMCPoints = 1000);
+  sgpp::base::DataVector l2InterpolationGradientError(
+      std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
+      size_t numMCPoints = 1000);
 
  private:
   sgpp::base::GridType gridType;
