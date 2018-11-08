@@ -277,8 +277,4 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   BOOST_CHECK_SMALL(fabs(objectiveFunctionEval - responseSurfEval), epsilon);
 }
 
-/* ToDo (rehmemk)
- * -Test response surface
- */
-
 BOOST_AUTO_TEST_SUITE_END()

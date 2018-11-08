@@ -79,6 +79,7 @@ class ASMatrix {
   };
 
   Eigen::MatrixXd getMatrix() { return C; }
+  sgpp::base::DataMatrix getMatrixDataMatrix() { return EigenToDataMatrix(C); };
 
   void setMatrix(Eigen::MatrixXd newC);
 
