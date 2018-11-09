@@ -53,7 +53,7 @@ int hpx_main(boost::program_options::variables_map& vm) {
   adaptConfig.threshold_ = 0.0;
 
   sgpp::datadriven::ARFFTools arffTools;
-  dataset = arffTools.readARFF(fileName);
+  dataset = arffTools.readARFFFromFile(fileName);
 
   trainingData = dataset.getData();
 

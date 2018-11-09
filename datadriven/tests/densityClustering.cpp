@@ -368,7 +368,8 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL) {
   size_t gridsize = grid->getStorage().getSize();
 
   // Load dataset for test scenario
-  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(
+  sgpp::datadriven::Dataset data =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(
       "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
@@ -409,7 +410,8 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(false);
 
   // Load dataset for test scenario
-  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(
+  sgpp::datadriven::Dataset data =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(
       "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
@@ -552,7 +554,8 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   manager = std::make_shared<sgpp::base::OCLManagerMultiPlatform>(false);
 
   // Load dataset for test scenario
-  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(
+  sgpp::datadriven::Dataset data =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(
       "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
