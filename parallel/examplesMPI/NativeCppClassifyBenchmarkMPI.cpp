@@ -591,7 +591,8 @@ int main(int argc, char* argv[]) {
     std::string tfileTest = testFile;
 
     sgpp::datadriven::Dataset dataset;
-    sgpp::datadriven::Dataset testdataset = sgpp::datadriven::ARFFTools::readARFF(tfileTest);
+    sgpp::datadriven::Dataset testdataset =
+      sgpp::datadriven::ARFFTools::readARFFFromFile(tfileTest);
 
     size_t nDim;
     size_t nInstancesNo;
@@ -624,7 +625,7 @@ int main(int argc, char* argv[]) {
                 << " nodes)." << std::endl;
 
     } else {
-      sgpp::datadriven::ARFFTools::readARFFSize(tfileTrain, nInstancesNo, nDim);
+      sgpp::datadriven::ARFFTools::readARFFSizeFromFile(tfileTrain, nInstancesNo, nDim);
     }
 
     nInstancesTestNo = testdataset.getNumberInstances();
@@ -646,7 +647,7 @@ int main(int argc, char* argv[]) {
       delete g;
     } else {
       // Read data from file
-      dataset = sgpp::datadriven::ARFFTools::readARFF(tfileTrain);
+      dataset = sgpp::datadriven::ARFFTools::readARFFFromFile(tfileTrain);
       data = dataset.getData();
       classes = dataset.getTargets();
     }

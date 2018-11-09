@@ -99,6 +99,13 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
         parseBool(*dataSourceConfig, "hasTargets", defaults.hasTargets, "dataSource");
     config.validationPortion = parseDouble(*dataSourceConfig, "validationPortion",
         defaults.validationPortion, "dataSource");
+    // if negative we want UINT_MAX here, so all should be fine
+    config.readinCutoff = static_cast<size_t>(parseInt(*dataSourceConfig, "readinCutoff",
+          defaults.readinCutoff, "dataSource"));
+    config.readinClasses = parseDoubleArray(*dataSourceConfig, "readinClasses",
+        defaults.readinClasses, "dataSource");
+    config.readinColumns = parseUIntArray(*dataSourceConfig, "readinColumns",
+        defaults.readinColumns, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -569,6 +576,54 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
+          "] from string" + dict[key].get() + ".";
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key
+              << "]. Setting to default value." << std::endl;
+    return defaultValue;
+  }
+}
+
+// (Sebastian) Adapted from parseIntArray without much thought
+std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict,
+                                                             const std::string &key,
+                                                             std::vector<double> defaultValue,
+                                                             const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<double> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        array.push_back(dict[key][i].getDouble());
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse double array" + parentNode + "[" + key +
+          "] from string" + dict[key].get() + ".";
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key
+              << "]. Setting to default value." << std::endl;
+    return defaultValue;
+  }
+}
+
+// (Sebastian) Adapted from parseIntArray without much thought
+std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict,
+                                                           const std::string &key,
+                                                           std::vector<size_t> defaultValue,
+                                                           const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<size_t> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        array.push_back(dict[key][i].getUInt());
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse uint array" + parentNode + "[" + key +
           "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
