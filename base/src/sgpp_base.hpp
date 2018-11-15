@@ -23,7 +23,10 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
@@ -140,6 +143,5 @@
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include "sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 
 #endif /* BASE_HPP */

@@ -59,7 +59,8 @@ enum class GridType {
   NakBsplineBoundary,            // 31
   NakBsplineBoundaryCombigrid,   // 32
   NakBsplineModified,            // 33
-  NakBspline                     // 34
+  NakBspline,                    // 34
+  NakBsplineExtended             // 35
 };
 
 /**
@@ -690,6 +691,15 @@ class Grid {
    * @return grid
    */
   static Grid* createNakBsplineModifiedGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
 
   /**
    * reads a grid out of a string

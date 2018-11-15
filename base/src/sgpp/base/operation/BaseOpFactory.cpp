@@ -18,7 +18,9 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
@@ -141,6 +143,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineModifiedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
@@ -164,6 +168,8 @@
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineModifiedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
@@ -212,9 +218,6 @@
 
 #include <cstring>
 #include <vector>
-#include "../grid/type/NakBsplineModifiedGrid.hpp"
-#include "hash/OperationEvalNakBsplineModifiedNaive.hpp"
-#include "hash/OperationMultipleEvalNakBsplineModifiedNaive.hpp"
 
 namespace sgpp {
 
@@ -536,6 +539,9 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   } else if (grid.getType() == base::GridType::NakBsplineModified) {
     return new base::OperationMultipleEvalNakBsplineModifiedNaive(
         grid, dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationMultipleEvalNakBsplineExtendedNaive(
+        grid, dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
@@ -649,6 +655,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::NakBspline) {
     return new base::OperationEvalNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::NakBsplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationEvalNakBsplineExtendedNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEval is not implemented for this grid type."

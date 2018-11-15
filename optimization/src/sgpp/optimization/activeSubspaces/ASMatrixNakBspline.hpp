@@ -7,9 +7,11 @@
 //#ifdef USE_EIGEN
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
@@ -50,6 +52,9 @@ class ASMatrixNakBspline : public ASMatrix {
     } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
       grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
     } else {
       throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
     }

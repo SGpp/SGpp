@@ -28,6 +28,7 @@
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
@@ -169,6 +170,10 @@ Grid* Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree) {
   return new NakBsplineModifiedGrid(dim, degree);
 }
 
+Grid* Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree) {
+  return new NakBsplineExtendedGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -249,6 +254,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createNakBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBspline:
         return Grid::createNakBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NakBsplineExtended:
+        return Grid::createNakBsplineExtendedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -391,6 +398,10 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<NakBsplineGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineGrid(numDims, degree);
       break;
+    case GridType::NakBsplineExtended:
+      degree = dynamic_cast<NakBsplineExtendedGrid*>(this)->getDegree();
+      newGrid = Grid::createNakBsplineExtendedGrid(numDims, degree);
+      break;
 
     default:
       throw generation_exception("Grid::clone - grid type not known");
@@ -455,6 +466,7 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::ModBsplineClenshawCurtis:
     case GridType::NakBsplineBoundaryCombigrid:
     case GridType::NakBsplineBoundary:
+    case GridType::NakBsplineExtended:
     default:
       throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
   }
@@ -870,6 +882,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::NakBsplineModified;
   } else if (gridType.compare("nakbspline") == 0) {
     return sgpp::base::GridType::NakBspline;
+  } else if (gridType.compare("nakbsplineextended") == 0) {
+    return sgpp::base::GridType::NakBsplineExtended;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

@@ -170,7 +170,9 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
@@ -215,7 +217,9 @@ namespace std {
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryCombigridBase) sgpp::base::NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryBase) sgpp::base::NakBsplineBoundaryBasis<unsigned int, unsigned int>;
+%template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SNakBsplineExtendedBase) sgpp::base::NakBsplineExtendedBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point };
