@@ -92,6 +92,8 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
     // changed, we need a else if here and a boost check small.
     BOOST_CHECK_CLOSE(classes.get(rowIdx), testValues[rowIdx], tolerance);
   }
+  delete dataSource;
+  delete sampleProvider;
 }
 
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
@@ -113,6 +115,8 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
     //    dataset.reset();
   }
   BOOST_CHECK_EQUAL(1, dataSource->getCurrentIteration());
+  delete dataSource;
+  delete sampleProvider;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
