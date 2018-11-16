@@ -6,6 +6,7 @@
 #pragma once
 //#ifdef USE_EIGEN
 
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -21,6 +22,8 @@
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace optimization {
@@ -172,10 +175,41 @@ class ASMatrixNakBspline : public ASMatrix {
    */
   sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
 
+  /**
+   * calculates the l2 error of the interpolant
+   *
+   * @param numMCPoints number of Monte carlo points
+   *
+   * @return l2 error
+   */
   double l2InterpolationError(size_t numMCPoints = 1000);
+
+  /**
+   * calculates the l2 error of the interpolants gradient
+   *
+   * @param objectiveFuncGradient	the real gradient function
+   * @param numMCPoints             number of Monte Carlo Points
+   *
+   * @return l2 error of gradient
+   */
   sgpp::base::DataVector l2InterpolationGradientError(
       std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
       size_t numMCPoints = 1000);
+
+  /**
+   * returns the interpolation coefficients
+   *
+   * @return interpolation coefficients
+   */
+  sgpp::base::DataVector getCoefficients() { return coefficients; }
+
+  /**
+   * save the grid and the inteprolation coefficients to file
+   *
+   * @param path
+   *
+   */
+  void toFile(std::string path);
 
  private:
   sgpp::base::GridType gridType;

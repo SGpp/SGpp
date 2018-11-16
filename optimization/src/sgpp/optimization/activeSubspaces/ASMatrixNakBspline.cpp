@@ -98,6 +98,17 @@ sgpp::base::DataVector ASMatrixNakBspline::l2InterpolationGradientError(
   return errors;
 }
 
+void ASMatrixNakBspline::toFile(std::string path) {
+  std::string gridPath = path + "/ASMGrid.grid";
+  std::filebuf fb;
+  fb.open(gridPath, std::ios::out);
+  std::ostream os(&fb);
+  os << grid->serialize();
+  fb.close();
+  std::string coeffPath = path + "/ASMCoefficients.vec";
+  coefficients.toFile(coeffPath);
+}
+
 // ----------------- auxiliary routines -----------
 
 void ASMatrixNakBspline::refineSurplusAdaptive(size_t refinementsNum) {

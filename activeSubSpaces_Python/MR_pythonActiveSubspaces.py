@@ -1,7 +1,10 @@
+from argparse import ArgumentParser
+import os
 import time
 
 import activeSubspaceFunctions
 import active_subspaces as ac
+import cPickle as pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
@@ -25,46 +28,64 @@ def reverseDataMatrixToNdArray(m):
             n[i, -j - 1] = m.get(i, j)
     return n
 
-
-def objectiveFunction():
-    # defined on [-1,1]^D
-    # return activeSubspaceFunctions.wing()
-    return activeSubspaceFunctions.exp2D()
-    # return activeSubspaceFunctions.quadratic2D()
-    # return activeSubspaceFunctions.linear2D()
-
     
 class objFuncSGpp(pysgpp.OptScalarFunction):
 
-    def __init__(self, numDim):
+    def __init__(self, numDim, objFunc):
         self.numDim = numDim
+        self.objFunc = objFunc
         super(objFuncSGpp, self).__init__(self.numDim)
 
     def eval(self, v):
-        objFunc = objectiveFunction()
         # transform input from [0,1]^10 to [-1,1]^10 and call objFunc 
         x = np.ndarray(shape=(1, self.numDim))
         for i in range(self.numDim):
             x[0, i] = 2 * v[i] - 1
-        return objFunc.eval(x)[0][0] 
+        return self.objFunc.eval(x)[0][0] 
+
 
 #------------------------------- auxiliary function for AS calculations-------------------------------------------------
-
-
-def SGpp(numSamples, numDim, degree, gridType, initialLevel=1, numRefine=3):
+def SGppAS(objFunc, numSamples, numDim, degree, gridType, initialLevel=1, numRefine=3, savePath=None):
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
-    f = objFuncSGpp(numDim)
-    ASM = pysgpp.ASMatrixNakBspline(f, gridType, degree)
+    f = objFuncSGpp(numDim, objFunc)
+    ASM = pysgpp.ASMatrixNakBspline(f, pysgpp.Grid.stringToGridType(gridType), degree)
     ASM.buildAdaptiveInterpolant(numSamples, initialLevel, numRefine)
+    
+    if savePath is not None:
+        if not os.path.exists(savePath):
+            os.makedirs(savePath)
+        ASM.toFile(savePath)
+    
     ASM.createMatrixGauss()
     ASM.evDecompositionForSymmetricMatrices()
        
     eivalSGpp = ASM.getEigenvaluesDataVector()
     eivecSGpp = ASM.getEigenvectorsDataMatrix()
        
-    eivalSGppR = reverseDataVectorToNdArray(eivalSGpp)
-    eivecSGppR = reverseDataMatrixToNdArray(eivecSGpp)
-    return eivalSGppR, eivecSGppR
+    eival = reverseDataVectorToNdArray(eivalSGpp)
+    eivec = reverseDataMatrixToNdArray(eivecSGpp)
+    return eival, eivec
+
+
+def ConstantineAS(X=None, f=None, df=None, sstype='AS', nboot=0):
+    ss = ac.subspaces.Subspaces()
+     #----------- linear fit ----------
+    if sstype == 'OLS':
+        ss.compute(X=X, f=f, nboot=nboot, sstype='OLS')
+        eival = ss.eigenvals
+        eivec = ss.eigenvecs
+    #----------- quadratic fit -----------
+    elif sstype == 'QPHD':
+        ss.compute(X=X, f=f, nboot=nboot, sstype='QPHD')
+        eival = ss.eigenvals
+        eivec = ss.eigenvecs
+    # ---------- exact gradient ----------
+    elif sstype == 'AS':
+        ss.compute(df=df, nboot=nboot)
+        eival = ss.eigenvals
+        eivec = ss.eigenvecs
+        
+    return eival, eivec
 
 
 def uniformX(numSamples, numDim):
@@ -76,68 +97,126 @@ def uniformX(numSamples, numDim):
 
 
 #------------------------------------ main ---------------------------------------
-objFunc = objectiveFunction()
-numDim = objFunc.getDim()
-eivecReference = objFunc.getEigenvec()
-print(eivecReference[0])
+if __name__ == "__main__":
+    # parse the input arguments
+    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser.add_argument('--model', default='exp2D', type=str, help="define which test case should be executed")
+    parser.add_argument('--gridType', default='AS', type=str, help="SGpp grid type or Constantines OLS, QPHD or AS")
+    parser.add_argument('--degree', default=3, type=int, help="B-spline degree")
+    parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
+    parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
+    parser.add_argument('--numSteps', default=3, type=int, help="number of steps in the [minPoints maxPoints] range")
+    parser.add_argument('--saveFlag', default=False, type=bool, help="save results")
+    args = parser.parse_args()
+    
+    objFunc = activeSubspaceFunctions.getFunction(args.model)
+    resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces_Python/results"
+    resultsPath = os.path.join(resultsPath, objFunc.getName())
+    if args.gridType in ['OLS', 'QPHD', 'AS']:
+        folder = args.gridType + '_' + str(args.maxPoints)
+    else: 
+        folder = args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints)
+    path = os.path.join(resultsPath, folder)     
+    
+    numDim = objFunc.getDim()
+    nboot = 100
+    sampleRange = np.unique(np.logspace(np.log10(args.minPoints), np.log10(args.maxPoints), num=args.numSteps))
+    sampleRange = [int(s) for s in sampleRange]
+    
+    eival = np.ndarray(shape=(numDim , len(sampleRange)))
+    eivec = np.ndarray(shape=(numDim, numDim, len(sampleRange)))
+    
+    # Constantines Code
+    if args.gridType in ['OLS', 'QPHD']:
+        for i, numSamples in enumerate(sampleRange):
+            x = uniformX(numSamples, numDim)
+            f = objFunc.eval(x)
+            e, v = ConstantineAS(X=x, f=f, sstype=args.gridType, nboot=nboot)
+            eival[:, i] = e[:, 0]
+            eivec[:, :, i] = v
+    elif args.gridType == 'AS':
+        for i, numSamples in enumerate(sampleRange):
+            x = uniformX(numSamples, numDim)
+            f = objFunc.eval(x)
+            df = objFunc.eval_grad(x)
+            e, v = ConstantineAS(df=df, sstype=args.gridType, nboot=nboot)
+            eival[:, i] = e[:, 0]
+            eivec[:, :, i] = v
+    # SG++
+    else:
+        initialLevel = 1
+        numRefine = 3
+        for i, numSamples in enumerate(sampleRange):
+            e, v = SGppAS(objFunc, numSamples, numDim, args.degree, args.gridType, \
+                           initialLevel, numRefine, path)
+            eival[:, i] = e[:]
+            eivec[:, :, i] = v
+            
+    #------------------------------------ save Data ---------------------------------------
+    if args.saveFlag:
+        print("saving Data to {}".format(path))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        data = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange, \
+                'model':args.model, 'gridType':args.gridType, 'degree':args.degree}
+        with open(os.path.join(path, 'data.pkl'), 'wb') as fp:
+            pickle.dump(data, fp)
 
-# ---------- SGpp ----------
-sampleRangeSGpp = [10, 20, 40, 80, 160, 320, 640, 1280]
-sampleRangeSGpp = []
-errSGpp = np.zeros(len(sampleRangeSGpp))
-degree = 3
-# gridType = pysgpp.GridType_NakBsplineModified
-gridType = pysgpp.GridType_NakBsplineExtended
-initialLevel = 1
-numRefine = 3
-for i, numSamples in enumerate(sampleRangeSGpp):
-    start = time.time()
-    eivalSGpp, eivecSGpp = SGpp(numSamples, numDim, degree, gridType, initialLevel, numRefine)
-    print("{} points took {}s".format(numSamples, time.time() - start))
-    # Assuming that the eigenvectors are basically correct, but have varying signs we calculate the error
-    # with the absolute values of the entries
-    # errSGpp[i] = np.linalg.norm(abs(eivecSGpp[0]) - abs(eivecReference[0]))
-    errSGpp[i] = np.linalg.norm(abs(eivecSGpp[0]) - abs(eivecReference[0]))
+#------------------------------------ main ---------------------------------------
+# saveFlag = True
+# 
+# objFunc = objectiveFunction('exp2D')
+# numDim = objFunc.getDim()
+# eivecReference = objFunc.getEigenvec()
+# print(eivecReference[0])
+# 
+# # ---------- SGpp ----------
+# sampleRangeSGpp = [10, 20, 40, 80, 160]
+# errSGpp = np.zeros(len(sampleRangeSGpp))
+# degree = 3
+# # gridType = pysgpp.GridType_NakBsplineModified
+# gridType = pysgpp.GridType_NakBsplineExtended
+# initialLevel = 1
+# numRefine = 3
+# for i, numSamples in enumerate(sampleRangeSGpp):
+#     start = time.time()
+#     sgppSavePath = "/home/rehmemk/git//SGpp/activeSubSpaces_Python/results/testSave"
+#     eivalSGpp, eivecSGpp = SGppAS(numSamples, numDim, degree, gridType, initialLevel, numRefine, sgppSavePath)
+#     print("{} points took {}s".format(numSamples, time.time() - start))
+#     # Assuming that the eigenvectors are basically correct, but have varying signs we calculate the error
+#     # with the absolute values of the entries
+#     # errSGpp[i] = np.linalg.norm(abs(eivecSGpp[0]) - abs(eivecReference[0]))
+#     errSGpp[i] = np.linalg.norm(abs(eivecSGpp[0]) - abs(eivecReference[0]))
 
 # ---------- Constantine ----------
 # sampleRangeConstantine = sampleRangeSGpp
-sampleRangeConstantine = [320, 640, 1280, 2560, 5120]
-errLinear = np.zeros(len(sampleRangeConstantine))
-errQuadratic = np.zeros(len(sampleRangeConstantine))
-errGradient = np.zeros(len(sampleRangeConstantine))
-for i, numSamples in enumerate(sampleRangeConstantine):
-    x = uniformX(numSamples, numDim)
-    f = objFunc.eval(x)
-    df = objFunc.eval_grad(x)
-    ss = ac.subspaces.Subspaces()
-    
-    #----------- linear fit ----------
-    ss.compute(X=x, f=f, nboot=100, sstype='OLS')
-    eivalLinear = ss.eigenvals
-    eivecLinear = ss.eigenvecs
-    errLinear[i] = np.linalg.norm(abs(eivecLinear[0]) - abs(eivecReference[0]))
-    
-    #----------- quadratic fit -----------
-    ss.compute(X=x, f=f, nboot=100, sstype='QPHD')
-    eivalQuadratic = ss.eigenvals
-    eivecQuadratic = ss.eigenvecs
-    errQuadratic[i] = np.linalg.norm(abs(eivecQuadratic[0]) - abs(eivecReference[0]))
-    
-    # ---------- exact gradient ----------
-    ss.compute(df=df, nboot=100)
-    eivalGradient = ss.eigenvals
-    eivecGradient = ss.eigenvecs
-    errGradient[i] = np.linalg.norm(abs(eivecGradient[0]) - abs(eivecReference[0]))
+# sampleRangeConstantine = [320, 640, 1280, 2560, 5120]
+# errLinear = np.zeros(len(sampleRangeConstantine))
+# errQuadratic = np.zeros(len(sampleRangeConstantine))
+# errGradient = np.zeros(len(sampleRangeConstantine))
+# for i, numSamples in enumerate(sampleRangeConstantine):
+#     x = uniformX(numSamples, numDim)
+#     f = objFunc.eval(x)
+#     df = objFunc.eval_grad(x)
+#     ss = ac.subspaces.Subspaces()
+#     nboot = 100
+#     
+#     eivalLinear, eivecLinear = ConstantineAS(X=x, f=f, sstype='OLS', nboot=nboot)
+#     errLinear[i] = np.linalg.norm(abs(eivecLinear[0]) - abs(eivecReference[0]))
+#     
+#     eivalQuadratic, eivecQuadratic = ConstantineAS(X=x, f=f, sstype='QPHD', nboot=nboot)
+#     errQuadratic[i] = np.linalg.norm(abs(eivecQuadratic[0]) - abs(eivecReference[0]))
+#     
+#     eivalGradient, eivecGradient = ConstantineAS(df=df, sstype='AS', nboot=nboot)
+#     errGradient[i] = np.linalg.norm(abs(eivecGradient[0]) - abs(eivecReference[0]))
 
 #------------------------------------ plots ---------------------------------------
-plt.loglog(sampleRangeSGpp, errSGpp, '-o', label='SGpp')
-plt.loglog(sampleRangeConstantine, errLinear, '-^', label='Linear')
-plt.loglog(sampleRangeConstantine, errQuadratic, '-', label='Quadratic')
-plt.loglog(sampleRangeConstantine, errGradient, '-*', label='Gradient')
-plt.legend()
-plt.show()
-
-# ---------- plot eigenvector[0] errors----------
+# plt.loglog(sampleRangeSGpp, errSGpp, '-o', label='SGpp')
+# plt.loglog(sampleRangeConstantine, errLinear, '-^', label='Linear')
+# plt.loglog(sampleRangeConstantine, errQuadratic, '-', label='Quadratic')
+# plt.loglog(sampleRangeConstantine, errGradient, '-*', label='Gradient')
+# plt.legend()
+# # plt.show()
 
 # ---------- plot eigenvalues ----------
 # plt.semilogy(range(len(eivalSGpp)),eivalSGpp,'-o',label='SGpp')

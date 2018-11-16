@@ -3,6 +3,18 @@ import numpy as np
 import pysgpp
 
 
+def getFunction(model):
+    # defined on [-1,1]^D
+    if model == 'wing':
+        return wing()
+    elif model == 'exp2D':
+        return exp2D()
+    elif model == 'quadratic2D':
+        return quadratic2D()
+    elif model == 'linear2D':
+        return linear2D()
+
+
 def calculateMCReference(numSamples, objFunc):
     numDim = objFunc.getDim()
     xRef = np.ndarray(shape=(numSamples, numDim))
@@ -20,6 +32,9 @@ class wing():
 
     def getDim(self):
         return 10
+    
+    def getName(self):
+        return "wing"
 
     def getEigenvec(self):
          # calculated with 
@@ -96,6 +111,9 @@ class exp2D():
         lb = [-1, -1]
         ub = [1, 1]
         return lb, ub
+    
+    def getName(self):
+        return "exp2D"
 
     def getDim(self):
         return 2
@@ -132,6 +150,9 @@ class linear2D():
         lb = [0, 0]
         ub = [1, 1]
         return lb, ub
+    
+    def getName(self):
+        return "linear2D"
 
     def getDim(self):
         return 2
@@ -167,6 +188,9 @@ class quadratic2D():
         lb = [0, 0]
         ub = [1, 1]
         return lb, ub
+    
+    def getName(self):
+        return "quadratic2D"
 
     def getDim(self):
         return 2
