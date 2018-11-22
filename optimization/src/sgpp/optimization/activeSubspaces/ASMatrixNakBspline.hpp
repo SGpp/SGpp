@@ -14,7 +14,9 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/optimization/activeSubspaces/ASBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
+#include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
@@ -125,8 +127,8 @@ class ASMatrixNakBspline : public ASMatrix {
    * @param weights weights for the Gauss quadrature
    * @return matrix entry C_{i,j}
    */
-  double matrixEntryGauss(size_t i, size_t j, std::shared_ptr<sgpp::base::DataVector> pCoordinates,
-                          std::shared_ptr<sgpp::base::DataVector> pWeights);
+  double matrixEntryGauss(size_t i, size_t j,
+                          sgpp::optimization::ASBsplineScalarProducts& scalarProducts);
 
   /**
    * calculates \int d/dx_i b_k(x) d/dx_j b_l(x) dx
@@ -142,38 +144,39 @@ class ASMatrixNakBspline : public ASMatrix {
    * @return integral \int d/dx_i b_k(x) d/dx_j b_l(x) dx
    */
   double scalarProductDxbiDxbj(size_t i, size_t j, size_t k, size_t l,
-                               std::shared_ptr<sgpp::base::DataVector> pCoordinates,
-                               std::shared_ptr<sgpp::base::DataVector> pWeights);
-
-  /**
-   * calculates the one diensional integral \int f*g dx where f and g are B-spline basis functions
-   * or first derivatives of B-spline basis functions
-   *
-   * @param level1 level of the first B-spline
-   * @param index1 index of the first B-spline
-   * @param dx1 evaluate B-spline if False, evaluate d/dx B-spline if True
-   * @param level2 level of the second B-spline
-   * @param index2 index of the second B-spline
-   * @param coordinates coordinates for the Gauss quadrature
-   * @param weights weights for the Gauss quadrature
-   * @param dx2 evaluate B-spline if False, evaluate d/dx B-spline if True
-   *
-   * @return  integral (derivative of) first basis function * (derivative of) second basis function
-   */
-  double univariateScalarProduct(size_t level1, size_t index1, bool dx1, size_t level2,
-                                 size_t index2, bool dx2,
-                                 std::shared_ptr<sgpp::base::DataVector> pCoordinates,
-                                 std::shared_ptr<sgpp::base::DataVector> pWeights);
-
-  /**
-   * used to get the support segments of a b-splien basis functions. Needed for Gauss quadrature
-   *
-   * @param level	level of the B-spline basis function
-   * @param index	index of the B-spline basis function
-   *
-   * @return the indices of the segments of the B-spline basis functions support
-   */
-  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
+                               sgpp::optimization::ASBsplineScalarProducts& scalarProducts);
+  //
+  //  /**
+  //   * calculates the one diensional integral \int f*g dx where f and g are B-spline basis
+  //   functions
+  //   * or first derivatives of B-spline basis functions
+  //   *
+  //   * @param level1 level of the first B-spline
+  //   * @param index1 index of the first B-spline
+  //   * @param dx1 evaluate B-spline if False, evaluate d/dx B-spline if True
+  //   * @param level2 level of the second B-spline
+  //   * @param index2 index of the second B-spline
+  //   * @param coordinates coordinates for the Gauss quadrature
+  //   * @param weights weights for the Gauss quadrature
+  //   * @param dx2 evaluate B-spline if False, evaluate d/dx B-spline if True
+  //   *
+  //   * @return  integral (derivative of) first basis function * (derivative of) second basis
+  //   function
+  //   */
+  //  double univariateScalarProduct(size_t level1, size_t index1, bool dx1, size_t level2,
+  //                                 size_t index2, bool dx2,
+  //                                 std::shared_ptr<sgpp::base::DataVector> pCoordinates,
+  //                                 std::shared_ptr<sgpp::base::DataVector> pWeights);
+  //
+  //  /**
+  //   * used to get the support segments of a b-splien basis functions. Needed for Gauss quadrature
+  //   *
+  //   * @param level	level of the B-spline basis function
+  //   * @param index	index of the B-spline basis function
+  //   *
+  //   * @return the indices of the segments of the B-spline basis functions support
+  //   */
+  //  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
 
   /**
    * calculates the l2 error of the interpolant
@@ -211,14 +214,28 @@ class ASMatrixNakBspline : public ASMatrix {
    */
   void toFile(std::string path);
 
+  /**
+   * creates and returns an ASResponseSurfaceNakBspline based on the active subspace calculated with
+   * this class
+   *
+   * @param asDimension dimension of the active subspace
+   * @param gridType    underlying grid type for the response surface
+   * @param degree      degree of the underlying B-spline basis
+   *
+   * @return a response surface based on one of the not a knot B-spine basis types exploiting the
+   * active subspace
+   */
+  sgpp::optimization::ASResponseSurfaceNakBspline createResponseSurface(
+      size_t asDimension, sgpp::base::GridType gridType, size_t degree = 3);
+
  private:
   sgpp::base::GridType gridType;
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;
-  typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
-  std::map<asMatrixHashType, double> innerProducts;
+  //  typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
+  //  std::map<asMatrixHashType, double> innerProducts;
 };
 
 }  // namespace optimization

@@ -8,6 +8,7 @@
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/optimization/activeSubspaces/ASBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
@@ -26,7 +27,7 @@ double x6Function(double x) { return x * x * x * x * x * x; }
 
 BOOST_AUTO_TEST_SUITE(testActiveSubspaces)
 
-//#ifdef USE_EIGEN
+// #ifdef USE_EIGEN
 BOOST_AUTO_TEST_CASE(testEigenFunctionalities) {
   sgpp::base::DataVector v(3);
   v[0] = 1;
@@ -56,7 +57,7 @@ BOOST_AUTO_TEST_CASE(testEigenFunctionalities) {
   BOOST_CHECK_EQUAL(v2[1], e2(1));
   BOOST_CHECK_EQUAL(v2[2], e2(2));
 }
-//#endif /* USE_EIGEN */
+// #endif /* USE_EIGEN */
 
 BOOST_AUTO_TEST_CASE(testQuad) {
   double epsilon = 1e-15;
@@ -139,13 +140,9 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
         "testASMatrixNakBsplineBoundaryScalarProducte: gridType not supported.");
   }
 
-  // prepare gauss quadrature rule
-  sgpp::base::DataVector coordinates, weights;
-  sgpp::base::GaussLegendreQuadRule1D gauss;
+  // prepare scalar products
   size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
-  auto pCoordinates = std::make_shared<sgpp::base::DataVector>(coordinates);
-  auto pWeights = std::make_shared<sgpp::base::DataVector>(weights);
+  sgpp::optimization::ASBsplineScalarProducts scalarProducts(gridType, numDim, degree, quadOrder);
 
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
       numDim, objectiveFunctionScalarProduct);
@@ -171,18 +168,18 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
       sgpp::base::GridPoint& basisJ = gridStorage.getPoint(j);
       size_t levelJ = basisJ.getLevel(0);
       size_t indexJ = basisJ.getIndex(0);
-      result_ff += alpha[i] * alpha[j] *
-                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
-                                               pCoordinates, pWeights);
-      result_dff += alpha[i] * alpha[j] *
-                    ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true,
-                                                pCoordinates, pWeights);
-      result_dfdf += alpha[i] * alpha[j] *
-                     ASM.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true,
-                                                 pCoordinates, pWeights);
-      result_fg += alpha[i] * alpha2[j] *
-                   ASM.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false,
-                                               pCoordinates, pWeights);
+      result_ff +=
+          alpha[i] * alpha[j] *
+          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
+      result_dff +=
+          alpha[i] * alpha[j] *
+          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true);
+      result_dfdf +=
+          alpha[i] * alpha[j] *
+          scalarProducts.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true);
+      result_fg +=
+          alpha[i] * alpha2[j] *
+          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
     }
   }
   double epsilon = 1e-15;
