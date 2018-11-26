@@ -11,6 +11,7 @@
  */
 
 #ifdef ZLIB
+#ifdef USE_GSL
 
 #define BOOST_TEST_DYN_LINK
 
@@ -41,4 +42,5 @@ BOOST_AUTO_TEST_CASE(classificationMinerGzipTest) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif
