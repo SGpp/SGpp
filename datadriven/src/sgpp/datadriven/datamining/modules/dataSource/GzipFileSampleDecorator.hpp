@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
