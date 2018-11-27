@@ -71,6 +71,48 @@ namespace sgpp {
              * in the map)
              */
             std::vector<std::map<std::string, double>> pre_comp_evals;
+
+            // Utility for finding geometric neighbors
+
+            /**
+             * Used for leaf grid points. Goes up the tree in dir left
+             * until the current grid point is not left/right child of the parent
+             * grid point.
+             * Modifies both gp and up. Result in up.
+             */
+            void goUp(base::HashGridPoint& gp, base::HashGridPoint& up, size_t d,
+                      bool left) const;
+
+
+            /**
+             * Used for non-leaf grid points. Decends the tree in dir left
+             * until a leaf is reached.
+             * Modifies both gp and down. Result in down.
+             */
+            void goDown(base::HashGridPoint& gp,
+                        base::HashGridPoint& down,
+                        size_t d,
+                        bool left) const;
+
+            bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
+            bool isLeftChild(const base::HashGridPoint& gp, size_t d) const;
+
+            /**
+             * @param gp the grid point we want the child from
+             * @param child gets set to the left/right child in dim d of gp
+             * @param left specifies if left or right child is returned
+             * @param d specifies the dimension of the child. All other dims are kept constant
+             */
+            void getChild(const base::HashGridPoint& gp, size_t d, bool left,
+                          base::HashGridPoint& child) const;
+
+            /**
+             * @param gp the grid point we want the parent from
+             * @param par gets set to the parent in dim d of gp
+             * @param d specifies the dimension of the child. All other dims are kept constant
+             */
+            void getParent(const base::HashGridPoint& gp,
+                           size_t d, base::HashGridPoint& par) const;
         };
     }  // namespace datadriven
 }  // namespace sgpp
