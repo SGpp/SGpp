@@ -17,7 +17,7 @@ namespace optimization {
  */
 double gaussQuad(std::function<double(double)> f, double a, double b, size_t quadOrder);
 // the initialization of GaussLegendreQuadRule1D is slow. Do not use this frequently
-// If needed often initialize GaussLegendreQuadRule1D in the beginning and hand coordinates,
+// If needed often initialize GaussLegendreQuadRule1D in the beginning and hand coordinates and
 // weights through and copy the summation from here to the corresponding place
 
 }  // namespace optimization

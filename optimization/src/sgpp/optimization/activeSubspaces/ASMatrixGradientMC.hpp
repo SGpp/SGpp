@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-//#ifdef USE_EIGEN
+// #ifdef USE_EIGEN
 
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
@@ -13,10 +13,16 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * Used to create, store and use the matrix C for the detection of active subspaces using a Monte
+ * Carlo approximation. This is more or less obsolete because we use Paul G Constantines python
+ * framework for comparison
+ */
 class ASMatrixGradientMC : public ASMatrix {
  public:
-  ASMatrixGradientMC(std::shared_ptr<ScalarFunction> objectiveFunc) : ASMatrix(objectiveFunc) {}
-  void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); };
+  explicit ASMatrixGradientMC(std::shared_ptr<ScalarFunction> objectiveFunc)
+      : ASMatrix(objectiveFunc) {}
+  void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); }
   void createMatrixMonteCarlo(size_t numPoints,
                               WrapperScalarFunctionGradient objectiveFuncGradient);
   void createMatrixMonteCarloFiniteDifference(size_t numPoints, double h = 1e-08);
@@ -27,4 +33,4 @@ class ASMatrixGradientMC : public ASMatrix {
 }  // namespace optimization
 }  // namespace sgpp
 
-//#endif /* USE_EIGEN */
+// #endif /* USE_EIGEN */

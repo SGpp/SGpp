@@ -5,28 +5,45 @@
 
 // #ifdef USE_EIGEN
 
-#include <sgpp/optimization/activeSubspaces/ASBsplineScalarProducts.hpp>
+#include "NakBsplineScalarProducts.hpp"
 
 namespace sgpp {
 namespace optimization {
 
-double ASBsplineScalarProducts::univariateScalarProduct(size_t level1, size_t index1, bool dx1,
-                                                        size_t level2, size_t index2, bool dx2) {
+std::unique_ptr<sgpp::base::SBasis> NakBsplineScalarProducts::initializeBasis(
+    sgpp::base::GridType gridType, size_t degree) {
+  if (gridType == sgpp::base::GridType::NakBspline) {
+    return std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+    return std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    return std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+    return std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+  } else {
+    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+  }
+}
+
+double NakBsplineScalarProducts::univariateScalarProduct(unsigned int level1, unsigned int index1,
+                                                         bool dx1, unsigned int level2,
+                                                         unsigned int index2, bool dx2) {
   std::map<asMatrixHashType, double>::iterator it;
   asMatrixHashType hashKey = std::make_tuple(level1, index1, dx1, level2, index2, dx2);
+  // Check if this scalar products has already been caluclated and is stored
   it = innerProducts.find(hashKey);
   if (it != innerProducts.end()) {
     return it->second;
   } else {
-    sgpp::base::DataVector supp1 = nakBSplineSupport(level1, index1);
-    sgpp::base::DataVector supp2 = nakBSplineSupport(level2, index2);
+    sgpp::base::DataVector supp1 = nakBSplineSupport(level1, index1, degree1);
+    sgpp::base::DataVector supp2 = nakBSplineSupport(level2, index2, degree2);
     sgpp::base::DataVector commonSupport;
 
     // if supports do not overlap
     if ((supp1[0] >= supp2.back()) || (supp1.back() <= supp2[0])) {
       return 0;
     } else {
-      if (level1 > level2)
+      if (level1 >= level2)
         commonSupport = supp1;
       else if (level1 < level2)
         commonSupport = supp2;
@@ -34,21 +51,17 @@ double ASBsplineScalarProducts::univariateScalarProduct(size_t level1, size_t in
         commonSupport = supp1;
     }
 
-    unsigned int l1 = static_cast<unsigned int>(level1);
-    unsigned int i1 = static_cast<unsigned int>(index1);
-    unsigned int l2 = static_cast<unsigned int>(level2);
-    unsigned int i2 = static_cast<unsigned int>(index2);
     std::function<double(double)> func1;
     if (dx1) {
-      func1 = [&](double x) { return basis->evalDx(l1, i1, x); };
+      func1 = [&](double x) { return basis1->evalDx(level1, index1, x); };
     } else {
-      func1 = [&](double x) { return basis->eval(l1, i1, x); };
+      func1 = [&](double x) { return basis1->eval(level1, index1, x); };
     }
     std::function<double(double)> func2;
     if (dx2) {
-      func2 = [&](double x) { return basis->evalDx(l2, i2, x); };
+      func2 = [&](double x) { return basis2->evalDx(level2, index2, x); };
     } else {
-      func2 = [&](double x) { return basis->eval(l2, i2, x); };
+      func2 = [&](double x) { return basis2->eval(level2, index2, x); };
     }
 
     std::function<double(double)> func = [&](double x) { return func1(x) * func2(x); };
@@ -67,13 +80,13 @@ double ASBsplineScalarProducts::univariateScalarProduct(size_t level1, size_t in
       segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
       result += segmentIntegral;
     }
-
     innerProducts.insert(std::pair<asMatrixHashType, double>(hashKey, result));
     return result;
   }
 }
 
-sgpp::base::DataVector ASBsplineScalarProducts::nakBSplineSupport(size_t level, size_t index) {
+sgpp::base::DataVector NakBsplineScalarProducts::nakBSplineSupport(size_t level, size_t index,
+                                                                   size_t degree) {
   double indexD = static_cast<double>(index);
   double levelD = static_cast<double>(level);
   double pp1h = floor((static_cast<double>(degree) + 1.0) / 2.0);

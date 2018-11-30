@@ -7,6 +7,7 @@
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
@@ -23,14 +24,24 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * stores a sparse grid not a knot B-spline interpolant in the framework of a repsonse surface
+ */
 class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
  public:
+  /**
+   * Constructor
+   *
+   * @param objectiveFunc		objective Function
+   * @param gridType			type of the interpolants grid/basis
+   * @param degree			degree of the interpolants basis
+   */
   SparseGridResponseSurfaceNakBspline(
-      size_t dim, std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc,
+      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
       sgpp::base::GridType gridType, size_t degree = 3)
-      : ResponseSurface(dim), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
+      : ResponseSurface(), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
     initialize();
-  };
+  }
 
   /**
    * Destructor
@@ -42,21 +53,66 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    */
   void initialize();
 
+  /**
+   * creates a regualar sparse grid interpolant
+   * @param level	level of the regular sparse grid
+   */
   void createRegularResponseSurface(size_t level);
+
+  /**
+   * creates a surplus adaptive sparse grid inteprolant
+   * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
+   * @param initialLevel		first a regular grid of initialLevel is created. From this
+   * on it is adaptively refined
+   */
   void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel);
+
+  /**
+   * evaluates this response surface
+   * @param v	point to evaluate in
+   * @return	the evaluation
+   */
   double eval(sgpp::base::DataVector v);
+
+  /**
+   * evaluates the response surface and its gradient
+   * @param v			point to evaluate in
+   * @param gradient	reference to return the repsonse surfaces gradient evaluted in v
+   * @return 			the evaluation
+   */
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
- private:
-  std::shared_ptr<sgpp::optimization::WrapperScalarFunction> objectiveFunc;
-  sgpp::base::GridType gridType;
-  size_t degree;
-  size_t numDim;
-  std::unique_ptr<sgpp::base::Grid> grid;
-  std::unique_ptr<sgpp::base::SBasis> basis;
+  /**
+   * return the integral of the response surface
+   */
+  double getIntegral();
 
-  void refineSurplusAdaptive(size_t refinementsNum, sgpp::base::DataVector& alpha);
-  sgpp::base::DataVector calculateInterpolationCoefficients();
+ private:
+  // objective function
+  std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
+  // type of grid/basis
+  sgpp::base::GridType gridType;
+  // degree of the basis
+  size_t degree;
+  // number of dimensions
+  size_t numDim;
+  // the interpolation grid
+  std::unique_ptr<sgpp::base::Grid> grid;
+  // the interpolation basis
+  std::unique_ptr<sgpp::base::SBasis> basis;
+  // the interpolation coefficients
+  sgpp::base::DataVector coefficients;
+
+  /**
+   *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   */
+  void refineSurplusAdaptive(size_t refinementsNum);
+
+  /**
+   * calculates the interpolation coefficients on a given grid
+   */
+  void calculateInterpolationCoefficients();
 };
 
 }  // namespace optimization

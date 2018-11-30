@@ -22,70 +22,88 @@ namespace sgpp {
 namespace optimization {
 
 /**
- * Calculates and stores the scalar products of B-spline functions
+ * Calculates and stores the scalar products of not a knot B-spline functions
  */
-class ASBsplineScalarProducts {
+class NakBsplineScalarProducts {
  public:
   /**
    * Constructor
    *
-   * @param gridType          type of the grid for the interpolant
-   * @param degree            degree for the B-spline basis functions
+   * @param gridType1          	type of the first basis
+   * @param gridType2			type of the second basis
+   * @param degree1				degree of the firtst basis
+   * @param degree2 			degree of the second basis
+   * @param quadOrder			order for the quadrature
    */
-  ASBsplineScalarProducts(sgpp::base::GridType gridType, size_t numDim, size_t degree,
-                          size_t quadOrder)
-      : gridType(gridType), degree(degree), quadOrder(quadOrder) {
-    if (gridType == sgpp::base::GridType::NakBspline) {
-      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
-      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
-    } else {
-      throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
-    }
+  NakBsplineScalarProducts(sgpp::base::GridType gridType1, sgpp::base::GridType gridType2,
+                           size_t degree1, size_t degree2, size_t quadOrder)
+      : gridType1(gridType1),
+        gridType2(gridType2),
+        degree1(degree1),
+        degree2(degree2),
+        quadOrder(quadOrder) {
+    basis1 = initializeBasis(gridType1, degree1);
+    basis2 = initializeBasis(gridType2, degree2);
     base::GaussLegendreQuadRule1D gauss;
     gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   }
 
   /**
-   * calculates the one diensional integral \int f*g dx where f and g are B-spline basis functions
-   * or first derivatives of B-spline basis functions
-   *
-   * @param level1 level of the first B-spline
-   * @param index1 index of the first B-spline
-   * @param dx1 evaluate B-spline if False, evaluate d/dx B-spline if True
-   * @param level2 level of the second B-spline
-   * @param index2 index of the second B-spline
-   * @param coordinates coordinates for the Gauss quadrature
-   * @param weights weights for the Gauss quadrature
-   * @param dx2 evaluate B-spline if False, evaluate d/dx B-spline if True
-   *
-   * @return  integral (derivative of) first basis function * (derivative of) second basis function
+   * initializes a nak B spline basis according to gidType and degree
+   * @param gridType	type of the basis
+   * @param degree		degree of the basis
+   * @return 			the nak Bsplien basis
    */
-  double univariateScalarProduct(size_t level1, size_t index1, bool dx1, size_t level2,
-                                 size_t index2, bool dx2);
+  std::unique_ptr<sgpp::base::SBasis> initializeBasis(sgpp::base::GridType gridType, size_t degree);
 
   /**
-   * used to get the support segments of a b-splien basis functions. Needed for Gauss quadrature
+   * calculates the one dimensional integral \int f*g dx where f and g are B-spline basis
+   * functions or first derivatives of B-spline basis functions
+   *
+   * @param level1 	level of the first B-spline
+   * @param index1 	index of the first B-spline
+   * @param dx1 	evaluate B-spline if False, evaluate d/dx B-spline if True
+   * @param level2 	level of the second B-spline
+   * @param index2 	index of the second B-spline
+   * @param dx2 	evaluate B-spline if False, evaluate d/dx B-spline if True
+   *
+   * @return  integral (derivative of) first basis function * (derivative of) second basis
+   * function
+   */
+  double univariateScalarProduct(unsigned int level1, unsigned int index1, bool dx1,
+                                 unsigned int level2, unsigned int index2, bool dx2);
+
+  /**
+   * used to get the support segments of a not a knot b-spline basis functions.
    *
    * @param level	level of the B-spline basis function
    * @param index	index of the B-spline basis function
+   * @param degree	degree of the B-spline basis function
    *
-   * @return the indices of the segments of the B-spline basis functions support
+   * @return the indices of the segments of the not a knot B-spline basis functions support
    */
-  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index);
+  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index, size_t degree);
 
  private:
-  sgpp::base::GridType gridType;
-  size_t degree;
+  // type of first and second basis
+  sgpp::base::GridType gridType1;
+  sgpp::base::GridType gridType2;
+  // degrees of first and second basis
+  size_t degree1;
+  size_t degree2;
+  // order for the quadrature
   size_t quadOrder;
+  // quadrature coordinates
   sgpp::base::DataVector coordinates;
+  // quadrature weights
   sgpp::base::DataVector weights;
-  std::unique_ptr<sgpp::base::SBasis> basis;
+  // instances of first and second basis
+  std::unique_ptr<sgpp::base::SBasis> basis1;
+  std::unique_ptr<sgpp::base::SBasis> basis2;
+  // tuple used as hash to store scalar products in innerProducts
   typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
+  // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to
+  // calculated again if the same combination of indices, levels and dx is queried
   std::map<asMatrixHashType, double> innerProducts;
 };
 

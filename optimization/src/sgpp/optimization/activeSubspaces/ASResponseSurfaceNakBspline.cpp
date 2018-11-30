@@ -11,14 +11,17 @@ namespace optimization {
 void ASResponseSurfaceNakBspline::initialize() {
   activeDim = W1.cols();
   if (gridType == sgpp::base::GridType::NakBspline) {
-    grid = std::make_unique<sgpp::base::NakBsplineGrid>(activeDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+    grid = std::make_shared<sgpp::base::NakBsplineGrid>(activeDim, degree);
+    basis = std::make_shared<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    grid = std::make_unique<sgpp::base::NakBsplineBoundaryGrid>(activeDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+    grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(activeDim, degree);
+    basis = std::make_shared<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-    grid = std::make_unique<sgpp::base::NakBsplineModifiedGrid>(activeDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(activeDim, degree);
+    basis = std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+    grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(activeDim, degree);
+    basis = std::make_shared<sgpp::base::SNakBsplineExtendedBase>(degree);
   } else {
     throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
   }
@@ -57,10 +60,11 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints
       interpolationMatrix.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
           .solve(functionValues_Eigen);
 
-  sgpp::base::DataVector alpha = EigenToDataVector(alpha_Eigen);
-  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
-  interpolantGradient =
-      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+  coefficients = EigenToDataVector(alpha_Eigen);
+  interpolant =
+      std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_shared<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
@@ -73,10 +77,11 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
   if (W1.cols() == 1) {
     transformationfor1DActiveSubspace();
   }
-  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
-  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
-  interpolantGradient =
-      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+  calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+  interpolant =
+      std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_shared<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
 
   // Check interpolation property g(p) = f(pinvW1' * p) for all grid points p
   //  Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
@@ -107,16 +112,14 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
   if (W1.cols() == 1) {
     transformationfor1DActiveSubspace();
   }
-  sgpp::base::DataVector alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
-  interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
-  interpolantGradient =
-      std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+  calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
   while (grid->getSize() < maxNumGridPoints) {
-    this->refineSurplusAdaptive(refinementsNum, objectiveFunc, alpha);
-    interpolant = std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, alpha);
-    interpolantGradient =
-        std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(*grid, alpha);
+    this->refineSurplusAdaptive(refinementsNum, objectiveFunc);
   }
+  interpolant =
+      std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_shared<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
 }
 
 double ASResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {
@@ -150,18 +153,237 @@ double ASResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
   return interpolantGradient->eval(trans_v_DataVector, gradient);
 }
 
-// ----------------- auxiliary routines -----------
+double ASResponseSurfaceNakBspline::getMCIntegral(size_t numMCPoints, size_t numHistogramMCPoints,
+                                                  std::string pointStrategy) {
+  if (W1.cols() != 1) {
+    std::cerr << "ASResponseSurface::getMCIntegral currently supports only 1D active subspaces\n";
+    return -1;
+  }
+  /*
+  double integral = 0.0;
+    sgpp::base::DataVector points(numMCPoints + 1);
+    double delta = (rightBound1D - leftBound1D) / static_cast<double>(numMCPoints);
+    for (size_t i = 0; i < numMCPoints + 1; i++) {
+      points[i] = leftBound1D + static_cast<double>(i) * delta;
+    }
+    sgpp::base::DataVector weights(numMCPoints, 0.0);
 
-void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
-    size_t refinementsNum, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
-    sgpp::base::DataVector& alpha) {
-  sgpp::base::SurplusRefinementFunctor functor(alpha, refinementsNum);
-  grid->getGenerator().refine(functor);
-  alpha = calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+    Eigen::MatrixXd randomUnitPoints = Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints);
+    randomUnitPoints += Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints);
+    randomUnitPoints /= 2;
+    Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
+
+    for (size_t i = 0; i < numHistogramMCPoints; i++) {
+      for (size_t j = 0; j < numMCPoints; j++) {
+        if (randomPoints(i) >= points[j] && randomPoints(i) < points[j + 1]) {
+          weights[j]++;
+          break;
+        }
+      }
+    }
+    sgpp::base::DataVector numVec(numMCPoints, static_cast<double>(numHistogramMCPoints));
+    weights.componentwise_div(numVec);
+
+    sgpp::base::DataVector point(1, 0);
+    for (size_t j = 0; j < numMCPoints; j++) {
+      point[0] = (points[j] + points[j + 1]) / 2;
+      point[0] = (point[0] - leftBound1D) / (rightBound1D - leftBound1D);
+      //    std::cout << point[0] << " " << interpolant->eval(point) << " " << weights[j] << "\n";
+      integral += weights[j] * interpolant->eval(point);
+    }*/
+
+  // uniform points spread over the active subspace (without boundary points)
+  sgpp::base::DataVector points(numMCPoints);
+  double delta = (rightBound1D - leftBound1D) / static_cast<double>(numMCPoints);
+  for (size_t i = 0; i < numMCPoints; i++) {
+    points[i] = leftBound1D + (static_cast<double>(2 * i + 1) / 2.0) * delta;
+  }
+  sgpp::base::DataVector weights =
+      uniformIntervalHistogram(numHistogramMCPoints, points, delta, pointStrategy);
+  sgpp::base::DataVector numVec(points.getSize(), static_cast<double>(numHistogramMCPoints));
+  weights.componentwise_div(numVec);
+  double integral = 0.0;
+  sgpp::base::DataVector point(1, 0);
+  for (size_t j = 0; j < numMCPoints; j++) {
+    point[0] = (points[j] - leftBound1D) / (rightBound1D - leftBound1D);
+    //    std::cout << point[0] << " " << interpolant->eval(point) << " " << weights[j] << "\n";
+    integral += weights[j] * interpolant->eval(point);
+  }
+  return integral;
 }
 
-sgpp::base::DataVector
-ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
+double ASResponseSurfaceNakBspline::getContinuousIntegral(size_t level, size_t numHistogramMCPoints,
+                                                          std::string pointStrategy) {
+  if (W1.cols() != 1) {
+    std::cerr << "ASResponseSurface::getMCIntegral currently supports only 1D active subspaces\n";
+    return -1;
+  }
+  double integral = 0.0;
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+  std::shared_ptr<sgpp::base::Grid> quadGrid;
+  sgpp::base::DataVector quadCoefficients;
+  size_t quadDegree = 1;
+  sgpp::base::GridType quadGridType = sgpp::base::GridType::NakBsplineBoundary;
+  continuousIntervalQuadrature(level, numHistogramMCPoints, quadDegree, quadGridType, quadGrid,
+                               quadCoefficients, pointStrategy);
+
+  // ---------DEBUG-------
+  //  sgpp::optimization::InterpolantScalarFunction quadInt(*quadGrid, quadCoefficients);
+  //  sgpp::optimization::InterpolantScalarFunction Int(*grid, coefficients);
+  //  sgpp::base::DataVector pointi(1, 0.0);
+  //  size_t npi = 100;
+  //  sgpp::base::DataVector quadRes(npi + 1);
+  //  sgpp::base::DataVector Res(npi + 1);
+  //  for (size_t i = 0; i < npi + 1; i++) {
+  //    pointi[0] = static_cast<double>(i) / static_cast<double>(npi);
+  //    quadRes[i] = quadInt.eval(pointi);
+  //    Res[i] = Int.eval(pointi);
+  //  }
+  //  std::cout << "qRes:\n" << quadRes.toString() << "\n";
+  //  std::cout << "Res:\n" << Res.toString() << "\n";
+  // ------------
+
+  sgpp::base::GridStorage& quadGridStorage = quadGrid->getStorage();
+  size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
+  sgpp::optimization::NakBsplineScalarProducts scalarProducts(gridType, quadGridType, degree,
+                                                              quadDegree, quadOrder);
+  for (size_t k = 0; k < coefficients.getSize(); k++) {
+    for (size_t l = 0; l < quadCoefficients.getSize(); l++) {
+      sgpp::base::GridPoint& gpk = gridStorage.getPoint(k);
+      sgpp::base::GridPoint& gpl = quadGridStorage.getPoint(l);
+
+      unsigned int indexk = gpk.getIndex(0);
+      unsigned int levelk = gpk.getLevel(0);
+      unsigned int indexl = gpl.getIndex(0);
+      unsigned int levell = gpl.getLevel(0);
+      integral +=
+          coefficients[k] * quadCoefficients[l] *
+          scalarProducts.univariateScalarProduct(levelk, indexk, false, levell, indexl, false);
+    }
+  }
+  return integral * (rightBound1D - leftBound1D);
+}
+
+// ----------------- auxiliary routines -----------
+sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
+    size_t numHistogramMCPoints, sgpp::base::DataVector points, double delta,
+    std::string pointStrategy) {
+  sgpp::base::DataVector weights(points.getSize());
+  Eigen::MatrixXd randomUnitPoints(W1.rows(), numHistogramMCPoints);
+
+  if (pointStrategy == "MC") {
+    // random Monte Carlo points in the unit hypercube
+    randomUnitPoints = (Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints) +
+                        Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints)) /
+                       2;
+  } else if (pointStrategy == "Halton") {
+    // Quasi Monte Carlo with Halton Sequence in the unit hypercube
+    // ( Wikipedia: "Halton sequence works best up to ~ 6 dimensions, then Sobol sequence
+    // performs better")
+    int* haltonsequence = new int[W1.rows()];
+    for (int i = 0; i < W1.rows(); i++) {
+      haltonsequence[i] = sgpp::optimization::prime(i + 1);
+    }
+    double* haltonPoint;
+    for (size_t j = 0; j < numHistogramMCPoints; j++) {
+      haltonPoint = sgpp::optimization::halton_base(static_cast<int>(j),
+                                                    static_cast<int>(W1.rows()), haltonsequence);
+      for (int i = 0; i < W1.rows(); i++) {
+        randomUnitPoints(i, j) = haltonPoint[i];
+      }
+    }
+    delete[] haltonsequence;
+  } else if (pointStrategy == "Sobol") {
+    // Quasi Monte Carlo with Sobol sequence in the unit hypercube
+    double* sobolPoint = new double[W1.cols()];
+    // ToDo (rehmemk) Is this seed really good? For example simple2D seed 12345 was much better !?
+    long long int seed = sgpp::optimization::tau_sobol(static_cast<int>(W1.cols()));
+    for (size_t j = 0; j < numHistogramMCPoints; j++) {
+      sgpp::optimization::i8_sobol(static_cast<int>(W1.rows()), &seed, sobolPoint);
+      for (int i = 0; i < W1.rows(); i++) {
+        randomUnitPoints(i, j) = sobolPoint[i];
+      }
+    }
+    delete[] sobolPoint;
+  } else {
+    std::cerr << "ASResponseSurfaceNakBspline: pointStrategy not supported!\n";
+  }
+
+  Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
+
+  // the weight for each point p_i is the proportion of all random points in point p_i's bucket
+  //  when transformed  to the active subspace (by multiplication with W1)
+  // p_i's bucket is [(p_{i-1}+p_i)/2, (p_i,p_{i+1})/2]
+  double hdelta = delta / 2.0;
+
+  for (size_t i = 0; i < numHistogramMCPoints; i++) {
+    for (size_t j = 0; j < points.getSize(); j++) {
+      if ((randomPoints(i) >= (points[j] - hdelta)) && (randomPoints(i) < (points[j] + hdelta))) {
+        weights[j]++;
+        break;
+      }
+    }
+  }
+
+  //  std::cout << "buckets: \n";
+  //  for (size_t j = 0; j < points.getSize(); j++) {
+  //    std::cout << points[j] - hdelta << " " << points[j] + hdelta << "\n";
+  //  }
+
+  //  std::cout << "delta:" << delta << "\n";
+  //  std::cout << "points:\n" << points.toString() << "\n";
+  //  // std::cout << "random Points:\n" << randomPoints << "\n";
+  //  std::cout << "weights\n" << weights.toString() << "\n";
+
+  return weights;
+}
+
+void ASResponseSurfaceNakBspline::continuousIntervalQuadrature(
+    size_t level, size_t numHistogramMCPoints, size_t quadDegree, sgpp::base::GridType quadGridType,
+    std::shared_ptr<sgpp::base::Grid>& quadGrid, sgpp::base::DataVector& quadCoefficients,
+    std::string pointStrategy) {
+  if (W1.cols() != 1) {
+    std::cerr << "ASResponseSurface::continuousIntervalQuadrature currently supports only 1D "
+                 "active subspaces\n";
+    return;
+  }
+  size_t dim = 1;
+
+  if (quadGridType == sgpp::base::GridType::NakBsplineBoundary) {
+    quadGrid.reset(new sgpp::base::NakBsplineBoundaryGrid(dim, quadDegree));
+  } else {
+    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+  }
+  quadGrid->getGenerator().regular(level);
+  sgpp::base::GridStorage& quadGridStorage = quadGrid->getStorage();
+  sgpp::base::DataVector points(quadGridStorage.getSize());
+  for (size_t i = 0; i < quadGridStorage.getSize(); i++) {
+    sgpp::base::GridPoint& gp = quadGridStorage.getPoint(i);
+    points[i] = leftBound1D + (rightBound1D - leftBound1D) * gp.getStandardCoordinate(0);
+  }
+  double delta = abs((rightBound1D - leftBound1D) / std::pow(2, level));
+  sgpp::base::DataVector weights =
+      uniformIntervalHistogram(numHistogramMCPoints, points, delta, pointStrategy);
+  sgpp::base::DataVector numVec(points.getSize(),
+                                delta * static_cast<double>(numHistogramMCPoints));
+  weights.componentwise_div(numVec);
+
+  sgpp::optimization::HierarchisationSLE hierSLE(*quadGrid);
+  sgpp::optimization::sle_solver::Armadillo sleSolver;
+  if (!sleSolver.solve(hierSLE, weights, quadCoefficients)) {
+    std::cout << "ASMatrixNakBspline: Solving failed.\n";
+    return;
+  }
+}
+
+void ASResponseSurfaceNakBspline::refineSurplusAdaptive(
+    size_t refinementsNum, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
+  sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
+  grid->getGenerator().refine(functor);
+  calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
+}
+
+void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
     std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
   Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -200,8 +422,7 @@ ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse
 
   Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
   Eigen::VectorXd alpha_Eigen = dec.solve(functionValues);
-  sgpp::base::DataVector alpha = EigenToDataVector(alpha_Eigen);
-  return alpha;
+  coefficients = EigenToDataVector(alpha_Eigen);
 }
 
 Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension) {
@@ -234,8 +455,8 @@ Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension)
 
 void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace() {
   // find maximum value "rightBound" of W1^T * x for all corners x of [0,1]^d,
-  // then set up an interpolant on [0,rightBound]
-  Eigen::MatrixXd corners = hypercubeVertices(dim);
+  // then set up an interpolant on [leftBound,rightBound]
+  Eigen::MatrixXd corners = hypercubeVertices(W1.rows());
   rightBound1D = std::numeric_limits<double>::lowest();
   leftBound1D = std::numeric_limits<double>::max();
   for (unsigned int j = 0; j < corners.cols(); j++) {
@@ -243,6 +464,8 @@ void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace() {
     rightBound1D = tempBound > rightBound1D ? tempBound : rightBound1D;
     leftBound1D = tempBound < leftBound1D ? tempBound : leftBound1D;
   }
+
+  std::cout << "left Bound: " << leftBound1D << " right Bound: " << rightBound1D << "\n";
 }
 
 }  // namespace optimization

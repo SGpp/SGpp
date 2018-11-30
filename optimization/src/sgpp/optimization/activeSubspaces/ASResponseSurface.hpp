@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-//#ifdef USE_EIGEN
+// #ifdef USE_EIGEN
 
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 
@@ -13,24 +13,42 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * Reduced response surface on the active subspace of some objective function
+ */
 class ASResponseSurface : public ResponseSurface {
  public:
-  ASResponseSurface(size_t dim, Eigen::MatrixXd W1) : ResponseSurface(dim), W1(W1){};
+  /**
+   * Constructor
+   *
+   * @param W1	the eigenvectors defining the active subspace
+   */
+  explicit ASResponseSurface(Eigen::MatrixXd W1) : ResponseSurface(), W1(W1) {}
 
   /**
    * Destructor
    */
   virtual ~ASResponseSurface() {}
 
+  /**
+   * create a regular interpolant by determining the coefficients through regression with the
+   * evaluationPoints and the according functionValues. These are usually the ones calculated while
+   * detecting the active subspace
+   *
+   * @param evaluationPoints	set of points
+   * @param functionValues		the objective function evaluations at evaluationPoints
+   * @param level				level of the regular interpolant
+   */
   virtual void createRegularReducedSurfaceFromDetectionPoints(
       sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues,
       size_t level) = 0;
 
  protected:
+  // the eigenvectors defining the active subspace
   Eigen::MatrixXd W1;
 };
 
 }  // namespace optimization
 }  // namespace sgpp
 
-//#endif /* USE_EIGEN */
+// #endif /* USE_EIGEN */
