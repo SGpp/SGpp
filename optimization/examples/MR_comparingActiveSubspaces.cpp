@@ -181,12 +181,11 @@ int main() {
   //      objectiveFuncInstance.getObjectiveFunctionGradient();
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
 
-  size_t numDim = objectiveFunc->getNumberOfParameters();
   for (size_t level = 1; level < 5; level++) {
     // regular sparse grid interpolant
     auto regularResponseSurf =
-        std::make_shared<sgpp::optimization::SparseGridResponseSurfaceNakBspline>(
-            numDim, objectiveFunc, gridType, degree);
+        std::make_shared<sgpp::optimization::SparseGridResponseSurfaceNakBspline>(objectiveFunc,
+                                                                                  gridType, degree);
     regularResponseSurf->createRegularResponseSurface(level);
     size_t numberOfPointsAccordingToLevel = regularResponseSurf->getSize();
     std::cout << "num points: " << numberOfPointsAccordingToLevel << std::endl;
@@ -195,8 +194,8 @@ int main() {
 
     // surplus adaptive sparse grid interpolant
     auto adaptiveResponseSurf =
-        std::make_shared<sgpp::optimization::SparseGridResponseSurfaceNakBspline>(
-            numDim, objectiveFunc, gridType, degree);
+        std::make_shared<sgpp::optimization::SparseGridResponseSurfaceNakBspline>(objectiveFunc,
+                                                                                  gridType, degree);
     adaptiveResponseSurf->createSurplusAdaptiveResponseSurface(numberOfPointsAccordingToLevel, 1);
     std::cout << "Ad   | l2 err: " << adaptiveResponseSurf->l2Error(objectiveFunc, numMCErrorPoints)
               << std::endl;
@@ -213,8 +212,8 @@ int main() {
     sgpp::base::DataMatrix evaluationPoints_adaptiveBspline = ASM_Bspline.getEvaluationPoints();
     sgpp::base::DataVector functionValues_adaptiveBspline = ASM_Bspline.getFunctionValues();
     auto responseSurf_regularBspline =
-        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
-            numDim, W1_adaptiveBspline, gridType, degree);
+        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
+                                                                          gridType, degree);
     responseSurf_regularBspline->createRegularReducedSurfaceFromDetectionPoints(
         evaluationPoints_adaptiveBspline, functionValues_adaptiveBspline, level);
     std::cout << "B    | l2 err: "
@@ -234,8 +233,8 @@ int main() {
     size_t maxNumGridPoints = functionValues_adaptiveBspline.getSize();
     size_t initialLevel = 1;
     auto responseSurf_regularPinvBspline =
-        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
-            numDim, W1_adaptiveBspline, gridType, degree);
+        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
+                                                                          gridType, degree);
     responseSurf_regularPinvBspline->createRegularReducedSurfaceWithPseudoInverse(level,
                                                                                   objectiveFunc);
     std::cout << "B r  | l2 err: "
@@ -244,8 +243,8 @@ int main() {
 
     // adaptive B-spline matrix - regular Bspline response surface
     auto responseSurf_adaptivePinvBspline =
-        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(
-            numDim, W1_adaptiveBspline, gridType, degree);
+        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
+                                                                          gridType, degree);
     responseSurf_adaptivePinvBspline->createAdaptiveReducedSurfaceWithPseudoInverse(
         maxNumGridPoints, objectiveFunc, initialLevel);
     std::cout << "B a  | l2 err: "
@@ -263,8 +262,8 @@ int main() {
     sgpp::base::DataMatrix evaluationPoints_gradientMCFD = ASM_GradientMCFD.getEvaluationPoints();
     sgpp::base::DataVector functionValues_gradientMCFD = ASM_GradientMCFD.getFunctionValues();
     auto responseSurf_gradientMCFD =
-        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(numDim, W1_gradientMCFD,
-                                                                          gridType, degree);
+        std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_gradientMCFD, gridType,
+                                                                          degree);
     responseSurf_gradientMCFD->createRegularReducedSurfaceFromDetectionPoints(
         evaluationPoints_gradientMCFD, functionValues_gradientMCFD, level);
     std::cout

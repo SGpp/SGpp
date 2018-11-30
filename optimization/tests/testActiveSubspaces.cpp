@@ -8,7 +8,6 @@
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
-#include <sgpp/optimization/activeSubspaces/ASBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
@@ -16,6 +15,7 @@
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include "../src/sgpp/optimization/activeSubspaces/NakBsplineScalarProducts.hpp"
 
 #include <functional>
 
@@ -142,7 +142,8 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
 
   // prepare scalar products
   size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0));
-  sgpp::optimization::ASBsplineScalarProducts scalarProducts(gridType, numDim, degree, quadOrder);
+  sgpp::optimization::NakBsplineScalarProducts scalarProducts(gridType, gridType, degree, degree,
+                                                              quadOrder);
 
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
       numDim, objectiveFunctionScalarProduct);
@@ -162,12 +163,12 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   double result_fg = 0.0;
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     sgpp::base::GridPoint& basisI = gridStorage.getPoint(i);
-    size_t levelI = basisI.getLevel(0);
-    size_t indexI = basisI.getIndex(0);
+    unsigned int levelI = basisI.getLevel(0);
+    unsigned int indexI = basisI.getIndex(0);
     for (size_t j = 0; j < gridStorage.getSize(); j++) {
       sgpp::base::GridPoint& basisJ = gridStorage.getPoint(j);
-      size_t levelJ = basisJ.getLevel(0);
-      size_t indexJ = basisJ.getIndex(0);
+      unsigned int levelJ = basisJ.getLevel(0);
+      unsigned int indexJ = basisJ.getIndex(0);
       result_ff +=
           alpha[i] * alpha[j] *
           scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
@@ -261,7 +262,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   size_t n = 1;
   Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
 
-  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(numDim, W1, gridType, degree);
+  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
   size_t responseLevel = 3;

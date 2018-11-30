@@ -92,7 +92,7 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType='adaptive', numErr
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
     
-    sparseResponseSurf = pysgpp.SparseGridResponseSurfaceNakBspline(numDim, f, \
+    sparseResponseSurf = pysgpp.SparseGridResponseSurfaceNakBspline(f, \
                                                                     pysgpp.Grid.stringToGridType(gridType), degree)
     if responseType == 'adaptive':
         initialLevel = 1

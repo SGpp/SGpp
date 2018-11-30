@@ -79,19 +79,18 @@ double wing(sgpp::base::DataVector v) {
 }
 
 double f(sgpp::base::DataVector v) {
-  //  return exp(0.7 * v[0] + 0.3 * v[1]);
+  return exp(0.7 * v[0] + 0.3 * v[1]);
   //  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
   //  return exp(5 * v[0] + v[1]);
   //  return sin(v[0] + v[1]) * cos(v[0] + v[1]);
-  return wing(v);
+  //  return wing(v);
+  //  return exp(0.5 * v[0] + v[1]) * v[2] + v[3] * v[4] * v[5] + v[6] - v[7];
 }
 double df(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) {
-  gradient.resizeZero(4);
-  gradient[0] = cos(100 * v[0] + 1 * v[1]) * 100;
-  gradient[1] = cos(100 * v[0] + 1 * v[1]) * 10;
-  gradient[2] = cos(100 * v[0] + 1 * v[1]) * 1;
-  gradient[3] = cos(100 * v[0] + 1 * v[1]) * 0;
-  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
+  gradient.resizeZero(2);
+  gradient[0] = 0.7 * exp(2 * (0.7 * v[0] + 0.3 * v[1]));
+  gradient[1] = 0.3 * exp(2 * (0.7 * v[0] + 0.3 * v[1]));
+  return exp(0.7 * v[0] + 0.3 * v[1]);
 }
 
 int main(int argc, char* argv[]) {
@@ -101,20 +100,17 @@ int main(int argc, char* argv[]) {
   size_t degree = 3;
   size_t maxLevel = 9;
   size_t maxNumPoints = 100;
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineModified;
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
   initialize(argc, argv, adaptive, print, degree, maxLevel, maxNumPoints, gridType);
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  size_t numDim = 10;
-  // active subspace specifier
-  size_t n = 1;
-
   sgpp::base::SGppStopwatch watch;
+  size_t numDim = 2;
 
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
   auto objectiveFuncGradient =
       std::make_shared<sgpp::optimization::WrapperScalarFunctionGradient>(numDim, df);
   sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
-  size_t maxNumGridPointsMatrix = 700;
+  size_t maxNumGridPointsMatrix = 200;
   size_t initialLevel = 1;
   watch.start();
   ASM.buildAdaptiveInterpolant(maxNumGridPointsMatrix, initialLevel, 3);
@@ -122,59 +118,40 @@ int main(int argc, char* argv[]) {
   watch.start();
   ASM.createMatrixGauss();
   std::cout << watch.stop() << "s\n";
-  ASM.evDecompositionForSymmetricMatrices();
+  //  std::cout << "l2 interpol error: " << ASM.l2InterpolationError(1000) << "\n";
+  //  std::cout << "l2 gradient error:\n"
+  //            << ASM.l2InterpolationGradientError(objectiveFuncGradient, 1000).toString() << "\n";
 
+  ASM.evDecompositionForSymmetricMatrices();
+  // active subspace specifier
+  size_t n = 1;
   Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
   Eigen::MatrixXd eigenvectors = ASM.getEigenvectors();
   Eigen::MatrixXd W1 = ASM.getTransformationMatrix(n);
+  Eigen::MatrixXd C = ASM.getMatrix();
   if (print) {
-    std::cout << "EVal:\n" << eigenvalues << std::endl;
-    std::cout << "EVec:\n" << eigenvectors << std::endl;
-    std::cout << "W1\n" << W1 << std::endl;
-    std::cout << "-----------------------------" << std::endl;
+    std::cout << "EVal:\n" << eigenvalues << "\n";
+    std::cout << "EVec:\n" << eigenvectors << "\n";
+    std::cout << "W1\n" << W1 << "\n";
+    std::cout << "C\n" << C << "\n";
+    std::cout << "-----------------------------\n";
   }
 
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
 
   for (size_t responseLevel = 1; responseLevel <= maxLevel; responseLevel++) {
-    sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(numDim, W1, gridType, degree);
-    //  size_t maxNumGridPointsResponseSurface = 500;
-    //  responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(maxNumGridPointsResponseSurface,
-    //                                                             objectiveFunc, initialLevel);
-    responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, objectiveFunc);
+    sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
+    size_t maxNumGridPointsResponseSurface = 500;
+    responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(maxNumGridPointsResponseSurface,
+                                                               objectiveFunc, initialLevel);
+    //    responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, objectiveFunc);
 
-    std::cout << "l " << responseLevel << " " << responseSurf.getSize()
-              << " pts err: " << responseSurf.l2Error(objectiveFunc, 3000) << "\n";
     //    sgpp::base::DataVector v(numDim, 1);
     //    double responseSurfEval = responseSurf.eval(v);
     //    std::cout << "f(v)  = " << f(v) << std::endl;
     //    std::cout << "rI(v) = " << responseSurfEval << std::endl;
   }
 
-  //  sgpp::base::DataVector v(numDim, 0.3371);
-  //  double responseSurfEval = responseSurf.eval(v);
-  //  std::cout << "f(v)  = " << f(v) << std::endl;
-  //  std::cout << "rI(v) = " << responseSurfEval << std::endl;
-
-  //  std::cout << "--------- MC ---------" << std::endl;
-  //  size_t numMCpoints = 100;
-  //  sgpp::optimization::ASMatrixGradientMC ASM_GradientMC(objectiveFunc);
-  //  ASM_GradientMC.createMatrixMonteCarlo(numMCpoints, objectiveFuncGradient);
-  //  ASM_GradientMC.evDecompositionForSymmetricMatrices();
-  //  Eigen::VectorXd eigenvalues_gradientMC = ASM_GradientMC.getEigenvalues();
-  //  Eigen::MatrixXd eigenvectors_gradientMC = ASM_GradientMC.getEigenvectors();
-  //  Eigen::MatrixXd W1_gradientMC = ASM_GradientMC.getTransformationMatrix(n);
-  //  std::cout << "EVal\n" << eigenvalues_gradientMC << std::endl;
-  //  std::cout << "EVec\n" << eigenvectors_gradientMC << std::endl;
-  //  std::cout << "W1\n" << W1_gradientMC << std::endl;
-  //  sgpp::base::DataMatrix evaluationPoints_gradientMC = ASM_GradientMC.getEvaluationPoints();
-  //  sgpp::base::DataVector functionValues_gradientMC = ASM_GradientMC.getFunctionValues();
-  //  auto responseSurf_gradientMC =
-  //  std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(dim,
-  //      W1_gradientMC, gridType, degree);
-  //  responseSurf_gradientMC->createAdaptiveReducedSurfaceWithPseudoInverse(
-  //      maxNumGridPointsResponseSurface, objectiveFunc, initialLevel);
-  //  std::cout << "err: " << responseSurf_gradientMC->l2Error(objectiveFunc) << std::endl;
   return 0;
 }
