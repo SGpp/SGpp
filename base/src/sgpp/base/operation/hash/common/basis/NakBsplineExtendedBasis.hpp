@@ -268,7 +268,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
       case 5:
         if (l == 1) {
           // l = 1, i = 1
-          return 1.0;
+          return 0.0;
         } else if (l == 2) {
           if (i == 1) {
             // l = 2, i = 1
@@ -327,8 +327,139 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @return      integral of basis function
    */
   inline double getIntegral(LT l, IT i) {
-    std::cerr << "NakBsplineExtendedBasis: getIntegral not implemented\n";
-    return -1;
+    size_t degree = getDegree();
+    if ((degree != 1) && (degree != 3) && (degree != 5)) {
+      throw std::runtime_error(
+          "NakBsplineExtended: only B spline degrees 1, 3 and 5 are "
+          "supported.");
+    }
+
+    const IT hInv = static_cast<IT>(1) << l;
+    switch (getDegree()) {
+        // Extension coefficients are left =[2, -1], right =[-1,2]
+        // Only the ones corresponding to B-splines which are in the basis are used, i.e. indices
+        // 1,end-1
+
+      case 1:
+        if (l == 1) {
+          // l = 1, i = 1
+          return 1.0;
+        } else {
+          if (i == 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   2 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == hInv - 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   2 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else {
+            return notAKnotBsplineBasis.getIntegral(l, i);
+          }
+        }
+
+        // Constant on level 1
+        // Lagrange Polynomials on level 2
+        // Extended B-splines from level 3 on.
+
+        // Extension coefficients are left =[5, -10, 10, -4], right =[-4,10,-10,5]
+        // Only the ones corresponding to B-splines which are in the basis are used, i.e. indices
+        // 1,3,end-3,end-1
+      case 3:
+        if (l == 1) {
+          // l = 1, i = 1
+          return 1.0;
+        } else if (l == 2) {
+          if (i == 1) {
+            // l = 2, i = 1
+            return 2.0 / 3.0;
+          } else {
+            // l = 2, i = 3
+            return 2.0 / 3.0;
+          }
+
+        } else {
+          if (i == 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   5 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == 3) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   10 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == hInv - 3) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   10 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else if (i == hInv - 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   5 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else {
+            return notAKnotBsplineBasis.getIntegral(l, i);
+          }
+        }
+
+        // Constant on level 1
+        // Lagrange Polynomials on level 2
+        // Extended B-splines from level 3 on.
+
+        // Extension coefficients are left =[8,-28,42,-35,20,-6], right =[-6,20,-35,42,-28,8] on
+        // level 3 and left = [8,-28,56,-70,56,-21], right = [-21,56,-70,56,-28,8] on level >= 4
+        // Only the ones corresponding to B-splines which are in the basis are used, i.e. indices
+        // 1,3,5,end-5,end-3,end-1
+      case 5:
+        if (l == 1) {
+          // l = 1, i = 1
+          return 1.0;
+        } else if (l == 2) {
+          if (i == 1) {
+            // l = 2, i = 1
+            return 2.0 / 3.0;
+          } else {
+            // l = 2, i = 3
+            return 2.0 / 3.0;
+          }
+
+        } else if (l == 3) {
+          if (i == 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   8 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == 3) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   42 * notAKnotBsplineBasis.getIntegral(l, 0) +
+                   20 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else if (i == 5) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   20 * notAKnotBsplineBasis.getIntegral(l, 0) +
+                   42 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else if (i == 7) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   8 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else {
+            return notAKnotBsplineBasis.getIntegral(l, i);
+          }
+        } else {
+          if (i == 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   8 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == 3) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   56 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == 5) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   56 * notAKnotBsplineBasis.getIntegral(l, 0);
+          } else if (i == hInv - 5) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   56 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else if (i == hInv - 3) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   56 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else if (i == hInv - 1) {
+            return notAKnotBsplineBasis.getIntegral(l, i) +
+                   8 * notAKnotBsplineBasis.getIntegral(l, hInv);
+          } else {
+            return notAKnotBsplineBasis.getIntegral(l, i);
+          }
+        }
+
+      default:
+        return 0.0;
+    }
   }
 
   /**

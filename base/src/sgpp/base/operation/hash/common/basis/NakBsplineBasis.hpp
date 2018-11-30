@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -1879,9 +1880,59 @@ class NakBsplineBasis : public Basis<LT, IT> {
     }
   }
 
-  double getIntegral(LT level, IT index) override {
-    std::cerr << "NakBsplineBasis: Integral not implemented" << std::endl;
-    return -1;
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      integral of basis function
+   */
+  inline double getIntegral(LT l, IT i) {
+    size_t degree = getDegree();
+    if ((degree != 1) && (degree != 3) && (degree != 5)) {
+      throw std::runtime_error(
+          "NakBsplineModified: only B spline degrees 1, 3 and 5 are "
+          "supported.");
+    }
+    size_t quadOrder = degree + 1;
+    base::DataVector quadCoordinates, quadWeights;
+    base::GaussLegendreQuadRule1D gauss;
+
+    const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
+    const size_t hInv = 1 << l;             // = 2^lid
+    const double hik = 1.0 / static_cast<double>(hInv);
+    double offset = (i - static_cast<double>(pp1h)) * hik;
+
+    if (degree == 3) {
+      if (i == 3) offset -= hik;
+    } else if (degree == 5) {
+      if (i == 5) offset -= 2 * hik;
+    }
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
+    // start and stop identify the segments on which the spline is nonzero
+    size_t start = 0, stop = 0;
+    start = ((i > pp1h) ? 0 : (pp1h - i));
+    stop = std::min(degree, hInv + pp1h - i - 1);
+    // nak special cases
+    if (degree == 3) {
+      if ((i == 3) || (i == hInv - 3)) stop += 1;
+    } else if (degree == 5) {
+      if ((i == 5) || (i == hInv - 5)) stop += 2;
+    }
+    if (l == 2) {
+      start = 1;
+      stop = 4;
+      offset = -0.25;
+    }
+    if ((degree == 5) && (l == 3)) {
+      start = 1;
+      stop = 8;
+      offset = -0.125;
+    }
+
+    double temp_res =
+        integrateBspline(l, i, start, stop, offset, hik, quadCoordinates, quadWeights);
+    double integral = temp_res * hik;
+
+    return integral;
   }
 
   /**
@@ -1892,6 +1943,37 @@ class NakBsplineBasis : public Basis<LT, IT> {
  protected:
   /// B-spline basis for B-spline evaluation
   BsplineBasis<LT, IT> bsplineBasis;
+
+ private:
+  /**
+   * integrate one basis function
+   *
+   * @param l				level
+   * @param i				index
+   * @param start			index for the supports first segment (usually 0)
+   * @param stop			index for the supports last segment (usually degree)
+   * @param offset			left point of the support
+   * @param scaling			size of one support segment
+   * @param quadCoordinates	the quadrature points
+   * @param quadWeights		the quadrature weights
+   *
+   * @return integral
+   */
+  double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double hik,
+                          base::DataVector quadCoordinates, base::DataVector quadWeights) {
+    double temp_res = 0.0;
+    // loop over the segments the B-spline is defined on
+    for (size_t n = start; n <= stop; n++) {
+      // loop over quadrature points
+      for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
+        // transform  the quadrature points to the segment on which the Bspline is
+        // evaluated
+        const double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
+        temp_res += quadWeights[c] * this->eval(l, i, x);
+      }
+    }
+    return temp_res;
+  }
 };
 
 // default type-def (unsigned int for level and index)

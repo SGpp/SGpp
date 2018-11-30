@@ -478,7 +478,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
-          "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
+          "NakBsplineModified: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
     size_t quadOrder = degree + 1;
@@ -624,6 +624,20 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   NakBsplineBasis<LT, IT> notAKnotBsplineBasis;
 
  private:
+  /**
+   * integrate one basis function
+   *
+   * @param l				level
+   * @param i				index
+   * @param start			index for the supports first segment (usually 0)
+   * @param stop			index for the supports last segment (usually degree)
+   * @param offset			left point of the support
+   * @param scaling			size of one support segment
+   * @param quadCoordinates	the quadrature points
+   * @param quadWeights		the quadrature weights
+   *
+   * @return integral
+   */
   double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double scaling,
                           base::DataVector quadCoordinates, base::DataVector quadWeights) {
     double temp_res = 0.0;
@@ -634,8 +648,6 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated
         const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
-        if (this->eval(l, i, x) == 0) {
-        }
         temp_res += quadWeights[c] * this->eval(l, i, x);
       }
     }
