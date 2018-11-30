@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-//#ifdef USE_EIGEN
+// #ifdef USE_EIGEN
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
@@ -29,7 +29,7 @@ class ASMatrix {
    *
    * @param objectiveFunc the objective function
    */
-  ASMatrix(std::shared_ptr<ScalarFunction> objectiveFunc)
+  explicit ASMatrix(std::shared_ptr<ScalarFunction> objectiveFunc)
       : objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
 
   /**
@@ -52,11 +52,11 @@ class ASMatrix {
    */
   void evDecompositionForSymmetricMatrices();
 
-  Eigen::VectorXd getEigenvalues() { return eigenvalues; };
-  sgpp::base::DataVector getEigenvaluesDataVector() { return EigenToDataVector(eigenvalues); };
+  Eigen::VectorXd getEigenvalues() { return eigenvalues; }
+  sgpp::base::DataVector getEigenvaluesDataVector() { return EigenToDataVector(eigenvalues); }
 
-  Eigen::MatrixXd getEigenvectors() { return W; };
-  sgpp::base::DataMatrix getEigenvectorsDataMatrix() { return EigenToDataMatrix(W); };
+  Eigen::MatrixXd getEigenvectors() { return W; }
+  sgpp::base::DataMatrix getEigenvectorsDataMatrix() { return EigenToDataMatrix(W); }
 
   sgpp::base::DataMatrix getEvaluationPoints() { return evaluationPoints; }
 
@@ -64,22 +64,21 @@ class ASMatrix {
 
   /**
    * The Matrix W_1, containing the n last columns of W, spans the active subset
+   * (Eigen sorts the eigenvectors in v increasing)
    *
    * @param n active subspace indicator (active variables: x_n,\dots , x_D
    * @return matrix W1
    */
-  //  Eigen::MatrixXd getTransformationMatrix(size_t n) { return W.block(0, n, W.cols(), numDim -
-  //  n); };
   Eigen::MatrixXd getTransformationMatrix(size_t n) {
     return W.block(0, W.cols() - n, W.rows(), n);
-  };
+  }
   sgpp::base::DataMatrix getTransformationMatrixDataMatrix(size_t n) {
-    Eigen::MatrixXd W1 = W.block(0, W.cols() - n, W.rows(), n);
+    Eigen::MatrixXd W1 = getTransformationMatrix(n);
     return EigenToDataMatrix(W1);
-  };
+  }
 
   Eigen::MatrixXd getMatrix() { return C; }
-  sgpp::base::DataMatrix getMatrixDataMatrix() { return EigenToDataMatrix(C); };
+  sgpp::base::DataMatrix getMatrixDataMatrix() { return EigenToDataMatrix(C); }
 
   void setMatrix(Eigen::MatrixXd newC);
 
@@ -103,4 +102,4 @@ class ASMatrix {
 }  // namespace optimization
 }  // namespace sgpp
 
-//#endif /* USE_EIGEN */
+// #endif /* USE_EIGEN */

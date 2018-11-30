@@ -38,6 +38,14 @@ sgpp::base::DataVector EigenToDataVector(Eigen::VectorXd e);
  */
 sgpp::base::DataMatrix EigenToDataMatrix(Eigen::MatrixXd m);
 
+/**
+ * converts a SG++ DataMatrix to an Eigen::MatrixXd
+ *
+ * @param m SG++ DataMatrix containing the elements of m
+ * @return  Eigen library matrix
+ */
+sgpp::base::DataMatrix DataMatrixToEigen(Eigen::MatrixXd m);
+
 }  // namespace optimization
 }  // namespace sgpp
 

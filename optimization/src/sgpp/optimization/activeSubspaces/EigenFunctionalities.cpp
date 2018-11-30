@@ -32,6 +32,17 @@ sgpp::base::DataMatrix EigenToDataMatrix(Eigen::MatrixXd m) {
   return d;
 }
 
+// This too is inefficient!
+Eigen::MatrixXd DataMatrixToEigen(sgpp::base::DataMatrix d) {
+  Eigen::MatrixXd m(d.getNrows(), d.getNcols());
+  for (size_t i = 0; i < d.getNrows(); i++) {
+    for (size_t j = 0; j < d.getNcols(); j++) {
+      m(i, j) = d.get(i, j);
+    }
+  }
+  return m;
+}
+
 }  // namespace optimization
 }  // namespace sgpp
 
