@@ -505,7 +505,12 @@ class HashGridStorage {
       return getPointCoordinate(seq, d);
     } else {
       HashGridPoint& gp = getPoint(seq);
-      return getUnitCoordinate(gp, d);
+      double bbox_point = getCoordinate(gp, d);
+      if (bUseStretching) {
+        return stretching->transformPointToUnitCube(d, bbox_point);
+      } else {
+        return boundingBox->transformPointToUnitCube(d, bbox_point);
+      }
     }
   }
 
