@@ -21,6 +21,7 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 
@@ -36,12 +37,13 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineExtended.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 
 #include <cstring>
-#include "../../../../../base/src/sgpp/base/grid/type/NakBsplineModifiedGrid.hpp"
 #include "hash/OperationMultipleHierarchisationNakBsplineModified.hpp"
 
 namespace sgpp {
@@ -67,9 +69,15 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return new optimization::OperationMultipleHierarchisationBsplineBoundary(
         dynamic_cast<base::BsplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::NakBspline) {
+    return new optimization::OperationMultipleHierarchisationNakBspline(
+        dynamic_cast<base::NakBsplineGrid&>(grid));
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new optimization::OperationMultipleHierarchisationNakBsplineBoundary(
         dynamic_cast<base::NakBsplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new optimization::OperationMultipleHierarchisationNakBsplineExtended(
+        dynamic_cast<base::NakBsplineExtendedGrid&>(grid));
   } else if (grid.getType() == base::GridType::NakBsplineModified) {
     return new optimization::OperationMultipleHierarchisationNakBsplineModified(
         dynamic_cast<base::NakBsplineModifiedGrid&>(grid));
