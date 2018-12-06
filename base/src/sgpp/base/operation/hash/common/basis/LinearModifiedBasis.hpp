@@ -7,11 +7,11 @@
 #define LINEAR_MODIFIED_BASE_HPP
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <iostrem>
 
 namespace sgpp {
 namespace base {

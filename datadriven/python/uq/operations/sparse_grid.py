@@ -1,3 +1,6 @@
+from scipy.interpolate import interp1d
+
+import numpy as np
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
@@ -10,10 +13,6 @@ from pysgpp import (createOperationHierarchisation,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
                     GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline)
-
-from scipy.interpolate import interp1d
-
-import numpy as np
 from pysgpp import OperationMultipleEvalType_DEFAULT, \
     GridType_PolyClenshawCurtis, GridType_PolyClenshawCurtisBoundary, \
     GridType_ModPoly, GridType_ModPolyClenshawCurtis, \
@@ -25,15 +24,15 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     SPolyModifiedClenshawCurtisBase, SPolyModifiedBase, \
     GridType_LinearTruncatedBoundary, GridType_BsplineClenshawCurtis, \
     GridType_BsplineBoundary, GridType_ModBsplineClenshawCurtis, \
-    GridType_NakBsplineBoundary, GridType_NakBsplineModified,\
+    GridType_NakBsplineBoundary, GridType_NakBsplineModified, \
+    GridType_NakBsplineExtended, \
     GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
     SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
     SBsplineModifiedClenshawCurtisBase, SNakBsplineBoundaryBase, \
-    SNakBsplineModifiedBase, \
+    SNakBsplineModifiedBase, SNakBsplineExtendedBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
 from pysgpp.pysgpp_swig import IndexVector
-
 
 #######################################################################
 bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
@@ -42,7 +41,8 @@ bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
 bsplineNoBoundaryGridTypes = [GridType_Bspline,
                               GridType_ModBspline,
                               GridType_ModBsplineClenshawCurtis,
-                              GridType_NakBsplineModified]
+                              GridType_NakBsplineModified,
+                              GridType_NakBsplineExtended]
 bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
 
 polyBoundaryGridTypes = [GridType_PolyBoundary,
@@ -68,6 +68,7 @@ multipleEvalNaiveGridTypes = [GridType_Bspline,
                               GridType_BsplineBoundary,
                               GridType_NakBsplineBoundary,
                               GridType_NakBsplineModified,
+                              GridType_NakBsplineExtended,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
                               GridType_LinearClenshawCurtis,
@@ -77,6 +78,7 @@ multipleEvalNaiveGridTypes = [GridType_Bspline,
                               GridType_PolyClenshawCurtisBoundary,
                               GridType_ModPolyClenshawCurtis]
 #######################################################################
+
 
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
     # create new grid
@@ -177,6 +179,8 @@ def getBasis(grid):
         return SNakBsplineBoundaryBase(grid.getDegree())
     elif gridType == GridType_NakBsplineModified:
         return SNakBsplineModifiedBase(grid.getDegree())
+    elif gridType == GridType_NakBsplineExtended:
+        return SNakBsplineExtendedBase(grid.getDegree())
     elif gridType == GridType_ModBspline:
         return SBsplineModifiedBase(grid.getDegree())
     elif gridType == GridType_BsplineClenshawCurtis:
@@ -185,6 +189,7 @@ def getBasis(grid):
         return SBsplineModifiedClenshawCurtisBase(grid.getDegree())
     else:
         raise AttributeError("basis %i is not supported" % gridType)
+
 
 def getDegree(grid):
     if grid.getType() in polyGridTypes + bsplineGridTypes + linearGridTypes:
@@ -197,6 +202,7 @@ def getDegree(grid):
 
 def hasBorder(gridType):
     return gridType in bsplineBoundaryGridTypes + linearBoundaryGridTypes + polyBoundaryGridTypes
+
 
 def isValid1d(grid, level, index):
     minLevel = 0 if hasBorder(grid.getType()) else 1
@@ -253,6 +259,7 @@ def parents(grid, gp):
             ans.append((d, ps))
     return ans
 
+
 def getGridPointsOnBoundary(level, index):
     # find left boundary
     left = None
@@ -272,12 +279,13 @@ def getGridPointsOnBoundary(level, index):
 
     return (left, right)
 
+
 def getGridPointsOnBoundaryEfficiently(level, index):
     # find left boundary
     left = None
-    multiplyDeBruijnBitPosition = [0,  1,  28, 2,  29, 14, 24, 3,  30, 22, 20,
-                                   15, 25, 17, 4,  8,  31, 27, 13, 23, 21, 19,
-                                   16, 7,  26, 12, 18, 6,  11, 5,  10, 9]
+    multiplyDeBruijnBitPosition = [0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20,
+                                   15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19,
+                                   16, 7, 26, 12, 18, 6, 11, 5, 10, 9]
     lindex = index - 1
     n = multiplyDeBruijnBitPosition[((lindex & -lindex) * 0x077CB531) >> 27]
     if n == 0 or n >= level:
@@ -295,6 +303,7 @@ def getGridPointsOnBoundaryEfficiently(level, index):
         right = (level - n, rindex >> n)
 
     return (left, right)
+
 
 def getHierarchicalAncestors(grid, gp):
     ans = []
@@ -413,8 +422,10 @@ def haveOverlappingSupportByLevelIndex((leveli, indexi), (levelj, indexj)):
     # in all dimensions
     return idim == numDims
 
+
 def insertHierarchicalAncestors(grid, gp):
     return insertPoint(grid, gp)
+
 
 def hasChildren(grid, gp):
     gs = grid.getStorage()
@@ -439,6 +450,7 @@ def hasChildren(grid, gp):
 
     return False
 
+
 def getLevel(gp):
     numDims = gp.getDimension()
     level = np.ndarray(numDims, dtype="int")
@@ -446,6 +458,7 @@ def getLevel(gp):
         level[i] = gp.getLevel(i)
 
     return level
+
 
 def getIndex(gp):
     numDims = gp.getDimension()
@@ -549,6 +562,7 @@ def insertPoint(grid, gp):
 
     return ans
 
+
 def isRefineable(grid, gp):
     gs = grid.getStorage()
     for d in xrange(gs.getDimension()):
@@ -639,6 +653,7 @@ def evalSGFunction(grid, alpha, p, isConsistent=True):
                               GridType_BsplineBoundary,
                               GridType_NakBsplineBoundary,
                               GridType_NakBsplineModified,
+                              GridType_NakBsplineExtended,
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
                               GridType_LinearClenshawCurtis,
@@ -669,6 +684,7 @@ def evalSGFunction(grid, alpha, p, isConsistent=True):
         if grid.getStorage().getDimension() != p.shape[1]:
             raise AttributeError("grid dimension differs from dimension of samples")
         return evalSGFunctionMulti(grid, alpha, p, isConsistent)
+
 
 def hierarchizeEvalHierToTop(grid, nodalValues):
     gs = grid.getStorage()
@@ -716,6 +732,7 @@ def hierarchizeEvalHierToTop(grid, nodalValues):
         ans[i] = alpha[j]
 
     return ans
+
 
 def evalHierToTop(basis, grid, coeffs, gp, d):
     gs = grid.getStorage()
@@ -806,7 +823,8 @@ def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
                               GridType_ModBsplineClenshawCurtis,
                               GridType_ModBspline,
                               GridType_NakBsplineBoundary,
-                              GridType_NakBsplineModified]:
+                              GridType_NakBsplineModified,
+                              GridType_NakBsplineExtended]:
             opHier = createOperationMultipleHierarchisation(grid)
         elif maxLevel > 1 and \
              grid.getType() in [GridType_LinearBoundary,
@@ -942,7 +960,6 @@ def addConst(grid, alpha, c, y):
     opHier.doHierarchisation(alpha_vec)
     return alpha_vec.array()
 
-
 #########################################################
 # def estimateSurplus(grid, gp, v):
 #     gs = grid.getStorage()
@@ -1010,6 +1027,7 @@ def addConst(grid, alpha, c, y):
 #         vgp = vparents
 #
 #     return np.max(vgp)
+
 
 def estimateSurplus(grid, gp, v):
     """
