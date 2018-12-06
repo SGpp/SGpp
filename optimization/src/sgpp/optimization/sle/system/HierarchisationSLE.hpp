@@ -917,12 +917,13 @@ class HierarchisationSLE : public CloneableSLE {
     }
 
     return result;
-  } /**
-     * @param basisI    basis function index
-     * @param pointJ    grid point index
-     * @return          value of the basisI-th nak Bspline extended basis function
-     *                  at the pointJ-th grid point
-     */
+  }
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th nak Bspline extended basis function
+   *                  at the pointJ-th grid point
+   */
   inline double evalNakBsplineExtendedFunctionAtGridPoint(size_t basisI, size_t pointJ) {
     double result = 1.0;
 

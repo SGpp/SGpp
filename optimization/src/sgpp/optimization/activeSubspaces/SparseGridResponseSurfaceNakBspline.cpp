@@ -62,10 +62,10 @@ double SparseGridResponseSurfaceNakBspline::getIntegral() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double integral = 0;
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     double integral1D = 1;
     for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-      integral1D *= basis->getIntegral(gp.getLevel(d), gp.getIndex(d));
+      integral1D *=
+          basis->getIntegral(gridStorage.getPointLevel(i, d), gridStorage.getPointIndex(i, d));
     }
     integral += coefficients[i] * integral1D;
   }
@@ -84,10 +84,9 @@ void SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t j = 0; j < gridStorage.getDimension(); j++) {
-      p[j] = gp.getStandardCoordinate(j);
+    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
+      p[d] = gridStorage.getPointCoordinate(i, d);
     }
     f_values[i] = objectiveFunc->eval(p);
   }

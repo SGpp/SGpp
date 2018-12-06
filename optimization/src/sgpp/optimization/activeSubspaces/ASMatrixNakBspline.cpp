@@ -107,6 +107,7 @@ void ASMatrixNakBspline::toFile(std::string path) {
 sgpp::optimization::ASResponseSurfaceNakBspline ASMatrixNakBspline::getResponseSurfaceInstance(
     size_t asDimension, sgpp::base::GridType gridType, size_t degree) {
   Eigen::MatrixXd W1 = this->getTransformationMatrix(asDimension);
+
   sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
   return responseSurf;
 }
@@ -124,10 +125,11 @@ void ASMatrixNakBspline::calculateInterpolationCoefficients() {
   evaluationPoints.resizeZero(gridStorage.getSize(), numDim);
   // ToDo (rehmemk) when refining iteratively use the function values from the last steps!
   functionValues.resizeZero(gridStorage.getSize());
+  sgpp::base::DataVector gridPointVector(gridStorage.getDimension());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
-    sgpp::base::DataVector gridPointVector(gridStorage.getDimension());
-    gp.getStandardCoordinates(gridPointVector);
+    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
+      gridPointVector[d] = gridStorage.getPointCoordinate(i, d);
+    }
     evaluationPoints.setRow(i, gridPointVector);
     functionValues[i] = objectiveFunc->eval(gridPointVector);
   }
@@ -163,13 +165,10 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double integral = 1.0;
   for (size_t d = 0; d < numDim; d++) {
-    sgpp::base::GridPoint& gpk = gridStorage.getPoint(k);
-    sgpp::base::GridPoint& gpl = gridStorage.getPoint(l);
-
-    unsigned int indexk = gpk.getIndex(d);
-    unsigned int indexl = gpl.getIndex(d);
-    unsigned int levelk = gpk.getLevel(d);
-    unsigned int levell = gpl.getLevel(d);
+    unsigned int indexk = gridStorage.getPointIndex(k, d);
+    unsigned int indexl = gridStorage.getPointIndex(l, d);
+    unsigned int levelk = gridStorage.getPointLevel(k, d);
+    unsigned int levell = gridStorage.getPointLevel(l, d);
     double integral1D = 0.0;
 
     if ((d == i && i != j)) {

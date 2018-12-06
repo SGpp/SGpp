@@ -39,10 +39,10 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints
     evaluationPoints.getRow(i, point);
     Eigen::VectorXd y_i = W1.transpose() * DataVectorToEigen(point);
     for (size_t j = 0; j < gridStorage.getSize(); j++) {
-      sgpp::base::GridPoint& gpBasis = gridStorage.getPoint(j);
       double basisEval = 1;
       for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-        double basisEval1D = basis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), y_i(t));
+        double basisEval1D =
+            basis->eval(gridStorage.getPointLevel(j, t), gridStorage.getPointIndex(j, t), y_i(t));
         if (basisEval1D == 0) {
           basisEval = 0;
           break;
@@ -249,16 +249,11 @@ double ASResponseSurfaceNakBspline::getContinuousIntegral(size_t level, size_t n
                                                               quadDegree, quadOrder);
   for (size_t k = 0; k < coefficients.getSize(); k++) {
     for (size_t l = 0; l < quadCoefficients.getSize(); l++) {
-      sgpp::base::GridPoint& gpk = gridStorage.getPoint(k);
-      sgpp::base::GridPoint& gpl = quadGridStorage.getPoint(l);
-
-      unsigned int indexk = gpk.getIndex(0);
-      unsigned int levelk = gpk.getLevel(0);
-      unsigned int indexl = gpl.getIndex(0);
-      unsigned int levell = gpl.getLevel(0);
       integral +=
           coefficients[k] * quadCoefficients[l] *
-          scalarProducts.univariateScalarProduct(levelk, indexk, false, levell, indexl, false);
+          scalarProducts.univariateScalarProduct(
+              gridStorage.getPointLevel(k, 0), gridStorage.getPointIndex(k, 0), false,
+              quadGridStorage.getPointLevel(l, 0), quadGridStorage.getPointIndex(l, 0), false);
     }
   }
   return integral * (rightBound1D - leftBound1D);
@@ -268,14 +263,29 @@ double ASResponseSurfaceNakBspline::getContinuousIntegral(size_t level, size_t n
 sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
     size_t numHistogramMCPoints, sgpp::base::DataVector points, double delta,
     std::string pointStrategy) {
+  // the weight for each point p_i is the proportion of all random points in point p_i's bucket
+  //  when transformed  to the active subspace (by multiplication with W1)
+  // p_i's bucket is [(p_{i-1}+p_i)/2, (p_i,p_{i+1})/2]
   sgpp::base::DataVector weights(points.getSize());
-  Eigen::MatrixXd randomUnitPoints(W1.rows(), numHistogramMCPoints);
+  Eigen::VectorXd randomUnitPoint(W1.rows());
+  Eigen::VectorXd randomPoint(1);
+  double hdelta = delta / 2.0;
 
   if (pointStrategy == "MC") {
     // random Monte Carlo points in the unit hypercube
-    randomUnitPoints = (Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints) +
-                        Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints)) /
-                       2;
+    Eigen::MatrixXd randomUnitPoints = (Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints) +
+                                        Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints)) /
+                                       2;
+    Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
+
+    for (size_t i = 0; i < numHistogramMCPoints; i++) {
+      for (size_t j = 0; j < points.getSize(); j++) {
+        if ((randomPoints(i) >= (points[j] - hdelta)) && (randomPoints(i) < (points[j] + hdelta))) {
+          weights[j]++;
+          break;
+        }
+      }
+    }
   } else if (pointStrategy == "Halton") {
     // Quasi Monte Carlo with Halton Sequence in the unit hypercube
     // ( Wikipedia: "Halton sequence works best up to ~ 6 dimensions, then Sobol sequence
@@ -289,7 +299,14 @@ sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
       haltonPoint = sgpp::optimization::halton_base(static_cast<int>(j),
                                                     static_cast<int>(W1.rows()), haltonsequence);
       for (int i = 0; i < W1.rows(); i++) {
-        randomUnitPoints(i, j) = haltonPoint[i];
+        randomUnitPoint(i) = haltonPoint[i];
+      }
+      randomPoint = W1.transpose() * randomUnitPoint;
+      for (size_t j = 0; j < points.getSize(); j++) {
+        if ((randomPoint(0) >= (points[j] - hdelta)) && (randomPoint(0) < (points[j] + hdelta))) {
+          weights[j]++;
+          break;
+        }
       }
     }
     delete[] haltonsequence;
@@ -301,39 +318,20 @@ sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
     for (size_t j = 0; j < numHistogramMCPoints; j++) {
       sgpp::optimization::i8_sobol(static_cast<int>(W1.rows()), &seed, sobolPoint);
       for (int i = 0; i < W1.rows(); i++) {
-        randomUnitPoints(i, j) = sobolPoint[i];
+        randomUnitPoint(i) = sobolPoint[i];
+      }
+      randomPoint = W1.transpose() * randomUnitPoint;
+      for (size_t j = 0; j < points.getSize(); j++) {
+        if ((randomPoint(0) >= (points[j] - hdelta)) && (randomPoint(0) < (points[j] + hdelta))) {
+          weights[j]++;
+          break;
+        }
       }
     }
     delete[] sobolPoint;
   } else {
     std::cerr << "ASResponseSurfaceNakBspline: pointStrategy not supported!\n";
   }
-
-  Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
-
-  // the weight for each point p_i is the proportion of all random points in point p_i's bucket
-  //  when transformed  to the active subspace (by multiplication with W1)
-  // p_i's bucket is [(p_{i-1}+p_i)/2, (p_i,p_{i+1})/2]
-  double hdelta = delta / 2.0;
-
-  for (size_t i = 0; i < numHistogramMCPoints; i++) {
-    for (size_t j = 0; j < points.getSize(); j++) {
-      if ((randomPoints(i) >= (points[j] - hdelta)) && (randomPoints(i) < (points[j] + hdelta))) {
-        weights[j]++;
-        break;
-      }
-    }
-  }
-
-  //  std::cout << "buckets: \n";
-  //  for (size_t j = 0; j < points.getSize(); j++) {
-  //    std::cout << points[j] - hdelta << " " << points[j] + hdelta << "\n";
-  //  }
-
-  //  std::cout << "delta:" << delta << "\n";
-  //  std::cout << "points:\n" << points.toString() << "\n";
-  //  // std::cout << "random Points:\n" << randomPoints << "\n";
-  //  std::cout << "weights\n" << weights.toString() << "\n";
 
   return weights;
 }
@@ -358,8 +356,8 @@ void ASResponseSurfaceNakBspline::continuousIntervalQuadrature(
   sgpp::base::GridStorage& quadGridStorage = quadGrid->getStorage();
   sgpp::base::DataVector points(quadGridStorage.getSize());
   for (size_t i = 0; i < quadGridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = quadGridStorage.getPoint(i);
-    points[i] = leftBound1D + (rightBound1D - leftBound1D) * gp.getStandardCoordinate(0);
+    points[i] =
+        leftBound1D + (rightBound1D - leftBound1D) * quadGridStorage.getPointCoordinate(i, 0);
   }
   double delta = abs((rightBound1D - leftBound1D) / std::pow(2, level));
   sgpp::base::DataVector weights =
@@ -387,42 +385,29 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
     std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
   Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  Eigen::MatrixXd interpolationMatrix(gridStorage.getSize(), gridStorage.getSize());
-  Eigen::VectorXd functionValues(gridStorage.getSize());
+  sgpp::base::DataVector functionValues(grid->getSize());
+  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     Eigen::VectorXd p(static_cast<int>(gridStorage.getDimension()));
     for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-      p[d] = gp.getStandardCoordinate(d);
-    }
-    for (size_t j = 0; j < gridStorage.getSize(); j++) {
-      sgpp::base::GridPoint& gpBasis = gridStorage.getPoint(j);
-      double basisEval = 1;
-      for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-        double basisEval1D = basis->eval(gpBasis.getLevel(t), gpBasis.getIndex(t), p(t));
-        if (basisEval1D == 0) {
-          basisEval = 0;
-          break;
-        } else {
-          basisEval *= basisEval1D;
-        }
+      p[d] = gridStorage.getPointCoordinate(i, d);
+
+      // transformation in 1D case
+      if (W1.cols() == 1) {
+        p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
       }
-      interpolationMatrix(i, j) = basisEval;
+      sgpp::base::DataVector pinv =
+          EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
+                                          // we don't have to transform here every time?
+      functionValues[i] = objectiveFunc->eval(pinv);
     }
-
-    // transformation in 1D case
-    if (W1.cols() == 1) {
-      p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
-    }
-    sgpp::base::DataVector pinv =
-        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
-                                        // we don't have to transform here every time?
-    functionValues(i) = objectiveFunc->eval(pinv);
   }
-
-  Eigen::ColPivHouseholderQR<Eigen::MatrixXd> dec(interpolationMatrix);
-  Eigen::VectorXd alpha_Eigen = dec.solve(functionValues);
-  coefficients = EigenToDataVector(alpha_Eigen);
+  sgpp::optimization::sle_solver::Auto sleSolver;
+  if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
+    std::cout << "Solving failed, exiting.\n";
+    return;
+  }
 }
 
 Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension) {

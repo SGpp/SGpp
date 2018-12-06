@@ -14,12 +14,14 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
+#include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/HaltonSequence.hpp>
 #include <sgpp/optimization/tools/SobolSequence.hpp>
