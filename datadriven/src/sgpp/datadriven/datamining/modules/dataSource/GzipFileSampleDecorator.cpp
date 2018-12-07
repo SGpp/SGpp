@@ -30,7 +30,11 @@ SampleProvider* GzipFileSampleDecorator::clone() const {
   return dynamic_cast<SampleProvider*>(new GzipFileSampleDecorator{*this});
 }
 
-void GzipFileSampleDecorator::readFile(const std::string& fileName) {
+void GzipFileSampleDecorator::readFile(const std::string& fileName,
+                                       bool hasTargets,
+                                       size_t readinCutoff,
+                                       std::vector<size_t> readinColumns,
+                                       std::vector<double> readinClasses) {
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
   if (inFileZ == nullptr) {
@@ -58,8 +62,8 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName) {
   }
 
   gzclose(inFileZ);
-
-  fileSampleProvider->readString(convert, false);
+  fileSampleProvider->readString(convert, hasTargets,
+    readinCutoff, readinColumns, readinClasses);
 }
 
 void GzipFileSampleDecorator::reset() {
