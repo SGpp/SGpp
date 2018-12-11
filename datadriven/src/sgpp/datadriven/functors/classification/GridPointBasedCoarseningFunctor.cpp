@@ -15,7 +15,7 @@
 #include <vector>
 #include <map>
 #include <string>
-
+#include <numeric>
 
 namespace sgpp {
     namespace datadriven {
@@ -52,25 +52,28 @@ namespace sgpp {
             // Evaluations of all grids at (param) seq
             std::vector<double> gridEvals;
 
+            // The most and second dominant class number
+            size_t max_class = 0;
+            size_t second_class = 1;
+
             // Get the evaluations of seq at all GridSave
             base::DataVector p(storage.getDimension());
+
             storage.getPoint(seq).getStandardCoordinates(p);
+
             if (pre_compute) {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::string key = p.toString();
                     gridEvals.push_back(pre_comp_evals.at(i).at(key));
                 }
-            } else {
+            }
+            else {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::unique_ptr<base::OperationEval>
                     opEval(op_factory::createOperationEval(*grids.at(i)));
                     gridEvals.push_back(opEval->eval(*alphas.at(i), p));
                 }
             }
-
-            // The most and second dominant class number
-            size_t max_class = 0;
-            size_t second_class = 1;
 
             // Find the largest and the second largest PDF of this grip point
             if(gridEvals.at(0) > gridEvals.at(1)) {
@@ -100,6 +103,7 @@ namespace sgpp {
             gridClassDiffs = max - second_max;
 
             //Compare to the neighbors
+
             base::HashGridPoint& gp = storage.getPoint(seq);
 
             // Find the geometric neighbors
@@ -140,26 +144,42 @@ namespace sgpp {
                     }
                 }
             }
+            // End of finding the geometric neighbors
+
+            // The diffenrence value for each neighbor
+            std::vector<double> neighborDiffs;
+            // The distance between each neighbor and the current grid point
+            std::vector<double> neighborDists;
 
             // Iterate over all neighbors
             for (size_t i = 0; i < neighSeq.size(); i++) {
-                double neighborDiff;
-                std::vector<double> neighborEvals;
-                // Evaluate all grids for each neighbor
-                for (size_t j = 0; j < grids.size(); j++) {
-                    std::unique_ptr<base::OperationEval>
-                    opEval(op_factory::createOperationEval(*grids.at(j)));
-                    // To Do
-                    neighborEvals.push_back(opEval->eval(*alphas.at(j), neighSeq.at(i)));
-                    // End
-                }
-                neighborDiff = neighborEvals[max_class]-neighborDiff[second_class];
-                // To do
-                // Use diff value to evaluate score
+                // For each neighbor
+                base::HashGridPoint& neighbor = storage.getPoint(neighSeq.at(i));
+
+                std::unique_ptr<base::OperationEval>
+                opEval1(op_factory::createOperationEval(*grids.at(max_class)));
+                double neighbor_max = opEval1->eval(*alphas.at(max_class), neighSeq.at(i));
+
+                std::unique_ptr<base::OperationEval>
+                opEval2(op_factory::createOperationEval(*grids.at(second_class)));
+                double neighbor_sec = opEval2->eval(*alphas.at(second_class), neighSeq.at(i));
+
+                neighborDiffs.push_back(neighbor_max-neighbor_sec);
+                neighborDists.push_back(getDistance(gp,neighbor));
+
             }
 
-            //To do
-            score = gridClassDiffs;
+            double total = 0.0;
+            // Calculate the score
+            for (unsigned i=0; i<neighborDists.size(); i++) {
+                total = total + 1/neighborDists.at(i);
+            }
+
+            for (unsigned i=0; i<neighborDiffs.size(); i++) {
+                score = score + neighborDiffs.at(i)/(neighborDists.at(i)*total);
+            }
+
+            score = score + gridClassDiffs;
 
             return score;
         }
@@ -286,6 +306,37 @@ namespace sgpp {
                 new_i -= 1;
             }
             par.set(d, new_l, new_i);
+        }
+        double GridPointBasedCoarseningFunctor::getDistance(base::HashGridPoint& gp1,
+                                                            base::HashGridPoint& gp2)
+        const {
+            base::DataVector dist(gp1->getDimension());
+
+            for (size_t d = 0; d < gp1->getDimension(); d++) {
+                double coord1 = gp1.getStandardCoordinate(d);
+                double coord2 = gp2.getStandardCoordinate(d);
+                double diff_sq = coord1-coord2;
+                dist.set(d, diff_sq);
+            }
+
+            double distance = dist.l2Norm();
+            return distance;
+        }
+
+        bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
+                                                         base::DataVector& point)
+        const {
+            for (size_t d = 0; d < point.getSize(); d++) {
+                double coord = gp.getStandardCoordinate(d);
+                size_t level = gp.getLevel(d);
+                double step = 1.0 / pow(2.0, static_cast<double>(level));
+                double lower = coord - step;
+                double upper = coord + step;
+                if (point.get(d) < lower || point.get(d) > upper) {
+                    return false;
+                }
+            }
+            return true;
         }
 
     }  // namespace datadriven

@@ -113,6 +113,19 @@ namespace sgpp {
              */
             void getParent(const base::HashGridPoint& gp,
                            size_t d, base::HashGridPoint& par) const;
+
+            /**
+             * @param gp the grid point
+             * @param point
+             */
+            double getDistance(base::HashGridPoint& gp,
+                                 base::DataVector& point) const;
+
+            /**
+             * Is point in support of basis function at gp
+             */
+            bool isWithinSupport(base::HashGridPoint& gp,
+                                 base::DataVector& point) const;
         };
     }  // namespace datadriven
 }  // namespace sgpp
