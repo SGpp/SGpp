@@ -1,0 +1,46 @@
+{
+	"dataSource": {
+		"filePath": "datadriven/tests/datasets/liver-disorders_normalized.arff.gz",
+		"compression": true,
+		"fileType": "arff",
+		"hasTargets": true,
+		"shuffling" : "random",
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [-1, 1],
+		"readinColumns": [0, 1, 2]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"gridType": "linear",
+			"level": 5
+		},
+		"adaptivityConfig": {
+				"numRefinements": 10,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
+
+
