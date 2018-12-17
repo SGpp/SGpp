@@ -9,7 +9,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/globaldef.hpp>
-#include <DataVector.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <cmath>
 #include <algorithm>
 #include <iostream>
@@ -140,6 +140,14 @@ class HashGenerator {
     }
 
     this->createFullGridIterative(storage, level);
+  }
+
+  void anisotropicFull(GridStorage& storage, std::vector<size_t>& dimlevels){
+	  if(storage.getSize() > 0){
+		  throw generation_exception("storage not empty");
+	  }
+
+	  this->createAnisotrophicFullGrid(storage, dimlevels);
   }
 
   /**
@@ -858,10 +866,17 @@ class HashGenerator {
     }
   }
 
-  void createAnisotrophicFullGrid(GridStorage& storage,  std::vector<index_t> v) { //TODO remove n
-	if(storage.getDimension()!=v.size()) return; //TODO add exception here
+  void createAnisotrophicFullGrid(GridStorage& storage,  std::vector<size_t> v) {
 
-    if (storage.getDimension() == 0) return;
+	if(storage.getDimension()!=v.size()){
+		std::cout <<"Storage dimension doesn't fit vector size!";
+		return;
+	}
+
+    if (storage.getDimension() == 0) {
+    	std::cout << "Storage dimension is zero!";
+    	return;
+    }
 
     GridPoint idx_1d(storage.getDimension());
 
@@ -926,6 +941,7 @@ class HashGenerator {
       }
     }
   }
+
 
   /**
    * Generate a full grid iteratively (much faster than recursively)
