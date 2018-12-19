@@ -126,7 +126,7 @@ namespace sgpp {
             return 0.0;
         }
 
-        size_t GridPointBasedCoarseningFunctor::getCoarseningsNum() const {
+        size_t GridPointBasedCoarseningFunctor::getRemovementsNum() const {
             return this->coarsenings_num;
         }
 

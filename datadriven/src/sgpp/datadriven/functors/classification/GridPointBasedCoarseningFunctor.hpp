@@ -45,7 +45,7 @@ namespace sgpp {
             double operator()(base::GridStorage& storage,
                               size_t seq) const override;
             double start() const override;
-            size_t getCoarseningsNum() const override;
+            size_t getRemovementsNum() const override;
             double getCoarseningThreshold() const override;
             virtual ~GridPointBasedCoarseningFunctor() {}
 
