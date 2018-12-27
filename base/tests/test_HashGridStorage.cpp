@@ -15,6 +15,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 
 #include <string>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;
@@ -439,6 +440,40 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
 
   g.regularWithBoundaries(s, 2, 1);
   BOOST_CHECK_EQUAL(s.getSize(), 81U);
+}
+
+BOOST_AUTO_TEST_CASE(testAnisotrophicFull){
+	HashGridStorage s(2);
+	HashGenerator g;
+	std::vector<size_t> vec {2,3};
+	g.anisotropicFull(s,vec);
+	HashGridPoint i(2);
+
+
+	for(sgpp::base::HashGridPoint::index_type n = 0; n<=3; n++){
+		if(n==0)
+			i.set(0,1,1);
+		else{
+			i.set(0,2,n);
+			n++;
+		}
+
+		i.set(1,1,1);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,2,1);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,2,3);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,3,1);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,3,3);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,3,5);
+		BOOST_CHECK(s.isContaining(i));
+		i.set(1,3,7);
+		BOOST_CHECK(s.isContaining(i));
+	}
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

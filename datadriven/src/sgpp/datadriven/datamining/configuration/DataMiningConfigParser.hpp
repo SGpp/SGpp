@@ -3,7 +3,7 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DataMiningConfigParser.cpp
+ * DataMiningConfigParser.hpp
  *
  *  Created on: Aug 14, 2016
  *  	Author: Michael Lettrich
