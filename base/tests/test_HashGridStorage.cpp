@@ -474,6 +474,8 @@ BOOST_AUTO_TEST_CASE(testAnisotrophicFull){
 		BOOST_CHECK(s.isContaining(i));
 	}
 
+	BOOST_CHECK_EQUAL(s.getSize(), 21);
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()
