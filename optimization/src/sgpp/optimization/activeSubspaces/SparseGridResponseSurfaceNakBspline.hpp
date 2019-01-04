@@ -87,6 +87,16 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    */
   double getIntegral();
 
+  /**
+   * @return the interpolation grid
+   */
+  std::shared_ptr<sgpp::base::Grid> getGrid() { return grid; }
+
+  /**
+   * @return the interpolation coefficients
+   */
+  sgpp::base::DataVector getCoefficients() { return coefficients; }
+
  private:
   // objective function
   std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
@@ -97,7 +107,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   // number of dimensions
   size_t numDim;
   // the interpolation grid
-  std::unique_ptr<sgpp::base::Grid> grid;
+  std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
   std::unique_ptr<sgpp::base::SBasis> basis;
   // the interpolation coefficients

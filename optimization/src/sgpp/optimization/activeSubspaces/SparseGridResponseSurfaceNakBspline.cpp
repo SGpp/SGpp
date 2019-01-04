@@ -11,16 +11,16 @@ namespace optimization {
 void SparseGridResponseSurfaceNakBspline::initialize() {
   numDim = objectiveFunc->getNumberOfParameters();
   if (gridType == sgpp::base::GridType::NakBspline) {
-    grid = std::make_unique<sgpp::base::NakBsplineGrid>(numDim, degree);
+    grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    grid = std::make_unique<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+    grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-    grid = std::make_unique<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
-    grid = std::make_unique<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
+    grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
   } else {
     throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
