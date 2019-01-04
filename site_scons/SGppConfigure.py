@@ -103,6 +103,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkOpenCL(config)
   checkZlib(config)
   checkGSL(config)
+  checkScaLAPACK(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -262,6 +263,11 @@ def checkGSL(config):
       Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
 
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
+
+def checkScaLAPACK(config):
+  if config.env["USE_SCALAPACK"]:
+    if not config.CheckLib(["scalapack"], language="c++", autoadd=0):
+      Helper.printErrorAndExit("scalapack not found, but required for ScaLAPACK")
 
 def checkZlib(config):
 #zlib needed for datamining
