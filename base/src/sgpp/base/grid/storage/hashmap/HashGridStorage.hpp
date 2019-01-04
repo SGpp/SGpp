@@ -492,9 +492,17 @@ class HashGridStorage {
     return static_cast<double>(index) / static_cast<double>(static_cast<uint32_t>(1) << level);
   }
 
+  inline DataVector getPointCoordinates(size_t seq) {
+    DataVector coordinates(dimension, 0.0);
+    for (size_t d = 0; d < dimension; d++) {
+      coordinates[d] = getPointCoordinate(seq, d);
+    }
+    return coordinates;
+  }
+
   /**
-   * Calculates the coordinate of a given grid point in specific dimension taking into account the
-   * BoundingBox and Stretching.
+   * Calculates the coordinate of a given grid point in specific dimension taking into account
+   * the BoundingBox and Stretching.
    *
    * @param seq   the sequence number of the index
    * @param d     dimension
