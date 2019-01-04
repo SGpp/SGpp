@@ -1,10 +1,11 @@
+#!/usr/lib/python2.7/dist-packages/sage -python
 from argparse import ArgumentParser
-from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 import os
-from sympy.physics.quantum.matrixutils import sparse
+from sage.all import *
 import time
 
-from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
 
 import activeSubspaceFunctions
 import active_subspaces as ac
@@ -14,6 +15,11 @@ import numpy as np
 import pysgpp
 
 
+######## IMPORTANT ###########
+# This uses sage for volume computations. This script must be called with 
+# sage -python asMain.py
+# instead of python2.7 asMain.py
+############################## 
 # SG++ AS functionalities return eigenvalues as increasingly sorted DataVector.
 # reverse the order and cast to numpy.ndarray
 def reverseDataVectorToNdArray(v):
@@ -46,6 +52,69 @@ class objFuncSGpp(pysgpp.OptScalarFunction):
         for i in range(self.numDim):
             x[0, i] = v[i]
         return  self.objFunc.eval(x)[0][0]
+
+
+def sageVolume(W1, point):
+    originalDim = len(W1)
+    m = matrix(RR, 2 * originalDim + 2, originalDim + 1)
+    for i in range(originalDim):
+        m[2 * i, 0] = 0
+        m[2 * i + 1, 0] = 1
+        m[2 * i, i + 1] = 1
+        m[2 * i + 1, i + 1] = -1
+        m[2 * originalDim, i + 1] = -W1[i]
+        m[2 * originalDim + 1, i + 1] = W1[i]
+    m[2 * originalDim + 1, 0] = -point
+    m[2 * originalDim, 0] = point
+    try:
+        p = Polyhedron(ieqs=m)
+        volume = p.volume(measure="induced")
+    #         A, b = p.affine_hull(orthogonal=True, as_affine_map=True)
+    #         Adet = (A.matrix().transpose() * A.matrix()).det()
+    #         volume = p.affine_hull(orthogonal=True).volume() / sqrt(Adet)
+        volume = volume.n(digits=14)
+        return volume
+#     except AttributeError:
+#         print('Attribute Error in sageVolume, returning 0.0')
+#         return 0.0
+    except ZeroDivisionError as e:
+#         print("ZeroDivisionError in sageVolume")
+        print("error with matrix:")
+        print(m)
+#         print(e)
+        return 0.0
+
+
+# calculates the volume of the d-1 dimensinoal cut through
+# the d dimensional hypercube at all transformed corners
+def volumeAtTransformedCorners1D(W1):
+    dim = len(W1)
+    corners = np.zeros(shape=(dim, 2 ** dim))
+    jump = 2 ** (dim - 1)
+    for i in range(dim):
+        j = 0
+        while j < 2 ** dim:
+            for n in range(jump):
+                if j + n >= 2 ** dim:
+                    break
+                corners[i, j + n] = 1
+            j = j + 2 * jump
+        jump = jump / 2
+    print(W1)
+    print(corners)
+        
+    points = np.zeros(2 ** dim)
+    for j in range(2 ** dim):
+        points[j] = W1.dot(corners[:, j])
+    points.sort()
+    points = np.unique(points)
+    
+    volumes = np.zeros(len(points))
+    # left and right most points don't have volume
+    for j in range(1, len(points) - 1):
+        volumes[j] = sageVolume(W1, points[j])
+        
+    return points, volumes
 
     
 # uniformly distributed points in numDim dimensions     
@@ -99,12 +168,11 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType='adaptive', numErr
         sparseResponseSurf.createSurplusAdaptiveResponseSurface(numResponse, initialLevel)
     elif responseType == 'regular':
         sparseResponseSurf.createRegularResponseSurface(numResponse)
-        
+     
+    print(numResponse)   
     lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
-    lBounds = pysgpp.DataVector(lb)
-    uBounds = pysgpp.DataVector(ub) 
-    l2Error = sparseResponseSurf.l2Error(f, lBounds, uBounds, numErrorPoints)
+    l2Error = sparseResponseSurf.l2Error(f, numErrorPoints)
     print("sparse interpolation error {}".format(l2Error))
     integral = sparseResponseSurf.getIntegral() * vol
     integralError = abs(integral - objFunc.getIntegral())
@@ -127,14 +195,16 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType='adaptive', numErr
 # savePath       path to save the interpolation grid and coefficients to or None
 #--------------------------------------------------------------------------
 def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
-                responseType='adaptive', integralType='Cont', numErrorPoints=10000, savePath=None):
+                responseType='adaptive', integralType='Cont', numErrorPoints=10000, \
+                numHistogramMCPoints=1000000, savePath=None):
+    print("{}".format(numASM))
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
+    numRefine = 3
+    initialLevel = 1
     ASM = pysgpp.ASMatrixNakBspline(f, pysgpp.Grid.stringToGridType(gridType), degree)
     if asmType == 'adaptive':
-        initialLevel = 1
-        numRefine = 3
         ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
     elif asmType == 'regualar':
         ASM.buildRegularInterpolant(numASM)
@@ -156,7 +226,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
     responseGridType = pysgpp.GridType_NakBsplineExtended  # test if other gridTypes are useful!
     responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
     if responseType == 'adaptive':
-        responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, 1)
+        responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
     elif responseType == 'regular':
         responseSurface.createRegularReducedSurfaceWithPseudoInverse(numResponse, f)
     elif responseType == 'detection':
@@ -166,18 +236,17 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
 
     lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
-
-    l2Error = ASM.l2InterpolationError(numErrorPoints)
+    
+    l2Error = responseSurf.l2Error(f, numErrorPoints)
     print("interpol error: {}".format(l2Error))
     
-    numHistogramMCPoints = 1000000
     if integralType == 'MC':
         integral = responseSurf.getMCIntegral(100, numHistogramMCPoints, 'Halton') * vol
-    else:
-        integral = responseSurf.getContinuousIntegral(10, numHistogramMCPoints, 'Halton') * vol
-    print("integral: {}".format(integral))
+    elif integralType == 'Cont':
+        integral = responseSurf.getHistogramBasedIntegral(11, numHistogramMCPoints, 'Halton') * vol
+    print("integral: {}".format(integral)),
     integralError = abs(integral - objFunc.getIntegral())
-    print("integral error: {}\n -------".format(integralError))
+    print(" integral error: {}\n -------".format(integralError))
     
 #     X, Y = np.meshgrid(np.linspace(0, 1, 100), np.linspace(0, 1, 100))
 #     Z = np.zeros(np.shape(X))
@@ -187,6 +256,57 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
 #     fig = plt.figure(); ax = fig.gca(projection='3d')
 #     surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm, linewidth=0, antialiased=False)
 #     plt.show()
+
+    print(eivec)
+    W1 = eivec[:, 0]
+#     points, volumes = volumeAtTransformedCorners1D(W1)
+#     print(points)
+#     print(volumes)
+
+# ======================= sage Volume =================================   
+# ===================== for Integration================================ 
+
+    volDim = 1
+    volDegree = 3
+    volLevel = 5
+    volGrid = pysgpp.Grid.createNakBsplineExtendedGrid(volDim, volDegree)
+    volGrid.getGenerator().regular(volLevel)
+    volGridStorage = volGrid.getStorage()
+    numPoints = volGridStorage.getSize()
+    volumeValues = np.zeros(numPoints)  # pysgpp.DataVector(numPoints, 0)
+    bounds = responseSurf.getBounds()
+    m = []
+    for i in range(numPoints):
+        point1D = volGridStorage.getPointCoordinate(i, 0)
+        scaledPoint1D = bounds[0] + (bounds[1] - bounds[0]) * point1D;
+        # print("point: {} scaled point:{}".format(point1D, scaledPoint1D))
+        volumeValues[i] = sageVolume(W1, scaledPoint1D)
+
+    volCoefficients = pysgpp.DataVector(len(volumeValues))
+    hierSLE = pysgpp.OptHierarchisationSLE(volGrid)
+    sleSolver = pysgpp.OptAutoSLESolver()
+    if not sleSolver.solve(hierSLE, pysgpp.DataVector(volumeValues), volCoefficients):
+        print "Solving failed, exiting."
+        sys.exit(1)
+          
+#     numAdaptiveVolPoints = volGrid.getSize()
+#     adaptiveVolGrid = pysgpp.Grid.createNakBsplineBoundaryGrid(volDim, volDegree)
+#     adaptiveVolGrid.getGenerator().regular(1)
+#     functor = pysgpp.SurplusRefinementFunctor()
+#     while adaptiveVolGrid.getSize() < numAdaptiveVolPoints:
+            
+#     f = pysgpp.OptInterpolantScalarFunction(volGrid, volCoefficients)
+#     x = np.linspace(0, 1, 100)
+#     fval = np.zeros(len(x))
+#     for i in range(len(x)):
+#         fval[i] = f.eval(pysgpp.DataVector(1, x[i]))
+#     plt.plot(x, fval)
+#     plt.show()
+          
+    mIntegral = responseSurf.getIntegralFromVolumeInterpolant(volGrid, volCoefficients, volDegree)
+    print("new Integral: {}, error: {}".format(mIntegral, abs(mIntegral - objFunc.getIntegral())))
+# ==================================================================
+# ================================================================== 
     
     return eival, eivec, l2Error, integral, integralError
 
@@ -198,7 +318,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
 # sstype   gradient based ('AS'), linear fit ('OLS') or quadratic fit ('QPHD')
 # nboot    number of bootstrappings
 #-------------------------------------------------------------------------- 
-def ConstantineAS(X=None, f=None, df=None, sstype='AS', nboot=0):
+def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=0):
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
     if sstype == 'OLS':
@@ -216,8 +336,10 @@ def ConstantineAS(X=None, f=None, df=None, sstype='AS', nboot=0):
         eival = ss.eigenvals
         eivec = ss.eigenvecs
     
-    # quadratic polynomial approximation
-    RS = ac.utils.response_surfaces.PolynomialApproximation(2)
+    # quadratic polynomial approximation of maximum degree responseDegree
+    print("response degree: {}".format(responseDegree))
+    RS = ac.utils.response_surfaces.PolynomialApproximation(responseDegree)
+    # RS = ac.utils.response_surfaces.RadialBasisApproximation(responseDegree)
     # Train the surface with active variable values (y = XX.dot(ss.W1)) and function values (f)
     y = X.dot(ss.W1)
     RS.train(y, f)
@@ -228,7 +350,7 @@ def ConstantineAS(X=None, f=None, df=None, sstype='AS', nboot=0):
     errorEval = RS.predict(errorPoints.dot(ss.W1))[0]
     errorFunctionValues = objFunc.eval(errorPoints)
     l2Error = np.linalg.norm((errorEval - errorFunctionValues) / numErrorPoints)
-    print"interpol error {}".format(l2Error)
+    print"interpol error {}".format(l2Error),
     
     # integral
     lb, ub = objFunc.getDomain()
@@ -238,7 +360,7 @@ def ConstantineAS(X=None, f=None, df=None, sstype='AS', nboot=0):
     integral = ac.integrals.av_integrate(lambda x: RS.predict(x)[0], avmap, 1000) * vol  # / (2 ** objFunc.getDim())
 #     print 'Constantine Integral: {:.2f}'.format(int_I)
     integralError = abs(integral - objFunc.getIntegral())
-    print("integral error {}".format(integralError))
+    print(" integral error {}".format(integralError))
         
     return eival, eivec, l2Error, integral, integralError
 
@@ -252,10 +374,10 @@ if __name__ == "__main__":
     parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
     parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
     parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
-    parser.add_argument('--saveFlag', default=0, type=bool, help="save results")
+    parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
     # only relevant for asSGpp and SGpp
     parser.add_argument('--gridType', default='nakbsplineextended', type=str, help="SGpp grid type")
-    parser.add_argument('--degree', default=3, type=int, help="B-spline degree")
+    parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--responseType', default='adaptive', type=str, help="method for response surface creation (regular,adaptive (and detection for asSGpp) ")
     # only relevant for asSGpp
     parser.add_argument('--asmType', default='adaptive', type=str, help="method for ASM creation (regular adaptive)")
@@ -275,13 +397,14 @@ if __name__ == "__main__":
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces_Python/results"
     resultsPath = os.path.join(resultsPath, objFunc.getName())
     if args.method in ['OLS', 'QPHD', 'AS']:
-        folder = args.method + '_' + str(args.maxPoints)
+        folder = args.method + '_' + str(args.maxPoints) + '_' + str(args.degree)
     elif args.method == 'asSGpp': 
         folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType + '_' + args.asmType + '_' + args.integralType
     elif args.method == 'SGpp': 
         folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
     path = os.path.join(resultsPath, folder)     
     
+    numHistogramMCPoints = 100000
     # .... ..... .... Constantines Code .... .... ....
     if args.method in ['AS', 'OLS', 'QPHD']:
         nboot = 100
@@ -294,15 +417,16 @@ if __name__ == "__main__":
             f = objFunc.eval(x, -1, 1)
             if args.method == 'AS':
                 df = objFunc.eval_grad(x, -1, 1)
-                e, v, l2Error, integral, integralError = ConstantineAS(X=x, f=f, df=df, sstype=args.method, nboot=nboot)
+                e, v, l2Error, integral, integralError = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree, \
+                                                                        sstype=args.method, nboot=nboot)
             else:
-                e, v, l2Error, integral, integralError = ConstantineAS(X=x, f=f, sstype=args.method, nboot=nboot)
-            # print("{} points took {}s".format(numSamples, time.time() - start))
+                e, v, l2Error, integral, integralError = ConstantineAS(X=x, f=f, responseDegree=args.degree, \
+                                                                       sstype=args.method, nboot=nboot)
             durations[i] = time.time() - start; l2Errors[i] = l2Error;
             integrals[i] = integral; integralErrors[i] = integralError
             eival[:, i] = e[:, 0]; eivec[:, :, i] = v
             
-    # .... .... .... .... as SG++ .... .... .... ....
+    # .... .... .... active subspace SG++ .... .... .... 
     elif args.method == 'asSGpp':
         initialLevel = 1
         numRefine = 3
@@ -312,8 +436,8 @@ if __name__ == "__main__":
             numASM = numSamples
             e, v, l2Error, integral, integralError = SGppAS(objFunc, args.gridType, args.degree, numASM, numResponse, \
                                                              args.asmType, args.responseType, args.integralType, \
-                                                             numErrorPoints=10000, savePath=path)
-#             print("{} points took {}s".format(numSamples, time.time() - start))
+                                                             numErrorPoints=10000, savePath=path, \
+                                                             numHistogramMCPoints=numHistogramMCPoints)
             durations[i] = time.time() - start; l2Errors[i] = l2Error;
             integrals[i] = integral; integralErrors[i] = integralError
             eival[:, i] = e[:]
@@ -335,10 +459,14 @@ if __name__ == "__main__":
         print("saving Data to {}".format(path))
         if not os.path.exists(path):
             os.makedirs(path)
+        # encapuslate all results and the input in 'data' dictionary and save it
         data = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange, \
-                'durations':durations, 'dim': numDim, 'method':args.method, \
-                'model':args.model, 'gridType':args.gridType, 'degree':args.degree, \
-                'l2Errors': l2Errors, 'integrals':integrals, 'integralErrors': integralErrors}
+                'durations':durations, 'dim': numDim, 'l2Errors': l2Errors, \
+                'integrals':integrals, 'integralErrors': integralErrors, \
+                'model':args.model, 'method':args.method, 'minPoints':args.minPoints, \
+                'maxPoints':args.maxPoints, 'numSteps':args.numSteps, 'gridType':args.gridType, \
+                'degree':args.degree, 'responseType':args.responseType, 'asmType':args.asmType, \
+                'integralType': args.integralType, 'numHistogramMCPoints':numHistogramMCPoints}
         with open(os.path.join(path, 'data.pkl'), 'wb') as fp:
             pickle.dump(data, fp)
 
