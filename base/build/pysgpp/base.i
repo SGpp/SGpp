@@ -7,7 +7,7 @@
 // before the classes are declared themselves.
 //%shared_ptr(sgpp::base::DataVector)
 //%shared_ptr(sgpp::base::DataMatrix)
-//%shared_ptr(sgpp::base::Grid)
+%shared_ptr(sgpp::base::Grid)
 
 %shared_ptr(sgpp::base::OperationMatrix)
 %shared_ptr(sgpp::base::OperationIdentity)
