@@ -24,7 +24,7 @@
 namespace sgpp {
 namespace base {
 /**
-* Anisotropic full grid. Used for example in the sparse grid combination technique.
+* Anisotropic full grid with linear basis function. Used for example in the sparse grid combination technique.
 */
 
 class AnisotropicFullGrid : public Grid {
@@ -56,6 +56,8 @@ public:
 	GridGenerator& getGenerator() override;
 
 	static Grid* unserialize(std::istream& istr);
+
+
 };
 }}
 
