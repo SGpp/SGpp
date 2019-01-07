@@ -36,6 +36,7 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
+#include <sgpp/base/grid/type/AnisotropicFullGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
@@ -152,6 +153,10 @@ Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
 Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
+}
+
+Grid* Grid::createAnisotropicFullGrid(size_t dim, std::vector<size_t> v) {
+	return new AnisotropicFullGrid(dim, v);
 }
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {

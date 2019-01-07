@@ -76,7 +76,9 @@ GridType GridTypeParser::parse(const std::string &input) {
   } else if (inputLower.compare("linearstencil") == 0) {
     return sgpp::base::GridType::LinearStencil;
   } else if (inputLower.compare("modlinearstencil") == 0) {
-    return sgpp::base::GridType::ModLinearStencil;
+      return sgpp::base::GridType::ModLinearStencil;
+  } else if (inputLower.compare("anisotrophicfull") == 0) {
+	  return sgpp::base::GridType::AnisotropicFullGrid;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known GridType";
     throw data_exception(errorMsg.c_str());
@@ -112,7 +114,8 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::ModFundamentalSpline, "ModFundamentalSpline"),
       std::make_pair(GridType::ModBsplineClenshawCurtis, "ModBsplineClenshawCurtis"),
       std::make_pair(GridType::LinearStencil, "LinearStencil"),
-      std::make_pair(GridType::ModLinearStencil, "ModLinearStencil")};
+      std::make_pair(GridType::ModLinearStencil, "ModLinearStencil"),
+	  std::make_pair(GridType::AnisotropicFullGrid, "AnisotropicFull")};
 }();
 } /* namespace datadriven */
 } /* namespace sgpp */
