@@ -43,15 +43,17 @@ void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numMCPoints) {
 }
 
 void ASMatrixNakBspline::createMatrixGauss() {
-  size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
-  sgpp::optimization::NakBsplineScalarProducts scalarProducts(gridType, gridType, degree, degree,
-                                                              quadOrder);
   C.resize(numDim, numDim);
-  for (unsigned int i = 0; i <= C.cols(); i++) {
-    for (unsigned int j = i; j < C.rows(); j++) {
-      double entry = matrixEntryGauss(i, j, scalarProducts);
-      C(i, j) = entry;
-      C(j, i) = entry;
+  {
+    size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
+    sgpp::optimization::NakBsplineScalarProducts scalarProducts(gridType, gridType, degree, degree,
+                                                                quadOrder);
+    for (unsigned int i = 0; i <= C.cols(); i++) {
+      for (unsigned int j = i; j < C.rows(); j++) {
+        double entry = matrixEntryGauss(i, j, scalarProducts);
+        C(i, j) = entry;
+        C(j, i) = entry;
+      }
     }
   }
 }
@@ -123,13 +125,10 @@ void ASMatrixNakBspline::refineSurplusAdaptive(size_t refinementsNum) {
 void ASMatrixNakBspline::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   evaluationPoints.resizeZero(gridStorage.getSize(), numDim);
-  // ToDo (rehmemk) when refining iteratively use the function values from the last steps!
   functionValues.resizeZero(gridStorage.getSize());
-  sgpp::base::DataVector gridPointVector(gridStorage.getDimension());
+
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-      gridPointVector[d] = gridStorage.getPointCoordinate(i, d);
-    }
+    sgpp::base::DataVector gridPointVector = gridStorage.getPointCoordinates(i);
     evaluationPoints.setRow(i, gridPointVector);
     functionValues[i] = objectiveFunc->eval(gridPointVector);
   }
@@ -145,6 +144,7 @@ void ASMatrixNakBspline::calculateInterpolationCoefficients() {
   coefficients = alpha;
 }
 
+// ToDo (rehmemk) Parallelize this?
 double ASMatrixNakBspline::matrixEntryGauss(
     size_t i, size_t j, sgpp::optimization::NakBsplineScalarProducts& scalarProducts) {
   double entry = 0.0;

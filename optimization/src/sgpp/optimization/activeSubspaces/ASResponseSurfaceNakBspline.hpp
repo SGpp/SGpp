@@ -30,6 +30,8 @@
 #include <string>
 #include <vector>
 
+#include "/home/rehmemk/git/cddlib/lib-src/cdd.h"
+
 namespace sgpp {
 namespace optimization {
 
@@ -94,7 +96,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    */
   void createAdaptiveReducedSurfaceWithPseudoInverse(
       size_t maxNumGridPoints, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
-      size_t initialLevel = 1);
+      size_t initialLevel = 1, size_t refinementsNum = 3);
 
   /**
    * evalauted the reduced response surface in a point v from the original parameter space. I.e. it
@@ -114,6 +116,11 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @return			evaluation at the (transformed) point
    */
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
+
+  /**
+   * evaluates the 1D interpolant along the 1D active subspace
+   */
+  double eval1D(double x);
 
   /**
    * Calculates an approximation for the integral of the objective function using Monte carlo
@@ -141,8 +148,32 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    *'MC' for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point
    *sequences uniform uniform @return the integral
    */
-  double getContinuousIntegral(size_t level, size_t numHistogramMCPoints,
-                               std::string pointStrategy = "MC");
+  double getHistogramBasedIntegral(size_t level, size_t numHistogramMCPoints,
+                                   std::string pointStrategy = "MC");
+
+  double getSplineBasedIntegral(size_t level, size_t volDegree = 3);
+
+  double getIntegralFromVolumeInterpolant(std::shared_ptr<sgpp::base::Grid> volGrid,
+                                          sgpp::base::DataVector volCoefficients, size_t volDegree);
+
+  /**
+   * @return the interpolation grid
+   */
+  std::shared_ptr<sgpp::base::Grid> getGrid() { return grid; }
+
+  /**
+   * @return the interpolation coefficients
+   */
+  sgpp::base::DataVector getCoefficients() { return coefficients; }
+
+  /**
+   * @return the boundary of the active subspace
+   */
+  inline sgpp::base::DataVector getBounds() {
+    sgpp::base::DataVector bounds(2, leftBound1D);
+    bounds[1] = rightBound1D;
+    return bounds;
+  }
 
  private:
   // grid Type of the response surface
@@ -163,6 +194,13 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double leftBound1D = 0.0;
 
   // ----------------- auxiliary routines -----------
+  int factorial(size_t n);
+  double xpowplus(double x, size_t n);
+  double w(size_t v, Eigen::VectorXd xi);
+  double Mspline(double x, Eigen::VectorXd xi);
+  dd_MatrixPtr createHPolytope(std::vector<int> permutations);
+  double simplexWiseVolume(Eigen::MatrixXd& projectedCorners);
+  double evalSimplexWiseVolume(double x, double simplexVolume, Eigen::MatrixXd projectedCorners);
 
   /**
    * Creates a Histogram for uniform points (grid width = delta) and a set of random points in the
@@ -196,11 +234,11 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param pointStrategy 			strategy how the Monte Carlo points are chosen. 'MC'
    * for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point sequences
    */
-  void continuousIntervalQuadrature(size_t level, size_t numHistogramMCPoints, size_t quadDegree,
-                                    sgpp::base::GridType quadGridType,
-                                    std::shared_ptr<sgpp::base::Grid>& quadGrid,
-                                    sgpp::base::DataVector& quadCoefficients,
-                                    std::string pointStrategy = "MC");
+  void histogramIntervalQuadrature(size_t level, size_t numHistogramMCPoints, size_t quadDegree,
+                                   sgpp::base::GridType quadGridType,
+                                   std::shared_ptr<sgpp::base::Grid>& quadGrid,
+                                   sgpp::base::DataVector& quadCoefficients,
+                                   std::string pointStrategy = "MC");
 
   /**
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
