@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostrem>
 
 namespace sgpp {
 namespace base {
