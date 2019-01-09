@@ -10,7 +10,7 @@
 namespace sgpp {
 namespace datadriven {
 
-const base::RegularGridConfiguration &FitterConfiguration::getGridConfig() const {
+const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
 
@@ -56,8 +56,8 @@ const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
   return learnerConfig;
 }
 
-base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
-  return const_cast<base::RegularGridConfiguration&>(
+base::GeneralGridConfiguration& FitterConfiguration::getGridConfig() {
+  return const_cast<base::GeneralGridConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getGridConfig());
 }
 
