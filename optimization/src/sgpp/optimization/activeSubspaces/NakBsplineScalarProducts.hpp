@@ -31,7 +31,7 @@ class NakBsplineScalarProducts {
    *
    * @param gridType1          	type of the first basis
    * @param gridType2			type of the second basis
-   * @param degree1				degree of the firtst basis
+   * @param degree1				degree of the firts basis
    * @param degree2 			degree of the second basis
    * @param quadOrder			order for the quadrature
    */
@@ -70,11 +70,16 @@ class NakBsplineScalarProducts {
    * @return  integral (derivative of) first basis function * (derivative of) second basis
    * function
    */
-  double univariateScalarProduct(unsigned int level1, unsigned int index1, bool dx1,
-                                 unsigned int level2, unsigned int index2, bool dx2);
+  double hierarchicalScalarProduct(unsigned int level1, unsigned int index1, bool dx1,
+                                   unsigned int level2, unsigned int index2, bool dx2);
 
   /**
-   * used to get the support segments of a not a knot b-spline basis functions.
+   *
+   */
+  double msplineScalarProduct(unsigned int level, unsigned int index, sgpp::base::DataVector xi);
+
+  /**
+   * used to get the support segments of a not a knot B-spline basis functions.
    *
    * @param level	level of the B-spline basis function
    * @param index	index of the B-spline basis function

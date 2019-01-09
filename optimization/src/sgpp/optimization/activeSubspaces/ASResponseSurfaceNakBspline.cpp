@@ -261,23 +261,10 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t level, size_t 
     return -1;
   }
   dd_set_global_constants();  // For cdd this must be called in the beginning.
-
-  // matrix containing the orthogonally projected simplex corners (columnwise)
   size_t dim = W1.rows();
+  // matrix containing the orthogonally projected simplex corners (columnwise)
   Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
   double simplexVolume = simplexWiseVolume(projectedCorners);
-  //  std::cout << "projected corners:\n" << projectedCorners << "\n";
-  //  std::cout << "simplex volumes:\n" << simplexVolumes << "\n---\n";
-
-  //  size_t nPoints = 100;
-  //  Eigen::VectorXd B(nPoints);
-  //  Eigen::VectorXd X(nPoints);
-  //  for (size_t i = 0; i < nPoints; i++) {
-  //    double x = static_cast<double>(i) / static_cast<double>(nPoints) * 1.31306;
-  //    X(i) = x;
-  //    B(i) = evalSimplexWiseVolume(x, projectedCorners, simplexVolumes);
-  //  }
-  //  std::cout << "X:\n" << X.transpose() << "\nB:\n" << B.transpose() << "\n";
 
   auto volGrid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(1, volDegree);
   volGrid->getGenerator().regular(level);
@@ -289,7 +276,6 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t level, size_t 
         leftBound1D + (rightBound1D - leftBound1D) * volGridStorage.getPointCoordinate(i, 0);
     //  std::cout << "point: " << point << "\n";
     volumes[i] = evalSimplexWiseVolume(point, simplexVolume, projectedCorners);
-    //  std::cout << "vol[i]: " << volumes[i] << "\n";
   }
 
   sgpp::optimization::HierarchisationSLE hierSLE(*volGrid);
@@ -322,7 +308,7 @@ double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
   for (size_t k = 0; k < coefficients.getSize(); k++) {
     for (size_t l = 0; l < volCoefficients.getSize(); l++) {
       integral += coefficients[k] * volCoefficients[l] *
-                  scalarProducts.univariateScalarProduct(gridStorage.getPointLevel(k, 0),
+                  scalarProducts.hierarchicalScalarProduct(gridStorage.getPointLevel(k, 0),
                                                          gridStorage.getPointIndex(k, 0), false,
                                                          volGridStorage.getPointLevel(l, 0),
                                                          volGridStorage.getPointIndex(l, 0), false);
@@ -334,34 +320,6 @@ double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
 // ----------------- auxiliary routines -----------
 int ASResponseSurfaceNakBspline::factorial(size_t n) {
   return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
-}
-
-double ASResponseSurfaceNakBspline::xpowplus(double x, size_t n) {
-  if (x >= 0)
-    return std::pow(x, static_cast<double>(n));
-  else
-    return 0.0;
-}
-
-double ASResponseSurfaceNakBspline::w(size_t v, Eigen::VectorXd xi) {
-  double res = 1.0;
-  for (unsigned int i = 0; i < xi.size(); i++) {
-    if (i != v) {
-      res *= (xi(v) - xi(i));
-    }
-  }
-  return res;
-}
-
-double ASResponseSurfaceNakBspline::Mspline(double x, Eigen::VectorXd xi) {
-  double res = 0.0;
-  size_t n = xi.size() - 1;
-  for (size_t v = 0; v < n + 1; v++) {
-    //    std::cout << "v " << v << " x+ " << xpowplus(xi[v] - x, n - 1) << " w " << w(v, xi) <<
-    //    "\n";
-    res += (static_cast<double>(n) * xpowplus(xi[v] - x, n - 1)) / w(v, xi);
-  }
-  return res;
 }
 
 dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permutations) {
@@ -414,7 +372,7 @@ double ASResponseSurfaceNakBspline::simplexWiseVolume(Eigen::MatrixXd& projected
 
     projectedCorners.col(i) = (W1.transpose() * V).transpose();
 
-    // calculate only one as it is equal for all simplices
+    // calculate only once as it is equal for all simplices
     if (i == 0) {
       Eigen::MatrixXd D(dim, dim);
       for (unsigned int k = 1; k <= dim; k++) {
@@ -430,8 +388,17 @@ double ASResponseSurfaceNakBspline::simplexWiseVolume(Eigen::MatrixXd& projected
 double ASResponseSurfaceNakBspline::evalSimplexWiseVolume(double x, double simplexVolume,
                                                           Eigen::MatrixXd projectedCorners) {
   double res = 0.0;
+
+  //  res = Mspline(x, projectedCorners.col(0));
+  MSplineBasis mSplineBasis;
   for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
-    res += Mspline(x, projectedCorners.col(i));
+    // the iterative M-spline definition needs sorted input knots and unique knots
+    sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
+    std::sort(xi.begin(), xi.end());
+    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
+    xi.resize(std::distance(xi.begin(), it));
+    res += mSplineBasis.eval(xi.getSize() - 1, 0, x, xi);
+    //    res += mSplineBasis.evalTruncated(x, projectedCorners.col(i));
   }
   return simplexVolume * res;
 }

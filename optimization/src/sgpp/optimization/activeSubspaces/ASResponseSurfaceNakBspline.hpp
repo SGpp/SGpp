@@ -17,6 +17,7 @@
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
+#include <sgpp/optimization/activeSubspaces/MSplineBasis.hpp>
 #include <sgpp/optimization/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -26,6 +27,7 @@
 #include <sgpp/optimization/tools/HaltonSequence.hpp>
 #include <sgpp/optimization/tools/SobolSequence.hpp>
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <vector>
@@ -195,9 +197,6 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   // ----------------- auxiliary routines -----------
   int factorial(size_t n);
-  double xpowplus(double x, size_t n);
-  double w(size_t v, Eigen::VectorXd xi);
-  double Mspline(double x, Eigen::VectorXd xi);
   dd_MatrixPtr createHPolytope(std::vector<int> permutations);
   double simplexWiseVolume(Eigen::MatrixXd& projectedCorners);
   double evalSimplexWiseVolume(double x, double simplexVolume, Eigen::MatrixXd projectedCorners);
