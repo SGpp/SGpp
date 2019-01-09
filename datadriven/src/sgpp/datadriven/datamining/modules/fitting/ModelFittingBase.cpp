@@ -52,8 +52,6 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) co
     tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::ModLinear) {
     tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
-  } else if(gridConfig.type_ == GridType::AnisotropicFullGrid){
-	tmpGrid = Grid::createAnisotropicFullGrid(gridConfig.dim_, gridConfig.levelVector_);
  } else {
     throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
   }
