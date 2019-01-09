@@ -215,9 +215,9 @@ bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &confi
     // parse general grid type
     if (fitterConfig->contains("generalGridType")){
     	if((*fitterConfig)["generalGridType"].size() == 1){
-    		config.type_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"].get());
+    		config.generalType_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"].get());
     	} else {
-    		config.type_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"]["value"].get());
+    		config.generalType_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"]["value"].get());
     	}
     }
 
