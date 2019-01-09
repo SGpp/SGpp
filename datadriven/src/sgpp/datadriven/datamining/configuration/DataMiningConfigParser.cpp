@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -194,8 +195,8 @@ bool DataMiningConfigParser::getFitterConfigType(FitterType &config,
   return hasFitterConfig;
 }
 
-bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &config,
-                                                 const RegularGridConfiguration &defaults) const {
+bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &config,
+                                                 const GeneralGridConfiguration &defaults) const {
   bool hasFitterGridConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("gridConfig") : false;
 
@@ -204,10 +205,21 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
     config.dim_ = parseUInt(*fitterConfig, "dim", defaults.dim_, "gridConfig");
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
+    config.levelVector_ = static_cast<std::vector<size_t>>(
+    		parseUIntArray(*fitterConfig, "levelVector", defaults.levelVector_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");
     config.boundaryLevel_ = static_cast<unsigned int>(
         parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig"));
     config.filename_ = parseString(*fitterConfig, "fileName", defaults.filename_, "gridConfig");
+
+    // parse general grid type
+    if (fitterConfig->contains("generalGridType")){
+    	if((*fitterConfig)["generalGridType"].size() == 1){
+    		config.type_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"].get());
+    	} else {
+    		config.type_ = GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"]["value"].get());
+    	}
+    }
 
     // parse  grid type
     if (fitterConfig->contains("gridType")) {
