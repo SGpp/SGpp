@@ -205,6 +205,8 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
     config.dim_ = parseUInt(*fitterConfig, "dim", defaults.dim_, "gridConfig");
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
+    config.levelVector_ = static_cast<std::vector<size_t>>(parseUIntArray(
+    		*fitterConfig,"levelVector", defaults.levelVector_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");
     config.boundaryLevel_ = static_cast<unsigned int>(
         parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig"));
