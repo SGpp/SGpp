@@ -22,7 +22,7 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::RegularGridConfiguration;
+using sgpp::base::GeneralGridConfiguration;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverConfiguration;
 
@@ -142,7 +142,7 @@ class ModelFittingBase {
    * @param gridConfig configuration for the grid object
    * @return new grid object that is owned by the caller.
    */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig) const;
+  Grid *buildGrid(const GeneralGridConfiguration &gridConfig) const;
 
   /**
    * Factory member function to build the solver for the least squares regression problem according

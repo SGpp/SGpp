@@ -27,7 +27,7 @@ using base::Grid;
 using base::GridPoint;
 using base::factory_exception;
 using base::GridGenerator;
-using base::RegularGridConfiguration;
+using base::GeneralGridConfiguration;
 using base::application_exception;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverType;
@@ -40,7 +40,7 @@ ModelFittingBase::ModelFittingBase()
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
+Grid *ModelFittingBase::buildGrid(const GeneralGridConfiguration &gridConfig) const {
   // load grid
   Grid *tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
