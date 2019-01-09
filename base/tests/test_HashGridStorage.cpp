@@ -442,7 +442,7 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
   BOOST_CHECK_EQUAL(s.getSize(), 81U);
 }
 
-BOOST_AUTO_TEST_CASE(testAnisotrophicFull){
+BOOST_AUTO_TEST_CASE(testAnisotropicFull){
 	HashGridStorage s(2);
 	HashGenerator g;
 	std::vector<size_t> vec {2,3};

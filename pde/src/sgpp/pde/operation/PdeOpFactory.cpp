@@ -266,10 +266,6 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base:
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary(m, &grid);
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new pde::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(m, &grid);
-  } else if (grid.getType() == base::GridType::AnisotropicFullGrid){
-	//return new pde::OperationMatrixLTwoDotExplicitAnisotropicFullGrid(m, &grid);
-	throw base::factory_exception(
-			"PdeOpFactory::OperationLTwoDotExplicit is not JET implemented for AnisotropicFullGrids");
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");

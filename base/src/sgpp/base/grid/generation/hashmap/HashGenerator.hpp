@@ -147,7 +147,7 @@ class HashGenerator {
 		  throw generation_exception("storage not empty");
 	  }
 
-	  this->createAnisotrophicFullGrid(storage, dimlevels);
+	  this->createAnisotropicFullGrid(storage, dimlevels);
   }
 
   /**
@@ -866,7 +866,7 @@ class HashGenerator {
     }
   }
 
-  void createAnisotrophicFullGrid(GridStorage& storage,  std::vector<size_t> v) {
+  void createAnisotropicFullGrid(GridStorage& storage,  std::vector<size_t> v) {
 
 	if(storage.getDimension()!=v.size()){
 		std::cout <<"Storage dimension doesn't fit vector size!";

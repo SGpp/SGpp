@@ -57,7 +57,6 @@ enum class GridType {
   ModPolyClenshawCurtis,         // 29
   ModLinearClenshawCurtis,       // 30
   NakBsplineBoundaryCombigrid,   // 31
-  AnisotropicFullGrid			 // 32
 };
 
 /**
@@ -665,15 +664,6 @@ class Grid {
     * @return grid
     */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
-
-  /**
-   * creates an anisotropic full grid
-   * @param dim the grid's dimension
-   * @param v the vector containing the refinement level for each dimension
-   * @return grid
-   */
-
-  static Grid* createAnisotropicFullGrid(size_t dim, std::vector<size_t> v);
 
   /**
    * reads a grid out of a string
