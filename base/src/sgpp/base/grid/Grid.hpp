@@ -82,7 +82,7 @@ struct GeneralGridConfiguration {
   size_t dim_;
   /// number of levels
   int level_;
-  /// vector of levels for each dimension in the anisotropic case
+  /// vector of levels for each dimension
   std::vector<size_t> levelVector_;
   /// max. polynomial degree for poly basis
   size_t maxDegree_ = 1;
