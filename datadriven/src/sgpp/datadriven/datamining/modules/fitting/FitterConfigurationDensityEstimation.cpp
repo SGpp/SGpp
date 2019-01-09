@@ -25,6 +25,8 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   // configure initial grid
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
+  gridConfig.levelVector_ = std::vector<size_t>();
+  gridConfig.generalType_ = sgpp::base::GeneralGridType::RegularSparseGrid;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
