@@ -57,7 +57,12 @@ Grid *ModelFittingBase::buildGrid(const GeneralGridConfiguration &gridConfig) co
   }
 
   GridGenerator &gridGen = tmpGrid->getGenerator();
-  gridGen.regular(gridConfig.level_);
+  if(gridConfig.generalType_ == base::GeneralGridType::RegularSparseGrid){
+	  gridGen.regular(gridConfig.level_);
+  } else if(gridConfig.generalType_ == base::GeneralGridType::ComponentGrid){
+	  gridGen.anisotropicFull(gridConfig.levelVector_);
+  }
+
   return tmpGrid;
 }
 
