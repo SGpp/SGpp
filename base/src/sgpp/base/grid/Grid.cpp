@@ -155,9 +155,6 @@ Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
 
-Grid* Grid::createAnisotropicFullGrid(size_t dim, std::vector<size_t> v) {
-	return new AnisotropicFullGrid(dim, v);
-}
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
