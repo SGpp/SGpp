@@ -13,6 +13,9 @@ additionalDependencies = []
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
 
+if env["USE_SCALAPACK"]:
+    additionalDependencies += ["scalapack"]
+
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
 module.scanSource()
