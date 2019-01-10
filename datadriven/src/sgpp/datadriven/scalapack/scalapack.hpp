@@ -30,4 +30,7 @@ void pdlaset_(char &uplo, int &m, int &n, double &alpha, double &beta, double *a
 
 void pdlaprnt_(int &m, int &n, double *a, int &ia, int &ja, int *desca, int &irprnt, int &icprnt,
                const char *cmatnm, int &nout, double *work);
+
+void descinit_(int *desc, int m, int n, int mb, int nb, int irsrc, int icsrc, int ictxt, int lld,
+               int info);
 }
