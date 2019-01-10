@@ -1,5 +1,8 @@
-#include <sgpp/base/scalapack/blacs.hpp>
-#include <sgpp/base/scalapack/scalapack.hpp>
+
+#ifdef USE_SCALAPACK
+
+#include <sgpp/datadriven/scalapack/blacs.hpp>
+#include <sgpp/datadriven/scalapack/scalapack.hpp>
 
 #include <mpi.h>
 #include <stdio.h>
@@ -17,7 +20,10 @@
 #define LLD_ 8
 #define ITHVAL_ 9
 
+#endif /* USE_SCALAPACK */
+
 int main(int argc, char** argv) {
+#ifdef USE_SCALAPACK
   // generate matrices
   int m = 8;
   int n = 8;
@@ -75,7 +81,7 @@ int main(int argc, char** argv) {
   int nout = 0;
 
   // pdlaprnt_(m, n, A.data(), ia, ja, desca, irprnt, icprnt, identifier.c_str(), nout,
-  // work.data());
+  // work.data())
 
   std::cout << "A: " << std::endl;
   for (int i = 0; i < m; i++) {
@@ -90,4 +96,6 @@ int main(int argc, char** argv) {
 
   int cont = 0;
   blacs_exit_(cont);
+
+#endif /*USE_SCALAPACK*/
 }

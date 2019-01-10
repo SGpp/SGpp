@@ -268,6 +268,8 @@ def checkScaLAPACK(config):
   if config.env["USE_SCALAPACK"]:
     if not config.CheckLib(["scalapack"], language="c++", autoadd=0):
       Helper.printErrorAndExit("scalapack not found, but required for ScaLAPACK")
+    
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
 
 def checkZlib(config):
 #zlib needed for datamining
