@@ -36,7 +36,7 @@ class SurplusCoarseningFunctor : public CoarseningFunctor {
    */
   ~SurplusCoarseningFunctor() override;
 
-  double operator()(GridStorage& storage, size_t seq) override;
+  double operator()(GridStorage& storage, size_t seq) const override;
 
   double start() const override;
 

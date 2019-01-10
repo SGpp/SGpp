@@ -40,7 +40,7 @@ class CoarseningFunctor {
    *
    * @return refinement value
    */
-  virtual double operator()(GridStorage& storage, size_t seq) = 0;
+  virtual double operator()(GridStorage& storage, size_t seq) const = 0;
 
   /**
    * This should return the initial value of coarsening criterion (e.g. alpha or error).
