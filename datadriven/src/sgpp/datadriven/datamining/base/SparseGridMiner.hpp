@@ -23,7 +23,7 @@ namespace datadriven {
 
 /**
  * SparseGridMiner models the entire mining process for data mining with sparse grids. It aggregates
- * and automates data input, fitting and validation modules and controlls the mining process.
+ * and automates data input, fitting and validation modules and controls the mining process.
  */
 class SparseGridMiner {
  public:
