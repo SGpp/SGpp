@@ -210,7 +210,6 @@ double ASResponseSurfaceNakBspline::getMCIntegral(size_t numMCPoints, size_t num
   sgpp::base::DataVector point(1, 0);
   for (size_t j = 0; j < numMCPoints; j++) {
     point[0] = (points[j] - leftBound1D) / (rightBound1D - leftBound1D);
-    //    std::cout << point[0] << " " << interpolant->eval(point) << " " << weights[j] << "\n";
     integral += weights[j] * interpolant->eval(point);
   }
   return integral;
@@ -232,29 +231,11 @@ double ASResponseSurfaceNakBspline::getHistogramBasedIntegral(size_t level,
   histogramIntervalQuadrature(level, numHistogramMCPoints, volDegree, volGridType, volGrid,
                               volCoefficients, pointStrategy);
 
-  // ---------DEBUG-------
-  //  sgpp::optimization::InterpolantScalarFunction quadInt(*quadGrid, quadCoefficients);
-  //  sgpp::optimization::InterpolantScalarFunction Int(*grid, coefficients);
-  //  sgpp::base::DataVector pointi(1, 0.0);
-  //  size_t npi = 100;
-  //  sgpp::base::DataVector quadRes(npi + 1);
-  //  sgpp::base::DataVector Res(npi + 1);
-  //  for (size_t i = 0; i < npi + 1; i++) {
-  //    pointi[0] = static_cast<double>(i) / static_cast<double>(npi);
-  //    quadRes[i] = quadInt.eval(pointi);
-  //    Res[i] = Int.eval(pointi);
-  //  }
-  //  std::cout << "qRes:\n" << quadRes.toString() << "\n";
-  //  std::cout << "Res:\n" << Res.toString() << "\n";
-  // ------------
-
   double integral = getIntegralFromVolumeInterpolant(volGrid, volCoefficients, volDegree);
   return integral;
 }
 
-// ToDo (rehmemk) nterpolating the ;-Spline with B-splines is of course nonsense. Rewrite the scalar
-// product routine s.t. it allows directly using the M-spline
-double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t level, size_t volDegree) {
+double ASResponseSurfaceNakBspline::getSplineBasedIntegral() {
   if (W1.cols() != 1) {
     std::cerr << "ASResponseSurface::getSplineBasedIntegral currently supports only 1D active "
                  "subspaces\n";
@@ -266,26 +247,22 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t level, size_t 
   Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
   double simplexVolume = simplexWiseVolume(projectedCorners);
 
-  auto volGrid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(1, volDegree);
-  volGrid->getGenerator().regular(level);
-  sgpp::base::GridStorage& volGridStorage = volGrid->getStorage();
-  sgpp::base::DataVector volumes(volGridStorage.getSize());
-  for (size_t i = 0; i < volGridStorage.getSize(); i++) {
-    //  size_t i = 7;
-    double point =
-        leftBound1D + (rightBound1D - leftBound1D) * volGridStorage.getPointCoordinate(i, 0);
-    //  std::cout << "point: " << point << "\n";
-    volumes[i] = evalSimplexWiseVolume(point, simplexVolume, projectedCorners);
+  size_t quadOrder = ((degree > dim + 1 ? degree : dim + 1) + 2) / 2;
+
+  sgpp::optimization::MSplineNakBsplineScalarProducts scalarProducts(gridType, degree, quadOrder);
+  double integral = 0.0;
+  for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
+    // the iterative M-spline definition needs sorted input knots and unique knots
+    sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
+    std::sort(xi.begin(), xi.end());
+    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
+    xi.resize(std::distance(xi.begin(), it));
+
+    double simplexIntegral = scalarProducts.calculateScalarProduct(grid, coefficients, xi);
+    integral += simplexIntegral;
   }
 
-  sgpp::optimization::HierarchisationSLE hierSLE(*volGrid);
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
-  sgpp::base::DataVector volCoefficients;
-  if (!sleSolver.solve(hierSLE, volumes, volCoefficients)) {
-    std::cerr << "ASMatrixNakBspline: Solving failed.\n";
-  }
-  double integral = getIntegralFromVolumeInterpolant(volGrid, volCoefficients, volDegree);
-  return integral;
+  return simplexVolume * integral;
 }
 
 double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
@@ -296,24 +273,13 @@ double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
                  "active subspaces\n";
     return -1;
   }
-  double integral = 0.0;
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-
-  sgpp::base::GridStorage& volGridStorage = volGrid->getStorage();
   sgpp::base::GridType volGridType = volGrid->getType();
   size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
 
   sgpp::optimization::NakBsplineScalarProducts scalarProducts(gridType, volGridType, degree,
                                                               volDegree, quadOrder);
-  for (size_t k = 0; k < coefficients.getSize(); k++) {
-    for (size_t l = 0; l < volCoefficients.getSize(); l++) {
-      integral += coefficients[k] * volCoefficients[l] *
-                  scalarProducts.hierarchicalScalarProduct(gridStorage.getPointLevel(k, 0),
-                                                         gridStorage.getPointIndex(k, 0), false,
-                                                         volGridStorage.getPointLevel(l, 0),
-                                                         volGridStorage.getPointIndex(l, 0), false);
-    }
-  }
+  double integral =
+      scalarProducts.calculateScalarProduct(grid, coefficients, volGrid, volCoefficients);
   return integral * (rightBound1D - leftBound1D);
 }
 
@@ -389,7 +355,6 @@ double ASResponseSurfaceNakBspline::evalSimplexWiseVolume(double x, double simpl
                                                           Eigen::MatrixXd projectedCorners) {
   double res = 0.0;
 
-  //  res = Mspline(x, projectedCorners.col(0));
   MSplineBasis mSplineBasis;
   for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
     // the iterative M-spline definition needs sorted input knots and unique knots

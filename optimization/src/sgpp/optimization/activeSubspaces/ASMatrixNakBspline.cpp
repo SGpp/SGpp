@@ -174,19 +174,19 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(
     if ((d == i && i != j)) {
       // int d/dxi b_{k_i} (x_i) b_{l_i} (x_i) dxi
       integral1D =
-          scalarProducts.hierarchicalScalarProduct(levelk, indexk, true, levell, indexl, false);
+          scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, false);
     } else if (d == j && i != j) {
       // int b_{k_j} (x_j) d/dxj b_{l_j} (x_j) dxj
       integral1D =
-          scalarProducts.hierarchicalScalarProduct(levelk, indexk, false, levell, indexl, true);
+          scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, true);
     } else if (d == i && i == j) {
       // int d/dxi b_{k_i} (xi) d/dxi b_{l_i} (xi) dxi
       integral1D =
-          scalarProducts.hierarchicalScalarProduct(levelk, indexk, true, levell, indexl, true);
+          scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, true);
     } else {
       // int b_{k_d} (x_d) b_{l_d} (x_d) dxd
       integral1D =
-          scalarProducts.hierarchicalScalarProduct(levelk, indexk, false, levell, indexl, false);
+          scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, false);
     }
     if (integral1D == 0) return 0.0;
     integral *= integral1D;

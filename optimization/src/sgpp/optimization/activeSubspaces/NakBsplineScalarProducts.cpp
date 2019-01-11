@@ -5,7 +5,7 @@
 
 // #ifdef USE_EIGEN
 
-#include "NakBsplineScalarProducts.hpp"
+#include <sgpp/optimization/activeSubspaces/NakBsplineScalarProducts.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -25,9 +25,9 @@ std::unique_ptr<sgpp::base::SBasis> NakBsplineScalarProducts::initializeBasis(
   }
 }
 
-double NakBsplineScalarProducts::hierarchicalScalarProduct(unsigned int level1, unsigned int index1,
-                                                           bool dx1, unsigned int level2,
-                                                           unsigned int index2, bool dx2) {
+double NakBsplineScalarProducts::basisScalarProduct(unsigned int level1, unsigned int index1,
+                                                    bool dx1, unsigned int level2,
+                                                    unsigned int index2, bool dx2) {
   std::map<asMatrixHashType, double>::iterator it;
   asMatrixHashType hashKey = std::make_tuple(level1, index1, dx1, level2, index2, dx2);
   // Check if this scalar products has already been caluclated and is stored
@@ -73,6 +73,7 @@ double NakBsplineScalarProducts::hierarchicalScalarProduct(unsigned int level1, 
       segmentCoordinates.mult(commonSupport[i + 1] - commonSupport[i]);
       base::DataVector leftVector(segmentCoordinates.getSize(), commonSupport[i]);
       segmentCoordinates.add(leftVector);
+
       double segmentIntegral = 0;
       for (size_t j = 0; j < segmentCoordinates.getSize(); j++) {
         segmentIntegral += weights[j] * func(segmentCoordinates[j]);
@@ -85,8 +86,22 @@ double NakBsplineScalarProducts::hierarchicalScalarProduct(unsigned int level1, 
   }
 }
 
-double msplineScalarProduct(unsigned int level, unsigned int index, sgpp::base::DataVector xi) {
-  return 0.0;
+double NakBsplineScalarProducts::calculateScalarProduct(std::shared_ptr<sgpp::base::Grid> grid1,
+                                                        sgpp::base::DataVector coeff1,
+                                                        std::shared_ptr<sgpp::base::Grid> grid2,
+                                                        sgpp::base::DataVector coeff2) {
+  sgpp::base::GridStorage& gridStorage1 = grid1->getStorage();
+  sgpp::base::GridStorage& gridStorage2 = grid2->getStorage();
+  double sp = 0.0;
+  for (size_t k = 0; k < coeff1.getSize(); k++) {
+    for (size_t l = 0; l < coeff2.getSize(); l++) {
+      sp += coeff1[k] * coeff2[l] *
+            basisScalarProduct(gridStorage1.getPointLevel(k, 0), gridStorage1.getPointIndex(k, 0),
+                               false, gridStorage2.getPointLevel(l, 0),
+                               gridStorage2.getPointIndex(l, 0), false);
+    }
+  }
+  return sp;
 }
 
 sgpp::base::DataVector NakBsplineScalarProducts::nakBSplineSupport(size_t level, size_t index,

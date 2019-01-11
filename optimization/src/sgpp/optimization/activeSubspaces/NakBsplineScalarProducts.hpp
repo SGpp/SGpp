@@ -70,24 +70,25 @@ class NakBsplineScalarProducts {
    * @return  integral (derivative of) first basis function * (derivative of) second basis
    * function
    */
-  double hierarchicalScalarProduct(unsigned int level1, unsigned int index1, bool dx1,
-                                   unsigned int level2, unsigned int index2, bool dx2);
+  double basisScalarProduct(unsigned int level1, unsigned int index1, bool dx1, unsigned int level2,
+                            unsigned int index2, bool dx2);
 
   /**
+   * calculates the scalar product of two sparse grid nak B-spline interpolants given through their
+   * grids and coefficients
+   *
+   * @param grid1	grid of the first interpolant
+   * @param coeff1	coefficients of the first intepolant
+   * @param grid2 	grid of the second interpolant
+   * @param coeff2	coefficients of the second interpolant
+   *
+   * @return the scalar product \int \sum coeff1_i b_i(x) \sum coeff2_jb_j(x) dx
    *
    */
-  double msplineScalarProduct(unsigned int level, unsigned int index, sgpp::base::DataVector xi);
-
-  /**
-   * used to get the support segments of a not a knot B-spline basis functions.
-   *
-   * @param level	level of the B-spline basis function
-   * @param index	index of the B-spline basis function
-   * @param degree	degree of the B-spline basis function
-   *
-   * @return the indices of the segments of the not a knot B-spline basis functions support
-   */
-  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index, size_t degree);
+  double calculateScalarProduct(std::shared_ptr<sgpp::base::Grid> grid1,
+                                sgpp::base::DataVector coeff1,
+                                std::shared_ptr<sgpp::base::Grid> grid2,
+                                sgpp::base::DataVector coeff2);
 
  private:
   // type of first and second basis
@@ -110,6 +111,17 @@ class NakBsplineScalarProducts {
   // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to
   // calculated again if the same combination of indices, levels and dx is queried
   std::map<asMatrixHashType, double> innerProducts;
+
+  /**
+   * used to get the support segments of a not a knot B-spline basis functions.
+   *
+   * @param level	level of the B-spline basis function
+   * @param index	index of the B-spline basis function
+   * @param degree	degree of the B-spline basis function
+   *
+   * @return the indices of the segments of the not a knot B-spline basis functions support
+   */
+  sgpp::base::DataVector nakBSplineSupport(size_t level, size_t index, size_t degree);
 };
 
 }  // namespace optimization

@@ -18,6 +18,7 @@
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/activeSubspaces/MSplineBasis.hpp>
+#include <sgpp/optimization/activeSubspaces/MSplineNakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
@@ -153,7 +154,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double getHistogramBasedIntegral(size_t level, size_t numHistogramMCPoints,
                                    std::string pointStrategy = "MC");
 
-  double getSplineBasedIntegral(size_t level, size_t volDegree = 3);
+  double getSplineBasedIntegral();
 
   double getIntegralFromVolumeInterpolant(std::shared_ptr<sgpp::base::Grid> volGrid,
                                           sgpp::base::DataVector volCoefficients, size_t volDegree);

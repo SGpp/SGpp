@@ -171,16 +171,16 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
       unsigned int indexJ = basisJ.getIndex(0);
       result_ff +=
           alpha[i] * alpha[j] *
-          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
+          scalarProducts.basisScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
       result_dff +=
           alpha[i] * alpha[j] *
-          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, true);
+          scalarProducts.basisScalarProduct(levelI, indexI, false, levelJ, indexJ, true);
       result_dfdf +=
           alpha[i] * alpha[j] *
-          scalarProducts.univariateScalarProduct(levelI, indexI, true, levelJ, indexJ, true);
+          scalarProducts.basisScalarProduct(levelI, indexI, true, levelJ, indexJ, true);
       result_fg +=
           alpha[i] * alpha2[j] *
-          scalarProducts.univariateScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
+          scalarProducts.basisScalarProduct(levelI, indexI, false, levelJ, indexJ, false);
     }
   }
   double epsilon = 1e-15;
