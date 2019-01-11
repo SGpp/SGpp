@@ -53,7 +53,7 @@ Grid *ModelFittingBase::buildGrid(const GeneralGridConfiguration &gridConfig) co
   } else if (gridConfig.type_ == GridType::ModLinear) {
     tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
  } else {
-    throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
+    throw factory_exception("ModelFittingBase::buildGrid: grid type is not supported");
   }
 
   GridGenerator &gridGen = tmpGrid->getGenerator();
