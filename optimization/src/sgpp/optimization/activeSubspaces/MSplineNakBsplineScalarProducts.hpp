@@ -37,8 +37,17 @@ class MSplineNakBsplineScalarProducts {
    * @param degree				degree of the not a knot B-spline basis
    * @param quadOrder			order for the quadrature
    */
-  MSplineNakBsplineScalarProducts(sgpp::base::GridType gridType, size_t degree, size_t quadOrder)
+  MSplineNakBsplineScalarProducts(sgpp::base::GridType gridType, size_t degree,
+                                  sgpp::base::DataVector xi, size_t quadOrder)
       : gridType(gridType), degree(degree), quadOrder(quadOrder) {
+    // scale xi to [0,1], assuming it is already sorted
+    double xiScale = xi.back() - xi[0];
+    double xi0 = xi[0];
+    for (size_t i = 0; i < xi.getSize(); i++) {
+      xi[i] = (xi[i] - xi0) / xiScale;
+    }
+    this->xi = xi;
+    mSplineBasis.setXi(this->xi);
     basis = initializeBasis(gridType, degree);
     base::GaussLegendreQuadRule1D gauss;
     gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
@@ -52,8 +61,7 @@ class MSplineNakBsplineScalarProducts {
    */
   std::unique_ptr<sgpp::base::SBasis> initializeBasis(sgpp::base::GridType gridType, size_t degree);
 
-  sgpp::base::DataVector getCommonSupport(unsigned int level, unsigned int index,
-                                          sgpp::base::DataVector xi);
+  sgpp::base::DataVector getCommonSupport(unsigned int level, unsigned int index);
 
   /**
    * calculates the one dimensional integral \int f*g dx where f and g are B-spline basis
@@ -66,7 +74,7 @@ class MSplineNakBsplineScalarProducts {
    * @return  scalarProduct of nak B-spline with given level and index with M-spline with given
    * knots xi
    */
-  double basisScalarProduct(unsigned int level, unsigned int index, sgpp::base::DataVector xi);
+  double basisScalarProduct(unsigned int level, unsigned int index);
 
   /**
    * calculates the scalar product of a sparse grid nak B-spline interpolant given through its grid
@@ -80,23 +88,25 @@ class MSplineNakBsplineScalarProducts {
    *
    */
   double calculateScalarProduct(std::shared_ptr<sgpp::base::Grid> grid,
-                                sgpp::base::DataVector coeff, sgpp::base::DataVector xi);
+                                sgpp::base::DataVector coeff);
 
  private:
-  // M-spline basis
-  MSplineBasis mSplineBasis;
   // type of not a knot B-spline basis
   sgpp::base::GridType gridType;
   // degrees of the not a knot B-spline basis
   size_t degree;
   // order for the quadrature
   size_t quadOrder;
+  // knot sequence defining the M-spline
+  sgpp::base::DataVector xi;
+  // M-spline basis
+  MSplineBasis mSplineBasis;
+  // instance of the not a knot B-spline basis
+  std::unique_ptr<sgpp::base::SBasis> basis;
   // quadrature coordinates
   sgpp::base::DataVector coordinates;
   // quadrature weights
   sgpp::base::DataVector weights;
-  // instance of the not a knot B-spline basis
-  std::unique_ptr<sgpp::base::SBasis> basis;
 
   /**
    * used to get the support segments of a not a knot B-spline basis functions.

@@ -156,6 +156,14 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   double getSplineBasedIntegral();
 
+  /**
+   * Same as getSplineBasedIntegral, but interpolates the M-spline giving the volume with B-splines
+   * for faster evaluation. Significant Speed up with very little loss in accuracy
+   * @param approxLevel		level of the B-splines
+   * @param approxDegree	degree of the B-splines
+   */
+  double getApproximateSplineBasedIntegral(size_t approxLevel = 7, size_t approxDegree = 3);
+
   double getIntegralFromVolumeInterpolant(std::shared_ptr<sgpp::base::Grid> volGrid,
                                           sgpp::base::DataVector volCoefficients, size_t volDegree);
 
@@ -199,8 +207,9 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   // ----------------- auxiliary routines -----------
   int factorial(size_t n);
   dd_MatrixPtr createHPolytope(std::vector<int> permutations);
-  double simplexWiseVolume(Eigen::MatrixXd& projectedCorners);
-  double evalSimplexWiseVolume(double x, double simplexVolume, Eigen::MatrixXd projectedCorners);
+  double simplexDecomposition(Eigen::MatrixXd& projectedCorners);
+  sgpp::base::DataVector caclculateVolumeSimplexWise(sgpp::base::DataVector points, double simplexVolume,
+                                               Eigen::MatrixXd projectedCorners);
 
   /**
    * Creates a Histogram for uniform points (grid width = delta) and a set of random points in the

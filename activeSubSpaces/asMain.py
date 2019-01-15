@@ -106,7 +106,7 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType='adaptive', numErr
     print("sparse interpolation error {}".format(l2Error))
     integral = sparseResponseSurf.getIntegral() * vol
     integralError = abs(integral - objFunc.getIntegral())
-#     print("sparse integral: {}".format(sparseIntegral))
+    print("sparse integral: {}".format(sparseIntegral))
     print("sparse integral error {}\n".format(integralError))
     
     return l2Error, integral, integralError
@@ -151,7 +151,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
     eival = reverseDataVectorToNdArray(eivalSGpp)
     eivec = reverseDataMatrixToNdArray(eivecSGpp)
     
-#     print(eivec)
+    print(eival)
+    print(eivec)
 #     print("AS:")
 #     print(eivec[:, 0])
     
@@ -179,10 +180,13 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive', \
     elif integralType == 'Hist':
         integral = responseSurf.getHistogramBasedIntegral(11, numHistogramMCPoints, 'Halton') * vol
     elif integralType == 'Spline':
-        integral = responseSurf.getSplineBasedIntegral(4, 3)
-    print("integral: {}".format(integral)),
+        approxLevel = 12
+        approxDegree = 3
+        # integral = responseSurf.getApproximateSplineBasedIntegral(approxLevel, approxDegree)
+        integral = responseSurf.getSplineBasedIntegral()
+    print("integral: {}\n".format(integral)),
     integralError = abs(integral - objFunc.getIntegral())
-    print(" integral error: {}\n -------".format(integralError))
+    print("integral error: {}".format(integralError))
     
 #     X, Y = np.meshgrid(np.linspace(0, 1, 100), np.linspace(0, 1, 100))
 #     Z = np.zeros(np.shape(X))
@@ -266,7 +270,7 @@ if __name__ == "__main__":
     parser.add_argument('--responseType', default='adaptive', type=str, help="method for response surface creation (regular,adaptive (and detection for asSGpp) ")
     # only relevant for asSGpp
     parser.add_argument('--asmType', default='adaptive', type=str, help="method for ASM creation (regular adaptive)")
-    parser.add_argument('--integralType', default='Hist', type=str, help="method for integral calculation (MC, Cont)")
+    parser.add_argument('--integralType', default='Spline', type=str, help="method for integral calculation (MC, Cont)")
     args = parser.parse_args()
 
     objFunc = asFunctions.getFunction(args.model)

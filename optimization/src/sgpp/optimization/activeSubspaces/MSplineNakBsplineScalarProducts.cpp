@@ -25,8 +25,8 @@ std::unique_ptr<sgpp::base::SBasis> MSplineNakBsplineScalarProducts::initializeB
   }
 }
 
-sgpp::base::DataVector MSplineNakBsplineScalarProducts::getCommonSupport(
-    unsigned int level, unsigned int index, sgpp::base::DataVector xi) {
+sgpp::base::DataVector MSplineNakBsplineScalarProducts::getCommonSupport(unsigned int level,
+                                                                         unsigned int index) {
   // knots in the common support of the B-spline and the M-spline
   sgpp::base::DataVector supp = nakBSplineSupport(level, index, degree);
 
@@ -41,20 +41,16 @@ sgpp::base::DataVector MSplineNakBsplineScalarProducts::getCommonSupport(
     --last;
     supp.append(first, last);
 
-    // sort and make unique
+    // sort
     std::sort(supp.begin(), supp.end());
-    sgpp::base::DataVector::iterator it = std::unique(supp.begin(), supp.end());
-    supp.resize(std::distance(supp.begin(), it));
+    //    sgpp::base::DataVector::iterator it = std::unique(supp.begin(), supp.end());
+    //    supp.resize(std::distance(supp.begin(), it));
   }
   return supp;
 }
 
-double MSplineNakBsplineScalarProducts::basisScalarProduct(unsigned int level, unsigned int index,
-                                                           sgpp::base::DataVector xi) {
-  sgpp::base::DataVector commonSupport = getCommonSupport(level, index, xi);
-  std::function<double(double)> func = [&](double x) {
-    return basis->eval(level, index, x) * mSplineBasis.eval(xi.getSize() - 1, 0, x, xi);
-  };
+double MSplineNakBsplineScalarProducts::basisScalarProduct(unsigned int level, unsigned int index) {
+  sgpp::base::DataVector commonSupport = getCommonSupport(level, index);
 
   // loop over supp segments
   // in each segment perform quadrature of quadOrder
@@ -68,7 +64,9 @@ double MSplineNakBsplineScalarProducts::basisScalarProduct(unsigned int level, u
 
     double segmentIntegral = 0;
     for (size_t j = 0; j < segmentCoordinates.getSize(); j++) {
-      segmentIntegral += weights[j] * func(segmentCoordinates[j]);
+      double x = segmentCoordinates[j];
+      segmentIntegral +=
+          weights[j] * basis->eval(level, index, x) * mSplineBasis.eval(xi.getSize() - 1, 0, x);
     }
     res += segmentIntegral * (commonSupport[i + 1] - commonSupport[i]);
   }
@@ -76,19 +74,12 @@ double MSplineNakBsplineScalarProducts::basisScalarProduct(unsigned int level, u
 }
 
 double MSplineNakBsplineScalarProducts::calculateScalarProduct(
-    std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coeff,
-    sgpp::base::DataVector xi) {
-  // scale xi to [0,1], assuming it is already sorted
-  double xiScale = xi.back() - xi[0];
-  double xi0 = xi[0];
-  for (size_t i = 0; i < xi.getSize(); i++) {
-    xi[i] = (xi[i] - xi0) / xiScale;
-  }
+    std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coeff) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double sp = 0.0;
   for (size_t k = 0; k < coeff.getSize(); k++) {
     sp += coeff[k] *
-          basisScalarProduct(gridStorage.getPointLevel(k, 0), gridStorage.getPointIndex(k, 0), xi);
+          basisScalarProduct(gridStorage.getPointLevel(k, 0), gridStorage.getPointIndex(k, 0));
   }
   return sp;
 }

@@ -8,21 +8,40 @@
 namespace sgpp {
 namespace optimization {
 
-double MSplineBasis::eval(size_t degree, size_t index, double x, sgpp::base::DataVector xi) {
+double MSplineBasis::eval(size_t degree, size_t index, double x) {
   //  std::cout << "degree: " << degree << " index: " << index << " x: " << x
   //            << " xi: " << xi.toString() << "\n";
+
+  //  const mSplineHashType hashKey = std::make_tuple(degree, index, x);
+  //  std::map<mSplineHashType, double>::iterator it;
+  //  it = precalculatedValues.find(hashKey);
+
+  //  if (it != precalculatedValues.end()) {
+  //    return it->second;
+  //  } else {
   if (degree == 1) {
     if ((xi[index] <= x) && (x < xi[index + 1])) {
-      return 1.0 / (xi[index + 1] - xi[index]);
+      double result = 1.0 / (xi[index + 1] - xi[index]);
+      //        precalculatedValues.insert(std::pair<mSplineHashType, double>(hashKey, result));
+      return result;
     } else {
+      //        precalculatedValues.insert(std::pair<mSplineHashType, double>(hashKey, 0.0));
       return 0.0;
     }
   } else {
-    return (static_cast<double>(degree) *
-            ((x - xi[index]) * eval(degree - 1, index, x, xi) +
-             (xi[index + degree] - x) * eval(degree - 1, index + 1, x, xi))) /
-           (static_cast<double>(degree - 1) * (xi[index + degree] - xi[index]));
+    if (xi[index + degree] != xi[index]) {
+      double result = (static_cast<double>(degree) *
+                       ((x - xi[index]) * eval(degree - 1, index, x) +
+                        (xi[index + degree] - x) * eval(degree - 1, index + 1, x))) /
+                      (static_cast<double>(degree - 1) * (xi[index + degree] - xi[index]));
+      //      precalculatedValues.insert(std::pair<mSplineHashType, double>(hashKey, result));
+      return result;
+    } else {
+      //        precalculatedValues.insert(std::pair<mSplineHashType, double>(hashKey, 0.0));
+      return 0.0;
+    }
   }
+  //  }
 }
 
 double MSplineBasis::xpowplus(double x, size_t n) {

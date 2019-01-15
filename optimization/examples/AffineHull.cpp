@@ -222,7 +222,7 @@ bool reduceHrepresentation(dd_MatrixPtr& hMatrix, Eigen::MatrixXd A0) {
 }
 
 int main() {
-  dd_set_global_constants(); /* First, this must be called. */
+  dd_set_global_constants();  // First, this must be called.
 
   size_t dim = 2;
   Eigen::MatrixXd A0(dim, 1);

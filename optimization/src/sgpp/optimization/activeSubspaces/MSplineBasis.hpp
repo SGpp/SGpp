@@ -6,10 +6,16 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Eigenvalues>
+#include <functional>
 #include <iostream>
+#include <map>
+#include <tuple>
+#include <unordered_map>
+#include <utility>
 
 namespace sgpp {
 namespace optimization {
@@ -24,6 +30,11 @@ class MSplineBasis {
    *
    * @param xi	knots defining the M-spline
    */
+  explicit MSplineBasis(sgpp::base::DataVector xi) : xi(xi) {}
+
+  /**
+   * Constructor
+   */
   MSplineBasis() {}
 
   /**
@@ -36,7 +47,7 @@ class MSplineBasis {
    * https://projecteuclid.org/download/pdf_1/euclid.ss/1177012761
    *
    */
-  double eval(size_t degree, size_t index, double x, sgpp::base::DataVector xi);
+  double eval(size_t degree, size_t index, double x);
 
   double xpowplus(double x, size_t n);
 
@@ -48,7 +59,18 @@ class MSplineBasis {
    */
   double evalTruncated(double x, Eigen::VectorXd xi);
 
- protected:
+  void setXi(sgpp::base::DataVector xi) { this->xi = xi; }
+
+ private:
+  sgpp::base::DataVector xi;
+  // tuple used as hash to store scalar products in innerProducts
+
+  typedef std::tuple<size_t, size_t, double> mSplineHashType;
+
+  // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to
+  // calculated again if the same combination of indices, levels and dx is queried
+  std::map<mSplineHashType, double> precalculatedValues;
+  //  std::unordered_map<mSplineHashType, double, key_hash, key_equal> precalculatedValues;
 };
 
 }  // namespace optimization

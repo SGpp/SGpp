@@ -245,24 +245,68 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral() {
   size_t dim = W1.rows();
   // matrix containing the orthogonally projected simplex corners (columnwise)
   Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
-  double simplexVolume = simplexWiseVolume(projectedCorners);
+  double simplexVolume = simplexDecomposition(projectedCorners);
 
   size_t quadOrder = ((degree > dim + 1 ? degree : dim + 1) + 2) / 2;
-
-  sgpp::optimization::MSplineNakBsplineScalarProducts scalarProducts(gridType, degree, quadOrder);
   double integral = 0.0;
+  // ToDo (rehmemk) local instances of grid, coefficients, gridType, degree for each thread?
+  // #pragma omp parallel for reduction(+ : integral)
   for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
-    // the iterative M-spline definition needs sorted input knots and unique knots
+    // the iterative M-spline definition needs sorted input knots
     sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
     std::sort(xi.begin(), xi.end());
-    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
-    xi.resize(std::distance(xi.begin(), it));
 
-    double simplexIntegral = scalarProducts.calculateScalarProduct(grid, coefficients, xi);
+    //    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
+    //    xi.resize(std::distance(xi.begin(), it));
+    sgpp::optimization::MSplineNakBsplineScalarProducts scalarProducts(gridType, degree, xi,
+                                                                       quadOrder);
+
+    double simplexIntegral = scalarProducts.calculateScalarProduct(grid, coefficients);
     integral += simplexIntegral;
   }
+  integral *= simplexVolume;
 
-  return simplexVolume * integral;
+  return integral;
+}
+
+double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t approxLevel,
+                                                                      size_t approxDegree) {
+  if (W1.cols() != 1) {
+    std::cerr << "ASResponseSurface::getSplineBasedIntegral currently supports only 1D active "
+                 "subspaces\n";
+    return -1;
+  }
+  dd_set_global_constants();  // For cdd this must be called in the beginning.
+  size_t dim = W1.rows();
+  // matrix containing the orthogonally projected simplex corners (columnwise)
+  Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
+  sgpp::base::SGppStopwatch watch;
+  watch.start();
+  double simplexVolume = simplexDecomposition(projectedCorners);
+  std::cout << "simplexDecomposition " << watch.stop() << "s\n";
+
+  auto volGrid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(1, approxDegree);
+  volGrid->getGenerator().regular(approxLevel);
+  sgpp::base::GridStorage& volGridStorage = volGrid->getStorage();
+  sgpp::base::DataVector interpolPoints(volGridStorage.getSize());
+  double width = rightBound1D - leftBound1D;
+  for (size_t i = 0; i < volGridStorage.getSize(); i++) {
+    interpolPoints[i] = leftBound1D + width * volGridStorage.getPointCoordinate(i, 0);
+  }
+  watch.start();
+  sgpp::base::DataVector volumes =
+      caclculateVolumeSimplexWise(interpolPoints, simplexVolume, projectedCorners);
+  std::cout << "caclculateVolumeSimplexWise " << watch.stop() << "s\n";
+
+  sgpp::optimization::HierarchisationSLE hierSLE(*volGrid);
+  sgpp::optimization::sle_solver::Armadillo sleSolver;
+  sgpp::base::DataVector volCoefficients;
+  if (!sleSolver.solve(hierSLE, volumes, volCoefficients)) {
+    std::cerr << "ASMatrixNakBspline: Solving failed.\n";
+  }
+  double integral = getIntegralFromVolumeInterpolant(volGrid, volCoefficients, approxDegree);
+
+  return integral;
 }
 
 double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
@@ -307,7 +351,10 @@ dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permu
   return hMatrix;
 }
 
-double ASResponseSurfaceNakBspline::simplexWiseVolume(Eigen::MatrixXd& projectedCorners) {
+// ToDo(rehmemk) isn't it somehow possible to directly generate the vertices of the simplices
+// instead of creating a H(yperplane)representation and transforming that to a
+// V(ertex)-representation as done here?
+double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projectedCorners) {
   size_t dim = W1.rows();
   double simplexVolume = 0.0;
   projectedCorners.resize(dim + 1, factorial(dim));
@@ -315,11 +362,6 @@ double ASResponseSurfaceNakBspline::simplexWiseVolume(Eigen::MatrixXd& projected
   std::iota(permutations.begin(), permutations.end(), 0);
   size_t i = 0;
   do {
-    //    for (size_t d = 0; d < dim; d++) {
-    //      std::cout << permutations[d] << " ";
-    //    }
-    //    std::cout << ":\n";
-
     dd_MatrixPtr hMatrix = createHPolytope(permutations);
     dd_ErrorType err;
     dd_PolyhedraPtr poly = dd_DDMatrix2Poly(hMatrix, &err);
@@ -351,21 +393,24 @@ double ASResponseSurfaceNakBspline::simplexWiseVolume(Eigen::MatrixXd& projected
   return simplexVolume;
 }
 
-double ASResponseSurfaceNakBspline::evalSimplexWiseVolume(double x, double simplexVolume,
-                                                          Eigen::MatrixXd projectedCorners) {
-  double res = 0.0;
-
+sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
+    sgpp::base::DataVector points, double simplexVolume, Eigen::MatrixXd projectedCorners) {
+  sgpp::base::DataVector volumes(points.getSize(), 0.0);
   MSplineBasis mSplineBasis;
-  for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
-    // the iterative M-spline definition needs sorted input knots and unique knots
-    sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
-    std::sort(xi.begin(), xi.end());
-    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
-    xi.resize(std::distance(xi.begin(), it));
-    res += mSplineBasis.eval(xi.getSize() - 1, 0, x, xi);
-    //    res += mSplineBasis.evalTruncated(x, projectedCorners.col(i));
+#pragma omp parallel for private(mSplineBasis)
+  for (size_t p = 0; p < points.getSize(); p++) {
+    double res = 0.0;
+    for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
+      // the iterative M-spline definition needs sorted input knots
+      sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
+      std::sort(xi.begin(), xi.end());
+      mSplineBasis.setXi(xi);
+      res += mSplineBasis.eval(xi.getSize() - 1, 0, points[p]);
+    }
+    volumes[p] = res;
   }
-  return simplexVolume * res;
+  volumes.mult(simplexVolume);
+  return volumes;
 }
 
 sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
