@@ -359,7 +359,7 @@ def checkPython(config):
                                "Hint: You might have to install the package " + package + ".")
 
     
-    python_two_or_three = "python2" if self.env["USE_PYTHON2_FOR_PYSGPP"] else "python3"
+    python_two_or_three = "python2" if config.env["USE_PYTHON2_FOR_PYSGPP"] else "python3"
 
     if not test_syscall(["{}".format(python_two_or_three), "-c", "import numpy, os;"
                      "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]):
