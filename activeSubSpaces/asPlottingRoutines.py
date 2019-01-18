@@ -2,9 +2,8 @@ from argparse import ArgumentParser
 from matplotlib.font_manager import FontProperties
 from mpl_toolkits.mplot3d import Axes3D
 import os
-
+from matplotlib import cm
 from matplotlib.pyplot import gca
-
 import active_subspaces as ac
 import asFunctions
 import cPickle as pickle
@@ -12,6 +11,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
 
+
+def surf2D(model):
+    objFunc = asFunctions.getFunction(model)
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    x, y = np.meshgrid(np.linspace(0, 1, 100), np.linspace(0, 1, 100))
+    z = np.ndarray(np.shape(x))
+    for i in range(len(x)):
+        for j in range(len(x)):
+           z[i, j] = objFunc.eval(np.array([x[i, j], y[i, j]]))
+    
+    # Plot the surface
+    ax.plot_surface(x, y, z , cmap=cm.viridis)
+    
 
 def plot_eigenvalues(data, label, color, marker, gridIndex=-1):
     eival = data["eigenvalues"]
@@ -30,7 +43,7 @@ def plot_error_first_eigenvec(data, label, color, marker):
     sampleRange = data["sampleRange"]
     err = np.zeros(np.shape(eivec)[2])
     for i in range(len(err)):
-        err[i] = np.linalg.norm(abs(eivec[:, :, i][:, 0]) - abs(eivecReference[0]))
+        err[i] = np.linalg.norm(abs(eivec[:, :, i][:, 0]) - abs(eivecReference[:, 0]))
     plt.loglog(sampleRange, err, label=label, color=color, marker=marker)
     plt.xlabel('number of points')
     plt.ylabel('error in first eigenvector')
@@ -40,19 +53,35 @@ def plot_error_first_eigenvec(data, label, color, marker):
 def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
     eivec = data["eigenvectors"][:, :, gridIndex]
     model = data["model"]
+    method = data["method"]
     gridType = data["gridType"]
+    shadow1DEvaluationsArray = data["shadow1DEvaluationsArray"]
+    numShadow1DPoints = data["numShadow1DPoints"] 
     objFunc = asFunctions.getFunction(model)
+    lb, ub = objFunc.getDomain()
     numDim = objFunc.getDim()
     numSamples = 2500
     X = np.ndarray(shape=(numSamples, numDim))
+    print('shadowplot: if domain is not [a,b]^d this must be fixed')
     for d in range(numDim):
-        r = np.random.uniform(-1, 1, (numSamples, 1))
+        # only works for equilateral cubes
+        # TODO replace by sampling in arbitrary domains
+        r = np.random.uniform(lb[0], ub[0], (numSamples, 1))
         X[:, d] = r[:, 0]
     f = objFunc.eval(X)
     if subspaceDimension == 1:
         W1 = eivec[:, 0]
         W1TX = X.dot(W1)
-        plt.scatter(W1TX, f, label=label)
+        plt.scatter(W1TX, f, color='b')
+        shadow1DEvaluations = shadow1DEvaluationsArray[:, -1]
+        bounds = [np.min(W1TX), np.max(W1TX)]
+        if method in ['asSGpp']:
+            X1unit = np.linspace(0, 1, numShadow1DPoints)
+            X1 = [bounds[0] + x * (bounds[1] - bounds[0]) for x in X1unit]
+        elif method in ["QPHD"]:
+            X1unit = np.linspace(-1, 1, numShadow1DPoints)
+            X1 = [bounds[0] + (x + 1) / 2.0 * (bounds[1] - bounds[0]) for x in X1unit]
+        plt.plot(X1, shadow1DEvaluations, label=label)
         
     elif subspaceDimension == 2:
         W1 = eivec[:, 0]
@@ -80,17 +109,13 @@ def l2errorPlot(data, label, color, marker):
 def integralerrorPlot(data, label, color, marker):
     integralErrors = data['integralErrors']
     sampleRange = data['sampleRange']
+    model = data["model"]
     objFunc = asFunctions.getFunction(model)
-    
-    lb, ub = objFunc.getDomain()
-    vol = np.prod(ub - lb)
-    
     realIntegral = objFunc.getIntegral()
-    relativeIntegralErrors = [e / realIntegral for e in integralErrors]
+#     relativeIntegralErrors = [e / realIntegral for e in integralErrors]
 #     plt.loglog(sampleRange, relativeIntegralErrors, label=label, color=color, marker=marker)
     plt.loglog(sampleRange, integralErrors, label=label, color=color, marker=marker)
     plt.xlabel('number of points')
-#     plt.ylabel('relative error in integral')
     plt.ylabel('integral error')
     # plt.title(model)
 
@@ -140,40 +165,62 @@ def plotter(folders, qoi, resultsPath, savefig=1):
     plt.legend()
     if savefig:
         figname = os.path.join(resultsPath, qoi)
+        print("saving {}".format(figname))
         plt.savefig(figname, dpi=300, bbox_inches='tight', pad_inches=0.0)
 
 
-#------------------------------------ main ---------------------------------------
-model = 'test'
-resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
-resultsPath = os.path.join(resultsPath, model)
-names = [  # 'AS_2000_3',
-          # 'QPHD_2000_3',
-        'SGpp_nakbsplineextended_3_100_adaptive',
-        # 'asSGpp_nakbsplineextended_3_2000_adaptive_adaptive_Hist',
-        'asSGpp_nakbsplineextended_3_100_adaptive_adaptive_Spline']
+if __name__ == "__main__":
+    # parse the input arguments
+    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser.add_argument('--model', default='sin8D', type=str, help="define which test case should be executed")
+    parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
+    parser.add_argument('--maxPoints', default=1000, type=int, help="maximum number of points used")
+    parser.add_argument('--plotL2', default=0, type=bool, help="do (not) plot l2 error")
+    parser.add_argument('--plotIntegral', default=0, type=bool, help="do (not) plot integral error")
+    parser.add_argument('--plotShadow', default=1, type=bool, help="do (not) plot shadow")
+    parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
+    parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
+    parser.add_argument('--surf2D', default=0, type=bool, help="do (not) plot surface plot (only works for 2D functions)")
+    args = parser.parse_args()
+    
+    resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
+    resultsPath = os.path.join(resultsPath, args.model)
+    names = [  # 'AS_{}_{}',
+            'QPHD_{}_{}',
+            # 'SGpp_nakbsplineextended_{}_{}_adaptive',
+            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Spline',
+            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_appSpline',
+            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Hist',
+            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_MC',
+             'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_None'
+            ]
+    names = [n.format(args.degree, args.maxPoints) for n in names]
+    folders = [os.path.join(resultsPath, name) for name in names]
+    savefig = 1
+    
+    # plt.rcParams.update({'font.size': 18})
+    # plt.rcParams.update({'lines.linewidth': 3})
+
+    if args.plotL2:    
+        fig = plt.figure()
+        plotter(folders, 'l2error', resultsPath, savefig)
+    if args.plotIntegral:
+        fig2 = plt.figure()
+        plotter(folders, 'integralerror', resultsPath, savefig)
+    if args.plotShadow:
+        fig4 = plt.figure()
+        plotter(folders, 'shadow', resultsPath, savefig)
+    if args.plotEival:
+        fig5 = plt.figure()
+        plotter([folders[-1]], 'eival', resultsPath, savefig)
+    if args.plotEivec1:
+        try:
+            fig3 = plt.figure()
+            plotter(folders, 'eivec1', resultsPath, savefig)
+        except(TypeError):
+            print('exact eigen values unknown')
+    if args.surf2D:
+        surf2D('atan2D')
          
-folders = [os.path.join(resultsPath, name) for name in names]
-
-# plt.rcParams.update({'font.size': 18})
-# plt.rcParams.update({'lines.linewidth': 3})
-# fig = plt.figure(figsize=(24, 7))
-# fig.add_subplot(1, 3, 1)
-# plotter(folders, 'eival', resultsPath)
-# fig.add_subplot(1, 3, 2)
-# plotter(folders, 'eivec1', resultsPath)
-# ax = fig.add_subplot(1, 3, 3)
-# plotter(folders, 'l2error', resultsPath)
-# # plt.tight_layout()
-# ax.legend(bbox_to_anchor=(0, -0.15, 1, 1), loc='lower center', bbox_transform=plt.gcf().transFigure, borderaxespad=0., ncol=2)
-# # plt.show()
-# plt.savefig('/home/rehmemk/SGS_Sync/Konferenzen/2018_12_SimTech_Statusseminar/gfx/convergence.png', bbox_inches='tight')
-
-savefig = 1
-fig = plt.figure()
-plotter(folders, 'l2error', resultsPath, savefig)
-fig2 = plt.figure()
-plotter(folders, 'integralerror', resultsPath, savefig)
-
-plt.show()
+    plt.show()
 

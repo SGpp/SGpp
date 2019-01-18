@@ -1,4 +1,8 @@
+from mpl_toolkits.mplot3d import Axes3D
+
 import active_subspaces as ac
+import matplotlib.pyplot as plt
+import numpy as np
 import numpy as np
 import pysgpp
 
@@ -26,6 +30,55 @@ def getFunction(model, args=None):
     elif model == 'exp2DNoise':
         return exp2DNoise()
     
+    elif model == 'sin2D':
+        return sinXD(2)
+    elif model == 'sin3D':
+        return sinXD(3)
+    elif model == 'sin4D':
+        return sinXD(4)
+    elif model == 'sin5D':
+        return sinXD(5)
+    elif model == 'sin6D':
+        return sinXD(6)
+    elif model == 'sin8D':
+        return sinXD(8)
+    
+    elif model == 'sin2Dexp1':
+        return sin2DexpX(-1)
+    elif model == 'sin2Dexp0.1':
+        return sin2DexpX(-0.1)
+    elif model == 'sin2Dexp0.01':
+        return sin2DexpX(-0.01) 
+    elif model == 'sin2Dexp0.001':
+        return sin2DexpX(-0.001) 
+    elif model == 'sin2Dexp0.0001':
+        return sin2DexpX(-0.0001) 
+    elif model == 'sin2Dexp0':
+        return sin2DexpX(0) 
+    elif model == 'sin5Dexp1':
+        return sin5DexpX(-1)
+    elif model == 'sin5Dexp0.1':
+        return sin5DexpX(-0.1)
+    elif model == 'sin5Dexp0.01':
+        return sin5DexpX(-0.01)
+    
+    elif model == 'ridge2D':
+        return ridgeXD(2)
+    elif model == 'ridge4D':
+        return ridgeXD(4)
+    elif model == 'ridge6D':
+        return ridgeXD(6)
+    elif model == 'ridge8D':
+        return ridgeXD(8)
+    
+    elif model == 'jump2D':
+        return jumpXD(2)
+    elif model == 'jump6D':
+        return jumpXD(6)
+    
+    elif model == 'ebola':
+        return ebola()
+    
     elif model == 'linear2D':
         return linear2D()
     elif model == 'linear3D':
@@ -40,12 +93,12 @@ def getFunction(model, args=None):
         return cubic2D()
     elif model == 'simple2D':
         return simple2D()
-    elif model == 'sin2D':
-        return sinXD(2)
-    elif model == 'sin6D':
-        return sinXD(6)
     elif model == 'sum6D':
         return sumXD(6)
+    elif model == 'bratley2D':
+        return bratleyXD(2)
+    elif model == 'bratley4D':
+        return bratleyXD(4)
     elif model == 'wing':
         return wing()
     elif model == 'borehole':
@@ -92,10 +145,15 @@ class test():
         return "test"
 
     def getIntegral(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
         return 0
 
     def getDim(self):
-        return 4
+        return 2
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -104,8 +162,12 @@ class test():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1]; x2 = x[:, 2]
-        return ((x0 + x1) * (x1 + x2)).reshape(numSamples, 1)
+        x0 = x[:, 0];x1 = x[:, 1]
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i] 
+                       
+        return (np.exp(x0 + x1)).reshape(numSamples, 1)
 
     
 class exp1D():
@@ -430,7 +492,7 @@ class sinXD():
         self.dim = dim
        
     def getDomain(self):
-        lb = np.array([-1] * self.getDim())
+        lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
         return lb, ub
     
@@ -438,8 +500,21 @@ class sinXD():
         return "sin{}D".format(self.getDim())
     
     def getIntegral(self):
-        print("activeSubspaceFunctions.py: not calculated")
-        return 0.0
+        # calculated with Wolfram Alpha
+        # Syntax: Integrate[sin(x+y+z+w+v), {x,0, 1}, {y,0, 1}, {z,0,1}, {w,0,1},{v,0,1}]
+        if self.dim == 2:
+            return 0.7736445427901113
+        elif self.dim == 3:
+            return 0.8793549306454009
+        elif self.dim == 4:
+            return 0.76861809417510700599
+        elif self.dim == 5:
+            return 0.485064781411046278072
+        elif self.dim == 6:
+            return 0.1096719474985168810318
+        else:
+            print("activeSubspaceFunctions.py: not calculated")
+            return 0.0
 
     def getDim(self):
         return self.dim
@@ -457,9 +532,197 @@ class sinXD():
         x = unnormalize(x, lb, ub, lN, uN)
         arg = 0
         for i in range(self.getDim()):
-            arg += x[:, i] * (i + 1) * 0.1
+            arg += x[:, i] 
                        
         return (np.sin(arg)).reshape(numSamples, 1)
+
+
+class sin2DexpX():
+       
+    def __init__(self, a):
+        self.dim = 2
+        self.a = a
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sin2Dexp{}".format(-self.a)
+    
+    def getIntegral(self):
+        # calculated with Wolfram Alpha
+        if self.a == -1:
+            return 0.54962181113438195
+        elif self.a == -0.1:
+            return  0.744767321367196
+        elif self.a == -0.01:
+            return 0.770675921853794199
+        elif self.a == -0.001:
+            return 0.7733468522991440128
+        elif self.a == 0:
+            return 0.7736445427901113
+        else:
+            print("activeSubspaceFunctions.py: not calculated")
+            return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i] 
+                       
+        return (np.sin(arg) * np.exp(self.a * x[:, 0] * x[:, 0])).reshape(numSamples, 1)
+
+    
+class sin5DexpX():
+       
+    def __init__(self, a):
+        self.dim = 5
+        self.a = a
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sin5Dexp{}".format(-self.a)
+    
+    def getIntegral(self):
+        # calculated with Wolfram Alpha
+        if self.a == -1:
+            return 0.4006833129324313
+        elif self.a == -0.1:
+            return 0.474785787243538
+        elif self.a == -0.01:
+            return 0.4840145794924695
+        else:
+            print("activeSubspaceFunctions.py: not calculated")
+            return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i] 
+                       
+        return (np.sin(arg) * np.exp(self.a * x[:, 0] * x[:, 0])).reshape(numSamples, 1)
+
+    
+class ridgeXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+        self.alpha = 0.004
+        self.beta = 1
+       
+    def getDomain(self):
+        lb = np.array([-1] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "ridge{}D".format(self.dim)
+    
+    def getIntegral(self):
+        if self.dim == 2:
+            return 4.0 / 3.0
+        elif self.dim == 4:
+            return 32.0 / 3.0
+        else:
+            print("activeSubspaceFunctions.py: not calculated")
+            return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
+        eivec[:, 0] = 1.0 / np.sqrt(self.dim)
+        return eivec
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        sum = 0.0
+        cossum = 0.0
+        for i in range(self.getDim()):
+            sum += x[:, i]
+            cossum += np.cos(self.beta * np.pi * x[:, i]) 
+                       
+        return (0.5 * sum ** 2 + self.alpha * cossum).reshape(numSamples, 1)
+
+    
+class jumpXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "jump{}D".format(self.dim)
+    
+    def getIntegral(self):
+        if self.dim == 2:
+            return 0.5
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0.0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        sum = 0.0
+        for i in range(self.getDim()):
+            sum += x[:, i]
+        
+        res = np.zeros((numSamples, 1))
+        res = np.array([int(s > 0.5 * self.dim) for s in sum])
+        return (res).reshape(numSamples, 1)
 
 
 class exp3D():
@@ -508,8 +771,6 @@ class exp3D():
         dfdx2 = (0.3 * fvalue)[:, None]
         return np.hstack((dfdx0, dfdx1, dfdx2)) 
         
-        return (res).reshape(numSamples, 1)
-
     
 class exp4D():
        
@@ -870,8 +1131,116 @@ class sumXD():
     def eval_grad(self, xx, lN=0, uN=1):
         print("activeSubspaceFunctions.py: not calculated")
         return 0
-        
+
+
+# https://www.sfu.ca/~ssurjano/bratleyetal92.html    
+# HAT KEINEN EXAKTEN ACTIVE SUBSPACE
+# aber schon um eine Groessenordnung fallende Eigenwerte. Evtl als Testfallgeeignet
+class bratleyXD():
+
+    def __init__(self, dim):
+        self.dim = dim
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sum"
+    
+    def getIntegral(self):
+        return -1.0 / 3.0 * (1 - (-0.5) ** self.dim)
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        res = 0
+        for i in range(self.getDim()):
+            prod = 1.0
+            for j in range(i + 1):
+                prod *= x[:, j]
+            res += (-1) ** (i + 1) * prod
         return (res).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+#----------------------- examples from Constantines active subspaces data sets git ---------------------------------------------
+
+
+class ebola():
+
+    def __init__(self):
+        self.dim = 8
+       
+    def getDomain(self):
+        # Liberia
+        lb = np.array([.1, .1, .05, .41, .0276, .081, .25, .0833])
+        ub = np.array([.4, .4, .2, 1, .1702, .21, .5, .7])
+        # Sierra Leone
+        # lb = np.array([.1, .1, .05, .41, .0275, .1236, .25, .0833])
+        # ub = np.array([.4, .4, .2, 1, .1569, .384, .5, .7])
+        return lb, ub
+    
+    def getName(self):
+        return "ebola"
+    
+    def getIntegral(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        b1 = x[:, 0]; b2 = x[:, 1]; b3 = x[:, 2]; r1 = x[:, 3]
+        g1 = x[:, 4]; g2 = x[:, 5]; om = x[:, 6]; p = x[:, 7]
+    
+        return ((b1 + b2 * r1 * g1 / om + b3 * p / g2) / (g1 + p)).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        b1 = x[:, 0]; b2 = x[:, 1]; b3 = x[:, 2]; r1 = x[:, 3]
+        g1 = x[:, 4]; g2 = x[:, 5]; om = x[:, 6]; p = x[:, 7]
+        
+        dRdb1 = (1. / (g1 + p))[:, None]
+        dRdb2 = (r1 * g1 / om / (g1 + p))[:, None]
+        dRdb3 = (p / g2 / (g1 + p))[:, None]
+        dRdr1 = (b2 * g1 / om / (g1 + p))[:, None]
+        dRdg1 = (b2 * r1 / om / (g1 + p) - R0(x) / (g1 + p))[:, None]
+        dRdg2 = (-b3 * p / g2 ** 2 / (g1 + p))[:, None]
+        dRdom = (-b2 * r1 * g1 / om ** 2 / (g1 + p))[:, None]
+        dRdp = (b3 / g2 / (g1 + p) - R0(x) / (g1 + p))[:, None]
+        
+        return np.hstack((dRdb1, dRdb2, dRdb3, dRdr1, dRdg1, dRdg2, dRdom, dRdp))
 
 #----------------------- tutorial functions from Constantines active subspaces library ---------------------------------------------
 
@@ -1157,3 +1526,4 @@ class piston():
         # The gradient components must be scaled in accordance with the chain rule: df/dx = df/dy*dy/dx
         return np.hstack((dCdM * (60 - 30) / 2., dCdS * (.02 - .005) / 2., dCdV0 * (.01 - .002) / 2., dCdk * (5000 - 1000) / 2., dCdP0 * (110000 - 90000) / 2., \
             dCdTa * (296 - 290) / 2., dCdT0 * (360 - 340) / 2.))
+
