@@ -31,12 +31,12 @@ namespace sgpp {
 namespace optimization {
 
 /**
- * Used to create, store and use the matrix C for the detection of active subspaces using a B-spline
- * interpolant. So
- * C_{i,j} = \int \nabla f \nabla f^T dx \approx \int \nabla \hat{f} \nabla \hat{f}^T dx
- * where \hat{f} is a nak B-spline interpolant for f
+ * Used to create, store and use the matrix C for the detection of active subspaces of an
+ * analytically given objective function f using a B-spline interpolant. So C_{i,j} = \int \nabla f
+ * \nabla f^T dx \approx \int \nabla \hat{f} \nabla \hat{f}^T dx where \hat{f} is a nak B-spline
+ * interpolant for f
  */
-class ASMatrixNakBspline : public ASMatrix {
+class ASMatrixBsplineAnalytic : public ASMatrix {
  public:
   /**
    * Constructor
@@ -45,25 +45,18 @@ class ASMatrixNakBspline : public ASMatrix {
    * @param gridType          type of the grid for the interpolant
    * @param degree            degree for the B-spline basis functions
    */
-  ASMatrixNakBspline(std::shared_ptr<ScalarFunction> objectiveFunc, sgpp::base::GridType gridType,
-                     size_t degree)
+  ASMatrixBsplineAnalytic(std::shared_ptr<ScalarFunction> objectiveFunc,
+                          sgpp::base::GridType gridType, size_t degree)
       : ASMatrix(objectiveFunc), gridType(gridType), degree(degree) {
-    if (gridType == sgpp::base::GridType::NakBspline) {
-      grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-      grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
-    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
-      grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
-    } else {
-      throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
-    }
+    initialize(gridType);
   }
+
+  /**
+   * Sets grid and basis according to grid type
+   *
+   * @param gridType	type for grid and basis
+   */
+  void initialize(sgpp::base::GridType gridType);
 
   /**
    * Create a regular interpolant of the objective function f

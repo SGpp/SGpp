@@ -8,7 +8,7 @@
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/activeSubspaces/GaussQuadrature.hpp>
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(testASMatrixNakBsplineBoundaryScalarProduct) {
   sgpp::base::DataVector alpha = interpolateRegular1D(objectiveFunc, gridType, degree, level, grid);
   sgpp::base::DataVector alpha2 =
       interpolateRegular1D(objectiveFunc2, gridType, degree, level, grid2);
-  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
+  sgpp::optimization::ASMatrixBsplineAnalytic ASM(objectiveFunc, gridType, degree);
 
   // as long as grid1 and grid2 are of the same grid type and regular level it does not matter
   //  from which the levels and indices are taken
@@ -216,7 +216,7 @@ BOOST_AUTO_TEST_CASE(testASMatrixEigenValuesAndVectors) {
   auto dummyFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(3, dummyFunction);
   sgpp::base::GridType dummyGridType = sgpp::base::GridType::NakBspline;
   size_t dummyDegree = 3;
-  sgpp::optimization::ASMatrixNakBspline ASM(dummyFunc, dummyGridType, dummyDegree);
+  sgpp::optimization::ASMatrixBsplineAnalytic ASM(dummyFunc, dummyGridType, dummyDegree);
   ASM.setMatrix(C);
   ASM.evDecompositionForSymmetricMatrices();
   Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
       numDim, objectiveFunctionResponseSurface);
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
+  sgpp::optimization::ASMatrixBsplineAnalytic ASM(objectiveFunc, gridType, degree);
   ASM.buildRegularInterpolant(level);
   ASM.createMatrixMonteCarlo(numMCPoints);
   ASM.evDecompositionForSymmetricMatrices();
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(testASResponseSurfaceNakBspline) {
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
   size_t responseLevel = 3;
-  responseSurf.createRegularReducedSurfaceFromDetectionPoints(evaluationPoints, functionValues,
+  responseSurf.createRegularReducedSurfaceFromData(evaluationPoints, functionValues,
                                                               responseLevel);
   sgpp::base::DataVector v(numDim, 0.3371);
   double objectiveFunctionEval = objectiveFunctionResponseSurface(v);

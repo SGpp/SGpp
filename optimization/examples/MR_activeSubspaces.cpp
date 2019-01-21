@@ -6,13 +6,15 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp>
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <cmath>
 #include <sstream>
+#include <string>
+#include <vector>
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
 
 void initialize(int argc, char* argv[], bool& adaptive, bool& print, size_t& degree, size_t& level,
                 size_t& numPoints, sgpp::base::GridType& gridType) {
@@ -78,6 +80,14 @@ double wing(sgpp::base::DataVector v) {
   return res;
 }
 
+double exp10D(sgpp::base::DataVector v) {
+  // domain is [0,2]^10
+  v.mult(2);
+  double res = exp(0.01 * v[0] - 0.01 * v[1] + 0.02 * v[2] - 0.02 * v[3] + 0.03 * v[4] -
+                   0.03 * v[5] + 0.04 * v[6] - 0.04 * v[7] + 0.05 * v[8] - 0.05 * v[9]);
+  return res;
+}
+
 double f(sgpp::base::DataVector v) {
   return exp(0.7 * v[0] + 0.3 * v[1]);
   //  return sin(100 * v[0] + 10 * v[1] + 1 * v[2] + 0 * v[3]);
@@ -98,8 +108,8 @@ int main(int argc, char* argv[]) {
   bool adaptive = 0;
   bool print = 0;
   size_t degree = 3;
-  size_t maxLevel = 9;
-  size_t maxNumPoints = 100;
+  size_t maxLevel = 10;
+  size_t maxNumPoints = 2000;
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
   initialize(argc, argv, adaptive, print, degree, maxLevel, maxNumPoints, gridType);
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
@@ -109,20 +119,20 @@ int main(int argc, char* argv[]) {
   auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
   auto objectiveFuncGradient =
       std::make_shared<sgpp::optimization::WrapperScalarFunctionGradient>(numDim, df);
-  sgpp::optimization::ASMatrixNakBspline ASM(objectiveFunc, gridType, degree);
-  size_t maxNumGridPointsMatrix = 200;
+  sgpp::optimization::ASMatrixBsplineAnalytic ASM(objectiveFunc, gridType, degree);
+  size_t maxNumGridPointsMatrix = maxNumPoints;
   size_t initialLevel = 1;
   watch.start();
   ASM.buildAdaptiveInterpolant(maxNumGridPointsMatrix, initialLevel, 3);
-  std::cout << watch.stop() << "s\n";
+  std::cout << "ASM adaptive interpolant: " << watch.stop() << "s\n";
   watch.start();
   ASM.createMatrixGauss();
-  std::cout << watch.stop() << "s\n";
-  //  std::cout << "l2 interpol error: " << ASM.l2InterpolationError(1000) << "\n";
-  //  std::cout << "l2 gradient error:\n"
-  //            << ASM.l2InterpolationGradientError(objectiveFuncGradient, 1000).toString() << "\n";
+  std::cout << "ASM create matrix: " << watch.stop() << "s\n";
+  watch.start();
 
   ASM.evDecompositionForSymmetricMatrices();
+  std::cout << "ev decomposition: " << watch.stop() << "s\n";
+  watch.start();
   // active subspace specifier
   size_t n = 1;
   Eigen::VectorXd eigenvalues = ASM.getEigenvalues();
@@ -140,18 +150,22 @@ int main(int argc, char* argv[]) {
   sgpp::base::DataMatrix evaluationPoints = ASM.getEvaluationPoints();
   sgpp::base::DataVector functionValues = ASM.getFunctionValues();
 
-  for (size_t responseLevel = 1; responseLevel <= maxLevel; responseLevel++) {
-    sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
-    size_t maxNumGridPointsResponseSurface = 500;
-    responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(maxNumGridPointsResponseSurface,
-                                                               objectiveFunc, initialLevel);
-    //    responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, objectiveFunc);
+  sgpp::optimization::ASResponseSurfaceNakBspline responseSurf(W1, gridType, degree);
+  responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(maxNumPoints, objectiveFunc,
+                                                             initialLevel);
+  std::cout << "resSurf adaptive interpolant: " << watch.stop() << "s\n";
+  watch.start();
+  double l2Error = ASM.l2InterpolationError(10000);
+  std::cout << "calculate l2 error: " << watch.stop() << "s\n";
+  watch.start();
+  std::cout << "l2 error: " << l2Error << "\n";
 
-    //    sgpp::base::DataVector v(numDim, 1);
-    //    double responseSurfEval = responseSurf.eval(v);
-    //    std::cout << "f(v)  = " << f(v) << std::endl;
-    //    std::cout << "rI(v) = " << responseSurfEval << std::endl;
-  }
+  size_t numHistogramPoints = 1000000;
+  double integral = responseSurf.getHistogramBasedIntegral(10, numHistogramPoints, "Halton");
+  std::cout << "calculate integral: " << watch.stop() << "s\n";
+  double vol = std::pow(2, 10);
+  integral *= vol;
+  std::cout << "integral error: " << abs(integral - 1.025878943696365e+03) << "\n";
 
   return 0;
 }

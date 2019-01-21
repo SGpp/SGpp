@@ -70,7 +70,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param functionValues		the objective function evaluated at evaluationPoints
    * @param level				level of the regular interpolant
    */
-  void createRegularReducedSurfaceFromDetectionPoints(sgpp::base::DataMatrix evaluationPoints,
+  void createRegularReducedSurfaceFromData(sgpp::base::DataMatrix evaluationPoints,
                                                       sgpp::base::DataVector functionValues,
                                                       size_t level);
 

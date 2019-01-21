@@ -140,10 +140,10 @@
 // active subspaces
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp>
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
+#include "sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */

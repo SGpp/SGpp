@@ -39,7 +39,7 @@ class ASResponseSurface : public ResponseSurface {
    * @param functionValues		the objective function evaluations at evaluationPoints
    * @param level				level of the regular interpolant
    */
-  virtual void createRegularReducedSurfaceFromDetectionPoints(
+  virtual void createRegularReducedSurfaceFromData(
       sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues,
       size_t level) = 0;
 

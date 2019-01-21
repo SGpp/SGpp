@@ -4,11 +4,11 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp>
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
+#include "../src/sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
 
 /*
  * Code to compare different methods of
@@ -201,7 +201,7 @@ int main() {
               << std::endl;
 
     // adaptive B-spline matrix - regular Bspline response surface from detection points
-    sgpp::optimization::ASMatrixNakBspline ASM_Bspline(objectiveFunc, gridType, degree);
+    sgpp::optimization::ASMatrixBsplineAnalytic ASM_Bspline(objectiveFunc, gridType, degree);
     ASM_Bspline.buildAdaptiveInterpolant(numberOfPointsAccordingToLevel);
     ASM_Bspline.createMatrixGauss();
     ASM_Bspline.evDecompositionForSymmetricMatrices();
@@ -214,7 +214,7 @@ int main() {
     auto responseSurf_regularBspline =
         std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_adaptiveBspline,
                                                                           gridType, degree);
-    responseSurf_regularBspline->createRegularReducedSurfaceFromDetectionPoints(
+    responseSurf_regularBspline->createRegularReducedSurfaceFromData(
         evaluationPoints_adaptiveBspline, functionValues_adaptiveBspline, level);
     std::cout << "B    | l2 err: "
               << responseSurf_regularBspline->l2Error(objectiveFunc, numMCErrorPoints)
@@ -264,7 +264,7 @@ int main() {
     auto responseSurf_gradientMCFD =
         std::make_shared<sgpp::optimization::ASResponseSurfaceNakBspline>(W1_gradientMCFD, gridType,
                                                                           degree);
-    responseSurf_gradientMCFD->createRegularReducedSurfaceFromDetectionPoints(
+    responseSurf_gradientMCFD->createRegularReducedSurfaceFromData(
         evaluationPoints_gradientMCFD, functionValues_gradientMCFD, level);
     std::cout
         << "MC FD| l2 err: "

@@ -1,4 +1,6 @@
 import ipdb
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
@@ -38,10 +40,6 @@ def funcexp(x):
 
 def funcexppoly(x):
     return np.exp(3 * x[0]) * x[0] ** 7
-
-
-def functrigonometric5D(x):
-    return np.sin(np.pi * 1 * x[0]) * np.cos(np.pi * 2 * x[1]) * np.sin(np.pi * 3 * x[2]) * x[0] * x[1] * x[3] * x[4]
 
 
 def interpolateAndError(degree, dim, level, numErrPoints, func, gridType):
@@ -107,9 +105,8 @@ def interpolateAndErrorForSets(degree, dim, levels, numErrPoints, func, gridType
 pysgpp.OptPrinter.getInstance().setVerbosity(-1)
 dim = 1
 numErrPoints = 5000
-degree = 3
-levels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-func = funcexppoly
+levels = [1, 2, 3 , 4, 5, 6, 7, 8, 9, 10 ]
+func = funcexp
 gridTypes = ["Bspline", "BsplineBoundary", "BsplineClenshawCurtis", "FundamentalSpline", "ModFundamentalSpline", \
              "NakBsplineBoundary", "NakBsplineModified", "NakBsplineExtended"]
 fig = plt.figure(figsize=(20, 8))
@@ -118,5 +115,9 @@ for degree in [1, 3, 5]:
     plt.title(degree)
     interpolateAndErrorForSets(degree, dim, levels, numErrPoints, func, gridTypes)
 
+plt.tight_layout()
+funcname = 'exp'
+figname = os.path.join('/home/rehmemk/SGS_Sync/Zwischenergebnisse/NakBsplineExtended', funcname)
+plt.savefig(figname, dpi=300, bbox_inches='tight', pad_inches=0.0)
 plt.show()
 

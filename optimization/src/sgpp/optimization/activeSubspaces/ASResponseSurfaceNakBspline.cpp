@@ -27,7 +27,7 @@ void ASResponseSurfaceNakBspline::initialize() {
   }
 }
 
-void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromDetectionPoints(
+void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData(
     sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
@@ -237,8 +237,7 @@ double ASResponseSurfaceNakBspline::getHistogramBasedIntegral(size_t level,
 
 double ASResponseSurfaceNakBspline::getSplineBasedIntegral() {
   if (W1.cols() != 1) {
-    std::cerr << "ASResponseSurface::getSplineBasedIntegral currently supports only 1D active "
-                 "subspaces\n";
+    std::cerr << "ASResponseSurface::getSplineBasedIntegral supports only 1D active subspaces\n";
     return -1;
   }
   dd_set_global_constants();  // For cdd this must be called in the beginning.
@@ -255,9 +254,6 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral() {
     // the iterative M-spline definition needs sorted input knots
     sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
     std::sort(xi.begin(), xi.end());
-
-    //    sgpp::base::DataVector::iterator it = std::unique(xi.begin(), xi.end());
-    //    xi.resize(std::distance(xi.begin(), it));
     sgpp::optimization::MSplineNakBsplineScalarProducts scalarProducts(gridType, degree, xi,
                                                                        quadOrder);
 
@@ -272,8 +268,7 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral() {
 double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t approxLevel,
                                                                       size_t approxDegree) {
   if (W1.cols() != 1) {
-    std::cerr << "ASResponseSurface::getSplineBasedIntegral currently supports only 1D active "
-                 "subspaces\n";
+    std::cerr << "ASResponseSurface::getSplineBasedIntegral  supports only 1D active subspaces\n";
     return -1;
   }
   dd_set_global_constants();  // For cdd this must be called in the beginning.
@@ -604,7 +599,6 @@ void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace() {
     rightBound1D = tempBound > rightBound1D ? tempBound : rightBound1D;
     leftBound1D = tempBound < leftBound1D ? tempBound : leftBound1D;
   }
-  std::cout << "left Bound: " << leftBound1D << " right Bound: " << rightBound1D << "\n";
 }
 
 }  // namespace optimization

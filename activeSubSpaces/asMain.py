@@ -134,7 +134,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
     f = objFuncSGpp(objFunc)
     numRefine = 3
     initialLevel = 1
-    ASM = pysgpp.ASMatrixNakBspline(f, pysgpp.Grid.stringToGridType(gridType), degree)
+    ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
     if asmType == 'adaptive':
         ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
     elif asmType == 'regualar':
@@ -165,10 +165,10 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
         responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
     elif responseType == 'regular':
         responseSurf.createRegularReducedSurfaceWithPseudoInverse(numResponse, f)
-    elif responseType == 'detection':
-        x = ASM.getEvaluationPoints()
-        f = ASM.getFunctionValues()
-        responseSurf.createRegularReducedSurfaceFromDetectionPoints(x, f, numResponse)
+    elif responseType == 'data':
+        detectionPoints = ASM.getEvaluationPoints()
+        detectionValues = ASM.getFunctionValues()
+        responseSurf.createRegularReducedSurfaceFromData(detectionPoints, detectionValues, numResponse)
 
     bounds = responseSurf.getBounds() 
     print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
@@ -243,9 +243,10 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
     y = X.dot(ss.W1)
     RS.train(y, f)
     
-    # l2 error
+    # calculate l2 error in W1T * [-1,1]. 
+    # ToDo Is this the correct space to measure the error?
     numErrorPoints = 10000
-    errorPoints = np.random.random((numErrorPoints, objFunc.getDim()))
+    errorPoints = np.random.random((numErrorPoints, objFunc.getDim())) * 2 - 1
     errorEval = RS.predict(errorPoints.dot(ss.W1))[0]
     errorFunctionValues = objFunc.eval(errorPoints)
     l2Error = np.linalg.norm((errorEval - errorFunctionValues) / numErrorPoints)

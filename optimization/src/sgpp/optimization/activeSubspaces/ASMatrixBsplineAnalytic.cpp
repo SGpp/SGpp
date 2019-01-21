@@ -5,16 +5,35 @@
 
 // #ifdef USE_EIGEN
 
-#include <sgpp/optimization/activeSubspaces/ASMatrixNakBspline.hpp>
+#include "ASMatrixBsplineAnalytic.hpp"
 
 namespace sgpp {
 namespace optimization {
-void ASMatrixNakBspline::buildRegularInterpolant(size_t level) {
+
+void ASMatrixBsplineAnalytic::initialize(sgpp::base::GridType gridType) {
+  if (gridType == sgpp::base::GridType::NakBspline) {
+    grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+    grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+    grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+  } else {
+    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+  }
+}
+
+void ASMatrixBsplineAnalytic::buildRegularInterpolant(size_t level) {
   grid->getGenerator().regular(level);
   this->calculateInterpolationCoefficients();
 }
 
-void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel,
+void ASMatrixBsplineAnalytic::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel,
                                                   size_t refinementsNum) {
   grid->getGenerator().regular(initialLevel);
   this->calculateInterpolationCoefficients();
@@ -23,9 +42,9 @@ void ASMatrixNakBspline::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_
   }
 }
 
-void ASMatrixNakBspline::createMatrix(size_t numPoints) { this->createMatrixMonteCarlo(numPoints); }
+void ASMatrixBsplineAnalytic::createMatrix(size_t numPoints) { this->createMatrixMonteCarlo(numPoints); }
 
-void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numMCPoints) {
+void ASMatrixBsplineAnalytic::createMatrixMonteCarlo(size_t numMCPoints) {
   sgpp::optimization::InterpolantScalarFunctionGradient interpolantGradient(*grid, coefficients);
 
   RandomNumberGenerator::getInstance().setSeed();
@@ -42,7 +61,7 @@ void ASMatrixNakBspline::createMatrixMonteCarlo(size_t numMCPoints) {
   this->C /= static_cast<double>(numMCPoints);
 }
 
-void ASMatrixNakBspline::createMatrixGauss() {
+void ASMatrixBsplineAnalytic::createMatrixGauss() {
   C.resize(numDim, numDim);
   {
     size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
@@ -58,7 +77,7 @@ void ASMatrixNakBspline::createMatrixGauss() {
   }
 }
 
-double ASMatrixNakBspline::l2InterpolationError(size_t numMCPoints) {
+double ASMatrixBsplineAnalytic::l2InterpolationError(size_t numMCPoints) {
   sgpp::optimization::InterpolantScalarFunction interpolant(*grid, coefficients);
   double l2Err = 0.0;
   sgpp::base::DataVector randomVector(objectiveFunc->getNumberOfParameters());
@@ -72,7 +91,7 @@ double ASMatrixNakBspline::l2InterpolationError(size_t numMCPoints) {
   return l2Err;
 }
 
-sgpp::base::DataVector ASMatrixNakBspline::l2InterpolationGradientError(
+sgpp::base::DataVector ASMatrixBsplineAnalytic::l2InterpolationGradientError(
     std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
     size_t numMCPoints) {
   sgpp::optimization::InterpolantScalarFunctionGradient interpolant(*grid, coefficients);
@@ -95,7 +114,7 @@ sgpp::base::DataVector ASMatrixNakBspline::l2InterpolationGradientError(
   return errors;
 }
 
-void ASMatrixNakBspline::toFile(std::string path) {
+void ASMatrixBsplineAnalytic::toFile(std::string path) {
   std::string gridPath = path + "/ASMGrid.grid";
   std::filebuf fb;
   fb.open(gridPath, std::ios::out);
@@ -106,7 +125,7 @@ void ASMatrixNakBspline::toFile(std::string path) {
   coefficients.toFile(coeffPath);
 }
 
-sgpp::optimization::ASResponseSurfaceNakBspline ASMatrixNakBspline::getResponseSurfaceInstance(
+sgpp::optimization::ASResponseSurfaceNakBspline ASMatrixBsplineAnalytic::getResponseSurfaceInstance(
     size_t asDimension, sgpp::base::GridType gridType, size_t degree) {
   Eigen::MatrixXd W1 = this->getTransformationMatrix(asDimension);
 
@@ -116,13 +135,13 @@ sgpp::optimization::ASResponseSurfaceNakBspline ASMatrixNakBspline::getResponseS
 
 // ----------------- auxiliary routines -----------
 
-void ASMatrixNakBspline::refineSurplusAdaptive(size_t refinementsNum) {
+void ASMatrixBsplineAnalytic::refineSurplusAdaptive(size_t refinementsNum) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
   this->calculateInterpolationCoefficients();
 }
 
-void ASMatrixNakBspline::calculateInterpolationCoefficients() {
+void ASMatrixBsplineAnalytic::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   evaluationPoints.resizeZero(gridStorage.getSize(), numDim);
   functionValues.resizeZero(gridStorage.getSize());
@@ -145,7 +164,7 @@ void ASMatrixNakBspline::calculateInterpolationCoefficients() {
 }
 
 // ToDo (rehmemk) Parallelize this?
-double ASMatrixNakBspline::matrixEntryGauss(
+double ASMatrixBsplineAnalytic::matrixEntryGauss(
     size_t i, size_t j, sgpp::optimization::NakBsplineScalarProducts& scalarProducts) {
   double entry = 0.0;
   for (size_t k = 0; k < coefficients.getSize(); k++) {
@@ -159,7 +178,7 @@ double ASMatrixNakBspline::matrixEntryGauss(
 
 // Todo(rehmemk) Check already here if (multidimensional) B-spline supports overlap and return 0 if
 // so
-double ASMatrixNakBspline::scalarProductDxbiDxbj(
+double ASMatrixBsplineAnalytic::scalarProductDxbiDxbj(
     size_t i, size_t j, size_t k, size_t l,
     sgpp::optimization::NakBsplineScalarProducts& scalarProducts) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -173,20 +192,16 @@ double ASMatrixNakBspline::scalarProductDxbiDxbj(
 
     if ((d == i && i != j)) {
       // int d/dxi b_{k_i} (x_i) b_{l_i} (x_i) dxi
-      integral1D =
-          scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, false);
+      integral1D = scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, false);
     } else if (d == j && i != j) {
       // int b_{k_j} (x_j) d/dxj b_{l_j} (x_j) dxj
-      integral1D =
-          scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, true);
+      integral1D = scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, true);
     } else if (d == i && i == j) {
       // int d/dxi b_{k_i} (xi) d/dxi b_{l_i} (xi) dxi
-      integral1D =
-          scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, true);
+      integral1D = scalarProducts.basisScalarProduct(levelk, indexk, true, levell, indexl, true);
     } else {
       // int b_{k_d} (x_d) b_{l_d} (x_d) dxd
-      integral1D =
-          scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, false);
+      integral1D = scalarProducts.basisScalarProduct(levelk, indexk, false, levell, indexl, false);
     }
     if (integral1D == 0) return 0.0;
     integral *= integral1D;
