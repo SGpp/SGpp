@@ -1179,8 +1179,10 @@ class bratleyXD():
         return 0
 
 #----------------------- examples from Constantines active subspaces data sets git ---------------------------------------------
+# https://github.com/paulcon/as-data-sets
 
 
+# https://github.com/paulcon/as-data-sets/tree/master/Ebola
 class ebola():
 
     def __init__(self):

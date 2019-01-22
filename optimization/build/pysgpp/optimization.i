@@ -514,7 +514,9 @@ const bool UMFPACK_ENABLED;
 //Active Subspaces
 %include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrix.hpp"
 %include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixBspline.hpp"
 %include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
+%include "optimization/src/sgpp/optimization/activeSubspaces/ASMatrixBsplineData.hpp"
 %include "optimization/src/sgpp/optimization/activeSubspaces/ResponseSurface.hpp"
 %include "optimization/src/sgpp/optimization/activeSubspaces/ASResponseSurface.hpp"
 %include "optimization/src/sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp"

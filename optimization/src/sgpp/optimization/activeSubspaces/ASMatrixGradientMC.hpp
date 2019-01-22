@@ -7,6 +7,7 @@
 // #ifdef USE_EIGEN
 
 #include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
@@ -21,13 +22,17 @@ namespace optimization {
 class ASMatrixGradientMC : public ASMatrix {
  public:
   explicit ASMatrixGradientMC(std::shared_ptr<ScalarFunction> objectiveFunc)
-      : ASMatrix(objectiveFunc) {}
+      : ASMatrix(), objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
   void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); }
   void createMatrixMonteCarlo(size_t numPoints,
                               WrapperScalarFunctionGradient objectiveFuncGradient);
   void createMatrixMonteCarloFiniteDifference(size_t numPoints, double h = 1e-08);
 
  private:
+  // objective function
+  std::shared_ptr<ScalarFunction> objectiveFunc;
+  // dimensionality
+  size_t numDim;
 };
 
 }  // namespace optimization

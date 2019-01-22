@@ -56,7 +56,8 @@ def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
     method = data["method"]
     gridType = data["gridType"]
     shadow1DEvaluationsArray = data["shadow1DEvaluationsArray"]
-    numShadow1DPoints = data["numShadow1DPoints"] 
+    numShadow1DPoints = data["numShadow1DPoints"]
+    bounds = data["boundsArray"][:, -1]
     objFunc = asFunctions.getFunction(model)
     lb, ub = objFunc.getDomain()
     numDim = objFunc.getDim()
@@ -74,12 +75,12 @@ def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
         W1TX = X.dot(W1)
         plt.scatter(W1TX, f, color='b')
         shadow1DEvaluations = shadow1DEvaluationsArray[:, -1]
-        bounds = [np.min(W1TX), np.max(W1TX)]
         if method in ['asSGpp']:
             X1unit = np.linspace(0, 1, numShadow1DPoints)
             X1 = [bounds[0] + x * (bounds[1] - bounds[0]) for x in X1unit]
         elif method in ["QPHD"]:
             X1unit = np.linspace(-1, 1, numShadow1DPoints)
+            bounds[0] = 0  # W1TX is defined on [0,bounds[1]]
             X1 = [bounds[0] + (x + 1) / 2.0 * (bounds[1] - bounds[0]) for x in X1unit]
         plt.plot(X1, shadow1DEvaluations, label=label)
         
@@ -139,7 +140,8 @@ def plotter(folders, qoi, resultsPath, savefig=1):
                     degree = data["degree"]
                     gridType = data["gridType"]
                     integralType = data["integralType"]
-                    label = method + '_' + gridType + '_' + str(degree) + '_' + integralType
+                    asmType = data["asmType"]
+                    label = method + '_' + gridType + '_' + str(degree) + '_' + integralType + '_' + asmType
                     
                 elif method == 'SGpp':
                     degree = data["degree"]
@@ -172,7 +174,7 @@ def plotter(folders, qoi, resultsPath, savefig=1):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='sin8D', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='sin5Dexp1', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=1000, type=int, help="maximum number of points used")
     parser.add_argument('--plotL2', default=0, type=bool, help="do (not) plot l2 error")
@@ -189,10 +191,11 @@ if __name__ == "__main__":
             'QPHD_{}_{}',
             # 'SGpp_nakbsplineextended_{}_{}_adaptive',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Spline',
-            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_appSpline',
+            'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_appSpline',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Hist',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_MC',
-             'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_None'
+            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_None'
+            'asSGpp_nakbsplineextended_3_1000_adaptive_data_appSpline'
             ]
     names = [n.format(args.degree, args.maxPoints) for n in names]
     folders = [os.path.join(resultsPath, name) for name in names]

@@ -32,8 +32,8 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData(
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  // interpolationMatrix(i,j) = b_j (y_i) = b_j (W1T * evaluationPoint_i)
-  Eigen::MatrixXd interpolationMatrix(evaluationPoints.getNrows(), gridStorage.getSize());
+  // regressionMatrix(i,j) = b_j (y_i) = b_j (W1T * evaluationPoint_i)
+  Eigen::MatrixXd regressionMatrix(evaluationPoints.getNrows(), gridStorage.getSize());
   for (size_t i = 0; i < evaluationPoints.getNrows(); i++) {
     sgpp::base::DataVector point(evaluationPoints.getNcols());
     evaluationPoints.getRow(i, point);
@@ -50,15 +50,14 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData(
           basisEval *= basisEval1D;
         }
       }
-      interpolationMatrix(i, j) = basisEval;
+      regressionMatrix(i, j) = basisEval;
     }
   }
 
   Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
   // Least Squares Fit
-  Eigen::VectorXd alpha_Eigen =
-      interpolationMatrix.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
-          .solve(functionValues_Eigen);
+  Eigen::VectorXd alpha_Eigen = regressionMatrix.bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
+                                    .solve(functionValues_Eigen);
 
   coefficients = EigenToDataVector(alpha_Eigen);
   interpolant =
@@ -278,7 +277,7 @@ double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t app
   sgpp::base::SGppStopwatch watch;
   watch.start();
   double simplexVolume = simplexDecomposition(projectedCorners);
-  std::cout << "simplexDecomposition " << watch.stop() << "s\n";
+  //  std::cout << "simplexDecomposition " << watch.stop() << "s\n";
 
   auto volGrid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(1, approxDegree);
   volGrid->getGenerator().regular(approxLevel);
@@ -291,7 +290,7 @@ double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t app
   watch.start();
   sgpp::base::DataVector volumes =
       caclculateVolumeSimplexWise(interpolPoints, simplexVolume, projectedCorners);
-  std::cout << "caclculateVolumeSimplexWise " << watch.stop() << "s\n";
+  //  std::cout << "caclculateVolumeSimplexWise " << watch.stop() << "s\n";
 
   sgpp::optimization::HierarchisationSLE hierSLE(*volGrid);
   sgpp::optimization::sle_solver::Armadillo sleSolver;
@@ -540,19 +539,18 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     Eigen::VectorXd p(static_cast<int>(gridStorage.getDimension()));
-    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-      p[d] = gridStorage.getPointCoordinate(i, d);
+    p = DataVectorToEigen(gridStorage.getPointCoordinates(i));
 
-      // transformation in 1D case
-      if (W1.cols() == 1) {
-        p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
-      }
-      sgpp::base::DataVector pinv =
-          EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
-                                          // we don't have to transform here every time?
-      functionValues[i] = objectiveFunc->eval(pinv);
+    // transformation in 1D case
+    if (W1.cols() == 1) {
+      p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
     }
+    sgpp::base::DataVector pinv =
+        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
+                                        // we don't have to transform here every time?
+    functionValues[i] = objectiveFunc->eval(pinv);
   }
+
   sgpp::optimization::sle_solver::Auto sleSolver;
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed, exiting.\n";

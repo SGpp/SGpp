@@ -30,14 +30,5 @@ void ASMatrix::evDecompositionForSymmetricMatrices() {
   }
 }
 
-void ASMatrix::setMatrix(Eigen::MatrixXd newC) {
-  if ((newC.cols() == static_cast<unsigned int>(numDim)) &&
-      (newC.rows() == static_cast<unsigned int>(numDim))) {
-    C = newC;
-  } else {
-    std::cout << "ASMatrix: matrix size does not match objective function" << std::endl;
-  }
-}
-
 }  // namespace optimization
 }  // namespace sgpp

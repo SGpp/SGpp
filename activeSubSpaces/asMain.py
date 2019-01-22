@@ -2,9 +2,7 @@ from argparse import ArgumentParser
 from mpl_toolkits.mplot3d import Axes3D
 import os
 import time
-
 from matplotlib import cm
-
 import active_subspaces as ac
 import asFunctions
 import cPickle as pickle
@@ -132,18 +130,49 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
+    lb, ub = objFunc.getDomain()
     numRefine = 3
     initialLevel = 1
-    ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
-    if asmType == 'adaptive':
-        ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
-    elif asmType == 'regualar':
-        ASM.buildRegularInterpolant(numASM)
+    
+    if asmType in ["adaptive", "regular"]:
+        ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
+        if asmType == 'adaptive':
+            ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
+        elif asmType == 'regualar':
+            ASM.buildRegularInterpolant(numASM)
+    elif asmType in ["data"]:
+        numPoints = 10000
+        randomPoints = np.random.rand(numDim, numPoints)
+        evaluationPoints = pysgpp.DataMatrix(numDim, numPoints)
+        for i in range(numDim):
+            for j in range(numPoints):
+                evaluationPoints.set(i, j, randomPoints[i, j])
+        functionValues = pysgpp.DataVector(numPoints)
+        for i in range(numPoints):
+            functionValues[i] = f.eval(randomPoints[:, i])
+        ASM = pysgpp.ASMatrixBsplineData(evaluationPoints, functionValues, pysgpp.Grid.stringToGridType(gridType), degree)
+        # asmLevel = 5
+        # ASM.buildRegularInterpolant(asmLevel)
+        ASM.buildAdaptiveInterpolant(numASM)
     
     if savePath is not None:
         if not os.path.exists(savePath):
             os.makedirs(savePath)
         ASM.toFile(savePath)
+ 
+# plot function and asm interpolant for 1D objective function       
+#     X = np.linspace(0, 1, 100)
+#     F = [f.eval([x]) for x in X]
+#     I = [ASM.evalInterpolant(pysgpp.DataVector(1, x)) for x in X]
+#     EP = np.zeros(numPoints)
+#     FV = np.zeros(numPoints)
+#     for j in range(numPoints):
+#         EP[j] = evaluationPoints.get(0, j)
+#         FV[j] = functionValues[j]
+#     plt.plot(X, F, 'b')
+#     plt.plot(X, I, 'r')
+#     plt.plot(EP, FV, 'yo')
+#     plt.show()
     
     ASM.createMatrixGauss()
     ASM.evDecompositionForSymmetricMatrices()
@@ -175,15 +204,13 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
     
     l2Error = responseSurf.l2Error(f, numErrorPoints)
     print("interpol error: {}".format(l2Error))
-
+    
     shadow1DEvaluations = []
     if numShadow1DPoints > 0:
         X1unit = np.linspace(0, 1, numShadow1DPoints)
         shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
 
-    lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
-    
     integral = float('NaN')
     if integralType == 'MC':
         integral = responseSurf.getMCIntegral(100, numHistogramMCPoints, 'Halton') * vol
@@ -193,21 +220,24 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
         integral = responseSurf.getSplineBasedIntegral() * vol
     elif integralType == 'appSpline':
         integral = responseSurf.getApproximateSplineBasedIntegral(approxLevel, approxDegree) * vol
-    print("integral: {}\n".format(integral)),
+#     print("integral: {}\n".format(integral)),
     integralError = abs(integral - objFunc.getIntegral())
     print("integral error: {}".format(integralError))
     
 # plot interpolant of 2D function
 #     X, Y = np.meshgrid(np.linspace(0, 1, 100), np.linspace(0, 1, 100))
-#     Z = np.zeros(np.shape(X))
+#     I = np.zeros(np.shape(X))
+#     F = np.ndarray(np.shape(X))
 #     for i in range(len(X)):
 #         for j in range(len(X[0])):
-#             Z[i, j] = responseSurf.eval(pysgpp.DataVector([X[i, j], Y[i, j]]))
+#             I[i, j] = responseSurf.eval(pysgpp.DataVector([X[i, j], Y[i, j]]))
+#             F[i, j] = f.eval([X[i, j], Y[i, j]])
 #     fig = plt.figure(); ax = fig.gca(projection='3d')
-#     surf = ax.plot_surface(X, Y, Z, cmap=cm.viridis, linewidth=0, antialiased=False)
+#     ax.plot_surface(X, Y, I, cmap=cm.viridis, linewidth=0, antialiased=False)
+#     ax.plot_wireframe(X, Y, F, rstride=10, cstride=10,color='r')
 #     plt.show()
 
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations
+    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, [bounds[0], bounds[1]]
 
 
 #---------------------Constantines AS framework----------------------------
@@ -244,7 +274,6 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
     RS.train(y, f)
     
     # calculate l2 error in W1T * [-1,1]. 
-    # ToDo Is this the correct space to measure the error?
     numErrorPoints = 10000
     errorPoints = np.random.random((numErrorPoints, objFunc.getDim())) * 2 - 1
     errorEval = RS.predict(errorPoints.dot(ss.W1))[0]
@@ -262,13 +291,33 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
     integralError = abs(integral - objFunc.getIntegral())
     print(" integral error {}".format(integralError))
     
+    bounds = avdom.vertY[ :, 0]
     shadow1DEvaluations = []
     if numShadow1DPoints > 0:
-        X1unit = np.ndarray((numShadow1DPoints, 1))
-        X1unit[:, 0] = np.linspace(-1, 1, numShadow1DPoints)
-        shadow1DEvaluations = RS.predict(X1unit)[0]
+        X1 = np.ndarray((numShadow1DPoints, 1))
+        X1[:, 0] = np.linspace(bounds[0], bounds[1], numShadow1DPoints)
+        shadow1DEvaluations = RS.predict(X1)[0]
+    
+    # plot interpolant of 2D function
+#     X, Y = np.meshgrid(np.linspace(-1, 1, 50), np.linspace(-1, 1, 50))
+#     Xunit, Yunit = np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))
+#     I = np.zeros(np.shape(X))
+#     F = np.ndarray(np.shape(X))
+#     wrapf = objFuncSGpp(objFunc)
+#     for i in range(len(X)):
+#         for j in range(len(X[0])):
+#             p = np.ndarray((1, 2))
+#             p[0, 0] = X[i, j]
+#             p[0, 1] = Y[i, j]
+#             I[i, j] = RS.predict(p.dot(ss.W1))[0]
+#             F[i, j] = wrapf.eval([Xunit[i, j], Yunit[i, j]])
+#     fig = plt.figure(); ax = fig.gca(projection='3d')
+#     ax.plot_surface(Xunit, Yunit, I, cmap=cm.viridis, linewidth=0, antialiased=False)
+#     ax.plot_wireframe(Xunit, Yunit, F, rstride=10, cstride=10, color='r')
+#     # ax.scatter((errorPoints[:, 0] + 1) / 2.0, (errorPoints[:, 1] + 1) / 2.0, errorEval, c='b')
+#     plt.show()
         
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations
+    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds
 
 
 #------------------------------------ main ---------------------------------------
@@ -281,7 +330,7 @@ if __name__ == "__main__":
     parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
     parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
     parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
-    parser.add_argument("--numShadow1DPoints", default=0, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
+    parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
     # only relevant for asSGpp and SGpp
     parser.add_argument('--gridType', default='nakbsplineextended', type=str, help="SGpp grid type")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
@@ -303,6 +352,7 @@ if __name__ == "__main__":
     durations = [0] * len(sampleRange); l2Errors = [0] * len(sampleRange)
     integrals = [0] * len(sampleRange); integralErrors = [0] * len(sampleRange)
     shadow1DEvaluationsArray = np.ndarray(shape=(args.numShadow1DPoints, len(sampleRange)))
+    boundsArray = np.ndarray(shape=(2, len(sampleRange)))
     
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
     resultsPath = os.path.join(resultsPath, objFunc.getName())
@@ -328,16 +378,17 @@ if __name__ == "__main__":
             f = objFunc.eval(x, -1, 1)
             if args.method == 'AS':
                 df = objFunc.eval_grad(x, -1, 1)
-                e, v, l2Error, integral, integralError, shadow1DEvaluations = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree,
+                e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree,
                                                                         sstype=args.method, nboot=nboot,
                                                                         numShadow1DPoints=args.numShadow1DPoints)
             else:
-                e, v, l2Error, integral, integralError, shadow1DEvaluations = ConstantineAS(X=x, f=f, responseDegree=args.degree,
+                e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, responseDegree=args.degree,
                                                                        sstype=args.method, nboot=nboot,
                                                                        numShadow1DPoints=args.numShadow1DPoints)
             durations[i] = time.time() - start; l2Errors[i] = l2Error;
             integrals[i] = integral; integralErrors[i] = integralError
             shadow1DEvaluationsArray[:, i] = shadow1DEvaluations[:, 0]
+            boundsArray[:, i] = bounds
             eival[:, i] = e[:, 0]; eivec[:, :, i] = v
             
     # .... .... .... active subspace SG++ .... .... .... 
@@ -349,7 +400,7 @@ if __name__ == "__main__":
             start = time.time()
             numResponse = numSamples
             numASM = numSamples
-            e, v, l2Error, integral, integralError, shadow1DEvaluations = SGppAS(objFunc,
+            e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = SGppAS(objFunc,
                                                              args.gridType, args.degree, numASM, numResponse,
                                                              args.asmType, args.responseType, args.integralType,
                                                              numErrorPoints=10000, savePath=path,
@@ -359,6 +410,7 @@ if __name__ == "__main__":
             durations[i] = time.time() - start; l2Errors[i] = l2Error;
             integrals[i] = integral; integralErrors[i] = integralError
             shadow1DEvaluationsArray[:, i] = shadow1DEvaluations
+            boundsArray[:, i] = bounds
             eival[:, i] = e[:]
             eivec[:, :, i] = v
             
@@ -387,7 +439,8 @@ if __name__ == "__main__":
                 'degree':args.degree, 'responseType':args.responseType, 'asmType':args.asmType,
                 'integralType': args.integralType, 'numHistogramMCPoints':numHistogramMCPoints,
                 'appSplineLevel': args.appSplineLevel, 'appSplineDegree': args.appSplineDegree,
-                'numShadow1DPoints':args.numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray}
+                'numShadow1DPoints':args.numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
+                'boundsArray':boundsArray}
         with open(os.path.join(path, 'data.pkl'), 'wb') as fp:
             pickle.dump(data, fp)
 

@@ -7,7 +7,6 @@
 // #ifdef USE_EIGEN
 
 #include <sgpp/optimization/activeSubspaces/ASMatrixBspline.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <string>
 
@@ -15,12 +14,12 @@ namespace sgpp {
 namespace optimization {
 
 /**
- * Used to create, store and use the matrix C for the detection of active subspaces of an
- * analytically given objective function f using a B-spline interpolant. So C_{i,j} = \int \nabla f
- * \nabla f^T dx \approx \int \nabla \hat{f} \nabla \hat{f}^T dx where \hat{f} is a nak B-spline
- * interpolant for f
+ * Used to create, store and use the matrix C for the detection of active subspaces of a function
+ * given by a data-set using a B-spline interpolant. So
+ * C_{i,j} = \int \nabla f \nabla f^T dx \approx \int \nabla \hat{f} \nabla \hat{f}^T dx where
+ * \hat{f} is a nak B-spline interpolant for f
  */
-class ASMatrixBsplineAnalytic : public ASMatrixBspline {
+class ASMatrixBsplineData : public ASMatrixBspline {
  public:
   /**
    * Constructor
@@ -29,10 +28,11 @@ class ASMatrixBsplineAnalytic : public ASMatrixBspline {
    * @param gridType          type of the grid for the interpolant
    * @param degree            degree for the B-spline basis functions
    */
-  ASMatrixBsplineAnalytic(std::shared_ptr<ScalarFunction> objectiveFunc,
-                          sgpp::base::GridType gridType, size_t degree)
-      : ASMatrixBspline(objectiveFunc->getNumberOfParameters(), degree, gridType),
-        objectiveFunc(objectiveFunc) {}
+  ASMatrixBsplineData(sgpp::base::DataMatrix evaluationPoints,
+                      sgpp::base::DataVector functionValues, sgpp::base::GridType gridType,
+                      size_t degree)
+      : ASMatrixBspline(evaluationPoints.getNrows(), degree, gridType, evaluationPoints,
+                        functionValues) {}
 
   /**
    * Create a regular interpolant of the objective function f
@@ -60,27 +60,14 @@ class ASMatrixBsplineAnalytic : public ASMatrixBspline {
   /**
    * calculates the l2 error of the interpolant
    *
-   * @param numMCPoints number of Monte Carlo points
+   * @param errorPoints points in which the error is measured
+   * @param values      exact function values according ot errorPoints
    *
    * @return l2 error
    */
-  double l2InterpolationError(size_t numMCPoints = 1000);
-
-  /**
-   * calculates the l2 error of the interpolants gradient
-   *
-   * @param objectiveFuncGradient	the real gradient function
-   * @param numMCPoints             number of Monte Carlo Points
-   *
-   * @return l2 error of gradient
-   */
-  sgpp::base::DataVector l2InterpolationGradientError(
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
-      size_t numMCPoints = 1000);
+  double l2InterpolationError(Eigen::MatrixXd errorPoints, Eigen::VectorXd values);
 
  private:
-  // objective function
-  std::shared_ptr<ScalarFunction> objectiveFunc;
 };
 
 }  // namespace optimization

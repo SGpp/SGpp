@@ -144,6 +144,8 @@
 #include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
+#include "sgpp/optimization/activeSubspaces/ASMatrixBspline.hpp"
 #include "sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
+#include "sgpp/optimization/activeSubspaces/ASMatrixBsplineData.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */

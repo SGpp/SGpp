@@ -8,7 +8,6 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/optimization/activeSubspaces/EigenFunctionalities.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <iostream>
 
@@ -27,10 +26,10 @@ class ASMatrix {
   /**
    * Constructor
    *
-   * @param objectiveFunc the objective function
    */
-  explicit ASMatrix(std::shared_ptr<ScalarFunction> objectiveFunc)
-      : objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
+  ASMatrix(sgpp::base::DataMatrix evaluationPoints = sgpp::base::DataMatrix(),
+           sgpp::base::DataVector functionValues = sgpp::base::DataVector())
+      : evaluationPoints(evaluationPoints), functionValues(functionValues) {}
 
   /**
    * Destructor
@@ -80,13 +79,9 @@ class ASMatrix {
   Eigen::MatrixXd getMatrix() { return C; }
   sgpp::base::DataMatrix getMatrixDataMatrix() { return EigenToDataMatrix(C); }
 
-  void setMatrix(Eigen::MatrixXd newC);
+  void setMatrix(Eigen::MatrixXd newC) { C = newC; }
 
  protected:
-  // objective function
-  std::shared_ptr<ScalarFunction> objectiveFunc;
-  // dimensionality
-  size_t numDim;
   // active subspace matrix C = \int \nabla f \nabla f^T dx \in R^{numDim x numDim}
   Eigen::MatrixXd C;
   // eigenvectors of C (one per column)
