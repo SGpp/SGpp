@@ -1,31 +1,44 @@
 
 #ifdef USE_SCALAPACK
 
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DistributedDataMatrix.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 #include <sgpp/datadriven/scalapack/scalapack.hpp>
 
 #include <mpi.h>
 #include <stdio.h>
+#include <memory>
 #include <vector>
 
-#define DLEN_ 9
-#define DTYPE_ 0
-#define CTXT_ 1
-#define M_ 2
-#define N_ 3
-#define MB_ 4
-#define NB_ 5
-#define RSRC_ 6
-#define CSRC_ 7
-#define LLD_ 8
-#define ITHVAL_ 9
+using sgpp::datadriven::BlacsProcessGrid;
+using sgpp::datadriven::DistributedDataMatrix;
+
+void test() {
+  std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 1);
+  std::cout << "Context handle: " << grid->getContextHandle() << std::endl;
+  std::cout << "grid: " << grid->getTotalRows() << " x " << grid->getTotalColumns() << std::endl;
+  std::cout << "process: " << grid->getCurrentRow() << ", " << grid->getCurrentColumn()
+            << std::endl;
+
+  DistributedDataMatrix matrix(grid, 128, 128, DistributedDataMatrix::DTYPE::DENSE, 128, 64, 0.0);
+  std::cout << "matrix initialized" << std::endl;
+
+  std::cout << "local size: " << matrix.getLocalRows() << " x " << matrix.getLocalColumns()
+            << std::endl;
+}
 
 #endif /* USE_SCALAPACK */
 
 int main(int argc, char** argv) {
 #ifdef USE_SCALAPACK
+
+  BlacsProcessGrid::initializeBlacs();
+  test();
+  BlacsProcessGrid::exitBlacs();
+
   // generate matrices
-  int m = 8;
+  /*int m = 8;
   int n = 8;
   int k = 8;
 
@@ -95,7 +108,7 @@ int main(int argc, char** argv) {
   blacs_gridexit_(ictxt);
 
   int cont = 0;
-  blacs_exit_(cont);
+  blacs_exit_(cont);*/
 
 #endif /*USE_SCALAPACK*/
 }
