@@ -34,10 +34,11 @@ checkForLibrary("Eigen",     "USE_EIGEN",     "eigen3/Eigen/Dense",    None)
 checkForLibrary("Armadillo", "USE_ARMADILLO", "armadillo",             "armadillo")
 checkForLibrary("Gmm++",     "USE_GMMPP",     "gmm/gmm.h",             None)
 
-# Note (rehmemk) I used the lpsolve library with the volume_approximation code by Vissarion Fissikapopolous
+ 
+# Note (rehmemk) I used the cdd library for H<->V representation
 # Remove this if not necessary anymore.
-additionalDependencies += ["lpsolve55"]
 additionalDependencies += ["cdd"]
+
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
