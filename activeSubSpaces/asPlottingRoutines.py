@@ -1,12 +1,16 @@
 from argparse import ArgumentParser
+import colorsys
 from matplotlib.font_manager import FontProperties
 from mpl_toolkits.mplot3d import Axes3D
 import os
+
 from matplotlib import cm
 from matplotlib.pyplot import gca
+
 import active_subspaces as ac
 import asFunctions
 import cPickle as pickle
+import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
@@ -50,7 +54,7 @@ def plot_error_first_eigenvec(data, label, color, marker):
     # plt.title(model)
 
     
-def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
+def shadowplot(data, label, path, color='b', subspaceDimension=1, gridIndex=-1):
     eivec = data["eigenvectors"][:, :, gridIndex]
     model = data["model"]
     method = data["method"]
@@ -73,7 +77,13 @@ def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
     if subspaceDimension == 1:
         W1 = eivec[:, 0]
         W1TX = X.dot(W1)
-        plt.scatter(W1TX, f, color='b')
+        
+        # use a brighter version of the given color for the shadow to improve visibility
+        brightenAmount = 0.5
+        c = colorsys.rgb_to_hls(*mc.to_rgb(color))
+        shadowColor = colorsys.hls_to_rgb(c[0], 1 - brightenAmount * (1 - c[1]), c[2])
+        
+        plt.scatter(W1TX, f, facecolors='none', edgecolors=shadowColor, alpha=0.3)
         shadow1DEvaluations = shadow1DEvaluationsArray[:, -1]
         if method in ['asSGpp']:
             X1unit = np.linspace(0, 1, numShadow1DPoints)
@@ -82,7 +92,22 @@ def shadowplot(data, label, subspaceDimension=1, gridIndex=-1):
             X1unit = np.linspace(-1, 1, numShadow1DPoints)
             bounds[0] = 0  # W1TX is defined on [0,bounds[1]]
             X1 = [bounds[0] + (x + 1) / 2.0 * (bounds[1] - bounds[0]) for x in X1unit]
-        plt.plot(X1, shadow1DEvaluations, label=label)
+        plt.plot(X1, shadow1DEvaluations, label=label, color=color)
+        
+        ########## debugging data #############
+        if data['responseType'] == 'data':
+            maxPoints = 499  # data['maxPoints']
+            with open(os.path.join(path, 'asmPoints' + str(maxPoints) + '.dat'), 'r') as pointsFile:
+                points = pointsFile.read().replace('\n', '')
+            points = eval(points)
+            with open(os.path.join(path, 'asmValues' + str(maxPoints) + '.dat'), 'r') as valuesFile:
+                values = valuesFile.read().replace('\n', '')
+            values = eval(values)
+            plt.scatter(np.dot(W1, points), values, marker='+', color='k')
+            # regulargridlevel = 8
+            # gridpoints = np.linspace(0, 1, 2 ** regulargridlevel + 1) * (bounds[1] - bounds[0]) + bounds[0]
+            # plt.scatter(gridpoints, np.ones(np.shape(gridpoints)) * -1, marker='x', color='b')
+        ######################################
         
     elif subspaceDimension == 2:
         W1 = eivec[:, 0]
@@ -153,7 +178,7 @@ def plotter(folders, qoi, resultsPath, savefig=1):
                 elif qoi == 'eivec1'and method != 'SGpp':
                     plot_error_first_eigenvec(data, label, colors[n], markers[n])
                 elif qoi == 'shadow'and method != 'SGpp':
-                    shadowplot(data, label)
+                    shadowplot(data, label, path, colors[n])
                 elif qoi == 'l2error':
                     l2errorPlot(data, label, colors[n], markers[n])
                 elif qoi == 'integralerror':
@@ -174,11 +199,11 @@ def plotter(folders, qoi, resultsPath, savefig=1):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='sin5Dexp1', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='sin5Dexp0.1', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
-    parser.add_argument('--maxPoints', default=1000, type=int, help="maximum number of points used")
-    parser.add_argument('--plotL2', default=0, type=bool, help="do (not) plot l2 error")
-    parser.add_argument('--plotIntegral', default=0, type=bool, help="do (not) plot integral error")
+    parser.add_argument('--maxPoints', default=500, type=int, help="maximum number of points used")
+    parser.add_argument('--plotL2', default=1, type=bool, help="do (not) plot l2 error")
+    parser.add_argument('--plotIntegral', default=1, type=bool, help="do (not) plot integral error")
     parser.add_argument('--plotShadow', default=1, type=bool, help="do (not) plot shadow")
     parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
     parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
@@ -188,14 +213,16 @@ if __name__ == "__main__":
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
     resultsPath = os.path.join(resultsPath, args.model)
     names = [  # 'AS_{}_{}',
-            'QPHD_{}_{}',
-            # 'SGpp_nakbsplineextended_{}_{}_adaptive',
-            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Spline',
+            # 'QPHD_{}_{}',
+            'SGpp_nakbsplineextended_{}_{}_adaptive',
+            'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Spline',
             'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_appSpline',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Hist',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_MC',
             # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_None'
-            'asSGpp_nakbsplineextended_3_1000_adaptive_data_appSpline'
+            'asSGpp_nakbsplineextended_{}_{}_data_data_Spline',
+            'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_Spline',
+            'asSGpp_nakbsplinemodified_{}_{}_data_data_Spline',
             ]
     names = [n.format(args.degree, args.maxPoints) for n in names]
     folders = [os.path.join(resultsPath, name) for name in names]

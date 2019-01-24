@@ -188,16 +188,24 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
     
     n = 1  # active subspace identifier
     responseDegree = degree  # test if different degrees for ASM and resposne surface are useful!
-    responseGridType = pysgpp.GridType_NakBsplineExtended  # test if other gridTypes are useful!
+    responseGridType = pysgpp.GridType_NakBsplineBoundary  # NakBsplineExtended  # test if other gridTypes are useful!
     responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
     if responseType == 'adaptive':
         responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
     elif responseType == 'regular':
         responseSurf.createRegularReducedSurfaceWithPseudoInverse(numResponse, f)
     elif responseType == 'data':
-        detectionPoints = ASM.getEvaluationPoints()
-        detectionValues = ASM.getFunctionValues()
-        responseSurf.createRegularReducedSurfaceFromData(detectionPoints, detectionValues, numResponse)
+        asmPoints = ASM.getEvaluationPoints()
+        asmValues = ASM.getFunctionValues()
+        if savePath is not None:
+            if not os.path.exists(savePath):
+                os.makedirs(savePath)
+            asmPoints.toFile(os.path.join(savePath, 'asmPoints' + str(numResponse) + '.dat'))
+            asmValues.toFile(os.path.join(savePath, 'asmValues' + str(numResponse) + '.dat'))
+        responseLevel = 5
+        responseSurf.createRegularReducedSurfaceFromData(asmPoints, asmValues, responseLevel)
+#         responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel)
+#         responseSurf.createAdaptiveReducedSurfaceFromData(numResponse, asmPoints, asmValues)
 
     bounds = responseSurf.getBounds() 
     print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
@@ -217,10 +225,11 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
     elif integralType == 'Hist':
         integral = responseSurf.getHistogramBasedIntegral(11, numHistogramMCPoints, 'Halton') * vol
     elif integralType == 'Spline':
-        integral = responseSurf.getSplineBasedIntegral() * vol
+        quadOrder = 7
+        integral = responseSurf.getSplineBasedIntegral(quadOrder) * vol
     elif integralType == 'appSpline':
         integral = responseSurf.getApproximateSplineBasedIntegral(approxLevel, approxDegree) * vol
-#     print("integral: {}\n".format(integral)),
+    print("integral: {}\n".format(integral)),
     integralError = abs(integral - objFunc.getIntegral())
     print("integral error: {}".format(integralError))
     
@@ -324,7 +333,7 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='exp2D', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='sin5Dexp0.1', type=str, help="define which test case should be executed")
     parser.add_argument('--method', default='QPHD', type=str, help="asSGpp, SGpp or one of the three Constantine (AS,OLS,QPHD)")
     parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
     parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
@@ -332,12 +341,12 @@ if __name__ == "__main__":
     parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
     parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
     # only relevant for asSGpp and SGpp
-    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help="SGpp grid type")
+    parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help="SGpp grid type")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--responseType', default='adaptive', type=str, help="method for response surface creation (regular,adaptive (and detection for asSGpp) ")
     # only relevant for asSGpp
     parser.add_argument('--asmType', default='adaptive', type=str, help="method for ASM creation (regular adaptive)")
-    parser.add_argument('--integralType', default='appSpline', type=str, help="method for integral calculation (MC, Cont)")
+    parser.add_argument('--integralType', default='Spline', type=str, help="method for integral calculation (MC, Cont)")
     parser.add_argument('--appSplineLevel', default=5, type=int, help="level used for integralType appSpline")
     parser.add_argument('--appSplineDegree', default=3, type=int, help="degree used for integralType appSpline")
     args = parser.parse_args()
