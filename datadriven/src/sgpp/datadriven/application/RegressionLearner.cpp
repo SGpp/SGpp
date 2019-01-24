@@ -150,6 +150,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
 
 base::Grid& RegressionLearner::getGrid() { return *grid; }
 
+// std::shared_ptr<base::Grid> RegressionLearner::getGridPtr() { return grid; }
+
 size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 
 base::DataVector RegressionLearner::getWeights() const { return weights; }
@@ -172,6 +174,12 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
     grid = std::make_unique<base::ModLinearGrid>(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::Linear) {
     grid = std::make_unique<base::LinearGrid>(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::ModBspline) {
+    grid = std::make_unique<base::ModBsplineGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::NakBsplineModified) {
+    grid = std::make_unique<base::NakBsplineModifiedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::NakBsplineExtended) {
+    grid = std::make_unique<base::NakBsplineExtendedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else {
     throw base::application_exception(
         "RegressionLearner::InitializeGrid: An unsupported grid type was chosen!");

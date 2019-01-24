@@ -6,22 +6,25 @@
 #ifndef REGRESSIONLEARNER_H
 #define REGRESSIONLEARNER_H
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/fista/FistaBase.hpp>
 
 #include <algorithm>
 #include <memory>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,10 +34,10 @@ namespace datadriven {
  */
 class RegressionLearner {
  public:
-  // Fista and (Bi)-CG do not share a common interace.
-  // This is why we need this slightly dirty solution.
-  // Excluded from SWIG.
-  #ifndef SWIG
+// Fista and (Bi)-CG do not share a common interace.
+// This is why we need this slightly dirty solution.
+// Excluded from SWIG.
+#ifndef SWIG
   class Solver {
    public:
     enum class solverCategory { cg, fista, none } type = solverCategory::none;
@@ -115,7 +118,7 @@ class RegressionLearner {
       std::unique_ptr<sgpp::solver::FistaBase> solverFista;
     };
   };
-  #endif  // end inner class
+#endif  // end inner class
 
   /**
    * @brief RegressionLearner
@@ -171,6 +174,12 @@ class RegressionLearner {
    * @return the grid
    */
   sgpp::base::Grid& getGrid();
+  /**
+   * @brief get shared pointer to Grid
+   * @return the grid pointer
+   */
+  //  std::shared_ptr<base::Grid> getGridPtr();
+
   /**
    * @brief getMSE
    * @param data is the design matrix

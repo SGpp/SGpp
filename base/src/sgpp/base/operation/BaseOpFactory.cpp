@@ -511,8 +511,10 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
   } else if (grid.getType() == base::GridType::Periodic) {
     return new base::OperationMultipleEvalPeriodic(grid, dataset);
   } else {
-    throw base::factory_exception(
-        "createOperationMultipleEval is not implemented for this grid type.");
+    return createOperationMultipleEvalNaive(grid, dataset);
+    //    throw base::factory_exception(
+    //        "createOperationMultipleEval is not implemented for this grid type."
+    //        "Try createOperationMultipleEvalNaive instead.");
   }
 }
 
@@ -581,7 +583,7 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
     return new base::OperationMultipleEvalLinearBoundaryNaive(grid, dataset);
   } else {
     throw base::factory_exception(
-        "createOperationMultipleEvalNaive is not implemented for this grid type.");
+        "createOperationMultipleEval(Naive) is not implemented for this grid type.");
   }
 }
 
