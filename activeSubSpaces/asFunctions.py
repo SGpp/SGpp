@@ -30,6 +30,9 @@ def getFunction(model, args=None):
     elif model == 'exp2DNoise':
         return exp2DNoise()
     
+    elif model == 'const2D':
+        return constXD(2)
+    
     elif model == 'sin2D':
         return sinXD(2)
     elif model == 'sin3D':
@@ -91,8 +94,6 @@ def getFunction(model, args=None):
         return quadratic2D()
     elif model == 'cubic2D':
         return cubic2D()
-    elif model == 'simple2D':
-        return simple2D()
     elif model == 'sum6D':
         return sumXD(6)
     elif model == 'bratley2D':
@@ -445,45 +446,39 @@ class cubic2D():
                        
         return ((2 * x0 + x1) ** 3).reshape(numSamples, 1)
 
-    
-class simple2D():
 
+class constXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+       
     def getDomain(self):
         lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
         return lb, ub
     
     def getName(self):
-        return "simple2D"
+        return "const{}D".format(self.getDim())
     
     def getIntegral(self):
-        # return 0.0
-        return 2.95249244201255975
+        return 1.0
 
     def getDim(self):
-        return 2
+        return self.dim
 
     def getEigenvec(self):
-        eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [1, 1]
-        eivec[1] = [-1, 1]
-        return eivec
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
         x = np.atleast_2d(x)
         numSamples = x.shape[0]
-        x0 = x[:, 0]; x1 = x[:, 1];
-       # unnormalize the input to the functions domain
+        # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        # return (x0 - x1).reshape(numSamples, 1)
-        
-        return (np.exp(x0 + x1)).reshape(numSamples, 1)
-
-    def eval_grad(self, xx):
-
-        return 0
+                       
+        return (1 + x[:, i] - x[:, i]).reshape(numSamples, 1)
 
 
 class sinXD():
@@ -520,8 +515,14 @@ class sinXD():
         return self.dim
 
     def getEigenvec(self):
-        print("activeSubspaceFunctions.py: not calculated")
-        return 0
+        if self.dim == 2:
+            eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
+            eivec[0] = [1.0 / np.sqrt(2), 1.0 / np.sqrt(2)]
+            eivec[1] = [1 / np.sqrt(2), 1 / np.sqrt(2)]
+            return eivec
+        else:
+            print("activeSubspaceFunctions.py: not calculated")
+            return 0
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()

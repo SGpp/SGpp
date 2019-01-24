@@ -53,6 +53,18 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
 
+//Active Subspaces
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixGradientMC.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp"
+
+
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSEigen.hpp"

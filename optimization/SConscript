@@ -35,10 +35,6 @@ checkForLibrary("Armadillo", "USE_ARMADILLO", "armadillo",             "armadill
 checkForLibrary("Gmm++",     "USE_GMMPP",     "gmm/gmm.h",             None)
 
  
-# Note (rehmemk) I used the cdd library for H<->V representation
-# Remove this if not necessary anymore.
-additionalDependencies += ["cdd"]
-
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 

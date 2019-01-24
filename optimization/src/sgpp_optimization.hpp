@@ -138,14 +138,14 @@
 #include <sgpp/optimization/tools/ScopedLock.hpp>
 
 // active subspaces
-#include <sgpp/optimization/activeSubspaces/ASMatrix.hpp>
-#include <sgpp/optimization/activeSubspaces/ASMatrixGradientMC.hpp>
-#include <sgpp/optimization/activeSubspaces/ASResponseSurface.hpp>
-#include <sgpp/optimization/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
-#include <sgpp/optimization/activeSubspaces/ResponseSurface.hpp>
-#include <sgpp/optimization/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
-#include "sgpp/optimization/activeSubspaces/ASMatrixBspline.hpp"
-#include "sgpp/optimization/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
-#include "sgpp/optimization/activeSubspaces/ASMatrixBsplineData.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrix.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixGradientMC.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */
