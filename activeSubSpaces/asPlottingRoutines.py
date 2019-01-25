@@ -95,12 +95,16 @@ def shadowplot(data, label, path, color='b', subspaceDimension=1, gridIndex=-1):
         plt.plot(X1, shadow1DEvaluations, label=label, color=color)
         
         ########## debugging data #############
-        if data['responseType'] == 'data':
-            maxPoints = 499  # data['maxPoints']
-            with open(os.path.join(path, 'asmPoints' + str(maxPoints) + '.dat'), 'r') as pointsFile:
+        if data['responseType'] in ['data', 'dataR', 'datadriven', 'datadrivenR' ]:
+            numSamples = 10000
+            generalPath = os.path.dirname(path)
+            pointsPath = os.path.join(generalPath, 'data', 'dataPoints' + str(numSamples) + '.dat')
+            valuesPath = os.path.join(generalPath, 'data', 'dataValues' + str(numSamples) + '.dat')
+            
+            with open(pointsPath, 'r') as pointsFile:
                 points = pointsFile.read().replace('\n', '')
             points = eval(points)
-            with open(os.path.join(path, 'asmValues' + str(maxPoints) + '.dat'), 'r') as valuesFile:
+            with open(valuesPath, 'r') as valuesFile:
                 values = valuesFile.read().replace('\n', '')
             values = eval(values)
             plt.scatter(np.dot(W1, points), values, marker='+', color='k')
@@ -125,8 +129,8 @@ def shadowplot(data, label, path, color='b', subspaceDimension=1, gridIndex=-1):
 
 def l2errorPlot(data, label, color, marker):
     l2Errors = data['l2Errors']
-    sampleRange = data['sampleRange']
-    plt.loglog(sampleRange, l2Errors, label=label, color=color, marker=marker)
+    numGridPointsArray = data['numGridPointsArray']
+    plt.loglog(numGridPointsArray, l2Errors, label=label, color=color, marker=marker)
     plt.xlabel('number of points')
     plt.ylabel('l2 error')
     # plt.title(model)
@@ -134,13 +138,13 @@ def l2errorPlot(data, label, color, marker):
         
 def integralerrorPlot(data, label, color, marker):
     integralErrors = data['integralErrors']
-    sampleRange = data['sampleRange']
+    numGridPointsArray = data['numGridPointsArray']
     model = data["model"]
     objFunc = asFunctions.getFunction(model)
     realIntegral = objFunc.getIntegral()
 #     relativeIntegralErrors = [e / realIntegral for e in integralErrors]
 #     plt.loglog(sampleRange, relativeIntegralErrors, label=label, color=color, marker=marker)
-    plt.loglog(sampleRange, integralErrors, label=label, color=color, marker=marker)
+    plt.loglog(numGridPointsArray, integralErrors, label=label, color=color, marker=marker)
     plt.xlabel('number of points')
     plt.ylabel('integral error')
     # plt.title(model)
@@ -165,8 +169,8 @@ def plotter(folders, qoi, resultsPath, savefig=1):
                     degree = data["degree"]
                     gridType = data["gridType"]
                     integralType = data["integralType"]
-                    asmType = data["asmType"]
-                    label = method + '_' + gridType + '_' + str(degree) + '_' + integralType + '_' + asmType
+                    responseType = data["responseType"]
+                    label = method + '_' + gridType + '_' + str(degree) + '_' + integralType + '_' + responseType
                     
                 elif method == 'SGpp':
                     degree = data["degree"]
@@ -199,7 +203,7 @@ def plotter(folders, qoi, resultsPath, savefig=1):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='sin5Dexp0.1', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='sin5D', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=500, type=int, help="maximum number of points used")
     parser.add_argument('--plotL2', default=1, type=bool, help="do (not) plot l2 error")
@@ -214,15 +218,15 @@ if __name__ == "__main__":
     resultsPath = os.path.join(resultsPath, args.model)
     names = [  # 'AS_{}_{}',
             # 'QPHD_{}_{}',
-            'SGpp_nakbsplineextended_{}_{}_adaptive',
-            'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Spline',
-            'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_appSpline',
-            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_Hist',
-            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_MC',
-            # 'asSGpp_nakbsplineextended_{}_{}_adaptive_adaptive_None'
-            'asSGpp_nakbsplineextended_{}_{}_data_data_Spline',
+#             'SGpp_nakbsplineextended_{}_{}_adaptive',
+#             'asSGpp_nakbsplineextended_{}_{}_data_data_Spline',
+#             'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_Spline',
+            'SGpp_nakbsplinemodified_{}_{}_adaptive',
             'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_Spline',
+#             'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_appSpline',
             'asSGpp_nakbsplinemodified_{}_{}_data_data_Spline',
+            'asSGpp_nakbsplinemodified_{}_{}_dataR_data_Spline',
+            'asSGpp_nakbsplinemodified_{}_{}_datadrivenR_data_Spline',
             ]
     names = [n.format(args.degree, args.maxPoints) for n in names]
     folders = [os.path.join(resultsPath, name) for name in names]
