@@ -23,7 +23,8 @@ if env["USE_GSL"]:
     additionalDependencies += ["gsl", "gslcblas"]
 if env["USE_CGAL"]:
   additionalDependencies += ["CGAL"]
-
+if env["USE_PYTHON_EMBEDDING"]:
+  additionalDependencies += ["python3.7m"]
 additionalBoostTestDependencies = ["z"]
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"

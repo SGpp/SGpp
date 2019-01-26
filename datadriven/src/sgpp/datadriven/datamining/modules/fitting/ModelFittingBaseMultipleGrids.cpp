@@ -10,9 +10,13 @@
  *      Author: nico
  */
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseMultipleGrids.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+
 #include <vector>
 
 using sgpp::base::Grid;
@@ -22,14 +26,26 @@ namespace sgpp {
 namespace datadriven{
 
 ModelFittingBaseMultipleGrids::ModelFittingBaseMultipleGrids()
-	: ModelFittingBase(), grids{std::vector<std::unique_ptr<ModelFittingBaseSingleGrid>>{}}, weights{} {}
+	: ModelFittingBase(), models{std::vector<std::unique_ptr<ModelFittingBaseSingleGrid>>{}}, weights{}, dim{0} {}
 
 Grid& ModelFittingBaseMultipleGrids::getGrid(size_t index){
-	return grids[index]->getGrid();
+	return models[index]->getGrid();
 }
 
 DataVector& ModelFittingBaseMultipleGrids::getSurpluses(size_t index){
-	return grids[index]->getSurpluses();
+	return models[index]->getSurpluses();
+}
+
+double ModelFittingBaseMultipleGrids::evaluate(DataVector& point){
+	//Data Vector must have same dimensions as the models of the grid
+	if(point.size() != dim){
+		throw sgpp::base::application_exception("ModelFittingBaseMultipleGrids::evaluate: Evaluation point dimensions don't fit grid dimensions");
+	}
+	double value = 0;
+	for(size_t i = 0; i < models.size(); i++){
+		value += models[i]->evaluate(point) * weights[i];
+	}
+	return value;
 }
 
 } //namespace sgpp

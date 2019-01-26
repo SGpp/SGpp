@@ -3,16 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/*
+ * ModelFittingBaseMultipleGrids.cpp
+ *
+ *  Created on: Jan 14, 2019
+ *      Author: nico
+ */
+
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 
 #include <vector>
 
 using sgpp::base::Grid;
+using sgpp::base::GeneralGridConfiguration;
 using sgpp::base::DataVector;
+using sgpp::base::HashGridPoint;
 
 namespace sgpp {
 namespace datadriven{
@@ -48,22 +59,42 @@ public:
 	/**
 	 * Get surpluses of a certain grid
 	 * @param index from the desired grid
-	 * @return returns vector of surpluses
+	 * @return vector of surpluses
 	 */
 	DataVector& getSurpluses(size_t index);
 
+	/**
+	 * Evaluate combined grids on a defined point
+	 * @param HashGridPoint to evaluate
+	 * @return the weighted sum of the HashGridPoints value in the grids
+	 */
+	double evaluate(DataVector& point);
 
+
+
+	/**
+	 * Add a model to the models vector
+	 * @param GeneralGridConfig
+	 * @param weight of the new added model
+	 * @return index of the new model to find it in the models vector
+	 */
+	std::unique_ptr<ModelFittingBaseSingleGrid> createNewModel(GeneralGridConfiguration config);
 
 protected:
 	/**
 	 * vector of single grid models that approximate the data
 	 */
-	std::vector<std::unique_ptr<ModelFittingBaseSingleGrid>> grids;
+	std::vector<std::unique_ptr<ModelFittingBaseSingleGrid>> models;
 
 	/**
-	 * vector of weights of the single grids used to evaluate them together
+	 * vector of weights of the single models used to evaluate them together
 	 */
 	std::vector<double> weights;
+
+	/**
+	 * Dimension of the Models Grids. All must have the same number of dimensions
+	 */
+	size_t dim;
 };
 } //namespace datadriven
 } //namespace sgpp
