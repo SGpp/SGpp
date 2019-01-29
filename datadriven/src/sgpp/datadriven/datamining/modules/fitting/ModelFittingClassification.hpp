@@ -14,15 +14,15 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
-#include <vector>
 #include <map>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
@@ -97,8 +97,8 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param surpluses vector of pointers to the suprluses for each class
    * @return pointer to a refinement functor that suits the model settings
    */
-  MultiGridRefinementFunctor *getRefinementFunctor(
-      std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+  MultiGridRefinementFunctor* getRefinementFunctor(std::vector<Grid*> grids,
+                                                   std::vector<DataVector*> surpluses);
 
   /**
    * Creates a density estimation model that fits the model settings.
@@ -130,4 +130,3 @@ class ModelFittingClassification : public ModelFittingBase {
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-
