@@ -5,7 +5,7 @@
 
 // #ifdef USE_EIGEN
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
+#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 
 namespace sgpp {
 namespace datadriven {

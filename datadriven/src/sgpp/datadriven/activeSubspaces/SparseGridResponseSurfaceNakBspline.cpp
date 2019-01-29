@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp"
+#include <sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -48,6 +48,20 @@ void SparseGridResponseSurfaceNakBspline::createSurplusAdaptiveResponseSurface(
     interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
         *grid, coefficients);
   }
+}
+
+void SparseGridResponseSurfaceNakBspline::createRegularResponseSurfaceData(
+    size_t level, sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues,
+    double lambda) {
+  grid->getGenerator().regular(level);
+  double mse = 0;
+  sgpp::base::DataVector errorPerBasis;
+  coefficients = EigenRegression(grid, degree, DataMatrixToEigen(evaluationPoints), functionValues,
+                                 mse, errorPerBasis);
+  interpolant =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
 }
 
 double SparseGridResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {

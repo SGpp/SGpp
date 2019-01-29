@@ -13,13 +13,13 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <iostream>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -66,6 +66,17 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * on it is adaptively refined
    */
   void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel);
+
+  /**
+   * creates a surplus adaptive sparse grid regression approximation
+   * @param level				sparse grid level
+   * @param evaluationPoints	data points
+   * @param functionValues		data values
+   * @param lambda				Tikhonov regularization parameter
+   */
+  void createRegularResponseSurfaceData(size_t level, sgpp::base::DataMatrix evaluationPoints,
+                                        sgpp::base::DataVector functionValues,
+                                        double lambda = 1e-6);
 
   /**
    * evaluates this response surface
