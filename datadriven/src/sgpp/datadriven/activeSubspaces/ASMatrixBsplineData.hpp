@@ -6,8 +6,9 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp>
+#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 #include <string>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -54,7 +55,7 @@ class ASMatrixBsplineData : public ASMatrixBspline {
    * calculates the coefficients for the interpolant based on the objective function and grid.
    * Must be called after every change to the grid!
    */
-  void calculateInterpolationCoefficients();
+  void calculateCoefficients();
 
   /**
    * calculates the l2 error of the interpolant

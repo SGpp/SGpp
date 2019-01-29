@@ -14,6 +14,10 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/datadriven/activeSubspaces/ASMatrix.hpp>
+#include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
+#include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
+#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
@@ -22,10 +26,6 @@
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <string>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrix.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -85,7 +85,7 @@ class ASMatrixBspline : public ASMatrix {
    * calculates the coefficients for the interpolant based on the objective function and grid.
    * Must be called after every change to the grid!
    */
-  virtual void calculateInterpolationCoefficients() = 0;
+  virtual void calculateCoefficients() = 0;
 
   /**
    * General routine to create the Matrix C, currently simply wraps createMatrixMonteCarlo.

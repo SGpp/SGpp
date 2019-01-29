@@ -5,68 +5,30 @@
 
 // #ifdef USE_EIGEN
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp"
+#include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 void ASMatrixBsplineData::buildRegularInterpolant(size_t level) {
   grid->getGenerator().regular(level);
-  this->calculateInterpolationCoefficients();
+  this->calculateCoefficients();
 }
 
 void ASMatrixBsplineData::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel,
                                                    size_t refinementsNum) {
   grid->getGenerator().regular(initialLevel);
-  this->calculateInterpolationCoefficients();
+  this->calculateCoefficients();
   while (grid->getSize() < maxNumGridPoints) {
     this->refineSurplusAdaptive(refinementsNum);
   }
 }
 
-void ASMatrixBsplineData::calculateInterpolationCoefficients() {
-  // regressionMatrix(i,j) = b_j (x_i)
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  Eigen::MatrixXd regressionMatrix(evaluationPoints.getNcols(), gridStorage.getSize());
-  sgpp::base::DataVector point(evaluationPoints.getNrows());
-
-  for (size_t i = 0; i < evaluationPoints.getNcols(); i++) {
-    evaluationPoints.getColumn(i, point);
-    Eigen::VectorXd y_i = DataVectorToEigen(point);
-    for (size_t j = 0; j < gridStorage.getSize(); j++) {
-      double basisEval = 1;
-      for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-        double basisEval1D =
-            basis->eval(gridStorage.getPointLevel(j, t), gridStorage.getPointIndex(j, t), y_i(t));
-        if (basisEval1D == 0) {
-          basisEval = 0;
-          break;
-        } else {
-          basisEval *= basisEval1D;
-        }
-      }
-      regressionMatrix(i, j) = basisEval;
-    }
-  }
-  Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
-
-  // three different ways to solve least squares with Eigen
-  // https://eigen.tuxfamily.org/dox/group__LeastSquares.html
-
-  Eigen::setNbThreads(4);
-  /* 1. SVD, slowest but most accurate*/
-  //  Eigen::VectorXd alpha_Eigen = regressionMatrix.bdcSvd(Eigen::ComputeThinU |
-  //  Eigen::ComputeThinV)
-  //                                    .solve(functionValues_Eigen);
-  /* 2. QR medium speed, medium accuracy*/
-  //  Eigen::VectorXd alpha_Eigen =
-  //  regressionMatrix.colPivHouseholderQr().solve(functionValues_Eigen);
-  /* 3. normal equations, fastest but least accurate. Terrible for ill conditioned matrices*/
-  Eigen::VectorXd alpha_Eigen = (regressionMatrix.transpose() * regressionMatrix)
-                                    .ldlt()
-                                    .solve(regressionMatrix.transpose() * functionValues_Eigen);
-
-  coefficients = EigenToDataVector(alpha_Eigen);
+void ASMatrixBsplineData::calculateCoefficients() {
+  double mse = 0;
+  sgpp::base::DataVector errorPerBasis;
+  coefficients = EigenRegression(grid, degree, DataMatrixToEigen(evaluationPoints), functionValues,
+                                 mse, errorPerBasis);
 }
 
 double ASMatrixBsplineData::l2InterpolationError(Eigen::MatrixXd errorPoints,

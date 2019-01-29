@@ -5,26 +5,26 @@
 
 // #ifdef USE_EIGEN
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
+#include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
 void ASMatrixBsplineAnalytic::buildRegularInterpolant(size_t level) {
   grid->getGenerator().regular(level);
-  this->calculateInterpolationCoefficients();
+  this->calculateCoefficients();
 }
 
 void ASMatrixBsplineAnalytic::buildAdaptiveInterpolant(size_t maxNumGridPoints, size_t initialLevel,
                                                        size_t refinementsNum) {
   grid->getGenerator().regular(initialLevel);
-  this->calculateInterpolationCoefficients();
+  this->calculateCoefficients();
   while (grid->getSize() < maxNumGridPoints) {
     this->refineSurplusAdaptive(refinementsNum);
   }
 }
 
-void ASMatrixBsplineAnalytic::calculateInterpolationCoefficients() {
+void ASMatrixBsplineAnalytic::calculateCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   evaluationPoints.resizeZero(gridStorage.getSize(), numDim);
   functionValues.resizeZero(gridStorage.getSize());

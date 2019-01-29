@@ -5,7 +5,7 @@
 
 // #ifdef USE_EIGEN
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
+#include <sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -88,7 +88,7 @@ sgpp::datadriven::ASResponseSurfaceNakBspline ASMatrixBspline::getResponseSurfac
 void ASMatrixBspline::refineSurplusAdaptive(size_t refinementsNum) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
-  this->calculateInterpolationCoefficients();
+  this->calculateCoefficients();
 }
 
 // ToDo (rehmemk) Parallelize this?
