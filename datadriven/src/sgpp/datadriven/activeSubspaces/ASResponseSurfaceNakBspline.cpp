@@ -28,12 +28,13 @@ void ASResponseSurfaceNakBspline::initialize() {
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData(
-    sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level) {
-  if (W1.cols() == 1) {
-    transformationfor1DActiveSubspace();
-  }
+    sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level,
+    double lambda) {
+  Eigen::MatrixXd transformedPoints_Eigen = prepareDataForEigenRegression(evaluationPoints);
+
   grid->getGenerator().regular(level);
-  calculateRegressionCoefficients(evaluationPoints, functionValues);
+  coefficients = EigenRegression(grid, degree, transformedPoints_Eigen, functionValues, mse,
+                                 errorPerBasis, lambda);
 
   interpolant =
       std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
@@ -42,17 +43,23 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData(
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData_DataDriven(
-    sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level) {
-  const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
+    sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues, size_t level,
+    double lambda, double exponentBase) {
+  Eigen::MatrixXd transformedPoints_Eigen = prepareDataForEigenRegression(evaluationPoints);
+  sgpp::base::DataMatrix transformedPoints = EigenToDataMatrix(transformedPoints_Eigen);
+  transformedPoints.transpose();
+
+  //  const auto regularizationType = sgpp::datadriven::RegularizationType::Diagonal;
+  const auto regularizationType = sgpp::datadriven::RegularizationType::Identity;
   auto regularizationConfig = sgpp::datadriven::RegularizationConfiguration();
   regularizationConfig.type_ = regularizationType;
-  regularizationConfig.lambda_ = 1e-4;
-  regularizationConfig.exponentBase_ = 0.5;
+  regularizationConfig.lambda_ = lambda;
+  regularizationConfig.exponentBase_ = exponentBase;  // what is this for? does it do anything?
 
   auto gridConfig = sgpp::base::RegularGridConfiguration();
-  gridConfig.dim_ = evaluationPoints.getNrows();
+  gridConfig.dim_ = W1.cols();
   gridConfig.level_ = static_cast<int>(level);
-  gridConfig.type_ = sgpp::base::GridType::NakBsplineModified;
+  gridConfig.type_ = gridType;
   gridConfig.maxDegree_ = 3;
 
   auto adaptivityConfig = sgpp::base::AdpativityConfiguration();  // no adaptivity
@@ -64,12 +71,43 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData_DataDriven
   solverConfig.maxIterations_ = 1000;
   solverConfig.eps_ = 1e-8;
   solverConfig.threshold_ = 1e-5;
-  //  auto learner = sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
-  //                                                     solverConfig, regularizationConfig);
-  evaluationPoints.transpose();
-  //  learner.train(evaluationPoints, functionValues);
-  //  grid = learner.getGridPtr();
-  //  coefficients = learner.getWeights();
+  auto learner = sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
+                                                     solverConfig, regularizationConfig);
+  learner.train(transformedPoints, functionValues);
+  grid = learner.getGridPtr();
+  coefficients = learner.getWeights();
+
+  //---------------
+  //  sgpp::base::GridStorage& gridStroage = grid->getStorage();
+  //  Eigen::MatrixXd regressionMatrix(evaluationPoints.getNcols(), gridStorage.getSize());
+  //  for (size_t i = 0; i < evaluationPoints.getNcols(); i++) {
+  //    sgpp::base::DataVector point(evaluationPoints.getNrows());
+  //    evaluationPoints.getColumn(i, point);
+  //
+  //    Eigen::VectorXd y_i = W1.transpose() * DataVectorToEigen(point);
+  //    // transformation in 1D case
+  //    if (W1.cols() == 1) {
+  //      y_i(0) = (y_i(0) - leftBound1D) / (rightBound1D - leftBound1D);
+  //    }
+  //
+  //    for (size_t j = 0; j < gridStorage.getSize(); j++) {
+  //      double basisEval = 1;
+  //      for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+  //        double basisEval1D =
+  //            basis->eval(gridStorage.getPointLevel(j, t), gridStorage.getPointIndex(j, t),
+  //            y_i(t));
+  //        if (basisEval1D == 0) {
+  //          basisEval = 0;
+  //          break;
+  //        } else {
+  //          basisEval *= basisEval1D;
+  //        }
+  //      }
+  //      regressionMatrix(i, j) = basisEval;
+  //    }
+  //  }
+  //  Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
+  //---------------
 
   interpolant =
       std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
@@ -79,7 +117,8 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData_DataDriven
 
 void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceFromData(
     size_t maxNumGridPoints, sgpp::base::DataMatrix evaluationPoints,
-    sgpp::base::DataVector functionValues, size_t initialLevel, size_t refinementsNum) {
+    sgpp::base::DataVector functionValues, size_t initialLevel, size_t refinementsNum,
+    double lambda) {
   // number of points to be refined in each step
   grid->getGenerator().regular(initialLevel);
   std::shared_ptr<sgpp::optimization::ScalarFunction> transformedObjectiveFunc;
@@ -87,12 +126,14 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceFromData(
   // (Transform the one dimensional grid to an interval of according size). For active subspace
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
   // the detection points
-  if (W1.cols() == 1) {
-    transformationfor1DActiveSubspace();
-  }
-  calculateRegressionCoefficients(evaluationPoints, functionValues);
+  Eigen::MatrixXd transformedPoints_Eigen = prepareDataForEigenRegression(evaluationPoints);
+  coefficients = EigenRegression(grid, degree, transformedPoints_Eigen, functionValues, mse,
+                                 errorPerBasis, lambda);
   while (grid->getSize() < maxNumGridPoints) {
-    refineRegressionSurplusAdaptive(refinementsNum, evaluationPoints, functionValues);
+    refineRegressionSurplusAdaptive(refinementsNum, transformedPoints_Eigen, functionValues,
+                                    lambda);
+    //    refineRegressionErrorAdaptive(refinementsNum, transformedPoints_Eigen, functionValues,
+    //                                    lambda);
   }
   interpolant =
       std::make_shared<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
@@ -196,39 +237,6 @@ double ASResponseSurfaceNakBspline::getMCIntegral(size_t numMCPoints, size_t num
     std::cerr << "ASResponseSurface::getMCIntegral currently supports only 1D active subspaces\n";
     return -1;
   }
-  /*
-  double integral = 0.0;
-    sgpp::base::DataVector points(numMCPoints + 1);
-    double delta = (rightBound1D - leftBound1D) / static_cast<double>(numMCPoints);
-    for (size_t i = 0; i < numMCPoints + 1; i++) {
-      points[i] = leftBound1D + static_cast<double>(i) * delta;
-    }
-    sgpp::base::DataVector weights(numMCPoints, 0.0);
-
-    Eigen::MatrixXd randomUnitPoints = Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints);
-    randomUnitPoints += Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints);
-    randomUnitPoints /= 2;
-    Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
-
-    for (size_t i = 0; i < numHistogramMCPoints; i++) {
-      for (size_t j = 0; j < numMCPoints; j++) {
-        if (randomPoints(i) >= points[j] && randomPoints(i) < points[j + 1]) {
-          weights[j]++;
-          break;
-        }
-      }
-    }
-    sgpp::base::DataVector numVec(numMCPoints, static_cast<double>(numHistogramMCPoints));
-    weights.componentwise_div(numVec);
-
-    sgpp::base::DataVector point(1, 0);
-    for (size_t j = 0; j < numMCPoints; j++) {
-      point[0] = (points[j] + points[j + 1]) / 2;
-      point[0] = (point[0] - leftBound1D) / (rightBound1D - leftBound1D);
-      //    std::cout << point[0] << " " << interpolant->eval(point) << " " << weights[j] << "\n";
-      integral += weights[j] * interpolant->eval(point);
-    }*/
-
   // uniform points spread over the active subspace (without boundary points)
   sgpp::base::DataVector points(numMCPoints);
   double delta = (rightBound1D - leftBound1D) / static_cast<double>(numMCPoints);
@@ -256,7 +264,6 @@ double ASResponseSurfaceNakBspline::getHistogramBasedIntegral(size_t level,
                  "subspaces\n";
     return -1;
   }
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
   std::shared_ptr<sgpp::base::Grid> volGrid;
   sgpp::base::DataVector volCoefficients;
   size_t volDegree = 1;
@@ -593,91 +600,21 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
 }
 
 void ASResponseSurfaceNakBspline::refineRegressionSurplusAdaptive(
-    size_t refinementsNum, sgpp::base::DataMatrix evaluationPoints,
-    sgpp::base::DataVector functionValues) {
+    size_t refinementsNum, Eigen::MatrixXd transformedPoints_Eigen,
+    sgpp::base::DataVector functionValues, double lambda) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
-  calculateRegressionCoefficients(evaluationPoints, functionValues);
+  coefficients = EigenRegression(grid, degree, transformedPoints_Eigen, functionValues, mse,
+                                 errorPerBasis, lambda);
 }
 
-void ASResponseSurfaceNakBspline::calculateRegressionCoefficients(
-    sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues) {
-  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  // regressionMatrix(i,j) = b_j (y_i) = b_j (W1T * evaluationPoint_i)
-  Eigen::MatrixXd regressionMatrix(evaluationPoints.getNcols(), gridStorage.getSize());
-  for (size_t i = 0; i < evaluationPoints.getNcols(); i++) {
-    sgpp::base::DataVector point(evaluationPoints.getNrows());
-    evaluationPoints.getColumn(i, point);
-
-    Eigen::VectorXd y_i = W1.transpose() * DataVectorToEigen(point);
-    // transformation in 1D case
-    if (W1.cols() == 1) {
-      y_i(0) = (y_i(0) - leftBound1D) / (rightBound1D - leftBound1D);
-    }
-
-    for (size_t j = 0; j < gridStorage.getSize(); j++) {
-      double basisEval = 1;
-      for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-        double basisEval1D =
-            basis->eval(gridStorage.getPointLevel(j, t), gridStorage.getPointIndex(j, t), y_i(t));
-        if (basisEval1D == 0) {
-          basisEval = 0;
-          break;
-        } else {
-          basisEval *= basisEval1D;
-        }
-      }
-      regressionMatrix(i, j) = basisEval;
-    }
-  }
-  Eigen::VectorXd functionValues_Eigen = DataVectorToEigen(functionValues);
-  // three different ways to solve least squares with Eigen
-  // https://eigen.tuxfamily.org/dox/group__LeastSquares.html
-
-  Eigen::setNbThreads(4);
-  /* 1. SVD, slowest but most accurate*/
-  //  Eigen::VectorXd alpha_Eigen = regressionMatrix.bdcSvd(Eigen::ComputeThinU |
-  //  Eigen::ComputeThinV)
-  //                                    .solve(functionValues_Eigen);
-  /* 2. QR medium speed, medium accuracy*/
-  //  Eigen::VectorXd alpha_Eigen =
-  //  regressionMatrix.colPivHouseholderQr().solve(functionValues_Eigen);
-  /* 3. normal equations, fastest but least accurate. Terrible for ill conditioned matrices*/
-  //  Eigen::VectorXd alpha_Eigen = (regressionMatrix.transpose() * regressionMatrix)
-  //                                    .ldlt()
-  //                                    .solve(regressionMatrix.transpose() * functionValues_Eigen);
-  /* 4. = 3. with Tikhonov regularization*/
-  //  Eigen::MatrixXd identity =
-  //      Eigen::MatrixXd::Identity(regressionMatrix.cols(), regressionMatrix.cols());
-  //  double lambda = 1e-6;
-  //  Eigen::VectorXd alpha_Eigen =
-  //      (regressionMatrix.transpose() * regressionMatrix / gridStorage.getSize() + lambda *
-  //      identity)
-  //          .ldlt()
-  //          .solve(regressionMatrix.transpose() * functionValues_Eigen / gridStorage.getSize());
-  /* 5. = 1. with Tikhonov*/
-  Eigen::MatrixXd identity =
-      Eigen::MatrixXd::Identity(regressionMatrix.cols(), regressionMatrix.cols());
-  double lambda = 1e-6;
-  Eigen::VectorXd alpha_Eigen =
-      (regressionMatrix.transpose() * regressionMatrix / gridStorage.getSize() + lambda * identity)
-          .bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
-          .solve(regressionMatrix.transpose() * functionValues_Eigen / gridStorage.getSize());
-
-  // DEBUG
-  //  std::cout << "\n\n\n";
-  //  for (size_t i = 230; i < 257; i++) {
-  //    Eigen::VectorXd alphai = Eigen::VectorXd::Zero(alpha_Eigen.size());
-  //    alphai(i) = 1;
-  //    sgpp::base::DataVector pointi = gridStorage.getPointCoordinates(i);
-  //    std::cout << "alphai point: " << pointi.toString() << "\n";
-  //    std::cout << "which is" << leftBound1D + pointi[0] * (rightBound1D - leftBound1D) << "\n";
-  //    std::cout << (regressionMatrix * alphai).norm() << "\n";
-  //    std::cout << alphai.transpose() * regressionMatrix.transpose() * functionValues_Eigen <<
-  //    "\n"; std::cout << "alpha[i]" << alpha_Eigen(i) << "\n";
-  //  }
-
-  coefficients = EigenToDataVector(alpha_Eigen);
+void ASResponseSurfaceNakBspline::refineRegressionErrorAdaptive(
+    size_t refinementsNum, Eigen::MatrixXd transformedPoints_Eigen,
+    sgpp::base::DataVector functionValues, double lambda) {
+  sgpp::base::SurplusRefinementFunctor functor(errorPerBasis, refinementsNum);
+  grid->getGenerator().refine(functor);
+  coefficients = EigenRegression(grid, degree, transformedPoints_Eigen, functionValues, mse,
+                                 errorPerBasis, lambda);
 }
 
 Eigen::MatrixXd ASResponseSurfaceNakBspline::hypercubeVertices(size_t dimension) {
@@ -719,6 +656,20 @@ void ASResponseSurfaceNakBspline::transformationfor1DActiveSubspace() {
     rightBound1D = tempBound > rightBound1D ? tempBound : rightBound1D;
     leftBound1D = tempBound < leftBound1D ? tempBound : leftBound1D;
   }
+}
+
+Eigen::MatrixXd ASResponseSurfaceNakBspline::prepareDataForEigenRegression(
+    sgpp::base::DataMatrix evaluationPoints) {
+  Eigen::MatrixXd evaluationPoints_Eigen = DataMatrixToEigen(evaluationPoints);
+  Eigen::MatrixXd transformedPoints_Eigen = W1.transpose() * evaluationPoints_Eigen;
+  if (W1.cols() == 1) {
+    transformationfor1DActiveSubspace();
+    Eigen::MatrixXd leftMatrix =
+        leftBound1D *
+        Eigen::MatrixXd::Ones(transformedPoints_Eigen.rows(), transformedPoints_Eigen.cols());
+    transformedPoints_Eigen = (transformedPoints_Eigen - leftMatrix) / (rightBound1D - leftBound1D);
+  }
+  return transformedPoints_Eigen;
 }
 
 }  // namespace datadriven

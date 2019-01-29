@@ -4,10 +4,17 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-//#ifdef USE_EIGEN
+// #ifdef USE_EIGEN
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Eigenvalues>
@@ -44,9 +51,26 @@ sgpp::base::DataMatrix EigenToDataMatrix(Eigen::MatrixXd m);
  * @param m SG++ DataMatrix containing the elements of m
  * @return  Eigen library matrix
  */
-sgpp::base::DataMatrix DataMatrixToEigen(Eigen::MatrixXd m);
+Eigen::MatrixXd DataMatrixToEigen(sgpp::base::DataMatrix d);
+
+/**
+ * calculates the regression for given data by  approximating the least squares optimal
+ * coefficients with Tikhonov regularization
+ *
+ * @param grid				grid
+ * @param degree			basis function degree
+ * @param evaluationPoints  set of points in the original space of the objective function
+ * @param functionValues	the objective function evaluated at evaluationPoints
+ * @param mse				reference to return eman sqaure error
+ * @param errorPerBasis		reference to return error per basis function
+ * @param lambda			regularization parameter
+ */
+sgpp::base::DataVector EigenRegression(std::shared_ptr<sgpp::base::Grid> grid, size_t degree,
+                                       Eigen::MatrixXd evaluationPoints,
+                                       sgpp::base::DataVector functionValues, double& mse,
+                                       sgpp::base::DataVector& errorPerBasis, double lambda = 1e-6);
 
 }  // namespace datadriven
 }  // namespace sgpp
 
-//#endif /* USE_EIGEN */
+// #endif /* USE_EIGEN */

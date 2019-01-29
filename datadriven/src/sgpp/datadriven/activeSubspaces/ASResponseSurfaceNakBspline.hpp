@@ -15,26 +15,27 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp>
+#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
+#include <sgpp/datadriven/activeSubspaces/MSplineBasis.hpp>
+#include <sgpp/datadriven/activeSubspaces/MSplineNakBsplineScalarProducts.hpp>
+#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
+#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/tools/HaltonSequence.hpp>
+#include <sgpp/datadriven/tools/SobolSequence.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+
 #include <algorithm>
 #include <limits>
 #include <string>
 #include <vector>
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/MSplineBasis.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/MSplineNakBsplineScalarProducts.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp"
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
 #include "/home/rehmemk/git/cddlib/lib-src/cdd.h"
-#include "../tools/HaltonSequence.hpp"
-#include "../tools/SobolSequence.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -70,9 +71,11 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param evaluationPoints	set of points
    * @param functionValues		the objective function evaluated at evaluationPoints
    * @param level				level of the regular interpolant
+   * @param lambda				regularization parameter
    */
   void createRegularReducedSurfaceFromData(sgpp::base::DataMatrix evaluationPoints,
-                                           sgpp::base::DataVector functionValues, size_t level);
+                                           sgpp::base::DataVector functionValues, size_t level,
+                                           double lambda = 1e-06);
 
   /**
    * createRegularReducedSurfaceFromData explicitl<y creates the matrix and uses methods of the
@@ -86,7 +89,8 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    */
   void createRegularReducedSurfaceFromData_DataDriven(sgpp::base::DataMatrix evaluationPoints,
                                                       sgpp::base::DataVector functionValues,
-                                                      size_t level);
+                                                      size_t level, double lambda = 1e-06,
+                                                      double exponentBase = 0.25);
 
   /**
    * creates an adaptive grid of the dimension of the reduced space ( = # columns of W1)
@@ -96,11 +100,13 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param evaluationPoints	set of points
    * @param functionValues		the objective function evaluated at evaluationPoints
    * @param level				level of the regular interpolant
+   * @param lambda				regularization parameter
    */
   void createAdaptiveReducedSurfaceFromData(size_t maxNumGridPoints,
                                             sgpp::base::DataMatrix evaluationPoints,
                                             sgpp::base::DataVector functionValues,
-                                            size_t initialLevel = 1, size_t refinementsNum = 3);
+                                            size_t initialLevel = 1, size_t refinementsNum = 3,
+                                            double lambda = 1e-06);
 
   /**
    * creates a regular grid of the dimension of the reduced space ( = # columns of W1)
@@ -231,6 +237,9 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   // hypercube.
   double rightBound1D = 1.0;
   double leftBound1D = 0.0;
+  // information from eigen regression
+  double mse = 0;
+  sgpp::base::DataVector errorPerBasis;
 
   // ----------------- auxiliary routines -----------
   int factorial(size_t n);
@@ -300,26 +309,29 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
       std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
 
   /**
-   *refines the grid surplus adaptive and recalculates the regression coefficients
+   *refines the grid surplus adaptive based on the coefficients and recalculates the regression
+   *coefficients
    *
    *@param refinementsNum	number of grid points which should be refined
    * @param evaluationPoints  set of points in the original space of the objective function
    * @param functionValues	the objective function evaluated at evaluationPoints
+   * @param lambda				regularization parameter
    */
   void refineRegressionSurplusAdaptive(size_t refinementsNum,
-                                       sgpp::base::DataMatrix evaluationPoints,
-                                       sgpp::base::DataVector functionValues);
+                                       Eigen::MatrixXd transformedPoints_Eigen,
+                                       sgpp::base::DataVector functionValues, double lambda);
 
   /**
-   * calculates the coefficients for the reduced response surface on the active
-   * subspace for a given grid for given data by  approximating the least squares optimal
-   * coefficients.
+   *refines the grid surplus adaptive based on the residual and recalculates the regression
+   *coefficients
    *
+   *@param refinementsNum	number of grid points which should be refined
    * @param evaluationPoints  set of points in the original space of the objective function
    * @param functionValues	the objective function evaluated at evaluationPoints
+   * @param lambda				regularization parameter
    */
-  void calculateRegressionCoefficients(sgpp::base::DataMatrix evaluationPoints,
-                                       sgpp::base::DataVector functionValues);
+  void refineRegressionErrorAdaptive(size_t refinementsNum, Eigen::MatrixXd transformedPoints_Eigen,
+                                     sgpp::base::DataVector functionValues, double lambda);
 
   /**
    * returns the corners of an arbitrary dimensional hypercube
@@ -334,6 +346,14 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * active subspaces bounds
    */
   void transformationfor1DActiveSubspace();
+
+  /**
+   * Transform evaluation points to active subspace, scale if 1D and cast to Eigen vector type
+   * @param evaluationPoints
+   *
+   * @return	transformed evaluationPoints
+   */
+  Eigen::MatrixXd prepareDataForEigenRegression(sgpp::base::DataMatrix evaluationPoints);
 };
 
 }  // namespace datadriven

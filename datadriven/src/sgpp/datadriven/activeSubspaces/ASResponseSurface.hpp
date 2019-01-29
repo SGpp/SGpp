@@ -7,7 +7,7 @@
 // #ifdef USE_EIGEN
 
 #include <iostream>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
+#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -37,10 +37,11 @@ class ASResponseSurface : public ResponseSurface {
    * @param evaluationPoints	set of points
    * @param functionValues		the objective function evaluations at evaluationPoints
    * @param level				level of the regular interpolant
+   * @param lambda				regularization parameter
    */
   virtual void createRegularReducedSurfaceFromData(sgpp::base::DataMatrix evaluationPoints,
                                                    sgpp::base::DataVector functionValues,
-                                                   size_t level) = 0;
+                                                   size_t level, double lambda) = 0;
 
  protected:
   // the eigenvectors defining the active subspace
