@@ -13,7 +13,6 @@
 
 #include <vector>
 
-
 namespace sgpp {
 namespace base {
 
@@ -32,8 +31,7 @@ class BoundaryGridGenerator : public GridGenerator {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  explicit BoundaryGridGenerator(GridStorage& storage,
-                                 level_t boundaryLevel = 1);
+  explicit BoundaryGridGenerator(GridStorage& storage, level_t boundaryLevel = 1);
 
   /**
    * Destructor
@@ -44,14 +42,14 @@ class BoundaryGridGenerator : public GridGenerator {
   void setBoundaryLevel(level_t boundaryLevel);
 
   void regular(size_t level) override;
+  void regular(size_t level, double T) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override;
   size_t getNumberOfRefinablePoints() override;
 
   void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                         size_t numFirstOnly) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnly) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

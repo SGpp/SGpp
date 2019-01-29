@@ -11,6 +11,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
@@ -175,6 +176,11 @@ class RegressionLearner {
    */
   sgpp::base::Grid& getGrid();
   /**
+   * @brief getGridPtr
+   * @return shared pointer to the grid
+   */
+  std::shared_ptr<sgpp::base::Grid> getGridPtr();
+  /**
    * @brief get shared pointer to Grid
    * @return the grid pointer
    */
@@ -209,7 +215,7 @@ class RegressionLearner {
   std::unique_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 
   /// sparse grid object
-  std::unique_ptr<sgpp::base::Grid> grid;
+  std::shared_ptr<sgpp::base::Grid> grid;
   /// the grid's coefficients
   sgpp::base::DataVector weights;
 
