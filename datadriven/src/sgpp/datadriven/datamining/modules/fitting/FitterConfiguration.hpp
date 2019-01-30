@@ -7,10 +7,10 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -25,7 +25,7 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares, DensityEstimation };
+enum class FitterType { RegressionLeastSquares, DensityEstimation, DensityEstimationCombi };
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -126,6 +126,12 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig() const;
 
   /**
+   * Get the FitterType
+   * @return FitterType
+   */
+  const FitterType &getFitterType();
+
+  /**
    * Returns the database configuration, i.e. the filepath
    * @return immutable DatabaseConfiguration
    */
@@ -135,7 +141,7 @@ class FitterConfiguration {
    * Returns the configuration for the learner's behaviour
    * @return immutable LearnerConfiguration
    */
-  const datadriven::LearnerConfiguration& getLearnerConfig() const;
+  const datadriven::LearnerConfiguration &getLearnerConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
@@ -250,6 +256,11 @@ class FitterConfiguration {
    * Configuration for the learner's behaviour
    */
   datadriven::LearnerConfiguration learnerConfig;
+
+  /**
+   * Defines the general type of the Fitter
+   */
+  FitterType type;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

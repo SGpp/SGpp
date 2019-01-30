@@ -56,7 +56,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  virtual bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) = 0;
+  virtual bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) = 0;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -70,7 +70,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * Returns the refinement functor suitable for the model settings.
    * @return pointer to a refinement functor that suits the model settings
    */
-  sgpp::base::RefinementFunctor *getRefinementFunctor();
+  sgpp::base::RefinementFunctor* getRefinementFunctor();
 
  protected:
   /**
