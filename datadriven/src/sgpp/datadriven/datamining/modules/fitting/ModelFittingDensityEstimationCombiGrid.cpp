@@ -12,9 +12,12 @@
 
 #include "ModelFittingDensityEstimationCombiGrid.hpp"
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+
 #include <vector>
 
 using std::vector;
@@ -27,18 +30,45 @@ ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid()
 
 ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
     FitterConfigurationDensityEstimation& config) {
+  generalFitterConfig = std::make_unique<FitterConfigurationDensityEstimation>(config);
   auto combiconfig = vector<combiConfig>();
   CombiConfigurator combiconfigurator;
   combiconfigurator.getStandardCombi(combiconfig, config.getGridConfig().dim_,
                                      config.getGridConfig().level_);
+  switch (config.getDensityEstimationConfig().type_) {
+    case (DensityEstimationType::CG): {
+      models = vector<unique_ptr<ModelFittingDensityEstimationCG>>(combiconfig.size());
+      break;
+    }
+    case (DensityEstimationType::Decomposition): {
+      models = vector<unique_ptr<ModelFittingDensityEstimationOnOff>>(combiconfig.size());
+      break;
+    }
+  }
+
   auto configtemp = config;
-  models = vector<unique_ptr<ModelFittingDensityEstimationOnOff>>(combiconfig.size());
   for (size_t i = 1; i < combiconfig.size(); i++) {
     configtemp.getGridConfig().levelVector_ = combiconfig[i].levels;
-    *models[i] = ModelFittingDensityEstimationOnOff(configtemp);
+    *models[i] = createNewModel(configtemp);
     weights[i] = combiconfig[i].coef;
   }
 }
+
+std::unique_ptr<ModelFittingDensityEstimation>
+ModelFittingDensityEstimationCombiGrid::createNewModel(
+    sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
+  switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
+    case DensityEstimationType::CG: {
+      return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
+    }
+    case DensityEstimationType::Decomposition: {
+      return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+    }
+    default: { throw base::application_exception("Unknown density estimation type"); }
+  }
+}
+
+void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig config) { throw "not ready"; }
 
 void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& dataset) {
   for (auto& model : models) {

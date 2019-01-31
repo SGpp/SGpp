@@ -35,6 +35,9 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
+  if (config.getFitterType() == FitterType::DensityEstimationCombi) {
+    return new ModelFittingDensityEstimationCombiGrid(config);
+  }
   switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
       return new ModelFittingDensityEstimationCG(config);

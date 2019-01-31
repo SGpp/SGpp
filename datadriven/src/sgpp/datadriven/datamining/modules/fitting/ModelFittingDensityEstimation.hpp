@@ -42,6 +42,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   virtual void fit(DataMatrix& dataset) = 0;
 
+  virtual void fit(Dataset& dataset) = 0;
+
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
    * the data samples and no targets (since those are irrelevant for the density estimation
