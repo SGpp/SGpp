@@ -13,6 +13,7 @@
 #pragma once
 
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
@@ -53,6 +54,16 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    */
   void fit(DataMatrix& dataset);
 
+  /**
+   * Creates a density estimation model that fits the model settings.
+   * @param densityEstimationConfig configuration for the density estimation
+   * @return a new density estimation model
+   */
+  std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
+      sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
+
+  void addNewModel(combiConfig config);
+
   void fit(Dataset& dataset);
 
   bool refine();
@@ -76,7 +87,9 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
   void update(Dataset& dataset);
 
  protected:
-  std::vector<std::unique_ptr<ModelFittingDensityEstimationOnOff>> models;
+  std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
+
+  std::unique_ptr<FitterConfigurationDensityEstimation> generalFitterConfig;
 
   std::vector<double> weights;
 
