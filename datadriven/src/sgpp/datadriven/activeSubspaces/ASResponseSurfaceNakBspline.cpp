@@ -588,7 +588,6 @@ void ASResponseSurfaceNakBspline::refineInterpolationSurplusAdaptive(
 
 void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
     std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
-  Eigen::MatrixXd pinvW1 = W1.transpose().completeOrthogonalDecomposition().pseudoInverse();
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector functionValues(grid->getSize());
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
@@ -601,9 +600,11 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
     if (W1.cols() == 1) {
       p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
     }
-    sgpp::base::DataVector pinv =
-        EigenToDataVector(pinvW1 * p);  // introduce a wrapper for eigen functions so
-                                        // we don't have to transform here every time?
+
+    // computes approximate solution "pseudo inverse style".
+    sgpp::base::DataVector pinv = EigenToDataVector(
+        W1.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(p));
+
     functionValues[i] = objectiveFunc->eval(pinv);
   }
 

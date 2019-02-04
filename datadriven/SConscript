@@ -31,10 +31,6 @@ performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 if env[performanceTestFlag]:
     additionalBoostTestDependencies.extend(["boost_filesystem", "boost_system"])
 
-# Note (rehmemk) I used the cdd library for H<->V representation
-# Remove this if not necessary anymore.
-additionalDependencies += ["cdd"]
-
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies,
                              additionalBoostTestDependencies)
 
