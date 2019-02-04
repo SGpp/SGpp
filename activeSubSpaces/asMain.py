@@ -10,7 +10,12 @@ import asFunctions
 import cPickle as pickle
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pn
 import pysgpp
+
+
+def dataVectorToPy(v):
+    return np.fromstring(v.toString()[1:-2], dtype=float, sep=',')
 
 
 # SG++ AS functionalities return eigenvalues as increasingly sorted DataVector.
@@ -70,24 +75,63 @@ def createData(f, numSamples, pointsPath, valuesPath):
     return evaluationPoints, functionValues
 
 
-def getData(savePath, numDataPoints, f):
-    generalPath = os.path.dirname(savePath)
-    pointsPath = os.path.join(generalPath, 'data', 'dataPoints' + str(numDataPoints) + '.dat')
-    valuesPath = os.path.join(generalPath, 'data', 'dataValues' + str(numDataPoints) + '.dat')
-    if os.path.exists(pointsPath) and os.path.exists(valuesPath):
-        evaluationPoints = pysgpp.DataMatrix.fromFile(pointsPath)
-        functionValues = pysgpp.DataVector.fromFile(valuesPath)
+def getData(savePath, numDataPoints, f, method, model='SingleDiode'):
+    if model == 'SingleDiode':
+        df = pn.DataFrame.from_csv('/home/rehmemk/git/SGpp/activeSubSpaces/results/SingleDiode/data/SingleDiodePV-Pmax.txt')
+        data = df.values
+        X = data[:, :5]
+        f = data[:, 5]
+        df = data[:, 6:]
+#         labels = df.keys()
+#         in_labels = labels[:5]
+#         out_label = labels[5]
+        # Normalize the inputs to the interval [-1,1] / [0,1]. The second variable is uniform in the log space.
+        xl = np.array([0.05989, -24.539978662570231, 1.0, 0.16625, 93.75])
+        xu = np.array([0.23598, -15.3296382905940, 2.0, 0.665, 375.0])
+        Y = X.copy()
+        Y[:, 1] = np.log(Y[:, 1])
+        if method in ['asSGpp']:
+            XX = asFunctions.unnormalize(Y, 0, 1, xl, xu)
+        elif method in ["QPHD"]:
+            XX = ac.utils.misc.BoundedNormalizer(xl, xu).normalize(Y)
+        evaluationPoints = pysgpp.DataMatrix(XX[0:numDataPoints, :])
+        functionValues = pysgpp.DataVector(f[0:numDataPoints])
+        
+        evaluationPoints.transpose()
     else:
-        evaluationPoints, functionValues = createData(f, numDataPoints, pointsPath, valuesPath)
-    return evaluationPoints, functionValues
+        generalPath = os.path.dirname(savePath)
+        pointsPath = os.path.join(generalPath, 'data', 'dataPoints' + str(numDataPoints) + '.dat')
+        valuesPath = os.path.join(generalPath, 'data', 'dataValues' + str(numDataPoints) + '.dat')
+        if os.path.exists(pointsPath) and os.path.exists(valuesPath):
+            evaluationPoints = pysgpp.DataMatrix.fromFile(pointsPath)
+            functionValues = pysgpp.DataVector.fromFile(valuesPath)
+        else:
+            evaluationPoints, functionValues = createData(f, numDataPoints, pointsPath, valuesPath)
+    
+    # split data 80/20 into training data and validation data
+    splitIndex = numDataPoints * 8 / 10
+    numDim = evaluationPoints.getNrows()
+    trainingValues = pysgpp.DataVector(splitIndex)
+    trainingPoints = pysgpp.DataMatrix(numDim, splitIndex)
+    validationValues = pysgpp.DataVector(numDataPoints - splitIndex)
+    validationPoints = pysgpp.DataMatrix(numDim, numDataPoints - splitIndex)
+    for i in range(splitIndex):
+        trainingValues[i] = functionValues[i]
+        for j in range(numDim):
+            trainingPoints.set(j, i, evaluationPoints.get(j, i))
+    for i in range(numDataPoints - splitIndex):
+        validationValues[i] = functionValues[splitIndex + i]
+        for j in range(numDim):
+            validationPoints.set(j, i, evaluationPoints.get(j, splitIndex + i))
+            
+    return trainingPoints, trainingValues, validationPoints, validationValues
 
     
 # uniformly distributed points in numDim dimensions     
-def uniformX(numSamples, numDim):
+def uniformX(numSamples, numDim, l=-1, r=1):
     x = np.ndarray(shape=(numSamples, numDim))
     for d in range(numDim):
-        r = np.random.uniform(-1, 1, (numSamples, 1))
-        x[:, d] = r[:, 0]
+        x[:, d] = np.random.uniform(l, r, (numSamples, 1))[:, 0]
     return x
 
 
@@ -121,7 +165,8 @@ def boreholeX(numSamples):
 # responseType   method for creation of the response surface. Adaptive or regular
 # numerrorPoints number of MC points used to calculate the l2 interpolation error
 #-----------------------------------------------------------------------
-def SGpp(objFunc, gridType, degree, numResponse, responseType, numErrorPoints=10000, savePath=None, numDataPoints=10000):
+def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPoints=10000, savePath=None, numDataPoints=10000):
+    print("\nnumGridPoints = {}".format(numResponse))
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
@@ -131,20 +176,44 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType, numErrorPoints=10
     if responseType == 'adaptive':
         initialLevel = 1
         sparseResponseSurf.createSurplusAdaptiveResponseSurface(numResponse, initialLevel)
+        l2Error = sparseResponseSurf.l2Error(f, numErrorPoints)
     elif responseType == 'regular':
-        sparseResponseSurf.createRegularResponseSurface(numResponse)
+        print("TODO: Write routien to guess level from numResponse!")
+        # sparseResponseSurf.createRegularResponseSurface(numResponse)
+        # l2Error = sparseResponseSurf.l2Error(f, numErrorPoints)
     elif responseType == 'dataR':
-        evaluationPoints, functionValues = getData(savePath, numDataPoints, f)
+        print("TODO: Write routien to guess level from numResponse!")
+        trainingPoints, trainingValues, validationPoints, validationValues = getData(savePath, numDataPoints, f, 'SGpp', model)
         responseLambda = 1e-6
-        responseLevel = 3  
+        responseLevel = 4  
+        if objFunc.getDim() == 5:
+            responseLevel = 1
+            if numResponse >= 11:
+                responseLevel = 2
+            if numResponse >= 71:
+                responseLevel = 3
+            if numResponse >= 351:
+                responseLevel = 4
+            if numResponse >= 1471:
+                responseLevel = 5
+            if numResponse > 5503:
+                responseLevel = 6
+            if numResponse >= 18943:
+                responseLevel = 7
         print('{} gridpoints requested, using level {} (This is hard coded, find a way to determine level!)) '.format(numResponse, responseLevel))
-        sparseResponseSurf.createRegularResponseSurfaceData(responseLevel, evaluationPoints, functionValues, responseLambda)
-     
-    print(numResponse)   
+        sparseResponseSurf.createRegularResponseSurfaceData(responseLevel, trainingPoints, trainingValues, responseLambda)
+        numValidationPoints = validationValues.getSize()
+        validationEval = pysgpp.DataVector(numValidationPoints)
+        validationPoint = pysgpp.DataVector(numDim) 
+        for i in range(numValidationPoints):
+            validationPoints.getColumn(i, validationPoint)
+            validationEval[i] = sparseResponseSurf.eval(validationPoint)
+        validationEval.sub(validationValues)
+        l2Error = validationEval.l2Norm() / numValidationPoints
+        
+    print("sparse interpolation error {}".format(l2Error))
     lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
-    l2Error = sparseResponseSurf.l2Error(f, numErrorPoints)
-    print("sparse interpolation error {}".format(l2Error))
     integral = sparseResponseSurf.getIntegral() * vol
     integralError = abs(integral - objFunc.getIntegral())
     print("sparse integral: {}".format(integral))
@@ -153,6 +222,60 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType, numErrorPoints=10
     print('actual num grid points = {}'.format(numGridPoints))
     
     return l2Error, integral, integralError, numGridPoints
+
+
+def integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder=7, approxLevel=8, approxDegree=3, numHistogramMCPoints=1000000):
+    lb, ub = objFunc.getDomain()
+    vol = np.prod(ub - lb)
+    integral = float('NaN')
+    if integralType == 'MC':
+        integral = responseSurf.getMCIntegral(100, numHistogramMCPoints, 'Halton') * vol
+    elif integralType == 'Hist':
+        integral = responseSurf.getHistogramBasedIntegral(11, numHistogramMCPoints, 'Halton') * vol
+    elif integralType == 'Spline':
+        integral = responseSurf.getSplineBasedIntegral(quadOrder) * vol
+    elif integralType == 'appSpline':
+        integral = responseSurf.getApproximateSplineBasedIntegral(approxLevel, approxDegree) * vol
+    integralError = abs(integral - objFunc.getIntegral())
+    return integral, integralError
+
+
+def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine, savePath, numDataPoints, model):
+    datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
+    validationValues = []
+    validationPoints = []
+    if asmType in ["adaptive", "regular"]:
+        ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
+        if asmType == 'adaptive':
+            ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
+        elif asmType == 'regualar':
+            ASM.buildRegularInterpolant(numASM)
+    elif asmType in datatypes:
+        trainingPoints, trainingValues, validationPoints, validationValues = getData(savePath, numDataPoints, f, 'asSGpp', model)
+        ASM = pysgpp.ASMatrixBsplineData(trainingPoints, trainingValues, pysgpp.Grid.stringToGridType(gridType), degree)
+        if asmType == 'data':
+            ASM.buildAdaptiveInterpolant(numASM)
+        elif asmType == 'dataR':
+            print("\n         TODO: asRecognition asmLevel in case dataR is hard coded and not automatically chosen!")
+            asmLevel = 4
+            ASM.buildRegularInterpolant(asmLevel)
+            print("         used asmLevel={}, resulting in {} grid  points\n".format(asmLevel, ASM.getCoefficients().getSize()))
+        else:
+            print("asmType not supported currently")
+    
+    if savePath is not None:
+        if not os.path.exists(savePath):
+            os.makedirs(savePath)
+        ASM.toFile(savePath)
+ 
+    ASM.createMatrixGauss()
+    ASM.evDecompositionForSymmetricMatrices()
+    eivalSGpp = ASM.getEigenvaluesDataVector();    
+    eivecSGpp = ASM.getEigenvectorsDataMatrix()
+    eival = reverseDataVectorToNdArray(eivalSGpp);   
+    eivec = reverseDataMatrixToNdArray(eivecSGpp)
+    
+    return ASM, eival, eivec, validationValues, validationPoints
 
 
 #---------------------SGpp with active subspaces----------------------------
@@ -167,60 +290,32 @@ def SGpp(objFunc, gridType, degree, numResponse, responseType, numErrorPoints=10
 # numErrorPoints number of MC points used to calculate the l2 interpolation error
 # savePath       path to save the interpolation grid and coefficients to or None
 #--------------------------------------------------------------------------
-def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
+def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adaptive',
                 responseType='adaptive', integralType='Hist', numErrorPoints=10000,
                 numHistogramMCPoints=1000000, savePath=None, approxLevel=8,
                 approxDegree=3, numShadow1DPoints=0, numDataPoints=10000):
-    numGridPoints = numASM
-    print("\nnumResponse = numSamples = {}".format(numSamples))
+    print("\nnumGridPoints = {}".format(numResponse))
     responseLevel = int(np.math.log(numResponse + 1, 2)) 
     asmLevel = responseLevel
-    print("using level {} which has {} points for regular grids".format(responseLevel,
-                                                                        2 ** responseLevel - 1))
+    print("using level {} which has {} points for regular grids".format(responseLevel, 2 ** responseLevel - 1))
+    print("numDataPoints = {}".format(numDataPoints))
+    datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
     
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
-    lb, ub = objFunc.getDomain()
     numRefine = 3
     initialLevel = 1
     
-    if asmType in ["adaptive", "regular"]:
-        ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
-        if asmType == 'adaptive':
-            ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
-        elif asmType == 'regualar':
-            ASM.buildRegularInterpolant(numASM)
-    elif asmType in ['data', 'datadriven', 'dataR', 'datadrivenR']:
-        evaluationPoints, functionValues = getData(savePath, numDataPoints, f)
-        ASM = pysgpp.ASMatrixBsplineData(evaluationPoints, functionValues, pysgpp.Grid.stringToGridType(gridType), degree)
-        if asmType == 'data':
-            ASM.buildAdaptiveInterpolant(numASM)
-        elif asmType == 'dataR':
-            ASM.buildRegularInterpolant(asmLevel)
-        else:
-            print("asmType not supported currently")
-    
-    if savePath is not None:
-        if not os.path.exists(savePath):
-            os.makedirs(savePath)
-        ASM.toFile(savePath)
- 
-    ASM.createMatrixGauss()
-    ASM.evDecompositionForSymmetricMatrices()
-    eivalSGpp = ASM.getEigenvaluesDataVector()
-    eivecSGpp = ASM.getEigenvectorsDataMatrix()
-    eival = reverseDataVectorToNdArray(eivalSGpp)
-    eivec = reverseDataMatrixToNdArray(eivecSGpp)
-    
-#     print(eival)
-#     print(eivec)
-#     print("AS:")
-#     print(eivec[:, 0])
+    ASM, eival, eivec, validationValues, validationPoints = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
+                                                                          numRefine, savePath, numDataPoints, model)
+    #     print(eival)
+    #     print(eivec)
+    print("first eigenvector {}".format(eivec[:, 0]))
     
     n = 1  # active subspace identifier
-    responseDegree = degree  # test if different degrees for ASM and resposne surface are useful!
-    responseGridType = pysgpp.GridType_NakBsplineBoundary  # NakBsplineExtended  # test if other gridTypes are useful!
+    responseDegree = degree  
+    responseGridType = pysgpp.GridType_NakBsplineBoundary  
     responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
     if responseType == 'adaptive':
         responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
@@ -236,32 +331,41 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
             responseSurf.createRegularReducedSurfaceFromData(asmPoints, asmValues, responseLevel, responseLambda)
         elif responseType == 'datadrivenR':
             responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel, responseLambda)
-        numGridPoints = responseSurf.getCoefficients().getSize()
+    numGridPoints = responseSurf.getCoefficients().getSize()
 
     bounds = responseSurf.getBounds() 
     print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
     
-    l2Error = responseSurf.l2Error(f, numErrorPoints)
+    if responseType not in datatypes:
+        errorPoints = np.random.random((numErrorPoints, objFunc.getDim()))
+        validationValues = objFunc.eval(errorPoints)
+        validationPoints = pysgpp.DataMatrix(errorPoints)
+        validationPoints.transpose()
+    numValidationPoints = validationPoints.getNcols()
+    responseEval = np.ndarray((numValidationPoints, 1))
+    validationPoint = pysgpp.DataVector(numDim) 
+    for i in range(numValidationPoints):
+        validationPoints.getColumn(i, validationPoint)
+        responseEval[i] = responseSurf.eval(validationPoint)
+    l2Error = np.linalg.norm(responseEval - validationValues) / numValidationPoints
     print("interpol error: {}".format(l2Error))
+    # print("Comparison: l2 error {}".format(responseSurf.l2Error(f, numErrorPoints)))
+    
+#     W1 = eivec[:, 0]
+#     W1 = [1 / np.sqrt(5)] * 5
+#     plt.scatter(errorPoints.dot(W1), responseEval, label='approx')
+#     plt.scatter(errorPoints.dot(W1), validationValues, label='f')
+#     plt.legend()
+#     plt.show()
     
     shadow1DEvaluations = []
     if numShadow1DPoints > 0:
         X1unit = np.linspace(0, 1, numShadow1DPoints)
         shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
 
-    vol = np.prod(ub - lb)
-    integral = float('NaN')
-    if integralType == 'MC':
-        integral = responseSurf.getMCIntegral(100, numHistogramMCPoints, 'Halton') * vol
-    elif integralType == 'Hist':
-        integral = responseSurf.getHistogramBasedIntegral(11, numHistogramMCPoints, 'Halton') * vol
-    elif integralType == 'Spline':
-        quadOrder = 7
-        integral = responseSurf.getSplineBasedIntegral(quadOrder) * vol
-    elif integralType == 'appSpline':
-        integral = responseSurf.getApproximateSplineBasedIntegral(approxLevel, approxDegree) * vol
-    print("integral: {}\n".format(integral)),
-    integralError = abs(integral - objFunc.getIntegral())
+    quadOrder = 7
+    integral, integralError = integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder, approxLevel, approxDegree, numHistogramMCPoints)
+#     print("integral: {}\n".format(integral)),
     print("integral error: {}".format(integralError))
     
 # plot interpolant of 2D function
@@ -277,7 +381,12 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
 #     ax.plot_wireframe(X, Y, F, rstride=10, cstride=10,color='r')
 #     plt.show()
 
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, [bounds[0], bounds[1]], numGridPoints
+    responseGrid = responseSurf.getGrid()
+    responseCoefficients = responseSurf.getCoefficients()
+    responseGridStr = responseGrid.serialize()
+
+    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, \
+           [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients
 
 
 #---------------------Constantines AS framework----------------------------
@@ -287,7 +396,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, asmType='adaptive',
 # sstype   gradient based ('AS'), linear fit ('OLS') or quadratic fit ('QPHD')
 # nboot    number of bootstrappings
 #-------------------------------------------------------------------------- 
-def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=0, numShadow1DPoints=0, numErrorPoints=10000):
+def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=0, numShadow1DPoints=0, validationPoints=[], validationValues=[]):
+    print(len(f))
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
     if sstype == 'OLS':
@@ -304,31 +414,40 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
         ss.compute(df=df, nboot=nboot, sstype='AS')
         eival = ss.eigenvals
         eivec = ss.eigenvecs
-    
+        
+    print(eival)
+    print("first eigenvector: {}".format(ss.eigenvecs[:, 0]))
     # quadratic polynomial approximation of maximum degree responseDegree
     print("response degree: {}".format(responseDegree))
     RS = ac.utils.response_surfaces.PolynomialApproximation(responseDegree)
     # RS = ac.utils.response_surfaces.RadialBasisApproximation(responseDegree)
-    # Train the surface with active variable values (y = XX.dot(ss.W1)) and function values (f)
+    n = 1  # active subspace identifier
+    ss.partition(n)
     y = X.dot(ss.W1)
     RS.train(y, f)
     
-    # calculate l2 error in W1T * [-1,1]. 
-    errorPoints = np.random.random((numErrorPoints, objFunc.getDim())) * 2 - 1
-    errorEval = RS.predict(errorPoints.dot(ss.W1))[0]
-    errorFunctionValues = objFunc.eval(errorPoints)
-    l2Error = np.linalg.norm((errorEval - errorFunctionValues) / numErrorPoints)
-    print"interpol error {}".format(l2Error),
+    if args.responseType == 'regular':
+        # calculate l2 error in W1T * [-1,1]. 
+        validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
+        validationValues = objFunc.eval(validationPoints, -1, 1)
+    validationEval = RS.predict(np.dot(validationPoints, ss.W1))[0]
+    l2Error = np.linalg.norm((validationEval - validationValues) / len(validationValues))
+    print("interpol error {}".format(l2Error))
+            
+#     plt.scatter(np.dot(validationPoints, ss.W1), validationValues, label='f')
+#     plt.scatter(np.dot(validationPoints, ss.W1), validationEval, label='approx')
+#     plt.legend()
+#     plt.show()
     
     # integral
     lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
     avdom = ac.domains.BoundedActiveVariableDomain(ss)
     avmap = ac.domains.BoundedActiveVariableMap(avdom)  
-    integral = ac.integrals.av_integrate(lambda x: RS.predict(x)[0], avmap, 1000) * vol  # / (2 ** objFunc.getDim())
+    integral = ac.integrals.av_integrate(lambda x: RS.predict(x)[0], avmap, 1000) * vol  
 #     print 'Constantine Integral: {:.2f}'.format(int_I)
     integralError = abs(integral - objFunc.getIntegral())
-    print(" integral error {}".format(integralError))
+    print("integral error {}".format(integralError))
     
     bounds = avdom.vertY[ :, 0]
     shadow1DEvaluations = []
@@ -355,6 +474,15 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
 #     ax.plot_wireframe(Xunit, Yunit, F, rstride=10, cstride=10, color='r')
 #     # ax.scatter((errorPoints[:, 0] + 1) / 2.0, (errorPoints[:, 1] + 1) / 2.0, errorEval, c='b')
 #     plt.show()
+        
+    # 1 and 2 dim shadow plots
+#     ss.partition(1)
+#     y = np.dot(X, ss.W1)
+#     ac.utils.plotters.sufficient_summary(y, f[:, 0])
+#     plt.show()
+        
+    print("Control:")
+    print("num data points = {}".format(len(f)))
         
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds
 
@@ -404,16 +532,21 @@ if __name__ == "__main__":
     numGridPointsArray = np.ndarray(shape=(len(sampleRange), len(dataRange)))
     shadow1DEvaluationsArray = np.ndarray(shape=(args.numShadow1DPoints, len(sampleRange), len(dataRange)))
     boundsArray = np.ndarray(shape=(2, len(sampleRange), len(dataRange)))
+    responseGridStrDict = {}
+    responseCoefficientsDict = {}
     
-    resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
-    resultsPath = os.path.join(resultsPath, objFunc.getName())
-    if args.method in ['OLS', 'QPHD', 'AS']:
-        folder = args.method + '_' + str(args.degree) + '_' + str(args.maxPoints)
-    elif args.method == 'asSGpp': 
-        folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType + '_' + args.asmType + '_' + args.integralType
-    elif args.method == 'SGpp': 
-        folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
-    path = os.path.join(resultsPath, folder)     
+    if args.saveFlag == 1:
+        resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
+        resultsPath = os.path.join(resultsPath, objFunc.getName())
+        if args.method in ['OLS', 'QPHD', 'AS']:
+            folder = args.method + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
+        elif args.method == 'asSGpp': 
+            folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType + '_' + args.asmType + '_' + args.integralType
+        elif args.method == 'SGpp': 
+            folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
+        path = os.path.join(resultsPath, folder)    
+    else:
+        path = None 
     
     numHistogramMCPoints = 100000
     numErrorPoints = 10000
@@ -424,20 +557,37 @@ if __name__ == "__main__":
         for i, numSamples in enumerate(sampleRange):
             for j, numData in enumerate(dataRange):
                 start = time.time()
-                if args.model == 'borehole':
-                    x = boreholeX(numSamples)
+                df = 0; vP = 0; vV = 0  # dummy
+                if args.responseType == 'data':
+                    trainingPoints, trainingValues, validationPoints, validationValues = getData(path, numData, objFuncSGpp(objFunc), args.method, args.model)
+                    trainingPoints.transpose();  validationPoints.transpose()
+                    f = np.ndarray(shape=(trainingValues.getSize(), 1))
+                    vV = np.ndarray(shape=(validationValues.getSize(), 1))
+                    x = np.ndarray(shape=(trainingPoints.getNrows(), trainingPoints.getNcols()))
+                    vP = np.ndarray(shape=(validationPoints.getNrows(), validationPoints.getNcols()))
+                    for k in range(trainingValues.getSize()):
+                        f[k] = trainingValues[k]
+                        for l in range(objFunc.getDim()):
+                            x[k, l] = trainingPoints.get(k, l)
+                    for k in range(validationValues.getSize()):
+                        vV[k] = validationValues[k]
+                        for l in range(objFunc.getDim()):
+                            vP[k, l] = trainingPoints.get(k, l)
+                elif args.responseType == 'regular':
+                    if args.model == 'borehole':
+                        x = boreholeX(numSamples)
+                    else:
+                        x = uniformX(numSamples, numDim)
+                    f = objFunc.eval(x, -1, 1)
+                    if args.method == 'AS':
+                        df = objFunc.eval_grad(x, -1, 1)
                 else:
-                    x = uniformX(numSamples, numDim)
-                f = objFunc.eval(x, -1, 1)
-                if args.method == 'AS':
-                    df = objFunc.eval_grad(x, -1, 1)
-                    e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree,
-                                                                            sstype=args.method, nboot=nboot,
-                                                                            numShadow1DPoints=args.numShadow1DPoints, numErrorPoints=10000)
-                else:
-                    e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, responseDegree=args.degree,
-                                                                           sstype=args.method, nboot=nboot,
-                                                                           numShadow1DPoints=args.numShadow1DPoints, numErrorPoints=10000)
+                    print('response type not supported')
+                    
+                e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree,
+                                                                        sstype=args.method, nboot=nboot,
+                                                                        numShadow1DPoints=args.numShadow1DPoints, validationPoints=vP, validationValues=vV)
+                
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations[:, 0]
@@ -455,13 +605,16 @@ if __name__ == "__main__":
                 start = time.time()
                 numResponse = numSamples
                 numASM = numSamples
-                e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds, numGridPoints = SGppAS(objFunc,
-                                                                 args.gridType, args.degree, numASM, numResponse,
-                                                                 args.asmType, args.responseType, args.integralType,
-                                                                 numErrorPoints=numErrorPoints, savePath=path,
-                                                                 numHistogramMCPoints=numHistogramMCPoints,
-                                                                 approxLevel=args.appSplineLevel, approxDegree=args.appSplineDegree,
-                                                                 numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData)
+                
+                e, v, l2Error, integral, integralError, shadow1DEvaluations, \
+                bounds, numGridPoints, responseGridStr, responseCoefficients = \
+                SGppAS(objFunc, args.gridType, args.degree, numASM, numResponse, args.model,
+                       args.asmType, args.responseType, args.integralType,
+                       numErrorPoints=numErrorPoints, savePath=path,
+                       numHistogramMCPoints=numHistogramMCPoints,
+                       approxLevel=args.appSplineLevel, approxDegree=args.appSplineDegree,
+                        numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData)
+                
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations
@@ -469,6 +622,8 @@ if __name__ == "__main__":
                 boundsArray[:, i, j] = bounds
                 eival[:, i, j] = e[:]
                 eivec[:, :, i, j] = v
+                responseGridStrDict["{} {}".format(i, j)] = responseGridStr
+                responseCoefficientsDict["{} {}".format(i, j)] = dataVectorToPy(responseCoefficients)
             
     # .... .... .... .... SG++ .... .... .... ....
     elif args.method == 'SGpp':
@@ -477,8 +632,12 @@ if __name__ == "__main__":
         for i, numSamples in enumerate(sampleRange):
             for j, numData in enumerate(dataRange):
                 start = time.time()
-                l2Error, integral, integralError, numGridPoints = SGpp(objFunc, args.gridType, args.degree, numSamples,
-                                                         args.responseType, numErrorPoints=numErrorPoints, savePath=path, numDataPoints=numData)
+                
+                l2Error, integral, integralError, numGridPoints = \
+                SGpp(objFunc, args.gridType, args.degree, numSamples,
+                     args.model, args.responseType, numErrorPoints=numErrorPoints,
+                     savePath=path, numDataPoints=numData)
+                
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 numGridPointsArray[i, j] = numGridPoints
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
@@ -487,8 +646,8 @@ if __name__ == "__main__":
         print("saving Data to {}".format(path))
         if not os.path.exists(path):
             os.makedirs(path)
-        # encapuslate all results and the input in 'data' dictionary and save it
-        data = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange,
+        # encapuslate all results and the input in 'summary' dictionary and save it
+        summary = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange,
                 'durations':durations, 'dim': numDim, 'l2Errors': l2Errors,
                 'integrals':integrals, 'integralErrors': integralErrors,
                 'model':args.model, 'method':args.method, 'minPoints':args.minPoints,
@@ -497,7 +656,8 @@ if __name__ == "__main__":
                 'integralType': args.integralType, 'numHistogramMCPoints':numHistogramMCPoints,
                 'appSplineLevel': args.appSplineLevel, 'appSplineDegree': args.appSplineDegree,
                 'numShadow1DPoints':args.numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
-                'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange}
-        with open(os.path.join(path, 'data.pkl'), 'wb') as fp:
-            pickle.dump(data, fp)
+                'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
+                'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict}
+        with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
+            pickle.dump(summary, fp)
 

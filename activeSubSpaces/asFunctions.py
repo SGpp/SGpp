@@ -81,6 +81,8 @@ def getFunction(model, args=None):
     
     elif model == 'ebola':
         return ebola()
+    elif model == 'SingleDiode':
+        return SingleDiode()
     
     elif model == 'linear2D':
         return linear2D()
@@ -497,16 +499,27 @@ class sinXD():
     def getIntegral(self):
         # calculated with Wolfram Alpha
         # Syntax: Integrate[sin(x+y+z+w+v), {x,0, 1}, {y,0, 1}, {z,0,1}, {w,0,1},{v,0,1}]
+        
+        # for argument = sum(x)
+#         if self.dim == 2:
+#             return 0.7736445427901113
+#         elif self.dim == 3:
+#             return 0.8793549306454009
+#         elif self.dim == 4:
+#             return 0.76861809417510700599
+#         elif self.dim == 5:
+#             return 0.485064781411046278072
+#         elif self.dim == 6:
+#             return 0.1096719474985168810318
+#         else:
+#             print("activeSubspaceFunctions.py: not calculated")
+#             return 0.0
+
+        # for argument = pi*sum(x)
         if self.dim == 2:
-            return 0.7736445427901113
-        elif self.dim == 3:
-            return 0.8793549306454009
-        elif self.dim == 4:
-            return 0.76861809417510700599
+            return 0
         elif self.dim == 5:
-            return 0.485064781411046278072
-        elif self.dim == 6:
-            return 0.1096719474985168810318
+            return 32 / (np.pi ** 5)  # for argument pi*sum(x)
         else:
             print("activeSubspaceFunctions.py: not calculated")
             return 0.0
@@ -535,7 +548,23 @@ class sinXD():
         for i in range(self.getDim()):
             arg += x[:, i] 
                        
-        return (np.sin(arg)).reshape(numSamples, 1)
+        return (np.sin(np.pi * arg)).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i]
+            
+        dfdxi = np.pi * np.cos(np.pi * arg)[:, None]
+        df = dfdxi
+        for i in range(self.dim - 1):
+            df = np.hstack((df, dfdxi))
+        return df
 
 
 class sin2DexpX():
@@ -1244,6 +1273,50 @@ class ebola():
         dRdp = (b3 / g2 / (g1 + p) - R0(x) / (g1 + p))[:, None]
         
         return np.hstack((dRdb1, dRdb2, dRdb3, dRdr1, dRdg1, dRdg2, dRdom, dRdp))
+
+    
+# https://github.com/paulcon/as-data-sets/tree/master/SingleDiodePV
+# dummy function. there is only data!
+class SingleDiode():
+
+    def __init__(self):
+        self.dim = 5
+       
+    def getDomain(self):
+        lb = np.array([0.05989, -24.539978662570231, 1.0, 0.16625, 93.75])
+        ub = np.array([0.23598, -15.3296382905940, 2.0, 0.665, 375.0])
+        return lb, ub
+    
+    def getName(self):
+        return "SingleDiode"
+    
+    def getIntegral(self):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        # calculated with derivative data and Constantine AS
+        eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
+        eivec[0] = [0.76738051, -0.42284057, 0.47295689, -0.09064426, 0.02069781]
+        return eivec
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        x0 = x[:, 0]; x1 = x[:, 1]; x2 = x[:, 2]; x3 = x[:, 3]; x4 = x[:, 4]
+        print("SingleDiode function has no eval, only data!")
+        return (0 * x1).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        print("activeSubspaceFunctions.py: not calculated")
+        return 0
 
 #----------------------- tutorial functions from Constantines active subspaces library ---------------------------------------------
 
