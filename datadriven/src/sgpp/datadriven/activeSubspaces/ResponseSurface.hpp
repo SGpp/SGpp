@@ -8,13 +8,13 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <iostream>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp"
 
 namespace sgpp {
 namespace datadriven {

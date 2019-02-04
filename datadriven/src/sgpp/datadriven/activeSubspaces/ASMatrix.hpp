@@ -6,9 +6,10 @@
 #pragma once
 // #ifdef USE_EIGEN
 
-#include <iostream>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp"
+#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
+
+#include <iostream>
 
 namespace sgpp {
 namespace datadriven {

@@ -280,7 +280,7 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t quadOrder) {
     std::cerr << "ASResponseSurface::getSplineBasedIntegral supports only 1D active subspaces\n";
     return -1;
   }
-  dd_set_global_constants();  // For cdd this must be called in the beginning.
+  //  dd_set_global_constants();  // For cdd this must be called in the beginning.
   size_t dim = W1.rows();
   // matrix containing the orthogonally projected simplex corners (columnwise)
   Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
@@ -311,7 +311,7 @@ double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t app
     std::cerr << "ASResponseSurface::getSplineBasedIntegral  supports only 1D active subspaces\n";
     return -1;
   }
-  dd_set_global_constants();  // For cdd this must be called in the beginning.
+  //  dd_set_global_constants();  // For cdd this must be called in the beginning.
   size_t dim = W1.rows();
   // matrix containing the orthogonally projected simplex corners (columnwise)
   Eigen::MatrixXd projectedCorners(dim + 1, factorial(dim));
@@ -367,24 +367,24 @@ int ASResponseSurfaceNakBspline::factorial(size_t n) {
   return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
 }
 
-dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permutations) {
-  size_t dim = permutations.size();
-  dd_MatrixPtr hMatrix = dd_CreateMatrix(dim + 3, dim + 1);
-
-  // x_p[0] >= 0
-  hMatrix->matrix[0][permutations[0] + 1][0] = 1.0;
-  // x_p[end] <= 1
-  hMatrix->matrix[1][0][0] = 1.0;
-  hMatrix->matrix[1][permutations.back() + 1][0] = -1.0;
-  // x_p[i] <= x_p[i+1]
-  for (size_t d = 0; d < dim - 1; d++) {
-    hMatrix->matrix[d + 2][permutations[d] + 1][0] = -1.0;
-    hMatrix->matrix[d + 2][permutations[d + 1] + 1][0] = 1.0;
-  }
-  hMatrix->numbtype = dd_Real;
-  hMatrix->representation = dd_Inequality;
-  return hMatrix;
-}
+// dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permutations) {
+//  size_t dim = permutations.size();
+//  dd_MatrixPtr hMatrix = dd_CreateMatrix(dim + 3, dim + 1);
+//
+//  // x_p[0] >= 0
+//  hMatrix->matrix[0][permutations[0] + 1][0] = 1.0;
+//  // x_p[end] <= 1
+//  hMatrix->matrix[1][0][0] = 1.0;
+//  hMatrix->matrix[1][permutations.back() + 1][0] = -1.0;
+//  // x_p[i] <= x_p[i+1]
+//  for (size_t d = 0; d < dim - 1; d++) {
+//    hMatrix->matrix[d + 2][permutations[d] + 1][0] = -1.0;
+//    hMatrix->matrix[d + 2][permutations[d + 1] + 1][0] = 1.0;
+//  }
+//  hMatrix->numbtype = dd_Real;
+//  hMatrix->representation = dd_Inequality;
+//  return hMatrix;
+//}
 
 // ToDo(rehmemk) isn't it somehow possible to directly generate the vertices of the simplices
 // instead of creating a H(yperplane)representation and transforming that to a
@@ -397,21 +397,36 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
   std::iota(permutations.begin(), permutations.end(), 0);
   size_t i = 0;
   do {
-    dd_MatrixPtr hMatrix = createHPolytope(permutations);
-    dd_ErrorType err;
-    dd_PolyhedraPtr poly = dd_DDMatrix2Poly(hMatrix, &err);
-    dd_FreeMatrix(hMatrix);
+    //    dd_MatrixPtr hMatrix = createHPolytope(permutations);
+    //    dd_ErrorType err;
+    //    dd_PolyhedraPtr poly = dd_DDMatrix2Poly(hMatrix, &err);
+    //    dd_FreeMatrix(hMatrix);
+    //
+    //    dd_MatrixPtr vRep = dd_CopyGenerators(poly);
+    //    dd_FreePolyhedra(poly);
+    //    dd_Amatrix vRepMatrix = vRep->matrix;
+    //
+    //    Eigen::MatrixXd V(vRep->colsize - 1, vRep->rowsize);  // simplex points (columnwise)
+    //    for (unsigned int i = 0; i < V.rows(); i++) {
+    //      for (unsigned int j = 0; j < V.cols(); j++) {
+    //        V(i, j) = vRepMatrix[j][i + 1][0];
+    //      }
+    //    }
 
-    dd_MatrixPtr vRep = dd_CopyGenerators(poly);
-    dd_FreePolyhedra(poly);
-    dd_Amatrix vRepMatrix = vRep->matrix;
-
-    Eigen::MatrixXd V(vRep->colsize - 1, vRep->rowsize);  // simplex points (columnwise)
-    for (unsigned int i = 0; i < V.rows(); i++) {
-      for (unsigned int j = 0; j < V.cols(); j++) {
-        V(i, j) = vRepMatrix[j][i + 1][0];
+    // simplex points (column wise)
+    Eigen::MatrixXd V = Eigen::MatrixXd::Zero(dim, dim + 1);
+    for (size_t k = 0; k < dim; k++) {
+      for (size_t l = k; l < dim; l++) {
+        V(permutations[l], k) = 1.0;
       }
     }
+
+    //    std::cout << "\n";
+    //    for (auto& p : permutations) {
+    //      std::cout << p << " ";
+    //    }
+    //    std::cout << "\n";
+    //    std::cout << V << "\n";
 
     projectedCorners.col(i) = (W1.transpose() * V).transpose();
 
@@ -426,7 +441,7 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
     i++;
   } while (std::next_permutation(permutations.begin(), permutations.end()));
   return simplexVolume;
-}
+}  // namespace datadriven
 
 sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
     sgpp::base::DataVector points, double simplexVolume, Eigen::MatrixXd projectedCorners) {

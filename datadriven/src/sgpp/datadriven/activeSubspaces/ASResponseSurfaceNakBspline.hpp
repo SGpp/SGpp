@@ -35,7 +35,7 @@
 #include <string>
 #include <vector>
 
-#include "/home/rehmemk/git/cddlib/lib-src/cdd.h"
+//#include "/home/rehmemk/git/cddlib/lib-src/cdd.h"
 
 namespace sgpp {
 namespace datadriven {
@@ -243,7 +243,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
 
   // ----------------- auxiliary routines -----------
   int factorial(size_t n);
-  dd_MatrixPtr createHPolytope(std::vector<int> permutations);
+  //  dd_MatrixPtr createHPolytope(std::vector<int> permutations);
   double simplexDecomposition(Eigen::MatrixXd& projectedCorners);
   sgpp::base::DataVector caclculateVolumeSimplexWise(sgpp::base::DataVector points,
                                                      double simplexVolume,
