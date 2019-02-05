@@ -41,11 +41,13 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    */
   ModelFittingDensityEstimationCombiGrid(FitterConfigurationDensityEstimation& config);
 
-  /*
-   * need to implement it here because DesityEstimation works with DataMatrix and ModelFittingBase
-   * with Dataset,
-   * may override virtual fit function in modelfittingbasesinglegrid
+  /**
+   * Fit the grids to the given dataset by determining the weights of the initial grid by the
+   * SGDE approach.
+   * @param dataset the training dataset that is used to fit the model.
    */
+  void fit(Dataset& dataset);
+
   /**
    * Fit the grids to the given dataset by determining the surpluses of the initial grid by the
    * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
@@ -53,6 +55,24 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset);
+
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+
+  void update(Dataset& dataset);
+
+  /**
+   * Updates the model based on new data samples (streaming, batch learning). Requires only
+   * the data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever)
+   * @param samples the new data samples
+   */
+  void update(DataMatrix& samples);
+
+  double evaluate(const DataVector& sample);
+
+  void evaluate(DataMatrix& samples, DataVector& results);
+
+  void reset() override;
 
   /**
    * Creates a density estimation model that fits the model settings.
@@ -64,32 +84,10 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
 
   void addNewModel(combiConfig config);
 
-  void fit(Dataset& dataset);
-
-  bool refine();
-
-  void reset() override;
-
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
-
-  double evaluate(const DataVector& sample);
-
-  void evaluate(DataMatrix& samples, DataVector& results);
-
-  /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only
-   * the data samples and no targets (since those are irrelevant for the density estimation
-   * whatsoever)
-   * @param samples the new data samples
-   */
-  void update(DataMatrix& samples);
-
-  void update(Dataset& dataset);
-
  protected:
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
 
-  std::unique_ptr<FitterConfigurationDensityEstimation> generalFitterConfig;
+  std::unique_ptr<FitterConfigurationDensityEstimation> collectiveDEConfig;
 
   std::vector<double> weights;
 

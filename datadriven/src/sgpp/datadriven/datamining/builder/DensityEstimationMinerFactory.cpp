@@ -35,13 +35,18 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  if (config.getFitterType() == FitterType::DensityEstimationCombi) {
+  std::cout << "modelfittingbase BREAK 1\n";
+  if (false) {
+    std::cout << "modelfittingbase BREAK 2\n";
     return new ModelFittingDensityEstimationCombiGrid(config);
   }
-  switch (config.getDensityEstimationConfig().type_) {
+  std::cout << "\n lel \n";
+  switch (DensityEstimationType::Decomposition) {  //!!!
+    std::cout << "SWITCH";
     case (DensityEstimationType::CG):
       return new ModelFittingDensityEstimationCG(config);
     case (DensityEstimationType::Decomposition):
+      std::cout << "DECOMPOSITION";
       return new ModelFittingDensityEstimationOnOff(config);
     default: { throw base::application_exception("Unknown density estimation type"); }
   }

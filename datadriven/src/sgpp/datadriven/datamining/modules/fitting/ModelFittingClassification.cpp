@@ -11,21 +11,22 @@
  */
 
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombiGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
-#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
-#include <string>
-#include <vector>
 #include <list>
 #include <map>
+#include <string>
+#include <vector>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -65,8 +66,8 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
       double label = p.first;
       size_t idx = p.second;
       if (classNumberInstances[idx] == 0) {
-         // The model for this class was not trained -> no prediction possible for this model
-         continue;
+        // The model for this class was not trained -> no prediction possible for this model
+        continue;
       }
       double classConditionalDensity = models[idx]->evaluate(sample);
       double prior;
@@ -83,9 +84,9 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
         maxDensity = density;
         prediction = label;
       }
-        evaluatedModel = true;
-      }
-      return prediction;
+      evaluatedModel = true;
+    }
+    return prediction;
   }
 }
 
@@ -105,14 +106,18 @@ void ModelFittingClassification::fit(Dataset& newDataset) {
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
+  // if (densityEstimationConfig.getGridConfig().generalType_ ==
+  //  base::GeneralGridType::ComponentGrid) {
+  // return std::make_unique<ModelFittingDensityEstimationCombiGrid>(densityEstimationConfig);
+  //}
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
-    case DensityEstimationType::CG : {
+    case DensityEstimationType::CG: {
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
-    case DensityEstimationType::Decomposition : {
+    case DensityEstimationType::Decomposition: {
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default : {
+    default: {
       std::string errMsg = "Unknown density estimation type";
       throw application_exception(errMsg.c_str());
     }
@@ -127,7 +132,7 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 
     // Create a new model
     std::unique_ptr<ModelFittingDensityEstimation> model = createNewModel(
-                dynamic_cast<sgpp::datadriven::FitterConfigurationDensityEstimation&>(*config));
+        dynamic_cast<sgpp::datadriven::FitterConfigurationDensityEstimation&>(*config));
     models.push_back(std::move(model));
 
     // Count the number of instances for this class
@@ -140,47 +145,52 @@ size_t ModelFittingClassification::labelToIdx(double label) {
   }
 }
 
-MultiGridRefinementFunctor *ModelFittingClassification::getRefinementFunctor(
+MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
-    case RefinementFunctorType::Surplus : {
+    case RefinementFunctorType::Surplus: {
       return new MultiSurplusRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
-          refinementConfig.levelPenalize, refinementConfig.threshold_);
+                                               refinementConfig.levelPenalize,
+                                               refinementConfig.threshold_);
     }
-    case RefinementFunctorType::ZeroCrossing : {
-      return new ZeroCrossingRefinementFunctor(grids, surpluses,
-        refinementConfig.noPoints_, refinementConfig.levelPenalize,
-        refinementConfig.precomputeEvaluations);
+    case RefinementFunctorType::ZeroCrossing: {
+      return new ZeroCrossingRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+                                               refinementConfig.levelPenalize,
+                                               refinementConfig.precomputeEvaluations);
     }
-    case RefinementFunctorType::DataBased : {
+    case RefinementFunctorType::DataBased: {
       if (refinementConfig.scalingCoefficients.size() != 0) {
         if (refinementConfig.scalingCoefficients.size() < models.size()) {
-          std::string errorMessage = "Not enough scaling coefficients were given for the amount"
+          std::string errorMessage =
+              "Not enough scaling coefficients were given for the amount"
               "of classes";
           throw new application_exception(errorMessage.c_str());
         } else if (refinementConfig.scalingCoefficients.size() > models.size()) {
-          std::cout << "Did not train on at least one sample for every class. Data based " <<
-              "refinement not possible in this iteration..." << std::endl;
+          std::cout << "Did not train on at least one sample for every class. Data based "
+                    << "refinement not possible in this iteration..." << std::endl;
           return nullptr;
         }
       }
       return new DataBasedRefinementFunctor(grids, surpluses, &(dataset->getData()),
-          &(dataset->getTargets()), refinementConfig.noPoints_, refinementConfig.levelPenalize,
-          refinementConfig.scalingCoefficients);
+                                            &(dataset->getTargets()), refinementConfig.noPoints_,
+                                            refinementConfig.levelPenalize,
+                                            refinementConfig.scalingCoefficients);
     }
-    case RefinementFunctorType::SurplusVolume : {
-      std::string errorMessage = "Unsupported refinement functor type SurplusVolume "
+    case RefinementFunctorType::SurplusVolume: {
+      std::string errorMessage =
+          "Unsupported refinement functor type SurplusVolume "
           "for classification!";
       throw new application_exception(errorMessage.c_str());
     }
-    case RefinementFunctorType::GridPointBased : {
+    case RefinementFunctorType::GridPointBased: {
       return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
-          refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
+                                                 refinementConfig.precomputeEvaluations,
+                                                 refinementConfig.threshold_);
     }
-    case RefinementFunctorType::MultipleClass : {
-      return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
-          0, refinementConfig.threshold_);
+    case RefinementFunctorType::MultipleClass: {
+      return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
+                                                refinementConfig.threshold_);
     }
     default:
       return nullptr;
@@ -208,17 +218,17 @@ bool ModelFittingClassification::refine() {
       // Refinement for multiple class is fundamentaly different! this needs to be fixed!
       if (refinementConfig.refinementFunctorType == RefinementFunctorType::MultipleClass) {
         // The functor handles refinements for all grids
-        MultipleClassRefinementFunctor *multifunc = dynamic_cast<MultipleClassRefinementFunctor*>(
-            func);
+        MultipleClassRefinementFunctor* multifunc =
+            dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
           // Precompute evaluations in case of data based / zero crossing refinement
-          if (refinementConfig.precomputeEvaluations && (
-              refinementConfig.refinementFunctorType == RefinementFunctorType::DataBased ||
-              refinementConfig.refinementFunctorType == RefinementFunctorType::ZeroCrossing ||
-              refinementConfig.refinementFunctorType == RefinementFunctorType::GridPointBased)) {
+          if (refinementConfig.precomputeEvaluations &&
+              (refinementConfig.refinementFunctorType == RefinementFunctorType::DataBased ||
+               refinementConfig.refinementFunctorType == RefinementFunctorType::ZeroCrossing ||
+               refinementConfig.refinementFunctorType == RefinementFunctorType::GridPointBased)) {
             func->preComputeEvaluations();
           }
           func->setGridIndex(idx);
@@ -233,8 +243,8 @@ bool ModelFittingClassification::refine() {
         // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
         std::list<size_t> coarsened;
         models[idx]->refine(grids[idx]->getSize(), &coarsened);
-        std::cout << "Refined model for class index " << idx << " (new size : "
-            << (grids[idx]->getSize()) << ")" << std::endl;
+        std::cout << "Refined model for class index " << idx
+                  << " (new size : " << (grids[idx]->getSize()) << ")" << std::endl;
       }
       delete func;
     }
@@ -262,7 +272,7 @@ void ModelFittingClassification::update(Dataset& newDataset) {
   // Update the models
   for (auto& p : classSamples) {
     size_t idx = labelToIdx(p.first);
-    DataMatrix *samples = p.second;
+    DataMatrix* samples = p.second;
     models[idx]->update(*samples);
     classNumberInstances[idx] += samples->getNrows();
     delete samples;
@@ -278,7 +288,3 @@ void ModelFittingClassification::reset() {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-
-
-

@@ -36,7 +36,7 @@ class CombiConfigurator {
    * @param l level of the sparse grid
    * @return vector of combiConfig
    */
-  const int getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
+  int getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
