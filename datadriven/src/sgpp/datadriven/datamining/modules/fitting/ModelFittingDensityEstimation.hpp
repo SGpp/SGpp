@@ -52,6 +52,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   virtual void update(DataMatrix& samples) = 0;
 
+  virtual void update(Dataset& dataset) = 0;
+
   /**
    * Performs a refinement given the new grid size and the points to coarsened
    * @param newNoPoints the grid size after refinement and coarsening

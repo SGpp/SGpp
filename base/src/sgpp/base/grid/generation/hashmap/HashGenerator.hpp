@@ -6,16 +6,16 @@
 #ifndef HASHGENERATOR_HPP
 #define HASHGENERATOR_HPP
 
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/exception/generation_exception.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
 #include <iostream>
+#include <iterator>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/globaldef.hpp>
 #include <unordered_set>
 #include <vector>
-#include <iterator>
 
 template <typename T>
 std::ostream& operator<<(std::ostream& out, const std::vector<T>& v) {
@@ -142,12 +142,12 @@ class HashGenerator {
     this->createFullGridIterative(storage, level);
   }
 
-  void anisotropicFull(GridStorage& storage, std::vector<size_t>& dimlevels){
-	  if(storage.getSize() > 0){
-		  throw generation_exception("storage not empty");
-	  }
+  void anisotropicFull(GridStorage& storage, std::vector<size_t>& dimlevels) {
+    if (storage.getSize() > 0) {
+      throw generation_exception("storage not empty");
+    }
 
-	  this->createAnisotropicFullGrid(storage, dimlevels);
+    this->createAnisotropicFullGrid(storage, dimlevels);
   }
 
   /**
@@ -243,9 +243,7 @@ class HashGenerator {
      * if (level%2==0) level--;
      * */
     int small_level = level / 2;
-    this->square_rec(storage, point, storage.getDimension() - 1,
-                     level, small_level, false,
-                     0);
+    this->square_rec(storage, point, storage.getDimension() - 1, level, small_level, false, 0);
   }
   /**
    * Generates a truncated boundary grid containing all gridpoints with li<l-k and |l|<l+(dim-1)*k
@@ -617,8 +615,8 @@ class HashGenerator {
 
       // loop over all current grid points
       for (size_t g = 0; g < gridSize; g++) {
-              level_t levelSum = 0;
-              level_t numberOfZeroLevels = 0;
+        level_t levelSum = 0;
+        level_t numberOfZeroLevels = 0;
         GridPoint idx(storage.getPoint(g));
         bool firstPoint = true;
 
@@ -866,16 +864,16 @@ class HashGenerator {
     }
   }
 
-  void createAnisotropicFullGrid(GridStorage& storage,  std::vector<size_t> v) {
-
-	if(storage.getDimension()!=v.size()){
-		std::cout <<"Storage dimension doesn't fit vector size!";
-		return;
-	}
+  void createAnisotropicFullGrid(GridStorage& storage, std::vector<size_t> v) {
+    if (storage.getDimension() != v.size()) {
+      throw sgpp::base::generation_exception(
+          "HashGenerator:: createAnisotropicFullGrid() Storage size doesn't fit vector size");
+      return;
+    }
 
     if (storage.getDimension() == 0) {
-    	std::cout << "Storage dimension is zero!";
-    	return;
+      std::cout << "Storage dimension is zero!";
+      return;
     }
 
     GridPoint idx_1d(storage.getDimension());
@@ -941,7 +939,6 @@ class HashGenerator {
       }
     }
   }
-
 
   /**
    * Generate a full grid iteratively (much faster than recursively)
@@ -1123,9 +1120,8 @@ class HashGenerator {
    * @param bLevelZero specifies if the current index has a level zero component
    */
 
-  void boundaries_truncated_rec(GridStorage& storage, GridPoint& index,
-                                size_t current_dim, level_t current_level,
-                                level_t level, bool bLevelZero) {
+  void boundaries_truncated_rec(GridStorage& storage, GridPoint& index, size_t current_dim,
+                                level_t current_level, level_t level, bool bLevelZero) {
     if (current_dim == 0) {
       boundaries_Truncated_rec_1d(storage, index, current_level, level, bLevelZero);
     } else {
@@ -1187,9 +1183,8 @@ class HashGenerator {
    * @param bLevelZero specifies if the current index has a level zero component
    */
 
-  void boundaries_Truncated_rec_1d(GridStorage& storage, GridPoint& index,
-                                   level_t current_level, level_t level,
-                                   bool bLevelZero) {
+  void boundaries_Truncated_rec_1d(GridStorage& storage, GridPoint& index, level_t current_level,
+                                   level_t level, bool bLevelZero) {
     bool bLevelGreaterZero = !bLevelZero;
 
     for (level_t l = 0; l <= level - current_level + 1; l++) {
@@ -1232,8 +1227,7 @@ class HashGenerator {
    * @param level maximum level of the sparse grid
    */
 
-  void boundaries_rec(GridStorage& storage, GridPoint& index,
-                      size_t current_dim,
+  void boundaries_rec(GridStorage& storage, GridPoint& index, size_t current_dim,
                       level_t current_level, level_t level) {
     index_t source_index;
     level_t source_level;
@@ -1309,9 +1303,8 @@ class HashGenerator {
    * @param sum sum of all levels
    */
 
-  void square_rec(GridStorage& storage, GridPoint& index,
-                  size_t current_dim, level_t level, level_t small_level,
-                  bool tail, size_t sum) {
+  void square_rec(GridStorage& storage, GridPoint& index, size_t current_dim, level_t level,
+                  level_t small_level, bool tail, size_t sum) {
     index_t source_index;
     level_t source_level;
 
@@ -1395,8 +1388,7 @@ class HashGenerator {
    *the construction of the sparse grid)
    */
 
-  void trunc_rec(GridStorage& storage, GridPoint& index,
-                 size_t current_dim, level_t current_level,
+  void trunc_rec(GridStorage& storage, GridPoint& index, size_t current_dim, level_t current_level,
                  level_t level, level_t minlevel) {
     index_t source_index;
     level_t source_level;

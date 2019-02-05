@@ -33,21 +33,18 @@ namespace datadriven {
 
 ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
+  std::cout << "DensityEstimationMinerFactory::createFitter()\n";
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  std::cout << "modelfittingbase BREAK 1\n";
-  if (false) {
-    std::cout << "modelfittingbase BREAK 2\n";
+  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityEstimationCombiGrid(config);
   }
-  std::cout << "\n lel \n";
-  switch (DensityEstimationType::Decomposition) {  //!!!
-    std::cout << "SWITCH";
+  switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
-    		std::cout << "CG";
+      std::cout << "\nCG\n";
       return new ModelFittingDensityEstimationCG(config);
     case (DensityEstimationType::Decomposition):
-      std::cout << "DECOMPOSITION";
+      std::cout << "\nDECOMPOSITION\n";
       return new ModelFittingDensityEstimationOnOff(config);
     default: { throw base::application_exception("Unknown density estimation type"); }
   }

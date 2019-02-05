@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
@@ -33,6 +34,7 @@ int main(int argc, char **argv) {
   config.readParams(parser);
   auto fittingbase = new sgpp::datadriven::ModelFittingDensityEstimationCombiGrid(config);
   cout << "ModelFittingDensityEstimationCombiGrid created!" << std::endl;
-
+  sgpp::base::DataMatrix data;
+  fittingbase->fit(data);
   return 0;
 }
