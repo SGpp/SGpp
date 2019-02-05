@@ -44,6 +44,7 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
   switch (DensityEstimationType::Decomposition) {  //!!!
     std::cout << "SWITCH";
     case (DensityEstimationType::CG):
+    		std::cout << "CG";
       return new ModelFittingDensityEstimationCG(config);
     case (DensityEstimationType::Decomposition):
       std::cout << "DECOMPOSITION";
