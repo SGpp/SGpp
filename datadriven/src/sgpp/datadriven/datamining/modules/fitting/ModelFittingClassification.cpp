@@ -106,10 +106,10 @@ void ModelFittingClassification::fit(Dataset& newDataset) {
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
-  // if (densityEstimationConfig.getGridConfig().generalType_ ==
-  //  base::GeneralGridType::ComponentGrid) {
-  // return std::make_unique<ModelFittingDensityEstimationCombiGrid>(densityEstimationConfig);
-  //}
+  if (densityEstimationConfig.getGridConfig().generalType_ ==
+      base::GeneralGridType::ComponentGrid) {
+    return std::make_unique<ModelFittingDensityEstimationCombiGrid>(densityEstimationConfig);
+  }
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
     case DensityEstimationType::CG: {
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);

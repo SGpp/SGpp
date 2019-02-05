@@ -46,7 +46,7 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& dataset);
+  void fit(Dataset& newDataset);
 
   /**
    * Fit the grids to the given dataset by determining the surpluses of the initial grid by the
@@ -54,7 +54,7 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& NewDataset);
 
   bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
@@ -86,8 +86,6 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
 
  protected:
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
-
-  std::unique_ptr<FitterConfigurationDensityEstimation> collectiveDEConfig;
 
   std::vector<double> weights;
 

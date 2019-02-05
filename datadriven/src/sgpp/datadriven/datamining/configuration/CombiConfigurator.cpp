@@ -18,7 +18,6 @@ namespace sgpp {
 namespace datadriven {
 
 int CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, size_t level) {
-  cout << "getStandardCombi";
   PyObject *pName, *pModule, *pFunc;
   PyObject *pArgs, *pValue;
 
@@ -46,24 +45,19 @@ int CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, si
     pair.coef = 0.0;
     pair.levels = std::vector<size_t>();
     vec.push_back(pair);
-    cout << "PYBREAK 1";
     vec.at(j).coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
-    cout << "PYBREAK 2";
     for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
-      cout << "PYBREAK 3";
       vec.at(j).levels.push_back(PyLong_AsSize_t(PyList_GetItem(PyList_GetItem(pValue, j), c)));
     }
-    cout << "PYBREAK 4";
   }
-  cout << "PYBREAK 5";
 
   Py_DECREF(pModule);
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
   Py_XDECREF(pFunc);
-  cout << "calling Py_Finalize: ";
+  cout << "Calling Py_Finalize: \n";
   Py_FinalizeEx();
-  cout << "Py_Finalize done";
+  cout << "Py_Finalize done \n";
   return 0;
 
   // throw base::tool_exception("To make this work, compile with USE_PYTHON_EMBEDDING=1");
