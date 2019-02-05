@@ -17,7 +17,6 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 
 #include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Eigenvalues>
 
 namespace sgpp {
 namespace datadriven {

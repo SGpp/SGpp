@@ -4,17 +4,15 @@
 // sgpp.sparsegrids.org
 
 #pragma once
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 
-#include <eigen3/Eigen/Dense>
-#include <eigen3/Eigen/Eigenvalues>
 #include <functional>
 #include <iostream>
 #include <map>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <tuple>
 #include <unordered_map>
 #include <utility>
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp"
 
 namespace sgpp {
 namespace datadriven {

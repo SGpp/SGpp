@@ -364,7 +364,7 @@ double ASResponseSurfaceNakBspline::getIntegralFromVolumeInterpolant(
 
 // ----------------- auxiliary routines -----------
 int ASResponseSurfaceNakBspline::factorial(size_t n) {
-  return (n == 1 || n == 0) ? 1 : factorial(n - 1) * n;
+  return static_cast<int>((n == 1 || n == 0) ? 1 : factorial(n - 1) * n);
 }
 
 // dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permutations) {
@@ -436,7 +436,7 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
       for (unsigned int k = 1; k <= dim; k++) {
         D.col(k - 1) = V.col(k) - V.col(0);
       }
-      simplexVolume = abs(D.determinant() / static_cast<double>(factorial(dim)));
+      simplexVolume = fabs(D.determinant() / static_cast<double>(factorial(dim)));
     }
     i++;
   } while (std::next_permutation(permutations.begin(), permutations.end()));
