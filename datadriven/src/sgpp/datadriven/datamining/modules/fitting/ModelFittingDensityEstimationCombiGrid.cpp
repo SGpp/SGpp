@@ -18,10 +18,12 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
+#include <iostream>
 #include <vector>
 
 using std::vector;
 using std::unique_ptr;
+using std::cout;
 
 namespace sgpp {
 namespace datadriven {
@@ -30,34 +32,27 @@ ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid()
 
 ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
     FitterConfigurationDensityEstimation& config) {
-  generalFitterConfig = std::make_unique<FitterConfigurationDensityEstimation>(config);
-  auto combiconfig = vector<combiConfig>();
+  collectiveDEConfig = std::make_unique<FitterConfigurationDensityEstimation>(config);
+  vector<combiConfig> combiconfig;
   CombiConfigurator combiconfigurator;
   combiconfigurator.getStandardCombi(combiconfig, config.getGridConfig().dim_,
                                      config.getGridConfig().level_);
-  switch (config.getDensityEstimationConfig().type_) {
-    case (DensityEstimationType::CG): {
-      models = vector<unique_ptr<ModelFittingDensityEstimationCG>>(combiconfig.size());
-      break;
-    }
-    case (DensityEstimationType::Decomposition): {
-      models = vector<unique_ptr<ModelFittingDensityEstimationOnOff>>(combiconfig.size());
-      break;
-    }
-  }
 
-  auto configtemp = config;
-  for (size_t i = 1; i < combiconfig.size(); i++) {
-    configtemp.getGridConfig().levelVector_ = combiconfig[i].levels;
-    *models[i] = createNewModel(configtemp);
-    weights[i] = combiconfig[i].coef;
+  models = vector<unique_ptr<ModelFittingDensityEstimation>>(combiconfig.size());
+  weights = vector<double>(combiconfig.size());
+  auto configtemp = FitterConfigurationDensityEstimation(config);
+  for (size_t i = 0; i < combiconfig.size(); i++) {
+    configtemp.getGridConfig().levelVector_ = combiconfig.at(i).levels;
+    models.at(i) = createNewModel(configtemp);
+    weights.at(i) = combiconfig.at(i).coef;
   }
 }
 
 std::unique_ptr<ModelFittingDensityEstimation>
 ModelFittingDensityEstimationCombiGrid::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
-  switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
+  std::cout << "creating New Model";
+  switch (DensityEstimationType::Decomposition) {  //!!!
     case DensityEstimationType::CG: {
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
@@ -70,19 +65,11 @@ ModelFittingDensityEstimationCombiGrid::createNewModel(
 
 void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig config) { throw "not ready"; }
 
-void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& dataset) {
-  for (auto& model : models) {
-    model->fit(dataset);
-  }
-}
+void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& dataset) { throw "not ready"; }
 
-void ModelFittingDensityEstimationCombiGrid::fit(Dataset& dataset) {
-  for (auto& model : models) {
-    model->fit(dataset);
-  }
-}
+void ModelFittingDensityEstimationCombiGrid::fit(Dataset& dataset) { throw "not ready"; }
 
-bool ModelFittingDensityEstimationCombiGrid::refine() { throw "not ready"; }
+// bool ModelFittingDensityEstimationCombiGrid::refine() { throw "not ready"; }
 
 void ModelFittingDensityEstimationCombiGrid::reset() { throw "not ready"; }
 
@@ -99,13 +86,11 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
   throw "not ready";
 }
 
-void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& samples) {
-  for (auto& model : models) {
-    model->update(samples);
-  }
-}
+void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& samples) { throw "not ready"; }
 
 void ModelFittingDensityEstimationCombiGrid::update(Dataset& dataset) { throw "not ready"; }
+
+bool ModelFittingDensityEstimationCombiGrid::isRefinable() { return 0; }
 
 }  // namespace datadriven
 }  // namespace sgpp
