@@ -91,10 +91,11 @@ void ASMatrixBspline::refineSurplusAdaptive(size_t refinementsNum) {
   this->calculateCoefficients();
 }
 
-// ToDo (rehmemk) Parallelize this?
 double ASMatrixBspline::matrixEntryGauss(
     size_t i, size_t j, sgpp::datadriven::NakBsplineScalarProducts& scalarProducts) {
   double entry = 0.0;
+// ToDo (rehmemk) Does the parallelization work fine?
+#pragma omp parallel for reduction(+ : entry)
   for (size_t k = 0; k < coefficients.getSize(); k++) {
     for (size_t l = 0; l < coefficients.getSize(); l++) {
       entry +=

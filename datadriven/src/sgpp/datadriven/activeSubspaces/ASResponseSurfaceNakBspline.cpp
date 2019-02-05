@@ -287,8 +287,8 @@ double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t quadOrder) {
   double simplexVolume = simplexDecomposition(projectedCorners);
 
   double integral = 0.0;
-  // ToDo (rehmemk) local instances of grid, coefficients, gridType, degree for each thread?
-  // #pragma omp parallel for reduction(+ : integral)
+// ToDo (rehmemk) does this parallelization work fine?
+#pragma omp parallel for reduction(+ : integral)
   for (unsigned int i = 0; i < projectedCorners.cols(); i++) {
     // the iterative M-spline definition needs sorted input knots
     sgpp::base::DataVector xi = EigenToDataVector(projectedCorners.col(i));
