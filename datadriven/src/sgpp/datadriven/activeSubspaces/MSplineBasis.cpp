@@ -51,13 +51,13 @@ double MSplineBasis::xpowplus(double x, size_t n) {
     return 0.0;
 }
 
-double MSplineBasis::w(size_t v, Eigen::VectorXd xi) {
+double MSplineBasis::w(size_t v) {
   double res = 1.0;
   for (unsigned int i = 0; i < xi.size(); i++) {
     if (i != v) {
       // ToDo (rehmemk) diff can only be 0 if there are multiple knots. I should remove
       // duplicate knots in the projected corners
-      double diff = xi(v) - xi(i);
+      double diff = xi[v] - xi[i];
       if (abs(diff) > 1e-14) {
         res *= diff;
       }
@@ -66,13 +66,13 @@ double MSplineBasis::w(size_t v, Eigen::VectorXd xi) {
   return res;
 }
 
-double MSplineBasis::evalTruncated(double x, Eigen::VectorXd xi) {
+double MSplineBasis::evalTruncated(double x) {
   double res = 0.0;
   size_t n = xi.size() - 1;
   for (size_t v = 0; v < n + 1; v++) {
     //    std::cout << "v " << v << " x+ " << xpowplus(xi[v] - x, n - 1) << " w " << w(v, xi) <<
     //    "\n";
-    res += (static_cast<double>(n) * xpowplus(xi[v] - x, n - 1)) / w(v, xi);
+    res += (static_cast<double>(n) * xpowplus(xi[v] - x, n - 1)) / w(v);
   }
   return res;
 }

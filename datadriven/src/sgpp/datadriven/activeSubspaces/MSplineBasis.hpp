@@ -48,13 +48,13 @@ class MSplineBasis {
 
   double xpowplus(double x, size_t n);
 
-  double w(size_t v, Eigen::VectorXd xi);
+  double w(size_t v);
 
   /**
    * This is the original Schoenberg way to evaluate M-Splines https://doi.org/10.1007/BF02788653
    * It is numerically not as favourable as the iterative version and only here for testing.
    */
-  double evalTruncated(double x, Eigen::VectorXd xi);
+  double evalTruncated(double x);
 
   void setXi(sgpp::base::DataVector xi) { this->xi = xi; }
 

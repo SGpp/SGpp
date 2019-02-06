@@ -521,7 +521,7 @@ class sinXD():
         elif self.dim == 5:
             return 32 / (np.pi ** 5)  # for argument pi*sum(x)
         else:
-            print("activeSubspaceFunctions.py: not calculated")
+            print("activeSubspaceFunctions.py: integral not calculated")
             return 0.0
 
     def getDim(self):
@@ -534,7 +534,7 @@ class sinXD():
             eivec[1] = [1 / np.sqrt(2), 1 / np.sqrt(2)]
             return eivec
         else:
-            print("activeSubspaceFunctions.py: not calculated")
+            print("activeSubspaceFunctions.py: eivec not calculated")
             return 0
 
     def eval(self, xx, lN=0, uN=1):

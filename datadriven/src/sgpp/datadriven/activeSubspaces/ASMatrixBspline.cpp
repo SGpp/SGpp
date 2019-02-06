@@ -94,12 +94,21 @@ void ASMatrixBspline::refineSurplusAdaptive(size_t refinementsNum) {
 double ASMatrixBspline::matrixEntryGauss(
     size_t i, size_t j, sgpp::datadriven::NakBsplineScalarProducts& scalarProducts) {
   double entry = 0.0;
-// ToDo (rehmemk) Does the parallelization work fine?
-#pragma omp parallel for reduction(+ : entry)
-  for (size_t k = 0; k < coefficients.getSize(); k++) {
-    for (size_t l = 0; l < coefficients.getSize(); l++) {
-      entry +=
-          coefficients[k] * coefficients[l] * scalarProductDxbiDxbj(i, j, k, l, scalarProducts);
+  // ToDo (rehmemk) Does the parallelization work fine? If yes remove the scalarProducts and use
+  // only the innerScalarProducts
+  size_t numBasisFunctions = coefficients.getSize();
+#pragma omp parallel
+  {
+    //    std::cout << "ASM using" << omp_get_num_threads() << " threads\n";
+    size_t quadOrder = static_cast<size_t>(std::ceil(static_cast<double>(degree) + 1.0 / 2.0)) * 2;
+    sgpp::datadriven::NakBsplineScalarProducts innerScalarProducts(gridType, gridType, degree,
+                                                                   degree, quadOrder);
+#pragma omp for reduction(+ : entry) collapse(2)
+    for (size_t k = 0; k < numBasisFunctions; k++) {
+      for (size_t l = 0; l < numBasisFunctions; l++) {
+        entry += coefficients[k] * coefficients[l] *
+                 scalarProductDxbiDxbj(i, j, k, l, innerScalarProducts);
+      }
     }
   }
   return entry;
