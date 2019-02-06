@@ -4,10 +4,10 @@
 // sgpp.sparsegrids.org
 
 // to disable OpenMP multi-threading within Python
-//void omp_set_num_threads(int num_threads);
-//%init %{
-//    omp_set_num_threads(1);
-//%}
+void omp_set_num_threads(int num_threads);
+%init %{
+    omp_set_num_threads(1);
+%}
 
 // global variables for the support of SLE solver libaries (set at compile-time)
 const bool ARMADILLO_ENABLED;

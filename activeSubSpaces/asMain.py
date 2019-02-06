@@ -293,11 +293,12 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
 def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adaptive',
                 responseType='adaptive', integralType='Hist', numErrorPoints=10000,
                 numHistogramMCPoints=1000000, savePath=None, approxLevel=8,
-                approxDegree=3, numShadow1DPoints=0, numDataPoints=10000):
+                approxDegree=3, numShadow1DPoints=0, numDataPoints=10000, printFlag=1):
     print("\nnumGridPoints = {}".format(numResponse))
-    responseLevel = int(np.math.log(numResponse + 1, 2)) 
-    asmLevel = responseLevel
-    print("using level {} which has {} points for regular grids".format(responseLevel, 2 ** responseLevel - 1))
+    if responseType in ['dataR', 'datadrivenR']:
+        responseLevel = int(np.math.log(numResponse + 1, 2)) 
+        asmLevel = responseLevel
+        print("using level {} which has {} points for regular grids".format(responseLevel, 2 ** responseLevel - 1))
     print("numDataPoints = {}".format(numDataPoints))
     datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
     
@@ -307,8 +308,13 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     numRefine = 3
     initialLevel = 1
     
+    start = time.time()
     ASM, eival, eivec, validationValues, validationPoints = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
                                                                           numRefine, savePath, numDataPoints, model)
+    recognitionTime = time.time() - start; start = time.time()
+    if printFlag == 1:
+        print("recognition time:               {}".format(recognitionTime))
+    
     #     print(eival)
     #     print(eivec)
     print("first eigenvector {}".format(eivec[:, 0]))
@@ -332,6 +338,10 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         elif responseType == 'datadrivenR':
             responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel, responseLambda)
     numGridPoints = responseSurf.getCoefficients().getSize()
+
+    responseCreationTime = time.time() - start
+    if printFlag == 1:
+        print("response surface creation time: {}".format(responseCreationTime))
 
     bounds = responseSurf.getBounds() 
     print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
@@ -364,7 +374,12 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
 
     quadOrder = 7
+    start = time.time()
     integral, integralError = integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder, approxLevel, approxDegree, numHistogramMCPoints)
+    integrationTime = time.time() - start; 
+    if printFlag == 1:
+        print("integration time:               {}".format(integrationTime))
+        
 #     print("integral: {}\n".format(integral)),
     print("integral error: {}".format(integralError))
     
@@ -493,6 +508,7 @@ if __name__ == "__main__":
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--model', default='sin5Dexp0.1', type=str, help="define which test case should be executed")
     parser.add_argument('--method', default='QPHD', type=str, help="asSGpp, SGpp or one of the three Constantine (AS,OLS,QPHD)")
+    parser.add_argument('--numThreads', default=4, type=int, help="number of threads for omp parallelization")
     parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
     parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
     parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
@@ -512,6 +528,7 @@ if __name__ == "__main__":
     parser.add_argument('--maxDataPoints', default=100000, type=int, help="maximum number of points used in artificial data scenarios")
     parser.add_argument('--numDataSteps', default=1, type=int, help="number of steps in [mindataPoints, maxDataPoints] range")
     args = parser.parse_args()
+    pysgpp.omp_set_num_threads(args.numThreads)
 
     objFunc = asFunctions.getFunction(args.model)
     numDim = objFunc.getDim()
