@@ -56,6 +56,8 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    */
   void fit(DataMatrix& NewDataset);
 
+  bool refine();
+
   bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
   void update(Dataset& dataset);

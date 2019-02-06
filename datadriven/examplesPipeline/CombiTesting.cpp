@@ -17,7 +17,7 @@ using std::cout;
 using std::vector;
 using sgpp::datadriven::combiConfig;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   const std::string path = [argc, &argv]() {
     if (argc != 2) {
       std::cout << "No or bad path given, aborting\n";
@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
       return std::string{argv[1]};
     }
   }();
+  sgpp::datadriven::CombiConfigurator combi;
+  vector<sgpp::datadriven::combiConfig> combiconfig;
+  combi.getStandardCombi(combiconfig, 2, 5);
 
   const sgpp::datadriven::DataMiningConfigParser parser(path);
 
