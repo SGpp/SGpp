@@ -46,6 +46,19 @@ def getFunction(model, args=None):
     elif model == 'sin8D':
         return sinXD(8)
     
+    elif model == 'dampedSin2D':
+        return dampedSinXD(2)
+    elif model == 'dampedSin3D':
+        return dampedSinXD(3)
+    elif model == 'dampedSin4D':
+        return dampedSinXD(4)
+    elif model == 'dampedSin5D':
+        return dampedSinXD(5)
+    elif model == 'dampedSin6D':
+        return dampedSinXD(6)
+    elif model == 'dampedSin8D':
+        return dampedSinXD(8)
+    
     elif model == 'sin2Dexp1':
         return sin2DexpX(-1)
     elif model == 'sin2Dexp0.1':
@@ -156,7 +169,7 @@ class test():
         return 0
 
     def getDim(self):
-        return 2
+        return 8
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -170,7 +183,7 @@ class test():
         for i in range(self.getDim()):
             arg += x[:, i] 
                        
-        return (np.exp(x0 + x1)).reshape(numSamples, 1)
+        return (np.sin(np.pi * arg) / (np.pi * arg)).reshape(numSamples, 1)
 
     
 class exp1D():
@@ -566,6 +579,50 @@ class sinXD():
             df = np.hstack((df, dfdxi))
         return df
 
+
+class dampedSinXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sampedSin{}D".format(self.getDim())
+    
+    def getIntegral(self):
+        if self.dim == 2:
+            return -0.04193369444831444
+        elif self.dim == 3:
+            print("integral only accurate up to 1e-6")
+            return -0.0405178
+        else:
+            print("activeSubspaceFunctions.py: integral not calculated")
+            return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: eivec not calculated")
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i] 
+                       
+        return (np.sin(np.pi * arg + 1) / (np.pi * arg + 1)).reshape(numSamples, 1)
+    
 
 class sin2DexpX():
        
