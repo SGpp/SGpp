@@ -592,20 +592,34 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
   sgpp::base::DataVector functionValues(grid->getSize());
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
 
+  Eigen::MatrixXd P(grid->getDimension(), grid->getSize());
+
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
     Eigen::VectorXd p(static_cast<int>(gridStorage.getDimension()));
     p = DataVectorToEigen(gridStorage.getPointCoordinates(i));
 
-    // transformation in 1D case
-    if (W1.cols() == 1) {
-      p(0) = p(0) * (rightBound1D - leftBound1D) + leftBound1D;
-    }
+    P.col(i) = p;
+  }
 
-    // computes approximate solution "pseudo inverse style".
-    sgpp::base::DataVector pinv = EigenToDataVector(
-        W1.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(p));
+  // transformation in 1D case
+  if (W1.cols() == 1) {
+    P.row(0) *= (rightBound1D - leftBound1D);
+    P.row(0) += leftBound1D * Eigen::VectorXd::Ones(P.cols());
+  }
 
-    functionValues[i] = objectiveFunc->eval(pinv);
+  // computes least squares solution
+  // ToDo (rehmemk) Find fastest method for this.
+  // See these links for an overview of Eigens methods for least squares:
+  // https://eigen.tuxfamily.org/dox/group__LeastSquares.html
+  // https://eigen.tuxfamily.org/dox/group__DenseDecompositionBenchmark.html
+
+  //    sgpp::base::DataVector pinv = EigenToDataVector(
+  //        W1.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(p));
+
+  Eigen::MatrixXd Pinv = W1.transpose().bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(P);
+
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    functionValues[i] = objectiveFunc->eval(EigenToDataVector(Pinv.col(i)));
   }
 
   sgpp::optimization::sle_solver::Auto sleSolver;
