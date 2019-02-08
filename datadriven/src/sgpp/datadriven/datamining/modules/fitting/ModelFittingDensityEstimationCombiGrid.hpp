@@ -56,10 +56,6 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    */
   void fit(DataMatrix& NewDataset);
 
-  bool refine();
-
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
-
   void update(Dataset& dataset);
 
   /**
@@ -74,7 +70,24 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
 
   void evaluate(DataMatrix& samples, DataVector& results);
 
+  bool refine();
+
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+
   void reset() override;
+
+ protected:
+  /**
+   * Contains the component grids witch form the sparse grids
+   */
+  std::vector<std::unique_ptr<ModelFittingDensityEstimation>> components;
+
+  /**
+   * Contains all level vector and weights of the current component grid set
+   */
+  std::vector<combiConfig> componentConfigs;
+
+  bool isRefinable();
 
   /**
    * Creates a density estimation model that fits the model settings.
@@ -85,13 +98,6 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
   void addNewModel(combiConfig config);
-
- protected:
-  std::vector<std::unique_ptr<ModelFittingDensityEstimation>> models;
-
-  std::vector<double> weights;
-
-  bool isRefinable();
 };
 
 }  // namespace datadriven
