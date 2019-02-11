@@ -58,7 +58,7 @@ double MSplineBasis::w(size_t v) {
       // ToDo (rehmemk) diff can only be 0 if there are multiple knots. I should remove
       // duplicate knots in the projected corners
       double diff = xi[v] - xi[i];
-      if (abs(diff) > 1e-14) {
+      if (fabs(diff) > 1e-14) {
         res *= diff;
       }
     }

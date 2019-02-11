@@ -584,7 +584,7 @@ class sinXD():
 
 class dampedSinXD():
        
-    def __init__(self, dim, alpha=1.5):
+    def __init__(self, dim, alpha=0.75):
         self.dim = dim
         self.alpha = alpha
        
@@ -597,14 +597,24 @@ class dampedSinXD():
         return "sampedSin{}D".format(self.getDim())
     
     def getIntegral(self):
-        if self.dim == 2:
-            return 0.255662522241
-        elif self.dim == 4:
-            return -0.106323443947
-        elif self.dim == 6:
-            return -0.0884461263413
-        elif self.dim == 8:
-            return 0.0311044599111
+        if self.alpha == 1.5:
+            if self.dim == 2:
+                return 0.255662522241
+            elif self.dim == 4:
+                return -0.106323443947
+            elif self.dim == 6:
+                return -0.0884461263413
+            elif self.dim == 8:
+                return 0.0311044599111
+        elif self.alpha == 0.75:
+            if self.dim == 2:
+                return 0.558608603736
+            elif self.dim == 4:
+                return 0.247799567797
+            elif self.dim == 6:
+                return -0.00450247798127
+            elif self.dim == 8:
+                return -0.145521330847
         else:
             print("activeSubspaceFunctions.py: integral not calculated")
             return 0.0

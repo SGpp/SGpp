@@ -564,7 +564,7 @@ void ASResponseSurfaceNakBspline::histogramIntervalQuadrature(
     points[i] =
         leftBound1D + (rightBound1D - leftBound1D) * quadGridStorage.getPointCoordinate(i, 0);
   }
-  double delta = abs((rightBound1D - leftBound1D) / std::pow(2, level));
+  double delta = fabs((rightBound1D - leftBound1D) / std::pow(2, level));
   sgpp::base::DataVector weights =
       uniformIntervalHistogram(numHistogramMCPoints, points, delta, pointStrategy);
   sgpp::base::DataVector numVec(points.getSize(),
