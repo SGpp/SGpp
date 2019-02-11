@@ -47,7 +47,8 @@ int CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, si
     vec.push_back(pair);
     vec.at(j).coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
     for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
-      vec.at(j).levels.push_back(PyLong_AsSize_t(PyList_GetItem(PyList_GetItem(pValue, j), c)));
+      // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
+      vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
     }
   }
 
