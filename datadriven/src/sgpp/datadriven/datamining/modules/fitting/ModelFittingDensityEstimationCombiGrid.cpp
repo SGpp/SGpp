@@ -40,7 +40,6 @@ ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
        << config.getGridConfig().level_ << " \n";
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-  this->config->getRefinementConfig().numRefinements_ = 0;
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
 }
 
@@ -51,44 +50,42 @@ void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
-  cout << "voidi ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) ";
+  cout << "void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) ";
 
-  cout << "BREAK 1";
   CombiConfigurator combiconfigurator;
-  cout << "BREAK 2";
-  // FitterConfigurationDensityEstimation configtemp{};
-  cout << "BREAK 3";
-  // configtemp.setupDefaults();
-  cout << "BREAK 4";
-  // configtemp.getGridConfig() = config->getGridConfig();
-  cout << "BREAK 5";
-  // auto gridConfig = config->getGridConfig();
-
   combiconfigurator.getStandardCombi(componentConfigs, newDataset.getNcols(),
                                      config->getGridConfig().level_);
-  cout << "BREAK 6";
+  cout << "Printing the componentConfig:\n";
+  for (auto v : componentConfigs) {
+    cout << "[";
+    for (auto b : v.levels) {
+      cout << b << " ";
+    }
+    cout << "] " << v.coef << "\n";
+  }
 
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
-  cout << "BREAK 7";
-
-  cout << "BREAK 8";
 
   for (size_t i = 0; i < componentConfigs.size(); i++) {
     FitterConfigurationDensityEstimation newFitterConfig{};
     newFitterConfig.setupDefaults();
     newFitterConfig.getDensityEstimationConfig().type_ = config->getDensityEstimationConfig().type_;
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
-    newFitterConfig.getGridConfig().levelVector_ = componentConfigs.at(i).levels;
+    newFitterConfig.getGridConfig().levelVector_.clear();
+    for (auto v : componentConfigs.at(i).levels) {
+      cout << v << "\n";
+      newFitterConfig.getGridConfig().levelVector_.push_back(v);
+    }
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
 
     components.at(i) = createNewModel(newFitterConfig);
     cout << "Model created\n";
   }
-  cout << "BREAK 9";
+  cout << "Fitting the component grids to the Dataset: \n";
   for (auto& model : components) {
     model->fit(newDataset);
   }
-  cout << "BREAK 10";
+  cout << "Done fitting the component grids. \n";
 }
 
 void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
@@ -135,6 +132,8 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
 }
 
 bool ModelFittingDensityEstimationCombiGrid::refine() {
+  cout << "refine() refinementsPerfomed: " << refinementsPerformed
+       << " numRefinements_: " << config->getRefinementConfig().numRefinements_ << "\n";
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
     throw application_exception("ModelFittingDensityEstimationCombiGrid::refine(): not ready jet");
   }
