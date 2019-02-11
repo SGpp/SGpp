@@ -29,12 +29,20 @@ int main(int argc, char** argv) {
   }();
   sgpp::datadriven::CombiConfigurator combi;
   vector<sgpp::datadriven::combiConfig> combiconfig;
-  combi.getStandardCombi(combiconfig, 2, 5);
-
   const sgpp::datadriven::DataMiningConfigParser parser(path);
-
   sgpp::datadriven::FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
+  combi.getStandardCombi(combiconfig, config.getGridConfig().dim_, config.getGridConfig().level_);
+
+  cout << "Printing CombiConfig: \n";
+  for (auto v : combiconfig) {
+    cout << v.coef << "[";
+    for (auto b : v.levels) {
+      cout << b << " ";
+    }
+    cout << "]\n";
+  }
+
   auto fittingbase = new sgpp::datadriven::ModelFittingDensityEstimationCombiGrid(config);
   cout << "ModelFittingDensityEstimationCombiGrid created!" << std::endl;
   sgpp::base::DataMatrix data;
