@@ -613,8 +613,8 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
   // https://eigen.tuxfamily.org/dox/group__LeastSquares.html
   // https://eigen.tuxfamily.org/dox/group__DenseDecompositionBenchmark.html
 
-  //    sgpp::base::DataVector pinv = EigenToDataVector(
-  //        W1.transpose().jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(p));
+  //    Eigen::MatrixXd Pinv = W1.transpose().jacobiSvd(Eigen::ComputeThinU |
+  //    Eigen::ComputeThinV).solve(P));
 
   Eigen::MatrixXd Pinv = W1.transpose().bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(P);
 

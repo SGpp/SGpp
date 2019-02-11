@@ -216,7 +216,7 @@ def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPo
     vol = np.prod(ub - lb)
     integral = sparseResponseSurf.getIntegral() * vol
     integralError = abs(integral - objFunc.getIntegral())
-    print("sparse integral: {}".format(integral))
+    # print("sparse integral: {}".format(integral))
     print("sparse integral error {}\n".format(integralError))
     numGridPoints = sparseResponseSurf.getCoefficients().getSize()
     print('actual num grid points = {}'.format(numGridPoints))
@@ -240,7 +240,7 @@ def integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder=7, a
     return integral, integralError
 
 
-def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine, savePath, numDataPoints, model):
+def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine, savePath, numDataPoints, model, printFlag):
     datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
     validationValues = []
     validationPoints = []
@@ -248,7 +248,8 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
         ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
         if asmType == 'adaptive':
             ASM.buildAdaptiveInterpolant(numASM, initialLevel, numRefine)
-        elif asmType == 'regualar':
+        elif asmType == 'regular':
+            print("numASM: {}".format(numASM))
             ASM.buildRegularInterpolant(numASM)
     elif asmType in datatypes:
         trainingPoints, trainingValues, validationPoints, validationValues = getData(savePath, numDataPoints, f, 'asSGpp', model)
@@ -275,6 +276,10 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
     eival = reverseDataVectorToNdArray(eivalSGpp);   
     eivec = reverseDataMatrixToNdArray(eivecSGpp)
     
+    if printFlag == 1 and asmType in ["adaptive", "regular"]:
+        print("error in ASM interpolant: {}".format(ASM.l2InterpolationError(10000)))
+        print("number of ASM interpolation points: {}".format(ASM.getCoefficients().getSize()))
+    
     return ASM, eival, eivec, validationValues, validationPoints
 
 
@@ -293,11 +298,13 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
 def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adaptive',
                 responseType='adaptive', integralType='Hist', numErrorPoints=10000,
                 numHistogramMCPoints=1000000, savePath=None, approxLevel=8,
-                approxDegree=3, numShadow1DPoints=0, numDataPoints=10000, printFlag=1):
+                approxDegree=3, numShadow1DPoints=0, numDataPoints=10000, printFlag=1,
+                numRefine=10, initialLevel=2):
     print("\nnumGridPoints = {}".format(numResponse))
-    if responseType in ['dataR', 'datadrivenR']:
+    if responseType in ['regular', 'dataR', 'datadrivenR']:
         responseLevel = int(np.math.log(numResponse + 1, 2)) 
         asmLevel = responseLevel
+        numASM = asmLevel  # wrapper
         print("using level {} which has {} points for regular grids".format(responseLevel, 2 ** responseLevel - 1))
     print("numDataPoints = {}".format(numDataPoints))
     datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
@@ -305,12 +312,10 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
-    numRefine = 3
-    initialLevel = 1
     
     start = time.time()
     ASM, eival, eivec, validationValues, validationPoints = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
-                                                                          numRefine, savePath, numDataPoints, model)
+                                                                          numRefine, savePath, numDataPoints, model, printFlag)
     recognitionTime = time.time() - start; start = time.time()
     if printFlag == 1:
         print("recognition time:               {}".format(recognitionTime))
@@ -326,7 +331,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     if responseType == 'adaptive':
         responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
     elif responseType == 'regular':
-        responseSurf.createRegularReducedSurfaceWithPseudoInverse(numResponse, f)
+        responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, f)
     elif responseType in ['data', 'datadriven', 'dataR', 'datadrivenR']:
         asmPoints = ASM.getEvaluationPoints()
         asmValues = ASM.getFunctionValues()
@@ -491,10 +496,10 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
 #     plt.show()
         
     # 1 and 2 dim shadow plots
-#     ss.partition(1)
-#     y = np.dot(X, ss.W1)
-#     ac.utils.plotters.sufficient_summary(y, f[:, 0])
-#     plt.show()
+    ss.partition(1)
+    y = np.dot(X, ss.W1)
+    ac.utils.plotters.sufficient_summary(y, f[:, 0])
+    plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))
@@ -514,6 +519,8 @@ if __name__ == "__main__":
     parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
     parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
     parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
+    parser.add_argument('--numRefine', default=10, type=int, help="max number of grid points added in refinement steps for sparse grids")
+    parser.add_argument('--initialLevel', default=2, type=int, help="initial regular level for adaptive sparse grids")
     # only relevant for asSGpp and SGpp
     parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help="SGpp grid type")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
@@ -630,7 +637,8 @@ if __name__ == "__main__":
                        numErrorPoints=numErrorPoints, savePath=path,
                        numHistogramMCPoints=numHistogramMCPoints,
                        approxLevel=args.appSplineLevel, approxDegree=args.appSplineDegree,
-                        numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData)
+                        numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData,
+                        numRefine=args.numRefine, initialLevel=args.initialLevel)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
@@ -674,7 +682,8 @@ if __name__ == "__main__":
                 'appSplineLevel': args.appSplineLevel, 'appSplineDegree': args.appSplineDegree,
                 'numShadow1DPoints':args.numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
                 'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
-                'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict}
+                'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict,
+                'numRefine':args.numRefine, 'initialLevel':args.initialLevel}
         with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
             pickle.dump(summary, fp)
 

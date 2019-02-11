@@ -43,6 +43,8 @@ def getFunction(model, args=None):
         return sinXD(5)
     elif model == 'sin6D':
         return sinXD(6)
+    elif model == 'sin7D':
+        return sinXD(7)
     elif model == 'sin8D':
         return sinXD(8)
     
@@ -497,9 +499,11 @@ class constXD():
 
 
 class sinXD():
-       
-    def __init__(self, dim):
+
+    # Stefan: Choose the parameter alpha which results in the best results... ;)       
+    def __init__(self, dim, alpha=10):
         self.dim = dim
+        self.alpha = alpha
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -531,6 +535,8 @@ class sinXD():
         # for argument = pi*sum(x)
         if self.dim == 2:
             return 0
+        elif self.dim == 4:
+            return 0
         elif self.dim == 5:
             return 32 / (np.pi ** 5)  # for argument pi*sum(x)
         else:
@@ -541,14 +547,10 @@ class sinXD():
         return self.dim
 
     def getEigenvec(self):
-        if self.dim == 2:
-            eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
-            eivec[0] = [1.0 / np.sqrt(2), 1.0 / np.sqrt(2)]
-            eivec[1] = [1 / np.sqrt(2), 1 / np.sqrt(2)]
-            return eivec
-        else:
-            print("activeSubspaceFunctions.py: eivec not calculated")
-            return 0
+        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
+        for i in range(self.getDim()):
+            eivec[i, 0] = [1.0 / np.sqrt(self.getDim())]
+        return eivec
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -561,7 +563,7 @@ class sinXD():
         for i in range(self.getDim()):
             arg += x[:, i] 
                        
-        return (np.sin(np.pi * arg)).reshape(numSamples, 1)
+        return (np.sin(self.alpha / self.dim * arg)).reshape(numSamples, 1)
     
     def eval_grad(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -582,8 +584,9 @@ class sinXD():
 
 class dampedSinXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, alpha=1.5):
         self.dim = dim
+        self.alpha = alpha
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -595,10 +598,13 @@ class dampedSinXD():
     
     def getIntegral(self):
         if self.dim == 2:
-            return -0.04193369444831444
-        elif self.dim == 3:
-            print("integral only accurate up to 1e-6")
-            return -0.0405178
+            return 0.255662522241
+        elif self.dim == 4:
+            return -0.106323443947
+        elif self.dim == 6:
+            return -0.0884461263413
+        elif self.dim == 8:
+            return 0.0311044599111
         else:
             print("activeSubspaceFunctions.py: integral not calculated")
             return 0.0
@@ -620,8 +626,8 @@ class dampedSinXD():
         arg = 0
         for i in range(self.getDim()):
             arg += x[:, i] 
-                       
-        return (np.sin(np.pi * arg + 1) / (np.pi * arg + 1)).reshape(numSamples, 1)
+        arg = self.alpha * arg + 1    
+        return (np.sin(arg) / arg).reshape(numSamples, 1)
     
 
 class sin2DexpX():

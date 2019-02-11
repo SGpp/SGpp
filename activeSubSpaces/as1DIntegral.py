@@ -67,7 +67,7 @@ def func1D(x, dim, alpha=1.5):
     return np.sin(t) / t
 
 
-dim = 4
+dim = 8
 W1 = np.ones(dim) / np.sqrt(dim)  # function dependent!!!
 perm = range(dim)
 permutations = list(itertools.permutations(perm))
@@ -81,6 +81,8 @@ for i in range(len(permutations)):
  
 leftBound = np.min(projectedCorners)
 rightBound = np.max(projectedCorners)
+
+print("bounds: [{}, {}]".format(leftBound, rightBound))
  
  
 def Vol(x):  
@@ -90,26 +92,23 @@ def Vol(x):
         xi.sort()
         vol += MsplineWiki(len(xi) - 1, 0, x, xi)
     return vol
- 
- 
-# int_0^1  sin(x+y) = 0.773645
-# int_0^1  sin(x+y+z) = 0.879355
-# int_0^1  sin(x+y+z+w) = 0.7686180941751
-# int_0^1  sin(x+y+z+w+v) = 0.485064781411046
+
+
 quadArg = lambda  x: func1D(x, dim) * Vol(x)
+
 integral = scipy.integrate.quad(quadArg, leftBound, rightBound)
 print(integral[0] / scipy.misc.factorial(dim))
 
-X = np.linspace(leftBound, rightBound, 100)
-M = np.zeros(len(X))
-F = np.zeros(len(X))
-FV = np.zeros(len(X))
-for i in range(len(X)):
-#     M[i] = Vol(X[i]) 
-    F[i] = func1D(X[i], dim)
-#     FV[i] = func1D(X[i], dim) * Vol(X[i])
-# plt.plot(X, M, 'b')
-plt.plot(X, F, 'g')
-# plt.plot(X, FV, 'yellow')
-plt.show()
+# X = np.linspace(leftBound, rightBound, 100)
+# M = np.zeros(len(X))
+# F = np.zeros(len(X))
+# FV = np.zeros(len(X))
+# for i in range(len(X)):
+# #     M[i] = Vol(X[i]) 
+#     F[i] = func1D(X[i], dim)
+# #     FV[i] = func1D(X[i], dim) * Vol(X[i])
+# # plt.plot(X, M, 'b')
+# plt.plot(X, F, 'g')
+# # plt.plot(X, FV, 'yellow')
+# plt.show()
 

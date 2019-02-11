@@ -64,7 +64,7 @@ class ASMatrixBsplineAnalytic : public ASMatrixBspline {
    *
    * @return l2 error
    */
-  double l2InterpolationError(size_t numMCPoints = 1000);
+  double l2InterpolationError(size_t numMCPoints = 10000);
 
   /**
    * calculates the l2 error of the interpolants gradient
