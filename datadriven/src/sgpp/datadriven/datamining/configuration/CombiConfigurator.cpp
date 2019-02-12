@@ -75,8 +75,35 @@ void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, s
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
   return;
-
   // throw base::tool_exception("To make this work, compile with USE_PYTHON_EMBEDDING=1");
+}
+
+bool CombiConfigurator::refineBlock(vector<combiConfig> &vec, size_t index) { return true; }
+
+void CombiConfigurator::test(vector<combiConfig> &vec) {
+  PyObject *pArgs, *pValue, *pTestFunc;
+  pArgs = PyTuple_New(0);
+  pTestFunc = PyObject_GetAttrString(pModule, "newtestpart1");
+  pValue = PyObject_CallObject(pTestFunc, pArgs);
+
+  pArgs = PyTuple_New(1);
+  PyTuple_SetItem(pArgs, 0, pValue);
+  pTestFunc = PyObject_GetAttrString(pModule, "newtestpart2");
+  pValue = PyObject_CallObject(pTestFunc, pArgs);
+
+  for (int j = 0; j < PyList_Size(pValue); j++) {
+    combiConfig pair;
+    pair.levels = std::vector<size_t>();
+    pair.coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
+    vec.push_back(pair);
+    for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
+      // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
+      vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
+    }
+  }
+  Py_DECREF(pTestFunc);
+  Py_DECREF(pArgs);
+  Py_DECREF(pValue);
 }
 
 } /* namespace datadriven */
