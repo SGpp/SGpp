@@ -27,12 +27,14 @@ int main(int argc, char** argv) {
       return std::string{argv[1]};
     }
   }();
-  sgpp::datadriven::CombiConfigurator combi;
+
   vector<sgpp::datadriven::combiConfig> combiconfig;
   const sgpp::datadriven::DataMiningConfigParser parser(path);
   sgpp::datadriven::FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  combi.getStandardCombi(combiconfig, config.getGridConfig().dim_, config.getGridConfig().level_);
+  sgpp::datadriven::CombiConfigurator combiconfigurator;
+  combiconfigurator.getStandardCombi(combiconfig, config.getGridConfig().dim_,
+                                     config.getGridConfig().level_);
 
   cout << "Printing CombiConfig: \n";
   for (auto v : combiconfig) {
