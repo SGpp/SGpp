@@ -8,6 +8,7 @@
  *  Created on: Jan 29, 2019
  *      Author: nico
  */
+
 #include <iostream>
 #include <sgpp/base/exception/tool_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
@@ -17,24 +18,44 @@ using std::cout;
 namespace sgpp {
 namespace datadriven {
 
-int CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, size_t level) {
-  PyObject *pName, *pModule, *pFunc;
-  PyObject *pArgs, *pValue;
+CombiConfigurator::CombiConfigurator() { Initialize(); }
 
+void CombiConfigurator::Initialize() {
+  if (initialized) {
+    return;
+  }
+  initialized = true;
   Py_Initialize();
   PyRun_SimpleString("import sys");
   PyRun_SimpleString("sys.path.append(\"../spatially-adaptive-combi\")");
 
   pName = PyUnicode_DecodeFSDefault("SGDEAdapter");
   pModule = PyImport_Import(pName);
-  Py_DECREF(pName);
 
   pFunc = PyObject_GetAttrString(pModule, "getstandardcombi");
+  return;
+}
+
+void CombiConfigurator::Finalize() {
+  if (!initialized) {
+    return;
+  }
+  initialized = false;
+  Py_DECREF(pName);
+  Py_DECREF(pModule);
+  Py_XDECREF(pFunc);
+  cout << "Calling Py_Finalize: \n";
+  Py_FinalizeEx();
+  cout << "Py_Finalize done \n";
+  return;
+}
+
+void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, size_t level) {
+  PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
 
   pValue = PyLong_FromLong(dim);
   PyTuple_SetItem(pArgs, 0, pValue);
-
   pValue = PyLong_FromLong(level);
   PyTuple_SetItem(pArgs, 1, pValue);
 
@@ -42,24 +63,18 @@ int CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, si
 
   for (int j = 0; j < PyList_Size(pValue); j++) {
     combiConfig pair;
-    pair.coef = 0.0;
     pair.levels = std::vector<size_t>();
+    pair.coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
     vec.push_back(pair);
-    vec.at(j).coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
     for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
       // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
       vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
     }
   }
 
-  Py_DECREF(pModule);
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
-  Py_XDECREF(pFunc);
-  cout << "Calling Py_Finalize: \n";
-  Py_FinalizeEx();
-  cout << "Py_Finalize done \n";
-  return 0;
+  return;
 
   // throw base::tool_exception("To make this work, compile with USE_PYTHON_EMBEDDING=1");
 }

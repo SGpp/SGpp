@@ -90,7 +90,7 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
 
 void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
   cout << "void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset)\n";
-  if (components.size() == 0) {
+  if (components.empty()) {
     fit(newDataset);
   }
   dataset = &newDataset;
@@ -101,12 +101,15 @@ void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
 
 void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
   cout << "void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset)\n";
-  if (components.size() == 0) {
+  if (components.empty()) {
+    cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
   }
+  cout << "updating components..\n";
   for (auto& model : components) {
     model->update(newDataset);
   }
+  cout << "done\n";
 }
 
 double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample) {

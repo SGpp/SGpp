@@ -8,12 +8,12 @@
  *  Created on: Jan 29, 2019
  *      Author: nico
  */
+#pragma once
 
 #include <python3.7/Python.h>
 #include <iostream>
 #include <vector>
 
-#pragma once
 namespace sgpp {
 namespace datadriven {
 
@@ -26,7 +26,7 @@ struct combiConfig {
 
 class CombiConfigurator {
  public:
-  CombiConfigurator() = default;
+  CombiConfigurator();
 
   /**
    * This returns the set of level vectors with the corresponding coefficients
@@ -36,7 +36,15 @@ class CombiConfigurator {
    * @param l level of the sparse grid
    * @return vector of combiConfig
    */
-  int getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
+
+  void getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
+
+ private:
+  void Initialize();
+  void Finalize();
+
+  inline static PyObject *pName, *pModule, *pFunc;
+  inline static bool initialized = false;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
