@@ -31,13 +31,23 @@ class CombiConfigurator {
   /**
    * This returns the set of level vectors with the corresponding coefficients
    * for the standard combination technique
-   * @param vec reference where to store the combiConfig
+   * @param vec reference where to store the combiConfigSet
    * @oaram d dimension of the sparse grid
    * @param l level of the sparse grid
    * @return vector of combiConfig
    */
 
   void getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
+
+  /**
+   * @param vec reference where to store the combiConfigSet
+   * @param index to the block that needs to be refined
+   * @return new vector of combiConfig
+   * @return true if the block could be refined
+   */
+  bool refineBlock(vector<combiConfig> &vec, size_t index);
+
+  void test(vector<combiConfig> &vec);
 
  private:
   void Initialize();

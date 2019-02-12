@@ -18,23 +18,10 @@ using std::vector;
 using sgpp::datadriven::combiConfig;
 
 int main(int argc, char** argv) {
-  const std::string path = [argc, &argv]() {
-    if (argc != 2) {
-      std::cout << "No or bad path given, aborting\n";
-      exit(1);
-      return std::string{};
-    } else {
-      return std::string{argv[1]};
-    }
-  }();
-
+  cout << "Standard combi for dim = 3, level = 3\n";
   vector<sgpp::datadriven::combiConfig> combiconfig;
-  const sgpp::datadriven::DataMiningConfigParser parser(path);
-  sgpp::datadriven::FitterConfigurationDensityEstimation config{};
-  config.readParams(parser);
   sgpp::datadriven::CombiConfigurator combiconfigurator;
-  combiconfigurator.getStandardCombi(combiconfig, config.getGridConfig().dim_,
-                                     config.getGridConfig().level_);
+  combiconfigurator.getStandardCombi(combiconfig, 3, 3);
 
   cout << "Printing CombiConfig: \n";
   for (auto v : combiconfig) {
@@ -45,9 +32,16 @@ int main(int argc, char** argv) {
     cout << "]\n";
   }
 
-  auto fittingbase = new sgpp::datadriven::ModelFittingDensityEstimationCombiGrid(config);
-  cout << "ModelFittingDensityEstimationCombiGrid created!" << std::endl;
-  sgpp::base::DataMatrix data;
-  fittingbase->fit(data);
+  combiconfig.clear();
+  sgpp::datadriven::CombiConfigurator configurator;
+  configurator.test(combiconfig);
+  cout << "Printing CombiConfig: \n";
+  for (auto v : combiconfig) {
+    cout << v.coef << "[";
+    for (auto b : v.levels) {
+      cout << b << " ";
+    }
+    cout << "]\n";
+  }
   return 0;
 }
