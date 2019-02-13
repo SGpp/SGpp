@@ -87,6 +87,11 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    */
   std::vector<combiConfig> componentConfigs;
 
+  /**
+   * Delivers the initial level vectors and weighs and manages refinements
+   */
+  CombiConfigurator configurator;
+
   bool isRefinable();
 
   /**

@@ -19,6 +19,24 @@ def newtestpart2(schema):
         newCombi.append(a)
     return newCombi
 
+def initadaptivescheme(dim, level):
+    print("Space-SGDEAdapter: initadaptivscheme")
+    scheme = CombiScheme(dim)
+    scheme.init_adaptive_combi_scheme(level, 1)
+    return scheme
+
+def getcombischeme(scheme):
+    print("Space-SGDEAdapter: getcombischeme")
+    oldCombi =  scheme.getCombiScheme(1,1,1)
+    newCombi = []
+    for x in oldCombi:
+        a = [x[1]]
+        a.extend(x[0])
+        newCombi.append(a)
+    return newCombi
+
+
+
 def getstandardcombi(dim, b):
     print("Space-SGDEAdapter: getstandardcombi")
     combi = CombiScheme(dim) 
@@ -30,5 +48,6 @@ def getstandardcombi(dim, b):
         newCombi.append(a)
     return newCombi
 
-def refineBlock(activeIndexSet):
+def refineBlock(currentScheme):
+    
     print("Space-SGDEAdapter: refineBlock")

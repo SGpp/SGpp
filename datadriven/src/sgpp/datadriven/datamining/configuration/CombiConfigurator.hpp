@@ -28,6 +28,10 @@ class CombiConfigurator {
  public:
   CombiConfigurator();
 
+  void initAdaptiveScheme(size_t dim, size_t level);
+
+  void getCombiScheme(vector<combiConfig> &vec);
+
   /**
    * This returns the set of level vectors with the corresponding coefficients
    * for the standard combination technique
@@ -36,7 +40,6 @@ class CombiConfigurator {
    * @param l level of the sparse grid
    * @return vector of combiConfig
    */
-
   void getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
 
   /**
@@ -50,10 +53,12 @@ class CombiConfigurator {
   void test(vector<combiConfig> &vec);
 
  private:
-  void Initialize();
-  void Finalize();
+  void InitializePython();
+  void FinalizePython();
 
-  inline static PyObject *pName, *pModule, *pFunc;
+  PyObject *combischeme;
+
+  inline static PyObject *pModule;
   inline static bool initialized = false;
 };
 } /* namespace datadriven */

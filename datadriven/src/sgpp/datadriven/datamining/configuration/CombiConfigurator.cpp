@@ -18,42 +18,53 @@ using std::cout;
 namespace sgpp {
 namespace datadriven {
 
-CombiConfigurator::CombiConfigurator() { Initialize(); }
+CombiConfigurator::CombiConfigurator() { InitializePython(); }
 
-void CombiConfigurator::Initialize() {
-  if (initialized) {
-    return;
-  }
-  initialized = true;
-  Py_Initialize();
-  PyRun_SimpleString("import sys");
-  PyRun_SimpleString("sys.path.append(\"../spatially-adaptive-combi\")");
+void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "initadaptivescheme");
+  PyObject *pArgs, *pValue;
+  pArgs = PyTuple_New(2);
+  pValue = PyLong_FromLong(dim);
+  PyTuple_SetItem(pArgs, 0, pValue);
+  pValue = PyLong_FromLong(level);
+  PyTuple_SetItem(pArgs, 1, pValue);
 
-  pName = PyUnicode_DecodeFSDefault("SGDEAdapter");
-  pModule = PyImport_Import(pName);
+  combischeme = PyObject_CallObject(pFunc, pArgs);
 
-  pFunc = PyObject_GetAttrString(pModule, "getstandardcombi");
-  return;
+  Py_DECREF(pFunc);
+  Py_DECREF(pArgs);
+  Py_DECREF(pValue);
 }
 
-void CombiConfigurator::Finalize() {
-  if (!initialized) {
-    return;
+void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "getcombischeme");
+  PyObject *pArgs, *pValue;
+  pArgs = PyTuple_New(1);
+  PyTuple_SetItem(pArgs, 0, combischeme);
+
+  pValue = PyObject_CallObject(pFunc, pArgs);
+
+  for (int j = 0; j < PyList_Size(pValue); j++) {
+    combiConfig pair;
+    pair.levels = std::vector<size_t>();
+    pair.coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
+    vec.push_back(pair);
+    for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
+      // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
+      vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
+    }
   }
-  initialized = false;
-  Py_DECREF(pName);
-  Py_DECREF(pModule);
-  Py_XDECREF(pFunc);
-  cout << "Calling Py_Finalize: \n";
-  Py_FinalizeEx();
-  cout << "Py_Finalize done \n";
+
+  Py_DECREF(pFunc);
+  Py_DECREF(pArgs);
+  Py_DECREF(pValue);
   return;
 }
 
 void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, size_t level) {
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "getstandardcombi");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
-
   pValue = PyLong_FromLong(dim);
   PyTuple_SetItem(pArgs, 0, pValue);
   pValue = PyLong_FromLong(level);
@@ -71,7 +82,7 @@ void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, s
       vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
     }
   }
-
+  Py_DECREF(pFunc);
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
   return;
@@ -81,15 +92,15 @@ void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, s
 bool CombiConfigurator::refineBlock(vector<combiConfig> &vec, size_t index) { return true; }
 
 void CombiConfigurator::test(vector<combiConfig> &vec) {
-  PyObject *pArgs, *pValue, *pTestFunc;
+  PyObject *pArgs, *pValue, *pFunc;
   pArgs = PyTuple_New(0);
-  pTestFunc = PyObject_GetAttrString(pModule, "newtestpart1");
-  pValue = PyObject_CallObject(pTestFunc, pArgs);
+  pFunc = PyObject_GetAttrString(pModule, "newtestpart1");
+  pValue = PyObject_CallObject(pFunc, pArgs);
 
   pArgs = PyTuple_New(1);
   PyTuple_SetItem(pArgs, 0, pValue);
-  pTestFunc = PyObject_GetAttrString(pModule, "newtestpart2");
-  pValue = PyObject_CallObject(pTestFunc, pArgs);
+  pFunc = PyObject_GetAttrString(pModule, "newtestpart2");
+  pValue = PyObject_CallObject(pFunc, pArgs);
 
   for (int j = 0; j < PyList_Size(pValue); j++) {
     combiConfig pair;
@@ -101,9 +112,37 @@ void CombiConfigurator::test(vector<combiConfig> &vec) {
       vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
     }
   }
-  Py_DECREF(pTestFunc);
+  Py_DECREF(pFunc);
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
+}
+
+void CombiConfigurator::InitializePython() {
+  if (initialized) {
+    return;
+  }
+  initialized = true;
+  Py_Initialize();
+  PyRun_SimpleString("import sys");
+  PyRun_SimpleString("sys.path.append(\"../spatially-adaptive-combi\")");
+
+  PyObject *pName;
+  pName = PyUnicode_DecodeFSDefault("SGDEAdapter");
+  pModule = PyImport_Import(pName);
+  Py_DECREF(pName);
+  return;
+}
+
+void CombiConfigurator::FinalizePython() {
+  if (!initialized) {
+    return;
+  }
+  initialized = false;
+  Py_DECREF(pModule);
+  cout << "Calling Py_Finalize: \n";
+  Py_FinalizeEx();
+  cout << "Py_Finalize done \n";
+  return;
 }
 
 } /* namespace datadriven */
