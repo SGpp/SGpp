@@ -44,17 +44,15 @@ ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
 }
 
 void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset) {
-  cout << "void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset\n)";
   dataset = &newDataset;
   fit(newDataset.getData());
 }
 
 void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
-  cout << "void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) ";
+  configurator = CombiConfigurator();
+  configurator.getStandardCombi(componentConfigs, newDataset.getNcols(),
+                                config->getGridConfig().level_);
 
-  CombiConfigurator combiconfigurator;
-  combiconfigurator.getStandardCombi(componentConfigs, newDataset.getNcols(),
-                                     config->getGridConfig().level_);
   cout << "Printing the componentConfig:\n";
   for (auto v : componentConfigs) {
     cout << "[";
@@ -89,7 +87,6 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
-  cout << "void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset)\n";
   if (components.empty()) {
     fit(newDataset);
   }
@@ -100,7 +97,6 @@ void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
-  cout << "void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset)\n";
   if (components.empty()) {
     cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
@@ -113,7 +109,6 @@ void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
 }
 
 double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample) {
-  cout << "double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample)\n";
   double result = 0;
   for (size_t i = 0; i < components.size(); i++) {
     result += components.at(i)->evaluate(sample) * componentConfigs.at(i).coef;
@@ -122,8 +117,6 @@ double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample
 }
 
 void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataVector& results) {
-  cout << "void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataVector& "
-          "results)\n";
   auto temp = sgpp::base::DataVector(results.size(), 0);
   results.setAll(0);
   for (size_t i = 0; i < components.size(); i++) {
@@ -135,8 +128,7 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
 }
 
 bool ModelFittingDensityEstimationCombiGrid::refine() {
-  cout << "refine() refinementsPerfomed: " << refinementsPerformed
-       << " numRefinements_: " << config->getRefinementConfig().numRefinements_ << "\n";
+  cout << "refine() refinementsPerfomed: " << refinementsPerformed;
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
     throw application_exception("ModelFittingDensityEstimationCombiGrid::refine(): not ready jet");
   }
