@@ -56,7 +56,39 @@ void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
   }
 
   Py_DECREF(pFunc);
-  Py_DECREF(pArgs);
+  /* will this lead to problems? if i deref pArgs i destroy my combischeme*/
+  // Py_DECREF(pArgs);
+  Py_DECREF(pValue);
+  return;
+}
+
+bool CombiConfigurator::isRefinable(combiConfig levelvec) {
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "isrefinable");
+  PyObject *pArgs, *pValue;
+  pArgs = PyTuple_New(2);
+  PyTuple_SetItem(pArgs, 0, combischeme);
+  PyTuple_SetItem(pArgs, 1, combiConfAsPyObj(levelvec));
+
+  pValue = PyObject_CallObject(pFunc, pArgs);
+
+  bool a = PyObject_IsTrue(pValue);
+  Py_DECREF(pFunc);
+  // Py_DECREF(pArgs);
+  Py_DECREF(pValue);
+  return a;
+}
+
+void CombiConfigurator::refineBlock(combiConfig levelvec) {
+  PyObject *pFunc = PyObject_GetAttrString(pModule, "refineblock");
+  PyObject *pArgs, *pValue;
+  pArgs = PyTuple_New(2);
+  PyTuple_SetItem(pArgs, 0, combischeme);
+  PyTuple_SetItem(pArgs, 1, combiConfAsPyObj(levelvec));
+
+  combischeme = PyObject_CallObject(pFunc, pArgs);
+
+  Py_DECREF(pFunc);
+  // Py_DECREF(pArgs);
   Py_DECREF(pValue);
   return;
 }
@@ -89,8 +121,6 @@ void CombiConfigurator::getStandardCombi(vector<combiConfig> &vec, size_t dim, s
   // throw base::tool_exception("To make this work, compile with USE_PYTHON_EMBEDDING=1");
 }
 
-bool CombiConfigurator::refineBlock(vector<combiConfig> &vec, size_t index) { return true; }
-
 void CombiConfigurator::test(vector<combiConfig> &vec) {
   PyObject *pArgs, *pValue, *pFunc;
   pArgs = PyTuple_New(0);
@@ -103,14 +133,7 @@ void CombiConfigurator::test(vector<combiConfig> &vec) {
   pValue = PyObject_CallObject(pFunc, pArgs);
 
   for (int j = 0; j < PyList_Size(pValue); j++) {
-    combiConfig pair;
-    pair.levels = std::vector<size_t>();
-    pair.coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
-    vec.push_back(pair);
-    for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
-      // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
-      vec.at(j).levels.push_back(PyLong_AsLong(PyList_GetItem(PyList_GetItem(pValue, j), c)));
-    }
+    vec.push_back(combiConfFromPyObj(PyList_GetItem(pValue, j)));
   }
   Py_DECREF(pFunc);
   Py_DECREF(pArgs);
@@ -143,6 +166,26 @@ void CombiConfigurator::FinalizePython() {
   Py_FinalizeEx();
   cout << "Py_Finalize done \n";
   return;
+}
+
+inline combiConfig CombiConfigurator::combiConfFromPyObj(PyObject *pValue) {
+  combiConfig pair;
+  pair.levels = std::vector<size_t>();
+  pair.coef = PyFloat_AsDouble(PyList_GetItem(pValue, 0));
+  for (int c = 1; c < PyList_Size(pValue); c++) {
+    // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
+    pair.levels.push_back(PyLong_AsLong(PyList_GetItem(pValue, c)));
+  }
+  return pair;
+}
+
+inline PyObject *CombiConfigurator::combiConfAsPyObj(combiConfig pair) {
+  PyObject *pValue = PyList_New(pair.levels.size() + 1);
+  PyList_SetItem(pValue, 0, PyLong_FromLong(pair.coef));
+  for (int i = 0; i < pair.levels.size(); i++) {
+    PyList_SetItem(pValue, i + 1, PyLong_FromLong(pair.levels.at(i)));
+  }
+  return pValue;
 }
 
 } /* namespace datadriven */
