@@ -80,7 +80,7 @@ bool CombiConfigurator::isRefinable(combiConfig levelvec) {
 
 void CombiConfigurator::refineBlock(combiConfig levelvec) {
   PyObject *pFunc = PyObject_GetAttrString(pModule, "refineblock");
-  PyObject *pArgs, *pValue;
+  PyObject *pArgs;
   pArgs = PyTuple_New(2);
   PyTuple_SetItem(pArgs, 0, combischeme);
   PyTuple_SetItem(pArgs, 1, combiConfAsPyObj(levelvec));
@@ -89,7 +89,6 @@ void CombiConfigurator::refineBlock(combiConfig levelvec) {
 
   Py_DECREF(pFunc);
   // Py_DECREF(pArgs);
-  Py_DECREF(pValue);
   return;
 }
 
