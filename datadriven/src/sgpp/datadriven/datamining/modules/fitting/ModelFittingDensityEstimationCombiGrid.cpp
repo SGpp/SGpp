@@ -50,8 +50,8 @@ void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset) {
 
 void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
   configurator = CombiConfigurator();
-  configurator.getStandardCombi(componentConfigs, newDataset.getNcols(),
-                                config->getGridConfig().level_);
+  configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
+  configurator.getCombiScheme(componentConfigs);
 
   cout << "Printing the componentConfig:\n";
   for (auto v : componentConfigs) {

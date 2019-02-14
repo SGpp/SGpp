@@ -32,6 +32,10 @@ class CombiConfigurator {
 
   void getCombiScheme(vector<combiConfig> &vec);
 
+  bool isRefinable(combiConfig levelvec);
+
+  void refineBlock(combiConfig levelvec);
+
   /**
    * This returns the set of level vectors with the corresponding coefficients
    * for the standard combination technique
@@ -48,13 +52,15 @@ class CombiConfigurator {
    * @return new vector of combiConfig
    * @return true if the block could be refined
    */
-  bool refineBlock(vector<combiConfig> &vec, size_t index);
 
   void test(vector<combiConfig> &vec);
 
  private:
   void InitializePython();
   void FinalizePython();
+
+  inline combiConfig combiConfFromPyObj(PyObject *pValue);
+  inline PyObject *combiConfAsPyObj(combiConfig pair);
 
   PyObject *combischeme;
 

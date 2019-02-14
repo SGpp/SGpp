@@ -29,6 +29,7 @@ class CombiScheme:
         return counter == 1, extendable_dim
 
     def is_refinable(self, levelvec):
+        print("is_refinable is getting called")
         assert self.initialized_adaptive
         return tuple(levelvec) in self.active_index_set
 
