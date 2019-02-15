@@ -71,7 +71,6 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
     newFitterConfig.getGridConfig().levelVector_.clear();
     for (auto v : componentConfigs.at(i).levels) {
-      cout << v << "\n";
       newFitterConfig.getGridConfig().levelVector_.push_back(v);
     }
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
@@ -130,7 +129,48 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
 bool ModelFittingDensityEstimationCombiGrid::refine() {
   cout << "refine() refinementsPerfomed: " << refinementsPerformed;
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
-    throw application_exception("ModelFittingDensityEstimationCombiGrid::refine(): not ready jet");
+    double max = 0;
+    size_t ind = 0;
+    /*
+     * Finding the sub grid with the greatest error.
+     * \TODO Add different kinds of error estimation
+     */
+    for (int i = 0; i < components.size(); i++) {
+      double now = components.at(i)->getSurpluses().l2Norm();
+      if (now > max) {
+        if (configurator.isRefinable(componentConfigs.at(i))) {
+          max = now;
+          ind = i;
+        }
+      }
+    }
+    /*
+     * Refining the chosen block
+     */
+    configurator.refineBlock(componentConfigs.at(ind));
+    vector<combiConfig> newConfigs;
+    configurator.getCombiScheme(newConfigs);
+    /*
+     * Actualizing coefficients and finding newly added components
+     */
+    vector<bool> toAdd(newConfigs.size(), 1);
+
+    for (size_t i = 0; i < newConfigs.size(); i++) {
+      for (combiConfig oldconfig : componentConfigs) {
+        if (newConfigs.at(i).levels == oldconfig.levels) {
+          toAdd.at(i) = 0;
+          oldconfig.coef = newConfigs.at(i).coef;
+        }
+      }
+    }
+    /*
+     * Adding new components
+     */
+    for (size_t i = 0; i < toAdd.size(); i++) {
+      if (toAdd.at(i)) {
+        addNewModel(newConfigs.at(i));
+      }
+    }
   }
   return false;
 }
@@ -164,9 +204,20 @@ ModelFittingDensityEstimationCombiGrid::createNewModel(
   }
 }
 
-void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig config) {
-  throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig config): not ready jet\n");
+void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig) {
+  FitterConfigurationDensityEstimation newFitterConfig{};
+  newFitterConfig.setupDefaults();
+  newFitterConfig.getDensityEstimationConfig().type_ =
+      this->config->getDensityEstimationConfig().type_;
+  newFitterConfig.getRefinementConfig().numRefinements_ = 0;
+  newFitterConfig.getGridConfig().levelVector_.clear();
+  for (auto v : combiconfig.levels) {
+    newFitterConfig.getGridConfig().levelVector_.push_back(v);
+  }
+  newFitterConfig.getGridConfig().generalType_ = this->config->getGridConfig().generalType_;
+
+  components.push_back(createNewModel(newFitterConfig));
+  componentConfigs.push_back(combiconfig);
 }
 
 bool ModelFittingDensityEstimationCombiGrid::isRefinable() {

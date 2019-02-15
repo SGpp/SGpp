@@ -102,7 +102,7 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
   std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
-  void addNewModel(combiConfig config);
+  void addNewModel(combiConfig combiconfig);
 };
 
 }  // namespace datadriven
