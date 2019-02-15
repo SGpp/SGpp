@@ -37,6 +37,7 @@ void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
 }
 
 void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
+  vec.clear();
   PyObject *pFunc = PyObject_GetAttrString(pModule, "getcombischeme");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(1);
