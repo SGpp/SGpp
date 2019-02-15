@@ -65,13 +65,13 @@ def Bspline(n, i, x, xi):
         return left + right
 
 
-xi = [0, 1, 1, 1, 2]
+xi = [0, 1, 1, 2]
 X = np.linspace(xi[0], xi[-1], 100)
 M = np.zeros(np.shape(X))
 MW = np.zeros(np.shape(X))
 B = np.zeros(np.shape(X))
 index = 0
-degree = 4
+degree = 3
 for l in range(len(X)):
     M[l] = Mspline(degree, index, X[l], xi)
     MW[l] = MsplineWiki(degree, index, X[l], xi)

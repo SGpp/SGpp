@@ -6,6 +6,7 @@ from matplotlib.font_manager import FontProperties
 from mpl_toolkits.mplot3d import Axes3D
 import os
 import scipy
+import sys
 
 from matplotlib import cm
 from matplotlib.pyplot import gca
@@ -31,6 +32,24 @@ def MsplineWiki(n, i, x, xi):
     else:
         if (xi[i + n] - xi[i]) != 0:
             return (n * ((x - xi[i]) * MsplineWiki(n - 1, i, x, xi) + (xi[i + n] - x) * MsplineWiki(n - 1, i + 1, x, xi))) / ((n - 1) * (xi[i + n] - xi[i]))
+        else:
+             return 0.0
+
+         
+def MsplineViaBspline(n, i, x, xi):
+    # check whether i stated the correlation between M-splines and B-splines correct in the UNCECOMP paper
+    if n == 1:
+        if xi[i] <= x and x < xi[i + 1]:
+            return 1.0
+        else:
+            return 0
+    else:
+        if (xi[i + n] - xi[i]) != 0:
+            print(n)
+            print(i)
+            print(xi[i + n + 1])
+            print(i + n)
+            return (x - xi[i]) / (xi[i + n] - xi[i]) * MsplineViaBspline(n - 1, i, x, xi) + (xi[i + n + 1] - x) / (xi[i + n + 1] - xi[i + 1]) * MsplineViaBspline(n - 1, i + 1, x, xi)
         else:
              return 0.0
 
@@ -62,12 +81,12 @@ def corners(dim):
 
 # corresponds to sin(alpha *sum(x) + 1) / (alpha *sum(x) + 1)
 # W1 = ones(dim)/sqrt(dim)
-def func1D(x, dim, alpha=1.5):
+def func1D(x, dim, alpha=0.75):
     t = x * dim * alpha / np.sqrt(dim) + 1
     return np.sin(t) / t
 
 
-dim = 8
+dim = 4
 W1 = np.ones(dim) / np.sqrt(dim)  # function dependent!!!
 perm = range(dim)
 permutations = list(itertools.permutations(perm))
@@ -90,12 +109,12 @@ def Vol(x):
     for i in range(int(scipy.misc.factorial(dim))): 
         xi = projectedCorners[:, i]
         xi.sort()
-        vol += MsplineWiki(len(xi) - 1, 0, x, xi)
+#         vol += MsplineWiki(len(xi) - 1, 0, x, xi)
+        vol += MsplineViaBspline(len(xi) - 1 , 0, x, xi)
     return vol
 
 
 quadArg = lambda  x: func1D(x, dim) * Vol(x)
-
 integral = scipy.integrate.quad(quadArg, leftBound, rightBound)
 print(integral[0] / scipy.misc.factorial(dim))
 
