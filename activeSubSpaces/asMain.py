@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pn
 import pysgpp
+import quasiMCIntegral
 
 
 def dataVectorToPy(v):
@@ -165,7 +166,8 @@ def boreholeX(numSamples):
 # responseType   method for creation of the response surface. Adaptive or regular
 # numerrorPoints number of MC points used to calculate the l2 interpolation error
 #-----------------------------------------------------------------------
-def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPoints=10000, savePath=None, numDataPoints=10000):
+def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPoints=10000, savePath=None, numDataPoints=10000,
+                numRefine=10, initialLevel=2):
     print("\nnumGridPoints = {}".format(numResponse))
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
@@ -175,7 +177,7 @@ def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPo
                                                                     pysgpp.Grid.stringToGridType(gridType), degree)
     if responseType == 'adaptive':
         initialLevel = 1
-        sparseResponseSurf.createSurplusAdaptiveResponseSurface(numResponse, initialLevel)
+        sparseResponseSurf.createSurplusAdaptiveResponseSurface(numResponse, initialLevel, numRefine)
         l2Error = sparseResponseSurf.l2Error(f, numErrorPoints)
     elif responseType == 'regular':
         print("TODO: Write routien to guess level from numResponse!")
@@ -299,7 +301,12 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
                 responseType='adaptive', integralType='Hist', numErrorPoints=10000,
                 numHistogramMCPoints=1000000, savePath=None, approxLevel=8,
                 approxDegree=3, numShadow1DPoints=0, numDataPoints=10000, printFlag=1,
-                numRefine=10, initialLevel=2):
+                numRefine=10, initialLevel=2, doResponse=1, doIntegral=1):
+    
+    # dummy values if response surface or integral are not calculated
+    l2Error, integral, integralError = 0, 0, 0
+    shadow1DEvaluations, bounds, responseCoefficients = np.zeros(numShadow1DPoints), [0, 0], []
+    
     print("\nnumGridPoints = {}".format(numResponse))
     if responseType in ['regular', 'dataR', 'datadrivenR']:
         responseLevel = int(np.math.log(numResponse + 1, 2)) 
@@ -320,7 +327,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     if printFlag == 1:
         print("recognition time:               {}".format(recognitionTime))
     
-    #     print(eival)
+    print(eival)
     #     print(eivec)
     print("first eigenvector {}".format(eivec[:, 0]))
     
@@ -344,27 +351,28 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
             responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel, responseLambda)
     numGridPoints = responseSurf.getCoefficients().getSize()
 
-    responseCreationTime = time.time() - start
-    if printFlag == 1:
-        print("response surface creation time: {}".format(responseCreationTime))
-
-    bounds = responseSurf.getBounds() 
-    print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
+    if doResponse == 1:
+        responseCreationTime = time.time() - start
+        if printFlag == 1:
+            print("response surface creation time: {}".format(responseCreationTime))
     
-    if responseType not in datatypes:
-        errorPoints = np.random.random((numErrorPoints, objFunc.getDim()))
-        validationValues = objFunc.eval(errorPoints)
-        validationPoints = pysgpp.DataMatrix(errorPoints)
-        validationPoints.transpose()
-    numValidationPoints = validationPoints.getNcols()
-    responseEval = np.ndarray((numValidationPoints, 1))
-    validationPoint = pysgpp.DataVector(numDim) 
-    for i in range(numValidationPoints):
-        validationPoints.getColumn(i, validationPoint)
-        responseEval[i] = responseSurf.eval(validationPoint)
-    l2Error = np.linalg.norm(responseEval - validationValues) / numValidationPoints
-    print("interpol error: {}".format(l2Error))
-    # print("Comparison: l2 error {}".format(responseSurf.l2Error(f, numErrorPoints)))
+        bounds = responseSurf.getBounds() 
+        print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
+        
+        if responseType not in datatypes:
+            errorPoints = np.random.random((numErrorPoints, objFunc.getDim()))
+            validationValues = objFunc.eval(errorPoints)
+            validationPoints = pysgpp.DataMatrix(errorPoints)
+            validationPoints.transpose()
+        numValidationPoints = validationPoints.getNcols()
+        responseEval = np.ndarray((numValidationPoints, 1))
+        validationPoint = pysgpp.DataVector(numDim) 
+        for i in range(numValidationPoints):
+            validationPoints.getColumn(i, validationPoint)
+            responseEval[i] = responseSurf.eval(validationPoint)
+        l2Error = np.linalg.norm(responseEval - validationValues) / numValidationPoints
+        print("interpol error: {}".format(l2Error))
+        # print("Comparison: l2 error {}".format(responseSurf.l2Error(f, numErrorPoints)))
     
 #     W1 = eivec[:, 0]
 #     W1 = [1 / np.sqrt(5)] * 5
@@ -373,20 +381,19 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #     plt.legend()
 #     plt.show()
     
-    shadow1DEvaluations = []
-    if numShadow1DPoints > 0:
-        X1unit = np.linspace(0, 1, numShadow1DPoints)
-        shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
+        if numShadow1DPoints > 0:
+            X1unit = np.linspace(0, 1, numShadow1DPoints)
+            shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
 
-    quadOrder = 7
-    start = time.time()
-    integral, integralError = integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder, approxLevel, approxDegree, numHistogramMCPoints)
-    integrationTime = time.time() - start; 
-    if printFlag == 1:
-        print("integration time:               {}".format(integrationTime))
-        
-#     print("integral: {}\n".format(integral)),
-    print("integral error: {}".format(integralError))
+    if doIntegral == 1:
+        quadOrder = 7
+        start = time.time()
+        integral, integralError = integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder, approxLevel, approxDegree, numHistogramMCPoints)
+        integrationTime = time.time() - start; 
+        if printFlag == 1:
+            print("integration time:               {}".format(integrationTime))
+    #     print("integral: {}\n".format(integral)),
+        print("integral error: {}".format(integralError))
     
 # plot interpolant of 2D function
 #     X, Y = np.meshgrid(np.linspace(0, 1, 100), np.linspace(0, 1, 100))
@@ -507,6 +514,22 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds
 
 
+def Halton(objFunc, numSamples):
+    print(numSamples)
+    dim = objFunc.getDim()
+    haltonPoints = quasiMCIntegral.halton_sequence (0, numSamples - 1, dim)
+    integral = 0
+    for n in range(numSamples):
+        integral += objFunc.eval(haltonPoints[:, n])
+    lb, ub = objFunc.getDomain()
+    vol = np.prod(ub - lb)
+    integral = integral[0][0] / numSamples * vol
+    integralError = abs(integral - objFunc.getIntegral())
+    print("quasiMC integral: {}".format(integral))
+    print("quasiMC integral error: {}".format(integralError))
+    return integral, integralError
+
+
 #------------------------------------ main ---------------------------------------
 if __name__ == "__main__":
     # parse the input arguments
@@ -521,6 +544,8 @@ if __name__ == "__main__":
     parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
     parser.add_argument('--numRefine', default=10, type=int, help="max number of grid points added in refinement steps for sparse grids")
     parser.add_argument('--initialLevel', default=2, type=int, help="initial regular level for adaptive sparse grids")
+    parser.add_argument('--doResponse', default=1, type=int, help="do (not) create response surface")
+    parser.add_argument('--doIntegral', default=1, type=int, help="do (not) calcualte integral")
     # only relevant for asSGpp and SGpp
     parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help="SGpp grid type")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
@@ -547,15 +572,15 @@ if __name__ == "__main__":
     else:
         dataRange = [0]
     
-    eival = np.ndarray(shape=(numDim , len(sampleRange), len(dataRange)))
-    eivec = np.ndarray(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
-    durations = np.ndarray(shape=(len(sampleRange), len(dataRange)))
-    l2Errors = np.ndarray(shape=(len(sampleRange), len(dataRange)))
-    integrals = np.ndarray(shape=(len(sampleRange), len(dataRange)))
-    integralErrors = np.ndarray(shape=(len(sampleRange), len(dataRange)))
-    numGridPointsArray = np.ndarray(shape=(len(sampleRange), len(dataRange)))
-    shadow1DEvaluationsArray = np.ndarray(shape=(args.numShadow1DPoints, len(sampleRange), len(dataRange)))
-    boundsArray = np.ndarray(shape=(2, len(sampleRange), len(dataRange)))
+    eival = np.zeros(shape=(numDim , len(sampleRange), len(dataRange)))
+    eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
+    durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    l2Errors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    integrals = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    integralErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    numGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    shadow1DEvaluationsArray = np.zeros(shape=(args.numShadow1DPoints, len(sampleRange), len(dataRange)))
+    boundsArray = np.zeros(shape=(2, len(sampleRange), len(dataRange)))
     responseGridStrDict = {}
     responseCoefficientsDict = {}
     
@@ -564,6 +589,8 @@ if __name__ == "__main__":
         resultsPath = os.path.join(resultsPath, objFunc.getName())
         if args.method in ['OLS', 'QPHD', 'AS']:
             folder = args.method + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
+        elif args.method == 'Halton':
+            folder = args.method + '_' + str(args.maxPoints) 
         elif args.method == 'asSGpp': 
             folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType + '_' + args.asmType + '_' + args.integralType
         elif args.method == 'SGpp': 
@@ -619,9 +646,19 @@ if __name__ == "__main__":
                 boundsArray[:, i, j] = bounds
                 eival[:, i, j] = e[:, 0]; eivec[:, :, i, j] = v
             
+    # .... .... .... Quasi Monte Carlo Integral with Halton Sequence  .... .... ....
+    elif args.method == 'Halton':
+        for i, numSamples in enumerate(sampleRange):
+            for j, numData in enumerate(dataRange):
+                start = time.time()
+                integral, integralError = Halton(objFunc, numSamples)
+                durations[i, j] = time.time() - start; 
+                integrals[i, j] = integral; 
+                integralErrors[i, j] = integralError
+                numGridPointsArray[i, j] = numSamples
+            
     # .... .... .... active subspace SG++ .... .... .... 
     elif args.method == 'asSGpp':
-        computeIntegral = False
         initialLevel = 1
         numRefine = 3
         for i, numSamples in enumerate(sampleRange):
@@ -638,7 +675,8 @@ if __name__ == "__main__":
                        numHistogramMCPoints=numHistogramMCPoints,
                        approxLevel=args.appSplineLevel, approxDegree=args.appSplineDegree,
                         numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData,
-                        numRefine=args.numRefine, initialLevel=args.initialLevel)
+                        numRefine=args.numRefine, initialLevel=args.initialLevel,
+                        doResponse=args.doResponse, doIntegral=args.doIntegral)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
@@ -661,7 +699,8 @@ if __name__ == "__main__":
                 l2Error, integral, integralError, numGridPoints = \
                 SGpp(objFunc, args.gridType, args.degree, numSamples,
                      args.model, args.responseType, numErrorPoints=numErrorPoints,
-                     savePath=path, numDataPoints=numData)
+                     savePath=path, numDataPoints=numData,
+                        numRefine=args.numRefine, initialLevel=args.initialLevel)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 numGridPointsArray[i, j] = numGridPoints
