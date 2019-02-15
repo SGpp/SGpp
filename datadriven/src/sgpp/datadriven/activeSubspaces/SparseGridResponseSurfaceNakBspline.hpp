@@ -62,10 +62,11 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   /**
    * creates a surplus adaptive sparse grid inteprolant
    * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
-   * @param initialLevel		first a regular grid of initialLevel is created. From this
-   * on it is adaptively refined
+   * @param initialLevel		first a regular grid of initialLevel is created.
+   * @param refinementsNum		max number of grid points, added in each refinement step
    */
-  void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel);
+  void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel,
+                                            size_t refinementsNum = 3);
 
   /**
    * creates a surplus adaptive sparse grid regression approximation

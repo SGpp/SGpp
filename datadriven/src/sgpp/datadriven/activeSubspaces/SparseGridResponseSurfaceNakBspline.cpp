@@ -37,9 +37,7 @@ void SparseGridResponseSurfaceNakBspline::createRegularResponseSurface(size_t le
 }
 
 void SparseGridResponseSurfaceNakBspline::createSurplusAdaptiveResponseSurface(
-    size_t maxNumGridPoints, size_t initialLevel) {
-  // number of points to be refined in each step
-  size_t refinementsNum = 3;
+    size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum) {
   createRegularResponseSurface(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
