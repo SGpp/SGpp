@@ -1,10 +1,10 @@
 from argparse import ArgumentParser
 import colorsys
-from matplotlib.font_manager import FontProperties
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
-from matplotlib import cm
+from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import gca
 
 import active_subspaces as ac
@@ -394,19 +394,7 @@ if __name__ == "__main__":
 #         # 'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_appSpline',
 #             ]
 
-    # no data, exact interpolation
-#     names = [  
-#         'AS_3_10000_regular',
-#         'AS_5_10000_regular',
-#         'AS_7_10000_regular',
-#         'QPHD_3_10000_regular',
-#         'QPHD_5_10000_regular',
-#         'QPHD_7_10000_regular',
-#         'SGpp_nakbsplinemodified_3_10000_adaptive',
-#         'asSGpp_nakbsplinemodified_3_10000_adaptive_adaptive_Spline',
-#             ]
-
-# damped sin for paper
+# dampedSin8D for paper
     names = [
             # 'AS_3_25000_regular',
             'AS_5_25000_regular',
@@ -414,7 +402,7 @@ if __name__ == "__main__":
             'QPHD_5_25000_regular',
             'Halton_25000',
             'SGpp_nakbsplinemodified_3_25000_adaptive',
-            'asSGpp_nakbsplinemodified_3_10000_adaptive_adaptive_Spline'
+            'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
              ]
     
     names = [n.format(args.degree, args.maxPoints) for n in names]

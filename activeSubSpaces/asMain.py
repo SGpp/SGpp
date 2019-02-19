@@ -1,9 +1,8 @@
 from argparse import ArgumentParser
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import os
 import time
-
-from matplotlib import cm
 
 import active_subspaces as ac
 import asFunctions
@@ -304,8 +303,10 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
                 numRefine=10, initialLevel=2, doResponse=1, doIntegral=1):
     
     # dummy values if response surface or integral are not calculated
-    l2Error, integral, integralError = 0, 0, 0
-    shadow1DEvaluations, bounds, responseCoefficients = np.zeros(numShadow1DPoints), [0, 0], []
+    l2Error, integral, integralError, numGridPoints = 0, 0, 0, 0
+    shadow1DEvaluations, bounds = np.zeros(numShadow1DPoints), [0, 0]
+    responseCoefficients = pysgpp.DataVector(objFunc.getDim())
+    responseGridStr = ' '
     
     print("\nnumGridPoints = {}".format(numResponse))
     if responseType in ['regular', 'dataR', 'datadrivenR']:
@@ -331,27 +332,27 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     #     print(eivec)
     print("first eigenvector {}".format(eivec[:, 0]))
     
-    n = 1  # active subspace identifier
-    responseDegree = degree  
-    responseGridType = pysgpp.GridType_NakBsplineBoundary  
-    responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
-    if responseType == 'adaptive':
-        responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
-    elif responseType == 'regular':
-        responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, f)
-    elif responseType in ['data', 'datadriven', 'dataR', 'datadrivenR']:
-        asmPoints = ASM.getEvaluationPoints()
-        asmValues = ASM.getFunctionValues()
-        responseLambda = 1e-8
-        if responseType == 'data':
-            responseSurf.createAdaptiveReducedSurfaceFromData(numResponse, asmPoints, asmValues, initialLevel, numRefine, responseLambda)
-        elif responseType == 'dataR':
-            responseSurf.createRegularReducedSurfaceFromData(asmPoints, asmValues, responseLevel, responseLambda)
-        elif responseType == 'datadrivenR':
-            responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel, responseLambda)
-    numGridPoints = responseSurf.getCoefficients().getSize()
-
     if doResponse == 1:
+        n = 1  # active subspace identifier
+        responseDegree = degree  
+        responseGridType = pysgpp.GridType_NakBsplineBoundary  
+        responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
+        if responseType == 'adaptive':
+            responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
+        elif responseType == 'regular':
+            responseSurf.createRegularReducedSurfaceWithPseudoInverse(responseLevel, f)
+        elif responseType in ['data', 'datadriven', 'dataR', 'datadrivenR']:
+            asmPoints = ASM.getEvaluationPoints()
+            asmValues = ASM.getFunctionValues()
+            responseLambda = 1e-8
+            if responseType == 'data':
+                responseSurf.createAdaptiveReducedSurfaceFromData(numResponse, asmPoints, asmValues, initialLevel, numRefine, responseLambda)
+            elif responseType == 'dataR':
+                responseSurf.createRegularReducedSurfaceFromData(asmPoints, asmValues, responseLevel, responseLambda)
+            elif responseType == 'datadrivenR':
+                responseSurf.createRegularReducedSurfaceFromData_DataDriven(asmPoints, asmValues, responseLevel, responseLambda)
+        numGridPoints = responseSurf.getCoefficients().getSize()
+
         responseCreationTime = time.time() - start
         if printFlag == 1:
             print("response surface creation time: {}".format(responseCreationTime))
@@ -373,6 +374,10 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         l2Error = np.linalg.norm(responseEval - validationValues) / numValidationPoints
         print("interpol error: {}".format(l2Error))
         # print("Comparison: l2 error {}".format(responseSurf.l2Error(f, numErrorPoints)))
+        
+        responseGrid = responseSurf.getGrid()
+        responseCoefficients = responseSurf.getCoefficients()
+        responseGridStr = responseGrid.serialize()
     
 #     W1 = eivec[:, 0]
 #     W1 = [1 / np.sqrt(5)] * 5
@@ -407,10 +412,6 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #     ax.plot_surface(X, Y, I, cmap=cm.viridis, linewidth=0, antialiased=False)
 #     ax.plot_wireframe(X, Y, F, rstride=10, cstride=10,color='r')
 #     plt.show()
-
-    responseGrid = responseSurf.getGrid()
-    responseCoefficients = responseSurf.getCoefficients()
-    responseGridStr = responseGrid.serialize()
 
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, \
            [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients
@@ -503,10 +504,14 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
 #     plt.show()
         
     # 1 and 2 dim shadow plots
-    ss.partition(1)
-    y = np.dot(X, ss.W1)
-    ac.utils.plotters.sufficient_summary(y, f[:, 0])
-    plt.show()
+#     ss.partition(1)
+#     y = np.dot(X, ss.W1)
+#     ac.utils.plotters.sufficient_summary(y, f[:, 0])
+    
+#     plt.figure()
+#     plt.semilogy(range(len(eival)), eival, '-o')
+#     
+#     plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))

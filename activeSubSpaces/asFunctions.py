@@ -63,6 +63,11 @@ def getFunction(model, args=None):
     elif model == 'dampedSin8D':
         return dampedSinXD(8)
     
+    elif model == 'gaussian4D':
+        return gaussianXD(4)
+    elif model == 'gaussian10D':
+        return gaussianXD(10)
+    
     elif model == 'quadratic2D':
         return quadraticXD(2)
     elif model == 'quadratic10D':
@@ -143,12 +148,15 @@ def getFunction(model, args=None):
         return bratleyXD(2)
     elif model == 'bratley4D':
         return bratleyXD(4)
+    # nice 1D AS but 10D :/
     elif model == 'wing':
         return wing()
     elif model == 'borehole':
         return borehole()
+    # nice 1D AS
     elif model == 'otlcircuit':
         return otlcircuit()
+    # moderate 1D AS
     elif model == 'piston':
         return piston()
 
@@ -187,11 +195,11 @@ class test():
         return "test{}D".format(self.getDim())
     
     def getIntegral(self):
-        print("activeSubspaceFunctions.py: integral not calculated")
-        return 0.0
+#         print("activeSubspaceFunctions.py: integral not calculated")
+        return 13.0 / 12.0
 
     def getDim(self):
-        return 8
+        return 4
 
     def getEigenvec(self):
         print("activeSubspaceFunctions.py: eigenvec not calculated")
@@ -206,19 +214,24 @@ class test():
         x = unnormalize(x, lb, ub, lN, uN)
         D = self.getDim()
         # Morokoff  (hat exakten 1D!)
-        res = 1 
-        for i in range(self.getDim()):
-            res *= (D - x[:, i]) 
-        res *= 1 / ((D - 0.5) ** D)
-
-        # Brately (hat naja subspace)
-#         res = 0 
+#         res = 1 
+#         for i in range(self.getDim()):
+#             res *= (D - x[:, i]) 
+#         res *= 1 / ((D - 0.5) ** D)
+        
+#         res = 0
 #         for i in range(self.getDim()):
 #             prod = 1
 #             for j in range(i):
 #                 prod *= x[:, j]
 #             res += (-1) ** i * prod
 
+        alpha = [0.1, 0.02, 0.37, 0.4]
+        u = [0.3, 0.8, 0.11, 0.01]
+        sum = 0
+        for i in range(self.getDim()):
+            sum += alpha[i] ** 2 * (x[:, i] - u[i]) ** 2
+        res = np.exp(-sum)
         return (res).reshape(numSamples, 1)
 
     
@@ -691,6 +704,75 @@ class dampedSinXD():
         df = dfdxi
         for i in range(self.dim - 1):
             df = np.hstack((df, dfdxi))
+        return df
+
+
+class gaussianXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+
+        if dim == 4:
+            self.a = 0.3
+            self.b = [0.1, 0.29, 0.71, 0.01]
+            self.c = [0.1, 0.9, 0.2, 0.5]
+        elif dim == 10:
+            self.a = 0.81509932
+            self.b = [0.35759224, 0.12422152, 0.80270042, 0.27039308, 0.75470597, 0.71285051, 0.63244037, 0.12516021, 0.97583364, 0.04952066]
+            self.c = [0.25174549, 0.20202675, 0.88427756, 0.07364739, 0.80637472, 0.50494681, 0.47542434, 0.20626397, 0.41080996, 0.46764418]
+        else:
+            self.a = np.random.rand(1, 1)
+            self.b = np.random.rand(self.dim, 1)
+            self.c = np.random.rand(self.dim, 1)
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "dampedSin{}D".format(self.getDim())
+    
+    def getIntegral(self):
+        print("activeSubspaceFunctions.py: integral not calculated")
+        return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        print("activeSubspaceFunctions.py: eivec not calculated")
+        return 0.0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += (x[:, i] - self.b[i]) ** 2 / (2 * self.c[i] ** 2) 
+
+        return (self.a * np.exp(-arg)).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += (x[:, i] - self.b[i]) ** 2 / (2 * self.c[i] ** 2) 
+        ex = self.a * (np.exp(-arg))[:, None]
+        
+        df = np.zeros((numSamples, self.getDim()))
+        for i in range(numSamples):
+            for j in range(self.getDim()):
+                df[i, j] = (self.b[j] - x[i, j]) / (self.c[j] ** 2) * ex[i]
         return df
 
 
