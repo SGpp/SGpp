@@ -26,8 +26,8 @@
 				"threshold": 0.001,
 				"maxLevelType": false,
 				"noPoints": 10,
-				"RefinementIndicator" : "DataBased",
-				"errorBasedRefinement" : true,
+				"CoarseningIndicator" : "GridPointBased",
+				"errorBasedRefinement" : false,
 				"errorMinInterval" : 1,
 				"errorBufferSize" : 2,
 				"errorConvergenceThreshold" : 0.001
