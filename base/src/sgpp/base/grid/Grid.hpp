@@ -154,7 +154,7 @@ struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
-  double threshold_;322
+  double threshold_;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_;
   /// max. number of points to be refined
