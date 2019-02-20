@@ -79,8 +79,8 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
     cout << "Model created\n";
   }
   cout << "Fitting the component grids to the Dataset: \n";
-  for (auto& model : components) {
-    model->fit(newDataset);
+  for (size_t i = 0; i < components.size(); i++) {
+    components.at(i)->fit(newDataset);
   }
   cout << "Done fitting the component grids. \n";
 }
@@ -129,6 +129,7 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
 bool ModelFittingDensityEstimationCombiGrid::refine() {
   cout << "refine() refinementsPerfomed: " << refinementsPerformed;
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
+    refinementsPerformed++;
     double max = 0;
     size_t ind = 0;
     /*
@@ -136,7 +137,10 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
      * \TODO Add different kinds of error estimation
      */
     for (int i = 0; i < components.size(); i++) {
-      double now = components.at(i)->getSurpluses().l2Norm();
+      double now =
+          components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
+      cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
+           << components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
       if (now > max) {
         if (configurator.isRefinable(componentConfigs.at(i))) {
           max = now;
@@ -151,18 +155,29 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
     vector<combiConfig> newConfigs;
     configurator.getCombiScheme(newConfigs);
     /*
-     * Actualizing coefficients and finding newly added components
+     * Actualizing coefficients and finding newly-added and newly-remoced components
      */
     vector<bool> toAdd(newConfigs.size(), 1);
+    vector<bool> toRemove(componentConfigs.size(), 1);
 
     for (size_t i = 0; i < newConfigs.size(); i++) {
-      for (combiConfig oldconfig : componentConfigs) {
-        if (newConfigs.at(i).levels == oldconfig.levels) {
+      for (size_t k = 0; k < componentConfigs.size(); k++) {
+        if (newConfigs.at(i).levels == componentConfigs.at(k).levels) {
           toAdd.at(i) = 0;
-          oldconfig.coef = newConfigs.at(i).coef;
+          if (toRemove.size() - k - 1 >= 0) {
+            toRemove.at(toRemove.size() - k - 1) = 0;
+          }
+          componentConfigs.at(k).coef = newConfigs.at(i).coef;
         }
       }
     }
+    /*
+     * Removing components
+     */
+    for (size_t i = 0; i < toRemove.size(); i++) {
+      removeModel(toRemove.at(i));
+    }
+
     /*
      * Adding new components
      */
@@ -218,6 +233,12 @@ void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig
 
   components.push_back(createNewModel(newFitterConfig));
   componentConfigs.push_back(combiconfig);
+  components.back()->fit(dataset->getData());
+}
+
+void ModelFittingDensityEstimationCombiGrid::removeModel(const size_t indexRev) {
+  componentConfigs.erase(componentConfigs.end() - indexRev);
+  components.erase(components.end() - indexRev);
 }
 
 bool ModelFittingDensityEstimationCombiGrid::isRefinable() {

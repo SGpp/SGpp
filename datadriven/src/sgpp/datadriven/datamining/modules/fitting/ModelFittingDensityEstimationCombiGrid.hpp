@@ -102,7 +102,13 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
   std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
-  void addNewModel(combiConfig combiconfig);
+  void addNewModel(const combiConfig combiconfig);
+
+  /**
+   * @param takes the reverse index (distance from the end of the vector) of the component that must
+   * be removed
+   */
+  void removeModel(size_t indexRev);
 };
 
 }  // namespace datadriven
