@@ -139,7 +139,7 @@ struct CoarseningConfiguration {
   /// of non error based refinement
   ///size_t refinementPeriod = 1;
   /// refinement indicator
-  CoaseningFunctorType coarseningFunctorType = CoarseningFunctorType::GridPointBased;
+  CoarseningFunctorType coarseningFunctorType = CoarseningFunctorType::GridPointBased;
   /// in case of zero corssing based refinement: determines if evaluations should be precomupted
   ///bool precomputeEvaluations = true;
   /// determines if finer grid levels should be penalized when finding points to refine
