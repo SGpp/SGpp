@@ -14,9 +14,11 @@
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/GridPointBasedCoarseningFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
@@ -138,6 +140,18 @@ size_t ModelFittingClassification::labelToIdx(double label) {
   } else {
     return classIdx.at(label);
   }
+}
+
+MultiGridRefinmentFunctor *ModelFittingClassification::getCoarseningFunctor(
+     std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
+    sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
+    switch (coarseningConfig.coarseningFunctorType) {
+        case CoarseningFunctorType::GridPointBased : {
+            return new GridPointBasedCoarseningFunctor(grids, surpluses);
+        }
+        default:
+            return nullptr;
+    }
 }
 
 MultiGridRefinementFunctor *ModelFittingClassification::getRefinementFunctor(
