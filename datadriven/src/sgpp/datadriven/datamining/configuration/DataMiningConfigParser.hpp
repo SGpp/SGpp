@@ -36,6 +36,7 @@ using json::DictNode;
 
 using sgpp::solver::SLESolverConfiguration;
 using sgpp::base::AdaptivityConfiguration;
+using sgpp::base::CoarseningConfiguration;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;

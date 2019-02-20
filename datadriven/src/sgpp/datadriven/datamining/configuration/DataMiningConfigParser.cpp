@@ -231,46 +231,6 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
   return hasFitterGridConfig;
 }
 
-bool DataMiningConfigParser::getFitterCoarseningConfig(
-    CoarseningConfiguration &config, const CoarseningConfiguration &defaults) const {
-  bool hasFitterAdaptivityConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
-  if (hasFitterAdaptivityConfig) {
-      bool hasCoarseningConfig =
-        hasFitterConfig() ? (*configFile)[fitter].contains("CoarseningConfig") : false;
-        if (hasCoarseningConfig){
-            auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
-            config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
-                                        defaults.numCoarsening_, "coarseningConfig");
-            config.errorBasedCoarsening = parseBool(*coarseningConfig, "errorBasedCoarsening",
-                                                defaults.errorBasedCoarsening, "coarseningConfig");
-            
-            config.threshold_ =
-                parseDouble(*coarseningConfig, "threshold", defaults.threshold_, "coarseningConfig");
-            config.maxLevelType_ =
-                parseBool(*coarseningConfig, "maxLevelType", defaults.maxLevelType_, "coarseningConfig");
-            config.noPoints_ =
-                parseUInt(*coarseningConfig, "noPoints", defaults.noPoints_, "coarseningConfig");
-            config.errorConvergenceThreshold = parseDouble(*coarseningConfig, "errorConvergenceThreshold",
-                defaults.errorConvergenceThreshold, "coarseningConfig");
-            config.errorBufferSize = parseUInt(*coarseningConfig, "errorBufferSize",
-                defaults.errorBufferSize, "coarseningConfig");
-            config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
-                defaults.errorMinInterval, "coarseningConfig");
-            config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
-                defaults.precomputeEvaluations, "coarseningConfig");
-        }
-        // Parse refinement indicator
-        if (coarseningConfig->contains("coaseningIndicator")) {
-        config.coarseningFunctorType =
-            CoarseningFunctorTypeParser::parse((*coaseningConfig)["coarseningIndicator"].get());
-        } else {
-        std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
-        }
-    }
-    
-}
-
 bool DataMiningConfigParser::getFitterAdaptivityConfig(
     AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
@@ -331,6 +291,47 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
   }
   return hasFitterAdaptivityConfig;
 }
+
+bool DataMiningConfigParser::getFitterCoarseningConfig(
+            CoarseningConfiguration &config, const CoarseningConfiguration &defaults) const {
+  bool hasFitterAdaptivityConfig =
+          hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
+  if (hasFitterAdaptivityConfig) {
+    bool hasCoarseningConfig =
+            hasFitterConfig() ? (*configFile)[fitter].contains("CoarseningConfig") : false;
+    if (hasCoarseningConfig){
+      auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
+      config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
+                                        defaults.numCoarsening_, "coarseningConfig");
+      config.errorBasedCoarsening = parseBool(*coarseningConfig, "errorBasedCoarsening",
+                                              defaults.errorBasedCoarsening, "coarseningConfig");
+
+      config.threshold_ =
+              parseDouble(*coarseningConfig, "threshold", defaults.threshold_, "coarseningConfig");
+      config.maxLevelType_ =
+              parseBool(*coarseningConfig, "maxLevelType", defaults.maxLevelType_, "coarseningConfig");
+      config.noPoints_ =
+              parseUInt(*coarseningConfig, "noPoints", defaults.noPoints_, "coarseningConfig");
+      config.errorConvergenceThreshold = parseDouble(*coarseningConfig, "errorConvergenceThreshold",
+                                                     defaults.errorConvergenceThreshold, "coarseningConfig");
+      config.errorBufferSize = parseUInt(*coarseningConfig, "errorBufferSize",
+                                         defaults.errorBufferSize, "coarseningConfig");
+      config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
+                                          defaults.errorMinInterval, "coarseningConfig");
+      config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
+                                               defaults.precomputeEvaluations, "coarseningConfig");
+    }
+    // Parse refinement indicator
+    if (coarseningConfig->contains("coaseningIndicator")) {
+      config.coarseningFunctorType =
+              CoarseningFunctorTypeParser::parse((*coaseningConfig)["coarseningIndicator"].get());
+    } else {
+      std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
+    }
+  }
+  return hasCoarseningConfig;
+}
+
 
 bool DataMiningConfigParser::getFitterCrossvalidationConfig(
     CrossvalidationConfiguration &config, const CrossvalidationConfiguration &defaults) const {
