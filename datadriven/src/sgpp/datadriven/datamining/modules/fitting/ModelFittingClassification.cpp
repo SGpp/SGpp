@@ -198,6 +198,14 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
 }
 
 bool ModelFittingClassification::refine() {
+  // TODO nicoroesel change this..
+  if (config->getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
+    for (size_t i = 0; i < models.size(); i++) {
+      models.at(i)->refine();
+    }
+    refinementsPerformed++;
+    return true;
+  }
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   if (refinementsPerformed < refinementConfig.numRefinements_) {
     // Assemble grids and alphas
