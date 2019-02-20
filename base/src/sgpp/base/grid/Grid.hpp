@@ -10,7 +10,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
-
+#include <sgpp/base/grid/CoarseningConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <map>
@@ -154,7 +154,7 @@ struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_;
   /// refinement threshold for surpluses
-  double threshold_;
+  double threshold_;322
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_;
   /// max. number of points to be refined

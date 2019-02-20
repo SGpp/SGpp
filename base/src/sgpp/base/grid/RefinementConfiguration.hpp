@@ -26,12 +26,6 @@ enum class RefinementFunctorType {
   MultipleClass
 };
 /**
- * Enumeration that defines different types of refinement indicators / functors
- */
-enum class CoarseningFunctorType {
-  GridPointBased
-};
-/**
  * Enumeration that defines the different types of refinement monitors (that trigger refinements)
  */
 enum class RefinementMonitorType {
