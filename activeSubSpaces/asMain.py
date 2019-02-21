@@ -397,7 +397,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         integrationTime = time.time() - start; 
         if printFlag == 1:
             print("integration time:               {}".format(integrationTime))
-    #     print("integral: {}\n".format(integral)),
+        print("integral: {}\n".format(integral)),
         print("integral error: {}".format(integralError))
     
 # plot interpolant of 2D function
@@ -507,10 +507,10 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
 #     ss.partition(1)
 #     y = np.dot(X, ss.W1)
 #     ac.utils.plotters.sufficient_summary(y, f[:, 0])
-    
+#      
 #     plt.figure()
 #     plt.semilogy(range(len(eival)), eival, '-o')
-#     
+#      
 #     plt.show()
         
     print("Control:")

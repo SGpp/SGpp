@@ -1,14 +1,14 @@
 from mpl_toolkits.mplot3d import Axes3D
 
 import active_subspaces as ac
+import as1DIntegral
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy as np
 import pysgpp
 
+
 # Note: the function in http://www.sfu.ca/~ssurjano/morcaf95b.html from "Quasi-monte carlo integration", Morokoff has an 1D AS
-
-
 def getFunction(model, args=None):
     if model == 'test':
         return test()
@@ -98,6 +98,11 @@ def getFunction(model, args=None):
 # Genz established a set of test functions for integration
 # https://link.springer.com/chapter/10.1007/978-94-009-3889-2_33
 # two of these (oscillatory and corner peak) have 1D AS    
+    elif model == 'genzOscillatory2D':
+        return genzOscillatoryXD(2)
+    elif model == 'genzCornerPeak2D':
+        return genzCornerPeakXD(2)
+    
     elif model == 'genzOscillatory8D':
         return genzOscillatoryXD(8)
     elif model == 'genzProductPeak8D':
@@ -788,10 +793,10 @@ class genzOscillatoryXD():
     def __init__(self, dim):
         self.dim = dim
         alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
         self.alpha = alpha
         self.u = u
+        print("Genz alpha:{}".format(alpha))
+        print("Genz u:{}".format(u))
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -802,8 +807,10 @@ class genzOscillatoryXD():
         return "genzOscillatory{}D".format(self.getDim())
     
     def getIntegral(self):
-        print("activeSubspaceFunctions.py: integral not calculated")
-        return 0.0
+        W1 = self.alpha / np.linalg.norm(self.alpha)
+        g = lambda x: np.cos(2 * np.pi * self.u[0] + np.linalg.norm(self.alpha) * x)
+        integral = as1DIntegral.integrateASg(g, W1, self.getDim())
+        return integral
 
     def getDim(self):
         return self.dim
@@ -874,11 +881,11 @@ class genzCornerPeakXD():
     def __init__(self, dim):
         self.dim = dim
         alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
         self.alpha = alpha
         self.u = u
-       
+        print("Genz alpha:{}".format(self.alpha))
+        print("Genz u:{}".format(self.u))
+        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
@@ -888,8 +895,10 @@ class genzCornerPeakXD():
         return "genzCornerPeak{}D".format(self.getDim())
     
     def getIntegral(self):
-        print("activeSubspaceFunctions.py: integral not calculated")
-        return 0.0
+        W1 = self.alpha / np.linalg.norm(self.alpha)
+        g = lambda x: (1 + np.linalg.norm(self.alpha) * x) ** (-self.getDim() - 1)
+        integral = as1DIntegral.integrateASg(g, W1, self.getDim())
+        return integral
 
     def getDim(self):
         return self.dim

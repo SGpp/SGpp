@@ -459,6 +459,7 @@ sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
     }
     volumes[p] = res;
   }
+
   volumes.mult(simplexVolume);
   return volumes;
 }

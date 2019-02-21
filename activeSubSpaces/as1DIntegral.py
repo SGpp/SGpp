@@ -2,15 +2,13 @@ from argparse import ArgumentParser
 import colorsys
 import ipdb
 import itertools
-from matplotlib.font_manager import FontProperties
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import os
 import scipy
 import sys
-
-from matplotlib import cm
+from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import gca
-
 import active_subspaces as ac
 import asFunctions
 import cPickle as pickle
@@ -78,56 +76,59 @@ def corners(dim):
 # def func1D(x, dim):
 #     return np.sin(dim / np.sqrt(dim) * x)
 
-
 # corresponds to sin(alpha *sum(x) + 1) / (alpha *sum(x) + 1)
 # W1 = ones(dim)/sqrt(dim)
-def func1D(x, dim, alpha=0.75):
-    t = x * dim * alpha / np.sqrt(dim) + 1
-    return np.sin(t) / t
+# def func1D(x, dim, alpha=0.75):
+#     t = x * dim * alpha / np.sqrt(dim) + 1
+#     return np.sin(t) / t
+
+# corresponds to gernz Corner Peak: (1+ sum(alpha_i x_i))^(-dim-1)
+# W1 = alpha
+# def func1D(x, dim, alpha=[0.1, 0.2, 0.3, 0.4]):
+#     return (1 + np.linalg.norm(alpha) * x) ** (-dim - 1)
 
 
-dim = 4
-W1 = np.ones(dim) / np.sqrt(dim)  # function dependent!!!
-perm = range(dim)
-permutations = list(itertools.permutations(perm))
-projectedCorners = np.zeros(shape=(dim + 1, int(scipy.misc.factorial(dim))))
-for i in range(len(permutations)):
-    V = np.zeros((dim, dim + 1))
-    for k in range(dim):
-        for l in range(k, dim):
-            V[permutations[i][l], k] = 1
-    projectedCorners[:, i] = W1.transpose().dot(V)
- 
-leftBound = np.min(projectedCorners)
-rightBound = np.max(projectedCorners)
-
-print("bounds: [{}, {}]".format(leftBound, rightBound))
- 
- 
-def Vol(x):  
-    vol = 0 
-    for i in range(int(scipy.misc.factorial(dim))): 
-        xi = projectedCorners[:, i]
-        xi.sort()
-#         vol += MsplineWiki(len(xi) - 1, 0, x, xi)
-        vol += MsplineViaBspline(len(xi) - 1 , 0, x, xi)
-    return vol
+# corresponds to gernz Corner Peak: (1+ sum(alpha_i x_i))^(-dim-1)
+# W1 = alpha
+def func1D(x, dim, u, alpha):
+    return np.cos(2 * np.pi * u[0] + np.linalg.norm(alpha) * x)
 
 
-quadArg = lambda  x: func1D(x, dim) * Vol(x)
-integral = scipy.integrate.quad(quadArg, leftBound, rightBound)
-print(integral[0] / scipy.misc.factorial(dim))
+def integrateASg(g, W1, dim):
+    perm = range(dim)
+    permutations = list(itertools.permutations(perm))
+    projectedCorners = np.zeros(shape=(dim + 1, int(scipy.misc.factorial(dim))))
+    for i in range(len(permutations)):
+        V = np.zeros((dim, dim + 1))
+        for k in range(dim):
+            for l in range(k, dim):
+                V[permutations[i][l], k] = 1
+        projectedCorners[:, i] = W1.transpose().dot(V)
+     
+    leftBound = np.min(projectedCorners)
+    rightBound = np.max(projectedCorners)
+    
+#     print("bounds: [{}, {}]".format(leftBound, rightBound))
+     
+    def Vol(x):  
+        vol = 0 
+        for i in range(int(scipy.misc.factorial(dim))): 
+            xi = projectedCorners[:, i]
+            xi.sort()
+            vol += MsplineWiki(len(xi) - 1, 0, x, xi)
+    #         vol += MsplineViaBspline(len(xi) - 1 , 0, x, xi) # <- something is wrong here ...
+        return vol
+    
+    quadArg = lambda  x: g(x) * Vol(x)
+    integral = scipy.integrate.quad(quadArg, leftBound, rightBound)[0] / scipy.misc.factorial(dim)
+    return integral
 
-# X = np.linspace(leftBound, rightBound, 100)
-# M = np.zeros(len(X))
-# F = np.zeros(len(X))
-# FV = np.zeros(len(X))
-# for i in range(len(X)):
-# #     M[i] = Vol(X[i]) 
-#     F[i] = func1D(X[i], dim)
-# #     FV[i] = func1D(X[i], dim) * Vol(X[i])
-# # plt.plot(X, M, 'b')
-# plt.plot(X, F, 'g')
-# # plt.plot(X, FV, 'yellow')
-# plt.show()
+# dim = 2
+# # W1 = np.ones(dim) / np.sqrt(dim)  # function dependent!!!
+# alpha = [0.1, 0.2]
+# u = [0.3, 0.4]
+# W1 = np.asarray(alpha) / np.linalg.norm(alpha)
+# func = lambda x:func1D(x, dim, u, alpha)
+# integral = integrateASg(func, W1, dim)
+# print(integral)
 
