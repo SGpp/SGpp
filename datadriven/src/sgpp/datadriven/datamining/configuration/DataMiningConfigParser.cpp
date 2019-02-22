@@ -324,7 +324,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
       // Parse refinement indicator
       if (coarseningConfig->contains("coaseningIndicator")) {
         config.coarseningFunctorType =
-                CoarseningFunctorTypeParser::parse((*coaseningConfig)["coarseningIndicator"].get());
+                CoarseningFunctorTypeParser::parse((*coarseningConfig)["coarseningIndicator"].get());
       } else {
         std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
       }
