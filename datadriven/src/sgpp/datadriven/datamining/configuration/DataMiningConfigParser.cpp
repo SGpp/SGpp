@@ -329,8 +329,9 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
         std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
       }
     }
+    return hasCoarseningConfig;
   }
-  return hasCoarseningConfig;
+  
 }
 
 
