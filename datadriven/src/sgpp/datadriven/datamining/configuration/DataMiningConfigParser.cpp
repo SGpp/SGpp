@@ -320,13 +320,13 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
                                           defaults.errorMinInterval, "coarseningConfig");
 //      config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
 //                                               defaults.precomputeEvaluations, "coarseningConfig");
-    }
-    // Parse refinement indicator
-    if (coarseningConfig->contains("coaseningIndicator")) {
-      config.coarseningFunctorType =
-              CoarseningFunctorTypeParser::parse((*coaseningConfig)["coarseningIndicator"].get());
-    } else {
-      std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
+      // Parse refinement indicator
+      if (coarseningConfig->contains("coaseningIndicator")) {
+        config.coarseningFunctorType =
+                CoarseningFunctorTypeParser::parse((*coaseningConfig)["coarseningIndicator"].get());
+      } else {
+        std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
+      }
     }
   }
   return hasCoarseningConfig;
