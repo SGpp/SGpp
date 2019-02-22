@@ -241,7 +241,7 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
     config.threshold_ =
-        parseDouble(*adaptivityConfig, "threshold", defaults.threshold_, "adaptivityConfig");
+        parseDouble(*adaptivityConfig, "threshold", defaults.thresho322ld_, "adaptivityConfig");
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_, "adaptivityConfig");
     config.noPoints_ =
@@ -298,7 +298,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
           hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
   if (hasFitterAdaptivityConfig) {
     bool hasCoarseningConfig =
-            hasFitterConfig() ? (*configFile)[fitter].contains("CoarseningConfig") : false;
+            hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
     if (hasCoarseningConfig){
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
@@ -318,8 +318,8 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
                                          defaults.errorBufferSize, "coarseningConfig");
       config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
                                           defaults.errorMinInterval, "coarseningConfig");
-      config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
-                                               defaults.precomputeEvaluations, "coarseningConfig");
+//      config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
+//                                               defaults.precomputeEvaluations, "coarseningConfig");
     }
     // Parse refinement indicator
     if (coarseningConfig->contains("coaseningIndicator")) {

@@ -21,7 +21,7 @@
 			"level": 5
 		},
 		"adaptivityConfig": {
-			"CoarseningConfig" :{
+			"coarseningConfig" :{
                 "numCoarsening": 10,
 				"threshold": 0.001,
 				"maxLevelType": false,
