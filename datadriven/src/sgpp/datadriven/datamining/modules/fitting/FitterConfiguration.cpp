@@ -18,6 +18,10 @@ const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() 
   return adaptivityConfig;
 }
 
+const base::CoarseningConfiguration &FitterConfiguration::getCoarseningConfig() const {
+  return coarseningConfig;
+}
+
 const datadriven::CrossvalidationConfiguration &
 FitterConfiguration::getCrossvalidationConfig() const {
   return crossvalidationConfig;

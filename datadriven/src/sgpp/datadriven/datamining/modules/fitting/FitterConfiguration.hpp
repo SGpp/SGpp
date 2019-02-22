@@ -154,7 +154,11 @@ class FitterConfiguration {
    * @return AdaptivityConfiguration
    */
   base::AdaptivityConfiguration &getRefinementConfig();
-
+    /**
+     * Get or set how the adaptivity algorithms for the grid should behave.
+     * @return AdaptivityConfiguration
+     */
+    base::CoarseningConfiguration &getCoarseningConfig();
   /**
    * Get or set how the crossvalidation should behave.
    * @return CrossvalidationConfiguration
@@ -214,6 +218,11 @@ class FitterConfiguration {
    * Configure how the adaptivity algorithms for the grid should behave.
    */
   base::AdaptivityConfiguration adaptivityConfig;
+
+  /**
+   * Configure how the coarsening algorithms for the grid should behave.
+   */
+  base::CoarseningConfiguration coarseningConfig;
 
   /**
    * Configure how the crossvalidation should behave.
