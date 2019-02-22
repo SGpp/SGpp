@@ -115,12 +115,11 @@ namespace sgpp {
                            size_t d, base::HashGridPoint& par) const;
 
             /**
-             * @param gp the grid point
-             * @param point
+             * @param gp1 the grid point
+             * @param gp2 the grid point
              */
-            double getDistance(base::HashGridPoint& gp,
-                                 base::DataVector& point) const;
-
+            double getDistance(base::HashGridPoint& gp1,
+                               base::HashGridPoint& gp2) const;
             /**
              * Is point in support of basis function at gp
              */
