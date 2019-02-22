@@ -155,7 +155,7 @@ namespace sgpp {
             for (size_t i = 0; i < neighSeq.size(); i++) {
                 // For each neighbor
                 base::HashGridPoint& neighbor = storage.getPoint(neighSeq.at(i));
-                base::DataVector q(neighbor->getDimension());
+                base::DataVector q(neighbor.getDimension());
                 neighbor.getStandardCoordinates(q);
 
                 std::unique_ptr<base::OperationEval>
