@@ -155,14 +155,16 @@ namespace sgpp {
             for (size_t i = 0; i < neighSeq.size(); i++) {
                 // For each neighbor
                 base::HashGridPoint& neighbor = storage.getPoint(neighSeq.at(i));
+                base::DataVector q(neighbor->getDimension());
+                neighbor.getStandardCoordinates(q);
 
                 std::unique_ptr<base::OperationEval>
                 opEval1(op_factory::createOperationEval(*grids.at(max_class)));
-                double neighbor_max = opEval1->eval(*alphas.at(max_class), neighSeq.at(i));
+                double neighbor_max = opEval1->eval(*alphas.at(max_class), q);
 
                 std::unique_ptr<base::OperationEval>
                 opEval2(op_factory::createOperationEval(*grids.at(second_class)));
-                double neighbor_sec = opEval2->eval(*alphas.at(second_class), neighSeq.at(i));
+                double neighbor_sec = opEval2->eval(*alphas.at(second_class), q);
 
                 neighborDiffs.push_back(neighbor_max-neighbor_sec);
                 neighborDists.push_back(getDistance(gp,neighbor));
