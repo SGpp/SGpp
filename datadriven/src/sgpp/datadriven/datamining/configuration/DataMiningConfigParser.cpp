@@ -241,7 +241,7 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
     config.threshold_ =
-        parseDouble(*adaptivityConfig, "threshold", defaults.thresho322ld_, "adaptivityConfig");
+        parseDouble(*adaptivityConfig, "threshold", defaults.threshold_, "adaptivityConfig");
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_, "adaptivityConfig");
     config.noPoints_ =
