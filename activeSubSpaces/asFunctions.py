@@ -931,6 +931,7 @@ class genzCornerPeakXD():
         return self.dim
 
     def getEigenvec(self):
+        # W1 = alpha / np.linalg.norm(alpha)
        print("activeSubspaceFunctions.py: eivec not calculated")
        return 0
 

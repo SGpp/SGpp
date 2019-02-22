@@ -391,13 +391,13 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
             shadow1DEvaluations = [responseSurf.eval1D(x)  for x in X1unit]
 
     if doIntegral == 1:
-        quadOrder = 7
+        quadOrder = 9
         start = time.time()
         integral, integralError = integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder, approxLevel, approxDegree, numHistogramMCPoints)
         integrationTime = time.time() - start; 
         if printFlag == 1:
             print("integration time:               {}".format(integrationTime))
-        print("integral: {}\n".format(integral)),
+            print("integral: {}\n".format(integral)),
         print("integral error: {}".format(integralError))
     
 # plot interpolant of 2D function
