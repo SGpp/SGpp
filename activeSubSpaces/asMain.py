@@ -424,7 +424,9 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 # sstype   gradient based ('AS'), linear fit ('OLS') or quadratic fit ('QPHD')
 # nboot    number of bootstrappings
 #-------------------------------------------------------------------------- 
-def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=0, numShadow1DPoints=0, validationPoints=[], validationValues=[]):
+def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular', responseDegree=2, sstype='AS',
+                  nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
+                  validationValues=[]):
     print(len(f))
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
@@ -454,7 +456,7 @@ def ConstantineAS(X=None, f=None, df=None, responseDegree=2, sstype='AS', nboot=
     y = X.dot(ss.W1)
     RS.train(y, f)
     
-    if args.responseType == 'regular':
+    if responseType == 'regular':
         # calculate l2 error in W1T * [-1,1]. 
         validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
         validationValues = objFunc.eval(validationPoints, -1, 1)
@@ -535,6 +537,191 @@ def Halton(objFunc, numSamples):
     return integral, integralError
 
 
+##############################################################################
+############################### Main #########################################
+##############################################################################
+def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
+                saveFlag, numShadow1DPoints, numRefine, initialLevel, doResponse,
+                doIntegral, gridType, degree, responseType, asmType,
+                integralType, appSplineLevel, appSplineDegree, minDataPoints,
+                maxDataPoints, numDataSteps, genzIndex):
+    pysgpp.omp_set_num_threads(numThreads)
+
+    if 'genz' in model:
+        objFunc = asFunctions.getFunction(model, genzIndex)
+    else:
+        objFunc = asFunctions.getFunction(model)
+    numDim = objFunc.getDim()
+    sampleRange = np.unique(np.logspace(np.log10(minPoints), np.log10(maxPoints), num=numSteps))
+    sampleRange = [int(s) for s in sampleRange]
+    if responseType in ['data', 'dataR', 'datadriven', 'datadrivenR']:
+        dataRange = np.unique(np.logspace(np.log10(minDataPoints), np.log10(maxDataPoints), num=numDataSteps))
+        dataRange = [int(s) for s in dataRange]
+    else:
+        dataRange = [0]
+    
+    eival = np.zeros(shape=(numDim , len(sampleRange), len(dataRange)))
+    eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
+    durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    l2Errors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    integrals = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    integralErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    numGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    shadow1DEvaluationsArray = np.zeros(shape=(numShadow1DPoints, len(sampleRange), len(dataRange)))
+    boundsArray = np.zeros(shape=(2, len(sampleRange), len(dataRange)))
+    responseGridStrDict = {}
+    responseCoefficientsDict = {}
+    
+    if saveFlag == 1:
+        resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
+        resultsPath = os.path.join(resultsPath, objFunc.getName())
+        if method in ['OLS', 'QPHD', 'AS']:
+            folder = method + '_' + str(degree) + '_' + str(maxPoints) + '_' + responseType
+        elif method == 'Halton':
+            folder = method + '_' + str(maxPoints) 
+        elif method == 'asSGpp': 
+            if genzIndex >= 0:
+                folder = method + '_' + gridType + '_' + str(degree) + '_' + str(maxPoints) + '_' + responseType + '_' + asmType + '_' + integralType + '_alpha' + str(genzIndex)
+            else:
+                folder = method + '_' + gridType + '_' + str(degree) + '_' + str(maxPoints) + '_' + responseType + '_' + asmType + '_' + integralType
+        elif method == 'SGpp': 
+            folder = method + '_' + gridType + '_' + str(degree) + '_' + str(maxPoints) + '_' + responseType
+        path = os.path.join(resultsPath, folder)    
+    else:
+        path = None 
+    
+    numHistogramMCPoints = 100000
+    numErrorPoints = 10000
+    
+    # .... ..... .... Constantines Code .... .... ....
+    if method in ['AS', 'OLS', 'QPHD']:
+        nboot = 100
+        for i, numSamples in enumerate(sampleRange):
+            for j, numData in enumerate(dataRange):
+                start = time.time()
+                df = 0; vP = 0; vV = 0  # dummy
+                if responseType == 'data':
+                    trainingPoints, trainingValues, validationPoints, validationValues = getData(path, numData, objFuncSGpp(objFunc), method, model)
+                    trainingPoints.transpose();  validationPoints.transpose()
+                    f = np.ndarray(shape=(trainingValues.getSize(), 1))
+                    vV = np.ndarray(shape=(validationValues.getSize(), 1))
+                    x = np.ndarray(shape=(trainingPoints.getNrows(), trainingPoints.getNcols()))
+                    vP = np.ndarray(shape=(validationPoints.getNrows(), validationPoints.getNcols()))
+                    for k in range(trainingValues.getSize()):
+                        f[k] = trainingValues[k]
+                        for l in range(objFunc.getDim()):
+                            x[k, l] = trainingPoints.get(k, l)
+                    for k in range(validationValues.getSize()):
+                        vV[k] = validationValues[k]
+                        for l in range(objFunc.getDim()):
+                            vP[k, l] = trainingPoints.get(k, l)
+                elif responseType == 'regular':
+                    if model == 'borehole':
+                        x = boreholeX(numSamples)
+                    else:
+                        x = uniformX(numSamples, numDim)
+                    f = objFunc.eval(x, -1, 1)
+                    if method == 'AS':
+                        df = objFunc.eval_grad(x, -1, 1)
+                else:
+                    print('response type not supported')
+                    
+                e, v, l2Error, integral, \
+                integralError, shadow1DEvaluations, \
+                bounds = ConstantineAS(X=x, f=f, df=df, objFunc=objFunc,
+                                       responseType='regular', responseDegree=degree,
+                                       sstype=method, nboot=nboot, numErrorPoints=numErrorPoints,
+                                       numShadow1DPoints=numShadow1DPoints, validationPoints=vP,
+                                       validationValues=vV)
+                
+                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
+                integrals[i, j] = integral; integralErrors[i, j] = integralError
+                shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations[:, 0]
+                numGridPointsArray[i, j] = numSamples
+                boundsArray[:, i, j] = bounds
+                eival[:, i, j] = e[:, 0]; eivec[:, :, i, j] = v
+            
+    # .... .... .... Quasi Monte Carlo Integral with Halton Sequence  .... .... ....
+    elif method == 'Halton':
+        for i, numSamples in enumerate(sampleRange):
+            for j, numData in enumerate(dataRange):
+                start = time.time()
+                integral, integralError = Halton(objFunc, numSamples)
+                durations[i, j] = time.time() - start; 
+                integrals[i, j] = integral; 
+                integralErrors[i, j] = integralError
+                numGridPointsArray[i, j] = numSamples
+            
+    # .... .... .... active subspace SG++ .... .... .... 
+    elif method == 'asSGpp':
+        initialLevel = 1
+        numRefine = 3
+        for i, numSamples in enumerate(sampleRange):
+            for j, numData in enumerate(dataRange):
+                start = time.time()
+                numResponse = numSamples
+                numASM = numSamples
+                
+                e, v, l2Error, integral, integralError, shadow1DEvaluations, \
+                bounds, numGridPoints, responseGridStr, responseCoefficients = \
+                SGppAS(objFunc, gridType, degree, numASM, numResponse, model,
+                       asmType, responseType, integralType,
+                       numErrorPoints=numErrorPoints, savePath=path,
+                       numHistogramMCPoints=numHistogramMCPoints,
+                       approxLevel=appSplineLevel, approxDegree=appSplineDegree,
+                        numShadow1DPoints=numShadow1DPoints, numDataPoints=numData,
+                        numRefine=numRefine, initialLevel=initialLevel,
+                        doResponse=doResponse, doIntegral=doIntegral)
+                
+                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
+                integrals[i, j] = integral; integralErrors[i, j] = integralError
+                shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations
+                numGridPointsArray[i, j] = numGridPoints
+                boundsArray[:, i, j] = bounds
+                eival[:, i, j] = e[:]
+                eivec[:, :, i, j] = v
+                responseGridStrDict["{} {}".format(i, j)] = responseGridStr
+                responseCoefficientsDict["{} {}".format(i, j)] = dataVectorToPy(responseCoefficients)
+            
+    # .... .... .... .... SG++ .... .... .... ....
+    elif method == 'SGpp':
+        initialLevel = 1
+        numRefine = 3
+        for i, numSamples in enumerate(sampleRange):
+            for j, numData in enumerate(dataRange):
+                start = time.time()
+                
+                l2Error, integral, integralError, numGridPoints = \
+                SGpp(objFunc, gridType, degree, numSamples,
+                     model, responseType, numErrorPoints=numErrorPoints,
+                     savePath=path, numDataPoints=numData,
+                        numRefine=numRefine, initialLevel=initialLevel)
+                
+                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
+                numGridPointsArray[i, j] = numGridPoints
+                integrals[i, j] = integral; integralErrors[i, j] = integralError
+    #------------------------------------ save Data ---------------------------------------
+    if saveFlag == True:
+        print("saving Data to {}".format(path))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        # encapuslate all results and the input in 'summary' dictionary and save it
+        summary = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange,
+                'durations':durations, 'dim': numDim, 'l2Errors': l2Errors,
+                'integrals':integrals, 'integralErrors': integralErrors,
+                'model':model, 'method':method, 'minPoints':minPoints,
+                'maxPoints':maxPoints, 'numSteps':numSteps, 'gridType':gridType,
+                'degree':degree, 'responseType':responseType, 'asmType':asmType,
+                'integralType': integralType, 'numHistogramMCPoints':numHistogramMCPoints,
+                'appSplineLevel': appSplineLevel, 'appSplineDegree': appSplineDegree,
+                'numShadow1DPoints':numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
+                'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
+                'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict,
+                'numRefine':numRefine, 'initialLevel':initialLevel, 'genzIndex':genzIndex}
+        with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
+            pickle.dump(summary, fp)
+
+
 #------------------------------------ main ---------------------------------------
 if __name__ == "__main__":
     # parse the input arguments
@@ -564,170 +751,12 @@ if __name__ == "__main__":
     parser.add_argument('--minDataPoints', default=10000, type=int, help="minimum number of points used in artificial data scenarios")
     parser.add_argument('--maxDataPoints', default=100000, type=int, help="maximum number of points used in artificial data scenarios")
     parser.add_argument('--numDataSteps', default=1, type=int, help="number of steps in [mindataPoints, maxDataPoints] range")
+    # only relevant for Genz functions with predefined alpha (used for paper)
+    parser.add_argument('--genzIndex', default=-1, type=int, help="index when iterating through several alpha/u for genz. Default -1 => random")
+    
     args = parser.parse_args()
-    pysgpp.omp_set_num_threads(args.numThreads)
-
-    objFunc = asFunctions.getFunction(args.model)
-    numDim = objFunc.getDim()
-    sampleRange = np.unique(np.logspace(np.log10(args.minPoints), np.log10(args.maxPoints), num=args.numSteps))
-    sampleRange = [int(s) for s in sampleRange]
-    if args.responseType in ['data', 'dataR', 'datadriven', 'datadrivenR']:
-        dataRange = np.unique(np.logspace(np.log10(args.minDataPoints), np.log10(args.maxDataPoints), num=args.numDataSteps))
-        dataRange = [int(s) for s in dataRange]
-    else:
-        dataRange = [0]
-    
-    eival = np.zeros(shape=(numDim , len(sampleRange), len(dataRange)))
-    eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
-    durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    l2Errors = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    integrals = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    integralErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    numGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    shadow1DEvaluationsArray = np.zeros(shape=(args.numShadow1DPoints, len(sampleRange), len(dataRange)))
-    boundsArray = np.zeros(shape=(2, len(sampleRange), len(dataRange)))
-    responseGridStrDict = {}
-    responseCoefficientsDict = {}
-    
-    if args.saveFlag == 1:
-        resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
-        resultsPath = os.path.join(resultsPath, objFunc.getName())
-        if args.method in ['OLS', 'QPHD', 'AS']:
-            folder = args.method + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
-        elif args.method == 'Halton':
-            folder = args.method + '_' + str(args.maxPoints) 
-        elif args.method == 'asSGpp': 
-            folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType + '_' + args.asmType + '_' + args.integralType
-        elif args.method == 'SGpp': 
-            folder = args.method + '_' + args.gridType + '_' + str(args.degree) + '_' + str(args.maxPoints) + '_' + args.responseType
-        path = os.path.join(resultsPath, folder)    
-    else:
-        path = None 
-    
-    numHistogramMCPoints = 100000
-    numErrorPoints = 10000
-    
-    # .... ..... .... Constantines Code .... .... ....
-    if args.method in ['AS', 'OLS', 'QPHD']:
-        nboot = 100
-        for i, numSamples in enumerate(sampleRange):
-            for j, numData in enumerate(dataRange):
-                start = time.time()
-                df = 0; vP = 0; vV = 0  # dummy
-                if args.responseType == 'data':
-                    trainingPoints, trainingValues, validationPoints, validationValues = getData(path, numData, objFuncSGpp(objFunc), args.method, args.model)
-                    trainingPoints.transpose();  validationPoints.transpose()
-                    f = np.ndarray(shape=(trainingValues.getSize(), 1))
-                    vV = np.ndarray(shape=(validationValues.getSize(), 1))
-                    x = np.ndarray(shape=(trainingPoints.getNrows(), trainingPoints.getNcols()))
-                    vP = np.ndarray(shape=(validationPoints.getNrows(), validationPoints.getNcols()))
-                    for k in range(trainingValues.getSize()):
-                        f[k] = trainingValues[k]
-                        for l in range(objFunc.getDim()):
-                            x[k, l] = trainingPoints.get(k, l)
-                    for k in range(validationValues.getSize()):
-                        vV[k] = validationValues[k]
-                        for l in range(objFunc.getDim()):
-                            vP[k, l] = trainingPoints.get(k, l)
-                elif args.responseType == 'regular':
-                    if args.model == 'borehole':
-                        x = boreholeX(numSamples)
-                    else:
-                        x = uniformX(numSamples, numDim)
-                    f = objFunc.eval(x, -1, 1)
-                    if args.method == 'AS':
-                        df = objFunc.eval_grad(x, -1, 1)
-                else:
-                    print('response type not supported')
-                    
-                e, v, l2Error, integral, integralError, shadow1DEvaluations, bounds = ConstantineAS(X=x, f=f, df=df, responseDegree=args.degree,
-                                                                        sstype=args.method, nboot=nboot,
-                                                                        numShadow1DPoints=args.numShadow1DPoints, validationPoints=vP, validationValues=vV)
-                
-                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
-                integrals[i, j] = integral; integralErrors[i, j] = integralError
-                shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations[:, 0]
-                numGridPointsArray[i, j] = numSamples
-                boundsArray[:, i, j] = bounds
-                eival[:, i, j] = e[:, 0]; eivec[:, :, i, j] = v
-            
-    # .... .... .... Quasi Monte Carlo Integral with Halton Sequence  .... .... ....
-    elif args.method == 'Halton':
-        for i, numSamples in enumerate(sampleRange):
-            for j, numData in enumerate(dataRange):
-                start = time.time()
-                integral, integralError = Halton(objFunc, numSamples)
-                durations[i, j] = time.time() - start; 
-                integrals[i, j] = integral; 
-                integralErrors[i, j] = integralError
-                numGridPointsArray[i, j] = numSamples
-            
-    # .... .... .... active subspace SG++ .... .... .... 
-    elif args.method == 'asSGpp':
-        initialLevel = 1
-        numRefine = 3
-        for i, numSamples in enumerate(sampleRange):
-            for j, numData in enumerate(dataRange):
-                start = time.time()
-                numResponse = numSamples
-                numASM = numSamples
-                
-                e, v, l2Error, integral, integralError, shadow1DEvaluations, \
-                bounds, numGridPoints, responseGridStr, responseCoefficients = \
-                SGppAS(objFunc, args.gridType, args.degree, numASM, numResponse, args.model,
-                       args.asmType, args.responseType, args.integralType,
-                       numErrorPoints=numErrorPoints, savePath=path,
-                       numHistogramMCPoints=numHistogramMCPoints,
-                       approxLevel=args.appSplineLevel, approxDegree=args.appSplineDegree,
-                        numShadow1DPoints=args.numShadow1DPoints, numDataPoints=numData,
-                        numRefine=args.numRefine, initialLevel=args.initialLevel,
-                        doResponse=args.doResponse, doIntegral=args.doIntegral)
-                
-                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
-                integrals[i, j] = integral; integralErrors[i, j] = integralError
-                shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations
-                numGridPointsArray[i, j] = numGridPoints
-                boundsArray[:, i, j] = bounds
-                eival[:, i, j] = e[:]
-                eivec[:, :, i, j] = v
-                responseGridStrDict["{} {}".format(i, j)] = responseGridStr
-                responseCoefficientsDict["{} {}".format(i, j)] = dataVectorToPy(responseCoefficients)
-            
-    # .... .... .... .... SG++ .... .... .... ....
-    elif args.method == 'SGpp':
-        initialLevel = 1
-        numRefine = 3
-        for i, numSamples in enumerate(sampleRange):
-            for j, numData in enumerate(dataRange):
-                start = time.time()
-                
-                l2Error, integral, integralError, numGridPoints = \
-                SGpp(objFunc, args.gridType, args.degree, numSamples,
-                     args.model, args.responseType, numErrorPoints=numErrorPoints,
-                     savePath=path, numDataPoints=numData,
-                        numRefine=args.numRefine, initialLevel=args.initialLevel)
-                
-                durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
-                numGridPointsArray[i, j] = numGridPoints
-                integrals[i, j] = integral; integralErrors[i, j] = integralError
-    #------------------------------------ save Data ---------------------------------------
-    if args.saveFlag == True:
-        print("saving Data to {}".format(path))
-        if not os.path.exists(path):
-            os.makedirs(path)
-        # encapuslate all results and the input in 'summary' dictionary and save it
-        summary = {'eigenvalues':eival, 'eigenvectors':eivec, 'sampleRange':sampleRange,
-                'durations':durations, 'dim': numDim, 'l2Errors': l2Errors,
-                'integrals':integrals, 'integralErrors': integralErrors,
-                'model':args.model, 'method':args.method, 'minPoints':args.minPoints,
-                'maxPoints':args.maxPoints, 'numSteps':args.numSteps, 'gridType':args.gridType,
-                'degree':args.degree, 'responseType':args.responseType, 'asmType':args.asmType,
-                'integralType': args.integralType, 'numHistogramMCPoints':numHistogramMCPoints,
-                'appSplineLevel': args.appSplineLevel, 'appSplineDegree': args.appSplineDegree,
-                'numShadow1DPoints':args.numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
-                'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
-                'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict,
-                'numRefine':args.numRefine, 'initialLevel':args.initialLevel}
-        with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
-            pickle.dump(summary, fp)
-
+    executeMain(args.model, args.method, args.numThreads, args.minPoints, args.maxPoints, args.numSteps,
+                args.saveFlag, args.numShadow1DPoints, args.numRefine, args.initialLevel, args.doResponse,
+                args.doIntegral, args.gridType, args.degree, args.responseType, args.asmType,
+                args.integralType, args.appSplineLevel, args.appSplineDegree, args.minDataPoints,
+                args.maxDataPoints, args.numDataSteps, args.genzIndex)

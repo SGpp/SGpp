@@ -1,15 +1,16 @@
+from click.exceptions import FileError
 from mpl_toolkits.mplot3d import Axes3D
+import os
 
 import active_subspaces as ac
 import as1DIntegral
 import matplotlib.pyplot as plt
 import numpy as np
-import numpy as np
 import pysgpp
 
 
 # Note: the function in http://www.sfu.ca/~ssurjano/morcaf95b.html from "Quasi-monte carlo integration", Morokoff has an 1D AS
-def getFunction(model, args=None):
+def getFunction(model, genzIndex=-1):
     if model == 'test':
         return test()
     
@@ -99,22 +100,22 @@ def getFunction(model, args=None):
 # https://link.springer.com/chapter/10.1007/978-94-009-3889-2_33
 # two of these (oscillatory and corner peak) have 1D AS    
     elif model == 'genzOscillatory2D':
-        return genzOscillatoryXD(2)
+        return genzOscillatoryXD(2, genzIndex)
     elif model == 'genzCornerPeak2D':
-        return genzCornerPeakXD(2)
+        return genzCornerPeakXD(2, genzIndex)
     
     elif model == 'genzOscillatory8D':
-        return genzOscillatoryXD(8)
+        return genzOscillatoryXD(8, genzIndex)
     elif model == 'genzProductPeak8D':
-        return genzProductPeakXD(8)
+        return genzProductPeakXD(8, genzIndex)
     elif model == 'genzCornerPeak8D':
-        return genzCornerPeakXD(8)
+        return genzCornerPeakXD(8, genzIndex)
     elif model == 'genzGaussian8D':
-        return genzGaussianXD(8)
+        return genzGaussianXD(8, genzIndex)
     elif model == 'genzC08D':
-        return genzC0XD(8)
+        return genzC0XD(8, genzIndex)
     elif model == 'genzDiscontinuous8D':
-        return genzDiscontinuousXD(8)
+        return genzDiscontinuousXD(8, genzIndex)
     
     elif model == 'ridge2D':
         return ridgeXD(2)
@@ -781,22 +782,57 @@ class gaussianXD():
         return df
 
 
-def genzInitialilzeRandom(dim):
-    alpha = np.random.uniform(low=0, high=1, size=(dim,))
-    u = np.random.uniform(low=0, high=1, size=(dim,))
+def genzInitialilzeRandom(dim, model, index=-1,):
+    if index == -1:
+        alpha = np.random.uniform(low=0, high=1, size=(dim,))
+        u = np.random.uniform(low=0, high=1, size=(dim,))
+        print("Genz: using random values")
+        print("alpha: {}".format(alpha))
+        print("u: {}".format(u))
+    else:
+        path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/{}'.format(model)
+        print('Genz: loading alpha and u from {}'.format(path))
+        alphas = np.loadtxt(os.path.join(path, 'alpha.txt'))
+        us = np.loadtxt(os.path.join(path, 'u.txt'))
+        alpha = alphas[:, index]
+        u = us[:, index]
+        print("alpha: {}".format(alpha))
+        print("u: {}".format(u))
     return alpha, u
+
+
+def getGenzIntegral(model, index, alpha, u, dim):
+    try:
+        path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/{}'.format(model)
+        integrals = np.loadtxt(os.path.join(path, 'integrals.txt'))
+        return integrals[index]
+    except IOError:
+        if 'Oscillatory' in model:
+            print("Calculating exact integral")
+            W1 = alpha / np.linalg.norm(alpha)
+            g = lambda x: np.cos(2 * np.pi * u[0] + np.linalg.norm(alpha) * x)
+            integral = as1DIntegral.integrateASg(g, W1, dim)
+            return integral
+        elif 'CornerPeak' in model:
+            print("Calculating exact integral")
+            W1 = alpha / np.linalg.norm(alpha)
+            g = lambda x: (1 + np.linalg.norm(alpha) * x) ** (dim - 1)
+            integral = as1DIntegral.integrateASg(g, W1, dim)
+            return integral
+        else:
+            print('asFunctions: integral not calculated, returning 0')
+            return 0
 
 
 # has 1D AS!
 class genzOscillatoryXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
+        self.index = index
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -807,10 +843,7 @@ class genzOscillatoryXD():
         return "genzOscillatory{}D".format(self.getDim())
     
     def getIntegral(self):
-        W1 = self.alpha / np.linalg.norm(self.alpha)
-        g = lambda x: np.cos(2 * np.pi * self.u[0] + np.linalg.norm(self.alpha) * x)
-        integral = as1DIntegral.integrateASg(g, W1, self.getDim())
-        return integral
+        return getGenzIntegral(self.getName(), self.index, self.alpha, self.u, self.getDim())
 
     def getDim(self):
         return self.dim
@@ -835,11 +868,9 @@ class genzOscillatoryXD():
 # has moderate 1D AS
 class genzProductPeakXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -878,13 +909,12 @@ class genzProductPeakXD():
 # has 1D AS
 class genzCornerPeakXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
-        print("Genz alpha:{}".format(self.alpha))
-        print("Genz u:{}".format(self.u))
+        self.index = index
         
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -895,11 +925,8 @@ class genzCornerPeakXD():
         return "genzCornerPeak{}D".format(self.getDim())
     
     def getIntegral(self):
-        W1 = self.alpha / np.linalg.norm(self.alpha)
-        g = lambda x: (1 + np.linalg.norm(self.alpha) * x) ** (-self.getDim() - 1)
-        integral = as1DIntegral.integrateASg(g, W1, self.getDim())
-        return integral
-
+        return getGenzIntegral(self.getName(), self.index, self.alpha, self.u, self.getDim())
+    
     def getDim(self):
         return self.dim
 
@@ -924,11 +951,9 @@ class genzCornerPeakXD():
 # has moderate 1D AS
 class genzGaussianXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -968,11 +993,9 @@ class genzGaussianXD():
 # has moderate 1D AS
 class genzC0XD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -1012,11 +1035,9 @@ class genzC0XD():
 # has moderate 1D AS
 class genzDiscontinuousXD():
        
-    def __init__(self, dim):
+    def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim)
-        print("Genz alpha:{}".format(alpha))
-        print("Genz u:{}".format(u))
+        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
