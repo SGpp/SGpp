@@ -331,7 +331,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
     }
     return hasCoarseningConfig;
   }
-  
+
 }
 
 

@@ -36,6 +36,7 @@ using sgpp::base::DataVector;
 using sgpp::base::application_exception;
 
 using sgpp::datadriven::RefinementFunctorType;
+using sgpp::datadriven::CoarseningFunctorType;
 
 namespace sgpp {
 namespace datadriven {
@@ -142,7 +143,7 @@ size_t ModelFittingClassification::labelToIdx(double label) {
   }
 }
 
-MultiGridRefinmentFunctor *ModelFittingClassification::getCoarseningFunctor(
+MultiGridCoarseningFunctor *ModelFittingClassification::getCoarseningFunctor(
      std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
     sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
     switch (coarseningConfig.coarseningFunctorType) {
