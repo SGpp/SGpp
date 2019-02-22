@@ -312,9 +312,9 @@ namespace sgpp {
         double GridPointBasedCoarseningFunctor::getDistance(base::HashGridPoint& gp1,
                                                             base::HashGridPoint& gp2)
         const {
-            base::DataVector dist(gp1->getDimension());
+            base::DataVector dist(gp1.getDimension());
 
-            for (size_t d = 0; d < gp1->getDimension(); d++) {
+            for (size_t d = 0; d < gp1.getDimension(); d++) {
                 double coord1 = gp1.getStandardCoordinate(d);
                 double coord2 = gp2.getStandardCoordinate(d);
                 double diff_sq = coord1-coord2;
