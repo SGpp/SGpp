@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/MultiGridCoarseningFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <vector>
@@ -99,7 +100,14 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   MultiGridRefinementFunctor *getRefinementFunctor(
       std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
-
+    /**
+     * Returns the coarsening functor suitable for the model settings.
+     * @param grids vector of pointers to grids for each class
+     * @param surpluses vector of pointers to the suprluses for each class
+     * @return pointer to a coarsening functor that suits the model settings
+     */
+  MultiGridCoarseningFunctor *getCoarseningFunctor(
+            std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
   /**
    * Creates a density estimation model that fits the model settings.
    * @param densityEstimationConfig configuration for the density estimation
