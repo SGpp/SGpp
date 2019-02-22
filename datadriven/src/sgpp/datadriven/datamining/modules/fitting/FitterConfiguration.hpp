@@ -87,6 +87,12 @@ class FitterConfiguration {
    */
   const base::AdaptivityConfiguration &getRefinementConfig() const;
 
+    /**
+     * Get how the adaptivity algorithms for the grid should behave.
+     * @return immutable CoarseningConfiguration
+     */
+  const base::CoarseningConfiguration &getCoarseningConfig() const;
+
   /**
    * Get how the crossvalidation should behave.
    * @return immutable CrossvalidationConfiguration

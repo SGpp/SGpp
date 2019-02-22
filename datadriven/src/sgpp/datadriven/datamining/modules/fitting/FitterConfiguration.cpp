@@ -66,6 +66,11 @@ base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() {
       static_cast<const FitterConfiguration &>(*this).getRefinementConfig());
 }
 
+base::CoarseningConfiguration &FitterConfiguration::getCoarseningConfig() {
+  return const_cast<base::CoarseningConfiguration &>(
+          static_cast<const FitterConfiguration &>(*this).getCoarseningConfig());
+}
+
 datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig() {
   return const_cast<datadriven::CrossvalidationConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getCrossvalidationConfig());
