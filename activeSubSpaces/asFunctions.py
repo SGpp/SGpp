@@ -16,11 +16,17 @@ def getFunction(model, genzIndex=-1):
     elif model == 'exp2D':
         return expXD(2)
     elif model == 'exp10D':
-        return expXD(2)
+        return expXD(10)
+    
     elif model == 'exp10D2':
         return exp10D2()
     elif model == 'exp2DNoise':
         return exp2DNoise()
+    
+    elif model == 'sinSum4D':
+        return sinSumXD(4)
+    elif model == 'sinSum10D':
+        return sinSumXD(10)
     
     elif model == 'const2D':
         return constXD(2)
@@ -681,13 +687,29 @@ class multiSubspaceXD():
         [_, numSubspaces] = np.shape(self.W1)
         res = 0
         for i in range(numSubspaces):
-            sum = 0
-#             for j in range(self.getDim()):
-#                 sum += self.W1[j, i] * x[:, j]
             sum = np.dot(x, self.W1[:, i])
             res += np.exp(-sum)
         return (res).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        fvalue = 0
+        for i in range(numSubspaces):
+            sum = np.dot(x, self.W1[:, i])
+            fvalue += np.exp(-sum)
 
+        dfdx0 = (self.alpha[0] * fvalue)[:, None]
+        df = dfdx0            
+        for i in range(1, self.getDim()):
+            dfdxi = (self.alpha[i] * fvalue)[:, None]
+            df = np.hstack((df, dfdxi))
+        return df
+    
 
 # a exp(- (x-b^2) / c^2)
 class gaussianXD():
@@ -1357,6 +1379,29 @@ class expXD():
             self.alpha = [0.3976359776265647, 0.6208690449525298, 0.5092487084723184, 0.4439290610401342]
         elif self.dim == 10:
             self.alpha = [0.0221140615223529, 0.3076062948625377, 0.5564364395908996, 0.1405087923595306, 0.1624815809308112, 0.4197592578958778, 0.2567651122498575, 0.4154763884464925, 0.2537360583986147, 0.2645676951576569]
+        elif self.dim == 20:
+            self.alpha = [0.30624668, 0.26987092, 0.27809746, 0.24860875, 0.09371597,
+        0.08927579, 0.11911006, 0.35795882, 0.22830286, 0.26734514,
+        0.25324747, 0.24514351, 0.06815879, 0.30379755, 0.01596568,
+        0.30671697, 0.25375817, 0.0627973 , 0.16626598, 0.00940588]
+        elif self.dim == 30:
+            self.alpha = [0.24854291, 0.11924486, 0.08795798, 0.19653388, 0.0967644 ,
+        0.22155734, 0.12742474, 0.09005511, 0.09253937, 0.21143961,
+        0.09478724, 0.02490038, 0.31676272, 0.05501661, 0.27391802,
+        0.11003178, 0.08899827, 0.06752797, 0.25096827, 0.19406756,
+        0.24842435, 0.19510251, 0.03661695, 0.05618371, 0.09947753,
+        0.08172985, 0.30209137, 0.28481942, 0.29143771, 0.22398807]
+        elif self.dim == 50:
+            self.alpha = [0.05338397, 0.20833312, 0.08850366, 0.19823961, 0.22057508,
+        0.24856484, 0.01413401, 0.14307348, 0.10593953, 0.23749358,
+        0.22599878, 0.04824736, 0.07997166, 0.06429396, 0.03367442,
+        0.07641997, 0.01554401, 0.22311773, 0.13192647, 0.14823881,
+        0.12624719, 0.09462724, 0.08848517, 0.0912589 , 0.0454494 ,
+        0.12062256, 0.2376884 , 0.01213557, 0.0199672 , 0.15206845,
+        0.02631958, 0.23368798, 0.01436633, 0.11901981, 0.21789332,
+        0.2290975 , 0.07174841, 0.12921111, 0.04280606, 0.21963982,
+        0.15349246, 0.25297573, 0.1360565 , 0.1153098 , 0.02167285,
+        0.16459837, 0.03848994, 0.08493984, 0.11182624, 0.00753293]
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -1503,6 +1548,68 @@ class exp2DNoise():
         x = unnormalize(x, lb, ub, lN, uN)
         x0 = x[:, 0]; x1 = x[:, 1]
         return (np.exp(0.7 * x0 + 0.3 * x1) + np.sin(np.pi * x0)).reshape(numSamples, 1)
+
+
+class sinSumXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+        if self.dim == 2:
+            self.alpha = [0]
+        elif self.dim == 4:
+            # ||alpha||_1 = 2 pi
+            self.alpha = [0.00993215, 2.28442127, 2.34822345, 1.64060844]
+        elif self.dim == 10:
+            self.alpha = [0.25193051, 0.61404718, 0.46747394, 0.23123545, 0.80326464, 0.96411829, 0.56918122, 0.23040196, 0.98942164, 1.16211049]
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sinSum{}D".format(self.dim)
+    
+    def getIntegral(self):
+        print("integral unknown")
+        return 0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+#         eivec = np.zeros(shape=(self.getDim(), self.getDim()))
+#         eivec[:, 0] = self.alpha / np.linalg.norm(self.alpha)
+#         return eivec
+        print("eivec unknown")
+        return [0]
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        sum = 0
+        for i in range(self.getDim()):
+            sum += self.alpha[i] * x[:, i]
+        return (np.sin(sum)).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+
+        dfdx0 = (self.alpha[0] * np.cos(self.alpha[0] * x[:, 0]))[:, None]
+        df = dfdx0            
+        for i in range(1, self.getDim()):
+            dfdxi = (self.alpha[i] * np.cos(self.alpha[i] * x[:, i]))[:, None]
+            df = np.hstack((df, dfdxi))
+        return df
 
     
 class sumXD():
