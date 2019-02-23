@@ -59,6 +59,10 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   solverRefineConfig.eps_ = 1e-14;
   solverRefineConfig.threshold_ = 1e-14;
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
+
+  //configure geometry configuration
+  geometryConfig.stencil = "Direct Neighbour";
+  //geometryConfig.dim;
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser &parser) {
@@ -72,6 +76,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterDensityEstimationConfig(densityEstimationConfig, densityEstimationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
   parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
+  parser.getGeometryConfig(geometryConfig, geometryConfig);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -26,6 +26,9 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <fstream>
+#include <iostream>
+
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -99,8 +102,9 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 }
 
 void ModelFittingClassification::fit(Dataset& newDataset) {
-  reset();
-  update(newDataset);
+  /*reset();
+  update(newDataset);*/
+  storeClassificator();
 }
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
@@ -274,6 +278,55 @@ void ModelFittingClassification::reset() {
   classNumberInstances.clear();
   classIdx.clear();
   refinementsPerformed = 0;
+}
+
+void ModelFittingClassification::storeClassificator() {
+  std::cout << "Storing Classificator..." << std::endl;
+  //std::cout << test << std::endl;
+
+
+  //store labels
+  std::string labels;
+  for (const auto &p : classIdx) {
+    std::cout << "label[" << p.first << "] = " << p.second << '\n';
+    labels = labels + std::to_string(p.first) + ", " + std::to_string(p.second) + "\n";
+  }
+  std::ofstream labelsFile;
+  labelsFile.open("/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/labels.txt");
+  labelsFile << labels;
+  labelsFile.close();
+
+  /*for (auto i = classNumberInstances.begin(); i != classNumberInstances.end(); ++i){
+      std::cout << *i << ' ';
+  }*/
+
+  //store instances
+  std::string instances;
+  for(size_t i = 0; i < classNumberInstances.size(); i++){
+    instances = instances + std::to_string(classNumberInstances[i]) +"\n";
+  }
+  std::ofstream instancesFile;
+  instancesFile.open("/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/instances.txt");
+  instancesFile << instances;
+  instancesFile.close();
+
+  //store grids and alphas
+  for(size_t i = 0; i < models.size(); i++){
+	  std::string test;
+	  std::string classificator;
+	  classificator = "";
+	  test = "";
+	  classificator = classificator + "/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/" + "Grid_Alpha" + std::to_string(i) +".txt";
+	  //test = test + std::to_string(classNumberInstances[i]) + "\n";
+	  //std::cout << classificator << std::endl;
+	  //std::cout << "Calling storeFitter()" << std::endl;
+  	  test = test + models[i]->storeFitter();
+  	  //std::cout << test << std::endl;
+  	  std::ofstream file;
+  	  file.open(classificator);
+  	  file <<  test;
+  	  file.close();
+  }
 }
 
 }  // namespace datadriven

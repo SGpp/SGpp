@@ -30,6 +30,16 @@ Grid& ModelFittingBaseSingleGrid::getGrid() {
   }
 }
 
-DataVector& ModelFittingBaseSingleGrid::getSurpluses() { return alpha; }
+DataVector& ModelFittingBaseSingleGrid::getSurpluses() {
+  return alpha;
+}
+
+std::string ModelFittingBaseSingleGrid::storeFitter() {
+  std::string output;
+  output = output + "Grid: \n" + getGrid().serialize() + "\n";
+  output = output + "Alphas \n" + getSurpluses().toString() + "\n";
+  return output;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

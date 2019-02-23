@@ -85,6 +85,8 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    */
   DataVector& getSurpluses();
 
+  std::string storeFitter();
+
  protected:
   /**
    * the sparse grid that approximates the data.

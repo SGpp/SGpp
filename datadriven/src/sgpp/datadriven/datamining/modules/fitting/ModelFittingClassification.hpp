@@ -21,6 +21,8 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+
 #include <vector>
 #include <map>
 
@@ -81,6 +83,11 @@ class ModelFittingClassification : public ModelFittingBase {
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /*
+   * store Fitter into text file
+   */
+  void storeClassificator();
 
  private:
   /**

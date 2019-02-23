@@ -14,8 +14,10 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/grid/GridDataBase.hpp>
 
 #include <vector>
+#include <string>
 
 using sgpp::base::GridType;
 using sgpp::base::Grid;
@@ -26,32 +28,97 @@ using sgpp::base::algorithm_exception;
 namespace sgpp {
 namespace datadriven {
 
-sgpp::base::Grid *GridFactory::createGrid(sgpp::base::GeneralGridConfiguration& gridConfig,
-    std::vector<std::vector <size_t>> interactions) const {
-  Grid *grid;
+sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfiguration& gridConfig,
+		const std::vector<std::vector <size_t>> interactions) const {
+  Grid *tmpGrid;
+  if (gridConfig.type_ == GridType::Linear) {
+    tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
+    tmpGrid = Grid::createLinearBoundaryGrid(
+        gridConfig.dim_, static_cast<base::GridPoint::level_type>(gridConfig.boundaryLevel_));
+  } else if (gridConfig.type_ == GridType::LinearBoundary) {
+    tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::ModLinear) {
+    tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
+  } else {
+    throw algorithm_exception(
+        "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
+  }
 
-  if (gridConfig.type_ == GridType::ModLinear) {
-      grid = Grid::createModLinearGrid(gridConfig.dim_);
-    } else if (gridConfig.type_ == GridType::Linear) {
-      grid = Grid::createLinearGrid(gridConfig.dim_);
-    } else {
-      throw algorithm_exception(
-          "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
-    }
+  std::cout << interactions.size() << std::endl;
 
-    // Generate regular Grid with LEVELS Levels
-    if (interactions.size() == 0) {
-      grid->getGenerator().regular(gridConfig.level_);
-    } else {
-      if (gridConfig.generalType_ != sgpp::base::GeneralGridType::GeometryAwareSparseGrid) {
-        // No geometry aware sparse grid but passed interactions nonetheless
-        std::cout << "Passed grid configuration for non geometry aware sparse grids and" <<
-            "interactions vector nonetheless. Geometry aware sparse grid will be created!" <<
-            std::endl;
-      }
-      grid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
+  // Generate regular Grid with LEVELS Levels
+  if (interactions.size() == 0) {
+    tmpGrid->getGenerator().regular(gridConfig.level_);
+  } else {
+    if (gridConfig.generalType_ != sgpp::base::GeneralGridType::GeometryAwareSparseGrid) {
+      // No geometry aware sparse grid but passed interactions nonetheless
+      std::cout << "Passed grid configuration for non geometry aware sparse grids and" <<
+          " interactions vector nonetheless. Geometry aware sparse grid will be created!" <<
+          std::endl;
     }
-    return grid;
+    tmpGrid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
+    std::cout << "interactions set" << std::endl;
+  }
+  return tmpGrid;
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(std::string& stencil, std::vector<int64_t>& dim)
+    const {
+  std::vector<std::vector<size_t>> interactions;
+
+  std::vector<int64_t> res = dim;
+
+  if (!stencil.compare("DirectNeighbour")) {
+    interactions = getDirectNeighbours(res);
+  } else {
+    std::cout << "Stencil " << stencil << " not found";
+    std::cout << std::endl;
+  }
+
+  return interactions;
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(std::vector<int64_t>& res)
+    const {
+  // std::vector<int64_t> geodim = res;
+  size_t geodim = 28;
+  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
+
+  for (size_t i = 0; i < geodim; i++) {
+    for (size_t j = 0; j < geodim-1; j++) {
+      std::vector<size_t> xdir = std::vector<size_t>();
+
+      xdir.push_back(i*geodim+j);
+
+      xdir.push_back(i*geodim+j+1);
+
+      vec.push_back(xdir);
+    }
+  }
+  for (size_t i = 0; i < geodim-1; i++) {
+    for (size_t j = 0; j < geodim; j++) {
+      std::vector<size_t> ydir = std::vector<size_t>();
+
+      ydir.push_back(i*geodim+j);
+
+      ydir.push_back((i+1)*geodim+j);
+
+      vec.push_back(ydir);
+    }
+  }
+  // 1d vector for all dimensions
+  for (size_t i = 0; i < geodim*geodim; i++) {
+    std::vector<size_t> tmp = std::vector<size_t>();
+    tmp.push_back(i);
+    vec.push_back(tmp);
+  }
+  // add empty vector
+  std::vector<size_t> empty = std::vector<size_t>();
+  vec.push_back(empty);
+
+
+  return vec;
 }
 }  // namespace datadriven
 }  // namespace sgpp

@@ -14,6 +14,9 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
+
+
 #include <memory>
 
 namespace sgpp {
@@ -136,6 +139,9 @@ class ModelFittingBase {
    */
   bool verboseSolver;
 
+  // virtual std::string& storeFitter();
+  // void storeClassificator();
+
  protected:
   /**
    * Factory member function that generates a grid from configuration.
@@ -143,6 +149,14 @@ class ModelFittingBase {
    * @return new grid object that is owned by the caller.
    */
   Grid *buildGrid(const RegularGridConfiguration &gridConfig) const;
+
+  /**
+     * Factory member function that generates a grid from configuration.
+     * @param gridConfig configuration for the grid object
+     * @return new grid object that is owned by the caller.
+     */
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+                  const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Factory member function to build the solver for the least squares regression problem according
