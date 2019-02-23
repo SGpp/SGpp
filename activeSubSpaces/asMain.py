@@ -413,6 +413,15 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #     ax.plot_wireframe(X, Y, F, rstride=10, cstride=10,color='r')
 #     plt.show()
 
+#     plt.plot(range(len(eival)), eival)
+#     plt.show()
+    
+    print("eivec 0: {}".format(eivec[:, 0]))
+    print("real eivec 0: {}".format(objFunc.getEigenvec()[:, 0]))
+    print("\n")
+    print("error eivec 0: {}".format(np.linalg.norm(abs(eivec[:, 0]) - abs(objFunc.getEigenvec()[:, 0]))))
+    print("error eivec 1: {}".format(np.linalg.norm(abs(eivec[:, 1]) - abs(objFunc.getEigenvec()[:, 1]))))
+
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, \
            [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients
 
@@ -426,7 +435,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #-------------------------------------------------------------------------- 
 def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular', responseDegree=2, sstype='AS',
                   nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
-                  validationValues=[]):
+                  validationValues=[], savePath=None):
     print(len(f))
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
@@ -447,6 +456,7 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
         
     print(eival)
     print("first eigenvector: {}".format(ss.eigenvecs[:, 0]))
+#     print("real first eigenvector {}".format(objFunc.getEigenvec()[:, 0]))
     # quadratic polynomial approximation of maximum degree responseDegree
     print("response degree: {}".format(responseDegree))
     RS = ac.utils.response_surfaces.PolynomialApproximation(responseDegree)
@@ -509,14 +519,21 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
 #     ss.partition(1)
 #     y = np.dot(X, ss.W1)
 #     ac.utils.plotters.sufficient_summary(y, f[:, 0])
-#      
+      
 #     plt.figure()
 #     plt.semilogy(range(len(eival)), eival, '-o')
-#      
+#       
 #     plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))
+    
+#     print("\neigenvec:")
+#     print(ss.eigenvecs)
+#     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
+#     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
+
+    print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
         
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds
 
@@ -632,7 +649,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                                        responseType='regular', responseDegree=degree,
                                        sstype=method, nboot=nboot, numErrorPoints=numErrorPoints,
                                        numShadow1DPoints=numShadow1DPoints, validationPoints=vP,
-                                       validationValues=vV)
+                                       validationValues=vV, savePath=path)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
@@ -654,8 +671,6 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
             
     # .... .... .... active subspace SG++ .... .... .... 
     elif method == 'asSGpp':
-        initialLevel = 1
-        numRefine = 3
         for i, numSamples in enumerate(sampleRange):
             for j, numData in enumerate(dataRange):
                 start = time.time()
@@ -685,8 +700,6 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
             
     # .... .... .... .... SG++ .... .... .... ....
     elif method == 'SGpp':
-        initialLevel = 1
-        numRefine = 3
         for i, numSamples in enumerate(sampleRange):
             for j, numData in enumerate(dataRange):
                 start = time.time()

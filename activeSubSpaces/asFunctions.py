@@ -1,4 +1,3 @@
-from click.exceptions import FileError
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
@@ -14,20 +13,10 @@ def getFunction(model, genzIndex=-1):
     if model == 'test':
         return test()
     
-    elif model == 'exp1D':
-        return exp1D()
     elif model == 'exp2D':
-        return exp2D()
-    elif model == 'exp3D':
-        return exp3D()
-    elif model == 'exp4D':
-        return exp4D()
-    elif model == 'exp6D':
-        return exp6D()
-    elif model == 'exp8D':
-        return exp8D()
+        return expXD(2)
     elif model == 'exp10D':
-        return exp10D()
+        return expXD(2)
     elif model == 'exp10D2':
         return exp10D2()
     elif model == 'exp2DNoise':
@@ -64,6 +53,19 @@ def getFunction(model, genzIndex=-1):
     elif model == 'dampedSin8D':
         return dampedSinXD(8)
     
+    elif model == 'multiSubspace3D':
+        return multiSubspaceXD(3) 
+    elif model == 'multiSubspace10D':
+        return multiSubspaceXD(10)   
+    elif model == 'multiSubspace20D':
+        return multiSubspaceXD(20)  
+    elif model == 'multiSubspace30D':
+        return multiSubspaceXD(30)  
+    elif model == 'multiSubspace50D':
+        return multiSubspaceXD(50)  
+ 
+    elif model == 'gaussian2D':
+        return gaussianXD(2)   
     elif model == 'gaussian4D':
         return gaussianXD(4)
     elif model == 'gaussian10D':
@@ -192,6 +194,9 @@ def unnormalize(X, lb, ub, lN, uN):
 
 class test():
 
+    def __init__(self):
+        self.dummy = 7
+        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
@@ -201,8 +206,8 @@ class test():
         return "test{}D".format(self.getDim())
     
     def getIntegral(self):
-#         print("activeSubspaceFunctions.py: integral not calculated")
-        return 13.0 / 12.0
+        print("activeSubspaceFunctions.py: integral not calculated")
+        return 0.0
 
     def getDim(self):
         return 4
@@ -224,85 +229,8 @@ class test():
 #         for i in range(self.getDim()):
 #             res *= (D - x[:, i]) 
 #         res *= 1 / ((D - 0.5) ** D)
-        
-#         res = 0
-#         for i in range(self.getDim()):
-#             prod = 1
-#             for j in range(i):
-#                 prod *= x[:, j]
-#             res += (-1) ** i * prod
 
-        alpha = [0.1, 0.02, 0.37, 0.4]
-        u = [0.3, 0.8, 0.11, 0.01]
-        sum = 0
-        for i in range(self.getDim()):
-            sum += alpha[i] ** 2 * (x[:, i] - u[i]) ** 2
-        res = np.exp(-sum)
-        return (res).reshape(numSamples, 1)
-
-    
-class exp1D():
-
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1.3130643285972257] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp1D"
-
-    def getIntegral(self):
-        return np.e - 1.0
-
-    def getDim(self):
-        return 1
-
-    def eval(self, xx, lN=0, uN=1):
-        return (np.exp(xx[0][0])).reshape(1, 1)
-
-
-class exp2D():
-
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp2D"
-
-    def getDim(self):
-        return 2
-    
-    def getIntegral(self):
-        return 1.6889062543455505
-
-    def getEigenvec(self):
-        eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [0.91914503, 0.3939192986]
-        eivec[1] = [0.3939192986, -0.91914503]
-        return eivec
-
-    def eval(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];
-        return (np.exp(0.7 * x0 + 0.3 * x1)).reshape(numSamples, 1)
-
-    def eval_grad(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];
-        dfdx0 = (0.7 * np.exp(0.7 * x0 + 0.3 * x1))[:, None]
-        dfdx1 = (0.3 * np.exp(0.7 * x0 + 0.3 * x1))[:, None]
-        return np.hstack((dfdx0, dfdx1)) 
+        return (np.sin(x[:, 0] + np.cos(x[:, 2]))).reshape(numSamples, 1)
 
 
 class linear2D():
@@ -713,19 +641,69 @@ class dampedSinXD():
         return df
 
 
+class multiSubspaceXD():
+
+    def __init__(self, dim):
+        self.dim = dim
+        if self.dim in [3, 10, 20, 30, 50]:
+            path = os.path.join('/home/rehmemk/git/SGpp/activeSubSpaces/results', 'multiSubspace{}D'.format(dim), 'W1.txt')
+            print('multiSubspace: loading W1 from {}'.format(path))
+            self.W1 = np.loadtxt(path)
+        else:
+            print("asFunctions::multiSubspace: dimension {} has not been prepared".format(dim))
+
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "multiSubspace{}D".format(self.getDim())
+    
+    def getIntegral(self):
+        print("activeSubspaceFunctions.py: integral not calculated")
+        return 0.0
+
+    def getDim(self):
+        return self.dim
+
+    def getEigenvec(self):
+        return self.W1
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        D = self.getDim()
+        [_, numSubspaces] = np.shape(self.W1)
+        res = 0
+        for i in range(numSubspaces):
+            sum = 0
+#             for j in range(self.getDim()):
+#                 sum += self.W1[j, i] * x[:, j]
+            sum = np.dot(x, self.W1[:, i])
+            res += np.exp(-sum)
+        return (res).reshape(numSamples, 1)
+
+
+# a exp(- (x-b^2) / c^2)
 class gaussianXD():
        
     def __init__(self, dim):
         self.dim = dim
 
-        if dim == 4:
+        if dim == 2:
             self.a = 0.3
-            self.b = [0.1, 0.29, 0.71, 0.01]
-            self.c = [0.1, 0.9, 0.2, 0.5]
+            self.b = [0.2, 0.8]
+            self.c = [0.45, 0.55] 
         elif dim == 10:
             self.a = 0.81509932
-            self.b = [0.35759224, 0.12422152, 0.80270042, 0.27039308, 0.75470597, 0.71285051, 0.63244037, 0.12516021, 0.97583364, 0.04952066]
-            self.c = [0.25174549, 0.20202675, 0.88427756, 0.07364739, 0.80637472, 0.50494681, 0.47542434, 0.20626397, 0.41080996, 0.46764418]
+            # ||b||_1 = 1, ||c||_1 = 1
+            self.b = [0.13070685, 0.14730195, 0.05670354, 0.13042858, 0.02121103, 0.04008262, 0.19366816, 0.08305602, 0.10762894, 0.0892123 ]
+            self.c = [0.27993391, 0.32053254, 0.44999622, 0.05636396, 0.3468832 , 0.49267538, 0.23962195, 0.05029981, 0.03478667, 0.43474884]
         else:
             self.a = np.random.rand(1, 1)
             self.b = np.random.rand(self.dim, 1)
@@ -737,7 +715,7 @@ class gaussianXD():
         return lb, ub
     
     def getName(self):
-        return "dampedSin{}D".format(self.getDim())
+        return "gaussian{}D".format(self.getDim())
     
     def getIntegral(self):
         print("activeSubspaceFunctions.py: integral not calculated")
@@ -747,8 +725,14 @@ class gaussianXD():
         return self.dim
 
     def getEigenvec(self):
-        print("activeSubspaceFunctions.py: eivec not calculated")
-        return 0.0
+        if self.getDim() in [2, 10]:
+              path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/gaussian{}D/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
+              print('loading real eivec from {}'.format(path))
+              eivec = np.loadtxt(path)
+              return eivec
+        else:
+            print("activeSubspaceFunctions.py: eivec not calculated")
+            return 0
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -759,30 +743,29 @@ class gaussianXD():
         x = unnormalize(x, lb, ub, lN, uN)
         arg = 0
         for i in range(self.getDim()):
-            arg += (x[:, i] - self.b[i]) ** 2 / (2 * self.c[i] ** 2) 
+            arg += ((x[:, i] - self.b[i]) ** 2) / (2 * self.c[i] ** 2)
 
         return (self.a * np.exp(-arg)).reshape(numSamples, 1)
     
     def eval_grad(self, xx, lN=0, uN=1):
         x = xx.copy()
         x = np.atleast_2d(x)
-        numSamples = x.shape[0]
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
         arg = 0
         for i in range(self.getDim()):
-            arg += (x[:, i] - self.b[i]) ** 2 / (2 * self.c[i] ** 2) 
-        ex = self.a * (np.exp(-arg))[:, None]
-        
-        df = np.zeros((numSamples, self.getDim()))
-        for i in range(numSamples):
-            for j in range(self.getDim()):
-                df[i, j] = (self.b[j] - x[i, j]) / (self.c[j] ** 2) * ex[i]
+            arg += ((x[:, i] - self.b[i]) ** 2) / (2 * self.c[i] ** 2)
+            
+        dfdx0 = (self.a * (x[:, 0] - self.b[0]) / (self.c[0] ** 2) * np.exp(-arg))[:, None]
+        df = dfdx0
+        for i in range(1, self.dim):
+            dfdxi = (self.a * (x[:, i] - self.b[i]) / (self.c[i] ** 2) * np.exp(-arg))[:, None]
+            df = np.hstack((df, dfdxi))
         return df
 
 
-def genzInitialilzeRandom(dim, model, index=-1,):
+def genzInitialilze(dim, model, index=-1,):
     if index == -1:
         alpha = np.random.uniform(low=0, high=1, size=(dim,))
         u = np.random.uniform(low=0, high=1, size=(dim,))
@@ -829,7 +812,7 @@ class genzOscillatoryXD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
         self.index = index
@@ -870,7 +853,7 @@ class genzProductPeakXD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -911,7 +894,7 @@ class genzCornerPeakXD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
         self.index = index
@@ -954,7 +937,7 @@ class genzGaussianXD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -974,8 +957,8 @@ class genzGaussianXD():
         return self.dim
 
     def getEigenvec(self):
-       print("activeSubspaceFunctions.py: eivec not calculated")
-       return 0
+        print("activeSubspaceFunctions.py: eivec not calculated")
+        return 0
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -996,7 +979,7 @@ class genzC0XD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -1038,7 +1021,7 @@ class genzDiscontinuousXD():
        
     def __init__(self, dim, index=-1):
         self.dim = dim
-        alpha, u = genzInitialilzeRandom(dim, self.getName(), index)
+        alpha, u = genzInitialilze(dim, self.getName(), index)
         self.alpha = alpha
         self.u = u
        
@@ -1363,8 +1346,17 @@ class jumpXD():
         res = np.array([int(s > 0.5 * self.dim) for s in sum])
         return (res).reshape(numSamples, 1)
 
-
-class exp3D():
+ 
+class expXD():
+       
+    def __init__(self, dim):
+        self.dim = dim
+        if self.dim == 2:
+            self.alpha = [0.7, 0.3]
+        elif self.dim == 4:
+            self.alpha = [0.3976359776265647, 0.6208690449525298, 0.5092487084723184, 0.4439290610401342]
+        elif self.dim == 10:
+            self.alpha = [0.0221140615223529, 0.3076062948625377, 0.5564364395908996, 0.1405087923595306, 0.1624815809308112, 0.4197592578958778, 0.2567651122498575, 0.4154763884464925, 0.2537360583986147, 0.2645676951576569]
        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
@@ -1372,17 +1364,21 @@ class exp3D():
         return lb, ub
     
     def getName(self):
-        return "exp3D"
+        return "exp{}D".format(self.dim)
     
     def getIntegral(self):
-        return 1.357751380821328
+        if self.getDim() == 2:
+            return 1.6889062543455505
+        else:
+            print("integral unknown")
+            return 0
 
     def getDim(self):
-        return 3
+        return self.dim
 
     def getEigenvec(self):
         eivec = np.zeros(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [   0.267261241912424, 0.534522483824849, 0.801783725737273]
+        eivec[:, 0] = self.alpha / np.linalg.norm(self.alpha)
         return eivec
 
     def eval(self, xx, lN=0, uN=1):
@@ -1392,107 +1388,9 @@ class exp3D():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];x2 = x[:, 2]; 
-        return (np.exp(0.1 * x0 + 0.2 * x1 + 0.3 * x2)).reshape(numSamples, 1)
-    
-    def eval_grad(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];x2 = x[:, 2];
-        fvalue = np.exp(0.1 * x0 + 0.2 * x1 + 0.3 * x2)
-
-        dfdx0 = (0.1 * fvalue)[:, None]
-        dfdx1 = (0.2 * fvalue)[:, None]
-        dfdx2 = (0.3 * fvalue)[:, None]
-        return np.hstack((dfdx0, dfdx1, dfdx2)) 
-        
-    
-class exp4D():
-       
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp4D"
-    
-    def getIntegral(self):
-        return 1.669439155861167
-
-    def getDim(self):
-        return 4
-
-    def getEigenvec(self):
-        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [ 0.182574185835055, 0.365148371670111, 0.547722557505166, 0.730296743340221]
-        return eivec
-
-    def eval(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];x2 = x[:, 2]; x3 = x[:, 3];
-        return (np.exp(0.1 * x0 + 0.2 * x1 + 0.3 * x2 + 0.4 * x3)).reshape(numSamples, 1)
-    
-    def eval_grad(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        x0 = x[:, 0]; x1 = x[:, 1];x2 = x[:, 2]; x3 = x[:, 3];
-        fvalue = np.exp(0.1 * x0 + 0.2 * x1 + 0.3 * x2 + 0.4 * x3)
-
-        dfdx0 = (0.1 * fvalue)[:, None]
-        dfdx1 = (0.2 * fvalue)[:, None]
-        dfdx2 = (0.3 * fvalue)[:, None]
-        dfdx3 = (0.4 * fvalue)[:, None]
-        return np.hstack((dfdx0, dfdx1, dfdx2, dfdx3)) 
-        
-        return (res).reshape(numSamples, 1)
-
-
-class exp6D():
-       
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp6D"
-    
-    def getIntegral(self):
-        return 1.111131825870765
-
-    def getDim(self):
-        return 6
-
-    def getEigenvec(self):
-        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [ 0.104828483672192, 0.209656967344384, 0.314485451016575, 0.419313934688767, 0.524142418360959, 0.628970902033151]
-        return eivec
-
-    def eval(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06];
         res = 1
         for i in range(self.getDim()):
-            res *= np.exp(coeff[i] * x[:, i])
+            res *= np.exp(self.alpha[i] * x[:, i])
         return (res).reshape(numSamples, 1)
     
     def eval_grad(self, xx, lN=0, uN=1):
@@ -1502,141 +1400,16 @@ class exp6D():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06];
         fvalue = 1
         for i in range(self.getDim()):
-            fvalue *= np.exp(coeff[i] * x[:, i])
+            fvalue *= np.exp(self.alpha[i] * x[:, i])
 
-        dfdx0 = (coeff[0] * fvalue)[:, None]
-        dfdx1 = (coeff[1] * fvalue)[:, None]
-        dfdx2 = (coeff[2] * fvalue)[:, None]
-        dfdx3 = (coeff[3] * fvalue)[:, None]
-        dfdx4 = (coeff[4] * fvalue)[:, None]
-        dfdx5 = (coeff[5] * fvalue)[:, None]
-        return np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5)) 
-        
-        return (res).reshape(numSamples, 1)
-
-
-class exp8D():
-       
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp8D"
-    
-    def getIntegral(self):
-        return 1.198235394004500
-
-    def getDim(self):
-        return 8
-
-    def getEigenvec(self):
-        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
-        eivec[0] = [0.070014004201401, 0.140028008402801, 0.210042012604202, 0.280056016805602, 0.350070021007003, 0.420084025208403, 0.490098029409804, 0.560112033611204]
-        return eivec
-
-    def eval(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08];
-        res = 1
-        for i in range(self.getDim()):
-            res *= np.exp(coeff[i] * x[:, i])
-        return (res).reshape(numSamples, 1)
-    
-    def eval_grad(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08];
-        fvalue = 1
-        for i in range(self.getDim()):
-            fvalue *= np.exp(coeff[i] * x[:, i])
-
-        dfdx0 = (coeff[0] * fvalue)[:, None]
-        dfdx1 = (coeff[1] * fvalue)[:, None]
-        dfdx2 = (coeff[2] * fvalue)[:, None]
-        dfdx3 = (coeff[3] * fvalue)[:, None]
-        dfdx4 = (coeff[4] * fvalue)[:, None]
-        dfdx5 = (coeff[5] * fvalue)[:, None]
-        dfdx6 = (coeff[6] * fvalue)[:, None]
-        dfdx7 = (coeff[7] * fvalue)[:, None]
-        return np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5, dfdx6, dfdx7)) 
-        
-        return (res).reshape(numSamples, 1)
-
-   
-class exp10D():
-       
-    def getDomain(self):
-        lb = np.array([0] * self.getDim())
-        ub = np.array([1] * self.getDim())
-        return lb, ub
-    
-    def getName(self):
-        return "exp10D"
-    
-    def getIntegral(self):
-        return 1.000458431582603  # 1.318644188369653
-
-    def getDim(self):
-        return 10
-
-    def getEigenvec(self):
-        print("activeSubspaceFunctions.py: not calculated")
-        return 0
-
-    def eval(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, -0.01, 0.02, -0.02, 0.03, -0.03, 0.04, -0.04, 0.05, -0.05]
-        # coeff = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-        # coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10];
-        res = 1
-        for i in range(self.getDim()):
-            res *= np.exp(coeff[i] * x[:, i])
-        return (res).reshape(numSamples, 1)
-    
-    def eval_grad(self, xx, lN=0, uN=1):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        numSamples = x.shape[0]
-        # unnormalize the input to the functions domain
-        lb, ub = self.getDomain()
-        x = unnormalize(x, lb, ub, lN, uN)
-        coeff = [0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10];
-        fvalue = 1
-        for i in range(self.getDim()):
-            fvalue *= np.exp(coeff[i] * x[:, i])
-
-        dfdx0 = (coeff[0] * fvalue)[:, None]
-        dfdx1 = (coeff[1] * fvalue)[:, None]
-        dfdx2 = (coeff[2] * fvalue)[:, None]
-        dfdx3 = (coeff[3] * fvalue)[:, None]
-        dfdx4 = (coeff[4] * fvalue)[:, None]
-        dfdx5 = (coeff[5] * fvalue)[:, None]
-        dfdx6 = (coeff[6] * fvalue)[:, None]
-        dfdx7 = (coeff[7] * fvalue)[:, None]
-        dfdx8 = (coeff[8] * fvalue)[:, None]
-        dfdx9 = (coeff[9] * fvalue)[:, None]
-        return np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5, dfdx6, dfdx7, dfdx8, dfdx9)) 
-        
-        return (res).reshape(numSamples, 1)
+        dfdx0 = (self.alpha[0] * fvalue)[:, None]
+        df = dfdx0            
+        for i in range(1, self.getDim()):
+            dfdxi = (self.alpha[i] * fvalue)[:, None]
+            df = np.hstack((df, dfdxi))
+        return df
 
 
 class exp10D2():

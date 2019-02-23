@@ -1,6 +1,5 @@
 from argparse import ArgumentParser
 import colorsys
-import ipdb
 import itertools
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
