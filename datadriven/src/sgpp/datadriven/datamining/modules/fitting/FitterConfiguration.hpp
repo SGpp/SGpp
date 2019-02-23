@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -137,6 +138,12 @@ class FitterConfiguration {
    */
   const datadriven::LearnerConfiguration& getLearnerConfig() const;
 
+  /*
+   * Returns the configuration for the geometry parameters
+   * @return immutable GeometryConfiguration
+   */
+  const datadriven::GeometryConfiguration& getGeometryConfig() const;
+
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
@@ -186,6 +193,12 @@ class FitterConfiguration {
    * @return current OperationMultipleEvalConfiguration
    */
   datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig();
+
+  /*
+   * Get or set geometry aware parameters
+   * @return Geometry Configuration
+   */
+  //datadriven::GeometryConfiguration &getGeometryConfig();
 
   /**
    * set default values for all members based on the desired scenario.
@@ -250,6 +263,11 @@ class FitterConfiguration {
    * Configuration for the learner's behaviour
    */
   datadriven::LearnerConfiguration learnerConfig;
+
+  /*
+   * Configuration of the geometry parameters
+   */
+  datadriven::GeometryConfiguration geometryConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

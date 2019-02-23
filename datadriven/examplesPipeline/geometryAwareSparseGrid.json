@@ -1,0 +1,38 @@
+{
+  	"dataSource": {
+    		"filePath": "../../datasets/mnist/mnist_[2]_28x28.train.arff",
+		"batchSize": 6000
+	},
+	"fitter": {
+
+    		"gridConfig": {
+      			"gridType": "modlinear",
+      			"level": "3"
+    		},
+		"geometryConfig": {
+			"dim":[
+				28,
+				28
+			],
+			"stencil": "DirectNeighbour"
+		},
+    		"regularizationConfig":{
+			"regularizationType": "Identity",
+      			"lambda": "0.01"
+    		},
+    		"densityEstimationConfig":{
+			"densityEstimationType": "decomposition",
+			"matrixDecompositionType": "Chol"
+    		},
+    		"adaptivityConfig":{
+      			"numRefinements": "10",
+      			"noPoints": "5",
+      			"threshold": "0.0"
+    		},
+		"learner" : {
+			"usePrior" : false,
+			"beta" : 0.0
+		}
+
+  	}
+}

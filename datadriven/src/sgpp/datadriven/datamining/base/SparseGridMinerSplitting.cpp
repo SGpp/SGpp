@@ -50,8 +50,10 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       // Train model on new batch
       fitter->update(*dataset);
 
+      std::cout << "Done training!" << std::endl;
+
       // Evaluate the score on the training and validation data
-      double scoreTrain = scorer->test(*fitter, *dataset);
+      /*double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
       if (verbose) {
@@ -63,10 +65,11 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
         fitter->refine();
-      }
+      }*/
       if (verbose) {
         std::cout << "###############" << "Iteration finished." << std::endl;
       }
+      fitter->fit(*dataset);
     }
   }
   return scorer->test(*fitter, *(dataSource->getValidationData()));

@@ -41,24 +41,18 @@ ModelFittingBase::ModelFittingBase()
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
 Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
-  // load grid
-  Grid *tmpGrid;
-  if (gridConfig.type_ == GridType::Linear) {
-    tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
-  } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
-    tmpGrid = Grid::createLinearBoundaryGrid(
-        gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_));
-  } else if (gridConfig.type_ == GridType::LinearBoundary) {
-    tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
-  } else if (gridConfig.type_ == GridType::ModLinear) {
-    tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
-  } else {
-    throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
-  }
+  GridFactory gridFactory;
 
-  GridGenerator &gridGen = tmpGrid->getGenerator();
-  gridGen.regular(gridConfig.level_);
-  return tmpGrid;
+  // pass interactions with size 0
+  std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
+  return gridFactory.createGrid(gridConfig, interactions);
+}
+
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig, const GeometryConfiguration &geometryConfig) const{
+  GridFactory gridFactory;
+  std::string tmpString = geometryConfig.stencil;
+  std::vector<int64_t> dim = geometryConfig.dim;
+  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(tmpString, dim));
 }
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {

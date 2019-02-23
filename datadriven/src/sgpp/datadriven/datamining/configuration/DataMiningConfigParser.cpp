@@ -82,6 +82,11 @@ bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   return hasFitterCrossValidationConfig;
 }
 
+bool DataMiningConfigParser::hasGeometryConfig() const{
+	return configFile->contains("geometryConfig");
+}
+
+
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {
   bool hasDataSource = hasDataSourceConfig();
@@ -823,6 +828,22 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   }
 
   return hasLearnerConfig;
+}
+
+bool DataMiningConfigParser::getGeometryConfig(
+    datadriven::GeometryConfiguration &config,
+    const datadriven::GeometryConfiguration &defaults) const {
+  bool hasGeometryConfig = hasFitterConfig() ? (*configFile)[fitter].contains("geometryConfig") : false;
+
+  if (hasGeometryConfig) {
+    std::cout << "Has geometry config" << std::endl;
+    auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
+
+    config.stencil = parseString(*geometryConfig, "stencil", defaults.stencil, "geometryConfig");
+    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+  }
+
+  return hasGeometryConfig;
 }
 
 } /* namespace datadriven */

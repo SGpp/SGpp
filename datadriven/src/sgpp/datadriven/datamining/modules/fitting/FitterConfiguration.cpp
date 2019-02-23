@@ -55,6 +55,10 @@ const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
     const {
   return learnerConfig;
 }
+const datadriven::GeometryConfiguration &FitterConfiguration::getGeometryConfig() const {
+  return geometryConfig;
+}
+
 
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
   return const_cast<base::RegularGridConfiguration&>(
@@ -95,5 +99,12 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
   return const_cast<datadriven::OperationMultipleEvalConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
+
+/*
+datadriven::GeometryConfiguration &FitterConfiguration::getGeometryConfig() {
+  return const_cast<datadriven::GeometryConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getGeometryConfig());
+}
+*/
 }  // namespace datadriven
 }  // namespace sgpp

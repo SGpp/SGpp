@@ -20,6 +20,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 
 #include <vector>
 #include <string>
@@ -55,6 +56,7 @@ class DataMiningConfigParser {
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
   bool hasFitterConfig() const;
+  bool hasGeometryConfig() const;
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
                           std::map<std::string, DiscreteParameter> &dispar,
@@ -116,6 +118,12 @@ class DataMiningConfigParser {
    */
   bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
       const datadriven::LearnerConfiguration& defaults) const;
+
+  /*
+   *
+   */
+  bool getGeometryConfig(datadriven::GeometryConfiguration &config,
+      const datadriven::GeometryConfiguration &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
