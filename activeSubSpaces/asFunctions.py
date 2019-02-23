@@ -17,6 +17,12 @@ def getFunction(model, genzIndex=-1):
         return expXD(2)
     elif model == 'exp10D':
         return expXD(10)
+    elif model == 'exp20D':
+        return expXD(20)
+    elif model == 'exp30D':
+        return expXD(30)
+    elif model == 'exp50D':
+        return expXD(50)
     
     elif model == 'exp10D2':
         return exp10D2()
