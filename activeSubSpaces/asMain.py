@@ -277,11 +277,13 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
     eival = reverseDataVectorToNdArray(eivalSGpp);   
     eivec = reverseDataMatrixToNdArray(eivecSGpp)
     
+    asmError = 0
     if printFlag == 1 and asmType in ["adaptive", "regular"]:
-        print("error in ASM interpolant: {}".format(ASM.l2InterpolationError(10000)))
+        asmError = ASM.l2InterpolationError(10000)
+        print("error in ASM interpolant: {}".format(asmError))
         print("number of ASM interpolation points: {}".format(ASM.getCoefficients().getSize()))
     
-    return ASM, eival, eivec, validationValues, validationPoints
+    return ASM, eival, eivec, validationValues, validationPoints, asmError
 
 
 #---------------------SGpp with active subspaces----------------------------
@@ -311,7 +313,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     print("\nnumGridPoints = {}".format(numResponse))
     if responseType in ['regular', 'dataR', 'datadrivenR']:
         responseLevel = int(np.math.log(numResponse + 1, 2)) 
-        asmLevel = responseLevel
+        asmLevel = responseLevel  #this makes no sense in higher dimensions!!!
         numASM = asmLevel  # wrapper
         print("using level {} which has {} points for regular grids".format(responseLevel, 2 ** responseLevel - 1))
     print("numDataPoints = {}".format(numDataPoints))
@@ -322,7 +324,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     f = objFuncSGpp(objFunc)
     
     start = time.time()
-    ASM, eival, eivec, validationValues, validationPoints = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
+    ASM, eival, eivec, validationValues, validationPoints, asmError = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
                                                                           numRefine, savePath, numDataPoints, model, printFlag)
     recognitionTime = time.time() - start; start = time.time()
     if printFlag == 1:
@@ -416,14 +418,12 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #     plt.plot(range(len(eival)), eival)
 #     plt.show()
     
-    print("eivec 0: {}".format(eivec[:, 0]))
-    print("real eivec 0: {}".format(objFunc.getEigenvec()[:, 0]))
-    print("\n")
-    print("error eivec 0: {}".format(np.linalg.norm(abs(eivec[:, 0]) - abs(objFunc.getEigenvec()[:, 0]))))
-    print("error eivec 1: {}".format(np.linalg.norm(abs(eivec[:, 1]) - abs(objFunc.getEigenvec()[:, 1]))))
+#     print("\n")
+#     realEivec = objFunc.getEigenvec()
+#     print("err 0: {}".format(np.linalg.norm(abs(eivec[:, 0]) - abs(realEivec[:, 0]))))
 
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, \
-           [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients
+           [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients, asmError
 
 
 #---------------------Constantines AS framework----------------------------
@@ -437,6 +437,7 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
                   nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
                   validationValues=[], savePath=None):
     print(len(f))
+    asmError = 0
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
     if sstype == 'OLS':
@@ -448,6 +449,29 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
         ss.compute(X=X, f=f, nboot=nboot, sstype='QPHD')
         eival = ss.eigenvals
         eivec = ss.eigenvecs
+
+        # --- begin HACK!---
+        # the quadratic model is actualy quite simple. Reproduce it here and calculate the error from this:
+        qX, qM, qm = ac.utils.misc.process_inputs(X)
+        qweights = np.ones((qM, 1)) / qM
+        qpr = ac.utils.response_surfaces.PolynomialApproximation(2)
+        qpr.train(X, f, qweights)
+        # With this I can verify that indead the hacked quadratic interpolant is the same that is
+        # used inside Constantines code (the eigenvalues and eigenvectors are the same)
+#         qb, qA = qpr.g, qpr.H
+#         gamma = 1.0 / 3.0
+#         qC = np.outer(qb, qb.transpose()) + gamma * np.dot(qA, qA.transpose())
+#         qe, qW = ac.subspaces.sorted_eigh(qC)
+#         print(qe)
+#         print(qW)
+        
+        validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
+        validationValues = objFunc.eval(validationPoints, -1, 1)
+        detectionInterpolantEval = qpr.predict(validationPoints)[0]
+        asmError = np.linalg.norm(detectionInterpolantEval - validationValues)
+        print("detection interpolation error: {}".format(asmError))
+        # --- end HACK! ---
+        
     # ---------- exact gradient ----------
     elif sstype == 'AS':
         ss.compute(df=df, nboot=nboot, sstype='AS')
@@ -522,20 +546,23 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
       
 #     plt.figure()
 #     plt.semilogy(range(len(eival)), eival, '-o')
-#       
+#         
 #     plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))
     
-#     print("\neigenvec:")
-#     print(ss.eigenvecs)
+    print("\neigenvec:")
+    print(ss.eigenvecs)
 #     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
 #     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
 
-    print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
+#     print("\n")
+#     print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
+#     print("eivec:")
+#     print(ss.eigenvecs)
         
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds
+    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds, asmError
 
 
 def Halton(objFunc, numSamples):
@@ -581,6 +608,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
     eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
     durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
     l2Errors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    asmErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
     integrals = np.zeros(shape=(len(sampleRange), len(dataRange)))
     integralErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
     numGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
@@ -645,13 +673,14 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                     
                 e, v, l2Error, integral, \
                 integralError, shadow1DEvaluations, \
-                bounds = ConstantineAS(X=x, f=f, df=df, objFunc=objFunc,
+                bounds, asmError = ConstantineAS(X=x, f=f, df=df, objFunc=objFunc,
                                        responseType='regular', responseDegree=degree,
                                        sstype=method, nboot=nboot, numErrorPoints=numErrorPoints,
                                        numShadow1DPoints=numShadow1DPoints, validationPoints=vP,
                                        validationValues=vV, savePath=path)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
+                asmErrors[i, j] = asmError
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations[:, 0]
                 numGridPointsArray[i, j] = numSamples
@@ -678,7 +707,8 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                 numASM = numSamples
                 
                 e, v, l2Error, integral, integralError, shadow1DEvaluations, \
-                bounds, numGridPoints, responseGridStr, responseCoefficients = \
+                bounds, numGridPoints, responseGridStr, responseCoefficients, \
+                asmError = \
                 SGppAS(objFunc, gridType, degree, numASM, numResponse, model,
                        asmType, responseType, integralType,
                        numErrorPoints=numErrorPoints, savePath=path,
@@ -689,6 +719,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                         doResponse=doResponse, doIntegral=doIntegral)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
+                asmErrors[i, j] = asmError
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations
                 numGridPointsArray[i, j] = numGridPoints
@@ -730,7 +761,8 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                 'numShadow1DPoints':numShadow1DPoints, 'shadow1DEvaluationsArray':shadow1DEvaluationsArray,
                 'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
                 'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict,
-                'numRefine':numRefine, 'initialLevel':initialLevel, 'genzIndex':genzIndex}
+                'numRefine':numRefine, 'initialLevel':initialLevel, 'genzIndex':genzIndex,
+                'asmErrors': asmErrors}
         with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
             pickle.dump(summary, fp)
 
