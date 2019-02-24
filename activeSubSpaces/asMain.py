@@ -277,13 +277,15 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
     eival = reverseDataVectorToNdArray(eivalSGpp);   
     eivec = reverseDataMatrixToNdArray(eivecSGpp)
     
-    asmError = 0
+    detectionInterpolantError = 0
+    numDetectionInterpolantPoints = 0
     if printFlag == 1 and asmType in ["adaptive", "regular"]:
-        asmError = ASM.l2InterpolationError(10000)
-        print("error in ASM interpolant: {}".format(asmError))
+        detectionInterpolantError = ASM.l2InterpolationError(10000)
+        numDetectionInterpolantPoints = ASM.getCoefficients().getSize()
+        print("error in ASM interpolant: {}".format(detectionInterpolantError))
         print("number of ASM interpolation points: {}".format(ASM.getCoefficients().getSize()))
     
-    return ASM, eival, eivec, validationValues, validationPoints, asmError
+    return ASM, eival, eivec, validationValues, validationPoints, numDetectionInterpolantPoints, detectionInterpolantError
 
 
 #---------------------SGpp with active subspaces----------------------------
@@ -324,7 +326,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     f = objFuncSGpp(objFunc)
     
     start = time.time()
-    ASM, eival, eivec, validationValues, validationPoints, asmError = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
+    ASM, eival, eivec, validationValues, validationPoints, \
+    numDetectionInterpolantPoints, detectionInterpolantError = asRecognition(asmType, f, gridType, degree, numASM, initialLevel,
                                                                           numRefine, savePath, numDataPoints, model, printFlag)
     recognitionTime = time.time() - start; start = time.time()
     if printFlag == 1:
@@ -423,7 +426,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 #     print("err 0: {}".format(np.linalg.norm(abs(eivec[:, 0]) - abs(realEivec[:, 0]))))
 
     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, \
-           [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients, asmError
+           [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients, \
+           numDetectionInterpolantPoints, detectionInterpolantError
 
 
 #---------------------Constantines AS framework----------------------------
@@ -437,7 +441,7 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
                   nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
                   validationValues=[], savePath=None):
     print(len(f))
-    asmError = 0
+    detectionInterpolantError = 0
     ss = ac.subspaces.Subspaces()
      #----------- linear fit ----------
     if sstype == 'OLS':
@@ -468,8 +472,8 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
         validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
         validationValues = objFunc.eval(validationPoints, -1, 1)
         detectionInterpolantEval = qpr.predict(validationPoints)[0]
-        asmError = np.linalg.norm(detectionInterpolantEval - validationValues)
-        print("detection interpolation error: {}".format(asmError))
+        detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
+        print("detection interpolation error: {}".format(detectionInterpolantError))
         # --- end HACK! ---
         
     # ---------- exact gradient ----------
@@ -562,7 +566,7 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
 #     print("eivec:")
 #     print(ss.eigenvecs)
         
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds, asmError
+    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds, detectionInterpolantError
 
 
 def Halton(objFunc, numSamples):
@@ -608,10 +612,11 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
     eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
     durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
     l2Errors = np.zeros(shape=(len(sampleRange), len(dataRange)))
-    asmErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    detectionInterpolantErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
     integrals = np.zeros(shape=(len(sampleRange), len(dataRange)))
     integralErrors = np.zeros(shape=(len(sampleRange), len(dataRange)))
     numGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
+    numDetectionInterpolantGridPointsArray = np.zeros(shape=(len(sampleRange), len(dataRange)))
     shadow1DEvaluationsArray = np.zeros(shape=(numShadow1DPoints, len(sampleRange), len(dataRange)))
     boundsArray = np.zeros(shape=(2, len(sampleRange), len(dataRange)))
     responseGridStrDict = {}
@@ -673,17 +678,18 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                     
                 e, v, l2Error, integral, \
                 integralError, shadow1DEvaluations, \
-                bounds, asmError = ConstantineAS(X=x, f=f, df=df, objFunc=objFunc,
+                bounds, detectionInterpolantError = ConstantineAS(X=x, f=f, df=df, objFunc=objFunc,
                                        responseType='regular', responseDegree=degree,
                                        sstype=method, nboot=nboot, numErrorPoints=numErrorPoints,
                                        numShadow1DPoints=numShadow1DPoints, validationPoints=vP,
                                        validationValues=vV, savePath=path)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
-                asmErrors[i, j] = asmError
+                detectionInterpolantErrors[i, j] = detectionInterpolantError
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations[:, 0]
                 numGridPointsArray[i, j] = numSamples
+                numDetectionInterpolantGridPointsArray[i, j] = numSamples
                 boundsArray[:, i, j] = bounds
                 eival[:, i, j] = e[:, 0]; eivec[:, :, i, j] = v
             
@@ -708,7 +714,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                 
                 e, v, l2Error, integral, integralError, shadow1DEvaluations, \
                 bounds, numGridPoints, responseGridStr, responseCoefficients, \
-                asmError = \
+                numDetectionInterpolantPoints, detectionInterpolantError = \
                 SGppAS(objFunc, gridType, degree, numASM, numResponse, model,
                        asmType, responseType, integralType,
                        numErrorPoints=numErrorPoints, savePath=path,
@@ -719,10 +725,11 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                         doResponse=doResponse, doIntegral=doIntegral)
                 
                 durations[i, j] = time.time() - start; l2Errors[i, j] = l2Error;
-                asmErrors[i, j] = asmError
+                detectionInterpolantErrors[i, j] = detectionInterpolantError
                 integrals[i, j] = integral; integralErrors[i, j] = integralError
                 shadow1DEvaluationsArray[:, i, j] = shadow1DEvaluations
                 numGridPointsArray[i, j] = numGridPoints
+                numDetectionInterpolantGridPointsArray[i, j] = numDetectionInterpolantPoints
                 boundsArray[:, i, j] = bounds
                 eival[:, i, j] = e[:]
                 eivec[:, :, i, j] = v
@@ -762,7 +769,8 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                 'boundsArray':boundsArray, 'numGridPointsArray':numGridPointsArray, 'dataRange':dataRange,
                 'responseGridStrsDict':responseGridStrDict, 'responseCoefficientsDict': responseCoefficientsDict,
                 'numRefine':numRefine, 'initialLevel':initialLevel, 'genzIndex':genzIndex,
-                'asmErrors': asmErrors}
+                'numDetectionInterpolantGridPointsArray':numDetectionInterpolantGridPointsArray,
+                'detectionInterpolantErrors': detectionInterpolantErrors}
         with open(os.path.join(path, 'summary.pkl'), 'wb') as fp:
             pickle.dump(summary, fp)
 

@@ -77,10 +77,20 @@ def plot_eigenvalues(summary, label, color, marker, gridIndex=-1, dataIndex=-1):
     plt.xlabel('index')
 
 
+def detectionL2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
+    detectionL2Errors = summary['detectionInterpolantErrors']
+    numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
+    plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], abs(detectionL2Errors[:, dataIndex]), label=label, color=color, marker=marker)
+    plt.xlabel('number of grid points')
+    plt.ylabel('l2 error of detection interpolant')
+    if paper == 0:
+        plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
+
+
 def l2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     l2Errors = summary['l2Errors']
     numGridPointsArray = summary['numGridPointsArray']
-    plt.loglog(numGridPointsArray[:, dataIndex], l2Errors[:, dataIndex], label=label, color=color, marker=marker)
+    plt.loglog(numGridPointsArray[:, dataIndex], abs(l2Errors[:, dataIndex]), label=label, color=color, marker=marker)
     plt.xlabel('number of grid points')
     plt.ylabel('l2 error')
     if paper == 0:
@@ -273,8 +283,8 @@ def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dat
     
     ax.loglog(sampleRange, err, label=label, color=color, marker=marker)
     ax2.loglog(sampleRange, err, label=label, color=color, marker=marker)
-    ax.set_ylim(1e-4, 0.25e-1)  # outliers only
-    ax2.set_ylim(1e-16, 0.25e-13)  # most of the data
+    ax.set_ylim(1e-6, 0.25e-1)  # outliers only
+    ax2.set_ylim(1e-16, 0.25e-11)  # most of the data
     ax.spines['bottom'].set_visible(False)
     ax2.spines['top'].set_visible(False)
     ax.xaxis.tick_top()
@@ -323,6 +333,8 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
                     shadowplot1DAnalytic(summary, label, path, colors[n], paper=paper)
                 elif qoi == 'shadow1Data'and responseType in datatypes and method not in  ['SGpp', 'Halton']:
                     shadowplot1DData(summary, label, path, colors[n], paper=paper)
+                elif qoi == 'detectionl2errorG':
+                    detectionL2errorGridWise(summary, label, colors[n], markers[n], paper=paper)
                 elif qoi == 'l2errorG' and method not in ['Halton']:
                     l2errorGridWise(summary, label, colors[n], markers[n], paper=paper)
                 elif qoi == 'l2errorD' and responseType in datatypes:
@@ -360,22 +372,23 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='dampedSin8D', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='exp4D', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=10000, type=int, help="maximum number of points used")
     
-    parser.add_argument('--plotL2G', default=1, type=bool, help="do (not) plot l2 error grid-wise")
-    parser.add_argument('--plotL2D', default=0, type=bool, help="do (not) plot l2 error data-wise")
-    parser.add_argument('--plotIntegralG', default=1, type=bool, help="do (not) plot integral error grid-wise")
+    parser.add_argument('--plotDetectionL2G', default=1, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
+    parser.add_argument('--plotL2G', default=0, type=bool, help="do (not) plot l2 error of reduced resposne surface grid-wise")
+    parser.add_argument('--plotL2D', default=0, type=bool, help="do (not) plot l2 error of reduced response surface data-wise")
+    parser.add_argument('--plotIntegralG', default=0, type=bool, help="do (not) plot integral error grid-wise")
     parser.add_argument('--plotIntegralD', default=0, type=bool, help="do (not) plot integral error data-wise")
-    parser.add_argument('--plotShadow1', default=1, type=bool, help="do (not) plot 1D shadow")
+    parser.add_argument('--plotShadow1', default=0, type=bool, help="do (not) plot 1D shadow")
     parser.add_argument('--plotShadow2', default=0, type=bool, help="do (not) plot 2D shadow")
     parser.add_argument('--plotShadow1Data', default=0, type=bool, help="do (not) plot 1D data based shadow")
-    parser.add_argument('--plotEival', default=1, type=bool, help="do (not) plot  eigenvalues")
+    parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
     parser.add_argument('--plotEivec1', default=1, type=bool, help="do (not) plot error in first eigenvector")
     parser.add_argument('--surf2D', default=0, type=bool, help="do (not) plot surface plot (only works for 2D functions)")
     
-    parser.add_argument('--Paper', default=1, type=bool, help="do (not) use specific option for paper plots")
+    parser.add_argument('--Paper', default=0, type=bool, help="do (not) use specific option for paper plots")
     args = parser.parse_args()
     
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
@@ -395,14 +408,18 @@ if __name__ == "__main__":
 #             ]
 
 # dampedSin8D for paper
-    names = [
-            # 'AS_3_25000_regular',
-            'AS_5_25000_regular',
-            # 'QPHD_3_25000_regular',
-            'QPHD_5_25000_regular',
-            'Halton_25000',
-            'SGpp_nakbsplinemodified_3_25000_adaptive',
-            'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
+#     names = [
+#             # 'AS_3_25000_regular',
+#             'AS_5_25000_regular',
+#             # 'QPHD_3_25000_regular',
+#             'QPHD_5_25000_regular',
+#             'Halton_25000',
+#             'SGpp_nakbsplinemodified_3_25000_adaptive',
+#             'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
+#              ]
+    
+    names = ['asSGpp_nakbsplinemodified_3_3000_adaptive_adaptive_Spline',
+             'QPHD_3_3000_regular'
              ]
     
     names = [n.format(args.degree, args.maxPoints) for n in names]
@@ -412,6 +429,9 @@ if __name__ == "__main__":
     # plt.rcParams.update({'font.size': 18})
     # plt.rcParams.update({'lines.linewidth': 3})
  
+    if args.plotDetectionL2G:    
+        plt.figure()
+        plotter(folders, 'detectionl2errorG', resultsPath, savefig, args.Paper)
     if args.plotL2G:    
         plt.figure()
         plotter(folders, 'l2errorG', resultsPath, savefig, args.Paper)
