@@ -283,7 +283,7 @@ def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine,
         detectionInterpolantError = ASM.l2InterpolationError(10000)
         numDetectionInterpolantPoints = ASM.getCoefficients().getSize()
         print("error in ASM interpolant: {}".format(detectionInterpolantError))
-        print("number of ASM interpolation points: {}".format(ASM.getCoefficients().getSize()))
+        print("number of ASM interpolation points: {}".format(numDetectionInterpolantPoints))
     
     return ASM, eival, eivec, validationValues, validationPoints, numDetectionInterpolantPoints, detectionInterpolantError
 
@@ -548,18 +548,18 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
 #     y = np.dot(X, ss.W1)
 #     ac.utils.plotters.sufficient_summary(y, f[:, 0])
       
-#     plt.figure()
-#     plt.semilogy(range(len(eival)), eival, '-o')
-#         
-#     plt.show()
+    plt.figure()
+    plt.semilogy(range(len(eival)), eival, '-o')
+         
+    plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))
     
     print("\neigenvec:")
     print(ss.eigenvecs)
-#     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
-#     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
+    np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
+    np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
 
 #     print("\n")
 #     print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))

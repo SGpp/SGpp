@@ -15,6 +15,8 @@ def getFunction(model, genzIndex=-1):
     
     elif model == 'exp2D':
         return expXD(2)
+    elif model == 'exp4D':
+        return expXD(4)
     elif model == 'exp10D':
         return expXD(10)
     elif model == 'exp20D':
@@ -64,6 +66,10 @@ def getFunction(model, genzIndex=-1):
         return dampedSinXD(6)
     elif model == 'dampedSin8D':
         return dampedSinXD(8)
+    
+    # 4D active subspace
+    elif model == 'sinCos8D':
+        return sinCos8D()
     
     elif model == 'multiSubspace3D':
         return multiSubspaceXD(3) 
@@ -168,7 +174,7 @@ def getFunction(model, genzIndex=-1):
         return bratleyXD(2)
     elif model == 'bratley4D':
         return bratleyXD(4)
-    # nice 1D AS but 10D :/
+    # nice 1D AS but 10D -> not really integratable
     elif model == 'wing':
         return wing()
     elif model == 'borehole':
@@ -208,7 +214,9 @@ class test():
 
     def __init__(self):
         self.dummy = 7
-        
+        # ||alpha||=2 pi
+        self.alpha = [1.72618264, 3.0725052 , 2.09886846, 3.25706818, 1.97977555, 2.48262954, 1.26226932, 0.60695672]
+
     def getDomain(self):
         lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
@@ -241,8 +249,36 @@ class test():
 #         for i in range(self.getDim()):
 #             res *= (D - x[:, i]) 
 #         res *= 1 / ((D - 0.5) ** D)
+        res = np.zeros((numSamples, 1))
+#         res = np.sin(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1] + self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]) + \
+#               np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5] + self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7])
+        return (res).reshape(numSamples, 1)
+    
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
 
-        return (np.sin(x[:, 0] + np.cos(x[:, 2]))).reshape(numSamples, 1)
+#         # sin(x1+x2) + cos(x3+x4) + sin(2 pi * (x5+x6)) + cos(2 pi *(x7+x8))
+#         dfdx0 = (np.cos(x[:, 0] + x[:, 1]))[:, None]
+#         dfdx1 = (np.cos(x[:, 0] + x[:, 1]))[:, None]
+#         dfdx2 = (-np.sin(x[:, 2] + x[:, 3]))[:, None]
+#         dfdx3 = (-np.sin(x[:, 2] + x[:, 3]))[:, None]
+#         dfdx4 = (2 * np.pi * np.cos(2 * np.pi * (x[:, 4] + x[:, 5])))[:, None]
+#         dfdx5 = (2 * np.pi * np.cos(2 * np.pi * (x[:, 4] + x[:, 5])))[:, None]
+#         dfdx6 = (-2 * np.pi * np.sin(2 * np.pi * (x[:, 6] + x[:, 7])))[:, None]
+#         dfdx7 = (-2 * np.pi * np.sin(2 * np.pi * (x[:, 6] + x[:, 7])))[:, None]
+#         df = np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5, dfdx6, dfdx7))
+
+#         # sin(x1*x2) * cos(x3*x4) 
+        dfdx0 = (np.cos(x[:, 0] + x[:, 1]) * x[:, 1] * np.cos(x[:, 2] + x[:, 3]))[:, None]
+        dfdx1 = (np.cos(x[:, 0] + x[:, 1]) * x[:, 0] * np.cos(x[:, 2] + x[:, 3]))[:, None]
+        dfdx2 = (-np.sin(x[:, 0] + x[:, 1]) * x[:, 3] * np.sin(x[:, 2] + x[:, 3]))[:, None]
+        dfdx3 = (-np.sin(x[:, 0] + x[:, 1]) * x[:, 2] * np.sin(x[:, 2] + x[:, 3]))[:, None]
+        df = np.hstack((dfdx0, dfdx1, dfdx2, dfdx3))
+        return df
 
 
 class linear2D():
@@ -653,6 +689,69 @@ class dampedSinXD():
         return df
 
 
+class sinCos8D():
+       
+    def __init__(self, dim=8):
+        self.dim = dim
+        # ||alpha|| = 2 pi
+        if dim == 8:
+            self.alpha = [1.72618264, 3.0725052 , 2.09886846, 3.25706818, 1.97977555, 2.48262954, 1.26226932, 0.60695672]
+       
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "sinCos{}D".format(self.getDim())
+    
+    def getIntegral(self):
+        print("activeSubspaceFunctions.py: integral not calculated")
+        return 0.0
+
+    def getDim(self):
+        return  self.dim
+
+    def getEigenvec(self):
+          path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/sinCos{}/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
+          print('loading real eivec from {}'.format(path))
+          eivec = np.loadtxt(path)
+          return eivec
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        
+        res = np.sin(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]) + \
+              np.cos(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]) + \
+              np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]) + \
+              np.cos(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]) 
+        return (res).reshape(numSamples, 1)
+
+    def eval_grad(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+
+        # sin(x1+x2) + cos(x3+x4) - sin(x5+x6) - cos(x7+x8)
+        dfdx0 = (np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
+        dfdx1 = (np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
+        dfdx2 = (-np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
+        dfdx3 = (-np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
+        dfdx4 = (-np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
+        dfdx5 = (-np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
+        dfdx6 = (np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
+        dfdx7 = (np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
+        df = np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5, dfdx6, dfdx7))
+        return df
+
+
 class multiSubspaceXD():
 
     def __init__(self, dim):
@@ -717,7 +816,7 @@ class multiSubspaceXD():
         return df
     
 
-# a exp(- (x-b^2) / c^2)
+# a exp(- sum (x-b^2) / c^2)
 class gaussianXD():
        
     def __init__(self, dim):
@@ -727,6 +826,12 @@ class gaussianXD():
             self.a = 0.3
             self.b = [0.2, 0.8]
             self.c = [0.45, 0.55] 
+            
+        if dim == 4:
+            self.a = 0.3
+            self.b = [0.1, 0.3, 0.4, 0.2]
+            self.c = [0.55, 0.05, 0.2, 0.2]
+            
         elif dim == 10:
             self.a = 0.81509932
             # ||b||_1 = 1, ||c||_1 = 1
@@ -1439,10 +1544,14 @@ class expXD():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        res = 1
+#         res = 1
+#         for i in range(self.getDim()):
+#             res *= np.exp(self.alpha[i] * x[:, i])
+#         return (res).reshape(numSamples, 1)
+        sum = 0
         for i in range(self.getDim()):
-            res *= np.exp(self.alpha[i] * x[:, i])
-        return (res).reshape(numSamples, 1)
+            sum += self.alpha[i] * x[:, i]
+        return (np.exp(-sum)).reshape(numSamples, 1)        
     
     def eval_grad(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -1584,11 +1693,17 @@ class sinSumXD():
         return self.dim
 
     def getEigenvec(self):
-#         eivec = np.zeros(shape=(self.getDim(), self.getDim()))
-#         eivec[:, 0] = self.alpha / np.linalg.norm(self.alpha)
-#         return eivec
-        print("eivec unknown")
-        return [0]
+        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
+        if self.getDim() == 4:
+            eivec = np.asarray([[ 2.84976045e-03, 9.99995939e-01, 1.93261868e-12, 1.05294002e-12],
+                    [-6.23488033e-01, 1.77679876e-03, -7.75851162e-01, -9.65116067e-02],
+                    [-6.40901589e-01, 1.82642341e-03, 4.36497071e-01, 6.31436556e-01],
+                    [-4.47771934e-01, 1.27604793e-03, 4.55549429e-01, -7.69398067e-01]])
+
+            return eivec            
+        else:
+            print("eivec unknown")
+        return eivec
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -1609,11 +1724,13 @@ class sinSumXD():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-
+        sum = 0
+        for i in range(self.getDim()):
+            sum += self.alpha[i] * x[:, i]
         dfdx0 = (self.alpha[0] * np.cos(self.alpha[0] * x[:, 0]))[:, None]
         df = dfdx0            
         for i in range(1, self.getDim()):
-            dfdxi = (self.alpha[i] * np.cos(self.alpha[i] * x[:, i]))[:, None]
+            dfdxi = (self.alpha[i] * np.cos(sum))[:, None]
             df = np.hstack((df, dfdxi))
         return df
 
