@@ -727,8 +727,8 @@ class sinCos8D():
         x = unnormalize(x, lb, ub, lN, uN)
         
         res = np.sin(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]) + \
-              np.cos(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]) + \
-              np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]) + \
+              np.cos(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]) - \
+              np.sin(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]) - \
               np.cos(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]) 
         return (res).reshape(numSamples, 1)
 
@@ -740,14 +740,14 @@ class sinCos8D():
         x = unnormalize(x, lb, ub, lN, uN)
 
         # sin(x1+x2) + cos(x3+x4) - sin(x5+x6) - cos(x7+x8)
-        dfdx0 = (np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
-        dfdx1 = (np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
-        dfdx2 = (-np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
-        dfdx3 = (-np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
-        dfdx4 = (-np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
-        dfdx5 = (-np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
-        dfdx6 = (np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
-        dfdx7 = (np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
+        dfdx0 = (self.alpha[0] * np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
+        dfdx1 = (self.alpha[1] * np.cos(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1]))[:, None]
+        dfdx2 = (-self.alpha[2] * np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
+        dfdx3 = (-self.alpha[3] * np.sin(self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]))[:, None]
+        dfdx4 = (-self.alpha[4] * np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
+        dfdx5 = (-self.alpha[5] * np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5]))[:, None]
+        dfdx6 = (self.alpha[6] * np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
+        dfdx7 = (self.alpha[7] * np.sin(self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7]))[:, None]
         df = np.hstack((dfdx0, dfdx1, dfdx2, dfdx3, dfdx4, dfdx5, dfdx6, dfdx7))
         return df
 
