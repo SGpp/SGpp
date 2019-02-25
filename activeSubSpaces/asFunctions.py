@@ -249,9 +249,8 @@ class test():
 #         for i in range(self.getDim()):
 #             res *= (D - x[:, i]) 
 #         res *= 1 / ((D - 0.5) ** D)
-        res = np.zeros((numSamples, 1))
-#         res = np.sin(self.alpha[0] * x[:, 0] + self.alpha[1] * x[:, 1] + self.alpha[2] * x[:, 2] + self.alpha[3] * x[:, 3]) + \
-#               np.cos(self.alpha[4] * x[:, 4] + self.alpha[5] * x[:, 5] + self.alpha[6] * x[:, 6] + self.alpha[7] * x[:, 7])
+
+        res = np.exp(2 * (x[:, 0] + x[:, 1] + x[:, 2] + x[:, 3])) * np.exp(x[:, 0] - x[:, 1] - x[:, 2] - x[:, 3])
         return (res).reshape(numSamples, 1)
     
     def eval_grad(self, xx, lN=0, uN=1):
@@ -713,7 +712,7 @@ class sinCos8D():
         return  self.dim
 
     def getEigenvec(self):
-          path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/sinCos{}/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
+          path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/sinCos{}D/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
           print('loading real eivec from {}'.format(path))
           eivec = np.loadtxt(path)
           return eivec

@@ -341,7 +341,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         n = 1  # active subspace identifier
         responseDegree = degree  
         responseGridType = pysgpp.GridType_NakBsplineBoundary  
-        responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
+        # responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
+        responseSurf = ASM.getResponseSurfacedampedsin8D()
         if responseType == 'adaptive':
             responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
         elif responseType == 'regular':
@@ -548,18 +549,18 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
 #     y = np.dot(X, ss.W1)
 #     ac.utils.plotters.sufficient_summary(y, f[:, 0])
       
-    plt.figure()
-    plt.semilogy(range(len(eival)), eival, '-o')
-         
-    plt.show()
+#     plt.figure()
+#     plt.semilogy(range(len(eival)), eival, '-o')
+#           
+#     plt.show()
         
     print("Control:")
     print("num data points = {}".format(len(f)))
     
-    print("\neigenvec:")
-    print(ss.eigenvecs)
-    np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
-    np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
+#     print("\neigenvec:")
+#     print(ss.eigenvecs)
+#     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
+#     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
 
 #     print("\n")
 #     print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
@@ -583,6 +584,19 @@ def Halton(objFunc, numSamples):
     print("quasiMC integral: {}".format(integral))
     print("quasiMC integral error: {}".format(integralError))
     return integral, integralError
+
+
+# uses exact W1 to integrate dampedSin8D
+def fakeIntegration():
+    f = asFunctions.getFunction('dampedSin8D')
+    gridType = 'nakbsplinemodified'
+    degree = 3
+    ASM = pysgpp.ASMatrixBsplineAnalytic(f, pysgpp.Grid.stringToGridType(gridType), degree)
+    responseSurf = ASM.getResponseSurfacedampedsin8D()
+    vol = 1
+    quadOrder = 9
+    integral = responseSurf.getSplineBasedIntegral(quadOrder) * vol
+    print(integral)
 
 
 ##############################################################################

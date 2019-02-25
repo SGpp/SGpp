@@ -172,6 +172,12 @@ class ASMatrixBspline : public ASMatrix {
   sgpp::datadriven::ASResponseSurfaceNakBspline getResponseSurfaceInstance(
       size_t asDimension, sgpp::base::GridType gridType, size_t degree = 3);
 
+  /**
+   * ToDo (rehmemk) Terrible hack because of deadline. This returns the response surface for
+   * dampedSin8D exampel for the Uncecomp paper
+   */
+  sgpp::datadriven::ASResponseSurfaceNakBspline getResponseSurfacedampedsin8D();
+
   double evalInterpolant(sgpp::base::DataVector);
 
  protected:
