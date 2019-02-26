@@ -49,6 +49,7 @@ void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
+  datamatrix = newDataset;
   configurator = CombiConfigurator();
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
   configurator.getCombiScheme(componentConfigs);
@@ -86,16 +87,17 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
+  dataset = &newDataset;
   if (components.empty()) {
     fit(newDataset);
   }
-  dataset = &newDataset;
   for (auto& model : components) {
     model->update(newDataset);
   }
 }
 
 void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
+  datamatrix = newDataset;
   if (components.empty()) {
     cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
@@ -127,7 +129,13 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
 }
 
 bool ModelFittingDensityEstimationCombiGrid::refine() {
-  cout << "refine() refinementsPerfomed: " << refinementsPerformed;
+  if (componentConfigs.size() != components.size()) {
+    throw base::application_exception("componentsConfig.size() != components.size()");
+  }
+  if (components.size() == 0) {
+    throw base::application_exception("components.size() == 0");
+  }
+
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
     refinementsPerformed++;
     double max = 0;
@@ -139,10 +147,10 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
     for (int i = 0; i < components.size(); i++) {
       double now =
           components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
-      cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
-           << components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
       if (now > max) {
         if (configurator.isRefinable(componentConfigs.at(i))) {
+          cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
+               << components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
           max = now;
           ind = i;
         }
@@ -155,7 +163,7 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
     vector<combiConfig> newConfigs;
     configurator.getCombiScheme(newConfigs);
     /*
-     * Actualizing coefficients and finding newly-added and newly-remoced components
+     * Actualizing coefficients and finding newly-added and newly-removed components
      */
     vector<bool> toAdd(newConfigs.size(), 1);
     vector<bool> toRemove(componentConfigs.size(), 1);
@@ -164,9 +172,7 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
       for (size_t k = 0; k < componentConfigs.size(); k++) {
         if (newConfigs.at(i).levels == componentConfigs.at(k).levels) {
           toAdd.at(i) = 0;
-          if (toRemove.size() - k - 1 >= 0) {
-            toRemove.at(toRemove.size() - k - 1) = 0;
-          }
+          toRemove.at(k) = 0;
           componentConfigs.at(k).coef = newConfigs.at(i).coef;
         }
       }
@@ -174,8 +180,10 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
     /*
      * Removing components
      */
-    for (size_t i = 0; i < toRemove.size(); i++) {
-      removeModel(toRemove.at(i));
+    for (size_t i = toRemove.size() - 1; 0 >= toRemove.size(); i--) {
+      if (toRemove.at(i)) {
+        removeModel(i);
+      }
     }
 
     /*
@@ -233,12 +241,16 @@ void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig
 
   components.push_back(createNewModel(newFitterConfig));
   componentConfigs.push_back(combiconfig);
-  components.back()->fit(dataset->getData());
+  if (!(dataset == nullptr)) {
+    components.back()->fit(dataset->getData());
+  } else {
+    components.back()->fit(datamatrix);
+  }
 }
 
-void ModelFittingDensityEstimationCombiGrid::removeModel(const size_t indexRev) {
-  componentConfigs.erase(componentConfigs.end() - indexRev);
-  components.erase(components.end() - indexRev);
+void ModelFittingDensityEstimationCombiGrid::removeModel(const size_t ind) {
+  componentConfigs.erase(componentConfigs.begin() + ind);
+  components.erase(components.begin() + ind);
 }
 
 bool ModelFittingDensityEstimationCombiGrid::isRefinable() {

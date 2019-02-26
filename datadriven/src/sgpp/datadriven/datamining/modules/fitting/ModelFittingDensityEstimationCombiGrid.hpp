@@ -109,6 +109,8 @@ class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimat
    * be removed
    */
   void removeModel(size_t indexRev);
+
+  sgpp::DataMatrix datamatrix;
 };
 
 }  // namespace datadriven
