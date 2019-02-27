@@ -53,7 +53,3 @@ int main(int argc, char **argv) {
   miner->learn(true);
   std::cout << std::endl;
 }
-
-
-
-

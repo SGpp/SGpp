@@ -108,7 +108,7 @@ vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
-                                "if False, the modules must be enabled explicitly, e.g., " +
+                                "if Fsalse, the modules must be enabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
@@ -147,6 +147,7 @@ vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", Non
 vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
 vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
 vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
+vars.Add("SCALAPACK_LIBRARY_PATH", "Set the path to the Scalapack/mkl library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",

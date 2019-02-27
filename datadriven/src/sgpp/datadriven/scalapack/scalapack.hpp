@@ -24,6 +24,10 @@ const int rsrc_ = 6;
 const int csrc_ = 7;
 const int lld_ = 8;
 
+const char *const pblasNoTranspose = "N";
+const char *const pblasTranspose = "T";
+const char *const pblasConjugate = "C";
+
 extern "C" {
 
 /**
@@ -44,25 +48,49 @@ void sl_init_(int &ictxt, int &nprow, int &npcol);
 void pdgsev(int *n, int *nrhs, double *a, int *ia, int *ja, int *desca, int *ipiv, double *b,
             int *ib, int *jb, int *descb, int *info);
 
-void pdgemm(const char *transa, const char *transb, const int *m, const int *n, const int *k,
-            const double *alpha, const double *a, const int *ia, const int *ja, const int *desca,
-            const double *b, const int *ib, const int *jb, const int *descb, const double *beta,
-            double *c, const int *ic, const int *jc, const int *descc);
-
 void pdlaset_(char &uplo, int &m, int &n, double &alpha, double &beta, double *a, int &ia, int &ja,
               int *desca);
 
-void pdlaprnt_(int &m, int &n, double *a, int &ia, int &ja, int *desca, int &irprnt, int &icprnt,
-               const char *cmatnm, int &nout, double *work);
+void pdlaprnt_(const int &m, const int &n, const double *a, const int &ia, const int &ja,
+               const int *desca, const int &irprnt, const int &icprnt, const char *cmatnm,
+               const int &nout, double *work);
 
 void descinit_(int *desc, int m, int n, int mb, int nb, int irsrc, int icsrc, int ictxt, int lld,
                int info);
 
+// ScaLAPACK tools
+
 int numroc_(const int &n, const int &nb, const int &iproc, const int &isrcproc, const int &nprocs);
 
-void Cpdgemr2d(const int &m, const int &n, const double *a, const int &ia, const int &ja,
+int indxl2g();
+
+int indxg2l();
+
+int indxg2p();
+
+// redistribute matrix
+void pdgemr2d_(const int &m, const int &n, const double *a, const int &ia, const int &ja,
                const int *desca, double *b, const int &ib, const int &jb, const int *descb,
                const int &ictxt);
+
+// Level 1 BLAS
+
+// Level 2 BLAS
+void pdgemv_(const char *trans, const int &m, const int &n, const double &alpha, const double *a,
+             const int &ia, const int &ja, const int *desca, const double *x, const int &ix,
+             const int &jx, const int *descx, const int &incx, const double &beta, double *y,
+             const int &iy, const int &jy, const int *descy, const int &incy);
+
+void pdger_(const int &m, const int &n, const double &alpha, const double *x, const int &ix,
+            const int &jx, const int *descx, const int &incx, const double &beta, const double *y,
+            const int &iy, const int &jy, const int *descy, const int &incy, double *a,
+            const int &ia, const int &ja, const int *desca);
+
+// Level 3 BLAS
+void pdgemm_(const char *transa, const char *transb, const int &m, const int &n, const int &k,
+             const double &alpha, const double *a, const int &ia, const int &ja, const int *desca,
+             const double *b, const int &ib, const int &jb, const int *descb, const double &beta,
+             double *c, const int &ic, const int &jc, const int *descc);
 }
 }  // namespace datadriven
 }  // namespace sgpp

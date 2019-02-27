@@ -2,30 +2,73 @@
 #ifdef USE_SCALAPACK
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
-#include <sgpp/datadriven/scalapack/DistributedDataMatrix.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 #include <sgpp/datadriven/scalapack/scalapack.hpp>
 
 #include <mpi.h>
 #include <stdio.h>
+#include <iostream>
 #include <memory>
 #include <vector>
 
 using sgpp::datadriven::BlacsProcessGrid;
-using sgpp::datadriven::DistributedDataMatrix;
+using sgpp::datadriven::DataMatrixDistributed;
 
 void test() {
-  std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 1);
+  std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(1, 1);
   std::cout << "Context handle: " << grid->getContextHandle() << std::endl;
   std::cout << "grid: " << grid->getTotalRows() << " x " << grid->getTotalColumns() << std::endl;
   std::cout << "process: " << grid->getCurrentRow() << ", " << grid->getCurrentColumn()
             << std::endl;
 
-  DistributedDataMatrix matrix(grid, 128, 128, DistributedDataMatrix::DTYPE::DENSE, 128, 64, 0.0);
+  DataMatrixDistributed matrix(grid, 10, 10, DataMatrixDistributed::DTYPE::DENSE, 128, 64, 0.0);
   std::cout << "matrix initialized" << std::endl;
 
   std::cout << "local size: " << matrix.getLocalRows() << " x " << matrix.getLocalColumns()
             << std::endl;
+
+  for (int i = 0; i < matrix.getLocalRows(); i++) {
+    for (int j = 0; j < matrix.getLocalColumns(); j++) {
+      std::cout << matrix(i, j);
+    }
+    std::cout << std::endl;
+  }
+
+  std::vector<double> test{0.0, 1.0, 3.0, 0.0};
+
+  DataMatrixDistributed matrix2(test.data(), grid, 2, 2, DataMatrixDistributed::DTYPE::DENSE, 2, 1);
+
+  int m = 2;
+  int n = 2;
+  int ia = 1;
+  int ja = 1;
+  int irprnt = 0;
+  int icprnt = 0;
+  std::string identifier = "A";
+  int nout = 0;
+  auto work = std::vector<double>(m * n * 4);
+  // sgpp::datadriven::pdlaprnt_(m, n, matrix2.data(), ia, ja, matrix2.getDescriptor(), irprnt,
+  // icprnt,
+  //                            identifier.c_str(), nout, work.data());
+
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << matrix2.getLocalPointer()[(i * 2) + j];
+    }
+    std::cout << std::endl;
+  }
+
+  sgpp::base::DataMatrix local = matrix2.toLocalDataMatrix();
+
+  for (int i = 0; i < 2; i++) {
+    for (int j = 0; j < 2; j++) {
+      std::cout << matrix2.getLocalPointer()[(i * 2) + j];
+    }
+    std::cout << std::endl;
+  }
+
+  std::cout << local.toString() << std::endl;
 }
 
 #endif /* USE_SCALAPACK */

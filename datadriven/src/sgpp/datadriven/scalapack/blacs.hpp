@@ -15,7 +15,11 @@ namespace sgpp {
 namespace datadriven {
 extern "C" {
 
+// support routines
+
 void blacs_pinfo_(int &mypnum, int &nprocs);
+
+int blacs_pnum_(const int &icontxt, const int &prow, const int &pcol);
 
 void blacs_get_(int &icontxt, const int &what, int &val);
 
@@ -27,7 +31,17 @@ void blacs_gridexit_(const int &icontxt);
 
 void blacs_exit_(const int &cont);
 
-void blacs_barrier(int &icontxt, const char *scope);
+void blacs_barrier(const int &icontxt, const char *scope);
+
+// broadcasts
+
+// send
+void dgebs2d_(const int &icontxt, const char *scope, const char *top, const int &m, const int &n,
+              const double *a, const int &lda);
+
+// receive
+void dgebr2d_(const int &icontxt, const char *scope, const char *top, const int &m, const int &n,
+              double *a, const int &lda, const int &rsrc, const int &csrc);
 }
 }  // namespace datadriven
 }  // namespace sgpp

@@ -9,16 +9,33 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
+#ifdef USE_SCALAPACK
+
 #pragma once
 
 #include <sgpp/datadriven/scalapack/blacs.hpp>
+
+#include <cstddef>
 
 namespace sgpp {
 namespace datadriven {
 
 class BlacsProcessGrid {
  public:
+  /**
+   * Creates a BLACS process grid with a certain number of rows and columns.
+   * There must be at least rows * columns processes available.
+   *
+   * @param rows
+   * @param columns
+   */
   BlacsProcessGrid(int rows, int columns);
+
+  /**
+   * Creates a square process grid of maximum size.
+   * Given p processes, creates a sqrt(p) * sqrt(p) process grid.
+   */
+  BlacsProcessGrid();
 
   ~BlacsProcessGrid();
 
@@ -60,6 +77,9 @@ class BlacsProcessGrid {
   // system context for use in gridinit
   static int systemContext;
 
+  // total number of available processes
+  static int numberOfProcesses;
+
   // BLACS context handle
   int ictxt;
 
@@ -80,3 +100,5 @@ class BlacsProcessGrid {
 };
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif  // USE_SCALAPACK

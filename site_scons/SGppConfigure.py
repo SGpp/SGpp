@@ -19,7 +19,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag,
-                                       "CheckCompiler" : Helper.CheckCompiler})
+                                       "CheckCompiler" : Helper.CheckCompiler,
+                                       "CheckMKL" : Helper.CheckMklScalapack})
 
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
@@ -266,8 +267,18 @@ def checkGSL(config):
 
 def checkScaLAPACK(config):
   if config.env["USE_SCALAPACK"]:
-    if not config.CheckLib(["scalapack"], language="c++", autoadd=0):
-      Helper.printErrorAndExit("scalapack not found, but required for ScaLAPACK")
+    if "SCALAPACK_LIBRARY_PATH" in config.env:
+      config.env.AppendUnique(LIBPATH=[config.env["SCALAPACK_LIBRARY_PATH"]])
+
+    # first check MKL ScaLAPACK (vendor specific), then netlib version
+    if config.CheckMKL():      
+      config.env["SCALAPACK_VERSION"] = "mkl"
+      Helper.printInfo("Using mkl ScaLAPACK")
+    elif config.CheckLib("scalapack", language="c++", autoadd=0):
+      config.env["SCALAPACK_VERSION"] = "netlib"
+      Helper.printInfo("Using netlib ScaLAPACK")
+    else:
+      Helper.printErrorAndExit("No supported version of ScaLAPACK was found")
     
     config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
 

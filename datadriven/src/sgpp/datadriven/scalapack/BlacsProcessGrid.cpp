@@ -9,8 +9,12 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
+#ifdef USE_SCALAPACK
+
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
+#include <cmath>
+#include <iostream>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 #include <sgpp/datadriven/scalapack/scalapack.hpp>
 
@@ -18,21 +22,31 @@ namespace sgpp {
 namespace datadriven {
 
 int BlacsProcessGrid::systemContext;
+int BlacsProcessGrid::numberOfProcesses;
+
+BlacsProcessGrid::BlacsProcessGrid() {
+  size_t rows, columns = std::sqrt(numberOfProcesses);
+  BlacsProcessGrid(rows, columns);
+}
 
 BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(columns) {
-  int numberOfProcesses = 0;
-  blacs_pinfo_(mypnum, numberOfProcesses);
-  // TODO(jan) setup grid according to number of processes, configurability?
-
+  int ignore = -1;
+  blacs_get_(ignore, 0, systemContext);
   ictxt = systemContext;
   blacs_gridinit_(ictxt, "R", this->rows, this->columns);
 
-  // TODO error handling
-
+  // TODO(jan) error handling
   blacs_gridinfo_(ictxt, this->rows, this->columns, myrow, mycolumn);
+
+  this->mypnum = blacs_pnum_(ictxt, myrow, mycolumn);
 }
 
-BlacsProcessGrid::~BlacsProcessGrid() { blacs_gridexit_(ictxt); }
+BlacsProcessGrid::~BlacsProcessGrid() {
+  if (this->mypnum >= 0) {
+    // only exit the grid if this process is actually part of it
+    blacs_gridexit_(ictxt);
+  }
+}
 
 int BlacsProcessGrid::getContextHandle() const { return this->ictxt; }
 
@@ -50,6 +64,8 @@ void BlacsProcessGrid::initializeBlacs() {
   // init BLACS and the MPI environment
   int ignore = -1;
   blacs_get_(ignore, 0, systemContext);
+  int mypnum;
+  blacs_pinfo_(mypnum, numberOfProcesses);
 }
 
 void BlacsProcessGrid::exitBlacs() {
@@ -59,3 +75,5 @@ void BlacsProcessGrid::exitBlacs() {
 
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif  // USE_SCALAPACK
