@@ -144,7 +144,7 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
      * Finding the sub grid with the greatest error.
      * \TODO Add different kinds of error estimation
      */
-    for (int i = 0; i < components.size(); i++) {
+    for (size_t i = 0; i < components.size(); i++) {
       double now =
           components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
       if (now > max) {
@@ -157,6 +157,18 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
       }
     }
     /*
+     * DEBUGGING: PRINTING CURRENT SET
+     */
+    cout << "##CURRENT SET## (Refinement: " << refinementsPerformed << ")" << std::endl;
+    for (size_t i = 0; i < componentConfigs.size(); i++) {
+      cout << i << " :" << componentConfigs.at(i).coef << " [";
+      for (size_t l : componentConfigs.at(i).levels) {
+        cout << l << " ";
+      }
+      cout << "]" << std::endl;
+    }
+
+    /*
      * Refining the chosen block
      */
     configurator.refineBlock(componentConfigs.at(ind));
@@ -166,13 +178,13 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
      * Actualizing coefficients and finding newly-added and newly-removed components
      */
     vector<bool> toAdd(newConfigs.size(), 1);
-    vector<bool> toRemove(componentConfigs.size(), 1);
+    vector<bool> toRemove(componentConfigs.size(), true);
 
     for (size_t i = 0; i < newConfigs.size(); i++) {
       for (size_t k = 0; k < componentConfigs.size(); k++) {
         if (newConfigs.at(i).levels == componentConfigs.at(k).levels) {
           toAdd.at(i) = 0;
-          toRemove.at(k) = 0;
+          toRemove.at(k) = false;
           componentConfigs.at(k).coef = newConfigs.at(i).coef;
         }
       }
@@ -180,15 +192,27 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
     /*
      * Removing components
      */
-    for (size_t i = toRemove.size() - 1; 0 >= toRemove.size(); i--) {
-      if (toRemove.at(i)) {
-        removeModel(i);
+    cout << "DEBUGGING REMOVING: ";
+    for (bool b : toRemove) {
+      cout << b;
+    }
+    cout << toRemove.size() << std::endl;
+
+    for (size_t i = toRemove.size(); i > 0; i--) {
+      if (toRemove.at(i - 1)) {
+        removeModel(i - 1);
       }
     }
 
     /*
      * Adding new components
      */
+    cout << "DEBUGGING ADDING: ";
+    for (bool b : toAdd) {
+      cout << b;
+    }
+    cout << std::endl;
+
     for (size_t i = 0; i < toAdd.size(); i++) {
       if (toAdd.at(i)) {
         addNewModel(newConfigs.at(i));
@@ -249,6 +273,7 @@ void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig
 }
 
 void ModelFittingDensityEstimationCombiGrid::removeModel(const size_t ind) {
+  cout << "removing model " << ind << std::endl;
   componentConfigs.erase(componentConfigs.begin() + ind);
   components.erase(components.begin() + ind);
 }
