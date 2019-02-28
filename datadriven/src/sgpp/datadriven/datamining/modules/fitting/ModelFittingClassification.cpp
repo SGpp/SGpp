@@ -145,6 +145,7 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 
 MultiGridCoarseningFunctor *ModelFittingClassification::getCoarseningFunctor(
      std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
+    std::cout<<"ModelFittingClassification::getCoarseningFunctor"<<std::endl;
     sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
     switch (coarseningConfig.coarseningFunctorType) {
         case CoarseningFunctorType::GridPointBased : {
