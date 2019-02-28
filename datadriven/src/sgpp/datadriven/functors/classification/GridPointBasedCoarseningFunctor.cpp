@@ -182,7 +182,7 @@ namespace sgpp {
             }
 
             score = score + gridClassDiffs;
-
+            std::cout << "The score is: "<<score << std::endl;
             return score;
         }
 
