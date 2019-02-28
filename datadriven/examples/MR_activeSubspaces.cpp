@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
   std::cout << "calculate integral: " << watch.stop() << "s\n";
   double vol = std::pow(2, 10);
   integral *= vol;
-  std::cout << "integral error: " << abs(integral - 1.025878943696365e+03) << "\n";
+  std::cout << "integral error: " << fabs(integral - 1.025878943696365e+03) << "\n";
 
   return 0;
 }

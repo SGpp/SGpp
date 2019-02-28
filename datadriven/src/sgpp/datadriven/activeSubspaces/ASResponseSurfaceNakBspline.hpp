@@ -35,8 +35,6 @@
 #include <string>
 #include <vector>
 
-//#include "/home/rehmemk/git/cddlib/lib-src/cdd.h"
-
 namespace sgpp {
 namespace datadriven {
 

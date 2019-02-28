@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 import colorsys
 from matplotlib import cm
+from matplotlib import rc
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
@@ -15,6 +16,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pn
 import pysgpp
+
+# font sizes
+ylabelsize = 16
+xlabelsize = 16
+majortickfontsize = 14
+minortickfontsize = 12
 
 
 def getLabel(summary):
@@ -44,17 +51,17 @@ def getLabel(summary):
 def getPaperLabel(summary):
     method = summary['method']
     if method == 'AS':
-        label = 'MC with gradients, ' 
+        label = 'exact gradients' 
     elif method == 'OLS':
-        label = 'MC with linear $\hat{f}$, ' 
+        label = 'linear ridge function' 
     elif method == 'QPHD':
-        label = 'MC with quadratic $\hat{f}$'
+        label = 'quadratic ridge function'
     elif method == 'Halton':
-        label = 'QMC'
+        label = 'quasi Monte Carlo'
     elif method == 'asSGpp':
-        label = 'SG using AS'
+        label = 'sparse grid B-splines'
     elif method == 'SGpp':
-        label = 'SG'
+        label = 'full dimensional sparse grid'
     return label
 
 
@@ -81,18 +88,35 @@ def detectionL2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=
     detectionL2Errors = summary['detectionInterpolantErrors']
     numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
     plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], abs(detectionL2Errors[:, dataIndex]), label=label, color=color, marker=marker)
-    plt.xlabel('number of grid points')
-    plt.ylabel('l2 error of detection interpolant')
+    plt.xlabel('number of grid points', size=xlabelsize)
+    if summary["model"] == 'dampedSin8D':
+        plt.ylabel(r'$\Vert f_1 - \hat{f}_1\Vert_2$', size=ylabelsize)
+    elif summary["model"] == 'sinCos8D':
+        plt.ylabel(r'$\Vert f_2 - \hat{f}_2\Vert_2$', size=ylabelsize)
+    else:
+        plt.ylabel(r'$\Vert f - \hat{f}\Vert_2$', size=ylabelsize)
+    plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    plt.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
     if paper == 0:
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
 
 def l2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     l2Errors = summary['l2Errors']
-    numGridPointsArray = summary['numGridPointsArray']
-    plt.loglog(numGridPointsArray[:, dataIndex], abs(l2Errors[:, dataIndex]), label=label, color=color, marker=marker)
-    plt.xlabel('number of grid points')
-    plt.ylabel('l2 error')
+    try: 
+        numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
+        plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], abs(l2Errors[:, dataIndex]), label=label, color=color, marker=marker)
+    except KeyError:
+        numGridPointsArray = summary['numGridPointsArray']
+        plt.loglog(numGridPointsArray[:, dataIndex], abs(l2Errors[:, dataIndex]), label=label, color=color, marker=marker)
+        
+    plt.xlabel('number of grid points', size=xlabelsize)
+    if summary["model"] == 'dampedSin8D':
+        plt.ylabel(r'$\Vert g_1 - \hat{g}_1\Vert_2$', size=ylabelsize)
+    else:
+        plt.ylabel(r'$\Vert g - \hat{g}\Vert_2$', size=ylabelsize)
+    plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    plt.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
     if paper == 0:
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
@@ -109,13 +133,17 @@ def l2errorDataWise(summary, label, color, marker, gridIndex=-1, paper=0):
     
 def integralErrorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     integralErrors = summary['integralErrors']
-    numGridPointsArray = summary['numGridPointsArray']
     model = summary["model"]
-#         objFunc = asFunctions.getFunction(model)
-#         realIntegral = objFunc.getIntegral()
-    plt.loglog(numGridPointsArray[:, dataIndex], integralErrors[:, dataIndex], label=label, color=color, marker=marker)
-    plt.xlabel('number of grid points')
-    plt.ylabel('integral error')
+    try: 
+        numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
+        plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], integralErrors[:, dataIndex], label=label, color=color, marker=marker)
+    except KeyError:
+        numGridPointsArray = summary['numGridPointsArray']
+        plt.loglog(numGridPointsArray[:, dataIndex], integralErrors[:, dataIndex], label=label, color=color, marker=marker)
+    plt.xlabel('number of grid points', size=xlabelsize)
+    plt.ylabel('integral error', size=xlabelsize)
+    plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    plt.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
     if paper == 0:
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
@@ -254,6 +282,7 @@ def shadowplot1DData(summary, label, path, color='b', subspaceDimension=1, gridI
 #     ax.set_zlabel('f(x)')
 
 
+# error of the first eigenvector w_1
 def plot_error_first_eigenvec(summary, label, color, marker, dataIndex=-1):
     # calculate error of first eigenvector
     model = summary["model"]
@@ -267,9 +296,35 @@ def plot_error_first_eigenvec(summary, label, color, marker, dataIndex=-1):
     plt.loglog(sampleRange, err, label=label, color=color, marker=marker)
     plt.xlabel('number of grid points')
     plt.ylabel('error in first eigenvector')
-    # plt.title(model)
 
-    
+
+# error in the first four eigenvectors w_1,w_2,w_3,w_4. (Special Case for sinCos8D example in UNCECOMP paper)
+def plot_error_four_eigenvec(summary, label, color, marker, dataIndex=-1):
+    # calculate error of first eigenvector
+    model = summary["model"]
+    objFunc = asFunctions.getFunction(model)
+    eivecReference = objFunc.getEigenvec()
+    eivec = summary["eigenvectors"]
+    try:
+        nPoints = summary['numDetectionInterpolantGridPointsArray']
+    except KeyError:
+        nPoints = summary['numGridPointsArray']
+    err = np.zeros(np.shape(eivec)[2])
+    for i in range(len(err)):
+        err0 = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 0]) - abs(eivecReference[:, 0]))
+        err1 = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 1]) - abs(eivecReference[:, 1]))
+        err2 = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 2]) - abs(eivecReference[:, 2]))
+        err3 = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 3]) - abs(eivecReference[:, 3]))
+        err[i] = np.sqrt(err0 ** 2 + err1 ** 2 + err2 ** 2 + err3 ** 2)
+    plt.loglog(nPoints, err, label=label, color=color, marker=marker)
+    plt.xlabel('number of grid points', size=xlabelsize)
+    plt.ylabel('$\Vert W_1 - \hat{W}_1 \Vert_2$', size=ylabelsize)
+    plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    plt.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
+
+
+# plot error in the first eigenvector using an interrupted y axis
+# Special case for dampedSin8D, where the active subspace is one dimensional and therefore detected exactly with AS 
 def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dataIndex=-1):
     # calculate error of first eigenvector
     model = summary["model"]
@@ -280,11 +335,16 @@ def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dat
     err = np.zeros(np.shape(eivec)[2])
     for i in range(len(err)):
         err[i] = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 0]) - abs(eivecReference[:, 0]))
-    
-    ax.loglog(sampleRange, err, label=label, color=color, marker=marker)
-    ax2.loglog(sampleRange, err, label=label, color=color, marker=marker)
-    ax.set_ylim(1e-6, 0.25e-1)  # outliers only
-    ax2.set_ylim(1e-16, 0.25e-11)  # most of the data
+        
+    try:
+        nPoints = summary['numDetectionInterpolantGridPointsArray']
+    except KeyError:
+        nPoints = summary['numGridPointsArray']
+    ax.loglog(nPoints, err, label=label, color=color, marker=marker)
+    ax2.loglog(nPoints, err, label=label, color=color, marker=marker)
+    ax.set_ylim(1e-6, 1e0)  
+    ax.set_yticks([1e-0, 1e-2, 1e-4, 1e-6])
+    ax2.set_ylim(1e-16, 1e-15) 
     ax.spines['bottom'].set_visible(False)
     ax2.spines['top'].set_visible(False)
     ax.xaxis.tick_top()
@@ -299,23 +359,51 @@ def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dat
     ax2.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
     ax2.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # bottom-right diagonal
     
-    plt.xlabel('number of grid points')
-    plt.gcf().text(0.02, 0.5, 'active subspace error', va='center', rotation='vertical')
+    plt.xlabel('number of grid points', size=xlabelsize)
+    plt.gcf().text(-0.02, 0.5, '$\Vert W_1 - \hat{W}_1\Vert_2$', va='center', rotation='vertical', fontsize=ylabelsize)
+    ax.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    ax.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
+    ax2.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    ax2.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
     # plt.title(model)
+
+    
+# markers = ['o', '+', '*', '^', '<', '>', 's', 'd', 'v', '1', 'p', 'h', 'x', 'D']
+# colors = [[32.0 / 256.0, 86.0 / 256.0, 174.0 / 256.0], 'orange', 'g', 'c', 'r', 'y', 'm', 'fuchsia', 'aqua', 'k']
+def getColorAndMarker(method):
+    if method == 'AS':
+        color = 'y'; marker = '>'
+    elif method == 'OLS':
+        color = 'g'; marker = '+'
+    elif method == 'QPHD':
+        color = 'r'; marker = 's'
+    elif method == 'asSGpp':
+        color = 'b'; marker = 'o'
+    elif method == 'SGpp':
+        color = 'orange'; marker = '*'
+    elif method == 'Halton':
+        color = 'm'; marker = 'd'
+    else:
+        print(method)
+    return[color, marker]
 
 
 def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
-    markers = ['o', '+', '*', '^', '<', '>', 's', 'd', 'v', '1', 'p', 'h', 'x', 'D']
-    colors = [[32.0 / 256.0, 86.0 / 256.0, 174.0 / 256.0], 'orange', 'g', 'c', 'r', 'y', 'm', 'fuchsia', 'aqua']
+   
     if paper == 1 and qoi == 'eivec1':
-        _, (ax, ax2) = plt.subplots(2, 1, sharex=True)
+        _, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 4), sharex=True, gridspec_kw={'height_ratios':[6, 1]})
+    else:
+        fig, ax = plt.subplots(figsize=(5, 4))
         
+    model = 'X'
     for n, folder in enumerate(folders):  
         try:      
             path = os.path.join(resultsPath, folder)
             with open(os.path.join(path, 'summary.pkl'), 'rb') as fp:
                 summary = pickle.load(fp)
                 method = summary["method"]
+                model = summary["model"]
+                [color, marker] = getColorAndMarker(method)
                 responseType = summary["responseType"]
                 datatypes = ['data', 'dataR', 'datadriven', 'datadrivenR']
                 if paper == 1:
@@ -323,26 +411,28 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
                 else:
                     label = getLabel(summary)
                 if qoi == 'eival' and method not in  ['SGpp', 'Halton']:
-                    plot_eigenvalues(summary, label, colors[n], markers[n])
+                    plot_eigenvalues(summary, label, color, marker)
                 elif qoi == 'eivec1'and method not in  ['SGpp', 'Halton']:
                     if paper == 1:
-                        plot_error_first_eigenvecPaper(summary, (ax, ax2), label, colors[n], markers[n])
+                        plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker)
                     else:
-                        plot_error_first_eigenvec(summary, label, colors[n], markers[n])
+                        plot_error_first_eigenvec(summary, label, color, marker)
+                elif qoi == 'eivec4'and method not in  ['SGpp', 'Halton']:
+                        plot_error_four_eigenvec(summary, label, color, marker)
                 elif qoi == 'shadow1'and method not in  ['SGpp', 'Halton']:
-                    shadowplot1DAnalytic(summary, label, path, colors[n], paper=paper)
+                    shadowplot1DAnalytic(summary, label, path, color, paper=paper)
                 elif qoi == 'shadow1Data'and responseType in datatypes and method not in  ['SGpp', 'Halton']:
-                    shadowplot1DData(summary, label, path, colors[n], paper=paper)
-                elif qoi == 'detectionl2errorG':
-                    detectionL2errorGridWise(summary, label, colors[n], markers[n], paper=paper)
-                elif qoi == 'l2errorG' and method not in ['Halton']:
-                    l2errorGridWise(summary, label, colors[n], markers[n], paper=paper)
+                    shadowplot1DData(summary, label, path, color, paper=paper)
+                elif qoi == 'detectionl2errorG' and method not in  ['SGpp', 'Halton', 'AS']:
+                    detectionL2errorGridWise(summary, label, color, marker, paper=paper)
+                elif qoi == 'l2errorG' and method not in ['Halton', 'SGpp']:
+                    l2errorGridWise(summary, label, color, marker, paper=paper)
                 elif qoi == 'l2errorD' and responseType in datatypes:
-                    l2errorDataWise(summary, label, colors[n], markers[n], paper=paper)
+                    l2errorDataWise(summary, label, color, marker, paper=paper)
                 elif qoi == 'integralerrorG':
-                    integralErrorGridWise(summary, label, colors[n], markers[n], paper=paper)
+                    integralErrorGridWise(summary, label, color, marker, paper=paper)
                 elif qoi == 'integralerrorD' and responseType in datatypes:
-                    integralErrorDataWise(summary, label, colors[n], markers[n], paper=paper)
+                    integralErrorDataWise(summary, label, color, marker, paper=paper)
                 else:
                     print('plotter did not match')
         except IOError:
@@ -350,76 +440,87 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
             pass
     fig1 = plt.gcf()
     if paper == 1 and qoi == 'integralerrorG':
+        # hard coded errors of Cuba interpolating dampedSin8D calculated with demo-c
+        plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='fuchsia', marker='x', label='Cuhre')
+        # hard coded errors of performing normal asSGppintegration , but give correct W1 for dampedsin8D (data is saved as /home/rehmemk/git/SGpp/activeSubSpaces/results/dampedSin8D/asSGpp_nakbsplinemodified_3_20001_adaptive_adaptive_Spline)
+        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='cyan', marker='h', label='$\epsilon_{W_1}$')
+        # hard coded errors of integrating g on [l,r] in 1D for dampedSin8D. Calculated with  MR_dampedSin1DIntegration.cpp
+        plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=('$\epsilon_g$'))
+        
+    if paper == 1:
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
+        if qoi == 'integralerrorG':
+            originalHandles = handles[:]
+            originalLabels = labels[:]
+            handles[1] = originalHandles[4]; handles[2] = originalHandles[1]; handles[3] = originalHandles[5]; handles[4] = originalHandles[2]; handles[5] = originalHandles[6];handles[6] = originalHandles[3]
+            labels[1] = originalLabels[4]; labels[2] = originalLabels[1]; labels[3] = originalLabels[5]; labels[4] = originalLabels[2]; labels[5] = originalLabels[6];  labels[6] = originalLabels[3]
         plt.figure()
         axe = plt.gca()
-        axe.legend(handles, labels , loc='center', prop={'size': 12})
+        axe.legend(handles, labels , loc='center', prop={'size': 12}, ncol=4)
         axe.xaxis.set_visible(False)
         axe.yaxis.set_visible(False)
         for v in axe.spines.values():
             v.set_visible(False)
-        legendname = os.path.join(resultsPath, 'legend')
+        legendname = os.path.join(resultsPath, model + '_legend_{}'.format(qoi))
+        # cut off whitespace
+        plt.subplots_adjust(left=0.0, right=1.0, top=0.6, bottom=0.4)
         plt.savefig(legendname, dpi=900, bbox_inches='tight', pad_inches=0.0)
-    elif paper == 0:
-        plt.legend()
+    else:    
+        plt.legend(fontsize=legendfontsize)
     if savefig:
-        figname = os.path.join(resultsPath, qoi)
+        figname = os.path.join(resultsPath, model + '_' + qoi)
         print("saving {}".format(figname))
-        fig1.savefig(figname, dpi=900, bbox_inches='tight', pad_inches=0.0)
+        fig1.savefig(figname, dpi=900, bbox_inches='tight')
 
 
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='exp4D', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='sinCos8D', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=10000, type=int, help="maximum number of points used")
-    
+    # used in paper
     parser.add_argument('--plotDetectionL2G', default=1, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
     parser.add_argument('--plotL2G', default=0, type=bool, help="do (not) plot l2 error of reduced resposne surface grid-wise")
-    parser.add_argument('--plotL2D', default=0, type=bool, help="do (not) plot l2 error of reduced response surface data-wise")
     parser.add_argument('--plotIntegralG', default=0, type=bool, help="do (not) plot integral error grid-wise")
-    parser.add_argument('--plotIntegralD', default=0, type=bool, help="do (not) plot integral error data-wise")
+    parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
+    parser.add_argument('--plotEivec4', default=0, type=bool, help="do (not) plot error in first four eigenvectors")
+    # additional options
+    parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
     parser.add_argument('--plotShadow1', default=0, type=bool, help="do (not) plot 1D shadow")
     parser.add_argument('--plotShadow2', default=0, type=bool, help="do (not) plot 2D shadow")
+    parser.add_argument('--plotL2D', default=0, type=bool, help="do (not) plot l2 error of reduced response surface data-wise")
+    parser.add_argument('--plotIntegralD', default=0, type=bool, help="do (not) plot integral error data-wise")
     parser.add_argument('--plotShadow1Data', default=0, type=bool, help="do (not) plot 1D data based shadow")
-    parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
-    parser.add_argument('--plotEivec1', default=1, type=bool, help="do (not) plot error in first eigenvector")
     parser.add_argument('--surf2D', default=0, type=bool, help="do (not) plot surface plot (only works for 2D functions)")
     
-    parser.add_argument('--Paper', default=0, type=bool, help="do (not) use specific option for paper plots")
+    parser.add_argument('--Paper', default=1, type=bool, help="do (not) use specific option for paper plots")
     args = parser.parse_args()
+    
+    # use latex standard font
+    rc('text', usetex=True)
+    plt.rc('font', family='serif')
     
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
     resultsPath = os.path.join(resultsPath, args.model)
-    
-#     names = [  
-#          # 'AS_{}_{}_regular',
-#         'QPHD_{}_{}_regular',
-#         # 'QPHD_{}_{}_data',
-#         'SGpp_nakbsplinemodified_{}_{}_adaptive',
-#         'SGpp_nakbsplinemodified_{}_{}_dataR',
-#         'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_Spline',
-#         'asSGpp_nakbsplinemodified_{}_{}_data_data_Spline',
-#         'asSGpp_nakbsplinemodified_{}_{}_dataR_dataR_Spline',
-#         'asSGpp_nakbsplinemodified_{}_{}_datadrivenR_dataR_Spline',
-#         # 'asSGpp_nakbsplinemodified_{}_{}_adaptive_adaptive_appSpline',
-#             ]
 
 # dampedSin8D for paper
 #     names = [
-#             # 'AS_3_25000_regular',
-#             'AS_5_25000_regular',
-#             # 'QPHD_3_25000_regular',
-#             'QPHD_5_25000_regular',
-#             'Halton_25000',
-#             'SGpp_nakbsplinemodified_3_25000_adaptive',
+#             'AS_5_25000_regular',  # doenst matter which one, the repsonse surface is not used
+#             'QPHD_8_20000_regular',
+#             # 'Halton_25000',
+#             'OLS_8_20000_regular',
+#             # 'SGpp_nakbsplinemodified_3_25000_adaptive',
 #             'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
 #              ]
-    
-    names = ['asSGpp_nakbsplinemodified_3_3000_adaptive_adaptive_Spline',
-             'QPHD_3_3000_regular'
+
+# sinCos8D for paper
+    names = [
+            'AS_5_20000_regular',  # doenst matter which one, the repsonse surface is not used
+            'QPHD_7_20000_regular',
+            'OLS_8_20000_regular',
+            'asSGpp_nakbsplinemodified_3_19000_adaptive_adaptive_Spline'
              ]
     
     names = [n.format(args.degree, args.maxPoints) for n in names]
@@ -459,9 +560,13 @@ if __name__ == "__main__":
             plotter(folders, 'eivec1', resultsPath, savefig, args.Paper)
         except(TypeError):
             print('exact eigen values unknown')
+    if args.plotEivec4:
+        try:
+            plt.figure()
+            plotter(folders, 'eivec4', resultsPath, savefig, args.Paper)
+        except(TypeError):
+            print('exact eigen values unknown')
     if args.surf2D:
         surf2D('atan2D')
         
-    if args.Paper == 0:          
-        plt.show()
-
+    # plt.show()

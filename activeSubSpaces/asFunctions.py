@@ -162,6 +162,8 @@ def getFunction(model, genzIndex=-1):
         return linear3D()
     elif model == 'linear4D':
         return linear4D()
+    elif model == 'linear8D':
+        return linear8D()
     elif model == 'linearLargeSupport2D':
         return linearLargeSupport2D()
     elif model == 'quadratic2D':
@@ -283,7 +285,7 @@ class test():
 class linear2D():
 
     def getDomain(self):
-        lb = np.array([0] * self.getDim())
+        lb = np.array([-1] * self.getDim())
         ub = np.array([1] * self.getDim())
         return lb, ub
     
@@ -383,6 +385,37 @@ class linear4D():
         x = unnormalize(x, lb, ub, lN, uN)
         x0 = x[:, 0]; x1 = x[:, 1]; x2 = x[:, 2]; x3 = x[:, 3];
         return (x0 + x1 + x2 + x3).reshape(numSamples, 1)
+
+    
+class linear8D():
+
+    def getDomain(self):
+        lb = np.array([0] * self.getDim())
+        ub = np.array([1] * self.getDim())
+        return lb, ub
+    
+    def getName(self):
+        return "linear8D"
+    
+    def getIntegral(self):
+        return 2
+
+    def getDim(self):
+        return 8
+
+    def getEigenvec(self):
+        return 0
+
+    def eval(self, xx, lN=0, uN=1):
+        x = xx.copy()
+        x = np.atleast_2d(x)
+        numSamples = x.shape[0]
+        # unnormalize the input to the functions domain
+        lb, ub = self.getDomain()
+        x = unnormalize(x, lb, ub, lN, uN)
+        x0 = x[:, 0]; x1 = x[:, 1]; x2 = x[:, 2]; x3 = x[:, 3];
+        x4 = x[:, 4]; x5 = x[:, 5]; x6 = x[:, 6]; x7 = x[:, 7];
+        return (x0 + x1 + x2 + x3 - x4 - x5 - x6 + 0.12354 * x7).reshape(numSamples, 1)
 
     
 class linearLargeSupport2D():
@@ -678,12 +711,13 @@ class dampedSinXD():
         x = unnormalize(x, lb, ub, lN, uN)
         arg = 0
         for i in range(self.getDim()):
-            arg += x[:, i]
+            arg += x[:, i] 
         arg = self.alpha * arg + 1
             
-        dfdxi = ((self.alpha / arg ** 2) * (arg * np.cos(arg) - np.sin(arg)))[:, None]
-        df = dfdxi
-        for i in range(self.dim - 1):
+        dfdx0 = ((self.alpha / arg ** 2) * (arg * np.cos(arg) - np.sin(arg)))[:, None]
+        df = dfdx0
+        for i in range(1, self.dim):
+            dfdxi = ((self.alpha / arg ** 2) * (arg * np.cos(arg) - np.sin(arg)))[:, None]
             df = np.hstack((df, dfdxi))
         return df
 

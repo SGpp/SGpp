@@ -225,6 +225,7 @@ def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPo
     return l2Error, integral, integralError, numGridPoints
 
 
+# auxiliary routine for asSGpp, for the integration of the 1D response surface
 def integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder=7, approxLevel=8, approxDegree=3, numHistogramMCPoints=1000000):
     lb, ub = objFunc.getDomain()
     vol = np.prod(ub - lb)
@@ -241,6 +242,7 @@ def integrateResponseSurface(responseSurf, integralType, objFunc, quadOrder=7, a
     return integral, integralError
 
 
+# auxiliary routine for asSGpp, for the detection of active subspaces
 def asRecognition(asmType, f, gridType, degree, numASM, initialLevel, numRefine, savePath, numDataPoints, model, printFlag):
     datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
     validationValues = []
@@ -449,6 +451,22 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
         ss.compute(X=X, f=f, nboot=nboot, sstype='OLS')
         eival = ss.eigenvals
         eivec = ss.eigenvecs
+        
+        # --- begin HACK! ---
+        # the linear model is actually quite simple. Reproduce it here and calculate the error from this:
+        oX, of, oM, om = ac.utils.misc.process_inputs_outputs(X, f)
+        oweights = np.ones((oM, 1)) / oM
+        oA = np.hstack((np.ones((oM, 1)), oX))  # *np.sqrt(oweights)
+        ob = of  # * np.sqrt(oweights)
+        # \hat{f}(x) = om*x + oc
+        te = np.linalg.lstsq(oA, ob, rcond=None)[0]
+        numErrorPoints = 10000
+        validationPoints = uniformX(numErrorPoints, objFunc.getDim())
+        validationValues = objFunc.eval(validationPoints, -1, 1)
+        detectionInterpolantEval = te[0] + np.dot(validationPoints, te[1:])
+        detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
+        print("detection interpolation error: {}".format(detectionInterpolantError))
+        
     #----------- quadratic fit -----------
     elif sstype == 'QPHD':
         ss.compute(X=X, f=f, nboot=nboot, sstype='QPHD')
@@ -456,7 +474,7 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
         eivec = ss.eigenvecs
 
         # --- begin HACK!---
-        # the quadratic model is actualy quite simple. Reproduce it here and calculate the error from this:
+        # the quadratic model is actually quite simple. Reproduce it here and calculate the error from this:
         qX, qM, qm = ac.utils.misc.process_inputs(X)
         qweights = np.ones((qM, 1)) / qM
         qpr = ac.utils.response_surfaces.PolynomialApproximation(2)
@@ -562,8 +580,8 @@ def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular',
 #     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
 #     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
 
-#     print("\n")
-#     print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
+    print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
+    print("\n")
 #     print("eivec:")
 #     print(ss.eigenvecs)
         
