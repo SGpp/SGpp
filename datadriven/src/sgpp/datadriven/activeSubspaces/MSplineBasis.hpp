@@ -46,6 +46,14 @@ class MSplineBasis {
    */
   double eval(size_t degree, size_t index, double x);
 
+  /**
+   * [x^n]_+
+   *
+   * @param x	argument
+   * @param n	exponent
+   *
+   * @return x^n if its larger than zero, 0 otherwise
+   */
   double xpowplus(double x, size_t n);
 
   double w(size_t v);

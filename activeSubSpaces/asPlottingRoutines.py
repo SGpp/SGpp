@@ -17,6 +17,11 @@ import numpy as np
 import pandas as pn
 import pysgpp
 
+# plotting routines for the active subspace code
+# For analytically given functions simply use GridWise routines
+# For datadriven scenarios the GridWise routines plot fox a fixed amount of data and increasing grid sizes.
+# the DataWise routines plot for a fixed grid size and increasing amounts of data
+
 # font sizes
 ylabelsize = 16
 xlabelsize = 16
@@ -24,6 +29,7 @@ majortickfontsize = 14
 minortickfontsize = 12
 
 
+# labels for regular use. Contain lots of extra information
 def getLabel(summary):
     method = summary['method']
     if method == 'AS':
@@ -48,6 +54,7 @@ def getLabel(summary):
     return label
 
 
+# labels for use in paper. Short 
 def getPaperLabel(summary):
     method = summary['method']
     if method == 'AS':
@@ -65,6 +72,7 @@ def getPaperLabel(summary):
     return label
 
 
+# creates a surface plot for a 2D function
 def surf2D(model):
     objFunc = asFunctions.getFunction(model)
     fig = plt.figure()
@@ -77,6 +85,7 @@ def surf2D(model):
     ax.plot_surface(x, y, z , cmap=cm.viridis)
 
 
+# plot the eigenvalues 
 def plot_eigenvalues(summary, label, color, marker, gridIndex=-1, dataIndex=-1):
     eival = summary["eigenvalues"]
     plt.semilogy(range(len(eival[:, gridIndex, dataIndex])), eival[:, gridIndex, dataIndex], label=label, color=color, marker=marker)
@@ -84,6 +93,7 @@ def plot_eigenvalues(summary, label, color, marker, gridIndex=-1, dataIndex=-1):
     plt.xlabel('index')
 
 
+# plot the error ||f-\hat{f}|| for the interpolation of the original objective fucntion f
 def detectionL2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     detectionL2Errors = summary['detectionInterpolantErrors']
     numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
@@ -101,6 +111,7 @@ def detectionL2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
 
+# plot the error ||\hat{g}(W1^Tx) - f(x)|| fox a fixed amount of data and increasing grid sizes.
 def l2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     l2Errors = summary['l2Errors']
     try: 
@@ -120,7 +131,8 @@ def l2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     if paper == 0:
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
-    
+
+# plot the error ||\hat{g}(W1^Tx) - f(x)|| fox a fixedgrid size and increasing amounts of data    
 def l2errorDataWise(summary, label, color, marker, gridIndex=-1, paper=0):
     l2Errors = summary['l2Errors']
     dataRange = summary['dataRange']
@@ -130,10 +142,12 @@ def l2errorDataWise(summary, label, color, marker, gridIndex=-1, paper=0):
     if paper == 0:
         plt.title('{} grid points'.format(summary['numGridPointsArray'][gridIndex]))
 
-    
+
+# plot the error of the integral ox a fixed amount of data and increasing grid sizes.
 def integralErrorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     integralErrors = summary['integralErrors']
     model = summary["model"]
+    # should always be numDetectionInterpolantGridPointsArray, but for one large computation I did not log that => execption
     try: 
         numDetectionInterpolantGridPointsArray = summary['numDetectionInterpolantGridPointsArray']
         plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], integralErrors[:, dataIndex], label=label, color=color, marker=marker)
@@ -147,7 +161,8 @@ def integralErrorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
     if paper == 0:
         plt.title('{} data points'.format(summary['dataRange'][dataIndex]))
 
-    
+
+# plot the error of the integral ox a fixed grid size and increasing  amounts of data
 def integralErrorDataWise(summary, label, color, marker, gridIndex=-1, paper=0):
     integralErrors = summary['integralErrors']
     dataRange = summary['dataRange']
@@ -161,7 +176,7 @@ def integralErrorDataWise(summary, label, color, marker, gridIndex=-1, paper=0):
         plt.title('{} grid points'.format(summary['numGridPointsArray'][gridIndex]))
 
 
-# for analytically given functions
+# creates a 1D shadow plot for analytically given functions
 def shadowplot1DAnalytic(summary, label, path, color='b', subspaceDimension=1, gridIndex=-1, dataIndex=-1, paper=0):
     eivec = summary["eigenvectors"][:, :, gridIndex, dataIndex]; model = summary["model"]
     method = summary["method"]; shadow1DEvaluationsArray = summary["shadow1DEvaluationsArray"]
@@ -324,7 +339,7 @@ def plot_error_four_eigenvec(summary, label, color, marker, dataIndex=-1):
 
 
 # plot error in the first eigenvector using an interrupted y axis
-# Special case for dampedSin8D, where the active subspace is one dimensional and therefore detected exactly with AS 
+# Special case for dampedSin8D in the uncecomp paer, where the active subspace is one dimensional and therefore detected exactly with AS 
 def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dataIndex=-1):
     # calculate error of first eigenvector
     model = summary["model"]
@@ -388,14 +403,16 @@ def getColorAndMarker(method):
     return[color, marker]
 
 
+# distributor. Calls the requested plotting routine with the right arguments
 def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
    
+   # In this case we wanted an interrupted y-axis. This requires two subplots
     if paper == 1 and qoi == 'eivec1':
         _, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 4), sharex=True, gridspec_kw={'height_ratios':[6, 1]})
     else:
         fig, ax = plt.subplots(figsize=(5, 4))
         
-    model = 'X'
+    model = 'X'  # dummy
     for n, folder in enumerate(folders):  
         try:      
             path = os.path.join(resultsPath, folder)
@@ -439,6 +456,8 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
             print('path {} does not exist'.format(path))
             pass
     fig1 = plt.gcf()
+    
+    # add lines to one specific plots for the paper.
     if paper == 1 and qoi == 'integralerrorG':
         # hard coded errors of Cuba interpolating dampedSin8D calculated with demo-c
         plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='fuchsia', marker='x', label='Cuhre')
@@ -447,6 +466,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
         # hard coded errors of integrating g on [l,r] in 1D for dampedSin8D. Calculated with  MR_dampedSin1DIntegration.cpp
         plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=('$\epsilon_g$'))
         
+    # rrearrange legend order and save legends in individual files.
     if paper == 1:
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
@@ -468,6 +488,8 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
         plt.savefig(legendname, dpi=900, bbox_inches='tight', pad_inches=0.0)
     else:    
         plt.legend(fontsize=legendfontsize)
+        
+    # save figure to file
     if savefig:
         figname = os.path.join(resultsPath, model + '_' + qoi)
         print("saving {}".format(figname))
@@ -504,6 +526,8 @@ if __name__ == "__main__":
     
     resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
     resultsPath = os.path.join(resultsPath, args.model)
+
+# Choose which hresults to plot
 
 # dampedSin8D for paper
 #     names = [

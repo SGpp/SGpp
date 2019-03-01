@@ -1,6 +1,7 @@
 import numpy as np
 
 # taken from https://people.sc.fsu.edu/~jburkardt/py_src/halton/halton.html
+# halton_sequence can be used for quasi Monte Carlo quadrature.
 
 
 def prime (n):
@@ -291,17 +292,4 @@ def halton_sequence (i1, i2, m):
     k = k + 1
 
   return r
-
-
-def func(x):
-    return np.sin(x[0] + x[1])
-
-# npoints = 1000
-# dim = 2
-# haltonPoints = halton_sequence (0, npoints - 1, dim)
-# integral = 0
-# for n in range(npoints):
-#     integral += func(haltonPoints[:, n])
-# integral /= npoints
-# print(integral)
 

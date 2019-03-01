@@ -5,7 +5,7 @@
 
 // #ifdef USE_EIGEN
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp"
+#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
 
 namespace sgpp {
 namespace datadriven {

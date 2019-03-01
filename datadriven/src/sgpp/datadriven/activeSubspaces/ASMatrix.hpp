@@ -66,17 +66,26 @@ class ASMatrix {
    * (Eigen sorts the eigenvectors in v increasing)
    *
    * @param n active subspace indicator (active variables: x_n,\dots , x_D
-   * @return matrix W1
+   * @return matrix W1 as Eigen matrix
    */
   Eigen::MatrixXd getTransformationMatrix(size_t n) {
     return W.block(0, W.cols() - n, W.rows(), n);
   }
+
+  /**
+   * The Matrix W_1, containing the n last columns of W, spans the active subset
+   * (Eigen sorts the eigenvectors in v increasing)
+   *
+   * @param n active subspace indicator (active variables: x_n,\dots , x_D
+   * @return matrix W1 as DataMatrix
+   */
   sgpp::base::DataMatrix getTransformationMatrixDataMatrix(size_t n) {
     Eigen::MatrixXd W1 = getTransformationMatrix(n);
     return EigenToDataMatrix(W1);
   }
 
   Eigen::MatrixXd getMatrix() { return C; }
+
   sgpp::base::DataMatrix getMatrixDataMatrix() { return EigenToDataMatrix(C); }
 
   void setMatrix(Eigen::MatrixXd newC) { C = newC; }
@@ -88,7 +97,7 @@ class ASMatrix {
   Eigen::MatrixXd W;
   // eigenvalues of C
   Eigen::VectorXd eigenvalues;
-  // points the objective function is evaluated at (each row is one point)
+  // points the objective function is evaluated at (row-wise)
   sgpp::base::DataMatrix evaluationPoints;
   // evaluations of the objective function
   sgpp::base::DataVector functionValues;

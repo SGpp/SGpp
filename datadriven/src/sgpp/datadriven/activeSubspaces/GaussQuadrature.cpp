@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "../../../../../datadriven/src/sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp"
+#include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
 
 namespace sgpp {
 namespace datadriven {

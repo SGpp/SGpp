@@ -231,50 +231,6 @@ double ASResponseSurfaceNakBspline::eval1D(double x) {
   return interpolant->eval(v);
 }
 
-double ASResponseSurfaceNakBspline::getMCIntegral(size_t numMCPoints, size_t numHistogramMCPoints,
-                                                  std::string pointStrategy) {
-  if (W1.cols() != 1) {
-    std::cerr << "ASResponseSurface::getMCIntegral currently supports only 1D active subspaces\n";
-    return -1;
-  }
-  // uniform points spread over the active subspace (without boundary points)
-  sgpp::base::DataVector points(numMCPoints);
-  double delta = (rightBound1D - leftBound1D) / static_cast<double>(numMCPoints);
-  for (size_t i = 0; i < numMCPoints; i++) {
-    points[i] = leftBound1D + (static_cast<double>(2 * i + 1) / 2.0) * delta;
-  }
-  sgpp::base::DataVector weights =
-      uniformIntervalHistogram(numHistogramMCPoints, points, delta, pointStrategy);
-  sgpp::base::DataVector numVec(points.getSize(), static_cast<double>(numHistogramMCPoints));
-  weights.componentwise_div(numVec);
-  double integral = 0.0;
-  sgpp::base::DataVector point(1, 0);
-  for (size_t j = 0; j < numMCPoints; j++) {
-    point[0] = (points[j] - leftBound1D) / (rightBound1D - leftBound1D);
-    integral += weights[j] * interpolant->eval(point);
-  }
-  return integral;
-}
-
-double ASResponseSurfaceNakBspline::getHistogramBasedIntegral(size_t level,
-                                                              size_t numHistogramMCPoints,
-                                                              std::string pointStrategy) {
-  if (W1.cols() != 1) {
-    std::cerr << "ASResponseSurface::getHistogramBasedIntegral currently supports only 1D active "
-                 "subspaces\n";
-    return -1;
-  }
-  std::shared_ptr<sgpp::base::Grid> volGrid;
-  sgpp::base::DataVector volCoefficients;
-  size_t volDegree = 1;
-  sgpp::base::GridType volGridType = sgpp::base::GridType::NakBsplineBoundary;
-  histogramIntervalQuadrature(level, numHistogramMCPoints, volDegree, volGridType, volGrid,
-                              volCoefficients, pointStrategy);
-
-  double integral = getIntegralFromVolumeInterpolant(volGrid, volCoefficients, volDegree);
-  return integral;
-}
-
 double ASResponseSurfaceNakBspline::getSplineBasedIntegral(size_t quadOrder) {
   if (W1.cols() != 1) {
     std::cerr << "ASResponseSurface::getSplineBasedIntegral supports only 1D active subspaces\n";
@@ -367,28 +323,6 @@ int ASResponseSurfaceNakBspline::factorial(size_t n) {
   return static_cast<int>((n == 1 || n == 0) ? 1 : factorial(n - 1) * n);
 }
 
-// dd_MatrixPtr ASResponseSurfaceNakBspline::createHPolytope(std::vector<int> permutations) {
-//  size_t dim = permutations.size();
-//  dd_MatrixPtr hMatrix = dd_CreateMatrix(dim + 3, dim + 1);
-//
-//  // x_p[0] >= 0
-//  hMatrix->matrix[0][permutations[0] + 1][0] = 1.0;
-//  // x_p[end] <= 1
-//  hMatrix->matrix[1][0][0] = 1.0;
-//  hMatrix->matrix[1][permutations.back() + 1][0] = -1.0;
-//  // x_p[i] <= x_p[i+1]
-//  for (size_t d = 0; d < dim - 1; d++) {
-//    hMatrix->matrix[d + 2][permutations[d] + 1][0] = -1.0;
-//    hMatrix->matrix[d + 2][permutations[d + 1] + 1][0] = 1.0;
-//  }
-//  hMatrix->numbtype = dd_Real;
-//  hMatrix->representation = dd_Inequality;
-//  return hMatrix;
-//}
-
-// ToDo(rehmemk) isn't it somehow possible to directly generate the vertices of the simplices
-// instead of creating a H(yperplane)representation and transforming that to a
-// V(ertex)-representation as done here?
 double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projectedCorners) {
   size_t dim = W1.rows();
   double simplexVolume = 0.0;
@@ -397,22 +331,6 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
   std::iota(permutations.begin(), permutations.end(), 0);
   size_t i = 0;
   do {
-    //    dd_MatrixPtr hMatrix = createHPolytope(permutations);
-    //    dd_ErrorType err;
-    //    dd_PolyhedraPtr poly = dd_DDMatrix2Poly(hMatrix, &err);
-    //    dd_FreeMatrix(hMatrix);
-    //
-    //    dd_MatrixPtr vRep = dd_CopyGenerators(poly);
-    //    dd_FreePolyhedra(poly);
-    //    dd_Amatrix vRepMatrix = vRep->matrix;
-    //
-    //    Eigen::MatrixXd V(vRep->colsize - 1, vRep->rowsize);  // simplex points (columnwise)
-    //    for (unsigned int i = 0; i < V.rows(); i++) {
-    //      for (unsigned int j = 0; j < V.cols(); j++) {
-    //        V(i, j) = vRepMatrix[j][i + 1][0];
-    //      }
-    //    }
-
     // simplex points (column wise)
     Eigen::MatrixXd V = Eigen::MatrixXd::Zero(dim, dim + 1);
     for (size_t k = 0; k < dim; k++) {
@@ -420,13 +338,6 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
         V(permutations[l], k) = 1.0;
       }
     }
-
-    //    std::cout << "\n";
-    //    for (auto& p : permutations) {
-    //      std::cout << p << " ";
-    //    }
-    //    std::cout << "\n";
-    //    std::cout << V << "\n";
 
     projectedCorners.col(i) = (W1.transpose() * V).transpose();
 
@@ -441,7 +352,7 @@ double ASResponseSurfaceNakBspline::simplexDecomposition(Eigen::MatrixXd& projec
     i++;
   } while (std::next_permutation(permutations.begin(), permutations.end()));
   return simplexVolume;
-}  // namespace datadriven
+}
 
 sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
     sgpp::base::DataVector points, double simplexVolume, Eigen::MatrixXd projectedCorners) {
@@ -462,122 +373,6 @@ sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
 
   volumes.mult(simplexVolume);
   return volumes;
-}
-
-sgpp::base::DataVector ASResponseSurfaceNakBspline::uniformIntervalHistogram(
-    size_t numHistogramMCPoints, sgpp::base::DataVector points, double delta,
-    std::string pointStrategy) {
-  // the weight for each point p_i is the proportion of all random points in point p_i's bucket
-  //  when transformed  to the active subspace (by multiplication with W1)
-  // p_i's bucket is [(p_{i-1}+p_i)/2, (p_i,p_{i+1})/2]
-  sgpp::base::DataVector weights(points.getSize());
-  Eigen::VectorXd randomUnitPoint(W1.rows());
-  Eigen::VectorXd randomPoint(1);
-  double hdelta = delta / 2.0;
-
-  if (pointStrategy == "MC") {
-    // random Monte Carlo points in the unit hypercube
-    Eigen::MatrixXd randomUnitPoints = (Eigen::MatrixXd::Random(W1.rows(), numHistogramMCPoints) +
-                                        Eigen::MatrixXd::Ones(W1.rows(), numHistogramMCPoints)) /
-                                       2;
-    Eigen::MatrixXd randomPoints = W1.transpose() * randomUnitPoints;
-
-    for (size_t i = 0; i < numHistogramMCPoints; i++) {
-      for (size_t j = 0; j < points.getSize(); j++) {
-        if ((randomPoints(i) >= (points[j] - hdelta)) && (randomPoints(i) < (points[j] + hdelta))) {
-          weights[j]++;
-          break;
-        }
-      }
-    }
-  } else if (pointStrategy == "Halton") {
-    // Quasi Monte Carlo with Halton Sequence in the unit hypercube
-    // ( Wikipedia: "Halton sequence works best up to ~ 6 dimensions, then Sobol sequence
-    // performs better")
-    int* haltonsequence = new int[W1.rows()];
-    for (int i = 0; i < W1.rows(); i++) {
-      haltonsequence[i] = sgpp::datadriven::prime(i + 1);
-    }
-    double* haltonPoint;
-    for (size_t j = 0; j < numHistogramMCPoints; j++) {
-      haltonPoint = sgpp::datadriven::halton_base(static_cast<int>(j), static_cast<int>(W1.rows()),
-                                                  haltonsequence);
-      for (int i = 0; i < W1.rows(); i++) {
-        randomUnitPoint(i) = haltonPoint[i];
-      }
-      randomPoint = W1.transpose() * randomUnitPoint;
-      for (size_t j = 0; j < points.getSize(); j++) {
-        if ((randomPoint(0) >= (points[j] - hdelta)) && (randomPoint(0) < (points[j] + hdelta))) {
-          weights[j]++;
-          break;
-        }
-      }
-    }
-    delete[] haltonsequence;
-  } else if (pointStrategy == "Sobol") {
-    // Quasi Monte Carlo with Sobol sequence in the unit hypercube
-    double* sobolPoint = new double[W1.cols()];
-    // ToDo (rehmemk) Is this seed really good? For example simple2D seed 12345 was much better
-    // !?
-    long long int seed = sgpp::datadriven::tau_sobol(static_cast<int>(W1.cols()));
-    for (size_t j = 0; j < numHistogramMCPoints; j++) {
-      sgpp::datadriven::i8_sobol(static_cast<int>(W1.rows()), &seed, sobolPoint);
-      for (int i = 0; i < W1.rows(); i++) {
-        randomUnitPoint(i) = sobolPoint[i];
-      }
-      randomPoint = W1.transpose() * randomUnitPoint;
-      for (size_t j = 0; j < points.getSize(); j++) {
-        if ((randomPoint(0) >= (points[j] - hdelta)) && (randomPoint(0) < (points[j] + hdelta))) {
-          weights[j]++;
-          break;
-        }
-      }
-    }
-    delete[] sobolPoint;
-  } else {
-    std::cerr << "ASResponseSurfaceNakBspline: pointStrategy not supported!\n";
-  }
-
-  return weights;
-}
-
-void ASResponseSurfaceNakBspline::histogramIntervalQuadrature(
-    size_t level, size_t numHistogramMCPoints, size_t quadDegree, sgpp::base::GridType quadGridType,
-    std::shared_ptr<sgpp::base::Grid>& quadGrid, sgpp::base::DataVector& quadCoefficients,
-    std::string pointStrategy) {
-  if (W1.cols() != 1) {
-    std::cerr << "ASResponseSurface::continuousIntervalQuadrature currently supports only 1D "
-                 "active subspaces\n";
-    return;
-  }
-  size_t dim = 1;
-
-  if (quadGridType == sgpp::base::GridType::NakBsplineBoundary) {
-    // this is only for 1D. So we don't care about the two extra boundary points
-    quadGrid.reset(new sgpp::base::NakBsplineBoundaryGrid(dim, quadDegree));
-  } else {
-    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
-  }
-  quadGrid->getGenerator().regular(level);
-  sgpp::base::GridStorage& quadGridStorage = quadGrid->getStorage();
-  sgpp::base::DataVector points(quadGridStorage.getSize());
-  for (size_t i = 0; i < quadGridStorage.getSize(); i++) {
-    points[i] =
-        leftBound1D + (rightBound1D - leftBound1D) * quadGridStorage.getPointCoordinate(i, 0);
-  }
-  double delta = fabs((rightBound1D - leftBound1D) / std::pow(2, level));
-  sgpp::base::DataVector weights =
-      uniformIntervalHistogram(numHistogramMCPoints, points, delta, pointStrategy);
-  sgpp::base::DataVector numVec(points.getSize(),
-                                delta * static_cast<double>(numHistogramMCPoints));
-  weights.componentwise_div(numVec);
-
-  sgpp::optimization::HierarchisationSLE hierSLE(*quadGrid);
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
-  if (!sleSolver.solve(hierSLE, weights, quadCoefficients)) {
-    std::cout << "ASMatrixNakBspline: Solving failed.\n";
-    return;
-  }
 }
 
 void ASResponseSurfaceNakBspline::refineInterpolationSurplusAdaptive(
@@ -616,7 +411,6 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
 
   //    Eigen::MatrixXd Pinv = W1.transpose().jacobiSvd(Eigen::ComputeThinU |
   //    Eigen::ComputeThinV).solve(P));
-
   Eigen::MatrixXd Pinv = W1.transpose().bdcSvd(Eigen::ComputeThinU | Eigen::ComputeThinV).solve(P);
 
   for (size_t i = 0; i < gridStorage.getSize(); i++) {

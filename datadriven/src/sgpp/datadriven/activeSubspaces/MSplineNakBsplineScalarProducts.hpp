@@ -61,6 +61,15 @@ class MSplineNakBsplineScalarProducts {
    */
   std::unique_ptr<sgpp::base::SBasis> initializeBasis(sgpp::base::GridType gridType, size_t degree);
 
+  /**
+   * Determines the common support of an M-spline (given by the private knots xi) and a B-spline of
+   * given level and index
+   *
+   * @param level	level of the B-spline
+   * @param index	index of the B-spline
+   *
+   * @return knots in the common support
+   */
   sgpp::base::DataVector getCommonSupport(unsigned int level, unsigned int index);
 
   /**

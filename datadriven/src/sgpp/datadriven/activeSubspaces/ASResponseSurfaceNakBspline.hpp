@@ -158,44 +158,42 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   double eval1D(double x);
 
   /**
-   * Calculates an approximation for the integral of the objective function using Monte carlo
-   * points. The area orthogonal to the active subspace is approximated with a Monte Carlo Histogram
+   * Calculate an approximation for the high dimensional integral based on this one dimensional
+   * response surface using Schoenbergs theorem, stating, that the volume orthogonal to the one
+   * dimensional space is given by an M_spline defined on the orthogonal transformation of a simplex
+   * and thus triangulating the hypercube into simplices of which we can calcualte the volume.
+   *  (ON POLYA FREQUENCY FUNCTIONS IV: THE FUNDAMENTAL SPLINE FUNCTIONS AND THEIR LIMITS,
+   * Schoenberg, Curry 1966)
    *
-   * @param numMCPoints				number of Monte Carlo points for the integration
-   * @param numHistogramMCPoints	number of Monte Carlo points for the creation of the
-   * histogram
-   * @param pointStrategy			strategy how the Monte Carlo points are chosen. 'MC'
-   * for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point sequences
+   * @argument quadOrder		order of the Gauss quadrature
    *
-   * @return						the integral
+   * @return					approximation for the high dimensional integral over
+   * the unit hypercube
    */
-  double getMCIntegral(size_t numMCPoints = 1000, size_t numHistogramMCPoints = 1000000,
-                       std::string pointStrategy = "MC");
-
-  /**
-   * Calculates the integral using a B-spline interpolant for the area orthogonal to the active
-   * subspace. The interpolant is defined on a regular grid and uses a Monte Carlo Histogram to
-   * evaluate the area orthogonal to the active subspace.
-   *
-   *@param level					 level of the regular grid
-   *@param numHistogramPoints number of Monte Carlo points for the creation of the histogram
-   *@param pointStrategy			 strategy how the Monte Carlo points are chosen.
-   *'MC' for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point
-   *sequences uniform uniform @return the integral
-   */
-  double getHistogramBasedIntegral(size_t level, size_t numHistogramMCPoints,
-                                   std::string pointStrategy = "MC");
-
   double getSplineBasedIntegral(size_t quadOrder = 7);
 
   /**
    * Same as getSplineBasedIntegral, but interpolates the M-spline giving the volume with B-splines
-   * for faster evaluation. Significant Speed up with very little loss in accuracy
+   * for faster evaluation. Speed up with very little loss in accuracy
    * @param approxLevel		level of the B-splines
    * @param approxDegree	degree of the B-splines
+   * @return					approximation for the high dimensional integral over
+   * the unit hypercube
    */
   double getApproximateSplineBasedIntegral(size_t approxLevel = 7, size_t approxDegree = 3);
 
+  /**
+   * Calculates the same as getSplineBasedIntegral but instead of the Schoeneberg theorem uses an
+   * interpolant that represents he orthogonal volume. (usually this interpolant is created with
+   * getApproximateSplineBasedIntegral)
+   *
+   * @param volGrid			grid the interpolant for the volume is defined on
+   * @param volCoefficients	coefficients of the interpolant for the volume
+   * @param volDegree		degree of the interpolant for the volume
+   *
+   * @ return approximation for the high dimensional integral over the
+   * unit hypercube
+   */
   double getIntegralFromVolumeInterpolant(std::shared_ptr<sgpp::base::Grid> volGrid,
                                           sgpp::base::DataVector volCoefficients, size_t volDegree);
 
@@ -240,50 +238,38 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
   sgpp::base::DataVector errorPerBasis;
 
   // ----------------- auxiliary routines -----------
+  /**
+   * @return factorial of n (n!)
+   */
   int factorial(size_t n);
-  //  dd_MatrixPtr createHPolytope(std::vector<int> permutations);
+
+  /**
+   * Triangulates the D-dim unit hypercube into D! simplices.
+   * Every permutation pi of {0,..,D} defines one simplex in [0,1]^D via
+   * 0<= pi(0)<=...<=pi(D)<=1.
+   * These are D! dimplices, tringaulating [0,1]^D.
+   * This functions returns the volume of these simplices (its the same for all)
+   * and W1^T*V, where V is the matrix of the simplex corners.
+   *
+   * @param projectedCorners	used to return W1^T*V
+   *
+   * @return volume of the simplices
+   */
   double simplexDecomposition(Eigen::MatrixXd& projectedCorners);
+
+  /**
+   * Calculate the volume V(y) of the hyperplane {x \in [0,1]^D : W1^T x = y}, i.e. the hyperplane
+   * orthogonal to the active subspace through y. This is calculated using the triangulation of the
+   * unit cube and the resulting M-splines => V(y) = Vol(simplex) * \sum_{simplices}
+   * M-spline(simplex)
+   *
+   * @param points				evaluation points. Each entry is one y
+   * @param simplexVolume		the volume of the simplices (its the sme for all)
+   * @param projectedCorners	the simplex Corners V projected to the ative subspace, i.e. W_1^TV
+   */
   sgpp::base::DataVector caclculateVolumeSimplexWise(sgpp::base::DataVector points,
                                                      double simplexVolume,
                                                      Eigen::MatrixXd projectedCorners);
-
-  /**
-   * Creates a Histogram for uniform points (grid width = delta) and a set of random points in the
-   * unit hypercube transformed to the 1D active subspace via W1. This is used as the volume of the
-   * inactive subspace
-   *
-   * @param numHistogramMCPoints	number of Monte Carlo points for the creation of the
-   * histogram
-   * @param points					the uniform point on the 1D active subspace
-   * @param delta					the grid width of points
-   * @param pointStrategy 			strategy how the Monte Carlo points are chosen. 'MC'
-   * for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point sequences
-   *
-   * @return 						vector with the weights in the Histogram
-   */
-  sgpp::base::DataVector uniformIntervalHistogram(size_t numHistogramMCPoints,
-                                                  sgpp::base::DataVector points, double delta,
-                                                  std::string pointStrategy = "MC");
-
-  /**
-   * creates a linear B-spline interpolant for volume l(x) of the inactive subspace orthogonal to a
-   * point x in the active subspace using the histogram to evaluate l
-   *
-   * @param level					level of the regular interpolant
-   * @param numHistogramMCPoints	number of Monte Carlo points for the creation of the
-   * histogram
-   * @param quadDegree				degree for the quadrature
-   * @param quadGridType			type of the grid used for the interpolant
-   * @param quadGrid				reference to return the interpolation grid
-   * @param quadCoefficients		reference to return the interpolation coefficients
-   * @param pointStrategy 			strategy how the Monte Carlo points are chosen. 'MC'
-   * for uniform random, 'Halton' and 'Sobol' for the according Quasi Monte Carlo point sequences
-   */
-  void histogramIntervalQuadrature(size_t level, size_t numHistogramMCPoints, size_t quadDegree,
-                                   sgpp::base::GridType quadGridType,
-                                   std::shared_ptr<sgpp::base::Grid>& quadGrid,
-                                   sgpp::base::DataVector& quadCoefficients,
-                                   std::string pointStrategy = "MC");
 
   /**
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
@@ -298,8 +284,9 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * calculates the interpolation coefficients for the reduced response surface on the active
    * subspace for a given grid.
    * For x in the original parameter space y = W1T*x is its according point in the active subspace.
-   * Accordingly to interpolate at points y in the active subsapce we want to evaluate
-   * f(inv(W1T)*y). W1 is usually not invertible so we use the Moore Penrose pseudo inverse instead.
+   * Accordingly, to interpolate at points y in the active subsapce we want to evaluate
+   * f(inv(W1T)*y). W1 is usually not invertible so we use the least squares approximation
+   * x = argmin_x ||W_1^Tx - y||_2 and inteprolate in the paris (y,f(x))
    *
    * @param objectiveFunc	the objective function
    */

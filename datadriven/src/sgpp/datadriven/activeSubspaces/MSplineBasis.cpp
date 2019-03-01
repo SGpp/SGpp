@@ -9,9 +9,6 @@ namespace sgpp {
 namespace datadriven {
 
 double MSplineBasis::eval(size_t degree, size_t index, double x) {
-  //  std::cout << "degree: " << degree << " index: " << index << " x: " << x
-  //            << " xi: " << xi.toString() << "\n";
-
   //  const mSplineHashType hashKey = std::make_tuple(degree, index, x);
   //  std::map<mSplineHashType, double>::iterator it;
   //  it = precalculatedValues.find(hashKey);
@@ -70,8 +67,6 @@ double MSplineBasis::evalTruncated(double x) {
   double res = 0.0;
   size_t n = xi.size() - 1;
   for (size_t v = 0; v < n + 1; v++) {
-    //    std::cout << "v " << v << " x+ " << xpowplus(xi[v] - x, n - 1) << " w " << w(v, xi) <<
-    //    "\n";
     res += (static_cast<double>(n) * xpowplus(xi[v] - x, n - 1)) / w(v);
   }
   return res;

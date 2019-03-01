@@ -5,7 +5,8 @@ import asMain
 import numpy as np
 
 
-# calculates the exact integrals of genz Oscillary and Corner Peak functions for alpha and u loaded from files
+# approximates integrals of genz Oscillary and Corner Peak functions for alpha and u loaded from files
+# using the active subspace 1D integration
 def calculateIntegralsasSGpp(model, numThreads=4):
     numSamples = 3 
     for i in range(numSamples):

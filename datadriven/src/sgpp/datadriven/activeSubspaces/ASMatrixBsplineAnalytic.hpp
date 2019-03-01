@@ -6,9 +6,8 @@
 #pragma once
 // #ifdef USE_EIGEN
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp>
+#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <string>
 
 namespace sgpp {

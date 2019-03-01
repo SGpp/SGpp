@@ -1,4 +1,3 @@
-from argparse import ArgumentParser
 import colorsys
 import itertools
 from matplotlib import cm
@@ -17,10 +16,12 @@ import numpy as np
 import pandas as pn
 import pysgpp
 
+# caluclates the exact integral of functions with an 1D active subspace. For these functions holds
+#   \int_{[0,1]^D} f(x) dx  = \int_l^r g(y) V(y) dy
+# Here V(y) is exactly (!) represented as um of M-splines corresponding to a triangulation of the unit cube 
+
 
 def MsplineWiki(n, i, x, xi):
-#     print("degree: {} index {} x {} xi {}".format(n, l, x, xi))
-#     print("{} {} {} {}".format(n, i, xi[i + n], xi[i]))
     if n == 1:
         if xi[i] <= x and x < xi[i + 1]:
             return 1.0 / (xi[i + 1] - xi[i])
@@ -69,6 +70,8 @@ def corners(dim):
                 j = j + 2 * jump
             jump = jump / 2
         return corners
+
+# the g functions corresponding to functiosn f in asFunctions.py
 
 # corresponds to sin(sum(x))
 # W1 = ones(dim)/sqrt(dim)

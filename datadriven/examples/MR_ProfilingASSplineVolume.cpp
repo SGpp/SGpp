@@ -20,6 +20,8 @@ class objectiveFunctionVarious {
   }
 };
 
+// Calculate the integral of a function with a one-dim active subspace using the spline based
+// method. This is used for profiling.
 int main() {
   sgpp::base::SGppStopwatch mainWatch;
   sgpp::base::SGppStopwatch watch;

@@ -160,12 +160,5 @@ int main(int argc, char* argv[]) {
   watch.start();
   std::cout << "l2 error: " << l2Error << "\n";
 
-  size_t numHistogramPoints = 1000000;
-  double integral = responseSurf.getHistogramBasedIntegral(10, numHistogramPoints, "Halton");
-  std::cout << "calculate integral: " << watch.stop() << "s\n";
-  double vol = std::pow(2, 10);
-  integral *= vol;
-  std::cout << "integral error: " << fabs(integral - 1.025878943696365e+03) << "\n";
-
   return 0;
 }

@@ -28,15 +28,15 @@ def calculateIntegrals(alphas, us, model):
 
 dim = 2  
 print("starting execution")
-# pathO = '/home/rehmemk/git/SGpp/activeSubSpaces/results/genzOscillatory{}D'.format(dim)
+pathO = '/home/rehmemk/git/SGpp/activeSubSpaces/results/genzOscillatory{}D'.format(dim)
 pathCP = '/home/rehmemk/git/SGpp/activeSubSpaces/results/genzCornerPeak{}D'.format(dim)
-# alphaO = np.loadtxt(os.path.join(pathO, 'alpha.txt'))
-# uO = np.loadtxt(os.path.join(pathO, 'u.txt'))
+alphaO = np.loadtxt(os.path.join(pathO, 'alpha.txt'))
+uO = np.loadtxt(os.path.join(pathO, 'u.txt'))
 alphaCP = np.loadtxt(os.path.join(pathCP, 'alpha.txt'))
 uCP = np.loadtxt(os.path.join(pathCP, 'u.txt'))
 
-# integralsO = calculateIntegrals(alphaO, uO, model='genzOscillatory{}D'.format(dim))
+integralsO = calculateIntegrals(alphaO, uO, model='genzOscillatory{}D'.format(dim))
 integralsCP = calculateIntegrals(alphaCP, uCP, model='genzCornerPeak{}D'.format(dim))
 
 # np.savetxt(os.path.join(pathO, 'integrals.txt'), integralsO)
-np.savetxt(os.path.join(pathCP, 'integrals.txt'), integralsCP)
+# np.savetxt(os.path.join(pathCP, 'integrals.txt'), integralsCP)

@@ -83,16 +83,6 @@ sgpp::datadriven::ASResponseSurfaceNakBspline ASMatrixBspline::getResponseSurfac
   return responseSurf;
 }
 
-sgpp::datadriven::ASResponseSurfaceNakBspline ASMatrixBspline::getResponseSurfacedampedsin8D() {
-  Eigen::MatrixXd W1(8, 1);
-  for (int i = 0; i < 8; i++) {
-    W1(i, 0) = 1.0 / sqrt(8);
-  }
-  sgpp::datadriven::ASResponseSurfaceNakBspline responseSurf(
-      W1, sgpp::base::GridType::NakBsplineModified, 3);
-  return responseSurf;
-}
-
 // ----------------- auxiliary routines -----------
 
 void ASMatrixBspline::refineSurplusAdaptive(size_t refinementsNum) {
@@ -124,8 +114,6 @@ double ASMatrixBspline::matrixEntryGauss(
   return entry;
 }
 
-// Todo(rehmemk) Check already here if (multidimensional) B-spline supports overlap and return 0 if
-// so
 double ASMatrixBspline::scalarProductDxbiDxbj(
     size_t i, size_t j, size_t k, size_t l,
     sgpp::datadriven::NakBsplineScalarProducts& scalarProducts) {

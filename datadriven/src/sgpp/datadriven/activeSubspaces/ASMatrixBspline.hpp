@@ -40,8 +40,9 @@ class ASMatrixBspline : public ASMatrix {
   /**
    * Constructor
    *
-   * @param gridType          type of the grid for the interpolant
+   * @param numDim			  number of dimensions
    * @param degree            degree for the B-spline basis functions
+   * @param gridType          type of the grid for the interpolant
    * @param evaluationPoints  evaluationPoints only needed for ASMAtrixBsplineData
    * @param functionValues 	  functionValues only needed for ASMAtrixBsplineData
    */
@@ -89,7 +90,7 @@ class ASMatrixBspline : public ASMatrix {
 
   /**
    * General routine to create the Matrix C, currently simply wraps createMatrixMonteCarlo.
-   * Usually createMatrixGauss() is better and should be preferred
+   * createMatrixGauss() is better and should be preferred
    */
   void createMatrix(size_t numPoints);
 
@@ -172,24 +173,15 @@ class ASMatrixBspline : public ASMatrix {
   sgpp::datadriven::ASResponseSurfaceNakBspline getResponseSurfaceInstance(
       size_t asDimension, sgpp::base::GridType gridType, size_t degree = 3);
 
-  /**
-   * ToDo (rehmemk) Terrible hack because of deadline. This returns the response surface for
-   * dampedSin8D exampel for the Uncecomp paper
-   */
-  sgpp::datadriven::ASResponseSurfaceNakBspline getResponseSurfacedampedsin8D();
-
   double evalInterpolant(sgpp::base::DataVector);
 
  protected:
-  // dimensionality
   size_t numDim;
   sgpp::base::GridType gridType;
   size_t degree;
   sgpp::base::DataVector coefficients;
   std::shared_ptr<sgpp::base::Grid> grid;
   std::unique_ptr<sgpp::base::SBasis> basis;
-  //  typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
-  //  std::map<asMatrixHashType, double> innerProducts;
 };
 
 }  // namespace datadriven

@@ -640,6 +640,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
     else:
         dataRange = [0]
     
+    # prepare data containers which later will contain the data
     eival = np.zeros(shape=(numDim , len(sampleRange), len(dataRange)))
     eivec = np.zeros(shape=(numDim, numDim, len(sampleRange), len(dataRange)))
     durations = np.zeros(shape=(len(sampleRange), len(dataRange)))
@@ -654,6 +655,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
     responseGridStrDict = {}
     responseCoefficientsDict = {}
     
+    # set path for saving the data
     if saveFlag == 1:
         resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
         resultsPath = os.path.join(resultsPath, objFunc.getName())
@@ -672,7 +674,6 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
     else:
         path = None 
     
-    numHistogramMCPoints = 100000
     numErrorPoints = 10000
     
     # .... ..... .... Constantines Code .... .... ....

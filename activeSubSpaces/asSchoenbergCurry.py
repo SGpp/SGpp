@@ -1,15 +1,17 @@
+from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import os
 import sys        
 import time
-
-from matplotlib import cm
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
 
 
+# Plottign routine to compare the M-spline as defied in Schoenbergs paper,
+# and as defined recursively by Ramsey 
+# (Wikipedia defines like Ramsay, therefore the naming) 
 def xpowplus(x, n):
     if x >= 0:
         return x ** (n)
@@ -35,8 +37,6 @@ def Mspline(n, i, x, xi):
 
 
 def MsplineWiki(n, i, x, xi):
-#     print("degree: {} index {} x {} xi {}".format(n, l, x, xi))
-#     print("{} {} {} {}".format(n, i, xi[i + n], xi[i]))
     if n == 1:
         if xi[i] <= x and x < xi[i + 1]:
             return 1.0 / (xi[i + 1] - xi[i])
@@ -83,6 +83,4 @@ plt.plot(X, M, 'b')
 plt.plot(X, MW, 'g+')
 plt.plot(X, B, 'r*')
 plt.show()
-
-# MsplineWiki(4, 0, 0.3, xi)
 
