@@ -302,6 +302,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
     bool hasCoarseningConfig =
             hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
     if (hasCoarseningConfig){
+      std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig hasCoarseningConfig"<<std::endl;
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
                                         defaults.numCoarsening_, "coarseningConfig");

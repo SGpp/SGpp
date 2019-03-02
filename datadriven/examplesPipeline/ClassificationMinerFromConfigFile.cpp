@@ -45,6 +45,7 @@ int main(int argc) {
    * We need a factory class to actually build the #sgpp::datadriven::SparseGridMiner.
    */
   ClassificationMinerFactory factory;
+
   /**
    * The miner object is constructed by the factory from a supplied configuration file.
    */

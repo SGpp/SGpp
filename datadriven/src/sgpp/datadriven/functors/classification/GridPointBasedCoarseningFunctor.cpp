@@ -39,6 +39,7 @@ namespace sgpp {
         double
         GridPointBasedCoarseningFunctor::operator()(base::GridStorage& storage,
                                                     size_t seq) const {
+            std::cout<<"GridPointBasedCoarseningFunctor::operator"<<std::endl;
             // return value
             double score = 0.0;
 
