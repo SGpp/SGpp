@@ -295,9 +295,12 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 
 bool DataMiningConfigParser::getFitterCoarseningConfig(
             CoarseningConfiguration &config, const CoarseningConfiguration &defaults) const {
+
   std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig"<<std::endl;
+
   bool hasCoarseningConfig =
           hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
+
   if (hasCoarseningConfig) {
       std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig hasCoarseningConfig"<<std::endl;
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
