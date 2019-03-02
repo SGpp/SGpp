@@ -20,18 +20,16 @@
 			"gridType": "linear",
 			"level": 5
 		},
-		"adaptivityConfig": {
-			"coarseningConfig" :{
-                "numCoarsening": 10,
-				"threshold": 0.001,
-				"maxLevelType": false,
-				"noPoints": 10,
-				"CoarseningIndicator" : "GridPointBased",
-				"errorBasedRefinement" : false,
-				"errorMinInterval" : 1,
-				"errorBufferSize" : 2,
-				"errorConvergenceThreshold" : 0.001
-			}
+		"coarseningConfig" :{
+			"numCoarsening": 10,
+			"threshold": 0.001,
+			"maxLevelType": false,
+			"noPoints": 10,
+			"CoarseningIndicator" : "GridPointBased",
+			"errorBasedRefinement" : false,
+			"errorMinInterval" : 1,
+			"errorBufferSize" : 2,
+			"errorConvergenceThreshold" : 0.001
 		},
 		"regularizationConfig": {
 			"lambda": 1e-2

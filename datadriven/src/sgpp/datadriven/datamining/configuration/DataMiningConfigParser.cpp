@@ -296,13 +296,9 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 bool DataMiningConfigParser::getFitterCoarseningConfig(
             CoarseningConfiguration &config, const CoarseningConfiguration &defaults) const {
   std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig"<<std::endl;
-  bool hasFitterAdaptivityConfig =
-          hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
-  if (hasFitterAdaptivityConfig) {
-      std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig hasFitterAdaptivityConfig"<<std::endl;
-    bool hasCoarseningConfig =
-            hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
-    if (hasCoarseningConfig){
+  bool hasCoarseningConfig =
+          hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
+  if (hasCoarseningConfig) {
       std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig hasCoarseningConfig"<<std::endl;
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
@@ -322,19 +318,17 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
                                          defaults.errorBufferSize, "coarseningConfig");
       config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
                                           defaults.errorMinInterval, "coarseningConfig");
-//      config.precomputeEvaluations = parseBool(*coarseningConfig, "precomputeEvaluations",
-//                                               defaults.precomputeEvaluations, "coarseningConfig");
-      // Parse refinement indicator
+
+      // Parse coarsening indicator
       if (coarseningConfig->contains("coaseningIndicator")) {
         config.coarseningFunctorType =
                 CoarseningFunctorTypeParser::parse((*coarseningConfig)["coarseningIndicator"].get());
-      } else {
+      }
+      else {
         std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
       }
-    }
-    return hasCoarseningConfig;
   }
-
+    return hasCoarseningConfig;
 }
 
 
