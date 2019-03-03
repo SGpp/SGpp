@@ -65,7 +65,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   setupDefaults();
 
   parser.getFitterGridConfig(gridConfig, gridConfig);
-  parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
+  //parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
   parser.getFitterCoarseningConfig(coarseningConfig, coarseningConfig);
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);
   parser.getFitterSolverFinalConfig(solverFinalConfig, solverFinalConfig);
