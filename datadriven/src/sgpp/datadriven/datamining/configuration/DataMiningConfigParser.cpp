@@ -56,6 +56,7 @@ DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : co
     configFile = std::make_unique<JSON>(filepath);
     std::cout<<"File Path:"<<filepath<<std::endl;
   } catch (json_exception &exception) {
+    std::cout<<"Cannot open configFile:"<<filepath<<std::endl;
     std::cout << exception.what() << std::endl;
     std::string errorMsg = "can not open file: \"" + filepath + "\"";
     throw file_exception(errorMsg.c_str());
@@ -300,7 +301,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
   std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig"<<std::endl;
 
   bool hasCoarseningConfig =
-          hasFitterConfig() ? (*configFile)[fitter].contains("type") : false;
+          hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
 
   if (hasCoarseningConfig) {
 
