@@ -322,7 +322,7 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
                                           defaults.errorMinInterval, "coarseningConfig");
 
       // Parse coarsening indicator
-      if (coarseningConfig->contains("coaseningIndicator")) {
+      if (coarseningConfig->contains("coarseningIndicator")) {
         config.coarseningFunctorType =
                 CoarseningFunctorTypeParser::parse((*coarseningConfig)["coarseningIndicator"].get());
       }
