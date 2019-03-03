@@ -238,9 +238,7 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
-  std::cout<<"bool DataMiningConfigParser::getFitterAdaptivityConfig"<<std::endl;
   if (hasFitterAdaptivityConfig) {
-      std::cout<<"bool DataMiningConfigParser::getFitterAdaptivityConfig hasFitterAdaptivityConfig"<<std::endl;
     auto adaptivityConfig = static_cast<DictNode *>(&(*configFile)[fitter]["adaptivityConfig"]);
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
@@ -302,10 +300,8 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
   bool hasCoarseningConfig =
           hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
 
-    std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig"<<std::endl;
   if (hasCoarseningConfig) {
 
-      std::cout<<"DataMiningConfigParser::getFitterCoarseningConfig hasCoarseningConfig"<<std::endl;
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
                                         defaults.numCoarsening_, "coarseningConfig");
