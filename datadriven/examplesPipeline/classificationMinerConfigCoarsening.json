@@ -25,7 +25,7 @@
                 "threshold": 0.001,
                 "maxLevelType": false,
                 "noPoints": 10,
-                "CoarseningIndicator" : "GridPointBased",
+                "coarseningIndicator" : "GridPointBased",
                 "errorBasedRefinement" : false,
                 "errorMinInterval" : 1,
                 "errorBufferSize" : 2,
