@@ -405,6 +405,8 @@ Node& DictNode::replaceListAttr(const std::string& name) {
 }
 
 bool DictNode::contains(const std::string& key) {
+  std::cout<<"DictNode::contains"<<std::endl;
+  std::cout<<key<<std::endl;
   if (this->attributes.count(key) > 0) {
     return true;
   } else {
