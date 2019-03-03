@@ -13,7 +13,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include <iostream>
 namespace json {
 
 DictNode::DictNode() {}
