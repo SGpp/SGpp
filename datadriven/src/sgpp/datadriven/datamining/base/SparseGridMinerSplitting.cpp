@@ -76,7 +76,7 @@ double SparseGridMinerSplitting::learn_coarsening(bool verbose) {
     fitter->verboseSolver = verbose;
     // Setup refinement monitor
     RefinementMonitorFactory monitorFactory;
-    RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
+    RefinementMonitor *monitor = monitorFactory.createCoarseningMonitor(
             fitter->getFitterConfiguration().getCoarseningConfig());
     for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++)  {
       if (verbose) {

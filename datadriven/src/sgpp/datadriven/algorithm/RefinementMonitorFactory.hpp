@@ -31,6 +31,14 @@ class RefinementMonitorFactory {
    */
   RefinementMonitor* createRefinementMonitor(
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig) const;
+
+  /**
+  * Creates a refinement monitor
+  * @param adaptivityConfig configuration for the adaptivity of the sparse grid
+  * @return a new refinement monitor instance
+  */
+  RefinementMonitor* createCoarseningMonitor(
+      const sgpp::base::CoarseningConfiguration& coarseningConfig) const;
 };
 
 }  // namespace datadriven
