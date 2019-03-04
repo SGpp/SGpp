@@ -39,7 +39,7 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   // configure crossvalidation
   crossvalidationConfig.enable_ = false;
 
-  
+
   // configure density estimation
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;

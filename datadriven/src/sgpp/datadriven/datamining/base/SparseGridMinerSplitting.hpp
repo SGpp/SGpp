@@ -76,7 +76,13 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * training data.
    */
   double learn(bool verbose) override;
-
+  /**
+   * Perform Learning cycle: Get samples from data source and based on the scoring procedure,
+   * generalize data by fitting and asses quality of the fit. The learning process first divides
+   * the data into training and validation data and trains the model for several epochs on the
+   * training data.
+   */
+  double learn_coarsening(bool verbose);
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to
