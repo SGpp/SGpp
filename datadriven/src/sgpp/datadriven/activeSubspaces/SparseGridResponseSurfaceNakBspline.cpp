@@ -70,6 +70,25 @@ double SparseGridResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector 
   return interpolantGradient->eval(v, gradient);
 }
 
+double SparseGridResponseSurfaceNakBspline::evalNonUniform(sgpp::base::DataVector v,
+                                                           sgpp::base::DataVector lBounds,
+                                                           sgpp::base::DataVector uBounds) {
+  sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
+  sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
+  transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
+  return interpolant->eval(v);
+}
+
+double SparseGridResponseSurfaceNakBspline::evalGradientNonUniform(sgpp::base::DataVector v,
+                                                                   sgpp::base::DataVector& gradient,
+                                                                   sgpp::base::DataVector lBounds,
+                                                                   sgpp::base::DataVector uBounds) {
+  sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
+  sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
+  transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
+  return interpolantGradient->eval(v, gradient);
+}
+
 double SparseGridResponseSurfaceNakBspline::getIntegral() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double integral = 0;
@@ -108,6 +127,19 @@ void SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
   if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
+}
+
+void SparseGridResponseSurfaceNakBspline::transformPoint(sgpp::base::DataVector& v,
+                                                         sgpp::base::DataVector lBounds,
+                                                         sgpp::base::DataVector uBounds,
+                                                         sgpp::base::DataVector newlBounds,
+                                                         sgpp::base::DataVector newuBounds) {
+  v.sub(lBounds);
+  uBounds.sub(lBounds);
+  v.componentwise_div(uBounds);
+  newuBounds.sub(newlBounds);
+  v.componentwise_mult(newuBounds);
+  v.add(newlBounds);
 }
 
 }  // namespace datadriven

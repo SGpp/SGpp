@@ -492,6 +492,13 @@ class HashGridStorage {
     return static_cast<double>(index) / static_cast<double>(static_cast<uint32_t>(1) << level);
   }
 
+  /**
+   * Calculates the coordinate of a given grid point
+   *
+   * @param seq	the sequence number of the index
+   *
+   * @return 	coordinates of the point
+   */
   inline DataVector getPointCoordinates(size_t seq) {
     DataVector coordinates(dimension, 0.0);
     for (size_t d = 0; d < dimension; d++) {

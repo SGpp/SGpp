@@ -34,7 +34,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    *
    * @param objectiveFunc		objective Function
    * @param gridType			type of the interpolants grid/basis
-   * @param degree			degree of the interpolants basis
+   * @param degree				degree of the interpolants basis
    */
   SparseGridResponseSurfaceNakBspline(
       std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
@@ -95,6 +95,29 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
   /**
+   * evaluates the response surface in a point in [lBounds,uBounds] transformd to [0,1]
+   * @param v		a point in [lBounds, uBounds]
+   * @param lBounds	lower bounds
+   * @param uBounds upper bounds
+   *
+   * @return		the evaluation
+   */
+  double evalNonUniform(sgpp::base::DataVector v, sgpp::base::DataVector lBounds,
+                        sgpp::base::DataVector uBounds);
+
+  /**
+   * evaluates the response surface and its gradient in a point in [lBounds,uBounds] transformd to
+   * [0,1]
+   * @param v		a point in [lBounds, uBounds]
+   * @param lBounds	lower bounds
+   * @param uBounds upper bounds
+   *
+   * @return		the evaluation
+   */
+  double evalGradientNonUniform(sgpp::base::DataVector v, sgpp::base::DataVector& gradient,
+                                sgpp::base::DataVector lBounds, sgpp::base::DataVector uBounds);
+
+  /**
    * return the integral of the response surface
    */
   double getIntegral();
@@ -135,6 +158,20 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * calculates the interpolation coefficients on a given grid
    */
   void calculateInterpolationCoefficients();
+
+  /**
+   * transforms a point in hyper-rectangle [lBounds,rBounds] to the hyper-rectangle
+   * [newlBounds,newuBounds]
+   *
+   * @param	v			point in [lBounds,uBounds]
+   * @param lBounds		lower bounds
+   * @param uBounds		upper bounds
+   * @param newlBounds  new lower bounds
+   * @param newuBounds  new upper bounds
+   */
+  void transformPoint(sgpp::base::DataVector& v, sgpp::base::DataVector lBounds,
+                      sgpp::base::DataVector uBounds, sgpp::base::DataVector newlBounds,
+                      sgpp::base::DataVector newuBounds);
 };
 
 }  // namespace datadriven
