@@ -64,6 +64,13 @@ class DataSourceCrossValidation : public DataSource {
    */
   const CrossvalidationConfiguration& getCrossValidationConfig() const;
 
+  /**
+   * Clean up memory
+  */
+  ~DataSourceCrossValidation() {
+	  if (validationData != nullptr) delete validationData;
+  }
+
  private:
   /**
    * Validation dataset
