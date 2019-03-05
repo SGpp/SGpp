@@ -97,6 +97,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     dataSource->reset();
     Dataset *validationData = dataSource->getValidationData();
     scores.push_back(scorer->test(*fitter, *validationData));
+    delete monitor;
   }
 
   // Calculate mean score and std deviation

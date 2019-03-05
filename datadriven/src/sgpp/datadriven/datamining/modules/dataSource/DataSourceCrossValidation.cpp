@@ -37,7 +37,7 @@ void DataSourceCrossValidation::reset() {
   sampleProvider->reset();
 
   // Retrieve validation data again
-  delete validationData;
+  if (validationData != nullptr) delete validationData;
   size_t validationSize = shuffling->getCurrentFoldSize(sampleProvider->getNumSamples());
   validationData = sampleProvider->getNextSamples(validationSize);
 }
