@@ -76,9 +76,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
-  // Build the offline instance first
-  DBMatOffline *offline = nullptr;
-
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
@@ -87,15 +84,15 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
         densityEstimationConfig)) {
       std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
           regularizationConfig, densityEstimationConfig);
-      offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
+      offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(offlineFilepath)};
     }
   }
 
   // Build and decompose offline object if not loaded from database
   if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
-    offline = DBMatOfflineFactory::buildOfflineObject(gridConfig, refinementConfig,
-        regularizationConfig, densityEstimationConfig);
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(gridConfig, refinementConfig,
+        regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }

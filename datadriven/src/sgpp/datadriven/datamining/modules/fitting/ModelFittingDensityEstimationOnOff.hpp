@@ -115,6 +115,9 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
  private:
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
+
+  // The offline object
+  std::unique_ptr<DBMatOffline> offline;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

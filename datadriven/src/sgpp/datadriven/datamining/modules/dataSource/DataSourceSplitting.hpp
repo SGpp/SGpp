@@ -33,12 +33,20 @@ class DataSourceSplitting : public DataSource {
    * Returns the data that is used for validation
    * @return pointer to the validation dataset
    */
-  Dataset *getValidationData() override;
+  Dataset* getValidationData() override;
 
   /**
    * Resets the state of the the sample provider to begin a new training epoch
    */
   void reset();
+
+  /**
+   * Clean up memory
+   */
+  ~DataSourceSplitting() {
+    if (validationData != nullptr) delete validationData;
+  }
+
  private:
   /**
    * The validation data that is retrieved from the sample provider at initialization time

@@ -69,6 +69,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       }
     }
   }
+  delete monitor;   // release memory
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
 } /* namespace datadriven */
