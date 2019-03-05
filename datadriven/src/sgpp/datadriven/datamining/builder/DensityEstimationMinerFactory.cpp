@@ -37,7 +37,7 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
   if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
-    return new ModelFittingDensityEstimationCombiGrid(config);
+    return new ModelFittingDensityEstimationCombi(config);
   }
   switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
