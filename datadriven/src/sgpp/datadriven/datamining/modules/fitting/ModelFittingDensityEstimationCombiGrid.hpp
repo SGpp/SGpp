@@ -28,18 +28,18 @@ namespace datadriven {
  * Abstract super class to encapsulate density estimation models working with multiple Grids.
  */
 
-class ModelFittingDensityEstimationCombiGrid : public ModelFittingDensityEstimation {
+class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation {
  public:
   /**
    * Default constructor
    */
-  ModelFittingDensityEstimationCombiGrid();
+  ModelFittingDensityEstimationCombi();
 
   /**
    * Constructor from a FitterConfig
    * @param config FitterConfig
    */
-  ModelFittingDensityEstimationCombiGrid(FitterConfigurationDensityEstimation& config);
+  ModelFittingDensityEstimationCombi(FitterConfigurationDensityEstimation& config);
 
   /**
    * Fit the grids to the given dataset by determining the weights of the initial grid by the

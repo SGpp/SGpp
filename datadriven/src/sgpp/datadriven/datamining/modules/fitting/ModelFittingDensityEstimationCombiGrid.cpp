@@ -31,9 +31,9 @@ using sgpp::base::application_exception;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid() {}
+ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi() {}
 
-ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
+ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
     FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation{} {
   cout << "Creating ModelFittingDensityEstimationCombiGrid with Level = :"
@@ -43,12 +43,12 @@ ModelFittingDensityEstimationCombiGrid::ModelFittingDensityEstimationCombiGrid(
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
 }
 
-void ModelFittingDensityEstimationCombiGrid::fit(Dataset& newDataset) {
+void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
   dataset = &newDataset;
   fit(newDataset.getData());
 }
 
-void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
+void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   datamatrix = newDataset;
   configurator = CombiConfigurator();
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
@@ -86,7 +86,7 @@ void ModelFittingDensityEstimationCombiGrid::fit(DataMatrix& newDataset) {
   cout << "Done fitting the component grids. \n";
 }
 
-void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
+void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
   dataset = &newDataset;
   if (components.empty()) {
     fit(newDataset);
@@ -96,7 +96,7 @@ void ModelFittingDensityEstimationCombiGrid::update(Dataset& newDataset) {
   }
 }
 
-void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
+void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
   datamatrix = newDataset;
   if (components.empty()) {
     cout << "components.size() == 0 --> fit(newDataset)\n";
@@ -109,7 +109,7 @@ void ModelFittingDensityEstimationCombiGrid::update(DataMatrix& newDataset) {
   cout << "done\n";
 }
 
-double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample) {
+double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
   double result = 0;
   for (size_t i = 0; i < components.size(); i++) {
     result += components.at(i)->evaluate(sample) * componentConfigs.at(i).coef;
@@ -117,7 +117,7 @@ double ModelFittingDensityEstimationCombiGrid::evaluate(const DataVector& sample
   return result;
 }
 
-void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataVector& results) {
+void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVector& results) {
   auto temp = sgpp::base::DataVector(results.size(), 0);
   results.setAll(0);
   for (size_t i = 0; i < components.size(); i++) {
@@ -128,7 +128,7 @@ void ModelFittingDensityEstimationCombiGrid::evaluate(DataMatrix& samples, DataV
   }
 }
 
-bool ModelFittingDensityEstimationCombiGrid::refine() {
+bool ModelFittingDensityEstimationCombi::refine() {
   if (componentConfigs.size() != components.size()) {
     throw base::application_exception("componentsConfig.size() != components.size()");
   }
@@ -222,20 +222,20 @@ bool ModelFittingDensityEstimationCombiGrid::refine() {
   return false;
 }
 
-bool ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints,
+bool ModelFittingDensityEstimationCombi::refine(size_t newNoPoints,
                                                     std::list<size_t>* deletedGridPoints) {
   throw application_exception(
       "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
       "deletedGridPoints): not ready jet\n");
 }
 
-void ModelFittingDensityEstimationCombiGrid::reset() {
+void ModelFittingDensityEstimationCombi::reset() {
   components.clear();
   refinementsPerformed = 0;
 }
 
 std::unique_ptr<ModelFittingDensityEstimation>
-ModelFittingDensityEstimationCombiGrid::createNewModel(
+ModelFittingDensityEstimationCombi::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
   std::cout << "Creating New ";
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
@@ -251,7 +251,7 @@ ModelFittingDensityEstimationCombiGrid::createNewModel(
   }
 }
 
-void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig) {
+void ModelFittingDensityEstimationCombi::addNewModel(combiConfig combiconfig) {
   FitterConfigurationDensityEstimation newFitterConfig{};
   newFitterConfig.setupDefaults();
   newFitterConfig.getDensityEstimationConfig().type_ =
@@ -272,13 +272,13 @@ void ModelFittingDensityEstimationCombiGrid::addNewModel(combiConfig combiconfig
   }
 }
 
-void ModelFittingDensityEstimationCombiGrid::removeModel(const size_t ind) {
+void ModelFittingDensityEstimationCombi::removeModel(const size_t ind) {
   cout << "removing model " << ind << std::endl;
   componentConfigs.erase(componentConfigs.begin() + ind);
   components.erase(components.begin() + ind);
 }
 
-bool ModelFittingDensityEstimationCombiGrid::isRefinable() {
+bool ModelFittingDensityEstimationCombi::isRefinable() {
   throw application_exception(
       "ModelFittingDensityEstimationCombiGrid::isRefinable(): not ready jet\n");
 }

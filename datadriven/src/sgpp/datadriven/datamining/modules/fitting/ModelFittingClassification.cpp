@@ -108,7 +108,7 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
   if (densityEstimationConfig.getGridConfig().generalType_ ==
       base::GeneralGridType::ComponentGrid) {
-    return std::make_unique<ModelFittingDensityEstimationCombiGrid>(densityEstimationConfig);
+    return std::make_unique<ModelFittingDensityEstimationCombi>(densityEstimationConfig);
   }
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
     case DensityEstimationType::CG: {
