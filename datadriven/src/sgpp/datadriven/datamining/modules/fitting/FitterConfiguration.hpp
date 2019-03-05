@@ -7,10 +7,10 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -135,7 +135,7 @@ class FitterConfiguration {
    * Returns the configuration for the learner's behaviour
    * @return immutable LearnerConfiguration
    */
-  const datadriven::LearnerConfiguration& getLearnerConfig() const;
+  const datadriven::LearnerConfiguration &getLearnerConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
@@ -197,6 +197,11 @@ class FitterConfiguration {
    * @param parser: the parser object to read from
    */
   virtual void readParams(const DataMiningConfigParser &parser) = 0;
+
+  /**
+   * print out all parameters to stream
+   */
+  void dumpParamsToStdout(std::ostream &stream_out = std::cout) const;
 
  protected:
   /**

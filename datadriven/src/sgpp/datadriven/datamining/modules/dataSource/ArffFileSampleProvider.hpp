@@ -60,9 +60,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param readinColumns see FileSampleProvider.hpp
    * @param readinClasses see FileSampleProvider.hpp
    */
-  void readFile(const std::string &filePath,
-                bool hasTargets,
-                size_t readinCutoff = -1,
+  void readFile(const std::string &filePath, bool hasTargets, size_t readinCutoff = -1,
                 std::vector<size_t> readinColumns = std::vector<size_t>(),
                 std::vector<double> readinClasses = std::vector<double>()) override;
 
@@ -75,9 +73,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param readinColumns see FileSampleProvider.hpp
    * @param readinClasses see FileSampleProvider.hpp
    */
-  void readString(const std::string &input,
-                  bool hasTargets,
-                  size_t readinCutoff = -1,
+  void readString(const std::string &input, bool hasTargets, size_t readinCutoff = -1,
                   std::vector<size_t> readinColumns = std::vector<size_t>(),
                   std::vector<double> readinClasses = std::vector<double>()) override;
 
@@ -85,6 +81,13 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * Resets the state of the sample provider (e.g. to start a new epoch)
    */
   void reset() override;
+
+  /**
+   * Explicit destructor to avoid memory leaks
+   */
+  ~ArffFileSampleProvider() {
+    if (shuffling != nullptr) delete shuffling;
+  }
 
  private:
   /**

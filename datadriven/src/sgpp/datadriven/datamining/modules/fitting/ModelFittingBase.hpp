@@ -14,17 +14,19 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
+
 #include <memory>
 
 namespace sgpp {
 
-using sgpp::base::OperationMatrix;
-using sgpp::base::Grid;
-using sgpp::base::DataMatrix;
-using sgpp::base::DataVector;
-using sgpp::base::RegularGridConfiguration;
-using sgpp::solver::SLESolver;
-using sgpp::solver::SLESolverConfiguration;
+using base::OperationMatrix;
+using base::Grid;
+using base::DataMatrix;
+using base::DataVector;
+using base::RegularGridConfiguration;
+using solver::SLESolver;
+using solver::SLESolverConfiguration;
 
 namespace datadriven {
 
@@ -119,6 +121,14 @@ class ModelFittingBase {
    * the current model.
    */
   virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
+
+  /**
+   * Return the learned grid. Has to be rewritten to modify default behavior.
+   * Only available for single grid models. Otherwise, an error message is shown.
+   */
+  virtual Grid &getGrid() {
+    throw base::application_exception("This model does not support grid retrieval");
+  }
 
   /**
    * Resets the state of the entire model
