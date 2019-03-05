@@ -84,7 +84,7 @@ class OperationMultipleEvalConfiguration {
 
   std::shared_ptr<base::OperationConfiguration> getParameters() { return this->parameters; }
 
-  std::string& getName() { return this->name; }
+  const std::string& getName() const { return this->name; }
 };
 }  // namespace datadriven
 }  // namespace sgpp
