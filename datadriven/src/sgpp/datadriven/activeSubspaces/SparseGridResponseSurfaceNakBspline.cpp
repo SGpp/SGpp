@@ -27,7 +27,7 @@ void SparseGridResponseSurfaceNakBspline::initialize() {
   }
 }
 
-void SparseGridResponseSurfaceNakBspline::createRegularResponseSurface(size_t level) {
+void SparseGridResponseSurfaceNakBspline::regular(size_t level) {
   grid->getGenerator().regular(level);
   calculateInterpolationCoefficients();
   interpolant =
@@ -36,9 +36,26 @@ void SparseGridResponseSurfaceNakBspline::createRegularResponseSurface(size_t le
       *grid, coefficients);
 }
 
-void SparseGridResponseSurfaceNakBspline::createSurplusAdaptiveResponseSurface(
-    size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum) {
-  createRegularResponseSurface(initialLevel);
+void SparseGridResponseSurfaceNakBspline::regularByPoints(size_t numPoints) {
+  size_t level = 1;
+  do {
+    // todo (rehmemk) instead of trying out until pointnumber matches, use formula for number of
+    // grid points
+    grid->getStorage().clear();
+    grid->getGenerator().regular(level);
+    level++;
+  } while (grid->getSize() < numPoints);
+  calculateInterpolationCoefficients();
+  interpolant =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
+}
+
+void SparseGridResponseSurfaceNakBspline::surplusAdaptive(size_t maxNumGridPoints,
+                                                          size_t initialLevel,
+                                                          size_t refinementsNum) {
+  regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
     interpolant =
@@ -48,9 +65,10 @@ void SparseGridResponseSurfaceNakBspline::createSurplusAdaptiveResponseSurface(
   }
 }
 
-void SparseGridResponseSurfaceNakBspline::createRegularResponseSurfaceData(
-    size_t level, sgpp::base::DataMatrix evaluationPoints, sgpp::base::DataVector functionValues,
-    double lambda) {
+void SparseGridResponseSurfaceNakBspline::regularData(size_t level,
+                                                      sgpp::base::DataMatrix evaluationPoints,
+                                                      sgpp::base::DataVector functionValues,
+                                                      double lambda) {
   grid->getGenerator().regular(level);
   double mse = 0;
   sgpp::base::DataVector errorPerBasis;

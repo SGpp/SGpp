@@ -57,7 +57,14 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * creates a regualar sparse grid interpolant
    * @param level	level of the regular sparse grid
    */
-  void createRegularResponseSurface(size_t level);
+  void regular(size_t level);
+
+  /**
+   * creates a regular grid of the lowest level with more grid points than specified
+   *
+   * @param numPoints	desired number of grid points
+   */
+  void regularByPoints(size_t numPoints);
 
   /**
    * creates a surplus adaptive sparse grid inteprolant
@@ -65,8 +72,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * @param initialLevel		first a regular grid of initialLevel is created.
    * @param refinementsNum		max number of grid points, added in each refinement step
    */
-  void createSurplusAdaptiveResponseSurface(size_t maxNumGridPoints, size_t initialLevel,
-                                            size_t refinementsNum = 3);
+  void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3);
 
   /**
    * creates a surplus adaptive sparse grid regression approximation
@@ -75,9 +81,8 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * @param functionValues		data values
    * @param lambda				Tikhonov regularization parameter
    */
-  void createRegularResponseSurfaceData(size_t level, sgpp::base::DataMatrix evaluationPoints,
-                                        sgpp::base::DataVector functionValues,
-                                        double lambda = 1e-6);
+  void regularData(size_t level, sgpp::base::DataMatrix evaluationPoints,
+                   sgpp::base::DataVector functionValues, double lambda = 1e-6);
 
   /**
    * evaluates this response surface
