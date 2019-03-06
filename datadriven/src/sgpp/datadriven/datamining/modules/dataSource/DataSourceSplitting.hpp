@@ -16,8 +16,10 @@
 namespace sgpp {
 namespace datadriven {
 /**
- * DataSourceSlitting is a high level interface to provide functionality for processing data
- * epoch-wise with a validation set that is retrieved at initialization time using the first
+ * DataSourceSlitting is a high level interface to provide functionality for
+ * processing data
+ * epoch-wise with a validation set that is retrieved at initialization time
+ * using the first
  * samples the sample provider provides.
  */
 class DataSourceSplitting : public DataSource {
@@ -27,7 +29,8 @@ class DataSourceSplitting : public DataSource {
    * @param config configuration object used for the data source
    * @param sampleProvider the sample provider to operate on.
    */
-  DataSourceSplitting(const DataSourceConfig& config, SampleProvider* sampleProvider);
+  DataSourceSplitting(const DataSourceConfig& config,
+                      SampleProvider* sampleProvider);
 
   /**
    * Returns the data that is used for validation
@@ -44,12 +47,15 @@ class DataSourceSplitting : public DataSource {
    * Clean up memory
    */
   ~DataSourceSplitting() {
-    if (validationData != nullptr) delete validationData;
+    if (validationData != nullptr) {
+      delete validationData;
+    }
   }
 
  private:
   /**
-   * The validation data that is retrieved from the sample provider at initialization time
+   * The validation data that is retrieved from the sample provider at
+   * initialization time
    */
   Dataset* validationData;
 };
