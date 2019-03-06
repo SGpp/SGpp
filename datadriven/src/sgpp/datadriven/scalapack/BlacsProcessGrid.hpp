@@ -15,16 +15,30 @@
 
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 
+#include <atomic>
 #include <cstddef>
 
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * This class represents a BLACS process grid for use with ScaLAPACK.
+ */
 class BlacsProcessGrid {
  public:
   /**
+   * Creates a square process grid of maximum size.
+   * Given p processes, creates a sqrt(p) * sqrt(p) process grid.
+   * Always call this method from *all* processes, as the init
+   * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
+   */
+  BlacsProcessGrid();
+
+  /**
    * Creates a BLACS process grid with a certain number of rows and columns.
    * There must be at least rows * columns processes available.
+   * Always call this method from *all* processes, as the init
+   * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
    *
    * @param rows
    * @param columns
@@ -32,10 +46,9 @@ class BlacsProcessGrid {
   BlacsProcessGrid(int rows, int columns);
 
   /**
-   * Creates a square process grid of maximum size.
-   * Given p processes, creates a sqrt(p) * sqrt(p) process grid.
+   * Cannot be copied, otherwise errors with multiple calls to blacs_gridexit are possible
    */
-  BlacsProcessGrid();
+  BlacsProcessGrid(const BlacsProcessGrid&) = delete;
 
   ~BlacsProcessGrid();
 
@@ -69,11 +82,31 @@ class BlacsProcessGrid {
    */
   int getCurrentProcess() const;
 
+  /**
+   * @returns True if the current process is part of this grid, else false
+   */
+  bool isProcessInGrid() const;
+
+  /**
+   * Can only be called after BLACS initialization.
+   * @returns the number of available mpi processes
+   */
+  static size_t availableProcesses();
+
+  /**
+   * Initialize BLACS, should only be called once.
+   */
   static void initializeBlacs();
 
+  /**
+   * Exit BLACS, should only be called once.
+   */
   static void exitBlacs();
 
  private:
+  // flag to check if BLACS was initialized
+  static bool blacsInitialized;
+
   // system context for use in gridinit
   static int systemContext;
 
@@ -88,6 +121,9 @@ class BlacsProcessGrid {
 
   // process grid columns
   int columns;
+
+  // describes if the current process is part of this grid
+  bool partOfGrid;
 
   // current process number
   int mypnum;

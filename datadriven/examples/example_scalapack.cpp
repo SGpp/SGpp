@@ -22,7 +22,7 @@ void test() {
   std::cout << "process: " << grid->getCurrentRow() << ", " << grid->getCurrentColumn()
             << std::endl;
 
-  DataMatrixDistributed matrix(grid, 10, 10, DataMatrixDistributed::DTYPE::DENSE, 128, 64, 0.0);
+  DataMatrixDistributed matrix(grid, 10, 10, 128, 64, 0.0);
   std::cout << "matrix initialized" << std::endl;
 
   std::cout << "local size: " << matrix.getLocalRows() << " x " << matrix.getLocalColumns()
@@ -37,7 +37,7 @@ void test() {
 
   std::vector<double> test{0.0, 1.0, 3.0, 0.0};
 
-  DataMatrixDistributed matrix2(test.data(), grid, 2, 2, DataMatrixDistributed::DTYPE::DENSE, 2, 1);
+  DataMatrixDistributed matrix2(test.data(), grid, 2, 2, 2, 1);
 
   int m = 2;
   int n = 2;
@@ -52,8 +52,8 @@ void test() {
   // icprnt,
   //                            identifier.c_str(), nout, work.data());
 
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
+  for (int i = 0; i < matrix2.getLocalRows(); i++) {
+    for (int j = 0; j < matrix2.getLocalColumns(); j++) {
       std::cout << matrix2.getLocalPointer()[(i * 2) + j];
     }
     std::cout << std::endl;
@@ -61,8 +61,12 @@ void test() {
 
   sgpp::base::DataMatrix local = matrix2.toLocalDataMatrix();
 
-  for (int i = 0; i < 2; i++) {
-    for (int j = 0; j < 2; j++) {
+  std::cout << "process " << grid->getCurrentProcess()
+            << " converted local size: " << local.getNrows() << " x " << local.getNcols()
+            << std::endl;
+
+  for (int i = 0; i < matrix2.getLocalRows(); i++) {
+    for (int j = 0; j < matrix2.getLocalColumns(); j++) {
       std::cout << matrix2.getLocalPointer()[(i * 2) + j];
     }
     std::cout << std::endl;

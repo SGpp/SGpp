@@ -10,25 +10,25 @@
  *     Author: Kilian Röhner
  */
 
+#include <list>
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <string>
 #include <vector>
-#include <list>
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -36,7 +36,8 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
-    const FitterConfigurationDensityEstimation& config) : ModelFittingDensityEstimation() {
+    const FitterConfigurationDensityEstimation& config)
+    : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -48,7 +49,7 @@ double ModelFittingDensityEstimationOnOff::evaluate(const DataVector& sample) {
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingDensityEstimationOnOff::evaluate(DataMatrix& samples, DataVector& results) {
-    online->eval(alpha, samples, results, *grid);
+  online->eval(alpha, samples, results, *grid);
 }
 
 void ModelFittingDensityEstimationOnOff::fit(Dataset& newDataset) {
@@ -77,16 +78,16 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   alpha = DataVector{grid->getSize()};
 
   // Build the offline instance first
-  DBMatOffline *offline = nullptr;
+  DBMatOffline* offline = nullptr;
 
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
-        densityEstimationConfig)) {
-      std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-          regularizationConfig, densityEstimationConfig);
+                               densityEstimationConfig)) {
+      std::string offlineFilepath = database.getDataMatrix(
+          gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
       offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
     }
   }
@@ -94,24 +95,23 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // Build and decompose offline object if not loaded from database
   if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
-    offline = DBMatOfflineFactory::buildOfflineObject(gridConfig, refinementConfig,
-        regularizationConfig, densityEstimationConfig);
+    offline = DBMatOfflineFactory::buildOfflineObject(
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
-     *grid, regularizationConfig.lambda_)};
+  online = std::unique_ptr<DBMatOnlineDE>{
+      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
 
   online->computeDensityFunction(alpha, newDataset, *grid,
-      this->config->getDensityEstimationConfig(), true,
-      this->config->getCrossvalidationConfig().enable_);
+                                 this->config->getDensityEstimationConfig(), true,
+                                 this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().beta);
-  online->normalize(alpha, *grid);
+  // online->normalize(alpha, *grid);
 }
 
-
 bool ModelFittingDensityEstimationOnOff::refine(size_t newNoPoints,
-    std::list<size_t> *deletedGridPoints) {
+                                                std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha
@@ -127,9 +127,9 @@ bool ModelFittingDensityEstimationOnOff::refine(size_t newNoPoints,
   }
 
   // Update online object: lhs, rhs and recompute the density function based on the b stored
-  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(),
-      *grid, newNoPoints - oldNoPoints, *deletedGridPoints,
-      config->getRegularizationConfig().lambda_);
+  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
+                                          newNoPoints - oldNoPoints, *deletedGridPoints,
+                                          config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
   return true;
 }
@@ -146,9 +146,9 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
   } else {
     // Update the fit (streaming)
     online->computeDensityFunction(alpha, newDataset, *grid,
-        this->config->getDensityEstimationConfig(), true,
-        this->config->getCrossvalidationConfig().enable_);
-    online->normalize(alpha, *grid);
+                                   this->config->getDensityEstimationConfig(), true,
+                                   this->config->getCrossvalidationConfig().enable_);
+    // online->normalize(alpha, *grid);
   }
 }
 
