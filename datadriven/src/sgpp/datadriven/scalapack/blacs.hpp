@@ -11,37 +11,45 @@
  */
 #pragma once
 
+#include <cstddef>
+
 namespace sgpp {
 namespace datadriven {
 extern "C" {
 
 // support routines
 
-void blacs_pinfo_(int &mypnum, int &nprocs);
+void Cblacs_pinfo(int &mypnum, int &nprocs);
 
-int blacs_pnum_(const int &icontxt, const int &prow, const int &pcol);
+int Cblacs_pnum(int icontxt, int prow, int pcol);
 
-void blacs_get_(int &icontxt, const int &what, int &val);
+void Cblacs_get(int icontxt, int what, int &val);
 
-void blacs_gridinit_(int &icontxt, const char *order, const int &nprow, int &npcol);
+void Cblacs_gridinit(int &icontxt, const char *order, int nprow, int npcol);
 
-void blacs_gridinfo_(int &icontxt, int &nprow, int &npcol, int &myprow, int &mypcol);
+void Cblacs_gridinfo(int icontxt, int &nprow, int &npcol, int &myprow, int &mypcol);
 
-void blacs_gridexit_(const int &icontxt);
+void Cblacs_gridexit(int icontxt);
 
-void blacs_exit_(const int &cont);
+void Cblacs_exit(int cont);
 
-void blacs_barrier(const int &icontxt, const char *scope);
+void Cblacs_barrier(int icontxt, const char *scope);
 
 // broadcasts
 
 // send
-void dgebs2d_(const int &icontxt, const char *scope, const char *top, const int &m, const int &n,
-              const double *a, const int &lda);
+void Cdgebs2d(int icontxt, const char *scope, const char *top, size_t m, size_t n, const double *a,
+              size_t lda);
 
 // receive
-void dgebr2d_(const int &icontxt, const char *scope, const char *top, const int &m, const int &n,
-              double *a, const int &lda, const int &rsrc, const int &csrc);
+void Cdgebr2d(int icontxt, const char *scope, const char *top, size_t m, size_t n, double *a,
+              size_t lda, int rsrc, int csrc);
+
+// p2p send/receive
+
+void Cdgesd2d(int icontxt, size_t m, size_t n, const double *a, size_t lda, int rdest, int cdest);
+
+void Cdgerv2d(int icontxt, size_t m, size_t n, double *a, size_t lda, int rsrc, int csrc);
 }
 }  // namespace datadriven
 }  // namespace sgpp

@@ -10,6 +10,9 @@
  *     Author: Jan Schopohl
  */
 #pragma once
+
+#include <cstddef>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -73,7 +76,24 @@ void pdgemr2d_(const int &m, const int &n, const double *a, const int &ia, const
                const int *desca, double *b, const int &ib, const int &jb, const int *descb,
                const int &ictxt);
 
+void Cpdgemr2d(int m, int n, const double *a, int ia, int ja, const int *desca, double *b, int ib,
+               int jb, const int *descb, int ictxt);
+
 // Level 1 BLAS
+
+// sub(y) := sub(y) + a*sub(x)
+void pdaxpy(const int &n, const double *a, const double *x, const int &ix, const int &jx,
+            const int *descx, const int &incx, double *y, const int &iy, const int &jy,
+            const int *descy, const int &incy);
+
+// dot = sub(x)'*sub(y)
+void pddot(const int &n, double *dot, const double *x, const int &ix, const int &jx,
+           const int *descx, const int &incx, const double *y, const int &iy, const int &jy,
+           const int *descy, const int &incy);
+
+// sub(x) = a*sub(x)
+void pdscal(const int &n, const double *a, double *x, const int &ix, const int &jx,
+            const int *descx, const int &incx);
 
 // Level 2 BLAS
 void pdgemv_(const char *trans, const int &m, const int &n, const double &alpha, const double *a,
@@ -91,6 +111,11 @@ void pdgemm_(const char *transa, const char *transb, const int &m, const int &n,
              const double &alpha, const double *a, const int &ia, const int &ja, const int *desca,
              const double *b, const int &ib, const int &jb, const int *descb, const double &beta,
              double *c, const int &ic, const int &jc, const int *descc);
+
+// sub(C):=beta*sub(C) + alpha*op(sub(A))
+void pdgeadd_(const char *trans, const int &m, const int &n, const double &alpha, const double *a,
+              const int &ia, const int &ja, const int *desca, const double &beta, double *c,
+              const int &ic, const int &jc, const int *descc);
 }
 }  // namespace datadriven
 }  // namespace sgpp
