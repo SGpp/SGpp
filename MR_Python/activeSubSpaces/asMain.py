@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
 from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
 import os
 import time
+
+from mpl_toolkits.mplot3d import Axes3D
 
 import active_subspaces as ac
 import asFunctions
@@ -172,8 +173,9 @@ def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPo
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
     
-    sparseResponseSurf = pysgpp.SparseGridResponseSurfaceNakBspline(f, \
-                                                                    pysgpp.Grid.stringToGridType(gridType), degree)
+    sparseResponseSurf = pysgpp.SparseGridResponseSurfaceNakBspline(f,
+                                                                    pysgpp.Grid.stringToGridType(gridType),
+                                                                    degree)
     if responseType == 'adaptive':
         initialLevel = 1
         sparseResponseSurf.createSurplusAdaptiveResponseSurface(numResponse, initialLevel, numRefine)

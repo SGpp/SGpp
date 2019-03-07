@@ -8,13 +8,20 @@ import pysgpp
 
 # Functions are evaluated in a point given as DataVector.
 # This point must be in [0,1]^D. The function itself maps the point to its domain via unnormalize
-def getFunction(model, dim=1, degree=3):
+def getFunction(model, dim=1, scalarModelParameter=3):
     if model == 'test':
         return test()
     elif model == 'monomial':
+        degree = scalarModelParameter
         return monomial(dim, degree)
-    elif model == 'sin':
-        return sin(dim)
+    elif model == 'sinSum':
+        return sinSum(dim)
+    elif model == 'cosSum':
+        return cosSum(dim)
+    elif model == 'expSum':
+        return expSum(dim)
+    elif model == 'gaussian':
+        return gaussian(dim)
     elif model == 'wing':
         return wing()
 
@@ -98,7 +105,7 @@ class monomial():
 
     
 # sin(alpha pi sum x_i)
-class sin():
+class sinSum():
 
     def __init__(self, dim):
         self.dim = dim
@@ -110,7 +117,7 @@ class sin():
         return lb, ub
     
     def getName(self):
-        return "sin_{}D".format(self.degree, self.getDim())
+        return "sinSum_{}D".format(self.getDim())
     
     def getDim(self):
         return self.dim
@@ -121,6 +128,125 @@ class sin():
     def eval_grad(self, X):
         print("MR_functions: gradient not implemented")
         return 0
+
+    
+# cos(alpha pi sum x_i)
+class cosSum():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.alpha = 2.0 / dim
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
+        return lb, ub
+    
+    def getName(self):
+        return "cosSum_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        return np.cos(self.alpha * np.pi * v.sum())
+    
+    def eval_grad(self, X):
+        print("MR_functions: gradient not implemented")
+        return 0
+
+    
+# exp(-sum x_i)
+class expSum():
+
+    def __init__(self, dim):
+        self.dim = dim
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
+        return lb, ub
+    
+    def getName(self):
+        return "expSum_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        return np.exp(-v.sum())
+    
+    def eval_grad(self, X):
+        print("MR_functions: gradient not implemented")
+        return 0
+
+    
+# general gaussian function: a exp(- sum (x-b^2) / c^2)
+class gaussian():
+ 
+    def __init__(self, dim):
+        self.dim = dim
+        if dim == 5:
+            self.a = np.asarray([0.27324462])
+            self.b = np.asarray([[0.36392235], [0.39835248], [0.37496713], [0.58101065], [0.48031459]])
+            self.c = np.asarray([[0.30291827], [0.35548085], [0.23110054], [0.56948667], [0.635729  ]])
+        else:
+            self.a = np.random.rand(1)
+            self.b = np.random.rand(self.dim, 1)
+            self.b = self.b / np.linalg.norm(self.b)
+            self.c = np.random.rand(self.dim, 1)
+            self.c = self.c / np.linalg.norm(self.c)
+        print("gaussian function a exp(- sum (x-b^2) / c^2) using:\na {}\nb {}\nc {}".format(self.a, self.b, self.c))
+     
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
+        return lb, ub
+     
+    def getName(self):
+        return "gaussian_{}D".format(self.getDim())
+     
+    def getDim(self):
+        return self.dim
+ 
+    def eval(self, v):
+        arg = 0
+        for i in range(self.getDim()):
+            arg += (v[i] - self.b[i, 0] ** 2) / self.c[i, 0] ** 2
+        return self.a[0] * np.exp(-arg)
+     
+    def eval_grad(self, X):
+        print("MR_functions: gradient not implemented")
+        return 0
+
+# gaussian function from Dirks Diss
+# class gaussian():
+# 
+#     def __init__(self, dim):
+#         self.dim = dim
+#         self.mu = [0.5] * dim
+#         self.sigma = [1.0 / 16.0] * dim
+#     
+#     def getDomain(self):
+#         lb = pysgpp.DataVector(self.getDim(), 0.0)
+#         ub = pysgpp.DataVector(self.getDim(), 1.0)
+#         return lb, ub
+#     
+#     def getName(self):
+#         return "gaussian_{}D".format(self.getDim())
+#     
+#     def getDim(self):
+#         return self.dim
+# 
+#     def eval(self, v):
+#         prod = 1
+#         for i in range(self.getDim()):
+#             prod *= 1.0 / (2 * np.sqrt(self.sigma[i]) * np.pi) * np.exp(-0.5 * ((v[i] - self.mu[i]) / self.sigma[i]) ** 2)
+#         return prod
+#     
+#     def eval_grad(self, X):
+#         print("MR_functions: gradient not implemented")
+#         return 0
 
 
 # https://www.sfu.ca/~ssurjano/wingweight.html
