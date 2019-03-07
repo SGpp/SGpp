@@ -23,7 +23,7 @@ namespace base {
  * Extended Not-a-knot B-spline basis.
  *
  * This basis is a nonboundary version for the not-a-knot Bspline basis which still can represent
- * 1,2,...x^degree exact on [0,1].
+ * 1,x,...x^degree exact on [0,1].
  * This is achieved by adding the B-splines belonging to the left(0) and right boundary point (1) to
  * (degree+1) inner B-splines with extension coefficients derived from SLE for the representation of
  * 1,x,...x^degree.

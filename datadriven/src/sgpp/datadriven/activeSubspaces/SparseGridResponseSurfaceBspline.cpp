@@ -3,14 +3,32 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp>
+#include "SparseGridResponseSurfaceBspline.hpp"
 
 namespace sgpp {
 namespace datadriven {
 
-void SparseGridResponseSurfaceNakBspline::initialize() {
+void SparseGridResponseSurfaceBspline::initialize() {
   numDim = objectiveFunc->getNumberOfParameters();
-  if (gridType == sgpp::base::GridType::NakBspline) {
+  if (gridType == sgpp::base::GridType::Bspline) {
+    grid = std::make_shared<sgpp::base::BsplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
+  } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+    grid = std::make_shared<sgpp::base::BsplineBoundaryGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
+  } else if (gridType == sgpp::base::GridType::ModBspline) {
+    grid = std::make_shared<sgpp::base::ModBsplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
+    grid = std::make_shared<sgpp::base::BsplineClenshawCurtisGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
+  } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
+    grid = std::make_shared<sgpp::base::FundamentalSplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
+  } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
+    grid = std::make_shared<sgpp::base::ModFundamentalSplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakBspline) {
     grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
@@ -23,11 +41,12 @@ void SparseGridResponseSurfaceNakBspline::initialize() {
     grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
   } else {
-    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+    throw sgpp::base::generation_exception(
+        "SparseGridResponseSurfaceBspline: gridType not supported.");
   }
 }
 
-void SparseGridResponseSurfaceNakBspline::regular(size_t level) {
+void SparseGridResponseSurfaceBspline::regular(size_t level) {
   grid->getGenerator().regular(level);
   calculateInterpolationCoefficients();
   interpolant =
@@ -36,7 +55,7 @@ void SparseGridResponseSurfaceNakBspline::regular(size_t level) {
       *grid, coefficients);
 }
 
-void SparseGridResponseSurfaceNakBspline::regularByPoints(size_t numPoints) {
+void SparseGridResponseSurfaceBspline::regularByPoints(size_t numPoints) {
   size_t level = 1;
   do {
     // todo (rehmemk) instead of trying out until pointnumber matches, use formula for number of
@@ -52,9 +71,8 @@ void SparseGridResponseSurfaceNakBspline::regularByPoints(size_t numPoints) {
       *grid, coefficients);
 }
 
-void SparseGridResponseSurfaceNakBspline::surplusAdaptive(size_t maxNumGridPoints,
-                                                          size_t initialLevel,
-                                                          size_t refinementsNum) {
+void SparseGridResponseSurfaceBspline::surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel,
+                                                       size_t refinementsNum) {
   regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
@@ -65,10 +83,10 @@ void SparseGridResponseSurfaceNakBspline::surplusAdaptive(size_t maxNumGridPoint
   }
 }
 
-void SparseGridResponseSurfaceNakBspline::regularData(size_t level,
-                                                      sgpp::base::DataMatrix evaluationPoints,
-                                                      sgpp::base::DataVector functionValues,
-                                                      double lambda) {
+void SparseGridResponseSurfaceBspline::regularData(size_t level,
+                                                   sgpp::base::DataMatrix evaluationPoints,
+                                                   sgpp::base::DataVector functionValues,
+                                                   double lambda) {
   grid->getGenerator().regular(level);
   double mse = 0;
   sgpp::base::DataVector errorPerBasis;
@@ -80,34 +98,34 @@ void SparseGridResponseSurfaceNakBspline::regularData(size_t level,
       *grid, coefficients);
 }
 
-double SparseGridResponseSurfaceNakBspline::eval(sgpp::base::DataVector v) {
+double SparseGridResponseSurfaceBspline::eval(sgpp::base::DataVector v) {
   return interpolant->eval(v);
 }
-double SparseGridResponseSurfaceNakBspline::evalGradient(sgpp::base::DataVector v,
-                                                         sgpp::base::DataVector& gradient) {
+double SparseGridResponseSurfaceBspline::evalGradient(sgpp::base::DataVector v,
+                                                      sgpp::base::DataVector& gradient) {
   return interpolantGradient->eval(v, gradient);
 }
 
-double SparseGridResponseSurfaceNakBspline::evalNonUniform(sgpp::base::DataVector v,
-                                                           sgpp::base::DataVector lBounds,
-                                                           sgpp::base::DataVector uBounds) {
+double SparseGridResponseSurfaceBspline::evalNonUniform(sgpp::base::DataVector v,
+                                                        sgpp::base::DataVector lBounds,
+                                                        sgpp::base::DataVector uBounds) {
   sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
   sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
   transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
   return interpolant->eval(v);
 }
 
-double SparseGridResponseSurfaceNakBspline::evalGradientNonUniform(sgpp::base::DataVector v,
-                                                                   sgpp::base::DataVector& gradient,
-                                                                   sgpp::base::DataVector lBounds,
-                                                                   sgpp::base::DataVector uBounds) {
+double SparseGridResponseSurfaceBspline::evalGradientNonUniform(sgpp::base::DataVector v,
+                                                                sgpp::base::DataVector& gradient,
+                                                                sgpp::base::DataVector lBounds,
+                                                                sgpp::base::DataVector uBounds) {
   sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
   sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
   transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
   return interpolantGradient->eval(v, gradient);
 }
 
-double SparseGridResponseSurfaceNakBspline::getIntegral() {
+double SparseGridResponseSurfaceBspline::getIntegral() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   double integral = 0;
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
@@ -123,13 +141,13 @@ double SparseGridResponseSurfaceNakBspline::getIntegral() {
 
 // ----------------- auxiliary routines -----------
 
-void SparseGridResponseSurfaceNakBspline::refineSurplusAdaptive(size_t refinementsNum) {
+void SparseGridResponseSurfaceBspline::refineSurplusAdaptive(size_t refinementsNum) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
   calculateInterpolationCoefficients();
 }
 
-void SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
+void SparseGridResponseSurfaceBspline::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
@@ -139,7 +157,7 @@ void SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
     }
     f_values[i] = objectiveFunc->eval(p);
   }
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::optimization::sle_solver::Armadillo sleSolver;
   sgpp::optimization::Printer::getInstance().setVerbosity(-1);
   sgpp::optimization::HierarchisationSLE hierSLE(*grid);
   if (!sleSolver.solve(hierSLE, f_values, coefficients)) {
@@ -147,11 +165,11 @@ void SparseGridResponseSurfaceNakBspline::calculateInterpolationCoefficients() {
   }
 }
 
-void SparseGridResponseSurfaceNakBspline::transformPoint(sgpp::base::DataVector& v,
-                                                         sgpp::base::DataVector lBounds,
-                                                         sgpp::base::DataVector uBounds,
-                                                         sgpp::base::DataVector newlBounds,
-                                                         sgpp::base::DataVector newuBounds) {
+void SparseGridResponseSurfaceBspline::transformPoint(sgpp::base::DataVector& v,
+                                                      sgpp::base::DataVector lBounds,
+                                                      sgpp::base::DataVector uBounds,
+                                                      sgpp::base::DataVector newlBounds,
+                                                      sgpp::base::DataVector newuBounds) {
   v.sub(lBounds);
   uBounds.sub(lBounds);
   v.componentwise_div(uBounds);

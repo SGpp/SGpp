@@ -15,6 +15,7 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
@@ -25,9 +26,9 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * stores a sparse grid not a knot B-spline interpolant in the framework of a repsonse surface
+ * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  */
-class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
+class SparseGridResponseSurfaceBspline : public ResponseSurface {
  public:
   /**
    * Constructor
@@ -36,7 +37,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
    * @param gridType			type of the interpolants grid/basis
    * @param degree				degree of the interpolants basis
    */
-  SparseGridResponseSurfaceNakBspline(
+  SparseGridResponseSurfaceBspline(
       std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
       sgpp::base::GridType gridType, size_t degree = 3)
       : ResponseSurface(), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
@@ -46,7 +47,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   /**
    * Destructor
    */
-  virtual ~SparseGridResponseSurfaceNakBspline() {}
+  virtual ~SparseGridResponseSurfaceBspline() {}
 
   /**
    * sets numDim, grid and basis according to objectiveFunction and gridType
@@ -149,7 +150,7 @@ class SparseGridResponseSurfaceNakBspline : public ResponseSurface {
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
-  std::unique_ptr<sgpp::base::SBasis> basis;
+  std::shared_ptr<sgpp::base::SBasis> basis;
   // the interpolation coefficients
   sgpp::base::DataVector coefficients;
 

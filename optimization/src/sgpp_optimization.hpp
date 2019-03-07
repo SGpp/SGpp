@@ -146,6 +146,6 @@
 #include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
 #include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
 #include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceNakBspline.hpp"
+#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceBspline.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */
