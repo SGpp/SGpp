@@ -151,6 +151,12 @@ class cosSum():
     def eval(self, v):
         return np.cos(self.alpha * np.pi * v.sum())
     
+        # FOR THIS EXTENDED IS BETTER THAN THE OTHERS!
+#         sum = 0
+#         for d in range(self.dim):
+#             sum += np.cos(2 * np.pi * v[d])
+#         return sum
+    
     def eval_grad(self, X):
         print("MR_functions: gradient not implemented")
         return 0
@@ -269,8 +275,9 @@ class wing():
         lN = pysgpp.DataVector(self.getDim(), 0.0)
         uN = pysgpp.DataVector(self.getDim(), 1.0)
         v = unnormalize(v, lb, ub, lN, uN)
-        print(v[0])
-        return v[0]
+        Sw = v[0]; Wfw = v[1]; A = v[2]; L = v[3];q = v[4]
+        l = v[5]; tc = v[6];Nz = v[7];Wdg = v[8];Wp = v[9]
+        return 0.036 * Sw ** 0.758 * Wfw ** 0.0035 * (A / np.cos(L) ** 2) ** 0.6 * q ** 0.006 * l ** 0.04 * (100 * tc / np.cos(L)) ** (-0.3) * (Nz * Wdg) ** 0.49 + Sw * Wp
     
     def eval_grad(self, X):
         print("MR_functions: gradient not implemented")

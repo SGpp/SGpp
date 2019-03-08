@@ -1,7 +1,11 @@
 from argparse import ArgumentParser
 import ipdb
+from matplotlib import cm
+from matplotlib import rc
 import os
 import time
+
+from mpl_toolkits.mplot3d import Axes3D
 
 import cPickle as pickle
 import functions
@@ -27,6 +31,97 @@ class objFuncSGpp(pysgpp.OptScalarFunction):
     def getDim(self):
         return self.dim
 
+
+# inteprolate the function f-zerof, where zerof is an interpolant in the corners (=level zero)     
+class zeroObjFuncSGpp(pysgpp.OptScalarFunction):
+
+    def __init__(self, objFunc, zeroGrid, zeroAlpha):
+        self.dim = objFunc.getDim()
+        self.objFunc = objFunc
+        self.zeroGrid = zeroGrid
+        self.zeroAlpha = zeroAlpha
+        super(zeroObjFuncSGpp, self).__init__(self.dim)
+
+    def eval(self, v):
+#         import ipdb
+#         ipdb.set_trace()
+        fZero = pysgpp.OptInterpolantScalarFunction(self.zeroGrid, self.zeroAlpha)
+        return  self.objFunc.eval(v) - fZero.eval(v)
+    
+    def getName(self):
+        return self.objFunc.getName()
+    
+    def getDim(self):
+        return self.dim
+
+
+# get an interpolant for only the corner values. USed to subtract corner values from the original function 
+def prepareCorners(objFunc, degree):
+    dim = objFunc.getDim()
+    grid = pysgpp.Grid.createBsplineBoundaryGrid(dim, degree)
+    gridStorage = grid.getStorage()
+    grid.getGenerator().regular(0)
+    numPoints = gridStorage.getSize()
+    f_values = pysgpp.DataVector(numPoints)
+
+    for i in range(numPoints):
+        gp = gridStorage.getPoint(i)
+        p = np.zeros(dim)
+        for d in range(dim):
+            p[d] = gp.getStandardCoordinate(d)
+        f_values[i] = objFunc.eval(p)
+    alpha = pysgpp.DataVector(len(f_values))
+    hierSLE = pysgpp.OptHierarchisationSLE(grid)
+    sleSolver = pysgpp.OptAutoSLESolver()
+    if not sleSolver.solve(hierSLE, f_values, alpha):
+        print "Solving failed, exiting."
+        sys.exit(1)
+    return grid, alpha
+
+
+# caluclate error of a function approximated as f+zerof, where zerof is an interpolant in the corners (=level zero)  
+def zeroError(objFunc, zeroGrid, zeroAlpha, grid, alpha):
+    IZero = pysgpp.OptInterpolantScalarFunction(zeroGrid, zeroAlpha)
+    I = pysgpp.OptInterpolantScalarFunction(grid, alpha)
+    dim = objFunc.getDim()
+
+    def IBoth(v):
+        return IZero.eval(v) + I.eval(v)
+    
+    numErrorPoints = 10000
+    randomP = np.random.rand(numErrorPoints, dim)
+    err = np.zeros(numErrorPoints)
+    for i in range(numErrorPoints):
+        vec = pysgpp.DataVector(dim)
+        for d in range(dim):
+            vec[d] = randomP[i, d]
+        err[i] = objFunc.eval(vec) - IBoth(vec)
+    
+    return np.linalg.norm(err)
+
+
+# plot error projected to 2d space (by removing all except for 2 coordinates)
+# this show the error lies in the corners
+def plot2DprojectedError(reSurf, objFunc):
+    numErrorPoints = 10000
+    dim = objFunc.getDim()
+    r = np.random.rand(numErrorPoints, dim)
+    interpolCoeff = reSurf.getCoefficients()
+    interpolGrid = reSurf.getGrid()
+    I = pysgpp.OptInterpolantScalarFunction(interpolGrid, interpolCoeff)
+    Ivals = np.zeros(numErrorPoints)
+    Fvals = np.zeros(numErrorPoints)
+    for i in range(numErrorPoints):
+        vec = pysgpp.DataVector(dim)
+        for d in range(dim):
+            vec[d] = r[i, d]
+        Ivals[i] = I.eval(vec)
+        Fvals[i] = objFunc.eval(vec)
+    diff = abs(Ivals - Fvals)
+    fig = plt.figure()
+    cs = plt.scatter(r[:, 0], r[:, 1], c=diff , cmap=cm.bwr)
+    plt.colorbar(cs)
+
     
 def interpolateAndError(degree,
                         maxLevel,
@@ -49,11 +144,19 @@ def interpolateAndError(degree,
     gridSizes = np.zeros((len(gridTypes), len(sampleRange)))
     runTimes = np.zeros((len(gridTypes), len(sampleRange)))
     dim = objFunc.getDim()
+    
+    zeroGrid, zeroAlpha = prepareCorners(objFunc, degree)
+    newObjFunc = zeroObjFuncSGpp(objFunc, zeroGrid, zeroAlpha)
+    
     for  i, gridType in enumerate(gridTypes):
         for j, numPoints in enumerate(sampleRange):
             reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc,
                                                             pysgpp.Grid.stringToGridType(gridType),
                                                             degree)
+#             reSurf = pysgpp.SparseGridResponseSurfaceBspline(newObjFunc,  
+#                                                             pysgpp.Grid.stringToGridType(gridType),
+#                                                             degree)
+            
             start = time.time()
             if refineType == 'regular':
                 level = numPoints  # numPoints is an ugly wrapper for level. Improve this
@@ -64,7 +167,11 @@ def interpolateAndError(degree,
                 reSurf.surplusAdaptive(numPoints, initialLevel, numRefine)
             runTimes[i, j] = time.time() - start   
             interpolErrors[i, j] = reSurf.l2Error(objFunc, numErrPoints)
+            # interpolErrors[i, j] = zeroError(objFunc, zeroGrid, zeroAlpha, reSurf.getGrid(), reSurf.getCoefficients())
             gridSizes[i, j] = reSurf.getSize()
+            
+            # plot2DprojectedError(reSurf, objFunc)
+            
         print('{} {} (took {}s)'.format(gridType, degree, np.sum(runTimes[i, :])))
         plt.plot(gridSizes[i, :], interpolErrors[i, :], label=gridType, color=colors[i], marker=markers[i])
         plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
@@ -134,11 +241,7 @@ if __name__ == '__main__':
                                    numErrPoints, objFunc, gridTypes, args.refineType,
                                    args.initialLevel, args.numRefine)
     
-        # save data if specified
-        if args.model == 'monomial':
-            directory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data/monomials', objFunc.getName())
-        else:
-            directory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data', objFunc.getName())
+        directory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data/' + args.model, objFunc.getName())
             
         if args.saveFig == 1 or args.saveData == 1:
             if not os.path.exists(directory):
