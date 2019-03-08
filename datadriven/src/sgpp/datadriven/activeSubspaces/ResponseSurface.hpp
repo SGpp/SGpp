@@ -65,14 +65,9 @@ class ResponseSurface {
   double l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
                  size_t numMCPoints = 1000);
 
-  /**
-   * @return the number of grid points
-   */
-  size_t getSize() { return interpolant->getSize(); }
-
  protected:
-  std::shared_ptr<sgpp::optimization::ASInterpolantScalarFunction> interpolant;
-  std::shared_ptr<sgpp::optimization::ASInterpolantScalarFunctionGradient> interpolantGradient;
+  std::shared_ptr<sgpp::optimization::ScalarFunction> interpolant;
+  std::shared_ptr<sgpp::optimization::ScalarFunctionGradient> interpolantGradient;
 };
 
 }  // namespace datadriven

@@ -138,6 +138,11 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    */
   sgpp::base::DataVector getCoefficients() { return coefficients; }
 
+  /**
+   * @return the number of grid points
+   */
+  size_t getSize() { return grid->getSize(); }
+
  private:
   // objective function
   std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
