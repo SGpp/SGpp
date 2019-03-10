@@ -25,15 +25,15 @@ RefinementMonitor* RefinementMonitorFactory::createRefinementMonitor(
     return new RefinementMonitorPeriodic(adaptivityConfig.refinementPeriod);
   }
 }
-RefinementMonitor* RefinementMonitorFactory::createCoarseningMonitor(
-            const sgpp::base::CoarseningConfiguration& coarseningConfig) const {
-  if (coarseningConfig.errorBasedRefinement) {
-    return new RefinementMonitorConvergence(coarseningConfig.errorConvergenceThreshold,
-                                            coarseningConfig.errorBufferSize, coarseningConfig.errorMinInterval);
-  } else {
-    return new RefinementMonitorPeriodic(coarseningConfig.refinementPeriod);
-  }
-}
+//RefinementMonitor* RefinementMonitorFactory::createCoarseningMonitor(
+//            const sgpp::base::CoarseningConfiguration& coarseningConfig) const {
+//  if (coarseningConfig.errorBasedCoarsening) {
+//    return new RefinementMonitorConvergence(coarseningConfig.errorConvergenceThreshold,
+//                                            coarseningConfig.errorBufferSize, coarseningConfig.errorMinInterval);
+//  } else {
+//    return new RefinementMonitorPeriodic(coarseningConfig.CoarseningPeriod);
+//  }
+//}
 }  // namespace datadriven
 }  // namespace sgpp
 

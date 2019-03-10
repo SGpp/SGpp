@@ -31,6 +31,11 @@ namespace sgpp {
                 pre_compute(pre_compute),
                 pre_comp_evals() {
             // Add a map for each grid
+            // Check the parameters, throw exception
+            if (thresh < 0){
+                throw application_exception(
+                        "GridPointBasedCoarseningFunctor: Threshold should be non-negative!");
+            }
             for (size_t i = 0; i < grids.size(); i++) {
                 pre_comp_evals.push_back(std::map<std::string, double>());
             }
@@ -111,9 +116,11 @@ namespace sgpp {
             base::HashGridIterator iter(storage);
             std::vector<size_t> neighSeq;
 
+            bool has_child = false;
             for (size_t d = 0; d < storage.getDimension(); d++) {
                 // Left neighbor
                 if (hasChild(gp, d, true)) {
+                    has_child = true;
                     base::HashGridPoint child = base::HashGridPoint(gp);
                     base::HashGridPoint down = base::HashGridPoint(gp);
                     getChild(gp, d, true, child);
@@ -130,6 +137,7 @@ namespace sgpp {
                 }
                 // Right neighbor
                 if (hasChild(gp, d, false)) {
+                    has_child = true;
                     base::HashGridPoint child = base::HashGridPoint(gp);
                     base::HashGridPoint down = base::HashGridPoint(gp);
                     getChild(gp, d, false, child);
@@ -183,6 +191,12 @@ namespace sgpp {
             }
 
             score = score + gridClassDiffs;
+
+            // Should not coarsen a grid point that has child
+
+            if(has_child){
+                score = -1.0;
+            }
             std::cout << "The score is: "<<score << std::endl;
             return score;
         }

@@ -26,10 +26,10 @@
                 "maxLevelType": false,
                 "noPoints": 10,
                 "coarseningIndicator" : "GridPointBased",
-                "errorBasedRefinement" : false,
-                "errorMinInterval" : 1,
-                "errorBufferSize" : 2,
-                "errorConvergenceThreshold" : 0.001
+//                "errorBasedRefinement" : false,
+//                "errorMinInterval" : 1,
+//                "errorBufferSize" : 2,
+//                "errorConvergenceThreshold" : 0.001
 		},
 		"regularizationConfig": {
 			"lambda": 1e-2

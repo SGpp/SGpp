@@ -28,6 +28,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include "../../../../../../../base/src/sgpp/base/grid/Grid.hpp"
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -149,7 +150,8 @@ MultiGridCoarseningFunctor *ModelFittingClassification::getCoarseningFunctor(
     sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
     switch (coarseningConfig.coarseningFunctorType) {
         case CoarseningFunctorType::GridPointBased : {
-            return new GridPointBasedCoarseningFunctor(grids, surpluses);
+            return new GridPointBasedRefinementFunctor(grids, surpluses, coarseningConfig.numCoarsening_,
+                                                     coarseningConfig.precomputeEvaluations, coarseningConfig.threshold_);
         }
         default:
             return nullptr;
@@ -205,6 +207,8 @@ MultiGridRefinementFunctor *ModelFittingClassification::getRefinementFunctor(
 
 bool ModelFittingClassification::refine() {
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
+
   if (refinementsPerformed < refinementConfig.numRefinements_) {
     // Assemble grids and alphas
     std::vector<Grid*> grids;
@@ -244,11 +248,25 @@ bool ModelFittingClassification::refine() {
         }
       }
 
+      // Create a refinement functor
+      MultiGridCoarseningFunctor* cfunc = getCoarseningFunctor(grids, surpluses);
       // Apply changes to all models
       for (size_t idx = 0; idx < models.size(); idx++) {
         // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
         std::list<size_t> coarsened;
-        models[idx]->refine(grids[idx]->getSize(), &coarsened);
+
+        cfunc->preComputeEvaluations();
+        cfunc->setGridIndex(idx);
+
+        std::vector<size_t> removedSeq;
+        std::vector<HashGridPoint> removedPoints;
+
+        HashCoarsening coarsen;
+
+        coarsen.free_coarsen(grids[idx]->getStorage(), cfunc, surpluses.at(idx), &removedPoints, &removedSeq);
+
+        // Coarsen the grid points in the list
+        models[idx]->refine(grids[idx]->getSize(), &removedSeq);
         std::cout << "Refined model for class index " << idx << " (new size : "
             << (grids[idx]->getSize()) << ")" << std::endl;
       }

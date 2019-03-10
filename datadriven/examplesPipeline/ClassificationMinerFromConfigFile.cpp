@@ -53,7 +53,7 @@ int main(int argc) {
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  miner->learn_coarsening(true);
+  miner->learn(true);
   std::cout << std::endl;
 }
 
