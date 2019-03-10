@@ -305,21 +305,21 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
                                         defaults.numCoarsening_, "coarseningConfig");
-      config.errorBasedCoarsening = parseBool(*coarseningConfig, "errorBasedCoarsening",
-                                              defaults.errorBasedCoarsening, "coarseningConfig");
-
+//      config.errorBasedCoarsening = parseBool(*coarseningConfig, "errorBasedCoarsening",
+//                                              defaults.errorBasedCoarsening, "coarseningConfig");
+//
       config.threshold_ =
               parseDouble(*coarseningConfig, "threshold", defaults.threshold_, "coarseningConfig");
       config.maxLevelType_ =
               parseBool(*coarseningConfig, "maxLevelType", defaults.maxLevelType_, "coarseningConfig");
       config.noPoints_ =
               parseUInt(*coarseningConfig, "noPoints", defaults.noPoints_, "coarseningConfig");
-      config.errorConvergenceThreshold = parseDouble(*coarseningConfig, "errorConvergenceThreshold",
-                                                     defaults.errorConvergenceThreshold, "coarseningConfig");
-      config.errorBufferSize = parseUInt(*coarseningConfig, "errorBufferSize",
-                                         defaults.errorBufferSize, "coarseningConfig");
-      config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
-                                          defaults.errorMinInterval, "coarseningConfig");
+//      config.errorConvergenceThreshold = parseDouble(*coarseningConfig, "errorConvergenceThreshold",
+//                                                     defaults.errorConvergenceThreshold, "coarseningConfig");
+//      config.errorBufferSize = parseUInt(*coarseningConfig, "errorBufferSize",
+//                                         defaults.errorBufferSize, "coarseningConfig");
+//      config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
+//                                          defaults.errorMinInterval, "coarseningConfig");
 
       // Parse coarsening indicator
       if (coarseningConfig->contains("coarseningIndicator")) {
