@@ -23,7 +23,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
-
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <string>
 #include <vector>
 #include <list>
