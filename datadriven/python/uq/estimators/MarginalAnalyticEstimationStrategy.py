@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 
 from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
