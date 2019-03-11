@@ -12,8 +12,6 @@
 
 
 #from create_rotation_matrix import *
-from builtins import range
-from past.utils import old_div
 from numpy import *
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,7 +27,7 @@ def norm(mat):
 	for i in range(NDIM):
 		m = min(mat[:,i])
 		M = max(mat[:,i])
-		mat[:,i] = old_div((mat[:,i] - m),(M-m))
+		mat[:,i] = (mat[:,i] - m) / (M-m)
 	return mat
 
 

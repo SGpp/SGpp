@@ -3,7 +3,6 @@ Created on Jul 23, 2014
 
 @author: franzefn
 '''
-from builtins import range
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit, createOperationEval)
 from pysgpp.extensions.datadriven.uq.operations import (getBasis, hierarchize,

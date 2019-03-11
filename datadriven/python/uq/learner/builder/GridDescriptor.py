@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 from pysgpp.extensions.datadriven.learner.formatter.GridFormatter import GridFormatter
 

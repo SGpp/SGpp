@@ -1,6 +1,4 @@
-from builtins import range
-from builtins import object
-from .strategies.QuadratureFactory import QuadratureFactory
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.QuadratureFactory import QuadratureFactory
 
 
 class HashQuadrature(object):

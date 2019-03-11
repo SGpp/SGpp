@@ -1,8 +1,3 @@
-from builtins import input
-from builtins import map
-from builtins import range
-from builtins import object
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -288,7 +283,7 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
         else:
             fout.write("plot '-' w l\n")
         for x in range(resolution):
-            p[0] = old_div(float(x), (resolution - 1))
+            p[0] = float(x) / (resolution - 1)
             pc = createOperationEval(grid).eval(alpha, p)
             fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
@@ -305,8 +300,8 @@ def writeGnuplot(filename, grid, alpha, resolution, mode="w", data=None, fvals=N
             fout.write("splot '-' w pm3d\n")
         for x in range(resolution):
             for y in range(resolution):
-                p[0] = old_div(float(x), (resolution - 1))
-                p[1] = old_div(float(y), (resolution - 1))
+                p[0] = float(x) / (resolution - 1)
+                p[1] = float(y) / (resolution - 1)
                 pc = createOperationEval(grid).eval(alpha, p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
@@ -337,15 +332,15 @@ def writeGnuplotFctn(filename, dim, fctn, resolution, mode="w"):
     # evaluate 1d function
     if dim == 1:
         for x in range(resolution):
-            p[0] = old_div(float(x), (resolution - 1))
+            p[0] = float(x) / (resolution - 1)
             pc = fctn(p)
             fout.write("%f %f\n" % (p[0], pc))
     # evaluate 2d function
     elif dim == 2:
         for x in range(resolution):
             for y in range(resolution):
-                p[0] = old_div(float(x), (resolution - 1))
-                p[1] = old_div(float(y), (resolution - 1))
+                p[0] = float(x) / (resolution - 1)
+                p[1] = float(y) / (resolution - 1)
                 pc = fctn(p)
                 fout.write("%f %f %f\n" % (p[0], p[1], pc))
             fout.write("\n")
@@ -535,7 +530,7 @@ def split_n_folds(data, num_partitions, seed=None):
     size_left = size
     index = 0
     for i in range(num_partitions):
-        size_fold = old_div(size_left,(num_partitions-i))
+        size_fold = size_left / (num_partitions-i)
         dvec.append(DataMatrix(size_fold, dim))
         cvec.append(DataVector(size_fold))
         for rowNum in range(size_fold):
@@ -750,7 +745,7 @@ def readNormfile(filename):
         minvals = [float(l) for l in (data[1].strip()).split(None)[1:]]
         maxvals = [float(l) for l in (data[2].strip()).split(None)[1:]]
         deltavals = list(map(lambda x, y: (
-            old_div((y-x),(1.0-2.0*border))), minvals, maxvals))
+            (y-x) /(1.0-2.0*border)), minvals, maxvals))
     except:
         raise Exception("ERROR: Unable to read \"%s\"\n" % (filename))
     return (border, minvals, maxvals, deltavals)
@@ -798,7 +793,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
             print (" [%f,%f]" % (lmin[d], lmax[d]))
 
     # delta values
-    ldelta = list(map(lambda x, y: (old_div((y-x),(1.0-2.0*border))), lmin, lmax))
+    ldelta = list(map(lambda x, y: ((y-x) / (1.0-2.0*border)), lmin, lmax))
 
     # write normalization data to file:
     if filename:
@@ -818,7 +813,7 @@ def normalize(data, border=0.0, filename=None, minvals=None, maxvals=None, verbo
             else:
                 dataset["data"].getColumn(dim, vec_tmp)
                 for j in range(dataset["data"].getNrows()):
-                    vec_tmp[j] = old_div((vec_tmp[j]-lmin[dim]), ldelta[dim]) + border
+                    vec_tmp[j] = (vec_tmp[j]-lmin[dim]) / ldelta[dim] + border
 
                 dataset["data"].setColumn(dim, vec_tmp)
     return
@@ -884,7 +879,7 @@ def split_n_folds_sequential(data, num_partitions):
     index = 0
 
     for i in range(num_partitions):
-        size_fold = old_div(size_left,(num_partitions-i))
+        size_fold = size_left / (num_partitions-i)
         dvec.append(DataVector(size_fold, dim))
         cvec.append(DataVector(size_fold))
         for element in range(size_fold):
@@ -928,8 +923,8 @@ def split_n_folds_stratified(data, num_partitions, seed=None):
     index_neg = 0
 
     for i in range(num_partitions):
-        size_fold_pos = old_div(size_left_pos,(num_partitions-i))
-        size_fold_neg = old_div(size_left_neg,(num_partitions-i))
+        size_fold_pos = size_left_pos / (num_partitions-i)
+        size_fold_neg = size_left_neg / (num_partitions-i)
         dvec.append(DataVector(size_fold_pos+size_fold_neg, dim))
         cvec.append(DataVector(size_fold_pos+size_fold_neg))
         # add data with class pos first

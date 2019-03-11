@@ -1,6 +1,5 @@
-from builtins import range
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
-from .findCandidateSet import CandidateSet
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findCandidateSet import CandidateSet
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import parent, \
     hasAllChildren, getHierarchicalAncestors, getLevel, getIndex

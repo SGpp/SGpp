@@ -1,10 +1,9 @@
-from builtins import range
-from builtins import object
+
 from numpy import array
 
 
-from .UQSetting import UQSetting
-from .UQSettingFormatter import UQSettingFormatter
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSetting import UQSetting
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
 
 
 class Samplingresult(object):

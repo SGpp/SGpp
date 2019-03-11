@@ -3,9 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from builtins import range
 from pysgpp import DataMatrix, createOperationLTwoDotExplicit, DataVector
-from .BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 
 
 class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):

@@ -3,7 +3,6 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from builtins import range
 import numpy as np
 
 from pysgpp import DataMatrix, DataVector

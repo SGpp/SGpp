@@ -1,9 +1,8 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
-from .ASGCStatistics import ASGCStatistics
+from pysgpp.extensions.datadriven.uq.manager.ASGCStatistics import ASGCStatistics
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 

@@ -1,11 +1,10 @@
-from builtins import object
-from .AdmissibleSet import (AdmissibleSparseGridNodeSet,
+from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import (AdmissibleSparseGridNodeSet,
                            RefinableNodesSet)
-from .LocalRefinementStrategy import (CreateAllChildrenRefinement,
+from pysgpp.extensions.datadriven.uq.refinement.LocalRefinementStrategy import (CreateAllChildrenRefinement,
                                      ANOVARefinement,
                                      AddNode)
-from .RefinementManager import RefinementManager
-from .RefinementStrategy import (SurplusRanking,
+from pysgpp.extensions.datadriven.uq.refinement.RefinementManager import RefinementManager
+from pysgpp.extensions.datadriven.uq.refinement.RefinementStrategy import (SurplusRanking,
                                 SquaredSurplusRanking,
                                 WeightedSurplusRanking,
                                 WeightedL2OptRanking,

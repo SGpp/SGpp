@@ -1,3 +1,3 @@
-from .estimateDensitySGDE import estimateDensitySGDE
-from .estimateDensityDTrees import estimateDensityDTrees
-from .estimateDensityKDE import estimateDensityKDE
+from pysgpp.extensions.datadriven.uq.dists.optimization.estimateDensitySGDE import estimateDensitySGDE
+from pysgpp.extensions.datadriven.uq.dists.optimization.estimateDensityDTrees import estimateDensityDTrees
+from pysgpp.extensions.datadriven.uq.dists.optimization.estimateDensityKDE import estimateDensityKDE

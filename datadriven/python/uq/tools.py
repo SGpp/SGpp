@@ -1,5 +1,3 @@
-from builtins import range
-from past.utils import old_div
 import os
 import re
 import gzip
@@ -140,8 +138,8 @@ def writeDataARFF(data, merge=False):
 
 
 def check(n, dim, nmax=50000):
-    if dim > old_div(log(nmax), log(n)):
-        n = trunc(exp(old_div(log(nmax), dim)))
+    if dim > (log(nmax) / log(n)):
+        n = trunc(exp(log(nmax), dim))
 
     return n, n ** dim
 
@@ -152,7 +150,7 @@ def eval_linear(ppd, dim, norm_offset=0.0):
 
     if nrows > 1:
         # Mesh width
-        mw = old_div((1 - 2 * norm_offset), (1. * n - 1))
+        mw = (1 - 2 * norm_offset) / (1. * n - 1)
         # Generate a linear grid over the function range
         for j in range(dim):
             offset = n ** (dim - j - 1)

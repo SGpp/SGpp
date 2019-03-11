@@ -1,8 +1,5 @@
-from builtins import zip
-from builtins import range
-from past.utils import old_div
 from numpy.polynomial.hermite import hermgauss
-from .QuadratureStrategy import QuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.QuadratureStrategy import QuadratureStrategy
 
 
 class GaussHermiteQuadrature(QuadratureStrategy):
@@ -21,7 +18,7 @@ class GaussHermiteQuadrature(QuadratureStrategy):
             # get rootsArray in [-1, 1]
             rootsArray, weights = hermgauss(i + 1)
             # transform rootsArray to [0, 1]
-            rootsArray = old_div((rootsArray + 1), 2.)
+            rootsArray = (rootsArray + 1) / 2.
             # normalize weights
             weights /= np.sum(weights)
             # zip them

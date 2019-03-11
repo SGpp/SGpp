@@ -1,11 +1,10 @@
-from builtins import range
 from pysgpp import (DataVector,
                     NaiveSampleGenerator,
                     LatinHypercubeSampleGenerator,
                     HaltonSampleGenerator,
                     StratifiedSampleGenerator)
-from .Sample import Samples, SampleType, DistributionType
-from .Sampler import Sampler
+from pysgpp.extensions.datadriven.uq.sampler.Sample import Samples, SampleType, DistributionType
+from pysgpp.extensions.datadriven.uq.sampler.Sampler import Sampler
 
 
 class MCSampler(Sampler):

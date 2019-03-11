@@ -1,14 +1,13 @@
-from builtins import range
 from pysgpp import (DataVector, DataMatrix,
                     SurplusRefinementFunctor, Grid,
                     GridType_Linear, GridType_Poly)
 
 # from epsilonComplexity import getL2EpsilonComplexity
-from .sparse_grid import (hierarchize,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (hierarchize,
                          evalSGFunctionMulti,
                          getDegree,
                          isRefineable)
-from .general import join
+from pysgpp.extensions.datadriven.uq.operations.general import join
 import numpy as np
 
 

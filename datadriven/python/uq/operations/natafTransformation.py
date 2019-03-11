@@ -1,6 +1,3 @@
-from builtins import range
-from builtins import object
-from past.utils import old_div
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -45,7 +42,7 @@ class NatafTransformation(object):
         # this is used to transform the results back to the original space
         self.D = np.diag(np.sqrt(np.diag(self.S)))
         # divide the diagonal by the standard deviation of the diagonal elements
-        self.D_inverse = np.diag(old_div(1., np.sqrt(np.diag(self.S))))
+        self.D_inverse = np.diag(1. / np.sqrt(np.diag(self.S)))
         self.C = self.D_inverse.dot(self.S.dot(self.D_inverse))
 
 #         fig = plt.figure()

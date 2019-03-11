@@ -23,8 +23,8 @@ __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 # from MarginalAnalyticEstimationStrategy import MarginalAnalyticEstimationStrategy
 
 
-from .MCEstimator import MCEstimator
-from .AnalyticEstimationStrategy import AnalyticEstimationStrategy
-from .CollocationPointsStrategy import CollocationPointsStrategy
-from .MarginalAnalyticEstimationStrategy import MarginalAnalyticEstimationStrategy
-from .MonteCarloStrategy import MonteCarloStrategy
+from pysgpp.extensions.datadriven.uq.estimators.MCEstimator import MCEstimator
+from pysgpp.extensions.datadriven.uq.estimators.AnalyticEstimationStrategy import AnalyticEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.CollocationPointsStrategy import CollocationPointsStrategy
+from pysgpp.extensions.datadriven.uq.estimators.MarginalAnalyticEstimationStrategy import MarginalAnalyticEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.MonteCarloStrategy import MonteCarloStrategy

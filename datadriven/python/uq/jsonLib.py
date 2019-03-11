@@ -1,4 +1,3 @@
-from builtins import map
 from pysgpp import DataVector
 import types
 

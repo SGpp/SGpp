@@ -1,12 +1,12 @@
-from .operationMakePositive import OperationMakePositive
-from .operationMakePositiveFast import OperationMakePositiveFast
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.operationMakePositive import OperationMakePositive
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.operationMakePositiveFast import OperationMakePositiveFast
 
-from .scaledMinOfParents import ScaledMinOfParents
-from .interpolateFunction import InterpolateFunction
-from .estimateDensity import EstimateDensityAlgorithm
-from .interpolationAlgorithm import InterpolationAlgorithm
-from .setGridPointsToZero import SetGridPointsToZero
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.scaledMinOfParents import ScaledMinOfParents
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolateFunction import InterpolateFunction
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.estimateDensity import EstimateDensityAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.setGridPointsToZero import SetGridPointsToZero
 
-from .localFullGridSearch import LocalFullGridCandidates
-from .fullGridSearch import FullGridCandidates
-from .findIntersectionsSubspaceBased import IntersectionSubspaceCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.localFullGridSearch import LocalFullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.fullGridSearch import FullGridCandidates
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findIntersectionsSubspaceBased import IntersectionSubspaceCandidates

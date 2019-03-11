@@ -1,7 +1,6 @@
-from builtins import range
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 
-from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp.extensions.datadriven.uq.operations.general import project, projectList
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize, evalSGFunction, \

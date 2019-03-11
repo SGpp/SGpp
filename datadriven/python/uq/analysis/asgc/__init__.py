@@ -13,7 +13,7 @@ __all__ = []
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from .ASGCAnalysis import ASGCAnalysis
-from .ASGCAnalysisBuilder import ASGCAnalysisBuilder
-from .ASGCKnowledge import ASGCKnowledge
-from .ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCAnalysis import ASGCAnalysis
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCAnalysisBuilder import ASGCAnalysisBuilder
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter

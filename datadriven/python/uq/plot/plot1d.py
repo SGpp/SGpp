@@ -1,9 +1,6 @@
-from builtins import zip
-from builtins import range
-from past.utils import old_div
 import numpy as np
 import matplotlib.pyplot as plt
-from .colors import load_color, load_font_properties
+from pysgpp.extensions.datadriven.uq.plot.colors import load_color, load_font_properties
 from pysgpp import DataVector, DataMatrix
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import dehierarchize
@@ -90,7 +87,7 @@ def plotDensity1d(U, n=1000,
         if interval_label is None:
             interval_label = r"$[F(\alpha / 2), F(1 - \alpha/2)]$"
         # show interval that contains 1 - alpha
-        x_min, x_max = U.ppf(old_div(alpha_value, 2.)), U.ppf(1. - old_div(alpha_value, 2.))
+        x_min, x_max = U.ppf(alpha_value / 2.), U.ppf(1. - alpha_value / 2.)
         ixs = np.intersect1d(np.where(x_min <= x),
                              np.where(x <= x_max))
 #         plt.vlines(x_min, 0.0, y[ixs.min()], color=facecolor, label=interval_label)

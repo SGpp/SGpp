@@ -1,10 +1,9 @@
-from builtins import object
 from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
 from pysgpp import (createOperationLaplace,
                     createOperationIdentity)
 
 from StopPolicyDescriptor import StopPolicyDescriptor
-from .CGSolverDescriptor import CGSolverDescriptor
+from pysgpp.extensions.datadriven.uq.learner.builder.CGSolverDescriptor import CGSolverDescriptor
 
 from pysgpp.extensions.datadriven.learner.folding import (RandomFoldingPolicy,
                                  SequentialFoldingPolicy,

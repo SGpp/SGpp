@@ -8,7 +8,7 @@ __version__ = "0.1"
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from .RosenblattTransformation import RosenblattTransformation
-from .JointTransformation import JointTransformation
-from .LinearTransformation import LinearTransformation
-from .Transformation import Transformation
+from pysgpp.extensions.datadriven.uq.transformation.RosenblattTransformation import RosenblattTransformation
+from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transformation

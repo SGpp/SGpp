@@ -1,5 +1,3 @@
-from builtins import zip
-from builtins import object
 import numpy as np
 from pysgpp.extensions.datadriven.uq import jsonLib as ju
 from copy import copy

@@ -1,2 +1,2 @@
-from .LinearQuadratureStrategy import LinearQuadratureStrategy
-from .LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearQuadratureStrategy import LinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.linearform.LinearGaussQuadratureStrategy import LinearGaussQuadratureStrategy

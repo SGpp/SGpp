@@ -4,7 +4,7 @@ from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMargina
 from pysgpp.extensions.datadriven.uq.transformation import InverseCDFTransformation, \
     JointTransformation
 
-from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.SparseGridEstimationStrategy import SparseGridEstimationStrategy
 import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
