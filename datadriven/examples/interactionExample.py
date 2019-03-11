@@ -10,7 +10,6 @@
 ## a subset of all possible interaction terms.
 ## It uses the optical digits dataset as an example.
 
-from __future__ import print_function
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
 import pandas as pd

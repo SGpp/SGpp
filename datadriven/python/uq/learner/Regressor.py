@@ -1,5 +1,4 @@
 from __future__ import division
-from __future__ import print_function
 from past.utils import old_div
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes

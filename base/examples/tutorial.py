@@ -40,7 +40,6 @@
 ##
 
 ## At the beginning of the program, we have to import the pysgpp library.
-from __future__ import print_function
 import pysgpp
 
 ## Before starting, the function \f$f\f$, which we want to interpolate, is defined.

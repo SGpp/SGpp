@@ -1,4 +1,3 @@
-from __future__ import print_function
 from builtins import range
 from pysgpp.extensions.datadriven.uq.operations import estimateSurplus, estimateConvergence, hierarchize
 from pysgpp import Grid, DataVector, HashGridPoint

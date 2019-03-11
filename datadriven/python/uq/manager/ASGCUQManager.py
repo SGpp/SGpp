@@ -1,4 +1,3 @@
-from __future__ import print_function
 from __future__ import absolute_import
 from builtins import object
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
