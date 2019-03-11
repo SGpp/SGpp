@@ -120,10 +120,6 @@ Collaborative International Dictionary of English v.0.48.
 
 '''
 
-from future import standard_library
-standard_library.install_aliases()
-from past.builtins import basestring
-
 DEBUG = False
 PERSONAL = False
 
@@ -1711,7 +1707,7 @@ def transform(indent, lineno, node):
         result = NodeWith(indent, lineno, node.expr, node.vars, node.body)
     elif isinstance_(node, 'Yield'):
         result = NodeYield(indent, lineno, node.value)
-    elif isinstance(node, basestring):
+    elif isinstance(node, str):
         result = NodeStr(indent, lineno, node)
     elif isinstance(node, int):
         result = NodeInt(indent, lineno, node)
