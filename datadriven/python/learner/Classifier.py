@@ -1,10 +1,9 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-from .Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.learner.Learner import Learner, LearnerEvents
 from pysgpp import SurplusRefinementFunctor, createOperationTest
 
 

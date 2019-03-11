@@ -1,6 +1,3 @@
-from builtins import next
-from builtins import range
-from builtins import object
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -12,10 +9,10 @@ from builtins import object
 
 import numpy as np
 
-from .DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 from pysgpp import DataVector, DataMatrix
-from .DataAdapter import DataAdapter
-from .DataEntry import DataEntry
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataEntry import DataEntry
 import types
 
 

@@ -1,11 +1,10 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
 
-from .Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.learner.Learner import Learner, LearnerEvents
 from pysgpp import DataVector, SurplusRefinementFunctor
 
 from  math import sqrt
@@ -59,7 +58,7 @@ class Regressor(Learner):
         self.error.sub(data.getValues()) # error vector
         self.error.sqr() # entries squared
         errorsum = self.error.sum()
-        mse = old_div(errorsum, size) # MSE
+        mse = errorsum / size # MSE
         
         # calculate error per basis function
         self.errors = DataVector(len(alpha))
@@ -83,9 +82,9 @@ class Regressor(Learner):
         #eval error for test data and append it to other in this iteration
         if testSubset != None:  
             self.testAccuracy.append(self.evalError(testSubset, alpha))
-            self.testingOverall.append(old_div(sum(self.testAccuracy),i))
+            self.testingOverall.append(sum(self.testAccuracy) / i)
             
-        self.trainingOverall.append(old_div(sum(self.trainAccuracy),i))
+        self.trainingOverall.append(sum(self.trainAccuracy) / i)
 
         self.numberPoints.append(self.grid.getSize())
     

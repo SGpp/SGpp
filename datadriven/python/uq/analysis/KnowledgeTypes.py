@@ -3,8 +3,6 @@ Created on Jul 14, 2014
 
 @author: franzefn
 '''
-from builtins import range
-from builtins import object
 import numpy as np
 
 

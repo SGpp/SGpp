@@ -3,7 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-from .LinearSolver import LinearSolver, LinearSolverEvents
+from pysgpp.extensions.datadriven.learner.solver.LinearSolver import LinearSolver, LinearSolverEvents
 from pysgpp import *
 import types
 

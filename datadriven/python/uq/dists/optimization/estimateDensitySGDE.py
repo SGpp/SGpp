@@ -1,4 +1,3 @@
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist
 from pysgpp.extensions.datadriven.uq.plot import plotSG2d
 import matplotlib.pyplot as plt
@@ -198,7 +197,7 @@ printSurfaceFile = %s
 #             grid, alpha = opPositive.makePositive(sgdeDist.alpha)
 
             # scale to unit integrand
-            alpha.mult(old_div(1., createOperationQuadrature(grid).doQuadrature(alpha)))
+            alpha.mult(1. / createOperationQuadrature(grid).doQuadrature(alpha))
 
             sgdeDist.grid = grid
             sgdeDist.alpha = alpha

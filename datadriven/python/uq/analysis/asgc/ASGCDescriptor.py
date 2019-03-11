@@ -1,5 +1,4 @@
-from builtins import object
-from .ASGCAnalysisSpecification import ASGCAnalysisSpecification
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCAnalysisSpecification import ASGCAnalysisSpecification
 
 from pysgpp.extensions.datadriven.uq.estimators import (
     MonteCarloStrategy,

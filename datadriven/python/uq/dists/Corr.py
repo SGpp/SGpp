@@ -13,9 +13,8 @@
 @version  0.1
 
 """
-from builtins import range
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 import numpy as np
 

@@ -1,5 +1,3 @@
-from builtins import range
-from past.utils import old_div
 from pysgpp.extensions.datadriven.tools import (readAlphaARFF,
                                                 readGrid,
                                                 readDataTrivial)
@@ -22,7 +20,7 @@ import tempfile
 import uuid
 import json
 
-from .EstimatedDist import EstimatedDist
+from pysgpp.extensions.datadriven.uq.dists.EstimatedDist import EstimatedDist
 
 import configparser as cp
 import numpy as np
@@ -96,13 +94,13 @@ class SGDEdist(EstimatedDist):
             self.vol = np.mean([max(0.0, value) for value in values])
 
         # scale the coefficients such that it has unit integrand
-        self.unnormalized_alpha = np.array(old_div(self.alpha, self.vol))
+        self.unnormalized_alpha = np.array(self.alpha / self.vol)
         self.unnormalized_alpha_vec = DataVector(self.unnormalized_alpha)
 
         self.vol *= self.trans.vol()
         if unitIntegrand and self.vol > 1e-13:
             self.alpha /= self.vol
-            self.alpha_vec.mult(old_div(1., self.vol))
+            self.alpha_vec.mult(1. / self.vol)
 
     @classmethod
     def byLearnerSGDEConfig(cls,
