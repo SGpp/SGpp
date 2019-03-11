@@ -43,9 +43,9 @@ for moduleFolder, srcdir in pythonModuleFolders:
 # write init file for pysgpp
 initFile = os.path.join(libpath, "__init__.py")
 fd = open(initFile, "w")
-fd.write("from .pysgpp_swig import *%s" % os.linesep)
+fd.write("from pysgpp_swig import *%s" % os.linesep)
 if len(moduleFolders) > 0:
-    fd.write("from . import extensions%s" % os.linesep)
+    fd.write("import extensions%s" % os.linesep)
 fd.close()
 
 if len(moduleFolders) > 0:
