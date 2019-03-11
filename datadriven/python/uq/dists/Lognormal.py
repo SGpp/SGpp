@@ -1,8 +1,6 @@
-from __future__ import division
-from past.utils import old_div
 from scipy.stats import lognorm
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 from pysgpp.extensions.datadriven.uq import jsonLib as ju
 import numpy as np
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
@@ -41,8 +39,8 @@ class Lognormal(Dist):
         @param alpha: significance level
         """
         U = lognorm(sigma, scale=mu)
-        a = U.ppf(old_div(alpha, 2.))
-        b = U.ppf(1. - old_div(alpha, 2.))
+        a = U.ppf(alpha/ 2.)
+        b = U.ppf(1. - alpha / 2.)
 
         return cls(mu, sigma, a=a, b=b, *args, **kws)
 

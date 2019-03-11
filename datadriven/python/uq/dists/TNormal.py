@@ -13,11 +13,8 @@
 @version  0.1
 
 """
-from __future__ import division
-from past.utils import old_div
-
 from scipy.stats import truncnorm, norm
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
@@ -64,19 +61,19 @@ class TNormal(Dist):
         @param alpha: confidence value
         """
         U = norm(loc=mu, scale=sigma)
-        a = U.ppf(old_div(alpha, 2.))
-        b = U.ppf(1 - old_div(alpha, 2.))
+        a = U.ppf(alpha / 2.)
+        b = U.ppf(1 - alpha / 2.)
 
         return cls(mu, sigma, a, b)
 
     def __trans(self, x):
-        return old_div((x - self.__mu), self.__sigma)
+        return (x - self.__mu) / self.__sigma
 
     def __inv_trans(self, y):
         return y * self.__sigma + self.__mu
 
     def pdf(self, x):
-        return old_div(self._dist.pdf(self.__trans(x)), self.__sigma)
+        return self._dist.pdf(self.__trans(x)) / self.__sigma
 
     def cdf(self, x):
         return self._dist.cdf(self.__trans(x))

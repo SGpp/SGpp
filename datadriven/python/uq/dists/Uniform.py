@@ -15,7 +15,7 @@
 """
 
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 from scipy.stats import uniform
 import numpy as np
 

@@ -12,11 +12,6 @@
 
 @version  0.1
 """
-from __future__ import division
-from builtins import range
-from builtins import object
-from past.utils import old_div
-
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp.extensions.datadriven.uq.sampler.Sample import Sample, SampleType
 from pysgpp import DataVector
@@ -112,7 +107,7 @@ class Dist(object):
             sigmai = np.sqrt(covMatrix[idim, idim])
             for jdim in range(idim + 1, numDims):
                 sigmaj = np.sqrt(covMatrix[jdim, jdim])
-                corrij = old_div(covMatrix[idim, jdim], (sigmai * sigmaj))
+                corrij = covMatrix[idim, jdim] / (sigmai * sigmaj)
                 corr[idim, jdim] = corr[jdim, idim] = corrij
             corr[idim, idim] = 1.0
         return corr
@@ -210,7 +205,7 @@ class Dist(object):
 
             err += erri
 
-        return old_div(err, n)
+        return (err / n)
 
     @classmethod
     def fromJson(cls, jsonObject):
