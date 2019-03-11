@@ -22,7 +22,7 @@ import os
 from pysgpp.extensions.datadriven.tools import *
 from pysgpp import *
 from pysgpp.extensions.datadriven import *
-from .painlesscg import cg, sd, cg_new
+from pysgpp.extensions.misc.painlesscg import cg, sd, cg_new
 from math import sqrt
 from math import ceil
 import random

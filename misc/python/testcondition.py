@@ -8,9 +8,9 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from .toolsExtended import *
 from pysgpp import *
-from .painlesscg import cg,sd,cg_new
+from pysgpp.extensions.misc.toolsExtended import *
+from pysgpp.extensions.misc.painlesscg import cg,sd,cg_new
 from math import sqrt
 import random
 import numpy as np
