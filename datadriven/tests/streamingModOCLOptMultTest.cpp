@@ -35,12 +35,12 @@ struct FilesNamesAndErrorFixture {
   ~FilesNamesAndErrorFixture() {}
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman/friedman2_4d_10000.arff.gz", 1E-22),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman/friedman1_10d_2000.arff.gz", 1E-16)};
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-22),
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-16)};
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorFloat = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman/friedman2_4d_10000.arff.gz", 1E-4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman/friedman1_10d_2000.arff.gz", 1E1)};
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-4),
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E1)};
 
   uint32_t level = 5;
 };

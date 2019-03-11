@@ -42,7 +42,7 @@ double testModel(std::string configFile) {
 
   // Test
   CSVFileSampleProvider csv;
-  csv.readFile("datadriven/tests/datasets/classification/gmm_test.csv", true);
+  csv.readFile("datadriven/datasets/gmm/gmm_test.csv", true);
   auto testDataset = *(csv.getAllSamples());
   DataVector predictions(testDataset.getNumberInstances());
   model->evaluate(testDataset.getData(), predictions);
@@ -59,13 +59,13 @@ double testModel(std::string configFile) {
 BOOST_AUTO_TEST_SUITE(testClassification)
 
 BOOST_AUTO_TEST_CASE(testOnOff) {
-  std::string configFile = "datadriven/tests/datasets/classification/gmm_on_off.json";
+  std::string configFile = "datadriven/datasets/gmm/gmm_on_off.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
 BOOST_AUTO_TEST_CASE(testCG) {
-  std::string configFile = "datadriven/tests/datasets/classification/gmm_cg.json";
+  std::string configFile = "datadriven/datasets/gmm/gmm_cg.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);

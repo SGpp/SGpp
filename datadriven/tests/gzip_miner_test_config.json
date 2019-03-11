@@ -1,12 +1,14 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/tests/datasets/classification/gmm_train.csv",
-		"hasTargets" : true,
-		"batchSize" : 50,
-		"validationPortion" : 0.2,
-		"epochs" : 3,
+		"filePath": "datadriven/datasets/liver/liver-disorders_normalized_small.arff.gz",
+		"compression": true,
+		"fileType": "arff",
+		"hasTargets": true,
 		"shuffling" : "random",
-		"randomSeed" : -1
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [-1, 1],
+		"readinColumns": [0, 1, 2]
 	},
 	"scorer": {
 		"metric": "Accuracy"
@@ -15,7 +17,7 @@
 		"type": "classification",
 		"gridConfig": {
 			"gridType": "linear",
-			"level": 7
+			"level": 5
 		},
 		"adaptivityConfig": {
 				"numRefinements": 10,
@@ -24,15 +26,15 @@
 				"noPoints": 10,
 				"refinementIndicator" : "DataBased",
 				"errorBasedRefinement" : true,
-				"errorMinInterval" : 0,
-				"errorBufferSize" : 5,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
 				"errorConvergenceThreshold" : 0.001
 		},
 		"regularizationConfig": {
-			"lambda": 1e-1
+			"lambda": 1e-2
 		},
 		"densityEstimationConfig" : {
-			"densityEstimationType" : "CG"
+			"densityEstimationType" : "decomposition"
 		},
 		"learner" : {
 			"usePrior" : true,
@@ -40,4 +42,5 @@
 		}
 	}
 }
+
 

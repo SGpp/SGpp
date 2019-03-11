@@ -156,9 +156,9 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
  * hyper-parameter for the Friedman3 dataset using the diagonal Tikhonov regularization method.
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain = std::string("../tests/data/friedman3_10k_train.arff");
-  const auto filenameValidation = std::string("../tests/data/friedman3_10k_validation.arff");
-  const auto filenameTest = std::string("../tests/data/friedman3_10k_test.arff");
+  const auto filenameTrain = std::string("../datasets/friedman3_10k_train.arff");
+  const auto filenameValidation = std::string("../datasets/friedman3_10k_validation.arff");
+  const auto filenameTest = std::string("../datasets/friedman3_10k_test.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;

@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/DR5/DR5_nowarnings_less05_test.arff",
+		"filePath": "../datasets/DR5/DR5_train.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 1,
