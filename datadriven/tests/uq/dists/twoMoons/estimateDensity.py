@@ -559,7 +559,7 @@ def load_data_set(data_set, numSamples, numDims=2):
             samples = np.loadtxt("data/twomoons.csv")
             bounds = np.array([[0.0, 1.0], [0.0, 1.0]])
         elif "friedman" in data_set:
-            samples = np.loadtxt("data/friedman2_4d_50000.csv")
+            samples = np.loadtxt("data/friedman/friedman2_4d_50000.csv")
             bounds = None
         else:
             raise AttributeError()
