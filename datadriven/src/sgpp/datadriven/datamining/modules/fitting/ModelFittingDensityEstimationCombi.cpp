@@ -10,8 +10,6 @@
  *      Author: nico
  */
 
-#include "ModelFittingDensityEstimationCombiGrid.hpp"
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -22,6 +20,7 @@
 
 #include <iostream>
 #include <vector>
+#include "ModelFittingDensityEstimationCombi.hpp"
 
 using std::vector;
 using std::unique_ptr;
@@ -171,7 +170,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
     /*
      * Refining the chosen block
      */
-    configurator.refineBlock(componentConfigs.at(ind));
+    configurator.refineComponent(componentConfigs.at(ind));
     vector<combiConfig> newConfigs;
     configurator.getCombiScheme(newConfigs);
     /*
