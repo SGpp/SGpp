@@ -3,7 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from __future__ import division
 from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 """

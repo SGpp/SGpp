@@ -3,7 +3,6 @@ Created on Aug 18, 2014
 
 @author: franzefn
 '''
-from __future__ import division
 from builtins import zip
 from past.utils import old_div
 

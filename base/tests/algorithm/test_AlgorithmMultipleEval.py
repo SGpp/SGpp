@@ -1,4 +1,3 @@
-from __future__ import division
 from builtins import range
 from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project

@@ -1,6 +1,4 @@
-from __future__ import division
 from builtins import range
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -118,7 +116,7 @@ for line in data:
             i += 3
         # output
         lambda_s = "%-11g" %(line[options.x1-1])
-        counter = "%06.2f" %(math.log(line[options.x1-1], 0.1**(old_div(1,30.0))))
+        counter = "%06.2f" %(math.log(line[options.x1-1], 0.1**(1/30.0)))
         if options.lambdas:
             s = (s + lambda_s + "  " + counter + " - " + lopt_tr_s + " - " + lopt_te_s + "\n")
         if ((not options.min and lopt_tr > opt_tr) or (options.min and lopt_tr < opt_tr) or (lopt_tr == opt_tr and lopt_tr_numpoints < opt_tr_numpoints)):

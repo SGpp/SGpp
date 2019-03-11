@@ -10,7 +10,6 @@
 ## base module for things like DataVector and DataMatrix.
 
 ## At the beginning of the program, we have to import the pysgpp library.
-from __future__ import division
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform

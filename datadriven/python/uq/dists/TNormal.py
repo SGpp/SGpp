@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-from __future__ import division
 from past.utils import old_div
 
 from scipy.stats import truncnorm, norm

@@ -12,7 +12,6 @@
 ## Friedman, Jerome, Trevor Hastie, and Rob Tibshirani, Journal of statistical software, 2010.
 ## \endverbatim
 
-from __future__ import division
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
 import pandas as pd

@@ -7,7 +7,6 @@
 ## \page example_bSplines_py bSplines.py
 ## plots anisotropic full grids that form part of the combination technique
 
-from __future__ import division
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend

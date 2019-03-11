@@ -12,7 +12,6 @@
 # Output either as eps, png, or to stdout.
 #
 
-from __future__ import division
 from builtins import range
 from past.utils import old_div
 import sys, os, re, optparse

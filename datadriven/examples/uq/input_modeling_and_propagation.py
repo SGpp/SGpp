@@ -1,4 +1,3 @@
-from __future__ import division
 from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
