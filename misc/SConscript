@@ -7,7 +7,7 @@ import ModuleHelper
 
 Import("*")
 
-moduleDependencies = ["sgppfinance", "sgppdatadriven", "sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
+moduleDependencies = ["sgppdatadriven", "sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 module = ModuleHelper.Module(moduleDependencies, additionalBoostTestDependencies=["z"])
 
 module.scanSource()
