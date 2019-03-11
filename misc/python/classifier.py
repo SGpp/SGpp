@@ -13,7 +13,6 @@
 # @todo Join the different modes so that not 100 different versions (checkpointing, ...) exist!
 
 
-from past.utils import old_div
 from optparse import OptionParser
 import sys
 import os
@@ -273,7 +272,7 @@ def doApply():
         else:
             classes.append(-1.0)
     # output accuracy:
-    acc = old_div(acc, float(numData))
+    acc = acc / numData
     print("Accuracy on test data: %9.5f%%" % (100*acc))
 
     if options.regression:
@@ -346,7 +345,7 @@ def doEval():
                 classes.append(-1.0)
         if compute_accuracy:
             # output accuracy:
-            acc = old_div(acc, float(numData))
+            acc = acc / numData
             print("Accuracy on test data: %9.5f%%" % (100*acc))
     # regression:
     else:
@@ -415,7 +414,7 @@ def doEvalStdin():
                 if deltavals[i] == 0:
                     q[i] = 0.5
                 else:
-                    q[i] = old_div((float(dat[i])-minvals[i]),deltavals[i]) + border
+                    q[i] = (float(dat[i])-minvals[i]) / deltavals[i] + border
             else:
                 q[i] = float(dat[i])
         val = grid.createOparationEval().eval(q, alpha)
@@ -514,7 +513,7 @@ def evaluateError(classes, alpha, m):
     err_max = error.max()
     print("(Min,Max) error (abs.): (%f,%f)" % (sqrt(err_min), sqrt(err_max)))
     # output accuracy
-    mse = old_div(error.sum(), float(len(error)))
+    mse = error.sum() / len(error)
     print("MSE: %g on %d data pts" % (mse, len(classes)))
     print("RMSE / L2-norm of error on data: %g" % (sqrt(mse)))
 
@@ -860,8 +859,8 @@ def performFold(dvec, cvec):
             print(trainingCorrect)
             print(testingCorrect)
 
-        tr = old_div(sum(trainingCorrect),options.f_level)
-        te = old_div(sum(testingCorrect),options.f_level)
+        tr = sum(trainingCorrect) // options.f_level
+        te = sum(testingCorrect) // options.f_level
 
         if options.verbose:
             print(("training: ", tr))
@@ -871,7 +870,7 @@ def performFold(dvec, cvec):
         tr_refine.append(tr)
         te_refine.append(te)
 
-        refinealpha.mult(old_div(1.0,options.f_level))
+        refinealpha.mult(1.0 / options.f_level)
 
         if options.checkpoint != None:
             writeCheckpoint(options.checkpoint, grid, refinealpha)
@@ -1024,7 +1023,7 @@ def performFoldRegression(dvec, cvec):
             temp.sub(classes)
             temp.sqr()
             # MSE for training set
-            tr = old_div(temp.sum(), len(temp))
+            tr = temp.sum() / len(temp)
             meanSqrErrorsTraining.append(tr)
             errors = DataVector(len(alpha))
             m.B.multTranspose(temp, errors)
@@ -1039,10 +1038,10 @@ def performFoldRegression(dvec, cvec):
             if options.verbose:
                 print(("Fold-%d MSE (te, tr):" % (foldSetNumber), te, tr))
 
-        trSqrError = old_div(sum(meanSqrErrorsTraining),options.f_level)
-        trVar = old_div(sum([(x-trSqrError)**2 for x in meanSqrErrorsTraining]),(options.f_level-1))
-        teSqrError = old_div(sum(meanSqrErrorsTesting),options.f_level)
-        teVar = old_div(sum([(x-teSqrError)**2 for x in meanSqrErrorsTesting]),(options.f_level-1))
+        trSqrError = sum(meanSqrErrorsTraining) / options.f_level
+        trVar = sum([(x-trSqrError)**2 for x in meanSqrErrorsTraining]) / (options.f_level-1)
+        teSqrError = sum(meanSqrErrorsTesting) / options.f_level
+        teVar = sum([(x-teSqrError)**2 for x in meanSqrErrorsTesting]) / (options.f_level-1)
 
         if options.verbose:
             print(("testing:  ", teSqrError, teVar))
@@ -1052,7 +1051,7 @@ def performFoldRegression(dvec, cvec):
         tr_meanSqrError.append(trSqrError)
         te_meanSqrError.append(teSqrError)
 
-        refineerrors.mult(old_div(1.0,options.f_level))
+        refineerrors.mult(1.0 / options.f_level)
         if options.checkpoint != None:
             writeCheckpoint(options.checkpoint, grid, refineerrors)
 
@@ -1143,7 +1142,7 @@ def testVector(grid, alpha, test, classes):
         if (val < 0 and classes[i] < 0) or (val > 0 and classes[i] > 0):
             correct = correct + 1
 
-    return old_div(float(correct),test.getNrows())
+    return correct / test.getNrows()
 
 # -------------------------------------------------------------------------------
 # Computes the classification accuracy on some test data.
@@ -1157,7 +1156,7 @@ def testVector(grid, alpha, test, classes):
 
 
 def testVectorFast(grid, alpha, test, classes):
-    return old_div(createOperationTest(grid).test(alpha, test, classes),float(test.getNrows()))
+    return createOperationTest(grid).test(alpha, test, classes) / test.getNrows()
 
 # -------------------------------------------------------------------------------
 # Computes the MSE on some test data.
@@ -1193,7 +1192,7 @@ def testVectorFastWithCharacteristicNumbers(grid, alpha, test, classes):
     print("TN: " + str(charaNum[1]))
     print("FP: " + str(charaNum[2]))
     print("FN: " + str(charaNum[3]) + " \n")
-    return old_div(acc,float(test.getNrows()))
+    return acc / test.getNrows()
 
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
@@ -1209,7 +1208,7 @@ def testVectorValues(grid, alpha, test, classes, evalValues):
         if (val < 0 and classes[i] < 0) or (val > 0 and classes[i] > 0):
             correct = correct + 1
 
-    return old_div(float(correct),test.getNrows())
+    return correct / test.getNrows()
 
 # -------------------------------------------------------------------------------
 # Tests the classifier with some test data
