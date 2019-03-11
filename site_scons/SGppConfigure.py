@@ -265,8 +265,6 @@ def checkGSL(config):
 
 def checkZlib(config):
 #zlib needed for datamining
-    if config.env["SG_DATADRIVEN"] and config.env["COMPILE_BOOST_TESTS"]:
-      config.env["USE_ZLIB"] = True
     if(config.env["USE_ZLIB"]):
         if config.env["PLATFORM"] == "win32":
             Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
@@ -346,7 +344,7 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
-        
+
     try:
         import scipy
     except:
