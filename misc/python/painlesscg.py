@@ -120,7 +120,7 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
     	# q = A*d
         ApplyA(B, C, d, q, x, l)
 	    # a = d_new / d.q
-        a = old_div(delta_new,d.dotProduct(q))
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -290,7 +290,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         # q = A*d
         ApplyMatrix(d, q)
         # a = d_new / d.q
-        a = old_div(delta_new,d.dotProduct(q))
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -306,7 +306,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
 
         delta_old = delta_new
         delta_new = r.dotProduct(r)
-        beta = old_div(delta_new,delta_old)
+        beta = delta_new / delta_old
 
         if verbose:
             print( "delta: %g" % delta_new )

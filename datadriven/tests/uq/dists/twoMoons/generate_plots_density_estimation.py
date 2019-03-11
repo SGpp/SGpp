@@ -3,7 +3,6 @@ Created on Jan 27, 2017
 
 @author: franzefn
 '''
-from builtins import range
 from past.utils import old_div
 
 import os

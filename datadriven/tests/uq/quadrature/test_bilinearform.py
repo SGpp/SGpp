@@ -3,7 +3,6 @@ Created on Jul 21, 2014
 
 @author: franzefn
 '''
-from builtins import range
 from pysgpp import Grid, DataVector, DataMatrix, createOperationLTwoDotProduct, \
     createOperationLTwoDotExplicit
 from pysgpp.extensions.datadriven.uq.operations import hierarchize

@@ -97,15 +97,15 @@ def setupPython(target, source, env):
   # create __init__.py file which imports all the extensions
   fd = open(os.path.join(extensionsPath, "__init__.py"), "w")
   for pythonModuleFolder in pythonModuleFolders:
-    fd.write("from . import %s%s" % (pythonModuleFolder, os.linesep))
+    fd.write("import %s%s" % (pythonModuleFolder, os.linesep))
   fd.close()
 
   # create __init__.py file which imports the extension package and the
   # pysgpp_swig module
   fd = open(os.path.join(PYSGPP_BUILD_PATH.abspath, "__init__.py"), "w")
 
-  fd.write("from .pysgpp_swig import *%s" % os.linesep)
-  fd.write("from . import extensions%s" % os.linesep)
+  fd.write("from pysgpp_swig import *%s" % os.linesep)
+  fd.write("import extensions%s" % os.linesep)
   fd.close()
 
   # create__init__.py file which makes the lib folder a python package

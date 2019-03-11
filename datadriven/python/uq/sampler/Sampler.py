@@ -1,4 +1,3 @@
-
 class Sampler(object):
 
     def __init__(self):

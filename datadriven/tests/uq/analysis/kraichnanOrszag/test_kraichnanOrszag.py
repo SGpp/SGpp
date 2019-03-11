@@ -1,5 +1,4 @@
 from builtins import zip
-from builtins import object
 from past.utils import old_div
 # -------------------------------------------------------------------------------
 # Kraichnan Orszag
