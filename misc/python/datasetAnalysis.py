@@ -1,4 +1,3 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -72,8 +71,8 @@ for filename in options.infiles:
         # traverse all attributes
         for i in range(dim):
             total_sum = sum(dataset["data"][i])
-            mean = old_div(total_sum,float(numpoints))
-            unbiased_variance = old_div(sum([(x-mean)**2 for x in dataset["data"][i]]),float(numpoints-1))
+            mean = total_sum / numpoints
+            unbiased_variance = sum([(x-mean)**2 for x in dataset["data"][i]]) / (numpoints-1)
             sample_stddev = math.sqrt(unbiased_variance)
             print( "  %02d %12f %12f %12f %12f %12f" %(i+1, 
                                                  min(dataset["data"][i]),

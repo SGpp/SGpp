@@ -1,4 +1,3 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -68,7 +67,7 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
 
     while i < imax+1 and d > d0:
         ApplyA(B, C, r, temp, x, l)
-        a = old_div(d,r.dotProduct(temp))
+        a = d / r.dotProduct(temp)
 
         # x = x + ar
         alpha.axpy(a, r)
@@ -121,7 +120,7 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
     	# q = A*d
         ApplyA(B, C, d, q, x, l)
 	    # a = d_new / d.q
-        a = old_div(delta_new,d.dotProduct(q))
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -140,7 +139,7 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
 
         delta_old = delta_new
         delta_new = r.dotProduct(r)
-        beta = old_div(delta_new,delta_old)
+        beta = delta_new / delta_old
 
         d.mult(beta)
         d.add(r)
@@ -192,7 +191,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
         if sigma == 0.0:
             break
 
-        a = old_div(rho,sigma)
+        a = rho / sigma
 
         #w = r - a*s
         w = DataVector(r)
@@ -202,7 +201,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
         v = DataVector(len(alpha))
         ApplyMatrix(w, v)
 
-        omega = old_div(v.dotProduct(w), v.dotProduct(v))
+        omega = v.dotProduct(w) / v.dotProduct(v)
 
         #x = x - a*p - omega*w
         alpha.axpy(-a, p)
@@ -284,14 +283,14 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         delta_0 = delta_new*epsilon2
 
     if verbose:
-        print( "Starting norm of residuum: %g" % (old_div(delta_0,epsilon2)) )
+        print( "Starting norm of residuum: %g" % (delta_0 / epsilon2) )
         print( "Target norm:               %g" % (delta_0) )
 
     while (i < imax) and (delta_new > delta_0) and (max_threshold == None or delta_new > max_threshold):
         # q = A*d
         ApplyMatrix(d, q)
         # a = d_new / d.q
-        a = old_div(delta_new,d.dotProduct(q))
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -307,7 +306,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
 
         delta_old = delta_new
         delta_new = r.dotProduct(r)
-        beta = old_div(delta_new,delta_old)
+        beta = delta_new / delta_old
 
         if verbose:
             print( "delta: %g" % delta_new )

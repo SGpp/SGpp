@@ -1,4 +1,3 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -131,7 +130,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
                 inside = False
                 break
             else:
-                x_trans[d_k] = old_div((x[d_k] - bb[d_k][0]), (bb[d_k][1] - bb[d_k][0]))
+                x_trans[d_k] = (x[d_k] - bb[d_k][0]) / (bb[d_k][1] - bb[d_k][0])
 
         if inside:
             p = DataVector(x_trans)
