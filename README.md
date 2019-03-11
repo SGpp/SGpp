@@ -1,6 +1,7 @@
 # Welcome to SG++
 
-![Build Status](https://simsgs.informatik.uni-stuttgart.de/jenkins/buildStatus/icon?job=SG%2B%2B-gcc-master)
+![Jenkins build status](https://simsgs.informatik.uni-stuttgart.de/jenkins/buildStatus/icon?job=SG%2B%2B-gcc-master&subject=Jenkins)
+![Travis CI build status](https://img.shields.io/travis/SGpp/SGpp/master.svg?label=Travis%20CI)
 
 This is the current release version 3.1.0 of SG++, a library and framework
 for sparse grids in different flavors. SG++ supports both
