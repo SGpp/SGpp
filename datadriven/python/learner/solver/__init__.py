@@ -7,8 +7,8 @@
                                     #
 #############################################################################
 
-from .CGSolver import CGSolver
-from .LinearSolver import LinearSolver, LinearSolverEvents
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.learner.solver.LinearSolver import LinearSolver, LinearSolverEvents
 
 __all__ = ['CGSolver',
 'LinearSolver']

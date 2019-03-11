@@ -13,8 +13,6 @@
 # Useful, e.g., to examine the results of adaptive refinement criteria
 
 
-from builtins import range
-from past.utils import old_div
 import sys, os, re, optparse
 sys.path.append(os.environ["SGPP"])#+"/bin")
 from bin import tools
@@ -77,10 +75,10 @@ if __name__ == '__main__':
             xoffset = 0.05
             yoffset = 0.05
         else:
-            xoffset = old_div(1.0,12.0)
-            yoffset = old_div(1.0,12.0)
-        dx = old_div((1.0-xoffset),dim)
-        dy = old_div((1.0-yoffset),dim)
+            xoffset = 1.0 /12.0
+            yoffset = 1.0 /12.0
+        dx = (1.0-xoffset),dim
+        dy = (1.0-yoffset),dim
         if options.nolabel:
             xoffset = 0
             yoffset = 0
@@ -100,7 +98,7 @@ if __name__ == '__main__':
     #set size square 2,2
     set multiplot
     #
-    """ % (options.grid, old_div(1.0,dim), old_div(1.0,dim), dim, dim)
+    """ % (options.grid, (1.0 / dim), (1.0, / dim), dim, dim)
     
         for i in range(dim):
             for j in range(dim):

@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNormal, SGDEdist,
@@ -7,8 +5,8 @@ from pysgpp.extensions.datadriven.uq.dists import (Dist, Uniform, Normal, TNorma
 from pysgpp.extensions.datadriven.uq.transformation import (LinearTransformation,
                                                             RosenblattTransformation)
 
-from .DeterministicParameter import DeterministicParameter
-from .UncertainParameter import UncertainParameter
+from pysgpp.extensions.datadriven.uq.parameters.DeterministicParameter import DeterministicParameter
+from pysgpp.extensions.datadriven.uq.parameters.UncertainParameter import UncertainParameter
 from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
 from pysgpp.extensions.datadriven.uq.dists.DataDist import DataDist
 from pysgpp.extensions.datadriven.uq.sampler.Sample import DistributionType

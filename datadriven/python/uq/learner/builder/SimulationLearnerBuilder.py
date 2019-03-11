@@ -1,4 +1,3 @@
-from builtins import object
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledgeFormatter import ASGCKnowledgeFormatter
@@ -10,7 +9,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder.GridDescriptor import GridD
 from pysgpp.extensions.datadriven.uq.uq_setting import UQSettingAdapter
 import os
 
-from .LearnerBuilder import LearnerBuilder
+from pysgpp.extensions.datadriven.uq.learner.builder.LearnerBuilder import LearnerBuilder
 
 
 class SimulationLearnerBuilder(LearnerBuilder):

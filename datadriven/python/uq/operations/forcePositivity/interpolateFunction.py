@@ -3,9 +3,8 @@ Created on Apr 20, 2016
 
 @author: franzefn
 '''
-from builtins import range
 
-from .interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         hierarchize)

@@ -13,9 +13,7 @@
 @version  0.1
 
 """
-from builtins import zip
-from builtins import range
-from builtins import object
+
 from pysgpp import PolynomialChaosExpansion, \
     AbstractInfiniteFunctionBasis1DVector, \
     OrthogonalBasisFunctionsCollection, \
@@ -32,7 +30,7 @@ from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
                                                             RosenblattTransformation,
                                                             LinearTransformation)
-from .Parameter import Parameter
+from pysgpp.extensions.datadriven.uq.parameters.Parameter import Parameter
 
 import numpy as np
 

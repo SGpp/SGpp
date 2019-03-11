@@ -13,8 +13,7 @@ hypercube to an arbitrary hypercube
 
 @version  0.1
 """
-from past.utils import old_div
-from .Transformation import Transformation
+from pysgpp.extensions.datadriven.uq.sampler.Transformation import Transformation
 
 from  pysgpp.extensions.datadriven.uq import jsonLib as ju
 
@@ -48,7 +47,7 @@ class LinearTransformation(Transformation):
         elif self.__a == self.__b:
             return self.__a
         else:
-            return old_div((x - self.__a), (self.__b - self.__a))
+            return (x - self.__a) / (self.__b - self.__a)
 
     def vol(self):
         return self.__b - self.__a

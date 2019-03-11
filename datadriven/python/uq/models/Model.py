@@ -1,4 +1,3 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 
 class Model(object):

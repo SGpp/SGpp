@@ -1,5 +1,3 @@
-from builtins import range
-from past.utils import old_div
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -9,7 +7,7 @@ from pysgpp import DataVector, DataMatrix
 from scipy.stats import norm
 from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
-from .SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
 
 
@@ -141,7 +139,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             res = evalSGFunctionMulti(grid, alpha, samples)
 
             # compute the moment
-            moments[i] = old_div(np.sum((res - np.mean(res)) ** 2), (len(res) - 1.))
+            moments[i] = np.sum((res - np.mean(res)) ** 2) / (len(res) - 1.)
 
         # error statistics
         if self.__npaths > 1:
@@ -170,6 +168,6 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
 
         res = evalSGFunctionMulti(grid, alpha, samples)
 
-        return {"value": old_div(np.sum((res - mean) ** 2), (len(res) - 1.)),
+        return {"value": np.sum((res - mean) ** 2) / (len(res) - 1.),
                 "err": err,
                 "confidence_interval": (lower_percentile, upper_percentile)}

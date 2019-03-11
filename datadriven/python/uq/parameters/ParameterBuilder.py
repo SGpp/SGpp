@@ -12,11 +12,11 @@
 
 @version  0.1
 """
-from builtins import object
+
 from pysgpp.extensions.datadriven.uq.dists import Corr
-from .ParameterDescriptor import (UncertainParameterDesciptor,
+from pysgpp.extensions.datadriven.uq.parameters.ParameterDescriptor import (UncertainParameterDesciptor,
                                  DeterministicParameterDescriptor)
-from .ParameterSet import ParameterSet
+from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
 
 
 class ParameterBuilder(object):

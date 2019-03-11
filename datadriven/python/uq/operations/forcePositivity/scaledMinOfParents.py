@@ -3,12 +3,10 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from builtins import range
-from past.utils import old_div
 
 import numpy as np
 
-from .interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         getBoundsOfSupport,
@@ -49,7 +47,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
             else:
                 rightValue = 0.0
 
-            interpolatedValue = old_div(abs(leftValue - rightValue), 2)
+            interpolatedValue = abs(leftValue - rightValue) / 2
 
             if interpolatedValue < value:
                 value = interpolatedValue

@@ -1,5 +1,3 @@
-from builtins import zip
-from builtins import range
 import itertools
 import numpy as np
 import matplotlib.pyplot as plt

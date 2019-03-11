@@ -1,6 +1,3 @@
-from builtins import zip
-from builtins import range
-from past.utils import old_div
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
@@ -226,7 +223,7 @@ def isValid(grid, gp):
 def parent(grid, gp, d):
     # get parent
     level = gp.getLevel(d) - 1
-    index = old_div(gp.getIndex(d), 2) + (old_div((gp.getIndex(d) + 1), 2)) % 2
+    index = gp.getIndex(d) / 2 + ((gp.getIndex(d) + 1) / 2) % 2
 
     if isValid1d(grid, level, index):
         # create parent
@@ -1066,7 +1063,7 @@ def estimateConvergence(grid, gp, v):
             # to estimate the surplus of the current collocation node
             igrandpar = gs.getSequenceNumber(grp)
             if v[igrandpar] < -1e-10 or v[igrandpar] > 1e-10:
-                vgp.append(old_div(v[ipar], v[igrandpar]))
+                vgp.append(v[ipar] / v[igrandpar])
 
     if len(vgp) == 0:
         vgp = vparents
@@ -1097,7 +1094,7 @@ def checkInterpolation(grid, alpha, nodalValues, epsilon=1e-13):
         abs_error = np.abs(nodal - value)
         rel_error = abs_error
         if abs(nodal) > 1e-14:
-            rel_error = np.abs(old_div(abs_error, nodal))
+            rel_error = np.abs(abs_error / nodal)
 
         if abs_error > epsilon:
             spacing = 12

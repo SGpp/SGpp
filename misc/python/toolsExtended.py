@@ -1,5 +1,3 @@
-from builtins import range
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -135,7 +133,7 @@ def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutv
     if dim_rem == 0:
         points_save = points
         for x in range(resolution):
-            points = str(old_div(float(x), (resolution - 1))) + " " + points_save
+            points = str(float(x) / (resolution - 1)) + " " + points_save
             printRefPoint(points, dim, function, fout, foutvalue)
             
         fout.write("\n")
@@ -143,7 +141,7 @@ def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutv
     else:
         points_save = points
         for x in range(resolution):
-            points = str(old_div(float(x), (resolution - 1))) + " "+ points_save + str(old_div(float(x), (resolution - 1)))
+            points = str(float(x) /  (resolution - 1)) + " "+ points_save + str(float(x) / (resolution - 1))
             recGenPrintRefVector(dim_rem-1, dim, points, function, resolution, fout, foutvalue)
         
     return
@@ -200,14 +198,14 @@ def printPoint(p, grid, alpha, fout, foutvalue):
 def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
     if dim_rem == 0:
         for x in range(resolution):
-            p[dim_rem] = old_div(float(x), (resolution - 1))
+            p[dim_rem] = float(x) / (resolution - 1)
             printPoint(p, grid, alpha, fout, foutvalue)
             
         fout.write("\n")
         #foutvalue.write("\n")
     else:
         for x in range(resolution):
-            p[dim_rem] = old_div(float(x), (resolution - 1))
+            p[dim_rem] = float(x) / (resolution - 1)
             recGenPrintVector(dim_rem-1, p, grid, alpha, resolution, fout, foutvalue)
         
     return

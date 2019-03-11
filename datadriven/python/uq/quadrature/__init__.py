@@ -10,11 +10,11 @@ __all__ = []
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from .sparse_grid import doQuadrature, getIntegral, getIntegralOfBasisFunction
-from .HashQuadrature import HashQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature, getIntegral, getIntegralOfBasisFunction
+from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 
-from . import strategies
-from . import linearform
-from . import bilinearform
-from . import trilinearform
-from . import marginalization
+from pysgpp.extensions.datadriven.uq.quadrature import strategies
+from pysgpp.extensions.datadriven.uq.quadrature import linearform
+from pysgpp.extensions.datadriven.uq.quadrature import bilinearform
+from pysgpp.extensions.datadriven.uq.quadrature import trilinearform
+from pysgpp.extensions.datadriven.uq.quadrature import marginalization

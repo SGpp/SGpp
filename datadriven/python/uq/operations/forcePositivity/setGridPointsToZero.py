@@ -4,7 +4,7 @@ Created on Feb 6, 2015
 @author: franzefn
 '''
 
-from .interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                getBoundsOfSupport,

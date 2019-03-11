@@ -7,16 +7,16 @@
                                     #
 #############################################################################
 
-from .solver import *
-from .LearnedKnowledge import LearnedKnowledge
-from .Learner import Learner, LearnerEvents
-from .LearnerBuilder import LearnerBuilder
-from .Regressor import Regressor
-from .TrainingSpecification import TrainingSpecification
-from .TrainingStopPolicy import TrainingStopPolicy
-from .Types import *
-from .Types import BorderTypes, SolverTypes
-from .Classifier import Classifier
+from pysgpp.extensions.datadriven.learner.solver import *
+from pysgpp.extensions.datadriven.learner.solver.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.solver.Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.learner.solver.LearnerBuilder import LearnerBuilder
+from pysgpp.extensions.datadriven.learner.solver.Regressor import Regressor
+from pysgpp.extensions.datadriven.learner.solver.TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.solver.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.solver.Types import *
+from pysgpp.extensions.datadriven.learner.solver.Types import BorderTypes, SolverTypes
+from pysgpp.extensions.datadriven.learner.solver.Classifier import Classifier
 
 __all__ = ['folding'
            'formatter',

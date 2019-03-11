@@ -7,12 +7,12 @@
                                     #
 #############################################################################
 
-from .ARFFAdapter import ARFFAdapter
-from .CSVAdapter import CSVAdapter
-from .DataAdapter import DataAdapter
-from .DataContainer import DataContainer
-from .DataEntry import DataEntry
-from .DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
+from pysgpp.extensions.datadriven.data.CSVAdapter import CSVAdapter
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataEntry import DataEntry
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 
 __all__ = ['ARFFAdapter', 'CSVAdapter', 'DataAdapter', 'DataContainer', 'DataEntry',
            'DataSpecification']

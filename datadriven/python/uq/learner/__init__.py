@@ -16,7 +16,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder.RegressorSpecificationDescr
 # from pysgpp.extensions.datadriven.uq.learner.builder.SimulationLearnerBuilder import SimulationLearnerBuilder
 from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 
-from .Interpolant import Interpolant
-from .Learner import Learner, LearnerEvents
-from .Regressor import Regressor
+from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
+from pysgpp.extensions.datadriven.uq.learner.Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.uq.learner.Regressor import Regressor
 # from SimulationLearner import SimulationLearner

@@ -24,10 +24,10 @@ __all__ = ["UQBuilder", "UQSetting",
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from .UQBuilder import UQBuilder
-from .UQSetting import UQSetting, UQSampleType
-from .UQSettingAdapter import UQSettingAdapter
-from .UQSettingFormatter import UQSettingFormatter
-from .UQSpecification import UQSpecification
-from .UQSettingTools import findEquivalent
+from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSetting import UQSetting, UQSampleType
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSpecification import UQSpecification
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingTools import findEquivalent
 

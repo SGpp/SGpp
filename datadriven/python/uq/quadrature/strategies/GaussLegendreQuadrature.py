@@ -1,8 +1,5 @@
-from builtins import zip
-from builtins import range
-from past.utils import old_div
 from numpy.polynomial.legendre import leggauss
-from .QuadratureStrategy import QuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.QuadratureStrategy import QuadratureStrategy
 
 
 class GaussLegendreQuadrature(QuadratureStrategy):
@@ -20,6 +17,6 @@ class GaussLegendreQuadrature(QuadratureStrategy):
             # get rootsArray in [-1, 1]
             rootsArray, weights = leggauss(i + 1)
             # transform rootsArray to [0, 1]
-            rootsArray = old_div((rootsArray + 1), 2.)
+            rootsArray = (rootsArray + 1) / 2.
             # zip them
             self._gaussPoints[i] = list(zip(rootsArray, weights))

@@ -1,5 +1,4 @@
-from builtins import range
-from .Estimator import Estimator
+from pysgpp.extensions.datadriven.uq.estimators.Estimator import Estimator
 import numpy as np
 from scipy.stats import norm
 

@@ -1,6 +1,5 @@
-from builtins import range
 from pysgpp import (DataVector, DataMatrix, Grid, HashGridPoint)
-from .sparse_grid import (evalSGFunctionMulti, hierarchize,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (evalSGFunctionMulti, hierarchize,
                          copyGrid, evalSGFunction, insertPoint,
                          insertHierarchicalAncestors)
 

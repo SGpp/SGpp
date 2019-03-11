@@ -7,11 +7,11 @@
                                     #
 #############################################################################
 
-from .FoldingPolicy import FoldingPolicy
-from .RandomFoldingPolicy import RandomFoldingPolicy
-from .SequentialFoldingPolicy import SequentialFoldingPolicy
-from .StratifiedFoldingPolicy import StratifiedFoldingPolicy
-from .FilesFoldingPolicy import FilesFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
 
 __all__ = ['FilesFoldingPolicy',
             'FoldingPolicy',

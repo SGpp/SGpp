@@ -3,8 +3,6 @@ Created on Aug 18, 2014
 
 @author: franzefn
 '''
-from builtins import zip
-from past.utils import old_div
 
 
 def findEquivalent(sample, stats):
@@ -19,8 +17,8 @@ def findEquivalent(sample, stats):
         j = 0
         while not found and j < len(keys):
             g = keys[j]
-            diff1 = [old_div(abs(gi - pi), pi) for gi, pi in zip(g, p) if abs(pi) > 0]
-            diff2 = [old_div(abs(gi - pi), gi) for gi, pi in zip(g, p) if abs(gi) > 0]
+            diff1 = [(abs(gi - pi) / pi) for gi, pi in zip(g, p) if abs(pi) > 0]
+            diff2 = [(abs(gi - pi) / gi) for gi, pi in zip(g, p) if abs(gi) > 0]
             diff = sum(diff1) + sum(diff2)
             min_diff = min(min_diff, diff)
             if diff < 1e-6:

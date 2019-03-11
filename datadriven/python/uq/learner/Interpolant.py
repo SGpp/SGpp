@@ -1,10 +1,9 @@
-from builtins import range
 from pysgpp.extensions.datadriven.uq.operations import (hierarchize,
                                evalSGFunctionMulti,
                                hierarchizeBruteForce)
 from pysgpp import (DataVector, DataMatrix)
 
-from .Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.uq.learner.Learner import Learner, LearnerEvents
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation, dehierarchize
 from pysgpp.extensions.datadriven.uq.plot import plotNodal3d, plotSGNodal3d

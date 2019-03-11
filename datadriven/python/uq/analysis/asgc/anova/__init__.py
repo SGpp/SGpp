@@ -12,4 +12,4 @@ __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
 from hdmr import HDMR
-from .hdmrAnalytic import HDMRAnalytic
+from pysgpp.extensions.datadriven.uq.analysis.asgc.anova.hdmrAnalytic import HDMRAnalytic

@@ -1,5 +1,4 @@
-from builtins import range
-from .findCandidateSet import CandidateSet
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findCandidateSet import CandidateSet
 from pysgpp import HashGridPoint, DataVector
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import \

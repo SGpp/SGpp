@@ -1,4 +1,3 @@
-from builtins import range
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
@@ -9,7 +8,7 @@ import numpy as np
 from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 
-from .colors import load_default_color_map
+from pysgpp.extensions.datadriven.uq.plot.colors import load_default_color_map
 
 
 def plotDensity3d(U, n=36):

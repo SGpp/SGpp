@@ -3,8 +3,6 @@ Created on Jul 23, 2014
 
 @author: franzefn
 '''
-from builtins import range
-from past.utils import old_div
 
 from pysgpp import (DataVector, Grid, DataMatrix,
                     createOperationLTwoDotExplicit)
@@ -41,8 +39,8 @@ def computeBilinearFormQuad(grid, U):
 
                 # compute left and right boundary of the support of both
                 # basis functions
-                lb = max([old_div((iid - 1), lid), old_div((ijd - 1), ljd)])
-                ub = min([old_div((iid + 1), lid), old_div((ijd + 1), ljd)])
+                lb = max([((iid - 1) / lid), ((ijd - 1) / ljd)])
+                ub = min([((iid + 1) / lid), ((ijd + 1) / ljd)])
 
                 # same level, different index
                 if lid == ljd and iid != ijd:
@@ -111,8 +109,8 @@ def computeBilinearForm(grid, U):
 
                 # compute left and right boundary of the support of both
                 # basis functions
-                lb = max([old_div((iid - 1), lid), old_div((ijd - 1), ljd)])
-                ub = min([old_div((iid + 1), lid), old_div((ijd + 1), ljd)])
+                lb = max([((iid - 1) / lid), ((ijd - 1) / ljd)])
+                ub = min([((iid + 1) / lid), ((ijd + 1) / ljd)])
 
                 # same level, different index
                 if lid == ljd and iid != ijd:

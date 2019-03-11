@@ -1,5 +1,4 @@
-from builtins import range
-from .Transformation import Transformation
+from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transformation
 import numpy as np
 from  pysgpp.extensions.datadriven.uq import jsonLib as ju
 

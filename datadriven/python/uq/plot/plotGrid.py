@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp import createOperationEval, DataVector
 
 import numpy as np

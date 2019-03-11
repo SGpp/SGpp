@@ -1,4 +1,3 @@
-from past.utils import old_div
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.learner.Learner import Learner, LearnerEvents
@@ -192,7 +191,7 @@ class Regressor(Learner):
         self.error.sqr()
         errorsum = self.error.sum()
         # MSE
-        mse = old_div(errorsum, size)
+        mse = errorsum / size
 
         # calculate error per basis function
         self.errors = DataVector(len(alpha))
@@ -221,9 +220,9 @@ class Regressor(Learner):
         # eval error for test data and append it to other in this iteration
         if testSubset is not None:
             self.testAccuracy.append(self.evalError(testSubset, alpha))
-            self.testingOverall.append(old_div(sum(self.testAccuracy), i))
+            self.testingOverall.append(sum(self.testAccuracy) / i)
 
-        self.trainingOverall.append(old_div(sum(self.trainAccuracy), i))
+        self.trainingOverall.append(sum(self.trainAccuracy) / i)
 
         self.numberPoints.append(self.grid.getSize())
 

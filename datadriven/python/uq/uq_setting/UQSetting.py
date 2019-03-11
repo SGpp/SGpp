@@ -18,10 +18,6 @@ quantities of interest are computed out of the simulation results.
 @version  0.1
 
 """
-from builtins import zip
-from builtins import range
-from past.utils import old_div
-from builtins import object
 from pysgpp.extensions.datadriven.uq.sampler import Sample, SampleType
 from math import ceil
 from pysgpp import DataVector, DataMatrix
@@ -31,8 +27,8 @@ import os
 import sys
 
 from pysgpp.extensions.datadriven.tools import readDataARFF
-from .UQSettingFormatter import UQSettingFormatter
-from .UQSpecification import UQSpecification
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSpecification import UQSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import numpy as np
 import warnings
@@ -102,8 +98,8 @@ class UQSetting(object):
             while not found and j < len(keys):
                 g = keys[j]
                 j += 1
-                diff1 = [old_div(abs(gi - pi), pi) for gi, pi in zip(g, p) if abs(pi) > 0]
-                diff2 = [old_div(abs(gi - pi), gi) for gi, pi in zip(g, p) if abs(gi) > 0]
+                diff1 = [(abs(gi - pi) / pi) for gi, pi in zip(g, p) if abs(pi) > 0]
+                diff2 = [(abs(gi - pi) / gi) for gi, pi in zip(g, p) if abs(gi) > 0]
                 diff = sum(diff1) + sum(diff2)
                 min_diff = min(min_diff, diff)
                 if diff < 1e-6:
@@ -115,8 +111,8 @@ class UQSetting(object):
                     # save old items
                     q = self.getPreprocessor().unitToProbabilistic(x)
 
-                    diff1 = [old_div(abs(gi - pi), pi) for gi, pi in zip(q, old_q) if abs(pi) > 0]
-                    diff2 = [old_div(abs(gi - pi), gi) for gi, pi in zip(q, old_q) if abs(gi) > 0]
+                    diff1 = [(abs(gi - pi) / pi) for gi, pi in zip(q, old_q) if abs(pi) > 0]
+                    diff2 = [(abs(gi - pi) / gi) for gi, pi in zip(q, old_q) if abs(gi) > 0]
                     diff = sum(diff1) + sum(diff2)
 
                     simulation = self.__stats_simulation[old_q].copy()
@@ -391,12 +387,12 @@ class UQSetting(object):
             return
 
         # split into smaller chunks
-        jobsize = old_div(float(self.expectedsamplecount), float(self.parallelprocesses))
+        jobsize = float(self.expectedsamplecount) / float(self.parallelprocesses)
         if jobsize < 1:
             jobsize = 1.0
         if len(samples) > jobsize:
-            njobs = ceil(old_div(len(samples), jobsize))  # round up
-            nsamples = int(ceil(old_div(len(samples), njobs)))
+            njobs = ceil(len(samples) / jobsize)  # round up
+            nsamples = int(ceil(len(samples) / njobs))
             njobs = int(njobs)
             print(( "jobconfig:", njobs, jobsize, nsamples, len(samples) ))
 
@@ -1061,7 +1057,7 @@ class UQSetting(object):
 
         if len(t) == 0:
             # create t setting
-            n = int(ceil(old_div((tn - t0), dt) + 1))
+            n = int(ceil((tn - t0) / dt + 1))
             t = np.linspace(t0, tn, n, endpoint=True)
 
         # return for given time steps

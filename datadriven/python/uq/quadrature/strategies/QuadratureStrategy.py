@@ -1,5 +1,3 @@
-from builtins import object
-from past.utils import old_div
 import warnings
 import numpy as np
 
@@ -22,7 +20,7 @@ class QuadratureStrategy(object):
 
         s = [0, 0]
         width = b - a
-        vol = old_div(width, 2.)
+        vol = width / 2.
         err = 1.
         while (err < 1e-17 or err > tol) and deg - 1 < self._n:
             s[1] = 0.

@@ -12,8 +12,7 @@
 # Output either as eps, png, or to stdout.
 #
 
-from builtins import range
-from past.utils import old_div
+
 import sys, os, re, optparse
 if "SGPP" in os.environ:
     sys.path.append(os.environ["SGPP"]+"/bin")
@@ -124,10 +123,10 @@ if __name__=='__main__':
             xoffset = 0.02
             yoffset = 0.02
         else:
-            xoffset = old_div(1.0,12.0)
-            yoffset = old_div(1.0,12.0)
-        dx = old_div((1.0-xoffset),dim)
-        dy = old_div((1.0-yoffset),dim)
+            xoffset = 1.0 / 12.0
+            yoffset = 1.0 / 12.0
+        dx = (1.0-xoffset) / dim
+        dy = (1.0-yoffset) / dim
     
         s = """
     # taking data from %s

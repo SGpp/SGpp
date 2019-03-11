@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-from builtins import range
 
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCKnowledge
 from pysgpp.extensions.datadriven.uq.dists import Dist
@@ -24,7 +23,7 @@ from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 
 from pysgpp import DataVector
 
-from .ASGCSamplerSpecification import ASGCSamplerSpecification
+from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerSpecification import ASGCSamplerSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
 

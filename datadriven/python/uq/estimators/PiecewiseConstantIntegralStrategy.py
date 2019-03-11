@@ -1,4 +1,3 @@
-from builtins import range
 from uq.estimators.SparseGridEstimationStrategy import EstimationStrategy
 from numpy import prod
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction, discretize

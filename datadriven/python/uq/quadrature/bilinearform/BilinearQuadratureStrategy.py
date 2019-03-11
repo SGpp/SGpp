@@ -3,7 +3,7 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from builtins import range
+
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis

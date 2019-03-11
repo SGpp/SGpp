@@ -7,10 +7,10 @@
                                     #
 #############################################################################
 
-from .GridFormatter import GridFormatter
-#from GridImageFormatter import GridImageFormatter
-from .LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
-from .LearnerFormatter import LearnerFormatter
+from pysgpp.extensions.datadriven.learner.formatter.GridFormatter import GridFormatter
+#from pysgpp.extensions.datadriven.learner.formatter.GridImageFormatter import GridImageFormatter
+from pysgpp.extensions.datadriven.learner.formatter.LearnedKnowledgeFormatter import LearnedKnowledgeFormatter
+from pysgpp.extensions.datadriven.learner.formatter.LearnerFormatter import LearnerFormatter
 
 __all__ = ['GridFormatter',
 'GridImageFormatter',

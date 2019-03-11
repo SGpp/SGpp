@@ -1,7 +1,3 @@
-from builtins import zip
-from builtins import range
-from builtins import object
-from past.utils import old_div
 from multiprocessing import cpu_count
 import inspect
 import itertools
@@ -9,9 +5,9 @@ import math
 import os
 import pysgpp
 
-from .samplingresult import Samplingresult
+from pysgpp.extensions.datadriven.uq.uq_setting.samplingresult import Samplingresult
 import numpy as np
-from . import remote_worker as remote
+from pysgpp.extensions.datadriven.uq.uq_setting import remote_worker as remote
 from functools import reduce
 
 
@@ -33,7 +29,7 @@ class UQSettingManager(object):
             self.uqsetting.writeToFile()
         else:
             # set to zero for no separate process
-            self.parallelprocesses = old_div(cpu_count(), 2)
+            self.parallelprocesses = cpu_count() / 2
         # set to expected number of samples, for parallelization
         self.expectedsamplecount = 0
         # incremented for each process
@@ -100,13 +96,13 @@ class UQSettingManager(object):
             return
 
         # split into smaller chunks
-        jobsize = old_div(float(self.expectedsamplecount), float(self.parallelprocesses))
+        jobsize = float(self.expectedsamplecount) / float(self.parallelprocesses)
         if jobsize < 1:
             jobsize = 1.0
         if len(sampleList) > jobsize:
             # round up
-            njobs = math.ceil(old_div(len(sampleList), jobsize))
-            nsamples = int(math.ceil(old_div(len(sampleList), njobs)))
+            njobs = math.ceil(len(sampleList) / jobsize)
+            nsamples = int(math.ceil(len(sampleList) / njobs))
             njobs = int(njobs)
             print(( "jobconfig:", njobs, jobsize, nsamples, len(sampleList) ))
 
@@ -296,7 +292,7 @@ class UQSettingManager(object):
             self.gen.reset()
             samplesB = [self.gen.unitSample() for _ in range(samples)]
         elif samplingType == 'interleave':
-            samples = old_div(samples, 2)  # use no more samples as given by the user, to avoid problmes with sample generators.
+            samples = samples / 2  # use no more samples as given by the user, to avoid problmes with sample generators.
             allSamples = [self.gen.unitSample() for _ in range(2 * samples)]
             samplesA = [allSamples[i] for i in range(0, 2 * samples, 2)]
             samplesB = [allSamples[i] for i in range(1, 2 * samples, 2)]

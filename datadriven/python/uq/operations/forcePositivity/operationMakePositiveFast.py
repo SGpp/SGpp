@@ -3,8 +3,6 @@ Created on Apr 19, 2016
 
 @author: franzefn
 '''
-from builtins import range
-from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
