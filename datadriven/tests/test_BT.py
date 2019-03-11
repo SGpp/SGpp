@@ -196,13 +196,13 @@ class TestOperationBTModLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_ausgeklappt_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -214,13 +214,13 @@ class TestOperationBTModLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 5
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_ausgeklappt_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -232,13 +232,13 @@ class TestOperationBTModLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_ausgeklappt_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -250,13 +250,13 @@ class TestOperationBTModLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createModLinearGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 4
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_ausgeklappt_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -269,13 +269,13 @@ class TestOperationBTLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_dim_1_nopsgrid_7_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -287,13 +287,13 @@ class TestOperationBTLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 5
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_dim_1_nopsgrid_31_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -305,13 +305,13 @@ class TestOperationBTLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_dim_3_nopsgrid_31_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -323,13 +323,13 @@ class TestOperationBTLinear(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 4
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_dim_3_nopsgrid_111_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -342,13 +342,13 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1, 0)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 4
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -360,13 +360,13 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1, 0)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 5
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_l0_rand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -378,13 +378,13 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3, 0)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_123_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -396,13 +396,13 @@ class TestOperationBTLinearBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3, 0)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 4
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_l0_rand_dim_3_nopsgrid_297_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref)     
@@ -415,13 +415,13 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 4
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_17_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -433,13 +433,13 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(1)
-        training = buildTrainingVector(readDataVector('data/data_dim_1_nops_8_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_1_nops_8_float.arff.gz'))
         level = 5
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_trapezrand_dim_1_nopsgrid_33_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -451,13 +451,13 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 2
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_81_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref) 
@@ -469,13 +469,13 @@ class TestOperationBTLinearTruncatedBoundary(unittest.TestCase):
         from pysgpp import Grid
         
         factory = Grid.createLinearBoundaryGrid(3)
-        training = buildTrainingVector(readDataVector('data/data_dim_3_nops_512_float.arff.gz'))
+        training = buildTrainingVector(readDataVector('data/BT_BBT/data_dim_3_nops_512_float.arff.gz'))
         level = 3
         gen = factory.getGenerator()
         gen.regular(level)
 
         m = generateBTMatrix(factory, training)
-        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
+        m_ref = readReferenceMatrix(self, factory.getStorage(), 'data/BT_BBT/BT_phi_li_hut_trapezrand_dim_3_nopsgrid_225_float.dat.gz')
 
         # compare
         compareBTMatrices(self, m, m_ref)  
