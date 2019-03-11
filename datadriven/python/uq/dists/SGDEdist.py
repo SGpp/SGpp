@@ -1,4 +1,3 @@
-from builtins import str
 from builtins import range
 from past.utils import old_div
 from pysgpp.extensions.datadriven.tools import (readAlphaARFF,

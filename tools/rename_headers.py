@@ -5,7 +5,6 @@
 
 #!/usr/bin/python
 
-from builtins import str
 from builtins import range
 import re, sys, os
 

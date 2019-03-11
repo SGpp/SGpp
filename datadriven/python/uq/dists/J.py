@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-from builtins import str
 from builtins import range
 from .Dist import Dist
 from .SGDEdist import SGDEdist

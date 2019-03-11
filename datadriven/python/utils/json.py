@@ -1,4 +1,3 @@
-from builtins import str
 from builtins import chr
 from builtins import object
 # Copyright (C) 2008-today The SG++ project

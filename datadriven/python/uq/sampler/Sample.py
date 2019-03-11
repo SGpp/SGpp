@@ -1,4 +1,3 @@
-from builtins import str
 from builtins import zip
 from builtins import object
 import numpy as np

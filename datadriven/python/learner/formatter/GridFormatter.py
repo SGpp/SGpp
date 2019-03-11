@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from builtins import bytes
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
