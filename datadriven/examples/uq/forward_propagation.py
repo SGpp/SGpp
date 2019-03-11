@@ -1,4 +1,3 @@
-from __future__ import division
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
 from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder

@@ -1,4 +1,3 @@
-from __future__ import division
 from builtins import input
 from builtins import map
 from builtins import str

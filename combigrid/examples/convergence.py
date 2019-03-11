@@ -7,7 +7,6 @@
 ## \page example_convergence_py convergence.py
 ## simple code that provides convergence plots for various analytic models
 
-from __future__ import division
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend

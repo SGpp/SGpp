@@ -12,7 +12,6 @@
 # @version $CURR$
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
-from __future__ import division
 from builtins import input
 from builtins import map
 from builtins import str

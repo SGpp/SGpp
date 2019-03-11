@@ -15,7 +15,6 @@ decomposition for a Sparse-Grid function
 @version  0.1
 
 """
-from __future__ import division
 from builtins import map
 from builtins import range
 from builtins import object

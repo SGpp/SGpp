@@ -1,4 +1,3 @@
-from __future__ import division
 import pysgpp
 import numpy as np
 import matplotlib.pyplot as plt
