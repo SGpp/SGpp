@@ -1,4 +1,3 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingAdapter import UQSettingAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer

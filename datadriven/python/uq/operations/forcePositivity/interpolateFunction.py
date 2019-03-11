@@ -3,7 +3,6 @@ Created on Apr 20, 2016
 
 @author: franzefn
 '''
-from builtins import range
 
 from .interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector

@@ -1,7 +1,5 @@
 from builtins import input
 from builtins import map
-from builtins import range
-from builtins import object
 from past.utils import old_div
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and

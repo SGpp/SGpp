@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp import (DataVector, DataMatrix,
                     SurplusRefinementFunctor, Grid,
                     GridType_Linear, GridType_Poly)

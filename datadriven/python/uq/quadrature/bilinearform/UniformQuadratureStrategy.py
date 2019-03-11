@@ -3,7 +3,6 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from builtins import range
 from pysgpp import DataMatrix, createOperationLTwoDotExplicit
 from .BilinearQuadratureStrategy import BilinearQuadratureStrategy
 

@@ -1,4 +1,3 @@
-from builtins import object
 from .AdmissibleSet import (AdmissibleSparseGridNodeSet,
                            RefinableNodesSet)
 from .LocalRefinementStrategy import (CreateAllChildrenRefinement,

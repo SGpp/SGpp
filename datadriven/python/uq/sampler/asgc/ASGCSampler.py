@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-from builtins import range
 
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCKnowledge
 from pysgpp.extensions.datadriven.uq.dists import Dist

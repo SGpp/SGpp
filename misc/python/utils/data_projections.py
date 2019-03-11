@@ -12,7 +12,6 @@
 # Output either as eps, png, or to stdout.
 #
 
-from builtins import range
 from past.utils import old_div
 import sys, os, re, optparse
 if "SGPP" in os.environ:

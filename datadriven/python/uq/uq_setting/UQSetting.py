@@ -19,9 +19,7 @@ quantities of interest are computed out of the simulation results.
 
 """
 from builtins import zip
-from builtins import range
 from past.utils import old_div
-from builtins import object
 from pysgpp.extensions.datadriven.uq.sampler import Sample, SampleType
 from math import ceil
 from pysgpp import DataVector, DataMatrix

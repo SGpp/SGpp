@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp.extensions.datadriven.uq.operations import (hierarchize,
                                evalSGFunctionMulti,
                                hierarchizeBruteForce)

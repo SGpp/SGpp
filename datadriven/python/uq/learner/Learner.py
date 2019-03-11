@@ -1,4 +1,3 @@
-from builtins import object
 ##############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #
 # adaptive sparse grids to solve numerical problems                         #

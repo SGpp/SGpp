@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import balance
 from pysgpp import (DataVector, HashGridPoint,
                     SurplusRefinementFunctor,

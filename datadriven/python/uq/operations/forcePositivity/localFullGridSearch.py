@@ -1,6 +1,4 @@
 from builtins import zip
-from builtins import range
-from builtins import object
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from .findCandidateSet import CandidateSet
 import matplotlib.pyplot as plt

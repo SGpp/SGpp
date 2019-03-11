@@ -1,5 +1,4 @@
 from builtins import zip
-from builtins import range
 from past.utils import old_div
 from numpy.polynomial.hermite import hermgauss
 from .QuadratureStrategy import QuadratureStrategy

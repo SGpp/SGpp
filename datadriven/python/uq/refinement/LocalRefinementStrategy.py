@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 from pysgpp import HashGridPoint, IndexVector
 
 from pysgpp.extensions.datadriven.uq.operations import (insertPoint,

@@ -1,4 +1,3 @@
-from builtins import object
 class Sampler(object):
 
     def __init__(self):

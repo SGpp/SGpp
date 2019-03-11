@@ -1,4 +1,3 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 from pysgpp.extensions.datadriven.uq.learner.builder import GridDescriptor
 

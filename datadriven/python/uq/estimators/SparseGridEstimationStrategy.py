@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 from pysgpp.extensions.datadriven.uq.transformation import RosenblattTransformation, \
     JointTransformation
 from pysgpp.extensions.datadriven.uq.dists import Uniform, J

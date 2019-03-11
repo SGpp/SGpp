@@ -14,8 +14,6 @@
 
 """
 from builtins import zip
-from builtins import range
-from builtins import object
 from pysgpp import PolynomialChaosExpansion, \
     AbstractInfiniteFunctionBasis1DVector, \
     OrthogonalBasisFunctionsCollection, \

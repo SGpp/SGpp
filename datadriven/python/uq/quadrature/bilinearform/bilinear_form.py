@@ -3,7 +3,6 @@ Created on Jul 23, 2014
 
 @author: franzefn
 '''
-from builtins import range
 from past.utils import old_div
 
 from pysgpp import (DataVector, Grid, DataMatrix,
