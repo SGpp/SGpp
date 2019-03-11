@@ -1,4 +1,3 @@
-from builtins import range
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation

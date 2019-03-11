@@ -1,29 +1,28 @@
-from builtins import object
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-from .LearnedKnowledge import LearnedKnowledge
-from .Classifier import Classifier
-from .TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.Classifier import Classifier
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
 
-from .TrainingSpecification import TrainingSpecification
-from .solver.CGSolver import CGSolver
-from .Types import BorderTypes
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 
 from pysgpp import *
 from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp.extensions.datadriven.data.CSVAdapter import CSVAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
-from .Regressor import Regressor
+from pysgpp.extensions.datadriven.learner.Regressor import Regressor
 
 from pysgpp.extensions.datadriven.utils import json
-from .folding.SequentialFoldingPolicy import SequentialFoldingPolicy
-from .folding.RandomFoldingPolicy import RandomFoldingPolicy
-from .folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
-from .folding.FilesFoldingPolicy import FilesFoldingPolicy
-from .formatter import LearnedKnowledgeFormatter
+from pysgpp.extensions.datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
+from pysgpp.extensions.datadriven.learner.formatter import LearnedKnowledgeFormatter
 
 ## Implement mechanisms to create customized learning system
 #

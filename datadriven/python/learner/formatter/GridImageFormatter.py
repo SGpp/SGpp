@@ -1,4 +1,3 @@
-from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -9,7 +8,7 @@ from builtins import range
 #############################################################################
 
 from pysgpp import DataVector
-from bin.learner.formatter import GridFormatter
+from pysgpp.extensions.datadriven.learner.formatter import GridFormatter
 import matplotlib.pyplot as plt 
 from numpy import zeros, sqrt, ceil, floor
 

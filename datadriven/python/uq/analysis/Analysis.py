@@ -1,4 +1,3 @@
-from builtins import object
 # !/usr/bin/python
 # Copyright (C) 2013 Technische Universitaet Muenchen
 # This file is part of the SG++ project. For conditions of distribution and

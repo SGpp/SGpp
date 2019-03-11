@@ -1,9 +1,8 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.estimators import (MonteCarloStrategy,
                                                         AnalyticEstimationStrategy,
                                                         CollocationPointsStrategy)
 
-from .ASGCAnalysis import ASGCAnalysis
+from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCAnalysis import ASGCAnalysis
 
 
 class ASGCAnalysisBuilder(object):

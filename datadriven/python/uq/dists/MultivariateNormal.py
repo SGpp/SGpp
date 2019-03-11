@@ -3,8 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from builtins import range
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 """
 @file    tnormal.py
@@ -17,8 +15,8 @@ from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 
 """
 
-from .J import J
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.J import J
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 import numpy as np
 from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
@@ -48,13 +46,13 @@ class MultivariateNormal(Dist):
         self.dist = J(dists)
 
         self.cov_inv = np.linalg.inv(cov)
-        self.norm = old_div(1., np.sqrt((2 * np.pi) ** self.__dim * np.linalg.det(cov)))
+        self.norm = 1. / (np.sqrt((2 * np.pi) ** self.__dim * np.linalg.det(cov)))
 
         # do cholesky decomposition for nataf transformation
         self.corr = np.ndarray(cov.shape)
         for i in range(cov.shape[0]):
             for j in range(cov.shape[1]):
-                self.corr[i, j] = old_div(cov[i, j], np.sqrt(cov[i, i] * cov[j, j]))
+                self.corr[i, j] = cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
         self.L = np.linalg.cholesky(self.corr)
 
     def pdf(self, x):

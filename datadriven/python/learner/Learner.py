@@ -1,5 +1,3 @@
-from builtins import range
-from builtins import object
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -7,10 +5,10 @@ from builtins import object
 
 
 from pysgpp import *
-from .solver.CGSolver import CGSolver
-from .folding.FoldingPolicy import FoldingPolicy
-from .TrainingStopPolicy import TrainingStopPolicy
-from .TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
 
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.utils import json
