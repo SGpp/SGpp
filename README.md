@@ -1,5 +1,7 @@
 # Welcome to SG++
 
+![Build Status](https://simsgs.informatik.uni-stuttgart.de/jenkins/buildStatus/icon?job=SG%2B%2B-gcc-master)
+
 This is the current release version 3.1.0 of SG++, a library and framework
 for sparse grids in different flavors. SG++ supports both
 hierarchical, spatially-adaptive sparse grids and the
