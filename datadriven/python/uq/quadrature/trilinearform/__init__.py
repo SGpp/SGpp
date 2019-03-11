@@ -1,3 +1,2 @@
-from __future__ import absolute_import
 from .TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
 from .TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy

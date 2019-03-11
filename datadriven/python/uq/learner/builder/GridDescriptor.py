@@ -1,4 +1,3 @@
-from __future__ import print_function
 from builtins import range
 from builtins import object
 from pysgpp.extensions.datadriven.learner.Types import BorderTypes

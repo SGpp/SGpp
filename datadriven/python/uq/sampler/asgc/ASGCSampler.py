@@ -13,8 +13,6 @@
 @version  0.1
 
 """
-from __future__ import print_function
-from __future__ import absolute_import
 from builtins import range
 
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCKnowledge

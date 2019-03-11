@@ -12,6 +12,7 @@
 
 @version  0.1
 """
+
 from pysgpp.extensions.datadriven.tools import readDataTrivial
 import os
 

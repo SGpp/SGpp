@@ -1,5 +1,3 @@
-from __future__ import division
-from __future__ import print_function
 import pysgpp
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
 import numpy as np

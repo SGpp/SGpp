@@ -8,7 +8,6 @@
 ## This simple example shows how to create a Polynomial Chaos Expansion from an
 ## adaptively refined combigrid.
 
-from __future__ import print_function
 import numpy as np
 import pysgpp
 import time

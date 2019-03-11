@@ -3,7 +3,6 @@ Created on Sep 19, 2016
 
 @author: franzefn
 '''
-from __future__ import print_function
 from argparse import ArgumentParser
 from multiprocessing.process import Process
 from uq.analysis.atan.test_atan import run_atan_pce, run_atan_sg

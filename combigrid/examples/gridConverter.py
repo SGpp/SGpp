@@ -35,7 +35,6 @@
 ##     conversion type GridConversionTypes_COMPLETESUBSPACES
 ##
 ## First, we import a the methods/classes we need for this example...
-from __future__ import print_function
 import numpy as np
 from argparse import ArgumentParser
 import matplotlib.pyplot as plt

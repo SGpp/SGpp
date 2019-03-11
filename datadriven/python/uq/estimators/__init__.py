@@ -6,7 +6,6 @@ This module contains the different estimators for statistical moment
 extraction of sparse grid functions
 
 """
-from __future__ import absolute_import
 
 __version__ = "0.1"
 

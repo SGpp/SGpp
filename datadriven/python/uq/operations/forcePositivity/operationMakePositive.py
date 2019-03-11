@@ -3,7 +3,6 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from __future__ import print_function
 from builtins import range
 from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \

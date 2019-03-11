@@ -1,7 +1,4 @@
-from __future__ import division
-from __future__ import print_function
 from builtins import range
-from past.utils import old_div
 from argparse import ArgumentParser
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
 from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
@@ -20,7 +17,7 @@ from numpy import square
 
 
 def arctanModel(x):
-    return np.arctan(50.0 * (x[0] - .35)) + old_div(np.pi, 2.0) + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
+    return np.arctan(50.0 * (x[0] - .35)) + np.pi/2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
     # return np.arctan(50.0 * (x[0] - .35))
     # return x[0]*x[0]*x[0]*x[1]*x[1]*x[1]*x[1]
     # return x[0] * x[1]

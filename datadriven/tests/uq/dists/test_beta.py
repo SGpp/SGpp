@@ -1,4 +1,3 @@
-from __future__ import print_function
 from pysgpp.extensions.datadriven.uq.dists import Beta
 import numpy as np
 import matplotlib.pyplot as plt

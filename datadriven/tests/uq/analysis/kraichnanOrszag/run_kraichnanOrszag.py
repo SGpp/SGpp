@@ -3,7 +3,6 @@ Created on Sep 19, 2016
 
 @author: franzefn
 '''
-from __future__ import print_function
 from argparse import ArgumentParser
 from multiprocessing.process import Process
 from uq.analysis.kraichnanOrszag.test_kraichnanOrszag import run_kraichnanOrszag_sg, run_kraichnanOrszag_mc

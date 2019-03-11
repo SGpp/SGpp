@@ -4,11 +4,7 @@ Created on Wed Nov 18 10:40:46 2015
 
 @author: Julian
 """
-from __future__ import division
-from __future__ import print_function
-from builtins import str
 from builtins import range
-from past.utils import old_div
 
 import numpy as np
 
@@ -99,7 +95,7 @@ def leja_points(start, count, lower_bound, upper_bound, weight=lambda x : 1, deb
     return sorted(leja)
 
 def calc_min(f, lower_bound, upper_bound):
-    startvalue = old_div((upper_bound - lower_bound), 2) + lower_bound
+    startvalue = ((upper_bound - lower_bound) / 2) + lower_bound
     return minimize(f, startvalue, method='nelder-mead').x
 
 if __name__ == '__main__':

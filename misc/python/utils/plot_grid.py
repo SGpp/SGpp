@@ -9,7 +9,6 @@
 # Helper tool, plotting projections of data.
 # Plots the grid file provided by --grid
 
-from __future__ import print_function
 import sys, os
 # adapt path so that bin can be found
 sys.path.append(os.path.join(sys.path[0], "../.."))
