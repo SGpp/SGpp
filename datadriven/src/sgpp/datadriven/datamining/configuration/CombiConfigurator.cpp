@@ -18,7 +18,7 @@ using std::cout;
 namespace sgpp {
 namespace datadriven {
 
-CombiConfigurator::CombiConfigurator() { InitializePython(); }
+CombiConfigurator::CombiConfigurator() { initializePython(); }
 
 void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
   PyObject *pFunc = PyObject_GetAttrString(pModule, "initadaptivescheme");
@@ -79,7 +79,7 @@ bool CombiConfigurator::isRefinable(combiConfig levelvec) {
   return a;
 }
 
-void CombiConfigurator::refineBlock(combiConfig levelvec) {
+void CombiConfigurator::refineComponent(combiConfig levelvec) {
   PyObject *pFunc = PyObject_GetAttrString(pModule, "refineblock");
   PyObject *pArgs;
   pArgs = PyTuple_New(2);
@@ -140,7 +140,7 @@ void CombiConfigurator::test(vector<combiConfig> &vec) {
   Py_DECREF(pValue);
 }
 
-void CombiConfigurator::InitializePython() {
+void CombiConfigurator::initializePython() {
   if (initialized) {
     return;
   }
@@ -156,7 +156,7 @@ void CombiConfigurator::InitializePython() {
   return;
 }
 
-void CombiConfigurator::FinalizePython() {
+void CombiConfigurator::finalizePython() {
   if (!initialized) {
     return;
   }

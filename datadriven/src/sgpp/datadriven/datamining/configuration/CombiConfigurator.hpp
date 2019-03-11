@@ -34,7 +34,7 @@ class CombiConfigurator {
 
   bool isRefinable(combiConfig levelvec);
 
-  void refineBlock(combiConfig levelvec);
+  void refineComponent(combiConfig levelvec);
 
   /**
    * This returns the set of level vectors with the corresponding coefficients
@@ -56,8 +56,8 @@ class CombiConfigurator {
   void test(vector<combiConfig> &vec);
 
  private:
-  void InitializePython();
-  void FinalizePython();
+  void initializePython();
+  void finalizePython();
 
   inline combiConfig combiConfFromPyObj(PyObject *pValue);
   inline PyObject *combiConfAsPyObj(combiConfig pair);

@@ -26,7 +26,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 
 #include <string>
-#include "../modules/fitting/ModelFittingDensityEstimationCombiGrid.hpp"
+
+#include "../modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 
 namespace sgpp {
 namespace datadriven {

@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombiGrid.hpp>
+#include "../src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 
 using std::cout;
 using std::vector;
