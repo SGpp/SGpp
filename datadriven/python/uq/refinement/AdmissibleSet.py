@@ -1,4 +1,3 @@
-from builtins import str
 from builtins import range
 from builtins import object
 from pysgpp.extensions.datadriven.uq.operations import (isValid, isRefineable,

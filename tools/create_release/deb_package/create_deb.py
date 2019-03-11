@@ -1,5 +1,3 @@
-from __future__ import print_function
-from builtins import str
 from builtins import input
 #!/usr/bin/python3
 import sys

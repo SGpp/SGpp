@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import object
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge

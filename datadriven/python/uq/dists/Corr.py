@@ -13,6 +13,7 @@
 @version  0.1
 
 """
+
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 import numpy as np

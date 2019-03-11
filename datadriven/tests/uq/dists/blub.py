@@ -1,5 +1,3 @@
-from __future__ import division
-from __future__ import print_function
 from past.utils import old_div
 from scipy.stats import truncnorm
 import numpy as np

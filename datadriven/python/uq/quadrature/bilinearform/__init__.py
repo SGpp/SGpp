@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from .BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
 from .SparseGridQuadratureStrategy import SparseGridQuadratureStrategy
 from .UniformQuadratureStrategy import UniformQuadratureStrategy

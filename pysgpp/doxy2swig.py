@@ -9,8 +9,6 @@ for use by SWIG.
 index.xml is your doxygen generated XML file and output.i is where the
 output will be written (the file will be clobbered).
 """
-from __future__ import print_function
-from builtins import str
 from builtins import range
 from builtins import object
 #

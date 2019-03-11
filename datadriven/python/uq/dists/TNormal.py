@@ -13,6 +13,7 @@
 @version  0.1
 
 """
+
 from scipy.stats import truncnorm, norm
 from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 

@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import object
 from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
 from pysgpp import (createOperationLaplace,

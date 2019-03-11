@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from .BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from scipy.integrate import quad, dblquad
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport

@@ -3,7 +3,6 @@ Created on Sep 19, 2016
 
 @author: franzefn
 '''
-from __future__ import print_function
 from argparse import ArgumentParser
 from multiprocessing.process import Process
 from uq.anova.sobolgfunction.test_sobolgfunction import run_sobol_g_function_pce, \

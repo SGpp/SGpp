@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import range
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from .findCandidateSet import CandidateSet

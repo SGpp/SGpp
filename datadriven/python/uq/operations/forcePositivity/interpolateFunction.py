@@ -3,7 +3,6 @@ Created on Apr 20, 2016
 
 @author: franzefn
 '''
-from __future__ import absolute_import
 from builtins import range
 
 from .interpolationAlgorithm import InterpolationAlgorithm

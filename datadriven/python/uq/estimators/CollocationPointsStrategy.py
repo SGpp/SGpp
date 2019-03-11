@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import range
 from .SparseGridEstimationStrategy import SparseGridEstimationStrategy 
 from pysgpp.extensions.datadriven.uq.operations import dehierarchize
