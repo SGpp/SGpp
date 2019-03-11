@@ -24,7 +24,6 @@
 ## For instructions on how to run the example, please see \ref installation.
 
 # import pysgpp library
-from __future__ import print_function
 import pysgpp
 
 ## create a two-dimensional piecewise bi-linear grid

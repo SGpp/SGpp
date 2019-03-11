@@ -1,4 +1,3 @@
-from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -8,7 +7,7 @@ from builtins import range
 import time
 import math
 
-from .FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
 ## Provides functionality for accomplishment of learning with cross-validation

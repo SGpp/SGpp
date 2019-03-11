@@ -1,4 +1,3 @@
-from builtins import object
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes

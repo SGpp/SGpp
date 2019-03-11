@@ -1,8 +1,6 @@
-from __future__ import division
-from past.utils import old_div
 import numpy as np
 
-from .Lognormal import Lognormal
+from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
 from pysgpp.extensions.datadriven.uq import jsonLib as ju
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 
@@ -21,7 +19,7 @@ class TLognormal(Lognormal):
         self.phi_lwr = self._dist.cdf(a)
         self.phi_upr = self._dist.cdf(b)
         self.phi_width = self.phi_upr - self.phi_lwr
-        self.inv_phi_width = old_div(1., self.phi_width)
+        self.inv_phi_width = 1. / self.phi_width
 
     def pdf(self, x):
         return super(TLognormal, self).pdf(x) * self.inv_phi_width

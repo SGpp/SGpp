@@ -3,8 +3,6 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice at http://www5.in.tum.de/SGpp
 #
-from __future__ import division
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.transformation import LinearTransformation
 """
 @file    tnormal.py
@@ -67,8 +65,8 @@ class Normal(Dist):
         @param alpha: confidence value
         """
         U = norm(loc=mu, scale=sigma)
-        a = U.ppf(old_div(alpha, 2.))
-        b = U.ppf(1 - old_div(alpha, 2.))
+        a = U.ppf(alpha / 2.)
+        b = U.ppf(1 - alpha / 2.)
 
         return cls(mu, sigma, a, b)
 

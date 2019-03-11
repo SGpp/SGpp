@@ -1,6 +1,3 @@
-from builtins import next
-from builtins import str
-from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -15,10 +12,10 @@ from .DataSpecification import DataSpecification
 import re
 import gzip
 import csv
-from .DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
 from pysgpp import DataVector, DataMatrix
 
-from .DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
 
 ## Class implements the interface of DataAdapter for storing and restoring of input

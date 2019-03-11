@@ -27,7 +27,6 @@
 ## This example can be found in the file quadrature.py 
 
 # import pysgpp library
-from __future__ import print_function
 import pysgpp
 
 # the standard parabola (arbitrary-dimensional)

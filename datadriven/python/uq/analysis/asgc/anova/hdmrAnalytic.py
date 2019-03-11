@@ -15,12 +15,6 @@ decomposition for a Sparse-Grid function
 @version  0.1
 
 """
-from __future__ import division
-from __future__ import print_function
-from builtins import map
-from builtins import range
-from builtins import object
-from past.utils import old_div
 from pysgpp.extensions.datadriven.uq.estimators import (AnalyticEstimationStrategy,
                                                         MarginalAnalyticEstimationStrategy)
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunction,
@@ -339,7 +333,7 @@ class HDMRAnalytic(object):
         # make sure that there exists a variance
         if self.__V > 0:
             vis = self.getVarianceDecomposition()
-            ans = dict([(perm, old_div(vi, self.__V)) for perm, vi in list(vis.items())])
+            ans = dict([(perm, vi / self.__V) for perm, vi in list(vis.items())])
         else:
             ans = {}
             for k in range(self.__nk):

@@ -14,11 +14,9 @@
 @version  0.1
 
 """
-from __future__ import absolute_import
-from builtins import range
 import os
 import json
-from .anova import HDMR, HDMRAnalytic
+from pysgpp.extensions.datadriven.uq.analysis.asgc.anova import HDMRAnalytic
 from pysgpp.extensions.datadriven.uq.estimators import MonteCarloStrategy
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,

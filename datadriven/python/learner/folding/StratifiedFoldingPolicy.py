@@ -1,6 +1,3 @@
-from __future__ import division
-from builtins import range
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -10,7 +7,7 @@ from past.utils import old_div
                                     #
 #############################################################################
 
-from .FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 import math
 
 
@@ -34,8 +31,8 @@ class StratifiedFoldingPolicy(FoldingPolicy):
         for i in range(self.size):
             if values[i] < 0: indecesOfNegatives.append(i)
             else: indecesOfPositives.append(i)
-        windowPos = int(math.floor(old_div(len(indecesOfPositives), self.level)))
-        windowNeg = int(math.floor(old_div(len(indecesOfNegatives), self.level)))
+        windowPos = int(math.floor(len(indecesOfPositives) / self.level))
+        windowNeg = int(math.floor(len(indecesOfNegatives) / self.level))
         for step in range(self.level):
             validationIndeces = indecesOfPositives[ step * windowPos : ((step+1) * windowPos if (step+1) < self.level else len(indecesOfPositives))] + \
                                 indecesOfNegatives[ step * windowNeg : ((step+1) * windowNeg if (step+1) < self.level else len(indecesOfNegatives))]

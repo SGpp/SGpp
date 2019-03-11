@@ -1,6 +1,3 @@
-from __future__ import division
-from builtins import range
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -11,7 +8,7 @@ import time
 import random
 import math
 
-from .FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs randomly
@@ -26,7 +23,7 @@ class RandomFoldingPolicy(FoldingPolicy):
     #@param seed: Integer seed, default None so it is set to the timestamp
     def __init__(self,  dataContainer, level=1, seed = None):
         FoldingPolicy.__init__(self,  dataContainer, level)
-        self.window = int( math.ceil( old_div(self.size, self.level) ) )
+        self.window = int( math.ceil( self.size / self.level ) )
         if seed == None:
             self.seed = int(time.time())
         else:

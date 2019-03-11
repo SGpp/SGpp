@@ -12,13 +12,10 @@
 
 @version  0.1
 """
-from __future__ import division
-from past.utils import old_div
-
 from pysgpp.extensions.datadriven.tools import readDataTrivial
 import os
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 import numpy as np
 
 
@@ -60,7 +57,7 @@ class DataDist(Dist):
     def pdf(self, p, *args, **kws):
         x = tuple(p)
         if x in self.__sampleToIndex:
-            return old_div(float(self.__sampleToIndex[x]), self.__n)
+            return float(self.__sampleToIndex[x]) / self.__n
         else:
             return 0.
 

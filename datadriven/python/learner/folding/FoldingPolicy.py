@@ -1,7 +1,3 @@
-from __future__ import division
-from builtins import range
-from builtins import object
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -32,7 +28,7 @@ class FoldingPolicy(object):
         self.size = dataset.getPoints().getNrows()
         
         ##Number of points in one subset
-        self.window = int( math.ceil( old_div(float(self.size), self.level) ) ) #number of points in validation set
+        self.window = int( math.ceil( self.size / self.level) ) #number of points in validation set
         
         ##Sequence of indices of points from data set
         self.seq = None 
