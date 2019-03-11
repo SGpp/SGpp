@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/tests/datasets/dummydata.csv"
+		"filePath": "datadriven/datasets/dummydata/dummydata.csv"
 	},
 	"scorer": {
 		"metric": "MSE"

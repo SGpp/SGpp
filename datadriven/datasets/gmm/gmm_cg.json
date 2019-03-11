@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/tests/datasets/classification/gmm_train.csv",
+		"filePath": "datadriven/datasets/gmm/gmm_train.csv",
 		"hasTargets" : true,
 		"batchSize" : 50,
 		"validationPortion" : 0.2,

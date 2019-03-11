@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_SUITE(TestClusteringOpenCL)
 BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL) {
   // Load correct results for comparison
   std::vector<double> mult_optimal_result;
-  std::ifstream mult_in("datadriven/tests/data/clustering_test_data/mult_erg_dim2_depth11.txt");
+  std::ifstream mult_in("datadriven/datasets/clustering_test_data/mult_erg_dim2_depth11.txt");
   if (mult_in) {
     double value;
     while (mult_in >> value) mult_optimal_result.push_back(value);
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(DensityMultiplicationOpenCL) {
 BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
   // Load correct results for comparison
   std::vector<double> alpha_optimal_result;
-  std::ifstream alpha_in("datadriven/tests/data/clustering_test_data/alpha_erg_dim2_depth11.txt");
+  std::ifstream alpha_in("datadriven/datasets/clustering_test_data/alpha_erg_dim2_depth11.txt");
   if (alpha_in) {
     double value;
     while (alpha_in >> value) alpha_optimal_result.push_back(value);
@@ -289,7 +289,7 @@ BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
 
   // Load rhs vector
   sgpp::base::DataVector b(gridsize);
-  std::ifstream rhs_in("datadriven/tests/data/clustering_test_data/rhs_erg_dim2_depth11.txt");
+  std::ifstream rhs_in("datadriven/datasets/clustering_test_data/rhs_erg_dim2_depth11.txt");
   if (rhs_in) {
     double value;
     int counter = 0;
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(DensityAlphaSolver) {
 BOOST_AUTO_TEST_CASE(DensityRHSOpenCL) {
   // Load correct results for comparison
   std::vector<double> rhs_optimal_result;
-  std::ifstream rhs_in("datadriven/tests/data/clustering_test_data/rhs_erg_dim2_depth11.txt");
+  std::ifstream rhs_in("datadriven/datasets/clustering_test_data/rhs_erg_dim2_depth11.txt");
   if (rhs_in) {
     double value;
     while (rhs_in >> value) rhs_optimal_result.push_back(value);
@@ -370,7 +370,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL) {
   // Load dataset for test scenario
   sgpp::datadriven::Dataset data =
     sgpp::datadriven::ARFFTools::readARFFFromFile(
-      "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
+      "datadriven/datasets/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
   // Create operation
@@ -390,7 +390,7 @@ BOOST_AUTO_TEST_CASE(DensityRHSOpenCL) {
 BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
   // Load correct results for comparison
   std::vector<int> graph_optimal_result;
-  std::ifstream graph_in("datadriven/tests/data/clustering_test_data/graph_erg_dim2_depth11.txt");
+  std::ifstream graph_in("datadriven/datasets/clustering_test_data/graph_erg_dim2_depth11.txt");
   if (graph_in) {
     int value;
     while (graph_in >> value) graph_optimal_result.push_back(value);
@@ -412,7 +412,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
   // Load dataset for test scenario
   sgpp::datadriven::Dataset data =
     sgpp::datadriven::ARFFTools::readARFFFromFile(
-      "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
+      "datadriven/datasets/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
   // Create operation
@@ -499,7 +499,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
 BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   // Load input
   std::vector<int> graph;
-  std::ifstream graph_in("datadriven/tests/data/clustering_test_data/graph_erg_dim2_depth11.txt");
+  std::ifstream graph_in("datadriven/datasets/clustering_test_data/graph_erg_dim2_depth11.txt");
   if (graph_in) {
     int value;
     while (graph_in >> value) graph.push_back(value);
@@ -511,7 +511,7 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   // Load optimal results for comparison
   std::vector<int> graph_optimal_result;
   std::ifstream graph_result(
-      "datadriven/tests/data/clustering_test_data/graph_pruned_erg_dim2_depth11.txt");
+      "datadriven/datasets/clustering_test_data/graph_pruned_erg_dim2_depth11.txt");
   if (graph_result) {
     int value;
     while (graph_result >> value) graph_optimal_result.push_back(value);
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   // Load optimal results for comparison
   sgpp::base::DataVector alpha(gridsize);
   std::ifstream alpha_result(
-      "datadriven/tests/data/clustering_test_data/alpha_erg_dim2_depth11.txt");
+      "datadriven/datasets/clustering_test_data/alpha_erg_dim2_depth11.txt");
   if (alpha_result) {
     size_t counter = 0;
     double value;
@@ -556,7 +556,7 @@ BOOST_AUTO_TEST_CASE(KNNPruneGraphOpenCL) {
   // Load dataset for test scenario
   sgpp::datadriven::Dataset data =
     sgpp::datadriven::ARFFTools::readARFFFromFile(
-      "datadriven/tests/data/clustering_test_data/clustering_testdataset_dim2.arff");
+      "datadriven/datasets/clustering_test_data/clustering_testdataset_dim2.arff");
   sgpp::base::DataMatrix &dataset = data.getData();
 
   // Create operation
@@ -576,7 +576,7 @@ BOOST_AUTO_TEST_CASE(KNNClusterSearch) {
   // Load input
   std::vector<int> graph;
   std::ifstream graph_in(
-      "datadriven/tests/data/clustering_test_data/graph_pruned_erg_dim2_depth11.txt");
+      "datadriven/datasets/clustering_test_data/graph_pruned_erg_dim2_depth11.txt");
   if (graph_in) {
     int value;
     while (graph_in >> value) graph.push_back(value);
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE(KNNClusterSearch) {
   graph_in.close();
 
   std::vector<size_t> optimal_cluster_assignement;
-  std::ifstream assignement_in("datadriven/tests/data/clustering_test_data/cluster_erg.txt");
+  std::ifstream assignement_in("datadriven/datasets/clustering_test_data/cluster_erg.txt");
   if (assignement_in) {
     size_t value;
     while (assignement_in >> value) optimal_cluster_assignement.push_back(value);

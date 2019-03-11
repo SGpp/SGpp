@@ -32,7 +32,7 @@ using sgpp::datadriven::ARFFTools;
 BOOST_AUTO_TEST_SUITE(test_dataread_arff)
 
 BOOST_AUTO_TEST_CASE(test_fullread_hastargets) {
-  std::string fileName = "datadriven/tests/datasets/dataread/simple.arff";
+  std::string fileName = "datadriven/datasets/dataread/simple.arff";
   double eps = 1e-06;
   double data[] = {
     0.0, 0.1, 0.2, 0.3, 0.4,
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_fullread_hastargets) {
 }
 
 BOOST_AUTO_TEST_CASE(test_fullread_notargets) {
-  std::string fileName = "datadriven/tests/datasets/dataread/simple.arff";
+  std::string fileName = "datadriven/datasets/dataread/simple.arff";
   double eps = 1e-06;
   double data[] = {
     0.0, 0.1, 0.2, 0.3, 0.4,
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_fullread_notargets) {
 }
 
 BOOST_AUTO_TEST_CASE(test_partialread_cutoff) {
-  std::string fileName = "datadriven/tests/datasets/dataread/simple.arff";
+  std::string fileName = "datadriven/datasets/dataread/simple.arff";
   double eps = 1e-06;
   double data[] = {
     0.0, 0.1, 0.2, 0.3, 0.4,
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(test_partialread_cutoff) {
 }
 
 BOOST_AUTO_TEST_CASE(test_partialread_columns) {
-  std::string fileName = "datadriven/tests/datasets/dataread/simple.arff";
+  std::string fileName = "datadriven/datasets/dataread/simple.arff";
   double eps = 1e-06;
   // col 4 2 0
   double data[] = {
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_partialread_columns) {
 }
 
 BOOST_AUTO_TEST_CASE(test_partialread_classes) {
-  std::string fileName = "datadriven/tests/datasets/dataread/simple.arff";
+  std::string fileName = "datadriven/datasets/dataread/simple.arff";
   double eps = 1e-06;
   double data[] = {
     0.0, 0.1, 0.2, 0.3, 0.4,
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_read_arff_old) {
 
   sgpp::datadriven::Dataset dataSet =
     sgpp::datadriven::ARFFTools::readARFFFromFile(
-      "datadriven/tests/datasets/liver-disorders_normalized.arff");
+      "datadriven/datasets/liver/liver-disorders_normalized_small.arff");
 
   sgpp::base::DataVector& classes = dataSet.getTargets();
   sgpp::base::DataMatrix& data = dataSet.getData();
