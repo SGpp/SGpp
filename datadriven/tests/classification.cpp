@@ -59,13 +59,13 @@ double testModel(std::string configFile) {
 BOOST_AUTO_TEST_SUITE(testClassification)
 
 BOOST_AUTO_TEST_CASE(testOnOff) {
-  std::string configFile = "datadriven/datasets/gmm/gmm_on_off.json";
+  std::string configFile = "datadriven/tests/gmm_on_off.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
 BOOST_AUTO_TEST_CASE(testCG) {
-  std::string configFile = "datadriven/datasets/gmm/gmm_cg.json";
+  std::string configFile = "datadriven/tests/gmm_cg.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
