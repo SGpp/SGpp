@@ -1,4 +1,3 @@
-from builtins import object
 from pysgpp.extensions.datadriven.uq.dists import TNormal, Normal, Uniform, SGDEdist
 from .GaussHermiteQuadrature import GaussHermiteQuadrature
 from .GaussLegendreQuadrature import GaussLegendreQuadrature

@@ -1,4 +1,3 @@
-from builtins import range
 from .Estimator import Estimator
 import numpy as np
 from scipy.stats import norm

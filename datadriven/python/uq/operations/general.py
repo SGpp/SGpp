@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp import (Grid, HashGridPoint)
 
 from .sparse_grid import createGrid, isValid

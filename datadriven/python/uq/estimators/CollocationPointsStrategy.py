@@ -1,4 +1,3 @@
-from builtins import range
 from .SparseGridEstimationStrategy import SparseGridEstimationStrategy 
 from pysgpp.extensions.datadriven.uq.operations import dehierarchize
 from pysgpp import DataVector

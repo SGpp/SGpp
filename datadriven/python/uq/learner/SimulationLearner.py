@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.learner.Learner import Learner
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes

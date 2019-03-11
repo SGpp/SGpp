@@ -3,7 +3,6 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from builtins import range
 from past.utils import old_div
 
 import numpy as np

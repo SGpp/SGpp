@@ -12,7 +12,6 @@
 
 
 #from create_rotation_matrix import *
-from builtins import range
 from past.utils import old_div
 from numpy import *
 import numpy as np

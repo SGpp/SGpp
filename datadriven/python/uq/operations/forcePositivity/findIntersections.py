@@ -1,4 +1,3 @@
-from builtins import range
 from .findCandidateSet import CandidateSet
 from pysgpp import HashGridPoint, DataVector
 import numpy as np

@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
 from .findCandidateSet import CandidateSet
 import numpy as np

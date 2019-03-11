@@ -13,7 +13,6 @@
 # Useful, e.g., to examine the results of adaptive refinement criteria
 
 
-from builtins import range
 from past.utils import old_div
 import sys, os, re, optparse
 sys.path.append(os.environ["SGPP"])#+"/bin")

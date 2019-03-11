@@ -4,7 +4,6 @@ Created on Sun Mar 20 15:04:55 2016
 
 @author: Julian
 """
-from builtins import range
 
 import numpy as np
 from pysgpp import *

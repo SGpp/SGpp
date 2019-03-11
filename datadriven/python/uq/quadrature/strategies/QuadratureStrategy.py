@@ -1,4 +1,3 @@
-from builtins import object
 from past.utils import old_div
 import warnings
 import numpy as np

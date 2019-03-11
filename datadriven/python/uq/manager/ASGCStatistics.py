@@ -1,4 +1,3 @@
-from builtins import object
 class ASGCStatistics(object):
 
     def __init__(self):
