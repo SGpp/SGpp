@@ -3,7 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-
+from __future__ import print_function
 import glob
 import os
 import platform
