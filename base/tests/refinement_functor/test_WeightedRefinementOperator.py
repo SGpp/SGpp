@@ -1,5 +1,3 @@
-from builtins import range
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at 
@@ -32,7 +30,7 @@ class TestWeightedRefinementOperator(unittest.TestCase):
 
         xs = []
         DELTA = 0.05
-        DELTA_RECI = int(old_div(1,DELTA))
+        DELTA_RECI = int(1 / DELTA)
 
         for i in range(DELTA_RECI):
             for j in range(DELTA_RECI):

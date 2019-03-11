@@ -4,7 +4,6 @@ Created on Sun Mar 20 14:15:52 2016
 
 @author: Julian
 """
-from builtins import range
 
 import pylab
 import numpy as np

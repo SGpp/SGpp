@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-
 from pysgpp import PolynomialChaosExpansion, \
     AbstractInfiniteFunctionBasis1DVector, \
     OrthogonalBasisFunctionsCollection, \

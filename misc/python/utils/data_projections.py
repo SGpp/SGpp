@@ -12,7 +12,6 @@
 # Output either as eps, png, or to stdout.
 #
 
-
 import sys, os, re, optparse
 if "SGPP" in os.environ:
     sys.path.append(os.environ["SGPP"]+"/bin")

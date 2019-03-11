@@ -13,7 +13,6 @@
 @version  0.1
 
 """
-
 from pysgpp.extensions.datadriven.uq.transformation import Transformation
 from scipy.interpolate import interp1d
 

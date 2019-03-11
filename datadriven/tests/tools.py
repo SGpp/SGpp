@@ -14,8 +14,6 @@
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
 from builtins import input
 from builtins import map
-from builtins import range
-from builtins import object
 from past.utils import old_div
 import sys, re, time, fcntl, os, random, gzip, math
 from pysgpp import *

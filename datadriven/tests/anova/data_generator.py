@@ -6,7 +6,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 ''' Generator of artificial data for ANOVA decomposition test '''
-from builtins import range
 from past.utils import old_div
 
 

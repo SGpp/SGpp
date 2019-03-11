@@ -10,8 +10,8 @@
 from optparse import OptionParser
 import sys
 from tools import *
-from pysgpp.extensions.misc.utils.toolsExtended import *
 from pysgpp import *
+from pysgpp.extensions.misc.toolsExtended import *
 from math import sqrt
 import random
 import re
@@ -427,7 +427,9 @@ def runHierarchisationDehierarchisationModLinearRegularTest(dim, level):
     storage = grid.getStorage()
     
     node_values = DataVector(storage.getSize(), 1)
-    
+
+    print("Warning: this call may fail for swig versions < 3.0.9")
+    # cf. https://github.com/swig/swig/pull/598
     for n in range(storage.getSize()):
         points = storage.getPoint(n).getCoordinates().split()
         node_values[n] = evalFunction(function, points)

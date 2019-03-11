@@ -1,4 +1,3 @@
-from builtins import range
 from pysgpp.extensions.datadriven.uq.operations import estimateSurplus, estimateConvergence, hierarchize
 from pysgpp import Grid, DataVector, HashGridPoint
 import numpy as np
