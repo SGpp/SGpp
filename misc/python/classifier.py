@@ -13,7 +13,6 @@
 # @todo Join the different modes so that not 100 different versions (checkpointing, ...) exist!
 
 
-from builtins import str
 from builtins import range
 from past.utils import old_div
 from optparse import OptionParser

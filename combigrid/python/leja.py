@@ -4,7 +4,6 @@ Created on Wed Nov 18 10:40:46 2015
 
 @author: Julian
 """
-from builtins import str
 from builtins import range
 
 import numpy as np
