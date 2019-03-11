@@ -9,7 +9,6 @@
 ## is the number of dimensions, the second is the level, and the third is
 ## the parameter T. It then prints out the grid size.
 
-from __future__ import print_function
 from pysgpp import *
 import sys
 

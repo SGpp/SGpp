@@ -1,4 +1,3 @@
-from __future__ import print_function
 from builtins import range
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and

@@ -6,7 +6,6 @@ The UQSetting need to have an attribute 'setupCommand' which is a string
 with python code. The code should load a UQSetting with proper
 Simulation set.
 """
-from __future__ import print_function
 import os
 from pysgpp.extensions.datadriven.uq.sampler import Sample
 import json

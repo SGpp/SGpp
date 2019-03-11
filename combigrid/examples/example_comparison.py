@@ -6,7 +6,6 @@
 
 ## \page example_example_comparison_py example_comparison.py
 
-from __future__ import print_function
 import pysgpp
 import math
 import matplotlib.pyplot as plt

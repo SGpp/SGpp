@@ -14,7 +14,6 @@
 @version  0.1
 
 """
-from __future__ import print_function
 from builtins import object
 
 from pysgpp.extensions.datadriven.uq.uq_setting.UQSetting import UQSetting

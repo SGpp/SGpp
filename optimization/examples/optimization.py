@@ -14,7 +14,6 @@
 ## For comparison, we also minimize the objective function with Nelder-Mead's method.
 ##
 ## First, we import pysgpp and the required modules.
-from __future__ import print_function
 import pysgpp
 import math
 import sys

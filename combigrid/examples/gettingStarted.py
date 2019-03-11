@@ -11,7 +11,6 @@
 
 ## At the beginning of the program, we have to import the pysgpp library.
 from __future__ import division
-from __future__ import print_function
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform

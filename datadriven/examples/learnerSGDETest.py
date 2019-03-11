@@ -1,4 +1,3 @@
-from __future__ import print_function
 import sklearn.datasets as data
 import numpy as np
 import matplotlib.pyplot as plt

@@ -17,7 +17,6 @@
 ## V_n^T &= \bigoplus_{\substack{\vert {\mathbf{l}} \vert_1 - T \vert \mathbf{i} \vert_\infty \\ \leq n + d - 1 - T n}} W_{\mathbf{l}}\nonumber \f}
 
 ## We first import all pysgpp and other utility libraries.
-from __future__ import print_function
 import numpy as np
 import pysgpp as sg; sg.omp_set_num_threads(4)
 #import pandas as pd

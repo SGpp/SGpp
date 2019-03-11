@@ -1,4 +1,3 @@
-from __future__ import print_function
 # test sparse grid operations
 from pysgpp.pysgpp_swig import HashGridPoint
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getGridPointsOnBoundary, \
