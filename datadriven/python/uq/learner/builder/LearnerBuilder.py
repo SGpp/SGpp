@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import object
 ##############################################################################
 # This file is part of pysgpp, a program package making use of spatially    #

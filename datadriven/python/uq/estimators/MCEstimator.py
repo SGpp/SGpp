@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import range
 from .Estimator import Estimator
 import numpy as np

@@ -3,7 +3,6 @@ Created on Feb 6, 2015
 
 @author: franzefn
 '''
-from __future__ import absolute_import
 
 from .interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector

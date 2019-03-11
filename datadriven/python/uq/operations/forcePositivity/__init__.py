@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from .operationMakePositive import OperationMakePositive
 from .operationMakePositiveFast import OperationMakePositiveFast
 

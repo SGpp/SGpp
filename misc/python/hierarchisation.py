@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import str
 from builtins import range
 # Copyright (C) 2008-today The SG++ project

@@ -3,7 +3,6 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from __future__ import absolute_import
 from builtins import range
 from .BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation

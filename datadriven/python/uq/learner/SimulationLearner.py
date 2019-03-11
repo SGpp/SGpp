@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from builtins import range
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 from pysgpp.extensions.datadriven.learner.Learner import Learner

@@ -5,7 +5,6 @@ Created on Sun Mar 20 15:04:55 2016
 @author: Julian
 """
 from __future__ import division
-from __future__ import absolute_import
 from builtins import str
 from builtins import range
 from past.utils import old_div

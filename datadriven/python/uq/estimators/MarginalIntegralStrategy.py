@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from pysgpp.extensions.datadriven.uq.dists import Uniform, J
 from pysgpp.extensions.datadriven.uq.operations import discretize
 from pysgpp.extensions.datadriven.uq.quadrature.marginalization import doMarginalize

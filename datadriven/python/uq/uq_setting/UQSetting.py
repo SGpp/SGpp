@@ -19,7 +19,6 @@ quantities of interest are computed out of the simulation results.
 
 """
 from __future__ import division
-from __future__ import absolute_import
 from builtins import str
 from builtins import zip
 from builtins import range

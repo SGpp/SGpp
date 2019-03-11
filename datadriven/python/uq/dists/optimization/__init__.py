@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from .estimateDensitySGDE import estimateDensitySGDE
 from .estimateDensityDTrees import estimateDensityDTrees
 from .estimateDensityKDE import estimateDensityKDE
