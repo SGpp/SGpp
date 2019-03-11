@@ -8,7 +8,7 @@ from past.utils import old_div
 import unittest
 import math
 import random
-from pysgpp import Grid, DataVector, DataMatrix, BoundingBox1D, BoundingBox
+from pysgpp import Grid, DataVector, DataMatrix, BoundingBox1D, BoundingBox, createOperationEval
 
 class TestAlgorithmEvaluation(unittest.TestCase):
 

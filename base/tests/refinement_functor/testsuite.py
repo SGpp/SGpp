@@ -7,11 +7,11 @@ import unittest
 
 #correct the syspath, so python.ooks for packages in the root directory of SGpp
 import sys, os
-pathname = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(pathname) + '/../../..')
+#pathname = os.path.dirname(__file__)
+#sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from .test_PersistentErrorRefinementFunctor import TestPersistentRefinementOperator
-from .test_WeightedRefinementOperator import TestWeightedRefinementOperator
+from refinement_functor.test_PersistentErrorRefinementFunctor import TestPersistentRefinementOperator
+from refinement_functor.test_WeightedRefinementOperator import TestWeightedRefinementOperator
 
 suite1 = unittest.makeSuite(TestPersistentRefinementOperator,'test')
 suite2 = unittest.makeSuite(TestWeightedRefinementOperator,'test')
