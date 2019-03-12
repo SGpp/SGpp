@@ -48,7 +48,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   if config.env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    config.env["USE_MPI"] = True
+    config.env["USE_MPI"] = True # tells scons to build MPI related examples and operations
   else:
     config.env["USE_MPI"] = False
 
