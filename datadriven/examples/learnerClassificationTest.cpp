@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   const auto filenameTrain =
       std::string("../../datasets/ripley/ripleyGarcke.train.arff");
 
-  auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
+  auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
   auto xTrain = dataTrain.getData();
   auto yTrain = dataTrain.getTargets();
