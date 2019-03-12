@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
 #ifdef __AVX__
 
 #define BOOST_TEST_DYN_LINK
@@ -52,4 +53,5 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif
