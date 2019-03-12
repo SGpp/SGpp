@@ -14,4 +14,4 @@ The library is free to use, provided proper credit is given.
 
 For more details and the API, please visit http://sgpp.sparsegrids.org
 
-There, you can find binaries for Linux (deb) and Matlab support.
+You can find binaries for Linux (deb) and Matlab support in the [SG++ releases](https://github.com/SGpp/SGpp/releases).
