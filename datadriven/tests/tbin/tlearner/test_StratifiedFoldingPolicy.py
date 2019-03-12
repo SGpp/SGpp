@@ -37,7 +37,7 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
         values = DataVector(self.size)
         for i in range(self.size):
             points.set(i, 0, i)
-            values[i] = -1 if i < self.size/2 else 1
+            values[i] = -1 if i < self.size//2 else 1
         self.dataContainer = DataContainer(points=points, values=values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
 
