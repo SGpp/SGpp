@@ -6,7 +6,7 @@
 #############################################################################
                                     #
 #############################################################################
-from .DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 
 
 import re

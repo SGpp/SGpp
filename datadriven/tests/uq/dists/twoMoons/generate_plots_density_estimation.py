@@ -3,7 +3,6 @@ Created on Jan 27, 2017
 
 @author: franzefn
 '''
-from past.utils import old_div
 
 import os
 import pickle as pkl
@@ -103,7 +102,7 @@ def plotLogLikelihood(densities, functionName, out=False):
                        label=category)
         for rect in rects:
             h = -rect.get_height()
-            ax.text(rect.get_x() + old_div(rect.get_width(), 2.), h - 0.2, '%.2f' % h,
+            ax.text(rect.get_x() + (rect.get_width() / 2.), h - 0.2, '%.2f' % h,
                     ha='center', va='bottom')
 
 #     plt.xticks(pos, names)
@@ -169,7 +168,7 @@ def plotpvalueofChi2IndependenceTest(densities,
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
-            inner_samples = inner_samples.reshape(old_div(inner_samples.size, 2), 2)
+            inner_samples = inner_samples.reshape((inner_samples.size // 2), 2)
             h0 = np.histogram2d(inner_samples[:, 0],
                                 inner_samples[:, 1],
                                 bins=bins)[0][2:-2, 2:-2]
@@ -190,7 +189,7 @@ def plotpvalueofChi2IndependenceTest(densities,
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
-            inner_samples = inner_samples.reshape(old_div(inner_samples.size, 2), 2)
+            inner_samples = inner_samples.reshape((inner_samples.size // 2), 2)
             h0 = np.histogram2d(inner_samples[:, 0],
                                 inner_samples[:, 1],
                                 bins=bins)[0][2:-2, 2:-2]

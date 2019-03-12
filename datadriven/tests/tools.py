@@ -12,8 +12,6 @@
 # @version $CURR$
 
 #data = [{"data":[[x],[y]], "classes":[c]}, {"data":[[x],[y]], "classes":[c]}]
-from builtins import input
-from builtins import map
 from past.utils import old_div
 import sys, re, time, fcntl, os, random, gzip, math
 from pysgpp import *

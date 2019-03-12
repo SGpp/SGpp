@@ -1,4 +1,3 @@
-from builtins import zip
 from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
 
 import unittest
