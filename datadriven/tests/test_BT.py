@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 import unittest
-from . import tools
+import tools
 from pysgpp import createOperationMultipleEval
 
 #-------------------------------------------------------------------------------

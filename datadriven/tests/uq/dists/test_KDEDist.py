@@ -237,8 +237,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DCDFandPPF(self):
         # prepare data
-        C = old_div(np.array([[0.1, 0.08],
-                      [0.08, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         train_samples = U.rvs(1000)
 
@@ -286,9 +285,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DCovarianceMatrix(self):
         # prepare data
-        C = old_div(np.array([[0.1, 0.08, 0.02],
-                      [0.08, 0.1, 0.02],
-                      [0.02, 0.02, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08, 0.02], [0.08, 0.1, 0.02], [0.02, 0.02, 0.1]]) / 10.
 
         U = dists.MultivariateNormal([0.5, 0.5, 0.5], C, 0, 1)
         samples = U.rvs(20000)
@@ -302,8 +299,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DMarginalize(self):
         # prepare data
-        C = old_div(np.array([[0.2, 0.08],
-                      [0.08, 0.2]]), 10.)
+        C = np.array([[0.2, 0.08], [0.08, 0.2]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         fig = plt.figure()
