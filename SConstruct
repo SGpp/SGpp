@@ -424,7 +424,7 @@ env.Export("lintAction")
 if env["RUN_PYTHON_TESTS"]:
   if env["SG_PYTHON"]:
     # do the actual thing
-    python = ("python2" if env["USE_PYTHON2_FOR_PYSGPP"] else "python3")
+    python = "python3"
     builder = Builder(action=python + " $SOURCE", chdir=0)
     env.Append(BUILDERS={"Test" : builder})
     builder = Builder(action=python + " $SOURCE")
@@ -590,12 +590,8 @@ for module in moduleFolders:
 
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 
-if not env["USE_PYTHON2_FOR_PYSGPP"]:
-
-  finalMessagePrinter.pysgppPackagePath = (
-      PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
-else:
-  finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+finalMessagePrinter.pysgppPackagePath = (
+    PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 
 if env.GetOption("help"):
   finalMessagePrinter.disable()
