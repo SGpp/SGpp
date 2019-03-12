@@ -1,4 +1,3 @@
-from past.utils import old_div
 # -------------------------------------------------------------------------------
 # Kraichnan Orszag
 # -------------------------------------------------------------------------------
@@ -144,20 +143,20 @@ class KraichnanOrszagTest(object):
                 # -----------------------------
                 k1 = dt * np.array([fi(y, ti) for fi in f])
                 # -----------------------------
-                k2 = dt * np.array([fi(y + old_div(k1, 2.), ti + old_div(dt, 2.))
+                k2 = dt * np.array([fi(y + (k1 / 2.), ti + (dt / 2.))
                                     for fi in f])
                 # -----------------------------
-                k3 = dt * np.array([fi(y + old_div(k2, 2.), ti + old_div(dt, 2.))
+                k3 = dt * np.array([fi(y + (k2 / 2.), ti + (dt / 2.))
                                     for fi in f])
                 # -----------------------------
                 k4 = dt * np.array([fi(y + k3, ti + dt) for fi in f])
                 # -----------------------------
-                y += old_div(k1, 6.) + old_div(k2, 3.) + old_div(k3, 3.) + old_div(k4, 6.)
+                y += (k1 / 6.) + (k2 / 3.) + (k3 / 3.) + (k4 / 6.)
                 ans[i + 1, :] = y
             return ans
 
         def simulation(y0, t0, tn, dt):
-            t = np.linspace(t0, tn, old_div((tn - t0), dt) + 1, endpoint=True)
+            t = np.linspace(t0, tn, ((tn - t0) / dt) + 1, endpoint=True)
             return rungeKutta4thOrder(self.f, y0, t)
 
         class KraichnanOrszagPreprocessor(Transformation):
@@ -171,7 +170,7 @@ class KraichnanOrszagTest(object):
 
             def probabilisticToUnit(self, q, *args, **kws):
                 y1, y2, y3 = q
-                return (y1, old_div(y2, self.c_y2), y3)
+                return (y1, (y2 / self.c_y2), y3)
 
         def postprocessor(res, **kws):
             return {'y1': res[:, 0], 'y2': res[:, 1], 'y3': res[:, 2]}
@@ -213,7 +212,7 @@ class KraichnanOrszagTest(object):
             return [fi(y, t) for fi in self.f]
 
         self.y0 = [1., .5, 0.]
-        self.n = old_div((self.tn - self.t0), self.dt) + 1
+        self.n = ((self.tn - self.t0) / self.dt) + 1
         self.t = np.linspace(self.t0, self.tn, self.n, endpoint=True)
 
         # solve the ODEs
@@ -236,7 +235,7 @@ class KraichnanOrszagTest(object):
 
         # define uq setting
         self.defineUQSetting(builder.defineUQSetting())
-        
+
         samplerSpec = builder.defineSampler()
         samplerSpec.withGrid().withLevel(4)
 
@@ -416,7 +415,7 @@ class KraichnanOrszagTest(object):
             results["results"][t][maxLevel]["sobol_indices"] = me
             results["results"][t][maxLevel]["total_effects"] = te
             results["results"][t][maxLevel]["stats"] = uqManager.stats
-            
+
             results["results"][t][maxLevel]["mean_estimated_per_iteration"] = {}
             for it, res in list(analysis.mean(ts=[t], reduce=False).items()):
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = res["value"]
