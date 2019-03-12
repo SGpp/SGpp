@@ -1,4 +1,3 @@
-from past.utils import old_div
 # ASGC Sampler test: Parabola
 # ----------------------------------------------------
 from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
@@ -79,7 +78,7 @@ class ASGCParabolaTest(unittest.TestCase):
             diag = np.eye(numDims) * 0.005
             offdiag = np.abs(np.eye(numDims) - 1) * 0.001
             cov = diag + offdiag
-    
+
             # estimate the density
             names = ", ".join(["x%i" for i in range(numDims)])
             up.new().isCalled(names).withMultivariateNormalDistribution(mu, cov, 0, 1)
@@ -115,15 +114,15 @@ class ASGCParabolaTest(unittest.TestCase):
         computeWithMC = False
         if cls.param_setting == "uniform":
             print("computing analytic results")
-            cls.E_ana = (old_div(2., 3.)) ** numDims, 0.0
+            cls.E_ana = ((2. / 3.)) ** numDims, 0.0
             if numDims == 1:
-                cls.V_ana = old_div(4., 45.), 0.0
+                cls.V_ana = (4. / 45.), 0.0
             elif numDims == 2:
-                cls.V_ana = old_div(176., 2025.), 0.0
+                cls.V_ana = (176. / 2025.), 0.0
             elif numDims == 3:
-                cls.V_ana = old_div(60416., 820125.), 0.0
+                cls.V_ana = (60416. / 820125.), 0.0
             elif numDims == 4:
-                cls.V_ana = old_div(1705984., 36905625.), 0.0
+                cls.V_ana = (1705984. / 36905625.), 0.0
             else:
                 computeWithMC = True
         else:
