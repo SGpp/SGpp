@@ -413,7 +413,7 @@ class DataContainer(object):
         # save the data as a file, if it's not saved yet
         for category, specification in list(self.specifications.items()):
             if not self.specifications[category].isSaved():
-                from .ARFFAdapter import ARFFAdapter
+                from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
                 ARFFAdapter.ARFFAdapter(self.specifications[category].getFilename())\
                     .save(self.getPoints(category), self.getValues(category),
@@ -438,7 +438,7 @@ class DataContainer(object):
         # load data for other categories
         for category, specification in list(jsonObject.items()):
             if not (category == 'module' or category == 'train'):
-                from .ARFFAdapter import ARFFAdapter
+                from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
                 
                 container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
                 resultContainer = resultContainer.combine(container)
