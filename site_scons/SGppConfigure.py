@@ -278,8 +278,6 @@ def checkGSL(config):
 
 def checkZlib(config):
 #zlib needed for datamining
-    if config.env["SG_DATADRIVEN"] and config.env["COMPILE_BOOST_TESTS"]:
-      config.env["USE_ZLIB"] = True
     if(config.env["USE_ZLIB"]):
         if config.env["PLATFORM"] == "win32":
             Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
@@ -372,12 +370,8 @@ def checkPython(config):
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
 
-    if getOutput(["python3", "-c", "import builtins; "]).startswith('Traceback'):
-      Helper.printWarning("Warning: Future doesn't seem to be installed.")
-        
     if getOutput(["python3", "-c", "import scipy; "]).startswith('Traceback'):
       Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
-        
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
 
