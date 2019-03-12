@@ -39,8 +39,7 @@ swigFlags.extend(env["SWIGFLAGS"])
 if env["PYDOC"]:
   swigFlags.append("-DPYDOC")
 
-if not env["USE_PYTHON2_FOR_PYSGPP"]:
-  swigFlags.append("-py3")
+swigFlags.append("-py3")
 
 pyEnv.AppendUnique(SWIGFLAGS=swigFlags)
 
@@ -66,7 +65,7 @@ if env["USE_ZLIB"]:
 if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])
   # TODO: replace hard-coded "python27"
-  libs.append("python27")
+  #libs.append("python27")
 
 pyEnv.AppendUnique(LIBPATH=pythonLibPaths)
 pyEnv.AppendUnique(LIBS=libs)
