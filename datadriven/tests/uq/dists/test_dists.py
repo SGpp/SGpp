@@ -9,8 +9,8 @@ import unittest
 import sys
 from bin.uq import toolsKbhitCountdown
 
-from . import test_tnormal
-from . import test_J
+import test_tnormal
+import test_J
 
 if __name__ == '__main__':
     sys.stdout.write("Running unit tests. ")
