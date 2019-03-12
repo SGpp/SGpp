@@ -10,14 +10,14 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from .test_Classifier import TestClassifier
-from .test_GridFormatter import TestGridFormatter
-from .test_LearnerBuilder import TestLearnerBuilder
-from .test_RandomFoldingPolicy import TestRandomFoldingPolicy
-from .test_SequentialFoldingPolicy import TestSequentialFoldingPolicy
-from .test_StratifiedFoldingPolicy import TestStratifiedFoldingPolicy
-from .test_FilesFoldingPolicy import TestFilesFoldingPolicy
-from .test_LearnedKnowledgeFormatter import TestLearnedKnowledgeFormatter
+from test_Classifier import TestClassifier
+from test_GridFormatter import TestGridFormatter
+from test_LearnerBuilder import TestLearnerBuilder
+from test_RandomFoldingPolicy import TestRandomFoldingPolicy
+from test_SequentialFoldingPolicy import TestSequentialFoldingPolicy
+from test_StratifiedFoldingPolicy import TestStratifiedFoldingPolicy
+from test_FilesFoldingPolicy import TestFilesFoldingPolicy
+from test_LearnedKnowledgeFormatter import TestLearnedKnowledgeFormatter
 
 suite2 = unittest.makeSuite(TestClassifier,'test')
 suite3 = unittest.makeSuite(TestGridFormatter,'test')
