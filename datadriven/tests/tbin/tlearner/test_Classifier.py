@@ -135,7 +135,7 @@ class TestClassifier(unittest.TestCase):
         dim = 6
         l = 0.00001
         self.classifier = Classifier()
-        dataContainer = ARFFAdapter(pathlocal + "/../../../datasets/liver-disorders_normalized.arff").loadData()
+        dataContainer = ARFFAdapter(pathlocal + "/../../../datasets/liver/liver-disorders_normalized.arff").loadData()
         self.classifier.setDataContainer(dataContainer)
         foldingPolicy = SequentialFoldingPolicy(dataContainer, 10)
         self.classifier.setFoldingPolicy(foldingPolicy)
