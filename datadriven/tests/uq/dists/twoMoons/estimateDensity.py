@@ -3,8 +3,6 @@ Created on Apr 18, 2016
 
 @author: franzefn
 '''
-from past.utils import old_div
-
 import sys
 import os
 import json
@@ -528,7 +526,7 @@ def load_data_set(data_set, numSamples, numDims=2):
                     isValid &= np.all(sample[idim] < bounds[0][1])
                 if isValid:
                     samples = np.append(samples, sample)
-            samples = samples.reshape(old_div(samples.size, numDims), numDims)
+            samples = samples.reshape((samples.size // numDims), numDims)
 
             natafType["name"] = "gamma"
             natafType["alpha"] = alpha
@@ -548,7 +546,7 @@ def load_data_set(data_set, numSamples, numDims=2):
                     isValid &= np.all(sample[idim] < bounds[0][1])
                 if isValid:
                     samples = np.append(samples, sample)
-            samples = samples.reshape(old_div(samples.size, numDims), numDims)
+            samples = samples.reshape((samples.size // numDims), numDims)
 
             natafType["name"] = "beta"
             natafType["alpha"] = alpha
@@ -602,7 +600,7 @@ def run_densityEstimation(functionName,
         print("valid: %i x %i (mean=%g, var=%g)" % (validationSamples.shape[0], validationSamples.shape[1], np.mean(validationSamples), np.var(validationSamples)))
 
         np.random.seed(i * 123456 + i % 2)
-        trainSamples, testSamples = splitset(learnSamples, splitPercentage=1. - old_div(1., kfold))
+        trainSamples, testSamples = splitset(learnSamples, splitPercentage=1. - 1. / kfold)
 
         if "sgde" in method:
             dist, stats[i] = estimateSGDEDensity(functionName,
