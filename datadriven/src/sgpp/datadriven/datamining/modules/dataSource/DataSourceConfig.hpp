@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -80,6 +81,24 @@ struct DataSourceConfig {
    * The number of epochs to train on
    */
   size_t epochs = 1;
+  /**
+   * After how many (valid) lines of the sourcefile to stop reading
+   */
+  size_t readinCutoff = -1;
+  /**
+   * Specifies the set of classes (targets) to be read-in from the data file
+   * Any line with a class not contained in this vector is skipped
+   * If hasTargets=false this is ignored
+   * If empty then all classes/targets are considered (default)
+   */
+  std::vector<double> readinClasses = std::vector<double>();
+  /**
+   * Specifies the set of columns (dimensions) to be read-in from the data file
+   * Starts at 0, order matters; Any column not contained in this vector is ignored
+   * as a dimension
+   * If empty, then all columns are read in (default)
+   */
+  std::vector<size_t> readinColumns = std::vector<size_t>();
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -468,8 +468,10 @@ int main(int argc, char* argv[]) {
     std::string tfileTrain = dataFile;
     std::string tfileTest = testFile;
 
-    sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(tfileTrain);
-    sgpp::datadriven::Dataset testdataset = sgpp::datadriven::ARFFTools::readARFF(tfileTest);
+    sgpp::datadriven::Dataset dataset =
+      sgpp::datadriven::ARFFTools::readARFFFromFile(tfileTrain);
+    sgpp::datadriven::Dataset testdataset =
+      sgpp::datadriven::ARFFTools::readARFFFromFile(tfileTest);
 
     size_t nDim = dataset.getDimension();
     size_t nInstancesNo = dataset.getNumberInstances();
