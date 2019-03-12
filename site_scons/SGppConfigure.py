@@ -101,7 +101,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
-  checkZlib(config)
+  #checkZlib(config)
+  detectZlib(config)
   checkGSL(config)
   checkDAKOTA(config)
   checkCGAL(config)
@@ -594,3 +595,18 @@ def configureIntelCompiler(config):
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
 
   config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
+
+def detectZlib(config):
+  has_libz = config.CheckLib("z", language="c++", autoadd=0)
+  has_zlib = config.CheckCXXHeader("zlib.h")
+  if has_libz and has_zlib:
+    Helper.printInfo("zlib is installed, enabling ZLIB support.")
+    config.env["USE_ZLIB"] = True
+    config.env["CPPDEFINES"]["ZLIB"] = "1"
+  elif config.env["USE_ZLIB"]:
+    if config.env["PLATFORM"] == "win32":
+      Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
+    else:
+      Helper.printErrorAndExit("USE_ZLIB is set but either libz or zlib.h is missing!")
+  else:
+    Helper.printInfo("ZLIB support could not be enabled.")
