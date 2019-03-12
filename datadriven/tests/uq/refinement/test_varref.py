@@ -1,4 +1,3 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -57,7 +56,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # f = lambda x: dist.pdf(x)
         def f(x): return np.prod(4 * x * (1 - x))
 
-        def f(x): return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # --------------------------------------------------------------------------
         # define parameters
@@ -197,7 +196,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # f = lambda x: dist.pdf(x)
         def f(x): return np.prod(4 * x * (1 - x))
 
-        def f(x): return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        def f(x): return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # --------------------------------------------------------------------------
         # define parameters

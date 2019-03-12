@@ -1,4 +1,3 @@
-from past.utils import old_div
 from sympy import Rational
 
 a = (-1, 0, 2, 1)
@@ -24,4 +23,4 @@ for p in range(len(a)):
 # -----------------------------
 p = lambda x, a: sum([ai * x ** i for i, ai in enumerate(a)])
 from scipy.integrate import quad
-print(quad(lambda x: p(x, a) * p(x, b), 0, 1)[0], old_div(5., 6.))
+print(quad(lambda x: p(x, a) * p(x, b), 0, 1)[0], 5. / 6.)

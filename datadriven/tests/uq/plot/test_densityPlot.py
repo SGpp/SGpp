@@ -3,8 +3,6 @@ Created on Feb 12, 2015
 
 @author: franzefn
 '''
-from past.utils import old_div
-
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -21,8 +19,7 @@ from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 
 
 mu = np.array([0.5, 0.5])
-cov = old_div(np.array([[0.1, 0.04],
-                [0.04, 0.1]]), 5.)
+cov = np.array([[0.1, 0.04], [0.04, 0.1]]) / 5.
 
 dist = MultivariateNormal(mu, cov, 0, 1)
 
