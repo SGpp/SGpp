@@ -1,4 +1,3 @@
-from past.utils import old_div
 # -------------------------------------------------------------------------------
 # DataDist tests
 # -------------------------------------------------------------------------------
@@ -139,8 +138,8 @@ class SGDEdistTest(unittest.TestCase):
 #                                                                        np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples)
 #                                                                        ))
 
-        print("1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), old_div(np.abs(np.mean(trainSamples) - dist.mean()), np.mean(trainSamples))))
-        print("1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), old_div(np.abs(np.var(trainSamples) - dist.var()), np.var(trainSamples))))
+        print("1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), (np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))))
+        print("1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), (np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))))
         print("KL = %g" % U.klDivergence(dist, testSamples, testSamples))
         print("CE = %g" % dist.crossEntropy(testSamples))
         print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
@@ -305,8 +304,7 @@ class SGDEdistTest(unittest.TestCase):
 
     def test2DPPF(self):
         # prepare data
-        C = old_div(np.array([[0.1, 0.08],
-                      [0.08, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         train_samples = U.rvs(1000)
@@ -354,8 +352,7 @@ class SGDEdistTest(unittest.TestCase):
 
     def test2DCDFandPPF(self, plot=True):
         # prepare data
-        C = old_div(np.array([[0.1, 0.08],
-                      [0.08, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         train_samples = U.rvs(1000)
 
@@ -429,8 +426,7 @@ class SGDEdistTest(unittest.TestCase):
     def test2DCovarianceMatrix(self):
         # prepare data
         np.random.seed(1234567)
-        C = old_div(np.array([[0.3, 0.09],
-                      [0.09, 0.3]]), 10.)
+        C = np.array([[0.3, 0.09], [0.09, 0.3]]) / 10.
 
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         samples = U.rvs(2000)

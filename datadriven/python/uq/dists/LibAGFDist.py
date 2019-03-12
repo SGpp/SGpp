@@ -1,7 +1,6 @@
-from past.utils import old_div
 import os
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 import configparser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList
@@ -175,7 +174,7 @@ class LibAGFDist(Dist):
         n = self.trainData.getNrows()
         sigma = self.bandwidths.array()
         # normalization coefficient
-        norm = old_div(1., (sigma * np.sqrt(2. * np.pi)))
+        norm = 1. / (sigma * np.sqrt(2. * np.pi))
 
         trainData = self.trainData.array()
 

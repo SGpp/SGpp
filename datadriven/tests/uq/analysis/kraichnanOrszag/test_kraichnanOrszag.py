@@ -1,4 +1,3 @@
-from builtins import zip
 from past.utils import old_div
 # -------------------------------------------------------------------------------
 # Kraichnan Orszag

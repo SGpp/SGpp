@@ -1,4 +1,3 @@
-from past.utils import old_div
 # -------------------------------------------------------------------------------
 # NatafDensity tests
 # -------------------------------------------------------------------------------
@@ -25,7 +24,7 @@ class NatafDistTest(unittest.TestCase):
         alpha = 5.0
         beta = 10.0
 
-        mean = old_div(alpha, (alpha + beta))
+        mean = alpha / (alpha + beta)
         stddev = old_div(np.sqrt(alpha * beta / (alpha + beta + 1.)), (alpha + beta))
 
         nataf = NatafDist.beta_marginals(0.0, 1.0,

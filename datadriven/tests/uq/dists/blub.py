@@ -1,4 +1,3 @@
-from past.utils import old_div
 from scipy.stats import truncnorm
 import numpy as np
 import matplotlib.pyplot as plt
@@ -7,7 +6,7 @@ a, b = 1., 21.
 my = 17.
 sigma = 5.
 
-trans = lambda x: old_div((x - my), sigma)
+trans = lambda x: (x - my) / sigma
 inv_trans = lambda x: x * sigma + my
 
 t_a, t_b = trans(a), trans(b)
@@ -35,7 +34,7 @@ print(I)
 
 c = my
 I1 = quad(U.pdf, t_a, trans(c))[0]
-I2 = old_div(quad(lambda x: U.pdf(trans(x)), a, c)[0], sigma)
+I2 = quad(lambda x: U.pdf(trans(x)), a, c)[0] / sigma
 
 print(I1, I2)
 
