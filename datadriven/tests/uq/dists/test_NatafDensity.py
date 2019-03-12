@@ -25,7 +25,7 @@ class NatafDistTest(unittest.TestCase):
         beta = 10.0
 
         mean = alpha / (alpha + beta)
-        stddev = old_div(np.sqrt(alpha * beta / (alpha + beta + 1.)), (alpha + beta))
+        stddev = np.sqrt(alpha * beta / (alpha + beta + 1.)) / (alpha + beta)
 
         nataf = NatafDist.beta_marginals(0.0, 1.0,
                                          alpha, beta,
@@ -41,8 +41,7 @@ class NatafDistTest(unittest.TestCase):
         # prepare data
         numDims = 2
         mean = 0.5
-        C = old_div(np.array([[0.1, 0.08],
-                      [0.08, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         stddev = np.sqrt(C[0, 0])
         U = dists.MultivariateNormal(np.ones(numDims) * mean, C, 0, 1)
 

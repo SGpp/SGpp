@@ -1,4 +1,3 @@
-from past.utils import old_div
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import binom
@@ -61,7 +60,7 @@ gridConfig.maxDegree_ = level + 1
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
 
-dist = J([Normal(0.5, old_div(1., 16.), 0, 1)] * numDims)
+dist = J([Normal(0.5, 1./ 16., 0, 1)] * numDims)
 # dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
 # dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
 # dist = J([Lognormal(0.2, 0.7, 0, 1)] * numDims)  # problems in 5d/l3

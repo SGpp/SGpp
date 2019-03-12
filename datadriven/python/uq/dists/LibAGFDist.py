@@ -179,11 +179,11 @@ class LibAGFDist(Dist):
         trainData = self.trainData.array()
 
         # normalize it
-        trainData = old_div((x - trainData), sigma)
-        trainData = norm * np.exp(old_div(-trainData ** 2, 2.))
+        trainData = (x - trainData) / sigma
+        trainData = norm * np.exp(-trainData ** 2 / 2.)
 
         # scale the result by the number of samples
-        return old_div(np.sum(np.prod(trainData, axis=1)), n)
+        return np.sum(np.prod(trainData, axis=1)) / n
 
     def cdf(self, x):
         # convert the parameter to the right format
@@ -248,7 +248,7 @@ class LibAGFDist(Dist):
         moment = 0.
         for sample, _ in list(self.testData.items()):
             moment += np.prod(sample)
-        return old_div(moment, len(self.testData))
+        return moment / len(self.testData)
 
     def var(self):
         mean = self.mean()
@@ -256,7 +256,7 @@ class LibAGFDist(Dist):
         for sample, _ in list(self.testData.items()):
             moment += (np.prod(sample) - mean) ** 2
 
-        return old_div(moment, (len(self.testData) - 1))
+        return moment / (len(self.testData) - 1)
 
     def getBounds(self):
         return self.bounds
