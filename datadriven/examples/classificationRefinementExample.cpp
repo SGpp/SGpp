@@ -54,9 +54,9 @@ int main() {
    */
   std::string basePath = "../../datasets/ripley/ripleyGarcke";
   sgpp::datadriven::Dataset datasetTr =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".train.arff");
+    sgpp::datadriven::ARFFTools::readARFFFromFile(basePath + ".train.arff");
   sgpp::datadriven::Dataset datasetTs =
-    sgpp::datadriven::ARFFTools::readARFF(basePath + ".test.arff");
+    sgpp::datadriven::ARFFTools::readARFFFromFile(basePath + ".test.arff");
   sgpp::base::DataMatrix dataTrain = datasetTr.getData();
   sgpp::base::DataVector targetTrain = datasetTr.getTargets();
   sgpp::base::DataMatrix dataTest = datasetTs.getData();

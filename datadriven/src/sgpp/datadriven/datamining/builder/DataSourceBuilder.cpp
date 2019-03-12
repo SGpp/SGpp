@@ -129,9 +129,9 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
     sampleProvider = new GzipFileSampleDecorator(static_cast<FileSampleProvider*>(sampleProvider));
 #endif
   }
-
-  return new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
+  auto t = new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
       sampleProvider);
+  return t;
 }
 
 DataSourceCrossValidation* DataSourceBuilder::crossValidationFromConfig(
@@ -148,7 +148,6 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationFromConfig(
 void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;
-
   // split the string
   StringTokenizer::tokenize(config.filePath, ".", tokens);
   // convert to lower case

@@ -128,6 +128,14 @@ class DataMiningConfigParser {
                           const std::string &parentNode) const;
   double parseDouble(DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
+  std::vector<double> parseDoubleArray(DictNode &dict,
+                                       const std::string &key,
+                                       std::vector<double> defaultValue,
+                                       const std::string &parentNode) const;
+  std::vector<size_t> parseUIntArray(DictNode &dict,
+                                     const std::string &key,
+                                     std::vector<size_t> defaultValue,
+                                     const std::string &parentNode) const;
   size_t parseUInt(DictNode &dict, const std::string &key, size_t defaultValue,
                    const std::string &parentNode) const;
   int64_t parseInt(DictNode &dict, const std::string &key, int64_t defaultValue,

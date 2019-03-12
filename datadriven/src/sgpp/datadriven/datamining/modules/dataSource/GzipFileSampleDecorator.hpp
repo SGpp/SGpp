@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleDecorator.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -35,12 +36,24 @@ class GzipFileSampleDecorator : public FileSampleDecorator {
   SampleProvider* clone() const override;
 
   /**
-   * Decompress a gzip compressed file at the given path and read its contents using the delegate's
-   * member functions. Throws if the file cannot be opened or parsed.
-   *
-   * @param filePath valid path to a gzip compressed file.
+   * Decompresses a .gz file and delegates the contents down to the
+   * sample provider.
+   * @param fileName path to the file
+   * @param hasTargets whether the file has targets (i.e. supervised learning)
+   * @param readinCutoff see FileSampleProvider.hpp
+   * @param readinColumns see FileSampleProvider.hpp
+   * @param readinClasses see FileSampleProvider.hpp
    */
-  void readFile(const std::string& filePath) override;
+  void readFile(const std::string &fileName,
+                bool hasTargets,
+                size_t readinCutoff = -1,
+                std::vector<size_t> readinColumns = std::vector<size_t>(),
+                std::vector<double> readinClasses = std::vector<double>()) override;
+
+  /**
+   * Resets the state of the sample provider (e.g. to start a new epoch)
+   */
+  void reset() override;
 };
 
 } /* namespace datadriven */

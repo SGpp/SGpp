@@ -56,7 +56,8 @@ int main() {
       std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset trainDataset =
+        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract train classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -64,7 +65,8 @@ int main() {
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset testDataset =
+        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
