@@ -101,8 +101,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
+  detectGSL(config)
   detectZlib(config)
-  checkGSL(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -249,19 +249,6 @@ def checkCGAL(config):
     if config.env["USE_CGAL"]:
         if not config.CheckCXXHeader("CGAL/basic.h"):
             Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
-
-def checkGSL(config):
-  if config.env["USE_GSL"]:
-    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
-    if "GSL_LIBRARY_PATH" in config.env:
-	  config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
-
-    if not config.CheckCXXHeader("gsl/gsl_version.h"):
-      Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
-    if not config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
-      Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
-
-    config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -583,6 +570,20 @@ def configureIntelCompiler(config):
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
 
   config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
+
+def detectGSL(config):
+  if "GSL_INCLUDE_PATH" in config.env:
+    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
+  if "GSL_LIBRARY_PATH" in config.env:
+    config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
+  if config.CheckCXXHeader("gsl/gsl_version.h") and config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
+    Helper.printInfo("GSL is installed, enabling GSL support.")
+    config.env["USE_GSL"] = True
+    config.env["CPPDEFINES"]["USE_GSL"] = "1"
+  elif config.env["USE_GSL"]:
+    Helper.printErrorAndExit("gsl/gsl_version.h or libsgl/libgslcblas were not found, but required for GSL")
+  else:
+    Helper.printInfo("GSL support could not be enabled.")
 
 def detectZlib(config):
   if config.CheckLib("z", language="c++", autoadd=0) and config.CheckCXXHeader("zlib.h"):
