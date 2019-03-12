@@ -1,4 +1,3 @@
-from builtins import input
 #!/usr/bin/python3
 import sys
 import os

@@ -1,4 +1,3 @@
-from builtins import zip
 from past.utils import old_div
 import numpy as np
 from pysgpp import RegularGridConfiguration, Grid, DataVector, \
