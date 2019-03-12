@@ -1,4 +1,3 @@
-from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -60,7 +59,7 @@ class SobolGFunctionSudret2008(object):
         bs = [1, 2, 5, 10, 20, 50, 100, 500]
 
         def g(x, a):
-            return old_div((np.abs(4 * x - 2) + a), (a + 1))
+            return (np.abs(4 * x - 2) + a) / (a + 1)
 
         def f(xs, bs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
@@ -75,7 +74,7 @@ class SobolGFunctionSudret2008(object):
         # analytic reference values
         # --------------------------------------------------------
         def vari(i):
-            return old_div(1., (3 * (1 + bs[i]) ** 2))
+            return 1. / (3 * (1 + bs[i]) ** 2)
         
         def var():
             return np.prod([vari(i) + 1.0 for i in range(self.numDims)]) - 1.0
@@ -83,7 +82,7 @@ class SobolGFunctionSudret2008(object):
         self.var = var()
 
         def sobol_index(ixs):
-            return old_div(np.prod([vari(i) for i in ixs]), self.var)
+            return np.prod([vari(i) for i in ixs]) / self.var
 
         self.sobol_indices = {}
         for k in range(self.numDims):

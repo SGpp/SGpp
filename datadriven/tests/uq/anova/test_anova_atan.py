@@ -1,4 +1,3 @@
-from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -35,7 +34,7 @@ class AnovaTest(unittest.TestCase):
 
         # define model function
         def g(x, **kws):
-            return np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+            return np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         self.simulation = g
 

@@ -1,4 +1,3 @@
-from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -40,7 +39,7 @@ class AnovaTest(unittest.TestCase):
               if ix <= len(self.params)]
 
         def g(x, a):
-            return old_div((abs(4 * x - 2) + a), (a + 1))
+            return (abs(4 * x - 2) + a) / (a + 1)
 
         def f(xs, **kws):
             return np.prod([g(x, b) for x, b in zip(xs, bs)])
@@ -51,14 +50,14 @@ class AnovaTest(unittest.TestCase):
         # --------------------------------------------------------
 
         def vi(i):
-            return old_div(1., (3 * (1 + bs[i]) ** 2))
+            return 1. / (3 * (1 + bs[i]) ** 2)
 
         def vij(i, j):
-            return old_div(1., (9 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2))
+            return 1. / (9 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2)
 
         def vijk(i, j, k):
-            return old_div(1., (27 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2 *
-                         (1 + bs[k]) ** 2))
+            return 1. / (27 * (1 + bs[i]) ** 2 * (1 + bs[j]) ** 2 *
+                         (1 + bs[k]) ** 2)
 
         self.v_t = dict([((i,), vi(i))
                          for i in range(len(bs))] +
@@ -125,7 +124,7 @@ class AnovaTest(unittest.TestCase):
         # ----------------------------------------------------------
         # main effects
         me = anova.getSobolIndices()
-        tme = dict([(k, old_div(v, self.vg)) for k, v in list(self.v_t.items())])
+        tme = dict([(k, v / self.vg) for k, v in list(self.v_t.items())])
 
         print("-------------- Sobol Indices (t = %i) ------------------" % 1)
         for (key, val), (k, v) in zip(sorted(me.items()),
