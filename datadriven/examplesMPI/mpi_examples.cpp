@@ -43,7 +43,8 @@ int main(int argc, char *argv[]) {
   // Loading dataset
   std::string filename = argv[2];
   std::cout << "Loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset data = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset data =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
   sgpp::base::DataMatrix &dataset = data.getData();
   size_t dim = data.getDimension();
   size_t level = std::stoi(argv[3]);

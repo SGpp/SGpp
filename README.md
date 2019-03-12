@@ -1,6 +1,6 @@
 # Welcome to SG++
 
-This is the current release version 3.0.0 of SG++, a library and framework
+This is the current release version 3.1.0 of SG++, a library and framework
 for sparse grids in different flavors. SG++ supports both
 hierarchical, spatially-adaptive sparse grids and the
 dimensionally-adaptive sparse grid combination technique.

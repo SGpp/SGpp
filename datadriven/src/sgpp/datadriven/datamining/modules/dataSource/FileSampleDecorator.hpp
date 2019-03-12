@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -61,15 +62,28 @@ class FileSampleDecorator : public FileSampleProvider {
    * Reads a file's content from a file
    * @param fileName path to the file
    * @param hasTargets whether the file has targets (i.e. supervised learning)
+   * @param readinCutoff see FileSampleProvider.hpp
+   * @param readinColumns see FileSampleProvider.hpp
+   * @param readinClasses see FileSampleProvider.hpp
    */
-  void readFile(const std::string &fileName, bool hasTargets) override;
-
+  void readFile(const std::string &fileName,
+                bool hasTargets,
+                size_t readinCutoff = -1,
+                std::vector<size_t> readinColumns = std::vector<size_t>(),
+                std::vector<double> readinClasses = std::vector<double>()) override;
   /**
    * Reads a file's content
    * @param input the file's content
    * @param hasTargets whether the file has targets (i.e. supervised learning)
+   * @param readinCutoff see FileSampleProvider.hpp
+   * @param readinColumns see FileSampleProvider.hpp
+   * @param readinClasses see FileSampleProvider.hpp
    */
-  void readString(const std::string &input, bool hasTargets) override;
+  void readString(const std::string &input,
+                  bool hasTargets,
+                  size_t readinCutoff = -1,
+                  std::vector<size_t> readinColumns = std::vector<size_t>(),
+                  std::vector<double> readinClasses = std::vector<double>()) override;
 
  protected:
   /**

@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
       sgpp::datadriven::OperationMultipleEvalSubType::OCLUNIFIED, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
-  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromFile(fileName);
 
   sgpp::base::DataMatrix& trainingData = dataset.getData();
 
