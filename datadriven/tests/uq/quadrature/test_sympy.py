@@ -1,4 +1,3 @@
-from past.utils import old_div
 from math import sin, isnan
 from pysgpp import (Grid,
                     createOperationQuadrature,
@@ -56,4 +55,4 @@ for _ in range(20):
         cnt_fail += 1
 
 assert cnt_fail == 0
-assert (old_div(abs(fRef - f1), fRef)) < 1e-7
+assert (abs(fRef - f1) / fRef) < 1e-7
