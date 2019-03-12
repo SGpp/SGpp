@@ -100,6 +100,7 @@ you can install most dependencies by installing the following packages:
 - Doxygen: <tt>doxygen</tt>
 - Dot: <tt>graphviz</tt>
 - GSL: <tt>libgsl-dev</tt>
+- zlib: <tt>zlib1g-dev</tt> and <tt>zlib1g</tt>
 
 
 
