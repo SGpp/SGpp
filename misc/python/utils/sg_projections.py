@@ -98,11 +98,7 @@ if __name__ == '__main__':
     #set size square 2,2
     set multiplot
     #
-<<<<<<< HEAD
-    """ % (options.grid, (1.0 / dim), (1.0, / dim), dim, dim)
-=======
     """ % (options.grid, (1.0 / dim), (1.0 / dim), dim, dim)
->>>>>>> fed87620d6366b005b9dbf7620813ab489f693c2
     
         for i in range(dim):
             for j in range(dim):
