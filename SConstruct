@@ -304,7 +304,8 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+if not env.GetOption('clean'):
+  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
