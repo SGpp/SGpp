@@ -101,7 +101,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
-  #checkZlib(config)
   detectZlib(config)
   checkGSL(config)
   checkDAKOTA(config)
@@ -263,17 +262,6 @@ def checkGSL(config):
       Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
 
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
-
-def checkZlib(config):
-#zlib needed for datamining
-    if(config.env["USE_ZLIB"]):
-        if config.env["PLATFORM"] == "win32":
-            Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
-        else:
-            if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
-                Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-
-            config.env["CPPDEFINES"]["ZLIB"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -597,9 +585,7 @@ def configureIntelCompiler(config):
   config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 def detectZlib(config):
-  has_libz = config.CheckLib("z", language="c++", autoadd=0)
-  has_zlib = config.CheckCXXHeader("zlib.h")
-  if has_libz and has_zlib:
+  if config.CheckLib("z", language="c++", autoadd=0) and config.CheckCXXHeader("zlib.h"):
     Helper.printInfo("zlib is installed, enabling ZLIB support.")
     config.env["USE_ZLIB"] = True
     config.env["CPPDEFINES"]["ZLIB"] = "1"
