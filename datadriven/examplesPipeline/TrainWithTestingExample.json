@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/bupa_liver/liver-disorders_normalized.arff.gz"
+		"filePath": "../datasets/liver/liver-disorders_normalized_small.arff.gz"
 	},
 	"scorer": {
 		"testing": {

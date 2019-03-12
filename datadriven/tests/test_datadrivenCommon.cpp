@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
+
 #include <zlib.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
@@ -398,4 +400,5 @@ std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsMultiPlatform
   auto parameters = manager.getConfiguration();
   return parameters;
 }
+#endif
 #endif

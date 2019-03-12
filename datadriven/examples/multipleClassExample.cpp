@@ -47,7 +47,7 @@ int main() {
    * Allows to have an overview over set parameter.
    */
   // Parameter of data set
-  std::string filepath = "../tests/data/";
+  std::string filepath = "../datasets/";
   std::string filename = "multipleClassesTest.arff";
   // classes in ARFF are in [0,(classes-1)]
   size_t classes = 4;

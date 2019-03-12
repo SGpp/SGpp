@@ -7,5 +7,5 @@ import ModuleHelper
 
 Import("*")
 
-if env["USE_MPI"]:
+if env.get("USE_MPI"):
   module.scanSource(".")

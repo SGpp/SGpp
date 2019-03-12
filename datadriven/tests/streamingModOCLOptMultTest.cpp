@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
@@ -35,12 +36,12 @@ struct FilesNamesAndErrorFixture {
   ~FilesNamesAndErrorFixture() {}
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman2_4d_10000.arff.gz", 1E-22),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman1_10d_2000.arff.gz", 1E-16)};
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-22),
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-16)};
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorFloat = {
-      std::tuple<std::string, double>("datadriven/tests/data/friedman2_4d_10000.arff.gz", 1E-4),
-      std::tuple<std::string, double>("datadriven/tests/data/friedman1_10d_2000.arff.gz", 1E1)};
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-4),
+      std::tuple<std::string, double>("datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E1)};
 
   uint32_t level = 5;
 };
@@ -247,4 +248,5 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif
