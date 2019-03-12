@@ -485,7 +485,7 @@ class ParameterSet(object):
             assert len(margDistList) == len(margTransformations) == activeParams.getDim()
 
             # update the parameter setting
-            from .ParameterBuilder import ParameterBuilder
+            from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
             builder = ParameterBuilder()
             up = builder.defineUncertainParameters()
             for name, dist, trans in zip(activeParams.getNames(),

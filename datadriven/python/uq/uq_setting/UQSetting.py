@@ -34,7 +34,7 @@ import numpy as np
 import warnings
 
 # for parallelisation
-from . import remote_worker as remote
+from pysgpp.extensions.datadriven.uq.uq_setting import remote_worker as remote
 from multiprocessing import cpu_count
 
 

@@ -1,7 +1,7 @@
 from past.utils import old_div
 import os
 
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 import configparser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.general import isNumerical, isList

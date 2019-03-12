@@ -6,10 +6,10 @@ from probabilistic_transformations_cpp import NatafTransformationData
 # except:
 #     raise AttributeError("heat library 'https://bitbucket.org/jjakeman/heat' is missing. Nataf density is not available")
 
-from .EstimatedDist import EstimatedDist
-from .Normal import Normal
-from .Beta import Beta
-from .Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.estimatedDist import EstimatedDist
+from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
+from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 from pysgpp.extensions.datadriven.uq.jsonLib import reprVal
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
