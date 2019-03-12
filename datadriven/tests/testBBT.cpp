@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
@@ -730,3 +732,4 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+#endif
