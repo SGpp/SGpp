@@ -48,7 +48,7 @@ if env["USE_OCL"]:
                          additionalExampleDependencies=["boost_program_options",
                                                         "boost_filesystem",
                                                         "boost_system"])
-if env["USE_MPI"] and env["USE_OCL"]:
+if env.get("USE_MPI") and env["USE_OCL"]:
     module.buildExamples("examplesMPI")
 if (env["ARCH"].lower() == "avx2"):
     module.buildExamples("examplesAVX")
