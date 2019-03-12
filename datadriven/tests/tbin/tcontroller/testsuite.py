@@ -10,7 +10,7 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from .test_CheckpointController import TestCheckpointController
+from test_CheckpointController import TestCheckpointController
 #from test_TerminalController import TestTerminalController
 
 suite1 = unittest.makeSuite(TestCheckpointController,'test')

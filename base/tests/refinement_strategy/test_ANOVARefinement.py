@@ -9,9 +9,8 @@
 import unittest
 
 
-from pysgpp import Grid, HashRefinement, HashGridPoint, \
-    SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
-    ANOVAHashRefinement
+from pysgpp import Grid, HashRefinement, HashGridPoint, SurplusRefinementFunctor, \
+                    DataVector, SurplusVolumeRefinementFunctor, ANOVAHashRefinement
 
 
 class TestANOVARefinement(unittest.TestCase):

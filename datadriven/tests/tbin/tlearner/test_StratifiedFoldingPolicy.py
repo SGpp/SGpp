@@ -1,4 +1,3 @@
-from past.utils import old_div
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -38,7 +37,7 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
         values = DataVector(self.size)
         for i in range(self.size):
             points.set(i, 0, i)
-            values[i] = -1 if i < old_div(self.size,2) else 1
+            values[i] = -1 if i < self.size/2 else 1
         self.dataContainer = DataContainer(points=points, values=values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
 
