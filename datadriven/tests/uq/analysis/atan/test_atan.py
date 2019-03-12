@@ -63,7 +63,7 @@ class AtanPeridynamicExample(object):
                                                            # dist_params_1d=[2., 5.],
                                                            ranges=[-2, 1, 0, 1])
         self.params = self.defineParameters(inputSpace)
-        self.simulation = lambda x, **kws: np.arctan(50 * (x[0] - .35)) + old_div(np.pi, 2) + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
+        self.simulation = lambda x, **kws: np.arctan(50 * (x[0] - .35)) + np.pi / 2 + 4 * x[1] ** 3 + np.exp(x[0] * x[1] - 1)
 
         # compute reference values
         self.computeReferenceValues()
@@ -80,7 +80,7 @@ class AtanPeridynamicExample(object):
 
         grid = Grid.createLinearBoundaryGrid(2)
         grid.getGenerator().regular(0)
-        alpha = old_div(np.ones(grid.getSize()), 3.)
+        alpha = np.ones(grid.getSize()) / 3.
 
         dist = SGDEdist(grid, alpha, bounds=np.array([[-2, 1], [0, 1]]),
                         unitIntegrand=False, isPositive=True)
