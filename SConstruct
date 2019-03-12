@@ -374,6 +374,9 @@ if env["PLATFORM"] == "win32":
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
                                               PYSGPP_PACKAGE_PATH.abspath])
+  pysgpp_package_path = PYSGPP_PACKAGE_PATH.abspath + '/pysgpp'
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
+                                              pysgpp_package_path])
 
 # Style checker
 #########################################################################
@@ -587,7 +590,7 @@ for module in moduleFolders:
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 
 if not env["USE_PYTHON2_FOR_PYSGPP"]:
-  
+
   finalMessagePrinter.pysgppPackagePath = (
       PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 else:
