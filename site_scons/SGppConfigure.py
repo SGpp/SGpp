@@ -318,16 +318,12 @@ def checkSWIG(config):
 def checkPython(config):
   if config.env["SG_PYTHON"]:
     if not python3_is_installed():
-      config.env["USE_PYTHON2_FOR_PYSGPP"] = True
-
-    if config.env["USE_PYTHON2_FOR_PYSGPP"]:
-      pythonpath = distutils.sysconfig.get_python_inc()
-      package = "python-dev"
-    else:
-      pythonpath = getOutput(["python3", "-c",
+        raise Exception("Python 3 is required for SGpp python support!")
+      
+    pythonpath = getOutput(["python3", "-c",
           "import distutils.sysconfig; "
           "print(distutils.sysconfig.get_python_inc())"])
-      package = "python3-dev"
+    package = "python3-dev"
 
     config.env.AppendUnique(CPPPATH=[pythonpath])
     Helper.printInfo("pythonpath = " + pythonpath)
