@@ -1,4 +1,3 @@
-from past.utils import old_div
 import random
 import numpy as np
 
@@ -9,7 +8,7 @@ def normiere_liste(liste, dimensions):
       minimum = min(teil)
       maximum = max(teil)
       for i in range(0, len(teil)):
-         teil[i] = old_div((teil[i]-minimum),(maximum-minimum))
+         teil[i] = (teil[i]-minimum) / (maximum-minimum)
          teil[i] = (teil[i]+0.1)*0.8
       B[:, dimension] = teil
    return B
@@ -49,7 +48,7 @@ def generate_dataset(dimensions, clusters, setsize, abweichung, rauschensize):
    currentsize = setsize
    for cluster in range(0, clusters):
       if currentsize > 0:
-         for i in range(0, min(currentsize, old_div(setsize, clusters))):
+         for i in range(0, min(currentsize, setsize / clusters)):
             point = []
             for dimension in range(0, dimensions):
                point.append(random.gauss(centers[cluster][dimension], abweichung))

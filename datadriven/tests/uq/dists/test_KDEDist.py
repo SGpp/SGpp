@@ -1,4 +1,3 @@
-from past.utils import old_div
 # -------------------------------------------------------------------------------
 # DataDist tests
 # -------------------------------------------------------------------------------
@@ -198,8 +197,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DPPF(self):
         # prepare data
-        C = old_div(np.array([[0.1, 0.08],
-                      [0.08, 0.1]]), 10.)
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         fig = plt.figure()
