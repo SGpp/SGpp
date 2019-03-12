@@ -1,5 +1,4 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
+/* This file is part of the SG++ project. For conditions of distribution and
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
@@ -18,6 +17,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
@@ -28,6 +28,7 @@
 #include <string>
 
 using sgpp::datadriven::DataSource;
+using sgpp::datadriven::DataSourceSplitting;
 using sgpp::datadriven::Dataset;
 using sgpp::datadriven::SampleProvider;
 using sgpp::datadriven::GzipFileSampleDecorator;
@@ -38,7 +39,7 @@ using sgpp::base::DataVector;
 
 struct State {
   State()
-      : path("datadriven/tests/datasets/liver-disorders_normalized.arff"),
+      : path("datadriven/datasets/liver/liver-disorders_normalized_small.arff"),
         testPoints({{{0.307143, 0.130137, 0.050000},
                      {0.365584, 0.105479, 0.050000},
                      {0.178571, 0.201027, 0.050000},
@@ -64,8 +65,8 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
   DataSourceConfig config;
   config.filePath = path;
 
-  DataSource dataSource = DataSource(config, sampleProvider);
-  auto dataset = std::unique_ptr<Dataset>(dataSource.getNextSamples());
+  DataSource* dataSource = new DataSourceSplitting(config, sampleProvider);
+  auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   DataVector& classes = dataset->getTargets();
   DataMatrix& data = dataset->getData();
@@ -91,6 +92,7 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
     // changed, we need a else if here and a boost check small.
     BOOST_CHECK_CLOSE(classes.get(rowIdx), testValues[rowIdx], tolerance);
   }
+  delete dataSource;
 }
 
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
@@ -98,9 +100,9 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
   DataSourceConfig config;
   config.filePath = path;
 
-  DataSource dataSource = DataSource(config, sampleProvider);
+  DataSource* dataSource = new DataSourceSplitting(config, sampleProvider);
 
-  for (auto dsPtr : dataSource) {
+  for (auto dsPtr : *dataSource) {
     auto dataset = std::unique_ptr<Dataset>(dsPtr);
     DataVector& classes = dataset->getTargets();
     DataMatrix& data = dataset->getData();
@@ -111,7 +113,8 @@ BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
     BOOST_CHECK_EQUAL(3, data.getNcols());
     //    dataset.reset();
   }
-  BOOST_CHECK_EQUAL(1, dataSource.getCurrentIteration());
+  BOOST_CHECK_EQUAL(1, dataSource->getCurrentIteration());
+  delete dataSource;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

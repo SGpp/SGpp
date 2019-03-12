@@ -83,9 +83,9 @@ class FitterConfiguration {
 
   /**
    * Get how the adaptivity algorithms for the grid should behave.
-   * @return immutable AdpativityConfiguration
+   * @return immutable AdaptivityConfiguration
    */
-  const base::AdpativityConfiguration &getRefinementConfig() const;
+  const base::AdaptivityConfiguration &getRefinementConfig() const;
 
   /**
    * Get how the crossvalidation should behave.
@@ -145,9 +145,9 @@ class FitterConfiguration {
 
   /**
    * Get or set how the adaptivity algorithms for the grid should behave.
-   * @return AdpativityConfiguration
+   * @return AdaptivityConfiguration
    */
-  base::AdpativityConfiguration &getRefinementConfig();
+  base::AdaptivityConfiguration &getRefinementConfig();
 
   /**
    * Get or set how the crossvalidation should behave.
@@ -207,7 +207,7 @@ class FitterConfiguration {
   /**
    * Configure how the adaptivity algorithms for the grid should behave.
    */
-  base::AdpativityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
 
   /**
    * Configure how the crossvalidation should behave.

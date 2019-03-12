@@ -50,7 +50,7 @@ int main() {
      * Allows to have an overview over set parameter.
      */
     // Parameter of data set
-    std::string filepath = "../tests/data/";
+    std::string filepath = "../datasets/";
     std::string filename = "multipleClassesTest.arff";
     // classes in ARFF are in [0,(classes-1)]
     size_t classes = 4;
@@ -69,7 +69,7 @@ int main() {
     // Only calculation after here, no additional parameters set
 
     sgpp::datadriven::Dataset dataset =
-            sgpp::datadriven::ARFFTools::readARFF(filepath + filename);
+            sgpp::datadriven::ARFFTools::readARFFFromFile(filepath + filename);
     sgpp::base::DataMatrix dataTrain = dataset.getData();
     sgpp::base::DataVector targetTrain = dataset.getTargets();
 
@@ -160,7 +160,7 @@ sgpp::datadriven::LearnerSGDE createSGDELearner(size_t dim, size_t level,
     gridConfig.type_ = sgpp::base::GridType::Linear;
 
     // configure adaptive refinement
-    sgpp::base::AdpativityConfiguration adaptConfig;
+    sgpp::base::AdaptivityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 0;
     adaptConfig.noPoints_ = 10;
 

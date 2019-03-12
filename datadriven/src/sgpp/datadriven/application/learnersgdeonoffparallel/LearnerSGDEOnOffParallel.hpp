@@ -9,12 +9,12 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
@@ -44,10 +44,10 @@ using sgpp::base::DataVector;
 * This learner uses MPI to parallelize the learning phase across multiple nodes.
 */
 
-class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
+class LearnerSGDEOnOffParallel {
  public:
   LearnerSGDEOnOffParallel(sgpp::base::RegularGridConfiguration &gridConfig,
-                           sgpp::base::AdpativityConfiguration &adaptivityConfig,
+                           sgpp::base::AdaptivityConfiguration &adaptivityConfig,
                            sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
                            sgpp::datadriven::DensityEstimationConfiguration
                            &densityEstimationConfig,
@@ -261,7 +261,96 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    */
   Grid& getGrid(size_t classIndex);
 
+  /**
+  * Returns the number of existing classes.
+  *
+  * @return The number of classes
+  */
+  size_t getNumClasses() const;
+
+  /**
+   * Returns the accuracy of the classifier measured on the test data.
+   *
+   * @return The classification accuracy measured on the test data
+   */
+  double getAccuracy() const;
+
+  /**
+   * Predicts the class labels of the test data points.
+   *
+   * @param test The data points for which labels will be precicted
+   * @param classLabels vector containing the predicted class labels
+   */
+  void predict(DataMatrix& test, DataVector& classLabels) const;
+
+  /**
+   * Error evaluation required for convergence-based refinement.
+   *
+   * @param dataset The data to measure the error on
+   * @return The error evaluation
+   */
+  double getError(Dataset& dataset) const;
+
+  /**
+   * Updates the surplus vector of a certain class
+   *
+   * @param classIndex the index of the class
+   * @param deletedPoints a list of indexes of deleted points (coarsening)
+   * @param newPoints the number of new grid points (refinemenet)
+   */
+  void updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+      size_t newPoints);
+
+  /**
+   * Returns the density functions mapped to class labels.
+   *
+   * @return The density function objects mapped to class labels
+   */
+  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>& getDensityFunctions();
+
  protected:
+  // Grids TODO(fuchsgruber): Move outwards (just in this class so that it compiles...)
+  std::vector<std::unique_ptr<Grid>> grids;
+  // Surplusses TODO(fuchsgruber): Move alphas outwards (just in this class so that it compiles)
+  std::vector<DataVector*> alphas;
+
+  // The training data
+  Dataset& trainData;
+  // The test data
+  Dataset& testData;
+
+  // The (optional) validationData
+  Dataset* validationData;
+
+  // The class labels (e.g -1, 1)
+  DataVector classLabels;
+  // The total number of different classes
+  size_t numClasses;
+  // Specifies whether prior should be used for class prediction or not
+  bool usePrior;
+  // Stores prior values mapped to class labels
+  std::map<double, double> prior;
+  // Weighting factor
+  double beta;
+  // Indicates whether the model has been trained or not
+  bool trained;
+
+  // Contains the offline object that was cloned into all other classes
+  std::unique_ptr<DBMatOffline> offline;
+  // Contains all offline objects
+  std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
+  // The online objects (density functions)
+  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> densityFunctions;
+
+  // Counter for total number of data points processed within ona data pass
+  size_t processedPoints;
+
+  // The final classification error
+  // double error;
+
+  // A vector to store error evaluations
+  DataVector avgErrors;
+
   /**
    * Vector that holds the grid version for every class
    */
@@ -286,7 +375,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
   sgpp::base::GeneralGridConfiguration &gridConfig;
 
   // Configuration for the adaptivity TODO(fuchsgruber): Move outwards
-  sgpp::base::AdpativityConfiguration &adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration &adaptivityConfig;
 
   // Configuration for the regularization TODO(fuchsgruber): Move outwards
   sgpp::datadriven::RegularizationConfiguration &regularizationConfig;
@@ -315,7 +404,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    */
   void doRefinementForAll(const std::string &refinementFunctorType,
                           const std::string &refinementMonitorType,
-                          const ClassDensityContainer &onlineObjects,
+                          const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
                           RefinementMonitor &monitor);
 
   /**
@@ -324,7 +413,7 @@ class LearnerSGDEOnOffParallel : public LearnerSGDEOnOff {
    * @param messageString The message to display alongside the statistics
    * @param onlineObjects The current density estimation objects
    */
-  void printGridSizeStatistics(const char *messageString, ClassDensityContainer &onlineObjects);
+  void printGridSizeStatistics(const char *messageString, std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects);
 
   void splitBatchIntoClasses(const Dataset &dataset, size_t dim,
                              const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,

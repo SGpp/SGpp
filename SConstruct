@@ -69,7 +69,19 @@ Helper.printInfo("Available language support: {}".format(", ".join(languageSuppo
 # Define and read variables
 #########################################################################
 
-vars = Variables("custom.py")
+AddOption('--configfile',
+          dest='configfile',
+          type='string',
+          nargs=1,
+          action='store',
+          help='specify custom options input file (see custom.py in scons documentation)')
+input_file = GetOption('configfile')
+
+if input_file:
+  vars = Variables(input_file)
+else:
+  vars = Variables("custom.py")
+
 
 # define the flags
 vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +
@@ -292,7 +304,8 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+if not env.GetOption('clean'):
+  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)

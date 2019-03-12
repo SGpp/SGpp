@@ -13,7 +13,7 @@ namespace sgpp {
 namespace datadriven {
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdpativityConfiguration adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
@@ -27,7 +27,7 @@ ClassificationLearner::ClassificationLearner(
 
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdpativityConfiguration adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig)

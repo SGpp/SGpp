@@ -22,6 +22,11 @@ def convertExampleSourceToDoxy(sourcePath):
   sourceFileType = os.path.splitext(sourceFileName)[1][1:]
   moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
 
+  doxyFolder = os.path.join(moduleName, "doc", "doxygen")
+  snippetFolder = os.path.join(doxyFolder, "snippets")
+  # create path if not there
+  if not os.path.exists(snippetFolder): os.makedirs(snippetFolder)
+
   # feasible languages
   if sourceFileType == "cpp":
     doxygenBlockCommentBegin = "/**"
@@ -51,29 +56,40 @@ def convertExampleSourceToDoxy(sourcePath):
   if pageMatch is not None:
     # page command found ==> assume this is a documented example
     pageName = pageMatch.group(1)
-    doxy += "\\dontinclude {}\n".format(sourceFileName)
     inDoxygenComment = False
-    previousNonBlankLines = []
+    snippet = []
     skipUntilNextNonBlankLine = False
     sawFirstDoxygenComment = False
+    snippetNumber = 1
+
+    def saveSnippet(snippetNumber):
+      snippetName = "{}_snippet{}.{}".format(
+          pageName, snippetNumber, sourceFileType)
+      snippetPath = os.path.join(doxyFolder, "snippets", snippetName)
+      with open(snippetPath, "w") as f: f.write("\n".join(snippet))
+      return snippetName
 
     for sourceLine in source.splitlines():
       # skip empty lines
       if sourceLine.strip() == "":
+        if not skipUntilNextNonBlankLine: snippet.append(sourceLine)
         continue
 
       if sourceLine.strip() == doxygenBlockCommentBegin:
         # begin of Doxygen block comment
         inDoxygenComment = True
         if sawFirstDoxygenComment:
-          if len(previousNonBlankLines) > 0:
-            doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+          if len(snippet) > 0:
+            snippetPath = saveSnippet(snippetNumber)
+            snippetNumber += 1
+            snippet = []
+            doxy += "\\include {}\n\n".format(snippetPath)
           else:
             doxy += "\n"
         else:
           # assume up to now, there was only the copyright notice and no code ==> skip
           sawFirstDoxygenComment = True
-        previousNonBlankLines = []
+        snippet = []
         skipUntilNextNonBlankLine = False
       elif (sourceLine.strip() == doxygenBlockCommentEnd) and inDoxygenComment:
         # end of Doxygen block comment
@@ -82,27 +98,31 @@ def convertExampleSourceToDoxy(sourcePath):
       elif sourceLine.strip().startswith(doxygenLineCommentBegin):
         # Doxygen line comment
         if sawFirstDoxygenComment:
-          if len(previousNonBlankLines) > 0:
-            doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+          if len(snippet) > 0:
+            snippetPath = saveSnippet(snippetNumber)
+            snippetNumber += 1
+            snippet = []
+            doxy += "\\include {}\n\n".format(snippetPath)
         else:
           sawFirstDoxygenComment = True
         i = sourceLine.index(doxygenLineCommentBegin) + len(doxygenLineCommentBegin)
         doxy += sourceLine[i:] + "\n"
-        previousNonBlankLines = []
+        snippet = []
         skipUntilNextNonBlankLine = True
       elif inDoxygenComment:
         # line of Doxygen block comment
         doxy += "{}\n".format(sourceLine.strip(" *"))
       else:
         # source code line
-        if skipUntilNextNonBlankLine:
-          doxy += "\\skip {}\n".format(sourceLine)
-          skipUntilNextNonBlankLine = False
-        previousNonBlankLines.append(sourceLine)
+        skipUntilNextNonBlankLine = False
+        snippet.append(sourceLine)
 
     # write remaining lines if any
-    if len(previousNonBlankLines) > 0:
-      doxy += "\\until {}\n\n".format(previousNonBlankLines[-1])
+    if len(snippet) > 0:
+      snippetPath = saveSnippet(snippetNumber)
+      snippetNumber += 1
+      snippet = []
+      doxy += "\\include {}\n\n".format(snippetPath)
   else:
     # no page command ==> include the source verbatim without additional documentation
     pageName = "example_{}".format(sourceFileName.replace(".", "_"))
@@ -111,11 +131,8 @@ def convertExampleSourceToDoxy(sourcePath):
     doxy += "\\include {}\n".format(sourceFileName)
 
   doxy += "*/\n"
-  doxyPath = "{}/doc/doxygen/{}.doxy".format(moduleName, pageName)
+  doxyPath = os.path.join(doxyFolder, "{}.doxy".format(pageName))
 
-  # create path if not there
-  if not os.path.exists(os.path.dirname(doxyPath)):
-    os.makedirs(os.path.dirname(doxyPath))  
   # write *.doxy file
   with open(doxyPath, "w") as f: f.write(doxy)
   return {"pageName" : pageName, "language" : sourceFileType, "moduleName" : moduleName}
@@ -126,12 +143,12 @@ def convertExampleSourcesToDoxy(modules):
 
   # for each module
   for moduleName in modules:
-    examplePath = moduleName + "/examples"
+    examplePath = os.path.join(moduleName, "examples")
 
     # search for examples
     for exampleFileName in os.listdir(examplePath):
       if any([exampleFileName.endswith(ext) for ext in [".cpp", ".py", ".java", ".m"]]):
-        example = convertExampleSourceToDoxy("{}/{}".format(examplePath, exampleFileName))
+        example = convertExampleSourceToDoxy(os.path.join(examplePath, exampleFileName))
         if example is not None:
           examples.append(example)
 
@@ -146,15 +163,16 @@ def createDoxyfile(modules):
 
   for moduleName in modules:
     inputPath = moduleName + "/"
-    examplePath = moduleName + "/examples"
-    testPath = moduleName + "/tests"
-    imagePath = moduleName + "/doc/doxygen/images"
+    examplePath = os.path.join(moduleName, "examples")
+    snippetPath = os.path.join(moduleName, "doc", "doxygen", "snippets")
+    testPath = os.path.join(moduleName, "tests")
+    imagePath = os.path.join(moduleName, "doc", "doxygen", "images")
 
     if os.path.exists(os.path.join(os.getcwd(), inputPath)):
       inputPaths += " " + inputPath
     if os.path.exists(os.path.join(os.getcwd(), examplePath)):
-      examplePaths += " " + examplePath
-      excludePaths += " " + examplePath
+      examplePaths += " " + examplePath + " " + snippetPath
+      excludePaths += " " + examplePath + " " + snippetPath
     if os.path.exists(os.path.join(os.getcwd(), testPath)):
       excludePaths += " " + testPath
     if os.path.exists(os.path.join(os.getcwd(), imagePath)):
@@ -182,7 +200,9 @@ def createLanguageExampleDoxy(examples):
     examplesInLanguage = [example for example in examples if example["language"] == language]
 
     # create examples menu page
-    with open("base/doc/doxygen/examples_{}.doxy".format(language), "w") as examplesFile:
+    with open(os.path.join(
+        "base", "doc", "doxygen", "examples_{}.doxy".format(language)),
+        "w") as examplesFile:
       examplesFile.write("/**\n")
       languageName = {"cpp" : "C++", "py" : "Python", "java" : "Java", "m" : "MATLAB"}[language]
       examplesFile.write("@page examples_{} {} Examples\n".format(language, languageName))
@@ -214,10 +234,12 @@ def createLanguageExampleDoxy(examples):
 
 # create module page listing all the available modules
 def createModuleDoxy(modules):
-  with open("base/doc/doxygen/modules.stub0", "r") as f: stub0 = f.read()
-  with open("base/doc/doxygen/modules.stub1", "r") as f: stub1 = f.read()
+  with open(os.path.join("base", "doc", "doxygen", "modules.stub0"), "r") as f:
+    stub0 = f.read()
+  with open(os.path.join("base", "doc", "doxygen", "modules.stub1"), "r") as f:
+    stub1 = f.read()
 
-  with open("base/doc/doxygen/modules.doxy", "w") as f:
+  with open(os.path.join("base", "doc", "doxygen", "modules.doxy"), "w") as f:
     f.write(stub0)
 
     for moduleName in modules:
@@ -235,7 +257,7 @@ def createModuleDoxy(modules):
 # to ensure that users see and read those pages more likely;
 # has to be called after executing Doxygen
 def patchNavtree(target, source, env):
-  navtreePath = "doc/html/navtree.js"
+  navtreePath = os.path.join("doc", "html", "navtree.js")
   with open(navtreePath, "r") as f: navtree = f.read()
 
   # insert patch after

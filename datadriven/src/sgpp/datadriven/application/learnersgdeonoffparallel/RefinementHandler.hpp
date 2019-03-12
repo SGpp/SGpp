@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
-#define SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -15,7 +14,6 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
@@ -73,7 +71,7 @@ class RefinementHandler {
                                Grid &grid,
                                DataVector& alpha,
                                base::GridGenerator &gridGen,
-                               sgpp::base::AdpativityConfiguration adaptivityConfig) const;
+                               sgpp::base::AdaptivityConfiguration adaptivityConfig) const;
 
  public:
   /**
@@ -128,7 +126,7 @@ class RefinementHandler {
                                 double currentValidError, double currentTrainError,
                                 size_t numberOfCompletedRefinements,
                                 RefinementMonitor &monitor,
-                                sgpp::base::AdpativityConfiguration adaptivityConfig);
+                                sgpp::base::AdaptivityConfiguration adaptivityConfig);
 
   /**
    * Handles refinement for a specific class.
@@ -144,15 +142,13 @@ class RefinementHandler {
    */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,
-                            const ClassDensityConntainer &onlineObjects,
+                            const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
                             Grid& grid,
                             DataVector& alpha,
                             bool preCompute,
                             MultiGridRefinementFunctor *refinementFunctor,
                             size_t classIndex,
-                            sgpp::base::AdpativityConfiguration& adaptivityConfig);
+                            sgpp::base::AdaptivityConfiguration& adaptivityConfig);
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_LEARNERSGDEONOFFPARALLELHANDLER_HPP

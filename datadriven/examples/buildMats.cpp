@@ -5,7 +5,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
@@ -185,7 +184,7 @@ int main() {
   // select zero-crossings-based refinement
   refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   /**
   * Specify number of refinement steps and the max number
   * of grid points to refine each step.

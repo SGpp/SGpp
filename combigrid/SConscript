@@ -8,38 +8,33 @@ import ModuleHelper
 
 Import("*")
 
-
 def checkForLibrary(name, flag, headers, libraries):
-    if type(headers) is str:
-        headers = [headers]
-    if type(libraries) is str:
-        libraries = [libraries]
-    if libraries is None:
-        libraries = []
+  if type(headers) is str: headers = [headers]
+  if type(libraries) is str: libraries = [libraries]
+  if libraries is None: libraries = []
 
-    if (flag not in config.env) or (not config.env[flag]):
-        Helper.printInfo("sgpp::combigrid will be compiled without {} (flag not set).".format(name))
-    elif not config.CheckHeader(headers, language="C++"):
-        Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                                 "necessary headers {} were not found.".format(headers))
-    elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
-        Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                                 "necessary libraries {} were not found.".format(libraries))
-    else:
-        Helper.printInfo("sgpp::combigrid will be compiled with {}.".format(name))
-        additionalDependencies.extend(libraries)
-        env["CPPDEFINES"][flag] = "1"
+  if (flag not in config.env) or (not config.env[flag]):
+    Helper.printInfo("sgpp::combigrid will be compiled without {} (flag not set).".format(name))
+  elif not config.CheckHeader(headers, language="C++"):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary headers {} were not found.".format(headers))
+  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
+    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
+                             "necessary libraries {} were not found.".format(libraries))
+  else:
+    Helper.printInfo("sgpp::combigrid will be compiled with {}.".format(name))
+    additionalDependencies.extend(libraries)
+    env["CPPDEFINES"][flag] = "1"
 
 # /home/raphi/Projects/dakota/packages/pecos/src
 
 moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppquadrature", "sgppbase"]
 additionalDependencies = []
 
-checkForLibrary("PECOS", "USE_DAKOTA", "pecos_global_defs.hpp", "libpecos_src")
-#checkForLibrary("PECOS_teuch", "USE_DAKOTA", "pecos_global_defs.hpp", "libteuchos")
-checkForLibrary("PECOS_teuch1", "USE_DAKOTA", "pecos_global_defs.hpp", "libteuchoscore")
-checkForLibrary("PECOS_teuch2", "USE_DAKOTA", "pecos_global_defs.hpp", "libteuchosnumerics")
-checkForLibrary("PECOS_dak", "USE_DAKOTA", "pecos_global_defs.hpp", "dakota_src")
+checkForLibrary("PECOS",        "USE_DAKOTA",   "pecos_global_defs.hpp", "libpecos_src")
+checkForLibrary("PECOS_teuchcore",  "USE_DAKOTA",   "pecos_global_defs.hpp", "libteuchoscore")
+checkForLibrary("PECOS_teuchnumerics",  "USE_DAKOTA",   "pecos_global_defs.hpp", "libteuchosnumerics")
+checkForLibrary("PECOS_dak",    "USE_DAKOTA",   "pecos_global_defs.hpp", "dakota_src")
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 

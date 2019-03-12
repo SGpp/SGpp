@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
@@ -34,8 +35,8 @@
 #define OUT_FILENAME "results.csv"
 // #define REFINEMENT_POINTS 100
 
-// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman2_4d_10000.arff.gz",
-//        "datadriven/tests/data/friedman1_10d_2000.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
+// std::vector<std::string> fileNames = { "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz",
+//        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", "datadriven/datasets/DR5/DR5_train.arff.gz" };
 //
 // std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 //
@@ -45,7 +46,7 @@
 // std::vector<size_t> levelsModLinear = { 9, 5, 7 };
 // std::vector<size_t> refinementStepsModLinear = { 70, 70, 70 };
 
-std::vector<std::string> fileNames = {"datadriven/tests/data/DR5_train.arff.gz"};
+std::vector<std::string> fileNames = {"datadriven/datasets/DR5/DR5_train.arff.gz"};
 
 std::vector<std::string> datasetNames = {"DR5"};
 
@@ -74,7 +75,7 @@ static size_t refinedGridSize = 0;
 
 void getRuntime(sgpp::base::GridType gridType, const std::string& kernel, std::string& fileName,
                 std::string& datasetName, size_t level,
-                sgpp::base::AdpativityConfiguration adaptConfig,
+                sgpp::base::AdaptivityConfiguration adaptConfig,
                 sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   std::string content = uncompressFile(fileName);
 
@@ -168,7 +169,7 @@ void prepareGrid(std::string fileName, sgpp::base::GridType gridType, size_t lev
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
@@ -434,7 +435,7 @@ void getRuntimeDataMiningTransposed(
 
 void getRuntimeTransposed(sgpp::base::GridType gridType, const std::string& kernel,
                           std::string& fileName, std::string& datasetName, size_t level,
-                          sgpp::base::AdpativityConfiguration adaptConfig,
+                          sgpp::base::AdaptivityConfiguration adaptConfig,
                           sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   std::string content = uncompressFile(fileName);
 
@@ -518,7 +519,7 @@ void getRuntimeTransposed(sgpp::base::GridType gridType, const std::string& kern
 BOOST_AUTO_TEST_SUITE(HPCSE2015Linear)
 
 BOOST_AUTO_TEST_CASE(StreamingDefault) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -550,7 +551,7 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -571,7 +572,7 @@ BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingBase) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -592,7 +593,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -624,7 +625,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -660,7 +661,7 @@ BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(HPCSE2015ModLinear)
 
 BOOST_AUTO_TEST_CASE(StreamingBase) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -681,7 +682,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCL) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -713,7 +714,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -747,7 +748,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
 }
 
 BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
-  //    sgpp::base::AdpativityConfiguration adaptConfig;
+  //    sgpp::base::AdaptivityConfiguration adaptConfig;
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
@@ -776,4 +777,5 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif

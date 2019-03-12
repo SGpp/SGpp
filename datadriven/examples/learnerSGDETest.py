@@ -46,7 +46,7 @@ def main():
 
     # Config adaptivity
     print "create adaptive refinement config... ",
-    adapt = sg.AdpativityConfiguration()
+    adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
     adapt.noPoints_ = 10
     print "Done"

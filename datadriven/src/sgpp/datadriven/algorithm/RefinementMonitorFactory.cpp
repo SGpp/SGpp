@@ -17,7 +17,7 @@ namespace sgpp {
 namespace datadriven {
 
 RefinementMonitor* RefinementMonitorFactory::createRefinementMonitor(
-    const sgpp::base::AdpativityConfiguration& adaptivityConfig) const {
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig) const {
   if (adaptivityConfig.errorBasedRefinement) {
     return new RefinementMonitorConvergence(adaptivityConfig.errorConvergenceThreshold,
         adaptivityConfig.errorBufferSize, adaptivityConfig.errorMinInterval);

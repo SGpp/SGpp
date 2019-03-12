@@ -34,7 +34,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
+  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
   const auto filenameTrain =
       std::string("../../datasets/ripley/ripleyGarcke.train.arff");
 
-  auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
+  auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
   auto xTrain = dataTrain.getData();
   auto yTrain = dataTrain.getTargets();

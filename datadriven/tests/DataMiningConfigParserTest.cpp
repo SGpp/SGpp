@@ -21,7 +21,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
-const auto datasetPath = "datadriven/tests/data/dataminingConfig.json";
+const auto datasetPath = "datadriven/tests/dataminingConfig.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
@@ -139,14 +139,14 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
 BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   DataMiningConfigParser parser{datasetPath};
 
-  AdpativityConfiguration defaults;
+  AdaptivityConfiguration defaults;
   defaults.numRefinements_ = 42;
   defaults.threshold_ = 42;
   defaults.maxLevelType_ = true;
   defaults.noPoints_ = 42;
   defaults.percent_ = 0.42;
   defaults.errorBasedRefinement = true;
-  AdpativityConfiguration config;
+  AdaptivityConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
 

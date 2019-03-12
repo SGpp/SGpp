@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef PRIMALDUALSVM_HPP_
-#define PRIMALDUALSVM_HPP_
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -103,5 +102,3 @@ class PrimalDualSVM {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* PRIMALDUALSVM_HPP_ */

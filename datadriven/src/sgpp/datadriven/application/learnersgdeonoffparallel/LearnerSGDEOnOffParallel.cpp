@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
@@ -47,7 +48,7 @@ static const int MINIMUM_CONSISTENT_GRID_VERSION = 10;
 
 LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::RegularGridConfiguration &gridConfig,
-    sgpp::base::AdpativityConfiguration &adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration &adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
     Dataset &trainData, Dataset &testData,
@@ -55,13 +56,58 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::DataVector &classLabels, size_t numClassesInit,
     bool usePrior, double beta,
     MPITaskScheduler &mpiTaskScheduler)
-    : LearnerSGDEOnOff(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig,
-                       trainData, testData, validationData, classLabels, numClassesInit,
-                       usePrior, beta), mpiTaskScheduler(mpiTaskScheduler),
-                       refinementHandler(nullptr, 0), gridConfig{gridConfig},
+    : trainData{trainData},
+                       testData{testData},
+                       validationData{validationData},
+                       classLabels{classLabels},
+                       numClasses{numClassesInit},
+                       usePrior{usePrior},
+                       prior{},
+                       beta{beta},
+                       trained{false},
+                       offlineContainer{},
+                       densityFunctions{},
+                       processedPoints{0},
+                       avgErrors{0},
+                       mpiTaskScheduler(mpiTaskScheduler),
+                       refinementHandler(nullptr, 0),
+                       gridConfig{gridConfig},
                        adaptivityConfig{adaptivityConfig},
                        regularizationConfig{regularizationConfig},
                        densityEstimationConfig{densityEstimationConfig} {
+  // initialize offline object
+  // Create an offline object that serves as template for all classes
+  offline = std::unique_ptr<DBMatOffline>{
+    DBMatOfflineFactory::buildOfflineObject(gridConfig,
+          adaptivityConfig, regularizationConfig, densityEstimationConfig)
+  };
+
+  // Create a grid TODO(fuchsgruber): Maybe remove the learner class entirely??
+  grids.reserve(numClasses);
+  densityFunctions.reserve(numClasses);
+  offlineContainer.reserve(numClasses);
+  alphas.reserve(numClasses);
+  GridFactory gridFactory;
+  for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
+    // Create a grid
+    std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
+      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    };
+    std::unique_ptr<DBMatOffline> offlineCloned =
+        std::unique_ptr<DBMatOffline>{offline->clone()};
+    offlineCloned->buildMatrix(grid.get(), regularizationConfig);
+    offlineCloned->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    auto densEst = std::unique_ptr<DBMatOnlineDE>{
+      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offlineCloned, *grid,
+          regularizationConfig.lambda_, beta)};
+    densityFunctions.emplace_back(std::make_pair(std::move(densEst), classIndex));
+    prior.emplace(classLabels[classIndex], 0.0);
+    DataVector* alpha = new DataVector(offlineCloned->getGridSize());
+    alphas.emplace_back(alpha);
+    grids.emplace_back(std::move(grid));
+    offlineContainer.emplace_back(std::move(offlineCloned));
+  }
+
   localGridVersions.insert(localGridVersions.begin(), numClasses,
                            MINIMUM_CONSISTENT_GRID_VERSION);
   mpiTaskScheduler.setLearnerInstance(this);
@@ -78,6 +124,92 @@ LearnerSGDEOnOffParallel::~LearnerSGDEOnOffParallel() {
 
 Grid& LearnerSGDEOnOffParallel::getGrid(size_t classIndex) {
   return *(grids[classIndex]);
+}
+
+size_t LearnerSGDEOnOffParallel::getNumClasses() const { return numClasses; }
+
+double LearnerSGDEOnOffParallel::getAccuracy() const {
+  DataVector computedLabels{testData.getNumberInstances()};
+  predict(testData.getData(), computedLabels);
+  size_t correct = 0;
+  size_t correctLabel1 = 0;
+  size_t correctLabel2 = 0;
+  for (size_t i = 0; i < computedLabels.getSize(); i++) {
+    if (computedLabels.get(i) == testData.getTargets().get(i)) {
+      correct++;
+    }
+    if ((computedLabels.get(i) == -1.0) && (testData.getTargets().get(i) == -1.0)) {
+      correctLabel1++;
+    } else if ((computedLabels.get(i) == 1.0) && (testData.getTargets().get(i) == 1.0)) {
+      correctLabel2++;
+    }
+  }
+  // std::cout << "correct label (-1): " << correctLabel1 << "\n";
+  // std::cout << "correct label (1): " << correctLabel2 << "\n";
+
+  double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  return acc;
+}
+
+
+void LearnerSGDEOnOffParallel::predict(DataMatrix& data, DataVector& result) const {
+  // calculate per class densities
+  std::vector<DataVector> perClassDensities;
+  for (auto& densityFunction : densityFunctions) {
+    perClassDensities.emplace_back(data.getNrows());
+    size_t classIndex = densityFunction.second;
+    densityFunction.first->eval(*(alphas[classIndex]), data, perClassDensities.back(),
+        *(grids[classIndex]), true);
+    perClassDensities.back().mult(prior.at(classLabels[classIndex]));
+  }
+
+// now select the appropriate class
+#pragma omp parallel for
+  for (auto point = 0u; point < data.getNrows(); point++) {
+    auto bestClass = 0.0;
+    auto maxDensity = std::numeric_limits<double>::max() * (-1);
+    for (auto classNum = 0u; classNum < numClasses; classNum++) {
+      auto density = perClassDensities[classNum][point];
+      if (density > maxDensity) {
+        maxDensity = density;
+        bestClass = classLabels[densityFunctions[classNum].second];
+      }
+    }
+    if (bestClass == 0) {
+      std::cerr << "LearnerSGDEOnOff: Warning: no best class found!\n";
+    }
+    result[point] = bestClass;
+  }
+}
+
+double LearnerSGDEOnOffParallel::getError(Dataset& dataset) const {
+  double res = -1.0;
+
+  DataVector computedLabels{dataset.getNumberInstances()};
+  predict(dataset.getData(), computedLabels);
+  size_t correct = 0;
+  for (size_t i = 0; i < computedLabels.getSize(); i++) {
+    if (computedLabels.get(i) == dataset.getTargets().get(i)) {
+      correct++;
+    }
+  }
+
+  double acc = static_cast<double>(correct) / static_cast<double>(computedLabels.getSize());
+  res = 1.0 - acc;
+
+  return res;
+}
+
+void LearnerSGDEOnOffParallel::updateAlpha(size_t classIndex, std::list<size_t>* deletedPoints,
+    size_t newPoints) {
+  DataVector& alpha = *(alphas[classIndex]);
+  if (alpha.getSize() != 0 && deletedPoints != nullptr && !deletedPoints->empty()) {
+    std::vector<size_t> vecDeletedPoints{std::begin(*deletedPoints), std::end(*deletedPoints) };
+    alpha.remove(vecDeletedPoints);
+  }
+  if (newPoints > 0) {
+    alpha.resizeZero(alpha.getSize() + newPoints);
+  }
 }
 
 void LearnerSGDEOnOffParallel::trainParallel(size_t batchSize, size_t maxDataPasses,
@@ -212,8 +344,10 @@ size_t LearnerSGDEOnOffParallel::getDimensionality() {
   return trainData.getDimension();
 }
 
+std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>& LearnerSGDEOnOffParallel::getDensityFunctions() { return densityFunctions; }
+
 void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString,
-                                                       ClassDensityContainer &onlineObjects) {
+                                                       std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects) {
   // print initial grid size
   for (size_t idx = 0; idx < onlineObjects.size(); idx++) {
     auto& onlineObject = onlineObjects[idx];
@@ -225,7 +359,7 @@ void LearnerSGDEOnOffParallel::printGridSizeStatistics(const char *messageString
 void LearnerSGDEOnOffParallel::doRefinementForAll(
     const std::string &refinementFunctorType,
     const std::string &refinementMonitorType,
-    const ClassDensityContainer &onlineObjects,
+    const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
     RefinementMonitor &monitor) {
   // acc = getAccuracy();
   // avgErrors.append(1.0 - acc);

@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_MPIREQUESTPOOL_HPP
-#define SGPP_MPIREQUESTPOOL_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -65,5 +64,3 @@ class MPIRequestPool {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_MPIREQUESTPOOL_HPP

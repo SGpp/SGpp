@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERSGD_HPP
-#define LEARNERSGD_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -43,7 +42,7 @@ class LearnerSGD {
    *        for all error computations
    */
   LearnerSGD(base::RegularGridConfiguration& gridConfig,
-             base::AdpativityConfiguration& adaptivityConfig,
+             base::AdaptivityConfiguration& adaptivityConfig,
              base::DataMatrix& pTrainData,
              base::DataVector& pTrainLabels,
              base::DataMatrix& pTestData,
@@ -180,7 +179,7 @@ class LearnerSGD {
   base::DataVector batchError;
 
   base::RegularGridConfiguration gridConfig;
-  base::AdpativityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
 
   double lambda;
   double gamma;
@@ -193,5 +192,3 @@ class LearnerSGD {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERSGD_HPP */

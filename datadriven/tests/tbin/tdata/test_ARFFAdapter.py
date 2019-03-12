@@ -93,7 +93,7 @@ class TestARFFAdapter(unittest.TestCase):
                       [0.213636,0.050000,0.072500]
                      ]
         testValues = [-1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, -1.000000, -1.000000, -1.000000, -1.000000]
-        filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
+        filename = pathlocal + '/../../../datasets/liver/liver-disorders_normalized.arff.gz'
         adapter = ARFFAdapter(filename)
         container = adapter.loadData()
         points = container.getPoints()
@@ -117,7 +117,7 @@ class TestARFFAdapter(unittest.TestCase):
                       "x2":"NUMERIC",
                       "class":"NUMERIC",
                       }
-        filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
+        filename = pathlocal + '/../../../datasets/liver/liver-disorders_normalized.arff.gz'
         adapter = ARFFAdapter(filename)
         spec = adapter.loadSpecification()
         testAttributes = spec.getAttributes()

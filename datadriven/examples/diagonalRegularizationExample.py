@@ -80,7 +80,7 @@ def make_estimator(lambda_reg, prior):
     grid.level_ = 5
     grid.type_ = sg.GridType_ModLinear
 
-    adapt = sg.AdpativityConfiguration()
+    adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 5
     adapt.noPoints_ = 3
 

@@ -35,7 +35,7 @@ std::string fileName = "friedman2_4d_300000.arff";
 //  std::string fileName = "DR5_train.arff";
 //  std::string fileName = "debugging_small.arff";
 
-sgpp::base::AdpativityConfiguration adaptConfig;
+sgpp::base::AdaptivityConfiguration adaptConfig;
 std::unique_ptr<sgpp::base::Grid> grid(nullptr);
 sgpp::base::DataMatrix trainingData;
 sgpp::base::DataVector alpha;
@@ -53,7 +53,7 @@ int hpx_main(boost::program_options::variables_map& vm) {
   adaptConfig.threshold_ = 0.0;
 
   sgpp::datadriven::ARFFTools arffTools;
-  dataset = arffTools.readARFF(fileName);
+  dataset = arffTools.readARFFFromFile(fileName);
 
   trainingData = dataset.getData();
 

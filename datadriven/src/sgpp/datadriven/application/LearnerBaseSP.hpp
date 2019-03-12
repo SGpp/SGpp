@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef LEARNERBASESP_HPP
-#define LEARNERBASESP_HPP
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVectorSP.hpp>
@@ -143,7 +142,7 @@ class LearnerBaseSP {
                               const sgpp::base::RegularGridConfiguration& GridConfig,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdpativityConfiguration& AdaptConfig,
+                              const sgpp::base::AdaptivityConfiguration& AdaptConfig,
                               bool testAccDuringAdapt, const float lambdaRegularization);
 
   /**
@@ -283,5 +282,3 @@ class LearnerBaseSP {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* LEARNERBASESP_HPP */

@@ -77,7 +77,7 @@ public class example_learnerSGDE {
     //java.lang.System.load("/path/to/SGpp/trunk/lib/jsgpp/libjsgpp.so");
     sgpp.LoadJSGPPLib.loadJSGPPLib();
 
-    String filename = "../tests/data/friedman_4d_2000.arff";
+    String filename = "../datasets/friedman_4d_2000.arff";
 
     System.out.println("# loading file: " + filename);
     DataMatrix samples = readARFF(filename);
@@ -95,7 +95,7 @@ public class example_learnerSGDE {
 	* Configure adaptive refinement
 	*/
     System.out.println("# create adaptive refinement config");
-    AdpativityConfiguration adaptConfig = new AdpativityConfiguration();
+    AdaptivityConfiguration adaptConfig = new AdaptivityConfiguration();
     adaptConfig.setNoPoints_(5);
     adaptConfig.setNumRefinements_(0);
 

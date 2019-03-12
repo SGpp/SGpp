@@ -3,11 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_AUXILIARYSTRUCTURES_HPP
-#define SGPP_AUXILIARYSTRUCTURES_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 
 #include <vector>
 #include <list>
@@ -24,11 +23,6 @@ namespace datadriven {
 #define D(x)
 #endif
 
-
-/**
- * Type definition to avoid typographical error in original learner
- */
-typedef ClassDensityConntainer ClassDensityContainer;
 
 /**
  * Pair to hold the level and the index of a grid point in one dimension
@@ -67,5 +61,3 @@ struct RefinementResult {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_AUXILIARYSTRUCTURES_HPP

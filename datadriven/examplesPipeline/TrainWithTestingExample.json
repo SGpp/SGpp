@@ -1,0 +1,29 @@
+{
+	"dataSource": {
+		"filePath": "../datasets/liver/liver-disorders_normalized_small.arff.gz"
+	},
+	"scorer": {
+		"testing": {
+			"testingPortion": 0.75,
+			"shuffling": "random",
+			"randomSeed": 42,
+			"metric": "MSE"
+		}
+	},
+	"fitter": {
+		"type": "regressionLeastSquares",
+		"gridConfig": {
+			"gridType": "modlinear",
+			"level": 2
+		},
+	"adaptivityConfig": {
+			"numRefinements": 3,
+			"threshold": 0.001,
+			"maxLevelType": false,
+			"noPoints": 3
+		},
+		"regularizationConfig": {
+			"lambda": 10e-1
+		}
+	}
+}

@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
+
 #include <boost/lexical_cast.hpp>
 #include <zlib.h>
 
@@ -51,7 +53,7 @@ std::string uncompressFile(std::string fileName) {
   return convert.str();
 }
 
-void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                          sgpp::base::GridGenerator& gridGen) {
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -76,7 +78,7 @@ void doRandomRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp:
   }
 }
 
-void doDirectedRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                            sgpp::base::GridGenerator& gridGen) {
   double dummySurplusValue = 1.0;
 
@@ -102,3 +104,5 @@ void doDirectedRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgp
     dummySurplusValue += 1.0;
   }
 }
+
+#endif

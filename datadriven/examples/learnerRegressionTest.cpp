@@ -37,7 +37,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   gridConfig.type_ = sgpp::base::GridType::NakBsplineModified;
   gridConfig.maxDegree_ = 3;
 
-  auto adaptivityConfig = sgpp::base::AdpativityConfiguration();
+  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
@@ -159,17 +159,17 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
  * hyper-parameter for the Friedman3 dataset using the diagonal Tikhonov regularization method.
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain = std::string("../tests/data/friedman3_10k_train.arff");
-  const auto filenameValidation = std::string("../tests/data/friedman3_10k_validation.arff");
-  const auto filenameTest = std::string("../tests/data/friedman3_10k_test.arff");
+  const auto filenameTrain = std::string("../datasets/friedman3_10k_train.arff");
+  const auto filenameValidation = std::string("../datasets/friedman3_10k_validation.arff");
+  const auto filenameTest = std::string("../datasets/friedman3_10k_test.arff");
 
-  auto dataTrain = sgpp::datadriven::ARFFTools::readARFF(filenameTrain);
+  auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
   auto xTrain = dataTrain.getData();
   auto yTrain = dataTrain.getTargets();
   const auto dimensions = dataTrain.getDimension();
 
-  auto dataValidation = sgpp::datadriven::ARFFTools::readARFF(filenameValidation);
+  auto dataValidation = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameValidation);
   std::cout << "Read file " << filenameValidation << "." << std::endl;
   auto xValidation = dataValidation.getData();
   auto yValidation = dataValidation.getTargets();
@@ -177,7 +177,7 @@ int main(int argc, char** argv) {
   const auto configs = getConfigs();
   const auto bestConfig = gridSearch(configs, dimensions, xTrain, yTrain, xValidation, yValidation);
 
-  auto dataTest = sgpp::datadriven::ARFFTools::readARFF(filenameTest);
+  auto dataTest = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTest);
   std::cout << "Read file " << filenameTest << "." << std::endl;
   auto xTest = dataTest.getData();
   auto yTest = dataTest.getTargets();

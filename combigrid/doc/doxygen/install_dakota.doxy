@@ -3,15 +3,24 @@
 
 @short Install and enable Dakota for sgpp::combigrid module
 
+__Tested with dakota 6.8__
+
+-# Install dependencies as described here: https://dakota.sandia.gov/content/install-required-tools-and-libraries
+  - On Ubuntu most dependencies can be installed from standard package repository. \n
+    See https://dakota.sandia.gov/content/linux-ubuntu-1404 for reference
 
 -# Obtain source code either from:
   - dakota git repository: https://dakota.sandia.gov/content/getting-dakota-source-code
+    @verbatim
+git clone https://software.sandia.gov/git/dakota
+edit dakota/.gitmodules to redirect each of the submodule URLs <sm> to https://software.sandia.gov/git/<sm>
+git submodule sync
+git submodule update --init
+    @endverbatim
   - downloading appropriate source package: https://dakota.sandia.gov/downloads
 
--# Follow compilation and installation guide: https://dakota.sandia.gov/content/build-compile-source-code
 
-  - On Ubuntu most dependencies can be installed from standard package repository. \n
-    See https://dakota.sandia.gov/content/linux-ubuntu-1404 for reference
+-# Follow compilation and installation example at https://dakota.sandia.gov/content/configure-compile-and-install-dakota
     
 -# Point to dakota include and library directory when building SG++ \n
    Example custom.py with the appropriate options for building the combigrid module

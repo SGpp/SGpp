@@ -15,7 +15,7 @@
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
 
-void doAllRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha) {
   std::random_device rd;
   std::mt19937 mt(rd());
@@ -51,7 +51,7 @@ int main(int argc, char** argv) {
 
   uint32_t level = 8;
 
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
       sgpp::datadriven::OperationMultipleEvalSubType::OCLUNIFIED, parameters);
 
   sgpp::datadriven::ARFFTools arffTools;
-  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromFile(fileName);
 
   sgpp::base::DataMatrix& trainingData = dataset.getData();
 

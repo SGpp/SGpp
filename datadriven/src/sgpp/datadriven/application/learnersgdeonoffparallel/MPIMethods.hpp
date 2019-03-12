@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_MPIMETHODS_H
-#define SGPP_MPIMETHODS_H
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/NetworkMessageData.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/PendingMPIRequest.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 
 #include <vector>
 #include <list>
@@ -218,7 +218,7 @@ class MPIMethods {
    */
   static void
   sendSystemMatrixDecomposition(const size_t &classIndex,
-                                DataMatrix &newSystemMatrixDecomposition,
+                                sgpp::base::DataMatrix &newSystemMatrixDecomposition,
                                 int mpiTarget);
 
   /**
@@ -364,5 +364,3 @@ class MPIMethods {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // SGPP_MPIMETHODS_H

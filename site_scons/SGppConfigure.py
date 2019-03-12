@@ -48,7 +48,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   if config.env["COMPILER"] in ("openmpi", "mpich", "intel.mpi"):
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
-    config.env["USE_MPI"] = True
+    config.env["USE_MPI"] = True # tells scons to build MPI related examples and operations
   else:
     config.env["USE_MPI"] = False
 
@@ -101,7 +101,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
-  checkZlib(config)
+  detectZlib(config)
   checkGSL(config)
   checkDAKOTA(config)
   checkCGAL(config)
@@ -263,17 +263,6 @@ def checkGSL(config):
 
     config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
-def checkZlib(config):
-#zlib needed for datamining
-    if(config.env["USE_ZLIB"]):
-        if config.env["PLATFORM"] == "win32":
-            Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
-        else:
-            if not config.CheckLibWithHeader("z","zlib.h", language="C++",autoadd=0):
-                Helper.printErrorAndExit("The flag USE_ZLIB was set, but the necessary header 'zlib.h' or library was not found.")
-
-            config.env["CPPDEFINES"]["ZLIB"] = "1"
-
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
   if config.env["COMPILE_BOOST_TESTS"]:
@@ -308,8 +297,8 @@ def checkSWIG(config):
         r"[0-9.]*[0-9]+", subprocess.check_output(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
-    if swigVersionTuple < (3, 0, 0):
-      Helper.printErrorAndExit("SWIG version too old! At least 3.0 required.")
+    if swigVersionTuple < (3, 0, 3):
+      Helper.printErrorAndExit("SWIG version too old! At least 3.0.3 required.")
 
     Helper.printInfo("Using SWIG {}".format(swigVersion))
 
@@ -344,7 +333,7 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
-        
+
     try:
         import scipy
     except:
@@ -594,3 +583,16 @@ def configureIntelCompiler(config):
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
 
   config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
+
+def detectZlib(config):
+  if config.CheckLib("z", language="c++", autoadd=0) and config.CheckCXXHeader("zlib.h"):
+    Helper.printInfo("zlib is installed, enabling ZLIB support.")
+    config.env["USE_ZLIB"] = True
+    config.env["CPPDEFINES"]["ZLIB"] = "1"
+  elif config.env["USE_ZLIB"]:
+    if config.env["PLATFORM"] == "win32":
+      Helper.printWarning("zlib is currently not supported on Windows. Continuing withouth zlib.")
+    else:
+      Helper.printErrorAndExit("USE_ZLIB is set but either libz or zlib.h is missing!")
+  else:
+    Helper.printInfo("ZLIB support could not be enabled.")

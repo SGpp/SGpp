@@ -58,7 +58,8 @@ int main() {
       std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset trainDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset trainDataset =
+        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -66,7 +67,8 @@ int main() {
       filename = "../../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
-      sgpp::datadriven::Dataset testDataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+      sgpp::datadriven::Dataset testDataset =
+        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -140,7 +142,7 @@ int main() {
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      sgpp::base::AdpativityConfiguration adaptConfig;
+      sgpp::base::AdaptivityConfiguration adaptConfig;
       adaptConfig.numRefinements_ = 2;
       adaptConfig.noPoints_ = 7;
       adaptConfig.threshold_ = 0.0;  // only required for surplus refinement

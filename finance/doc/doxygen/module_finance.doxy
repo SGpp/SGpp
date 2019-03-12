@@ -1,9 +1,0 @@
-/**
-@page module_finance Module sgpp::finance
-
-- support for the solution of financial problems
-- Black-Scholes equation
-- Hull-White equation (1d,2d)
-- algorithmic schemes to support this
-
-**/

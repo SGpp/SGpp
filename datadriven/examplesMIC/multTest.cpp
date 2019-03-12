@@ -15,7 +15,7 @@
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
-void doAllRefinements(sgpp::base::AdpativityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha,
                       std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 
   uint32_t level = 10;
 
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 8;
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
       sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
 
   sgpp::datadriven::ARFFTools arffTools;
-  sgpp::datadriven::Dataset dataset = arffTools.readARFF(fileName);
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromFile(fileName);
 
   sgpp::base::DataMatrix& trainingData = dataset.getData();
 

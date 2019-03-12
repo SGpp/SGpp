@@ -8,9 +8,9 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
@@ -30,13 +30,13 @@ bool RefinementHandler::checkReadyForRefinement() const {
 void RefinementHandler::doRefinementForClass(
     const std::string &refType,
     RefinementResult *refinementResult,
-    const ClassDensityConntainer &onlineObjects,
+    const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
     Grid& grid,
     DataVector& alpha,
     bool preCompute,
     MultiGridRefinementFunctor *refinementFunctor,
     size_t classIndex,
-    sgpp::base::AdpativityConfiguration& adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig) {
   // perform refinement/coarsening for grid which corresponds to current
   // index
   std::cout << "Refinement and coarsening for class: " << classIndex
@@ -207,7 +207,7 @@ size_t RefinementHandler::checkRefinementNecessary(
     double currentTrainError,
     size_t numberOfCompletedRefinements,
     RefinementMonitor &monitor,
-    sgpp::base::AdpativityConfiguration adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration adaptivityConfig) {
   auto &offline = learnerInstance->getOffline();
   // access DBMatOnlineDE-objects of all classes in order
   // to apply adaptivity to the specific sparse grids later on
@@ -250,7 +250,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
     base::Grid &grid,
     DataVector& alpha,
     base::GridGenerator &gridGen,
-    sgpp::base::AdpativityConfiguration adaptivityConfig) const {
+    sgpp::base::AdaptivityConfiguration adaptivityConfig) const {
   DataVector *alphaWork;  // required for surplus refinement
   // auxiliary variables
   DataVector p(learnerInstance->getTrainData().getDimension());

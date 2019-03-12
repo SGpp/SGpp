@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 
 #include <string>
+#include <vector>
 
 // TODO(lettrich): allow different splitting techniques e.g. proportional splitting for
 // classification
@@ -55,15 +56,29 @@ class CSVFileSampleProvider : public FileSampleProvider {
    * can not be opened or parsed.
    * @param filePath Path to an existing file.
    * @param hasTargets whether the file has targest (i.e. supervised learning)
+   * @param readinCutoff see FileSampleProvider.hpp
+   * @param readinColumns see FileSampleProvider.hpp
+   * @param readinClasses see FileSampleProvider.hpp
    */
-  void readFile(const std::string &filePath, bool hasTargets) override;
+  void readFile(const std::string &filePath,
+                bool hasTargets,
+                size_t readinCutoff = -1,
+                std::vector<size_t> readinColumns = std::vector<size_t>(),
+                std::vector<double> readinClasses = std::vector<double>()) override;
 
   /**
    * Currently not implemented.
    * @param input string containing information in CSV file format
    * @param hasTargets whether the file has targest (i.e. supervised learning)
+   * @param readinCutoff see FileSampleProvider.hpp
+   * @param readinColumns see FileSampleProvider.hpp
+   * @param readinClasses see FileSampleProvider.hpp
    */
-  void readString(const std::string &input, bool hasTargets) override;
+  void readString(const std::string &input,
+                  bool hasTargets,
+                  size_t readinCutoff = -1,
+                  std::vector<size_t> readinColumns = std::vector<size_t>(),
+                  std::vector<double> readinClasses = std::vector<double>()) override;
 
   /**
    * Resets the state of the sample provider (e.g. to start a new epoch)

@@ -5,7 +5,6 @@
 
 #ifdef USE_GSL
 
-#include <sgpp/datadriven/application/LearnerSGDEOnOff.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 
@@ -184,7 +183,7 @@ int main(int argc, char *argv[]) {
   // select zero-crossings-based refinement
   refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   /**
    * Specify number of refinement steps and the max number
    * of grid points to refine each step.
@@ -304,7 +303,8 @@ int main(int argc, char *argv[]) {
 sgpp::datadriven::Dataset loadDataset(const std::string &filename) {
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset dataset =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
 
   if (dataset.getDimension() <= 0) {
     std::cout << "# Failed to read dataset! " << filename << std::endl;

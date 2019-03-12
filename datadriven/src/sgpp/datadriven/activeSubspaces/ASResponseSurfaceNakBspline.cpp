@@ -62,7 +62,7 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData_DataDriven
   gridConfig.type_ = gridType;
   gridConfig.maxDegree_ = 3;
 
-  auto adaptivityConfig = sgpp::base::AdpativityConfiguration();  // no adaptivity
+  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();  // no adaptivity
   adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 

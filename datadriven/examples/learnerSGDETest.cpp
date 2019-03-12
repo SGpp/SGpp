@@ -59,7 +59,8 @@ int main(int argc, char** argv) {
   std::string filename = "../../datasets/friedman/friedman2_4d_300000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset dataset =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
   sgpp::base::DataMatrix& samples = dataset.getData();
 
   /**
@@ -79,7 +80,7 @@ int main(int argc, char** argv) {
    * are specified.
    */
   std::cout << "# create adaptive refinement config" << std::endl;
-  sgpp::base::AdpativityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.noPoints_ = 10;
 
