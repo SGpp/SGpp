@@ -1,4 +1,3 @@
-from past.utils import old_div
 import numpy as np
 from pysgpp import RegularGridConfiguration, Grid, DataVector, \
     createOperationHierarchisation, GridType_Linear, createOperationEval
@@ -11,7 +10,7 @@ from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
 bs = [1, 2, 5, 10, 20, 50, 100, 500]
 
 def g(x, a):
-    return old_div((np.abs(4 * x - 2) + a), (a + 1))
+    return (np.abs(4 * x - 2) + a) / (a + 1)
 
 def f(xs, **kws):
     return np.prod([g(x, b) for x, b in zip(xs, bs)])

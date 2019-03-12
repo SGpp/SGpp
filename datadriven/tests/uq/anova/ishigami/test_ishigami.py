@@ -1,4 +1,3 @@
-from past.utils import old_div
 # --------------------------------------------------------
 # ANOVA test
 # --------------------------------------------------------
@@ -85,11 +84,11 @@ class IshigamiSudret2008(object):
 
         def sobol_index(perm):
             if len(perm) == 1:
-                return old_div(vi(perm[0]), var())
+                return vi(perm[0]) / var()
             elif len(perm) == 2:
-                return old_div(vij(perm[0], perm[1]), var())
+                return vij(perm[0], perm[1]) / var()
             elif len(perm) == 3:
-                return old_div(vijk(perm[0], perm[1], perm[2]), var())
+                return vijk(perm[0], perm[1], perm[2]) / var()
             else:
                 raise AttributeError("len of perm must be in {1, 2, 3}")
 
