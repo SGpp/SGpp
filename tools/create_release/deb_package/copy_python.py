@@ -15,7 +15,7 @@ def copy_python(package_name):
                 continue
             origin_path = os.path.join(root, f)
             target_suffix = re.search(r"\.\./\.\./\.\./lib/" + pysgpp_name + r"/" + r"(.*)", origin_path).group(1)
-            target_path = os.path.join(package_realpath, "usr/lib/python2.7/dist-packages/pysgpp/", target_suffix)
+            target_path = os.path.join(package_realpath, "usr/lib/python3/dist-packages/pysgpp/", target_suffix)
             target_dir = os.path.dirname(target_path)
             print("copy: " + origin_path + " -> " + target_path)
             os.makedirs(target_dir, exist_ok=True)

@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -424,7 +425,7 @@ env.Export("lintAction")
 if env["RUN_PYTHON_TESTS"]:
   if env["SG_PYTHON"]:
     # do the actual thing
-    python = ("python2" if env["USE_PYTHON2_FOR_PYSGPP"] else "python3")
+    python = ("python3")
     builder = Builder(action=python + " $SOURCE", chdir=0)
     env.Append(BUILDERS={"Test" : builder})
     builder = Builder(action=python + " $SOURCE")
