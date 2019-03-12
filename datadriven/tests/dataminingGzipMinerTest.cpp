@@ -32,7 +32,7 @@ BOOST_AUTO_TEST_SUITE(test_gzip_miner)
 
 // Based on the ClassificationMinerFromConfigFile example
 BOOST_AUTO_TEST_CASE(classificationMinerGzipTest) {
-  const std::string path = "datadriven/tests/datasets/gzip_miner_test_config.json";
+  const std::string path = "datadriven/tests/gzip_miner_test_config.json";
   ClassificationMinerFactory factory;
   auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
   miner->learn(true);
