@@ -8,7 +8,12 @@ import ModuleHelper
 Import("*")
 
 moduleDependencies = ["sgppdatadriven", "sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
-module = ModuleHelper.Module(moduleDependencies, additionalBoostTestDependencies=["z"])
+additionalBoostTestDependencies = []
+
+if env["USE_ZLIB"]:
+  additionalBoostTestDependencies = ["z"]
+
+module = ModuleHelper.Module(moduleDependencies, additionalBoostTestDependencies)
 
 module.scanSource()
 module.buildLibrary()

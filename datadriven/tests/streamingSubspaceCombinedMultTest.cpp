@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
 #if USE_OCL == 1
 #ifdef __AVX__
 
@@ -52,5 +53,6 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif
 #endif
