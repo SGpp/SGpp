@@ -26,7 +26,7 @@ code = "python"
 def hierarchizeFun(fun):
     nodalValues = np.ndarray(grid.getSize())
     p = DataVector(gs.getDimension())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getPoint(i).getStandardCoordinates(p)
         nodalValues[i] = fun(p.array())
 
@@ -55,8 +55,8 @@ grid.getGenerator().regular(level)
 gs = grid.getStorage()
 
 alpha = hierarchizeFun(fun)
-print "l=%i: (gs=%i)" % (level, grid.getSize())
-print "-" * 80
+print("l=%i: (gs=%i)" % (level, grid.getSize()))
+print("-" * 80)
 
 # plot the result
 if numDims < 3:
@@ -80,8 +80,8 @@ if code == "c++":
 else:
     grid, alpha = OperationMakePositiveFast(grid).makePositive(alpha)
 
-    print "-" * 80
-    print "l=%i: (gs=%i)" % (level, grid.getSize())
+    print("-" * 80)
+    print("l=%i: (gs=%i)" % (level, grid.getSize()))
 
 # plot the final result
 if numDims < 3:

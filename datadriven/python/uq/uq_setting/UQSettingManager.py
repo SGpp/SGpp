@@ -5,9 +5,10 @@ import math
 import os
 import pysgpp
 
-from samplingresult import Samplingresult
+from pysgpp.extensions.datadriven.uq.uq_setting.samplingresult import Samplingresult
 import numpy as np
-import remote_worker as remote
+from pysgpp.extensions.datadriven.uq.uq_setting import remote_worker as remote
+from functools import reduce
 
 
 class UQSettingManager(object):
@@ -23,7 +24,7 @@ class UQSettingManager(object):
 
         # parallel stuff
         if remote.do_distribution:
-            self.parallelprocesses = sum(remote.hosts.itervalues())
+            self.parallelprocesses = sum(remote.hosts.values())
             # make sure that the file is current
             self.uqsetting.writeToFile()
         else:
@@ -103,18 +104,18 @@ class UQSettingManager(object):
             njobs = math.ceil(len(sampleList) / jobsize)
             nsamples = int(math.ceil(len(sampleList) / njobs))
             njobs = int(njobs)
-            print "jobconfig:", njobs, jobsize, nsamples, len(sampleList)
+            print(( "jobconfig:", njobs, jobsize, nsamples, len(sampleList) ))
 
             # split into enough chunks to be below job size
             for i in range(0, njobs - 1):
                 if (nsamples * (i + 1)) >= len(sampleList):
-                    print i, "are enough"
+                    print(( i, "are enough" ))
                     break
-                print "job", nsamples * i, \
-                    len(sampleList[nsamples * i:nsamples * (i + 1)])
+                print(( "job", nsamples * i, \
+                    len(sampleList[nsamples * i:nsamples * (i + 1)])))
                 self.run_sampleList(sampleList[nsamples * i:nsamples * (i + 1)],
                                     *tagList, starti=nsamples * i)
-            # print "job", self.__starti, len(sampleList[nsamples*(njobs-1):])
+            # print( "job", self.__starti, len(sampleList[nsamples*(njobs-1):]) )
             self.run_sampleList(sampleList[nsamples * (njobs - 1):],
                                 *tagList, starti=nsamples * (njobs - 1))
             return
@@ -156,11 +157,11 @@ class UQSettingManager(object):
         elif res > 0:
             # in the parent, clean up and return
             self.children[res] = (starti, tagList, filename, host)
-            # print "incremented suffix", map(lambda it: (it[0], it[1][0], it[1][2]), self.children.iteritems())
+            # print( "incremented suffix", map(lambda it: (it[0], it[1][0], it[1][2]), self.children.iteritems()) )
             self.__filesuffix = self.__filesuffix + 1
             return
         else:
-            print "Error while forking, tags not processed:", tagList, starti
+            print(( "Error while forking, tags not processed:", tagList, starti ))
 
     def do_sampleList(self, sampleList, tagList, starti=0):
         for i, p in enumerate(sampleList):
@@ -195,14 +196,14 @@ class UQSettingManager(object):
                     remote.free_host(self.children[pid][3])
 
                 del self.children[pid]
-                print "child finished, %d remaining" % len(self.children)
+                print( "child finished, %d remaining" % len(self.children) )
             else:
                 starti, tags, f, host = self.children[pid]
 
                 if host != '':
                     remote.free_host(host)
 
-                print "WARNING: child %d crashed, File %s, Tags %s, starting from index %d on %s" % (pid, f, str(tags), starti, host)
+                print( "WARNING: child %d crashed, File %s, Tags %s, starting from index %d on %s" % (pid, f, str(tags), starti, host) )
                 del self.children[pid]
 
     def loadResults(self):
@@ -284,7 +285,7 @@ class UQSettingManager(object):
 
         indexLists = []
         for deg in range(1, maxDeg + 1):
-            indexLists = indexLists + [list(x) for x in itertools.combinations(range(activeDim), deg)]
+            indexLists = indexLists + [list(x) for x in itertools.combinations(list(range(activeDim)), deg)]
 
         if samplingType == 'restart':
             samplesA = [self.gen.unitSample() for _ in range(samples)]
@@ -309,7 +310,7 @@ class UQSettingManager(object):
             self.gen.reset()
 
         else:
-            print "ERROR: invalid samplingType!"
+            print( "ERROR: invalid samplingType!" )
 
         # to get nice parallelisation
         self.setExpectedSampleCount(samples * (2 + len(indexLists)))
@@ -337,7 +338,7 @@ class UQSettingManager(object):
 
         for indices in indexLists:
             sensitivity_tag['part'] = str(indices)
-            print str(indices)
+            print( str(indices) )
             self.run_sampleList(self.__mixMatrices(samplesA, samplesB, indices),
                                 sensitivity_tag)
 
@@ -360,11 +361,11 @@ class UQSettingManager(object):
         return reduce(f, lst, [[]])
 
 
-class Sampler:
+class Sampler(object):
 
     def __init__(self, parameterset, generator=pysgpp.NaiveSampleGenerator):
         self.n = parameterset.getDim()
-        self.relevant = [k for k, i in parameterset.items() if i.isActive()]
+        self.relevant = [k for k, i in list(parameterset.items()) if i.isActive()]
         self.k = len(self.relevant)
 
         if callable(generator):
@@ -381,7 +382,7 @@ class Sampler:
         if self.gengen:
             self.gen = self.gengen(self.k)
         else:
-            print "WARNING: cannot reset generator"
+            print( "WARNING: cannot reset generator" )
 
     def unitSample(self):
         dv = pysgpp.DataVector(self.k)
@@ -391,13 +392,13 @@ class Sampler:
     def expandSample(self, unitsample):
         r = [-1] * self.n
         i = 0
-        for i, j in zip(self.relevant, range(self.k)):
+        for i, j in zip(self.relevant, list(range(self.k))):
             r[i] = unitsample[j]
         return tuple(r)
 
     def transform(self, fullunitsample):
         t = [None] * self.n
-        for i, p in self.params.items():
+        for i, p in list(self.params.items()):
             if not p.isActive():
                 t[i] = p.getSample()
             else:

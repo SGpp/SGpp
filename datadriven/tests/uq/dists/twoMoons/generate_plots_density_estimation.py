@@ -31,13 +31,13 @@ def loadDensity(setting, functionName):
              ("beta" in functionName and (("sgde" in setting) or \
                                           "nataf" in setting or \
                                           "kde" in setting))):
-        print "-" * 80
-        print "load setting: %s" % setting
+        print("-" * 80)
+        print("load setting: %s" % setting)
         fd = open(filename, "r")
         stats = pkl.load(fd)
         fd.close()
 
-        for iteration, values in stats.items():
+        for iteration, values in list(stats.items()):
             jsonObject = None
             if setting in ["sgde_zero", "sgde_boundaries"]:
                 jsonObject = json.loads(values['posSGDE_json'])
@@ -47,7 +47,7 @@ def loadDensity(setting, functionName):
                 jsonObject = json.loads(values["NatafDist_json"])
             if setting != "nataf" and jsonObject is not None:
                 stats[iteration]["dist"] = Dist.fromJson(jsonObject)
-        print "done"
+        print("done")
     return stats
 
 
@@ -96,13 +96,13 @@ def plotLogLikelihood(densities, functionName, out=False):
     for i, category in enumerate(["train", "test", "validation"]):
         values = data[category]
         yval = np.ndarray(values.shape[1])
-        for j in xrange(values.shape[1]):
+        for j in range(values.shape[1]):
             yval[j] = np.mean(values[:, j])
         rects = ax.bar(pos + i * width, yval, width, color=load_color(i),
                        label=category)
         for rect in rects:
             h = -rect.get_height()
-            ax.text(rect.get_x() + rect.get_width() / 2., h - 0.2, '%.2f' % h,
+            ax.text(rect.get_x() + (rect.get_width() / 2.), h - 0.2, '%.2f' % h,
                     ha='center', va='bottom')
 
 #     plt.xticks(pos, names)
@@ -168,7 +168,7 @@ def plotpvalueofChi2IndependenceTest(densities,
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
-            inner_samples = inner_samples.reshape(inner_samples.size / 2, 2)
+            inner_samples = inner_samples.reshape((inner_samples.size // 2), 2)
             h0 = np.histogram2d(inner_samples[:, 0],
                                 inner_samples[:, 1],
                                 bins=bins)[0][2:-2, 2:-2]
@@ -189,7 +189,7 @@ def plotpvalueofChi2IndependenceTest(densities,
             for sample in samples:
                 if c < sample[0] < 1 - c and c < sample[1] < 1 - c:
                     inner_samples = np.append(inner_samples, sample)
-            inner_samples = inner_samples.reshape(inner_samples.size / 2, 2)
+            inner_samples = inner_samples.reshape((inner_samples.size // 2), 2)
             h0 = np.histogram2d(inner_samples[:, 0],
                                 inner_samples[:, 1],
                                 bins=bins)[0][2:-2, 2:-2]
@@ -273,7 +273,7 @@ def plotpvalueofKolmogorovSmirnovTest(densities, functionName, out=False):
             numDims = values["config"]["numDims"]
             pvalues_shuffled = np.zeros(numDims)
             pvalues_not_shuffled = np.zeros(numDims)
-            for idim in xrange(numDims):
+            for idim in range(numDims):
                 pvalues_shuffled[idim] = values["samples"]["shuffled"]["kstests"][idim][1]
                 pvalues_not_shuffled[idim] = values["samples"]["not_shuffled"]["kstests"][idim][1]
             data[j, 2 * i] = pvalues_shuffled.mean()
@@ -373,7 +373,7 @@ def plotDataset(functionName, numSamples=10000, numDims=2, out=False):
 
     if out:
         filename = os.path.join("plots", "%s_dataset" % functionName)
-        print filename
+        print(filename)
         fig.set_size_inches(5.7, 5, forward=True)
         savefig(fig, filename, tikz=True)
         plt.close(fig)
@@ -381,7 +381,7 @@ def plotDataset(functionName, numSamples=10000, numDims=2, out=False):
         plt.show()
 
 def plotDensities(densities, functionName, out=False):
-    for setting, stats in densities.items():
+    for setting, stats in list(densities.items()):
         if setting != "nataf":
             U = stats[0]["dist"]
             if "kde" in setting:
@@ -407,7 +407,7 @@ def plotDensities(densities, functionName, out=False):
                       fontproperties=load_font_properties())
             if out:
                 filename = os.path.join("plots", "%s_%s" % (functionName, setting))
-                print filename
+                print(filename)
                 fig.set_size_inches(5.7, 5, forward=True)
                 savefig(fig, filename, tikz=True)
                 plt.close(fig)

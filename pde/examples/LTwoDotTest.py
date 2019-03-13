@@ -9,15 +9,15 @@ def test_base():
     b = pysgpp.SLinearModifiedBase()
     # print(sum([b.eval(0,0,x) for x in np.linspace(0, 1, n)]) / n)
     for l in range(1,3,1):
-        print l
+        print(l)
         for i in range(1, 2**l, 1):
             s = 1
             s = sum([b.eval(l,i,x) for x in np.linspace(0, 1, n)]) / n
-            print("Level:",l , "index:", i)
+            print(("Level:",l , "index:", i))
             epsilon = abs(s - b.getIntegral(l,i))
             if(epsilon > 10**-6):
-                print "s: {} res: {}".format(s, b.getIntegral(l,i))
-                print "error: {}".format(epsilon)
+                print("s: {} res: {}".format(s, b.getIntegral(l,i)))
+                print("error: {}".format(epsilon))
 
 def test_LTwoDot(grid, l):
     res = 10000
@@ -44,16 +44,16 @@ def test_LTwoDot(grid, l):
                 ijk = gpj.getIndex(k)
                 # print "i l,i: {},{}   j l,i: {},{}".format(lik, iik, ljk, ijk)
                 xs = np.linspace(0, 1, res)
-                tmp = sum([b.eval(lik, iik, x)*b.eval(ljk, ijk, x) for x in xs])/res
+                tmp = sum([b.eval(lik, iik, x)*b.eval(ljk, ijk, x) for x in xs]) / res
                 sol *= tmp
                 # print("lik:{} iik:{} ljk:{} ijk:{} k:{} tmp: {}".format(lik, iik, ljk, ijk, k,tmp))
             # print(sol)
             error = abs(m.get(i,j) - sol)
             # print error
             if(error >= 10**-4):
-                print "i:{} j:{} error: {}".format(i, j, error)
-                print "iik:{} lik:{} ijk:{} ljk:{} error: {}".format(iik, lik, ijk, ljk, error)
-                print "is:{} should:{}".format(m.get(i,j), sol)
+                print("i:{} j:{} error: {}".format(i, j, error))
+                print("iik:{} lik:{} ijk:{} ljk:{} error: {}".format(iik, lik, ijk, ljk, error))
+                print("is:{} should:{}".format(m.get(i,j), sol))
 
 def test_LTwoDotImplicit(grid, l):
     grid.getGenerator().regular(l)
@@ -72,12 +72,12 @@ def test_LTwoDotImplicit(grid, l):
     op.mult(alpha, result)
     for i in range(size):
         if result[i] != resultExplicit[i]:
-            print "Error result entry {} differs".format(i)
+            print("Error result entry {} differs".format(i))
 
         if abs(result[i] - resultExplicit[i]) > 1e-16:
             # print result[i] - resultExplicit[i]
-            print "result:{}".format(result[i])
-            print "resultExplicit:{}".format(resultExplicit[i])
+            print("result:{}".format(result[i]))
+            print("resultExplicit:{}".format(resultExplicit[i]))
 
 def test_laplace(grid, lmax):
     resolution = 100000
@@ -102,12 +102,12 @@ def test_laplace(grid, lmax):
         approx = sum([b.evalDx(gp_i.getLevel(0), gp_i.getIndex(0), x) * b.evalDx(gp_j.getLevel(0), gp_j.getIndex(0), x) for x in xs]) / resolution
         print("i,j: {},{} result: {} approx:{}".format(point_i, point_j, result[point_j], approx))
         if(abs(result.get(point_j) - approx) > 1e-1):
-          print "--------"
-          print "points: {},{} ".format(point_i, point_j)
-          print "approx:{}".format(approx)
-          print "result:{}".format(result.get(point_j))
+          print("--------")
+          print("points: {},{} ".format(point_i, point_j))
+          print("approx:{}".format(approx))
+          print("result:{}".format(result.get(point_j)))
           # print result
-          print "--------"
+          print("--------")
 
 def test_poly_evaldx():
     l = 3
@@ -117,9 +117,9 @@ def test_poly_evaldx():
     b = pysgpp.SPolyModifiedClenshawCurtisBase(3)
     tang = b.evalDx(l, i, x)
     sec = (b.eval(l, i, x + eps) -  b.eval(l, i, x - eps)) / (2*eps)
-    print "evalDx:{}".format(tang)
-    print "sekante:{}".format(sec)
-    print "evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) )
+    print("evalDx:{}".format(tang))
+    print("sekante:{}".format(sec))
+    print("evals: {} {}".format( b.eval(l, i, x - eps), b.eval(l, i, x + eps) ))
 
 def plot_evaldx():
     l = 3
@@ -151,7 +151,7 @@ def test_laplace2(grid, lmax):
   size = gridStorage.getSize()
   m = pysgpp.DataMatrix(size, size)
   op = pysgpp.createOperationLaplaceExplicit(m, grid)
-  print m
+  print(m)
 
 
 
@@ -173,9 +173,9 @@ def test_firstMoment(grid, lmax):
         x = float(c) / resolution
         temp_res += x * b.eval(lev, ind, x)
     res += alpha.get(i) * temp_res / resolution
-  print "--FirstMoment--"
-  print res
-  print op.doQuadrature(alpha, bounds)
+  print("--FirstMoment--")
+  print(res)
+  print(op.doQuadrature(alpha, bounds))
   print (res - op.doQuadrature(alpha, bounds))
 
 def test_secondtMoment(grid, lmax):
@@ -198,9 +198,9 @@ def test_secondtMoment(grid, lmax):
         temp_res += x * x *b.eval(lev, ind, x)
     res += alpha.get(i) * temp_res / resolution
 
-  print "--SecondMoment--"
-  print res
-  print op.doQuadrature(alpha, bounds)
+  print("--SecondMoment--")
+  print(res)
+  print(op.doQuadrature(alpha, bounds))
   print (res - op.doQuadrature(alpha, bounds))
 
 # test_poly_evaldx()

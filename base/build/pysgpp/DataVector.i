@@ -13,9 +13,9 @@
 * After reference counter reaches 0, the memory of DataVector will be deallocated 
 * automatically. 
 */
-void free_array(void* ptr, void* dv){
+void free_array(PyObject* ptr){
   // double* vec = (double *) ptr;
-      PyObject* datavector = (PyObject*)dv;
+      PyObject* datavector = (PyObject*)PyCapsule_GetContext((PyObject*)ptr);
       Py_DECREF(datavector);
     }
 %}
@@ -128,7 +128,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
       
       // Let the array base point on the original data, free_array is a additional destructor for our ndarray, 
       // since we need to DECREF DataVector object
-      PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
+      PyObject* base = PyCapsule_New((void*)vec, nullptr, free_array);
+      PyCapsule_SetContext(base, (void*)datavector);
       PyArray_BASE(arr) = base;
       
       // Increase the number of references to PyObject DataVector, after the object the variable is reinitialized or deleted the object

@@ -9,7 +9,7 @@
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
 
-import ConfigParser, os
+import configparser, os
 from optparse import OptionParser
 
 #correct the syspath, so python looks for packages in the root directory of SGpp
@@ -42,7 +42,7 @@ import types
 # @endcode
 # for help to the console parameters.
 #
-class TerminalController:
+class TerminalController(object):
  
     ## Initial processing of input parameters
     @classmethod
@@ -97,7 +97,7 @@ class TerminalController:
             TerminalController.constructObjectsFromFile(options.jobfile)
         #if job defined with arguments:
         elif options.generate:
-            print TerminalController.generateBuilderCodeFromOptions(options)
+            print (TerminalController.generateBuilderCodeFromOptions(options) )
         else:
             TerminalController.constructObjectsFromOptions(options)
         
@@ -108,7 +108,7 @@ class TerminalController:
     # @param filename: string path to the file with job settings
     @classmethod
     def constructObjectsFromFile(cls, filename):
-        configuration = ConfigParser.ConfigParser()
+        configuration = configparser.ConfigParser()
         configuration.readfp(open(filename, 'r'))
         
         #Create builder for specified learner
@@ -126,8 +126,8 @@ class TerminalController:
         options = TerminalController.itemsToDict(configuration.items('data'))
         
         if options['file_type'] == 'arff':
-            if options.has_key('train_file'): 
-                if type(options['train_file']) != types.ListType:
+            if 'train_file' in options: 
+                if type(options['train_file']) != list:
                     builder.withTrainingDataFromARFFFile(options['train_file'])
                 else:
                     fileCounter = 0
@@ -138,7 +138,7 @@ class TerminalController:
                         
             else: raise Exception('Path to file with training data set is not defined in configurationfile')
             
-            if options.has_key('test_file'): builder.withTestingDataFromARFFFile(options['test_file'])
+            if 'test_file' in options: builder.withTestingDataFromARFFFile(options['test_file'])
        
         else: raise Exception('Unsupported data type in job configuration file')
         
@@ -146,20 +146,20 @@ class TerminalController:
         builder = builder.withGrid()
         options = TerminalController.itemsToDict(configuration.items('grid'))
         
-        if options.has_key('grid_file'):
+        if 'grid_file' in options:
             builder.fromFile(options['grid_file'])
         else:
             try:
-                if options.has_key('level'): builder.withLevel(int(options['level']))
-                if options.has_key('polynomial'): builder.withPolynomialBase(int(options['polynomial']))
-                if options.has_key('border'): builder.withBorder(options['border'])
+                if 'level' in options: builder.withLevel(int(options['level']))
+                if 'polynomial' in options: builder.withPolynomialBase(int(options['polynomial']))
+                if 'border' in options: builder.withBorder(options['border'])
             except: raise Exception('Grid configuration in job file is incorrect')
             
         #training specification
         builder = builder.withSpecification()
         options = TerminalController.itemsToDict(configuration.items('refinement'))
         
-        if options.has_key('points'): 
+        if 'points' in options: 
             if '.' in options['points']:
                 builder.withAdaptRate( float(options['points']) )
             else:
@@ -167,51 +167,51 @@ class TerminalController:
                 
         options = TerminalController.itemsToDict(configuration.items('learner'))
         
-        if options.has_key('regularization_parameter'): builder.withLambda( float(options['regularization_parameter']) )
-        if options.has_key('regularization_operator'):
+        if 'regularization_parameter' in options: builder.withLambda( float(options['regularization_parameter']) )
+        if 'regularization_operator' in options:
             if options['regularization_operator'] == 'laplace': builder.withLaplaceOperator()
             elif options['regularization_operator'] == 'idenitty': builder.withIdentityOperator()
             else: raise Exception('Incorrect regulariation operator type')
         
-        if options.has_key('threshold'): builder.withAdaptThreshold( float(options['threshold']) )
+        if 'threshold' in options: builder.withAdaptThreshold( float(options['threshold']) )
         
         
         #stop policy
         builder = builder.withStopPolicy()
         options = TerminalController.itemsToDict(configuration.items('refinement'))
         
-        if options.has_key('iterations'): builder.withAdaptiveItarationLimit( int(options['iterations']) )
-        if options.has_key('gridsize'): builder.withGridSizeLimit( int(options['gridsize']) )
-        if options.has_key('mse'): builder.withMSELimit( float(options['mse']) )
-        if options.has_key('epochs'): builder.withEpochsLimit( int(options['epochs']) )
+        if 'iterations' in options: builder.withAdaptiveItarationLimit( int(options['iterations']) )
+        if 'gridsize' in options: builder.withGridSizeLimit( int(options['gridsize']) )
+        if 'mse' in options: builder.withMSELimit( float(options['mse']) )
+        if 'epochs' in options: builder.withEpochsLimit( int(options['epochs']) )
         
         # linear solver
         builder = builder.withCGSolver()
         options = TerminalController.itemsToDict(configuration.items('solver'))
         
-        if options.has_key('accuracy'): builder.withAccuracy( float(options['accuracy']) )
-        if options.has_key('imax'): builder.withImax( int(options['imax']) )
-        if options.has_key('max_threshold'): builder.withThreshold(float(options['max_threshold']))
+        if 'accuracy' in options: builder.withAccuracy( float(options['accuracy']) )
+        if 'imax' in options: builder.withImax( int(options['imax']) )
+        if 'max_threshold' in options: builder.withThreshold(float(options['max_threshold']))
         
         #presentor
         options = TerminalController.itemsToDict(configuration.items('output'))
-        if options.has_key('type'):
+        if 'type' in options:
             types = options['type'].split(',')
             for type in types:
                 if type.strip() == 'InfoToScreen': builder.withProgressPresenter(InfoToScreen())
                 if type.strip() == 'InfoToScreenRegressor': builder.withProgressPresenter(InfoToScreenRegressor())
                 elif type.strip() == 'InfoToFile':
-                    if options.has_key('filename'): builder.withProgressPresenter(InfoToFile(options['filename']))
+                    if 'filename' in options: builder.withProgressPresenter(InfoToFile(options['filename']))
                     else: raise Exception('Define filename in order to use InfoToFile output')
                     
         #checkpoint
         options = TerminalController.itemsToDict(configuration.items('checkpoints'))
         
-        if options.has_key('name'):
-            path = options['path'] if options.has_key('path') else None
-            interval = options['interval'] if options.has_key('inte    rval') else None
+        if 'name' in options:
+            path = options['path'] if 'path' in options else None
+            interval = options['interval'] if 'inte    rval' in options else None
             checkpointController = CheckpointController(options['name'], path, interval)
-            if options.has_key('restore_iteration'):
+            if 'restore_iteration' in options:
                 learner = checkpointController.loadAll(options['restore_iteration'])
                                                                                                       
             builder.withCheckpointController(checkpointController)
@@ -238,7 +238,7 @@ class TerminalController:
         
         options = TerminalController.itemsToDict(configuration.items('learner'))
         if options['action'] == 'learn':
-            if (not options.has_key('with_testing')) or options['with_testing'].lower() == 'no':
+            if ('with_testing' not in options) or options['with_testing'].lower() == 'no':
                 learner.learnData()
             elif options['with_testing'].lower() == 'yes': learner.learnDataWithTest()
             else: raise Exception('with_testion can only be set to "yes" or "no"')
@@ -387,11 +387,11 @@ class TerminalController:
     def itemsToDict(cls, items):
         result = {}
         for item in items:
-            if result.has_key(item[0]) == False:
+            if (item[0] in result) == False:
                 result[item[0]] = item[1]
             else:
                 # the old value is already a list
-                if type( result[item[0]] ) == types.ListType:
+                if type( result[item[0]] ) == list:
                     result[ item[0] ].append( item[1] )
                 # create new list with old and new values
                 else:

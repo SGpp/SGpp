@@ -12,7 +12,7 @@ def plotGrid(grid, alpha, admissibleSet, params, refined=None):
     p = DataVector(2)
 
     x = np.ndarray((gs.getSize(), 2))
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         x[i, :] = T.unitToProbabilistic(p.array())
 

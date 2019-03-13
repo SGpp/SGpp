@@ -1,6 +1,6 @@
-from Transformation import Transformation
+from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transformation
 import numpy as np
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from  pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 
 class JointTransformation(Transformation):
@@ -24,19 +24,19 @@ class JointTransformation(Transformation):
 
     def add(self, trans, n=1):
         self.__trans.append(trans)
-        ixs = [self.__n + j for j in xrange(n)]
+        ixs = [self.__n + j for j in range(n)]
         self.__ixs.append(ixs)
         self.__n += n
 
     def probabilisticToUnitMatrix(self, ps, *args, **kws):
         unitdata = np.zeros(ps.shape)
-        for i in xrange(ps.shape[0]):
+        for i in range(ps.shape[0]):
             unitdata[i, :] = self.probabilisticToUnit(ps[i, :])
         return unitdata
 
     def unitToProbabilisticMatrix(self, ps, *args, **kws):
         probdata = np.zeros(ps.shape)
-        for i in xrange(ps.shape[0]):
+        for i in range(ps.shape[0]):
             probdata[i, :] = self.unitToProbabilistic(ps[i, :])
         return probdata
 

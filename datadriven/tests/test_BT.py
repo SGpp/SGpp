@@ -18,8 +18,8 @@ def buildTrainingVector(data):
     training = DataMatrix(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
-    for i in xrange(len(data["data"][0])):
-        for d in xrange(dim):
+    for i in range(len(data["data"][0])):
+        for d in range(dim):
             training.set(i, d, data["data"][d][i])
     
     return training
@@ -31,7 +31,7 @@ def openFile(filename):
     except:
         print ("An error occured while reading " + filename + "!")
         
-    if data.has_key("classes") == False:
+    if ("classes" in data) == False:
         print ("No classes found in the given File " + filename + "!")
         
     return data
@@ -49,7 +49,7 @@ def generateBTMatrix(factory, training, verbose=False):
     # create BT matrix
     m = DataMatrix(training.getNrows(), storage.getSize())
     
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
       
         # apply unit vectors
         temp.setAll(0.0)
@@ -68,7 +68,7 @@ def readReferenceMatrix(self, storage, filename):
     # read reference matrix
     try:
         fd = tools.gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fd = None
         
     if not fd:
@@ -77,14 +77,14 @@ def readReferenceMatrix(self, storage, filename):
     dat = fd.read().strip()
     fd.close()
     dat = dat.split('\n')
-    dat = map(lambda l: l.strip().split(None), dat)
+    dat = [l.strip().split(None) for l in dat]
 
     # right number of entries?
     self.assertEqual(storage.getSize(), len(dat[0]))
 
     m_ref = DataMatrix(len(dat), len(dat[0]))
-    for i in xrange(len(dat)):
-        for j in xrange(len(dat[0])):
+    for i in range(len(dat)):
+        for j in range(len(dat[0])):
             m_ref.set(i, j, float(dat[i][j]))
 
     return m_ref
@@ -94,7 +94,7 @@ def readDataVector(filename):
     
     try:
         fin = tools.gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fin = None
         
     if not fin:
@@ -130,7 +130,7 @@ def readDataVector(filename):
         if hasclass:
             classes.append(float(values[-1]))
             values = values[:-1]
-        for i in xrange(len(values)):
+        for i in range(len(values)):
             data[i].append(float(values[i]))
             
     # cleaning up and return

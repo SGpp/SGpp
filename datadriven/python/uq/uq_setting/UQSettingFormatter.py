@@ -63,7 +63,7 @@ class UQSettingFormatter(GzipSerializer):
 
         Return The UQSetting memento object
         """
-        if not isinstance(filename, types.StringType):
+        if not isinstance(filename, bytes):
             raise AttributeError("Filename as destination expected")
         serializationStream = self.gzOpen(filename, "r")
         try:

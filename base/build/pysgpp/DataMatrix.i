@@ -175,7 +175,8 @@ $1 = PySequence_Check($input) ? 1 : 0;
 
       // Let the array base point on the original data, free_array is a additional destructor for our ndarray,
       // since we need to DECREF DataVector object
-      PyObject* base = PyCObject_FromVoidPtrAndDesc((void*)vec, (void*)datavector, free_array);
+      PyObject* base = PyCapsule_New((void*)vec, nullptr, free_array);
+      PyCapsule_SetContext(base, (void*)datavector);
       PyArray_BASE(arr) = base;
 
       // Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object

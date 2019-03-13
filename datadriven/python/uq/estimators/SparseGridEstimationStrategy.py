@@ -14,7 +14,7 @@ class SparseGridEstimationStrategy(object):
         for i, trans in enumerate(T.getTransformations()):
             # if this is the case replace them by a uniform distribution
             if isinstance(trans, RosenblattTransformation):
-                for _ in xrange(trans.getSize()):
+                for _ in range(trans.getSize()):
                     dists.append(Uniform(0, 1))
                     jointTrans.append(LinearTransformation(0.0, 1.0))
             else:

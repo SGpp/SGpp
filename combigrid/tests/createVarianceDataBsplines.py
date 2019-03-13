@@ -16,7 +16,7 @@ from numpy import square
 
 
 def arctanModel(x):
-    return np.arctan(50.0 * (x[0] - .35)) + np.pi / 2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
+    return np.arctan(50.0 * (x[0] - .35)) + np.pi/2.0 + 4.0 * x[1] ** 3 + np.exp(x[0] * x[1] - 1.0)
     # return np.arctan(50.0 * (x[0] - .35))
     # return x[0]*x[0]*x[0]*x[1]*x[1]*x[1]*x[1]
     # return x[0] * x[1]
@@ -98,25 +98,25 @@ if __name__ == "__main__":
             meanSquare = dblquad(lambda x, y: BsplineInterpolation(x,y,levels)**2, 0, 1, lambda x: 0, lambda x: 1,
                                      epsabs=1e-14)
 
-            print "errs=%g, %g" % (mean[1], meanSquare[1])
+            print("errs=%g, %g" % (mean[1], meanSquare[1]))
             variance = meanSquare[0] - mean[0]**2
 
             variances[level1, level2] = variance
 
         levels_str = "std::vector<sgpp::combigrid::MultiIndex> levels{"
         variances_str = "std::vector<double> variances{"
-        for (level1, level2), variance in variances.items():
+        for (level1, level2), variance in list(variances.items()):
             levels_str += "sgpp::combigrid::MultiIndex{%i, %i}, " % (level1, level2)
             variances_str += "%.15f, " % variance
 
         levels_str = levels_str[:-2] + "};"
         variances_str = variances_str[:-2] + "};"
 
-    print """struct AtanModelVarianceTestDataBsplines {
+    print("""struct AtanModelVarianceTestDataBsplines {
   %s
   %s
 };
-""" % (levels_str, variances_str)
+""" % (levels_str, variances_str))
 
 #     try:
 #         os.remove("BSplineVarianceData.dat")

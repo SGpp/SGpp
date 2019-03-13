@@ -10,13 +10,13 @@ __all__ = []
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from AdmissibleSet import (AdmissibleSetGenerator,
+from pysgpp.extensions.datadriven.uq.refinement.AdmissibleSet import (AdmissibleSetGenerator,
                            AdmissibleSparseGridNodeSet,
                            RefinableNodesSet)
-from LocalRefinementStrategy import (CreateAllChildrenRefinement,
+from pysgpp.extensions.datadriven.uq.refinement.LocalRefinementStrategy import (CreateAllChildrenRefinement,
                                      ANOVARefinement,
                                      AddNode)
-from RefinementStrategy import (Ranking,
+from pysgpp.extensions.datadriven.uq.refinement.RefinementStrategy import (Ranking,
                                 SurplusRanking,
                                 SquaredSurplusRanking,
                                 ExpectationValueOptRanking,

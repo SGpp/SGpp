@@ -30,14 +30,14 @@ class TestPersistentRefinementOperator(unittest.TestCase):
 
         xs = []
         DELTA = 0.05
-        DELTA_RECI = int(1/DELTA)
+        DELTA_RECI = int(1 / DELTA)
 
-        for i in xrange(DELTA_RECI):
-            for j in xrange(DELTA_RECI):
+        for i in range(DELTA_RECI):
+            for j in range(DELTA_RECI):
                 xs.append([DELTA*i, DELTA*j])
 
         random.seed(1208813)
-        ys = [ random.randint(-10, 10) for i in xrange(DELTA_RECI**2)]
+        ys = [ random.randint(-10, 10) for i in range(DELTA_RECI**2)]
 
         # print xs
         # print ys
@@ -50,7 +50,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         coord = DataVector(DIM)
         opEval = createOperationEval(self.grid)
 
-        for i in xrange(self.trainData.getNrows()):
+        for i in range(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
             self.errors.__setitem__ (i, self.classes[i] - opEval.eval(self.alpha, coord))
 
@@ -75,11 +75,11 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         # First part
         # 
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
+        values = [self.functor.__call__(storage,i) for i in range(storage.getSize())]
         expect = []
         opEval = createOperationEval(self.grid)
 
-        for j in xrange(num_coeff):
+        for j in range(num_coeff):
 
             row = DataVector(DIM)
 
@@ -88,7 +88,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
             tmp_alpha.__setitem__(j, 1.0)
 
             current = 0
-            for i in xrange(self.trainData.getNrows()):
+            for i in range(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
                 current += (self.errors.__getitem__(i) * opEval.eval(tmp_alpha, row)) ** 2
             
@@ -101,11 +101,11 @@ class TestPersistentRefinementOperator(unittest.TestCase):
         # Second part
         #
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
+        values = [self.functor.__call__(storage,i) for i in range(storage.getSize())]
         expect = []
         opEval = createOperationEval(self.grid)
 
-        for j in xrange(num_coeff):
+        for j in range(num_coeff):
 
             row = DataVector(DIM)
 
@@ -114,7 +114,7 @@ class TestPersistentRefinementOperator(unittest.TestCase):
             tmp_alpha.__setitem__(j, 1.0)
 
             current = 0
-            for i in xrange(self.trainData.getNrows()):
+            for i in range(self.trainData.getNrows()):
                 self.trainData.getRow(i, row)
                 current += (self.errors.__getitem__(i) * opEval.eval(tmp_alpha, row)) ** 2
             
