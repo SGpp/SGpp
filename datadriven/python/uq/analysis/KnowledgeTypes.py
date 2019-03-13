@@ -18,7 +18,7 @@ class KnowledgeTypes(object):
 
     @classmethod
     def xrange(cls):
-        return xrange(0, 4)
+        return range(0, 4)
 
     @classmethod
     def getFunctionToApproximate(cls, dtype, U):
@@ -50,9 +50,9 @@ class KnowledgeTypes(object):
         f = cls.getFunctionToApproximate(dtype, U)
         res = {}
         # transform the data
-        for t, item in data.items():
+        for t, item in list(data.items()):
             res[t] = {}
-            for p, value in item.items():
+            for p, value in list(item.items()):
                 res[t][p] = f(p, value)
 
         return res

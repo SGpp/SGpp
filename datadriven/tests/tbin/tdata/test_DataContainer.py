@@ -43,7 +43,7 @@ class TestDataContainer(unittest.TestCase):
         values = self.container.getValues()
         points = self.container.getPoints()
         self.vectors = []
-        for row in xrange(0,self.size):
+        for row in range(0,self.size):
             vector = DataVector(self.dim)
             vector.setAll(row)
             self.vectors.append(vector)
@@ -111,9 +111,9 @@ class TestDataContainer(unittest.TestCase):
     def testCreateNullVector(self):
         vector = self.container.createNullVector(self.size, self.dim)
         entry = DataVector(self.dim)
-        for row in xrange(self.size):
+        for row in range(self.size):
             vector.getRow(row, entry)
-            for index in xrange(self.dim):
+            for index in range(self.dim):
                 self.assertEqual(entry[index], 0)
 
 

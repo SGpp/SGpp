@@ -81,9 +81,9 @@ class Regressor(Learner):
         self.notifyEventControllers(LearnerEvents.LEARNING_STARTED)
         self.specification.setBOperator(createOperationMultipleEval(self.grid,
                     self.dataContainer.getPoints(DataContainer.TRAIN_CATEGORY)))
-        print self.getL()
+        print( self.getL() )
         while True:  # repeat until policy says "stop"
-            print "Learning %i/%i" % (self.iteration, self.stopPolicy.getAdaptiveIterationLimit())
+            print( "Learning %i/%i" % (self.iteration, self.stopPolicy.getAdaptiveIterationLimit()) )
             self.notifyEventControllers(LearnerEvents.LEARNING_STEP_STARTED)
             # learning step
             self.alpha = self.doLearningIteration(self.dataContainer)

@@ -1,5 +1,5 @@
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
-from findCandidateSet import CandidateSet
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findCandidateSet import CandidateSet
 import matplotlib.pyplot as plt
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, \
@@ -32,7 +32,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
         level = [0] * numDims
         index = [0] * numDims
 
-        for d in xrange(numDims):
+        for d in range(numDims):
             if gpi.getLevel(d) > gpj.getLevel(d):
                 level[d] = gpi.getLevel(d)
                 index[d] = gpi.getIndex(d)
@@ -50,7 +50,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
         # find all possible intersections of grid points
         comparisonCosts = fullGridCosts = 0
-        for j, gpj in gpsj.items():
+        for j, gpj in list(gpsj.items()):
             comparisonCosts += 1
             idim = 0
             ranges = []
@@ -82,7 +82,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                     fullGridCosts += 1
                     level, index = self.findIntersection(gpi, ancestor_gpj)
                     gpintersection = HashGridPoint(self.numDims)
-                    for idim in xrange(self.numDims):
+                    for idim in range(self.numDims):
                         gpintersection.set(idim, level[idim], index[idim])
 
                     if not gs.isContaining(gpintersection):
@@ -97,7 +97,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
     def findIntersections(self, gpsi, gpsj, grid, alpha):
         overlappingGridPoints = {}
         costs = 0
-        for i, gpi in gpsi.items():
+        for i, gpi in list(gpsi.items()):
             del gpsj[i]
             comparisonCosts, fullGridCosts = self.findIntersectionsOfOverlappingSuppportsForOneGridPoint(i, gpi, gpsj,
                                                                                                          overlappingGridPoints,
@@ -110,7 +110,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
     def findNodesWithNegativeCoefficients(self, grid, alpha):
         gs = grid.getStorage()
         ans = {}
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             if alpha[i] < 0.0:
                 ans[i] = gs.get(i)
 
@@ -124,12 +124,12 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
         plotGrid2d(grid, alpha)
 
-        for gp in candidates.values():
+        for gp in list(candidates.values()):
             p = DataVector(gp.getDimension())
             gp.getStandardCoords(p)
             plt.plot(p[0], p[1], "x ", color="green")
 
-        for gp in ans.values():
+        for gp in list(ans.values()):
             p = DataVector(gp.getDimension())
             gp.getStandardCoords(p)
             plt.plot(p[0], p[1], "o ", color="green")
@@ -191,7 +191,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
     def getLocalFullGridLevel(self, levels, indices, grid):
         ans = [None] * self.numDims
-        for dup in xrange(self.numDims):
+        for dup in range(self.numDims):
             maxLevel, ddown = self.getLocalMaxLevel(dup, levels, indices, grid)
             ans[ddown] = maxLevel - levels[ddown] + 1
         return tuple(ans)
@@ -202,20 +202,20 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
         else:
             # list 1d grid points
             candidates = {}
-            for idim in xrange(self.numDims):
+            for idim in range(self.numDims):
                 candidates[idim] = []
 
             # Generate 1D grids
-            for idim in xrange(self.numDims):
-                for level in xrange(1, localFullGridLevels[idim] + 1):
-                    for index in xrange(1, 2 ** level + 1, 2):
+            for idim in range(self.numDims):
+                for level in range(1, localFullGridLevels[idim] + 1):
+                    for index in range(1, 2 ** level + 1, 2):
                         candidates[idim].append((level, index))
 
             # iterate over cross product
             globalGrid = {}
             levels = np.ndarray(self.numDims)
             indices = np.ndarray(self.numDims)
-            for values in product(*candidates.values()):
+            for values in product(*list(candidates.values())):
                 for idim, (level, index) in enumerate(values):
                     levels[idim] = level
                     indices[idim] = index
@@ -237,7 +237,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
         # compute levels of local grids and number of
         # local grid points on a corresponding full grid
-        for (levels, indices), values in overlap.items():
+        for (levels, indices), values in list(overlap.items()):
             localFullGridLevels[levels, indices] = self.getLocalFullGridLevel(levels, indices, grid)
             numLocalGridPoints = np.prod([2 ** ilevel - 1 for ilevel in localFullGridLevels[levels, indices]])
 
@@ -286,9 +286,9 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                 localGrid = {}
                 levels = [None] * self.numDims
                 indices = [None] * self.numDims
-                for levelsGlobal, indicesGlobal in globalGrid.keys():
+                for levelsGlobal, indicesGlobal in list(globalGrid.keys()):
                     gpdd = HashGridPoint(self.numDims)
-                    for idim in xrange(self.numDims):
+                    for idim in range(self.numDims):
                         lg, ig = levelsGlobal[idim], indicesGlobal[idim]
                         llroot, ilroot = localRoot['level'][idim], localRoot['index'][idim]
 
@@ -309,7 +309,7 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
                 ans.update(localGrid)
                 assert len(ans) > oldSize
 
-        return ans.values(), costs
+        return list(ans.values()), costs
 
 
 #     @profile
@@ -319,14 +319,14 @@ class LocalHierarchicalIntersectionCandidates(CandidateSet):
 
             if self.verbose:
                 gs = grid.getStorage()
-                print "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in xrange(gs.getSize()) if alpha[i] < 0.0]))
+                print( "# negative candidates : %i/%i" % (len(self.A0), np.sum([1 for i in range(gs.getSize()) if alpha[i] < 0.0])) )
 
             overlappingGridPoints, costsIntersectionSearch = self.findIntersections(self.A0, self.A0.copy(), grid, alpha)
 
             if self.verbose:
-                print "# intersections       : %i" % len(overlappingGridPoints)
+                print( "# intersections       : %i" % len(overlappingGridPoints) )
 
-            self.newCandidates = overlappingGridPoints.values()
+            self.newCandidates = list(overlappingGridPoints.values())
 
             self.costs = costsIntersectionSearch
             self.candidates = self.newCandidates

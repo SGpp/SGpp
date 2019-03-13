@@ -3,7 +3,8 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
 from pysgpp import Grid, DataVector
 from pysgpp.extensions.datadriven.uq.operations.discretization import discretize
@@ -37,7 +38,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
         ngs = ngrid.getStorage()
         nodalValues = DataVector(ngs.getSize())
 
-        for d in xrange(gpi.getDimension()):
+        for d in range(gpi.getDimension()):
             # get level index
             lid, iid = gpi.getLevel(d), gpi.getIndex(d)
             ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
@@ -61,7 +62,7 @@ class SparseGridQuadratureStrategy(BilinearQuadratureStrategy):
                 # do the 1d interpolation ...
                 # define transformation function
                 T = LinearTransformation(xlow, xhigh)
-                for k in xrange(ngs.getSize()):
+                for k in range(ngs.getSize()):
                     x = ngs.getCoordinate(ngs.getPoint(k), 0)
                     x = T.unitToProbabilistic(x)
                     nodalValues[k] = basisi.eval(lid, iid, x) * \

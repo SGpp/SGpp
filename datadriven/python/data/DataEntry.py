@@ -4,7 +4,7 @@
 # sgpp.sparsegrids.org
 
 from pysgpp import DataVector
-from DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 
 ## A container for tuple of a point and its corresponding value
 class DataEntry(object):

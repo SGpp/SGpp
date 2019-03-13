@@ -16,7 +16,7 @@
 """
 import os
 import json
-from anova import HDMRAnalytic
+from pysgpp.extensions.datadriven.uq.analysis.asgc.anova import HDMRAnalytic
 from pysgpp.extensions.datadriven.uq.estimators import MonteCarloStrategy
 from pysgpp.extensions.datadriven.uq.operations import (evalSGFunctionMulti,
                                evalSGFunction,
@@ -116,7 +116,7 @@ class ASGCAnalysis(Analysis):
             return self._estimateDensityByConfig(dtype, time_dependent_values, config)
 
         ans = {}
-        for t, values in time_dependent_values.items():
+        for t, values in list(time_dependent_values.items()):
             ans[t] = self._estimateDensityByConfig(dtype, values, config)
 
         return ans
@@ -557,12 +557,12 @@ class ASGCAnalysis(Analysis):
             v.setAll(0.0)
             v[0] = t
 
-            for i, key in enumerate(anova.getSortedPermutations(te.keys())):
+            for i, key in enumerate(anova.getSortedPermutations(list(te.keys()))):
                 v[i + 1] = te[key]
                 if k == 0:
                     names[i + 1] = '"$T_{' + keymap(key) + '}$"'
 
-            for i, key in enumerate(anova.getSortedPermutations(me.keys())):
+            for i, key in enumerate(anova.getSortedPermutations(list(me.keys()))):
                 v[n1 + i + 1] = me[key]
 
                 if k == 0:
@@ -635,7 +635,7 @@ class ASGCAnalysis(Analysis):
             # -----------------------------------------
             data = np.ndarray((gs.getSize(), dim))
             x = DataVector(dim)
-            for i in xrange(gs.getSize()):
+            for i in range(gs.getSize()):
                 gp = gs.getPoint(i)
                 gs.getCoordinates(gp, x)
                 data[i, :] = x.array()
@@ -658,7 +658,7 @@ class ASGCAnalysis(Analysis):
         names = self.__params.getNames()
         names.append('f_\\mathcal{I}(x)')
 
-        for iteration in xrange(self.__knowledge.getIteration() + 1):
+        for iteration in range(self.__knowledge.getIteration() + 1):
 #             myjson = {"Grid": {"dimNames": ["E", "K_1c", "rho", "n"],
 #                                "matrixEntries": ["E", "K_1c", "rho", "n"]},
 #                       "Set": {"path": "",
@@ -698,7 +698,7 @@ class ASGCAnalysis(Analysis):
                                           iteration=iteration)
 
         res = {}
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             s = gs.getPoint(i).getLevelSum()
             if s not in res:
                 res[s] = [alpha[i]]
@@ -721,13 +721,13 @@ class ASGCAnalysis(Analysis):
             n = 0
             for dtype in dtypes:
                 data[dtype] = self.computeSurplusesLevelWise(t, dtype)
-                n = sum([len(values) for values in data[dtype].values()])
+                n = sum([len(values) for values in list(data[dtype].values())])
 
             A = DataMatrix(n, len(names))
             # add them to a matrix structure
             for i, dtype in enumerate(dtypes):
                 k = 0
-                for level, surpluses in data[dtype].items():
+                for level, surpluses in list(data[dtype].items()):
                     for j, surplus in enumerate(surpluses):
                         A.set(k + j, i + 1, surplus)
                         A.set(k + j, 0, level)

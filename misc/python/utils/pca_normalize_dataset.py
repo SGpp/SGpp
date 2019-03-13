@@ -24,10 +24,10 @@ import logging.config
 # @param mat: matrix points row-wise
 def norm(mat):
 	NDIM = shape(mat)[1] # number of dimensions
-	for i in xrange(NDIM):
+	for i in range(NDIM):
 		m = min(mat[:,i])
 		M = max(mat[:,i])
-		mat[:,i] = (mat[:,i] - m)/(M-m)
+		mat[:,i] = (mat[:,i] - m) / (M-m)
 	return mat
 
 
@@ -43,7 +43,7 @@ def remove_outliers(mat, koef, target=None):
 	s = std(mat,0)
 	result = m
 	target_result = []
-	for i in xrange(size):
+	for i in range(size):
 		point = mat[i,:]
 		if sum(point > m - koef*s) == dim and sum(point < m + koef*s) == dim:
 			#target = targets[i]

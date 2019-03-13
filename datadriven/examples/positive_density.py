@@ -1062,7 +1062,7 @@ def loadMatrixFromOperation(numGridPoints, op):
 
     result = DataVector(numGridPoints)
     ans = np.ndarray((numGridPoints, numGridPoints))
-    for i in xrange(numGridPoints):
+    for i in range(numGridPoints):
         alpha[i] = 1.0
         op.mult(alpha, result)
         ans[:, i] = result.array()
@@ -1082,7 +1082,7 @@ def computeInterpolationMatrix(grid):
     grid_points = np.ndarray((gridStorage.getSize(),
                               numDims))
     x = DataVector(numDims)
-    for i in xrange(gridStorage.getSize()):
+    for i in range(gridStorage.getSize()):
         gridStorage.getCoordinates(gridStorage.getPoint(i), x)
         grid_points[i, :] = x.array()
     grid_points_vec = DataMatrix(grid_points)
@@ -1117,13 +1117,13 @@ def cvxopt_solve_qp(P, q, G=None, h=None, A=None, b=None):
     sol = cvxopt.solvers.qp(*args)
     if 'optimal' not in sol['status']:
         return None
-    print sol
-    print "P", P
-    print "G", G
-    print "G", matrix(G)
+    print(sol)
+    print("P", P)
+    print("G", G)
+    print("G", matrix(G))
     alpha = np.array(sol['x']).reshape((P.shape[1],))
-    print np.dot(G, alpha)
-    print "q", q
+    print(np.dot(G, alpha))
+    print("q", q)
     return np.array(sol['x']).reshape((P.shape[1],))
 
 
@@ -1138,13 +1138,13 @@ def quadprog_solve_qp(P, q, G=None, h=None, A=None, b=None):
         qp_C = -G.T
         qp_b = -h
         meq = 0
-    print "qp_G", qp_G
-    print "qp_a", qp_a
-    print "qp_C", qp_C
-    print "qp_b", qp_b
+    print("qp_G", qp_G)
+    print("qp_a", qp_a)
+    print("qp_C", qp_C)
+    print("qp_b", qp_b)
     x, f, _, iterations, _, _ = quadprog.solve_qp(qp_G, qp_a, qp_C, qp_b, meq)
 
-    print iterations, f
+    print(iterations, f)
     return x
 
 
@@ -1161,9 +1161,9 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     grid = Grid.createGrid(gridConfig)
     gridStorage = grid.getStorage()
     grid.getGenerator().regular(level)
-    print("gridStorage:", gridStorage.getSize())
-    print("numDims:", numDims)
-    print("trainSamples.shape[0]:", trainSamples.shape[0])
+    print(("gridStorage:", gridStorage.getSize()))
+    print(("numDims:", numDims))
+    print(("trainSamples.shape[0]:", trainSamples.shape[0]))
 
     # ------------------------------------------------------------
     # prepare matrices for least squares
@@ -1189,7 +1189,7 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
     P = np.dot(M.T, M)
     ew, v = np.linalg.eig(C)
     # print(C)
-    print "Eigenvalues:", ew
+    print("Eigenvalues:", ew)
     if (any(ew <= 0.0)):
         print("Negative Eigenvalue found !!!")
     q = np.dot(b, M).reshape((b.shape[0],))
@@ -1215,7 +1215,8 @@ def solve(trainSamples, gridType, level, lmbd, solver="cvxopt"):
 
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument('--numDims', default=2, type=int, help="dimensionality")
     parser.add_argument('--gridType', default="linear", type=str, help="define which sparse grid should be used (poly, polyClenshawcCurtis, polyBoundary, modPoly, modPolyClenshawCurtis, ...)")
     parser.add_argument('--level', default=3, type=int, help="level of regular sparse grid")
@@ -1241,7 +1242,7 @@ if __name__ == "__main__":
     # trainSamples = np.array(getSamples())
     # ------------------------------------------------------------
     # solve the optimization problem
-    print "SGDE...",
+    print("SGDE...", end=' ')
     dist_sgde = SGDEdist.byLearnerSGDEConfig(trainSamples,
                                              config={"grid_level": args.level,
                                                      "grid_type": args.gridType,
@@ -1260,17 +1261,17 @@ if __name__ == "__main__":
                                                      "sgde_makePositive_verbose": False,
                                                      "sgde_unitIntegrand": False}, bounds=U.getBounds())
     nodalValues = dehierarchize(dist_sgde.grid, dist_sgde.alpha)
-    print "is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",
-                                        np.min(nodalValues))
-    print "-" * 80
-    print "SGDE pos..."
+    print("is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",
+                                        np.min(nodalValues)))
+    print("-" * 80)
+    print("SGDE pos...")
     grid, alpha = solve(trainSamples, args.gridType, args.level, args.lmbd,
                         solver=args.solver)
-    print("alpha:", alpha)
+    print(("alpha:", alpha))
     nodalValues = dehierarchize(grid, alpha)
     # print nodalValues
-    print "is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",
-                                        np.min(nodalValues))
+    print("is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",
+                                        np.min(nodalValues)))
     if args.makePositive:
         alpha_vec = DataVector(alpha)
         createOperationMakePositive(MakePositiveCandidateSearchAlgorithm_Intersections,
@@ -1282,8 +1283,8 @@ if __name__ == "__main__":
                              trainData=trainSamples,
                              bounds=U.getBounds())
 
-    print "cross entropy: %f, %f" % (dist_sgde.crossEntropy(testSamples),
-                                     dist_sgde_pos.crossEntropy(testSamples))
+    print("cross entropy: %f, %f" % (dist_sgde.crossEntropy(testSamples),
+                                     dist_sgde_pos.crossEntropy(testSamples)))
 
     if args.numDims == 1:
         fig = plt.figure()

@@ -1,5 +1,5 @@
 from numpy.polynomial.legendre import leggauss
-from QuadratureStrategy import QuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.QuadratureStrategy import QuadratureStrategy
 
 
 class GaussLegendreQuadrature(QuadratureStrategy):
@@ -13,10 +13,10 @@ class GaussLegendreQuadrature(QuadratureStrategy):
         super(GaussLegendreQuadrature, self).__init__(*args, **kws)
 
         # init gauss-legendre points
-        for i in xrange(self._n):
+        for i in range(self._n):
             # get rootsArray in [-1, 1]
             rootsArray, weights = leggauss(i + 1)
             # transform rootsArray to [0, 1]
             rootsArray = (rootsArray + 1) / 2.
             # zip them
-            self._gaussPoints[i] = zip(rootsArray, weights)
+            self._gaussPoints[i] = list(zip(rootsArray, weights))

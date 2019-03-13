@@ -63,7 +63,7 @@ def choose_host():
     """
     allslots = []
     sleep_time = 0.5  # seconds
-    for h, props in hosts.iteritems():
+    for h, props in hosts.items():
         allslots = allslots + [h] * props['free_cores']
     if not allslots == []:
         host = random.choice(allslots)
@@ -142,8 +142,8 @@ def do_dist_run(host, uqsetting, outfile, samplelist, starti, scratch_path, samp
 
     # now connect per ssh and run the code on host
     # -> the method dist_main is called
-    print "=====> new run on %s" % host
-    print "It will be executed: %s" % data
+    print( "=====> new run on %s" % host )
+    print( "It will be executed: %s" % data )
 
     # debugging
     #pdb.set_trace()
@@ -164,12 +164,12 @@ def dist_main(pwd, setup, uq_in, uq_out, samples, starti, host, scratch_path, sa
     @param starti:
     """
     os.chdir(pwd)
-    print "Worker ", sample_number, " in %s" % pwd
+    print(( "Worker ", sample_number, " in %s" % pwd ))
 
     # Parses the list of sample representations to a list of "real" samples
-    # print "=====> samplelist with strings: ", samples[0]  # testing
+    # print( "=====> samplelist with strings: ", samples[0]  # testing )
     samplelist = [json.loads(s) for s in samples]
-    # print "=====> samplelist with jsonObjects: ", samplelist[0]  # testing
+    # print( "=====> samplelist with jsonObjects: ", samplelist[0]  # testing )
     samplelist = [Sample.fromJson(jsonObject) for jsonObject in samplelist]
 
     # build environment for setup
@@ -179,7 +179,7 @@ def dist_main(pwd, setup, uq_in, uq_out, samples, starti, host, scratch_path, sa
 
     # execute setup command -> build uqSetting and saves it
     # to the environment specified by var
-    exec setup in var
+    exec( setup, var )
     uq = var['uq']
 
     uq.setFilename(uq_out)
@@ -195,4 +195,4 @@ def dist_main(pwd, setup, uq_in, uq_out, samples, starti, host, scratch_path, sa
     uq.writeToFile()
 
     # testing
-    print "=====> Worker %d finished." % os.getpid()
+    print( "=====> Worker %d finished." % os.getpid() )

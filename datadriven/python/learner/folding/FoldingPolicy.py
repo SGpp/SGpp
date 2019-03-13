@@ -28,7 +28,7 @@ class FoldingPolicy(object):
         self.size = dataset.getPoints().getNrows()
         
         ##Number of points in one subset
-        self.window = int( math.ceil( float(self.size) / self.level ) ) #number of points in validation set
+        self.window = int( math.ceil( self.size / self.level) ) #number of points in validation set
         
         ##Sequence of indices of points from data set
         self.seq = None 
@@ -37,8 +37,8 @@ class FoldingPolicy(object):
     ##Implementation of iterator method next()
     #
     # @return: the next subset
-    def next(self):
-        for step in xrange(self.level):
+    def __next__(self):
+        for step in range(self.level):
             yield self.dataFold[step]
         return
     
@@ -61,6 +61,6 @@ class FoldingPolicy(object):
     ##Implementation of iterator method __iter__()
     # iterates through subsets
     def __iter__(self):
-        return self.next()
+        return next(self)
             
 

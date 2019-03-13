@@ -45,7 +45,7 @@ initFile = os.path.join(libpath, "__init__.py")
 fd = open(initFile, "w")
 fd.write("from pysgpp_swig import *%s" % os.linesep)
 if len(moduleFolders) > 0:
-    fd.write("import extensions")
+    fd.write("import pysgpp.extensions%s" % os.linesep)
 fd.close()
 
 if len(moduleFolders) > 0:

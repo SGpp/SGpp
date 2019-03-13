@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -105,6 +106,7 @@ vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
+vars.Add(BoolVariable("USE_PYTHON2_FOR_PYSGPP", "Enforce using Python 2.x for pysgpp", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
@@ -374,6 +376,9 @@ if env["PLATFORM"] == "win32":
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
                                               PYSGPP_PACKAGE_PATH.abspath])
+  pysgpp_package_path = PYSGPP_PACKAGE_PATH.abspath + '/pysgpp'
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
+                                              pysgpp_package_path])
 
 # Style checker
 #########################################################################
@@ -385,6 +390,9 @@ def lintAction(target, source, env):
                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   # wait for termination and get output on stdout and stderr
   stdout, stderr = p.communicate()
+  # in Python 3.x, communicate returns bytes
+  if sys.version_info >= (3, 0):
+    stdout, stderr = stdout.decode(), stderr.decode()
   # cpplint prints on stderr
   for line in stderr.splitlines():
     # skip status lines, empty lines, and some warning types
@@ -401,10 +409,10 @@ def lintAction(target, source, env):
       location = parts[0]
       message = ":  ".join(parts[1:])
       if message != "":
-        print location + ": warning: " + message
+        print(location + ": warning: " + message)
       else:
         # occurs when cpplint excludes file via CPPLINT.cfg
-        print location
+        print(location)
   # touch file without writing anything
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass
@@ -414,12 +422,16 @@ env.Export("lintAction")
 # Custom builders for Python and Boost tests
 #########################################################################
 
-if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
-  # do the actual thing
-  builder = Builder(action="python $SOURCE", chdir=0)
-  env.Append(BUILDERS={"Test" : builder})
-  builder = Builder(action="python $SOURCE")
-  env.Append(BUILDERS={"SimpleTest" : builder})
+if env["RUN_PYTHON_TESTS"]:
+  if env["SG_PYTHON"]:
+    # do the actual thing
+    python = "python3"
+    builder = Builder(action=python + " $SOURCE", chdir=0)
+    env.Append(BUILDERS={"Test" : builder})
+    builder = Builder(action=python + " $SOURCE")
+    env.Append(BUILDERS={"SimpleTest" : builder})
+  else:
+    Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
 
 if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE --log_level=test_suite")
@@ -578,7 +590,9 @@ for module in moduleFolders:
 #########################################################################
 
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
-finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+
+finalMessagePrinter.pysgppPackagePath = (
+    PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 
 if env.GetOption("help"):
   finalMessagePrinter.disable()
