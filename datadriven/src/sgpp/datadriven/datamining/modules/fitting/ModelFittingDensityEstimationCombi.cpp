@@ -137,12 +137,25 @@ bool ModelFittingDensityEstimationCombi::refine() {
 
   if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
     refinementsPerformed++;
-    double max = 0;
-    size_t ind = 0;
+
+    /*
+     * DEBUGGING: PRINTING CURRENT SET
+     */
+    cout << "##CURRENT SET before Refinement: " << refinementsPerformed << " ##" << std::endl;
+    for (size_t i = 0; i < componentConfigs.size(); i++) {
+      cout << i << " :" << componentConfigs.at(i).coef << " [";
+      for (size_t l : componentConfigs.at(i).levels) {
+        cout << l << " ";
+      }
+      cout << "]" << std::endl;
+    }
+
     /*
      * Finding the sub grid with the greatest error.
      * \TODO Add different kinds of error estimation
      */
+    double max = 0;
+    size_t ind = 0;
     for (size_t i = 0; i < components.size(); i++) {
       double now =
           components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
@@ -154,17 +167,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
           ind = i;
         }
       }
-    }
-    /*
-     * DEBUGGING: PRINTING CURRENT SET
-     */
-    cout << "##CURRENT SET## (Refinement: " << refinementsPerformed << ")" << std::endl;
-    for (size_t i = 0; i < componentConfigs.size(); i++) {
-      cout << i << " :" << componentConfigs.at(i).coef << " [";
-      for (size_t l : componentConfigs.at(i).levels) {
-        cout << l << " ";
-      }
-      cout << "]" << std::endl;
     }
 
     /*
@@ -217,12 +219,29 @@ bool ModelFittingDensityEstimationCombi::refine() {
         addNewModel(newConfigs.at(i));
       }
     }
+
+    /*
+     * DEBUGGING: PRINTING CURRENT SET
+     */
+    size_t gridpoints = 0;
+    for (size_t i = 0; i < components.size(); i++) {
+      gridpoints += components.at(i)->getGrid().getSize();
+    }
+    cout << "##CURRENT SET after Refinement: " << refinementsPerformed
+         << " ## Sum of Gridpoints: " << gridpoints << std::endl;
+    for (size_t i = 0; i < componentConfigs.size(); i++) {
+      cout << i << " :" << componentConfigs.at(i).coef << " [";
+      for (size_t l : componentConfigs.at(i).levels) {
+        cout << l << " ";
+      }
+      cout << "]" << std::endl;
+    }
   }
   return false;
 }
 
 bool ModelFittingDensityEstimationCombi::refine(size_t newNoPoints,
-                                                    std::list<size_t>* deletedGridPoints) {
+                                                std::list<size_t>* deletedGridPoints) {
   throw application_exception(
       "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
       "deletedGridPoints): not ready jet\n");
@@ -233,8 +252,7 @@ void ModelFittingDensityEstimationCombi::reset() {
   refinementsPerformed = 0;
 }
 
-std::unique_ptr<ModelFittingDensityEstimation>
-ModelFittingDensityEstimationCombi::createNewModel(
+std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationCombi::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
   std::cout << "Creating New ";
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
