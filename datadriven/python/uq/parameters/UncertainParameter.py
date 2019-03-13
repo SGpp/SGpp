@@ -1,4 +1,4 @@
-from Parameter import Parameter
+from pysgpp.extensions.datadriven.uq.parameters.Parameter import Parameter
 
 
 class UncertainParameter(Parameter):

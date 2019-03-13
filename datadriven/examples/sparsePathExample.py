@@ -63,7 +63,7 @@ def get_max_lambda(Phi, y, num_rows, l1_ratio=1.0):
         a = np.asarray(Phi[:,i]).flatten()
         prod = np.inner(a, y)
         max_prod = max(max_prod, prod)
-    max_lambda = max_prod/(l1_ratio * num_rows)
+    max_lambda = max_prod / (l1_ratio * num_rows)
     return max_lambda
 
 ## This function calculates the weights for different lambdas.
@@ -79,13 +79,13 @@ def calculate_weight_path(X, y, max_lambda,penalty, l1_ratio):
     ## \f$ \lambda \in \{ \varepsilon \cdot \lambda_\text{max} \text{ and } \lambda_\text{max} \}\f$.
     min_lambda = epsilon * max_lambda
     lambda_grid = np.logspace(np.log10(max_lambda), np.log10(min_lambda), num=num_lambdas)
-    print "no_learner, lambda, weights"
+    print("no_learner, lambda, weights")
     for i, lamb in enumerate(lambda_grid):
         last_weights = estimator.getWeights()
         estimator = make_estimator(penalty, l1_ratio, lamb,)
         estimator.setWeights(last_weights) # reuse old weights
         estimator.train(X, y)
-        print "{}, {:2.6f}, {}".format(i, lamb, np.array2string(estimator.getWeights().array(), separator=',', max_line_width=float('inf')))
+        print("{}, {:2.6f}, {}".format(i, lamb, np.array2string(estimator.getWeights().array(), separator=',', max_line_width=float('inf'))))
 
 ## This function returns an estimator that uses the given penalty, l1_ratio
 ## and \f$\lambda\f$
@@ -120,9 +120,9 @@ def main():
                  'elasticNet': sg.RegularizationType_ElasticNet,
                  'groupLasso': sg.RegularizationType_GroupLasso}
     if len(sys.argv) <= 1 or sys.argv[1] not in penalties:
-        print "Call this script by ./sparsePathExample.py <regularization method> <l1_ratio>"
-        print "Acceptable regularization methods are:"
-        print penalties.keys()
+        print("Call this script by ./sparsePathExample.py <regularization method> <l1_ratio>")
+        print("Acceptable regularization methods are:")
+        print(list(penalties.keys()))
         return
     reg_method = penalties[sys.argv[1]]
     if len(sys.argv) > 2 and sys.argv[1]=='elasticNet':

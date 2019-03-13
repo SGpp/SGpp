@@ -1,15 +1,15 @@
 from pysgpp import (Grid, HashGridPoint)
 
-from sparse_grid import createGrid, isValid
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import createGrid, isValid
 import numpy as np
-from sparse_grid import(copyGrid,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import(copyGrid,
                         insertPoint,
                         getBasis,
                         getDegree)
 
 
 def isNumerical(x):
-    return type(x) in (int, long, float, np.int64, np.int32,
+    return type(x) in (int, int, float, np.int64, np.int32,
                        np.float64)
 
 
@@ -56,16 +56,16 @@ def extend_grid_1d(grid, *args, **kws):
     ref_gs = ref_grid.getStorage()
 
     # create cross product between the 1d and the dimd-grid
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
         new_gp = HashGridPoint(dim + 1)
 
         # copy level index vectors from old grid to the new one
-        for d in xrange(gs.getDimension()):
+        for d in range(gs.getDimension()):
             new_gp.set(d, gp.getLevel(d), gp.getIndex(d))
 
         # get the indices in the missing dimension
-        for j in xrange(ref_gs.getSize()):
+        for j in range(ref_gs.getSize()):
             ref_gp = ref_gs.getPoint(j)
             new_gp.set(dim, ref_gp.getLevel(0), ref_gp.getIndex(0))
             insertPoint(new_grid, new_gp)
@@ -79,7 +79,7 @@ def extend_grid(grid, n, *args, **kws):
     @param grid: Grid, sparse grid
     @param n: int, additional dimensions
     """
-    for _ in xrange(n):
+    for _ in range(n):
         grid = extend_grid_1d(grid, *args, **kws)
     return grid
 
@@ -131,7 +131,7 @@ def project(grid, dims):
 
     # run over all grid points in grid and
     # project them to the dimensions dims
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
         ngp = HashGridPoint(dim)
         # copy level index to new grid point
@@ -171,7 +171,7 @@ def join(grid1, grid2, *args, **kws):
     gs2 = grid2.getStorage()
 
     # join grid points: copy all the grid points from grid 1 to grid 2
-    for i in xrange(gs1.size()):
+    for i in range(gs1.size()):
         gp = gs1.getPoint(i)
 
         # insert grid point

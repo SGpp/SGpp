@@ -6,7 +6,7 @@ from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 
 pi = math.pi
 
-class interpolation_function():
+class interpolation_function(object):
   def __init__(self, d, f):
     self.f = f
     self.d = d
@@ -43,7 +43,7 @@ class interpolation_function():
 def distrib(x):
     if isinstance(x, list):
         x = x[0]
-    return (np.sin(2.5*pi*x - (pi - pi/4.)) + 1./2**0.5) / 0.527044
+    return (np.sin(2.5*pi*x - (pi - pi / 4.)) + 1. / 2**0.5) / 0.527044
 
 def parabola(x):
   res = 1.

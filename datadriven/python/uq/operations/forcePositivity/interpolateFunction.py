@@ -4,7 +4,7 @@ Created on Apr 20, 2016
 @author: franzefn
 '''
 
-from interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         hierarchize)
@@ -23,7 +23,7 @@ class InterpolateFunction(InterpolationAlgorithm):
         gs = grid.getStorage()
         nodalValues = np.ndarray(gs.getSize())
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getPoint(i).getStandardCoordinates(p)
             nodalValues[i] = self.func(p.array())
 

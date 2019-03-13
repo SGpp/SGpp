@@ -64,7 +64,7 @@ class AnovaTest(unittest.TestCase):
                         [((i, j), vij(i, j))
                          for i, j in [(0, 1), (0, 2), (1, 2)]] +
                         [((0, 1, 2), vijk(0, 1, 2))])
-        self.vg = sum([v for v in self.v_t.values()])
+        self.vg = sum([v for v in list(self.v_t.values())])
 
     def testAnova(self):
         # ----------------------------------------------------------
@@ -106,10 +106,10 @@ class AnovaTest(unittest.TestCase):
         # expectation values and variances
         sg_mean, sg_var = analysis.mean(), analysis.var()
 
-        print "-" * 60
-        print "E[x] = %g = %g" % (1.0, sg_mean["value"])
-        print "V[x] = %g = %g" % (self.vg, sg_var["value"])
-        print "-" * 60
+        print("-" * 60)
+        print("E[x] = %g = %g" % (1.0, sg_mean["value"]))
+        print("V[x] = %g = %g" % (self.vg, sg_var["value"]))
+        print("-" * 60)
 
         # ----------------------------------------------------------
         # estimated anova decomposition
@@ -124,25 +124,25 @@ class AnovaTest(unittest.TestCase):
         # ----------------------------------------------------------
         # main effects
         me = anova.getSobolIndices()
-        tme = dict([(k, v / self.vg) for k, v in self.v_t.items()])
+        tme = dict([(k, v / self.vg) for k, v in list(self.v_t.items())])
 
-        print "-------------- Sobol Indices (t = %i) ------------------" % 1
+        print("-------------- Sobol Indices (t = %i) ------------------" % 1)
         for (key, val), (k, v) in zip(sorted(me.items()),
                                       sorted(tme.items())):
-            print "%s: %s, %s" % (key, val, v)
-        print sum([val for val in me.values()]), "==", 1
-        print sum([val for val in tme.values()]), "==", 1
+            print("%s: %s, %s" % (key, val, v))
+        print(sum([val for val in list(me.values())]), "==", 1)
+        print(sum([val for val in list(tme.values())]), "==", 1)
 
         # ----------------------------------------------------------
         # total effects
         te = anova.getTotalEffects()
-        print "-------------- Total Effects (t = %i) -----------------" % 1
+        print("-------------- Total Effects (t = %i) -----------------" % 1)
         for key, val in sorted(te.items()):
-            print "%s: %s" % (key, val)
-        print "---------------------------------------------"
-        print
+            print("%s: %s" % (key, val))
+        print("---------------------------------------------")
+        print()
 
-        names = anova.getSortedPermutations(me.keys())
+        names = anova.getSortedPermutations(list(me.keys()))
         values = [me[name] for name in names]
         fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()

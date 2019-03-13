@@ -9,11 +9,10 @@
 
 import numpy as np
 
-from DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 from pysgpp import DataVector, DataMatrix
-from DataAdapter import DataAdapter
-from DataEntry import DataEntry
-import ARFFAdapter
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataEntry import DataEntry
 import types
 
 
@@ -62,8 +61,8 @@ class DataContainer(object):
     # Implementation of iterator method next()
     #
     # @return: the next element in the container
-    def next(self):
-        for row in xrange(0, self.size):
+    def __next__(self):
+        for row in range(0, self.size):
             self.points[self.name].getRow(row, self.tempPoint)
             self.tempValue = self.values[self.name][row]
             yield DataEntry(self.tempPoint, self.tempValue)
@@ -91,7 +90,7 @@ class DataContainer(object):
     # Implementation of iterator method __iter__()
     # iterates through the container
     def __iter__(self):
-        return self.next()
+        return next(self)
 
     # Returns the data set which belongs to certain category
     #
@@ -202,7 +201,7 @@ class DataContainer(object):
                     self.dataDict[self.name] = {}
 
                     p = DataVector(self.points[self.name].getNcols())
-                    for i in xrange(self.points[self.name].getNrows()):
+                    for i in range(self.points[self.name].getNrows()):
                         self.points[self.name].getRow(i, p)
                         key = tuple(p.array())
                         self.dataDict[self.name][key] = self.values[self.name][i]
@@ -233,7 +232,7 @@ class DataContainer(object):
     # @return: new DataContainer with several data sets
     def combine(self, container):
         newContainer = DataContainer(points=self.getPoints(), values=self.getValues(), name=self.name)
-        for k in self.points.keys():
+        for k in list(self.points.keys()):
             if k != self.name:
                 newContainer = newContainer.__setSubContainer(self.points[k], self.values[k], self.dataDict[k], self.specifications[k], k)
 
@@ -269,7 +268,7 @@ class DataContainer(object):
         for container in containerList:
             points = container.getPoints()
             values = container.getValues()
-            for j in xrange(len(values)):
+            for j in range(len(values)):
                 points.getRow(j, tmpVector)
                 allPoints.setRow(i, tmpVector)
                 allValues[i] = values[j]
@@ -309,7 +308,7 @@ class DataContainer(object):
             numDims = points.getNcols()
             currentPoints.resizeRows(n + m)
             x = DataVector(numDims)
-            for i in xrange(m):
+            for i in range(m):
                 points.getRow(i, x)
                 currentPoints.setRow(n + i, x)
         else:
@@ -320,13 +319,13 @@ class DataContainer(object):
             n = len(currentValues)
             m = len(values)
             currentValues.resize(n + m)
-            for i in xrange(m):
+            for i in range(m):
                 currentValues[n + i] = values[i]
         else:
             self.values[name] = values
 
         if name in self.dataDict:
-            for x, value in dataDict.items():
+            for x, value in list(dataDict.items()):
                 self.dataDict[name][x] = value
         else:
             self.dataDict[name] = dataDict
@@ -412,15 +411,17 @@ class DataContainer(object):
     # @return A string that represents the object.
     def toString(self):
         # save the data as a file, if it's not saved yet
-        for category, specification in self.specifications.items():
+        for category, specification in list(self.specifications.items()):
             if not self.specifications[category].isSaved():
+                from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
+
                 ARFFAdapter.ARFFAdapter(self.specifications[category].getFilename())\
                     .save(self.getPoints(category), self.getValues(category),
                           specification.getAttributes())
                 specification.setSaved()
 
         serializedString = "'module' : '" + self.__module__ + "',\n"
-        for category in self.specifications.keys():
+        for category in list(self.specifications.keys()):
             serializedString += "'" + category + "' : " + self.specifications[category].toString() + ",\n"
         return "{" + serializedString.rstrip(",\n") + "}\n"
 
@@ -435,8 +436,10 @@ class DataContainer(object):
         specification = jsonObject['train']
         resultContainer = ARFFAdapter.ARFFAdapter(specification['filename']).loadData('train')
         # load data for other categories
-        for category, specification in jsonObject.items():
+        for category, specification in list(jsonObject.items()):
             if not (category == 'module' or category == 'train'):
+                from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
+                
                 container = ARFFAdapter.ARFFAdapter(specification['filename']).loadData(category)
                 resultContainer = resultContainer.combine(container)
 

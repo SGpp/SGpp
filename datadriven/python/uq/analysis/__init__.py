@@ -9,5 +9,5 @@ __all__ = []
 
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
-from KnowledgeTypes import KnowledgeTypes
-from Analysis import Analysis
+from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+from pysgpp.extensions.datadriven.uq.analysis.Analysis import Analysis

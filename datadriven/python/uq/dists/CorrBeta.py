@@ -1,7 +1,7 @@
 from scipy.stats import beta
 
-from Dist import Dist
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 import numpy as np
 
 

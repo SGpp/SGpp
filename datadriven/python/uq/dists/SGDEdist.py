@@ -20,9 +20,9 @@ import tempfile
 import uuid
 import json
 
-from EstimatedDist import EstimatedDist
+from pysgpp.extensions.datadriven.uq.dists.EstimatedDist import EstimatedDist
 
-import ConfigParser as cp
+import configparser as cp
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations import isNumerical, isList
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import evalSGFunctionMulti
@@ -33,7 +33,7 @@ from pysgpp import createOperationFirstMoment, \
     createOperationSecondMoment, \
     createOperationDensityMargTo1D, \
     createOperationEval
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 from pysgpp.pysgpp_swig import LatinHypercubeSampleGenerator
 from pysgpp.extensions.datadriven.uq.sampler.Sample import SampleType
 
@@ -87,7 +87,7 @@ class SGDEdist(EstimatedDist):
             generator = LatinHypercubeSampleGenerator(numDims, n)
             samples = np.ndarray((n, numDims))
             sample = DataVector(numDims)
-            for i in xrange(samples.shape[0]):
+            for i in range(samples.shape[0]):
                 generator.getSample(sample)
                 samples[i, :] = sample.array()
             values = evalSGFunction(grid, alpha, samples)

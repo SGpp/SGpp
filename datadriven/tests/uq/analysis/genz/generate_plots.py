@@ -48,8 +48,8 @@ def load_results(inputspace, path="results"):
                                      currentStats["num_model_evaluations"])
                     ans["mc"][key] = currentStats
 
-                print "-" * 80
-                print "loaded '%s'" % (key,)
+                print("-" * 80)
+                print("loaded '%s'" % (key,))
 
     return ans
 
@@ -120,7 +120,7 @@ def plotConvergenceResults(results):
         for i, (level, values) in enumerate(results["sg"][key]["results"].items()):
             num_evals[i] = values["num_model_evaluations"]
             errors[i] = values[error_type]
-        print num_evals
+        print(num_evals)
         ixs = np.argsort(num_evals)
         if "bound" in gridTypeLabel and "no" not in gridTypeLabel:
             if rosenblatt:

@@ -11,7 +11,7 @@ __all__ = ["plotSGDE3d", "plotSGDE2d",
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from plot1d import (plotFunction1d,
+from pysgpp.extensions.datadriven.uq.plot.plot1d import (plotFunction1d,
                     plotDensity1d,
                     plotHistogram1d,
                     plotCDF,
@@ -25,7 +25,7 @@ from plot1d import (plotFunction1d,
                     plotSGDE1d,
                     plotSobolIndices)
 
-from plot2d import (plotSGDE2d,
+from pysgpp.extensions.datadriven.uq.plot.plot2d import (plotSGDE2d,
                     plotTimedependentDensity2dWithRawData,
                     plotTimedependentDensity2d,
                     plotDensity2d,
@@ -35,7 +35,7 @@ from plot2d import (plotSGDE2d,
                     plotFunction2d,
                     plotScatter2d)
 
-from plot3d import (plotFunction3d,
+from pysgpp.extensions.datadriven.uq.plot.plot3d import (plotFunction3d,
                     plotDensity3d,
                     plotKDE3d,
                     plotSG3d,
@@ -45,22 +45,22 @@ from plot3d import (plotFunction3d,
                     plotError3d,
                     insert_labels_3d)
 
-from plotGrid import plotGrid
+from pysgpp.extensions.datadriven.uq.parameters.plot.plotGrid import plotGrid
 
-from scatterplot import scatterplot_matrix
+from pysgpp.extensions.datadriven.uq.parameters.plot.scatterplot import scatterplot_matrix
 
-from colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
+from pysgpp.extensions.datadriven.uq.parameters.plot.colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
     load_font_properties, insert_legend
 
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from colors import initialize_plotting_style
+    from from pysgpp.extensions.datadriven.uq.parameters.plot.colors import initialize_plotting_style
 
     initialize_plotting_style()
 
     __all__.append('plt')
     __all__.append('mpl')
 except:
-    print "Error initializing plotting style"
+    print( "Error initializing plotting style" )
     pass

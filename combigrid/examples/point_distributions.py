@@ -27,7 +27,7 @@ leja = pysgpp.LejaPointDistribution()
 l2_leja = pysgpp.L2LejaPointDistribution()
 
 
-for i in xrange(n_points):
+for i in range(n_points):
     points[0, i] = uni.compute(n_points, i)
     points[1, i] = unib.compute(n_points, i)
     points[2, i] = cheby.compute(n_points, i)

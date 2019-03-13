@@ -5,13 +5,16 @@
 
 
 from pysgpp import *
-from solver.CGSolver import CGSolver
-from folding.FoldingPolicy import FoldingPolicy
-import pysgpp.extensions.datadriven.utils.json as json
-from TrainingStopPolicy import TrainingStopPolicy
-from TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
+
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
+from pysgpp.extensions.datadriven.utils import json
+
 import types
+
 
 
 ## The class implements the routines common for classifier and regressor.
@@ -171,7 +174,7 @@ class Learner(object):
         values = DataVector(size)
         row = DataVector(dim)
         opEval = createOperationEval(self.grid)
-        for i in xrange(size):
+        for i in range(size):
             points.getRow(i, row)
             values[i] = opEval.eval(self.knowledge.getAlphas(), row)
         self.notifyEventControllers(LearnerEvents.APPLICATION_COMPLETE)
@@ -403,22 +406,22 @@ class Learner(object):
             attrValue = self.__getattribute__(attrName)
 
             #integers, dictionaries can serialized with str()
-            if type(attrValue) in [types.IntType, types.DictType] and attrName.find("__") != 0:
+            if type(attrValue) in [int, dict] and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
 
             #store floats in exponential format
-            elif type(attrValue) == types.FloatType:
+            elif type(attrValue) == float:
                 serializationString += "'" + attrName + "'" + " : " + "%e"%attrValue + ",\n"
 
             #store list of floats in exponential format
-            elif type(attrValue) == types.ListType:
-                if len(attrValue)>0 and type(attrValue[0]) == types.FloatType:
+            elif type(attrValue) == list:
+                if len(attrValue)>0 and type(attrValue[0]) == float:
                     serializationString += "'" + attrName + "'" + " : " + self.__listOfFloatsToString(attrValue) + ",\n"
                 else:
                     serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
 
             # serialize strings with quotes
-            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+            elif type(attrValue) == bytes and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
 
             #serialize knowledge
@@ -470,7 +473,7 @@ class Learner(object):
 
 
 ## Constants of different learning events
-class LearnerEvents:
+class LearnerEvents(object):
     ## Learning process is started
     LEARNING_STARTED = 100
 

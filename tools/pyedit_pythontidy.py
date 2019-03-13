@@ -3,6 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
+
 """
 This code is public domain.
 The original author is Bear Huang (http://bear330.wordpress.com/).
@@ -58,7 +59,7 @@ if cmd == 'onCreateActions':
                     # format selection.
                     #c = ps.getSelectedText()
                     #f1.write(ps.getSelectedText())
-                    print "Format selected text is not supported yet."
+                    print("Format selected text is not supported yet.")
                     f1.write("")
                     # A kind of solution is to insert a special comment in
                     # front and end of selection text, pythontidy it, and
@@ -84,7 +85,7 @@ if cmd == 'onCreateActions':
 
                 sel = TextSelection(doc, doc.getLineOffset(startLine), 0)
                 self.getTextEditor().getSelectionProvider().setSelection(sel)
-            except java.lang.Exception, e:
+            except java.lang.Exception as e:
                 self.beep(e)
 
     def bindInInterface():

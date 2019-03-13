@@ -1,4 +1,4 @@
-from Estimator import Estimator
+from pysgpp.extensions.datadriven.uq.estimators.Estimator import Estimator
 import numpy as np
 from scipy.stats import norm
 
@@ -23,7 +23,7 @@ class MCEstimator(Estimator):
         @param samples: numpy array
         """
         moments = np.ndarray(self.__npaths)
-        for i in xrange(self.__npaths):
+        for i in range(self.__npaths):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.mean(bootstrap)
 
@@ -48,7 +48,7 @@ class MCEstimator(Estimator):
         @param samples: numpy array
         """
         moments = np.ndarray(self.__npaths)
-        for i in xrange(self.__npaths):
+        for i in range(self.__npaths):
             bootstrap = self.getBootstrap(samples)
             moments[i] = np.var(bootstrap)
 
