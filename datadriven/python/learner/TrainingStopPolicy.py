@@ -130,11 +130,11 @@ class TrainingStopPolicy(object):
             attrValue = self.__getattribute__(attrName)
             
             #lists, integers, floats, dictionaries can serialized with str()
-            if type(attrValue) in [types.ListType, types.IntType, 
-                             types.FloatType, types.DictType] and attrName.find("__") != 0: 
+            if type(attrValue) in [list, int, 
+                             float, dict] and attrName.find("__") != 0: 
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             # serialize strings with quotes    
-            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+            elif type(attrValue) == bytes and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
                 
         serializationString = "{" + serializationString.rstrip(",\n") + "}"
@@ -149,17 +149,17 @@ class TrainingStopPolicy(object):
     @classmethod
     def fromJson(cls, jsonObject):
         policy = TrainingStopPolicy()
-        if jsonObject.has_key('_TrainingStopPolicy__adaptiveIterationLimit'):
+        if '_TrainingStopPolicy__adaptiveIterationLimit' in jsonObject:
             policy.setAdaptiveIterationLimit(jsonObject['_TrainingStopPolicy__adaptiveIterationLimit'])
-        if jsonObject.has_key('_TrainingStopPolicy__epochsLimit'):
+        if '_TrainingStopPolicy__epochsLimit' in jsonObject:
             policy.setEpochsLimit(jsonObject['_TrainingStopPolicy__epochsLimit'])
-        if jsonObject.has_key('_TrainingStopPolicy__MSELimit'):
+        if '_TrainingStopPolicy__MSELimit' in jsonObject:
             policy.setMSELimit(jsonObject['_TrainingStopPolicy__MSELimit'])
-        if jsonObject.has_key('_TrainingStopPolicy__accuracyLimit'):
+        if '_TrainingStopPolicy__accuracyLimit' in jsonObject:
             policy.setAccuracyLimit(jsonObject['_TrainingStopPolicy__accuracyLimit'])
-        if jsonObject.has_key('_TrainingStopPolicy__gridSize'):
+        if '_TrainingStopPolicy__gridSize' in jsonObject:
             policy.setGridSizeLimit(jsonObject['_TrainingStopPolicy__gridSize'])
-        if jsonObject.has_key('_TrainingStopPolicy__oldGridSize'):
+        if '_TrainingStopPolicy__oldGridSize' in jsonObject:
             policy.__oldGridSize = jsonObject['_TrainingStopPolicy__oldGridSize']
         return policy
 

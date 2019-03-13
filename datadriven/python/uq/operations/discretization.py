@@ -2,7 +2,7 @@ from pysgpp import (DataVector, DataMatrix,
                     SurplusRefinementFunctor, Grid)
 
 # from epsilonComplexity import getL2EpsilonComplexity
-from sparse_grid import (copyGrid,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (copyGrid,
                          hierarchize,
                          evalSGFunctionMulti)
 import numpy as np
@@ -25,7 +25,7 @@ def computeCoefficients(jgrid, grid, alpha, f):
     # dehierarchization
     p = DataVector(jgs.getDimension())
     A = DataMatrix(jgs.getSize(), jgs.getDimension())
-    for i in xrange(jgs.getSize()):
+    for i in range(jgs.getSize()):
         jgs.getCoordinates(jgs.getPoint(i), p)
         A.setRow(i, p)
 
@@ -33,15 +33,15 @@ def computeCoefficients(jgrid, grid, alpha, f):
 
     # apply f to all grid points
     jnodalValues = DataVector(jgs.getSize())
-    for i in xrange(len(nodalValues)):
+    for i in range(len(nodalValues)):
         A.getRow(i, p)
-#         print i, p.array(), nodalValues[i], alpha.min(), alpha.max()
+#         print( i, p.array(), nodalValues[i], alpha.min(), alpha.max() )
 #         if nodalValues[i] < -1e20 or nodalValues[i] > 1e20:
 #             from pysgpp.extensions.datadriven.uq.operations import evalSGFunction, evalSGFunctionMultiVectorized
-#             print alpha.min(), alpha.max()
-#             print evalSGFunction(grid, alpha, p)
-#             print evalSGFunctionMulti(grid, alpha, DataMatrix([p.array()]))
-#             print evalSGFunctionMultiVectorized(grid, alpha, DataMatrix([p.array()]))
+#             print( alpha.min(), alpha.max() )
+#             print( evalSGFunction(grid, alpha, p) )
+#             print( evalSGFunctionMulti(grid, alpha, DataMatrix([p.array()])) )
+#             print( evalSGFunctionMultiVectorized(grid, alpha, DataMatrix([p.array()])) )
 #             import ipdb; ipdb.set_trace()
         jnodalValues[i] = f(p.array(), nodalValues[i])
 
@@ -72,7 +72,7 @@ def computeErrors(jgrid, jalpha, grid, alpha, f, n=200):
 
     # compute errors
     err = DataVector(n)
-    for i in xrange(n):
+    for i in range(n):
         p = samples[i, :]
         y = f(p, nodalValues[i])
         err[i] = abs(y - jnodalValues[i])
@@ -102,7 +102,7 @@ def estimateL2error(grid1, grid2, alpha2):
     gs1 = grid1.getStorage()
     gs2 = grid2.getStorage()
     ans = 0
-    for i in xrange(gs2.getSize()):
+    for i in range(gs2.getSize()):
         gp = gs2.getPoint(i)
         if not gs1.isContaining(gp):
             ans += abs(alpha2[i])
@@ -146,7 +146,7 @@ def discretizeFunction(f, bounds, level=2, hasBorder=False, *args, **kws):
     # discretize on given level
     p = DataVector(dim)
     nodalValues = DataVector(gs.getSize())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         # transform to the right space
         q = T.unitToProbabilistic(p.array())
@@ -197,7 +197,7 @@ def discretize(grid, alpha, f, epsilon=0.,
     else:
         accMiseL2 = l2error_grid
 
-#     print "iteration 0/%i (%i, %i, %g): %g, %g, %s" % \
+#     print( "iteration 0/%i (%i, %i, %g): %g, %g, %s" % \ )
 #         (refnums, jgs.getSize(), len(jalpha),
 #          epsilon, accMiseL2, l2error_grid, maxdrift)
 
@@ -230,12 +230,12 @@ def discretize(grid, alpha, f, epsilon=0.,
         if useDiscreteL2Error:
             maxdrift, accMiseL2 = computeErrors(jgrid, jalpha, grid, alpha, f)
         # ------------------------------
-        print "iteration %i/%i (%i, %i, %i, %i, %g): %g, %g, %s -> current best %g" % \
+        print( "iteration %i/%i (%i, %i, %i, %i, %g): %g, %g, %s -> current best %g" % \
             (ref + 1, refnums,
              jgs.getSize(), len(jalpha),
              bestGrid.getSize(), len(bestAlpha),
              epsilon,
-             accMiseL2, l2error_grid, maxdrift, bestL2Error)
+             accMiseL2, l2error_grid, maxdrift, bestL2Error))
 
         # check whether the new grid is better than the current best one
         # using the discrete l2 error. If no MC integration is done,

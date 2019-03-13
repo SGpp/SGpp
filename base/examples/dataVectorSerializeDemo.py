@@ -18,11 +18,11 @@ v.append(2.0)
 v.append(3.0)
 
 ## Store the vector to file
-print v
+print( v )
 v.toFile("dataVectorTest.mat")
 
 ## Load the created DataVector from file and then save it again (for no particular reason)
 v2 = DataVector.fromFile("dataVectorTest.mat")
-print v2
+print( v2 )
 
 v2.toFile("dataVectorTest2.mat")

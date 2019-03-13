@@ -75,9 +75,9 @@ class UQSettingTest(unittest.TestCase):
 
         res = uq_b.getResults(qoi='x')
 
-        assert res.keys() == [0]
+        assert list(res.keys()) == [0]
 
-        for t, data in uq_b.toDataMatrix(qoi='x').items():
+        for t, data in list(uq_b.toDataMatrix(qoi='x').items()):
             writeDataARFF({'filename': 'uqSetting_%g.arff' % t,
                            'data': data})
 

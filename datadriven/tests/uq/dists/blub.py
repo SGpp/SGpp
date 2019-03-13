@@ -28,14 +28,14 @@ Y2 = [f(x) * U.pdf(trans(x)) for x in X]
 from scipy.integrate import quad
 
 I = quad(U.pdf, t_a, t_b)[0]
-print I
+print(I)
 I = 1. / sigma * quad(lambda x: U.pdf(trans(x)), a, b)[0]
-print I
+print(I)
 
 c = my
 I1 = quad(U.pdf, t_a, trans(c))[0]
 I2 = quad(lambda x: U.pdf(trans(x)), a, c)[0] / sigma
 
-print I1, I2
+print(I1, I2)
 
-print U.ppf(I1), U.ppf(I2)
+print(U.ppf(I1), U.ppf(I2))

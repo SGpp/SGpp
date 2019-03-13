@@ -20,16 +20,16 @@ class InfoToScreen(LearnerEventController, SolverEventController):
     ##
     def handleSolvingEvent(self, subject, status):
         if status == LinearSolverEvents.STARTING:
-            print "Solving started"
+            print("Solving started")
         elif status == LinearSolverEvents.CALC_STARTING:
-            print "Starting norm of residuum: %g" % subject.getResiduum()
+            print("Starting norm of residuum: %g" % subject.getResiduum())
         elif status == LinearSolverEvents.ITERATION_COMPLETE:
-            print "delta: %g" % subject.getResiduum()
+            print("delta: %g" % subject.getResiduum())
         elif status == LinearSolverEvents.COMPLETE:
-            print "Solving Complete"
+            print("Solving Complete")
             #print "Number of iterations: %d (max. %d)" % (subject.getNumberIterations(), subject.getImax())
-            print "Number of iterations: %d" % (subject.getNumberIterations())
-            print "Final norm of residuum: %g" % subject.getResiduum()
+            print("Number of iterations: %d" % (subject.getNumberIterations()))
+            print("Final norm of residuum: %g" % subject.getResiduum())
             
             
     ##
@@ -40,39 +40,39 @@ class InfoToScreen(LearnerEventController, SolverEventController):
     ##        
     def handleLearningEvent(self, subject, status):
         if status == LearnerEvents.LEARNING_STARTED:
-            print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of data entries is:", subject.dataContainer.getSize()
+            print(("Dimension is:", subject.dataContainer.getDim()))
+            print(("Number of data entries is:", subject.dataContainer.getSize()))
             
         elif status == LearnerEvents.LEARNING_COMPLETE:
-            print "Learning complete"
+            print ("Learning complete")
         
         elif status == LearnerEvents.LEARNING_WITH_FOLDING_STARTED:
             pass
         
         elif status == LearnerEvents.LEARNING_WITH_FOLDING_COMPLETE:
-            print "Learning complete"
+            print ("Learning complete")
         
         elif status == LearnerEvents.LEARNING_STEP_STARTED:
-            print "Adaptive Step: ", subject.iteration
+            print(("Adaptive Step: ", subject.iteration))
             
         elif status == LearnerEvents.LEARNING_STEP_COMPLETE:
-            print "Number of points: ", subject.numberPoints[-1]
-            print "Correct classified on training data: ",subject.trainAccuracy[-1]
+            print(( "Number of points: ", subject.numberPoints[-1] ))
+            print(( "Correct classified on training data: ",subject.trainAccuracy[-1] ))
             
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STARTED:
-            print "Dimension is:", subject.dataContainer.getDim()
-            print "Number of data entries is:", subject.dataContainer.getSize()
+            print(( "Dimension is:", subject.dataContainer.getDim() ))
+            print(( "Number of data entries is:", subject.dataContainer.getSize() ))
         
         elif status == LearnerEvents.LEARNING_WITH_TESTING_COMPLETE:
-            print "Learning complete"
+            print ( "Learning complete" )
         
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_STARTED:
-            print "Adaptive Step:", subject.iteration
+            print(( "Adaptive Step:", subject.iteration ))
             
         elif status == LearnerEvents.LEARNING_WITH_TESTING_STEP_COMPLETE:
-            print "Number of points: ", subject.numberPoints[-1]
-            print "Correct classified on training data: ",subject.trainAccuracy[-1]
-            print "Correct classified on testing data:  ",subject.testAccuracy[-1]
+            print(("Number of points: ", subject.numberPoints[-1] ))
+            print(("Correct classified on training data: ",subject.trainAccuracy[-1] ))
+            print(("Correct classified on testing data:  ",subject.testAccuracy[-1] ))
             
         elif status == LearnerEvents.APPLICATION_STARTED:
             pass
@@ -81,4 +81,4 @@ class InfoToScreen(LearnerEventController, SolverEventController):
             pass
         
         elif status == LearnerEvents.REFINING_GRID:
-            print "Refining Grid"
+            print ("Refining Grid" )

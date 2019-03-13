@@ -3,11 +3,11 @@ from pysgpp import (DataVector, DataMatrix,
                     GridType_Linear, GridType_Poly)
 
 # from epsilonComplexity import getL2EpsilonComplexity
-from sparse_grid import (hierarchize,
+from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (hierarchize,
                          evalSGFunctionMulti,
                          getDegree,
                          isRefineable)
-from general import join
+from pysgpp.extensions.datadriven.uq.operations.general import join
 import numpy as np
 
 
@@ -41,7 +41,7 @@ def computeErrors(jgrid, jalpha,
     # compute errors
     p = DataVector(jgs.getDimension())
     err = DataVector(n)
-    for i in xrange(n):
+    for i in range(n):
         samples.getRow(i, p)
         y = nodalValues1[i] * nodalValues2[i]
         if abs(jnodalValues[i]) > 1e100:
@@ -64,7 +64,7 @@ def dehierarchizeOnNewGrid(gridResult, grid, alpha):
     gs = gridResult.getStorage()
     ps = np.ndarray((gs.getSize(), gs.getDimension()))
     p = DataVector(gs.getDimension())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         ps[i, :] = p.array()
     nodalValues = evalSGFunctionMulti(grid, alpha, ps)
@@ -91,7 +91,7 @@ def refine(jgrid, jalpha):
     refinementStrategy = CreateAllChildrenRefinement()
     if len(refinable) == 0:
         refinable = []
-        for i in xrange(jgs.getSize()):
+        for i in range(jgs.getSize()):
             gp = jgs.getPoint(i)
             if isRefineable(jgrid, gp):
                 refinable.append(gp)

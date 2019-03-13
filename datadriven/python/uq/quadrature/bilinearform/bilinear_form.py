@@ -26,21 +26,21 @@ def computeBilinearFormQuad(grid, U):
 
     s = np.ndarray(gs.getDimension(), dtype='float')
     # run over all rows
-    for i in xrange(gs.size()):
+    for i in range(gs.size()):
         gpi = gs.getPoint(i)
         # run over all columns
-        for j in xrange(i, gs.size()):
+        for j in range(i, gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.getPoint(j)
-            for d in xrange(gs.getDimension()):
+            for d in range(gs.getDimension()):
                 # get level index
                 lid, iid = level.get(i, d), index.get(i, d)
                 ljd, ijd = level.get(j, d), index.get(j, d)
 
                 # compute left and right boundary of the support of both
                 # basis functions
-                lb = max([(iid - 1) / lid, (ijd - 1) / ljd])
-                ub = min([(iid + 1) / lid, (ijd + 1) / ljd])
+                lb = max([((iid - 1) / lid), ((ijd - 1) / ljd)])
+                ub = min([((iid + 1) / lid), ((ijd + 1) / ljd)])
 
                 # same level, different index
                 if lid == ljd and iid != ijd:
@@ -95,22 +95,22 @@ def computeBilinearForm(grid, U):
     s = np.ndarray(gs.getDimension(), dtype='float')
 
     # run over all rows
-    for i in xrange(gs.size()):
+    for i in range(gs.size()):
         gpi = gs.getPoint(i)
         # run over all columns
-        for j in xrange(i, gs.size()):
+        for j in range(i, gs.size()):
             # print "%i/%i" % (i * gs.size() + j + 1, gs.size() ** 2)
             gpj = gs.getPoint(j)
             # run over all dimensions
-            for d in xrange(gs.getDimension()):
+            for d in range(gs.getDimension()):
                 # get level index
                 lid, iid = level.get(i, d), index.get(i, d)
                 ljd, ijd = level.get(j, d), index.get(j, d)
 
                 # compute left and right boundary of the support of both
                 # basis functions
-                lb = max([(iid - 1) / lid, (ijd - 1) / ljd])
-                ub = min([(iid + 1) / lid, (ijd + 1) / ljd])
+                lb = max([((iid - 1) / lid), ((ijd - 1) / ljd)])
+                ub = min([((iid + 1) / lid), ((ijd + 1) / ljd)])
 
                 # same level, different index
                 if lid == ljd and iid != ijd:
@@ -123,7 +123,7 @@ def computeBilinearForm(grid, U):
                     # do the 1d interpolation ...
                     lid, iid = gpi.getLevel(d), int(iid)
                     ljd, ijd = gpj.getLevel(d), int(ijd)
-                    for k in xrange(ngs.size()):
+                    for k in range(ngs.size()):
                         x = ngs.getCoordinate(ngs.getPoint(k), 0)
                         nodalValues[k] = max(0, basis.eval(lid, iid, x)) * \
                             max(0, basis.eval(ljd, ijd, x))
@@ -153,9 +153,9 @@ def computePiecewiseConstantBilinearForm(grid, U):
     p = DataVector(gs.getDimension())
     q = DataVector(gs.getDimension())
 
-    for i in xrange(gs.size()):
+    for i in range(gs.size()):
         gs.getCoordinates(gs.getPoint(i), p)
-        for j in xrange(gs.size()):
+        for j in range(gs.size()):
             gs.getCoordinates(gs.getPoint(j), q)
             # compute center of the support
             p.add(q)

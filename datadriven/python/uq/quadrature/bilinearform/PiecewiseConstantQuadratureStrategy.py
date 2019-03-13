@@ -4,7 +4,7 @@ Created on Aug 6, 2014
 @author: franzefn
 """
 from pysgpp import DataMatrix, createOperationLTwoDotExplicit, DataVector
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 
 
 class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
@@ -27,7 +27,7 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         Generates a unique key for a given list of grid points
         @param gps: list of HashGridPoint
         """
-        return tuple([(gp.getLevel(d), gp.getIndex(d)) for gp in gps for d in xrange(gp.getDimension())])
+        return tuple([(gp.getLevel(d), gp.getIndex(d)) for gp in gps for d in range(gp.getDimension())])
 
     def computeBilinearForm(self, grid):
         """
@@ -45,10 +45,10 @@ class PiecewiseConstantQuadratureStrategy(BilinearQuadratureStrategy):
         p = DataVector(gs.getDimension())
         q = DataVector(gs.getDimension())
 
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gpi = gs.getPoint(i)
             gs.getCoordinates(gpi, p)
-            for j in xrange(gs.getSize()):
+            for j in range(gs.getSize()):
                 gpj = gs.getPoint(j)
                 gs.getCoordinates(gpj, q)
                 y = float(A.get(i, j) * self._U.pdf(p))

@@ -47,7 +47,7 @@ if options.infiles == None:
 for filename in options.infiles:
     try:
         # read in files
-        print "================= %20s =================" %(filename)
+        print( "================= %20s =================" %(filename) )
         ftype = isARFFFile(filename)
         if ftype == ARFF:
             dataset = readDataARFF(filename)
@@ -61,40 +61,40 @@ for filename in options.infiles:
         # header
         dim = len(dataset["data"])
         numpoints = len(dataset["data"][0])
-        print "Dim (#attributes): %d"%(dim)
-        print " %-4s %-12s %-12s %-12s %-12s %-12s" % ("Dim",
+        print( "Dim (#attributes): %d"%(dim) )
+        print( " %-4s %-12s %-12s %-12s %-12s %-12s" % ("Dim",
                                                        "Min",
                                                        "Max",
                                                        "mean",
                                                        "unbiased V",
-                                                       "samplestddev")
+                                                       "samplestddev"))
         # traverse all attributes
         for i in range(dim):
             total_sum = sum(dataset["data"][i])
-            mean = total_sum/float(numpoints)
-            unbiased_variance = sum(map(lambda x: (x-mean)**2, dataset["data"][i]))/float(numpoints-1)
+            mean = total_sum / numpoints
+            unbiased_variance = sum([(x-mean)**2 for x in dataset["data"][i]]) / (numpoints-1)
             sample_stddev = math.sqrt(unbiased_variance)
-            print "  %02d %12f %12f %12f %12f %12f" %(i+1,
+            print( "  %02d %12f %12f %12f %12f %12f" %(i+1, 
                                                  min(dataset["data"][i]),
                                                  max(dataset["data"][i]),
                                                  mean,
                                                  unbiased_variance,
-                                                 sample_stddev)
-        print "#data points: %d"%(numpoints)
+                                                 sample_stddev))
+        print( "#data points: %d"%(numpoints) )
         # statistics for class distribution
-        if dataset.has_key("classes"):
-            print "Class distribution:"
+        if "classes" in dataset:
+            print( "Class distribution:" )
             class_count = {}
             for c in dataset["classes"]:
-                if class_count.has_key(c):
+                if c in class_count:
                     class_count[c] += 1
                 else:
                     class_count[c] = 1
-            class_values = class_count.keys()
+            class_values = list(class_count.keys())
             class_values.sort()
             for c in class_values:
-                print "  %12f %d" % (c, class_count[c])
+                print( "  %12f %d" % (c, class_count[c]) )
 
-    except Exception, e:
+    except Exception as e:
         sys.stderr.write("ERROR: Skipping "+filename+os.linesep)
-        print "  ",e
+        print(( "  ",e ))

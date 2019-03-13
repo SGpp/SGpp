@@ -3,7 +3,7 @@ from pysgpp.extensions.datadriven.uq.operations import (hierarchize,
                                hierarchizeBruteForce)
 from pysgpp import (DataVector, DataMatrix)
 
-from Learner import Learner, LearnerEvents
+from pysgpp.extensions.datadriven.uq.learner.Learner import Learner, LearnerEvents
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkInterpolation, dehierarchize
 from pysgpp.extensions.datadriven.uq.plot import plotNodal3d, plotSGNodal3d
@@ -38,7 +38,7 @@ class Interpolant(Learner):
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
         cnt = 0
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gp = gs.getPoint(i)
             gs.getCoordinates(gp, p)
             x = tuple(p.array())
@@ -56,13 +56,13 @@ class Interpolant(Learner):
                 # ixs = np.argsort(l)
                 # # nodalValues[i] = np.mean(l[ixs[:n]])
                 nodalValues[i] = 0.0
-                print p, nodalValues[i]
+                print(( p, nodalValues[i] ))
                 cnt += 1
             else:
                 nodalValues[i] = float(points[x])
 
         if cnt > 0:
-            print '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize())
+            print( '%i/%i of the grid points have been set to 0' % (cnt, gs.getSize()) )
             pdb.set_trace()
 
         # hierarchization

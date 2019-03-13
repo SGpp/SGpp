@@ -29,7 +29,7 @@ from pysgpp.extensions.datadriven.uq.dists import J, Beta, Lognormal, TLognormal
 from pysgpp.extensions.datadriven.uq.transformation import (JointTransformation,
                                                             RosenblattTransformation,
                                                             LinearTransformation)
-from Parameter import Parameter
+from pysgpp.extensions.datadriven.uq.parameters.Parameter import Parameter
 
 import numpy as np
 
@@ -53,7 +53,7 @@ class ParameterSet(object):
         Copy the object
         """
         ans = ParameterSet(self.__n)
-        for key, value in self.items():
+        for key, value in list(self.items()):
             ans.addParam(key, value)
         return ans
 
@@ -67,7 +67,7 @@ class ParameterSet(object):
         if len(self.__params) <= key:
             self.__params += [None] * (key - len(self.__params) + 1)
         # get all currently available names
-        names = [param.getName() for param in self.values()]
+        names = [param.getName() for param in list(self.values())]
         # check if the new name and the key is unique
         name = value.getName()
         if self.__params[key] is not None or \
@@ -85,7 +85,7 @@ class ParameterSet(object):
         Add a dictionary of parameters to the parameter set
         @param params: dictionary {key: param} to the parameter set
         """
-        for key, value in params.items():
+        for key, value in list(params.items()):
             self.addParam(key, value)
 
     def replaceParam(self, key, value):
@@ -109,7 +109,7 @@ class ParameterSet(object):
         """
         param = self.__params[key]
         # remove the parameter by shifting the upper ones
-        for nkey in xrange(key + 1, self.__n):
+        for nkey in range(key + 1, self.__n):
             self.__params[nkey - 1] = self.__params[nkey]
 
         # reset the upper slot
@@ -126,7 +126,7 @@ class ParameterSet(object):
         """
         ans = ParameterSet(0)
         i = 0
-        for param in self.values():
+        for param in list(self.values()):
             if param.isUncertain() == isUncertain \
                     and (isActive is None
                          or param.isActive() == isActive):
@@ -173,7 +173,7 @@ class ParameterSet(object):
         """
         Creates a list of all distributions
         """
-        return [param.getDistribution() for param in self.values()
+        return [param.getDistribution() for param in list(self.values())
                 if param.isUncertain()]
 
     def getParameter(self, name):
@@ -195,7 +195,7 @@ class ParameterSet(object):
         """
         Creates a list of all transformations
         """
-        return [param.getTransformation() for param in self.values()
+        return [param.getTransformation() for param in list(self.values())
                 if param.isActive()]
 
     def getJointTransformation(self):
@@ -207,7 +207,7 @@ class ParameterSet(object):
     def getOrthogonalPolynomialBasisFunctions(self):
         tensorBasis = OrthogonalBasisFunctionsCollection()
 
-        for param in self.values():
+        for param in list(self.values()):
             if param.isUncertain():
                 orthogPoly = param.getOrthogonalPolynomial()
                 if orthogPoly is not None:
@@ -263,14 +263,14 @@ class ParameterSet(object):
         """
         xlim = np.ndarray([self.__dim, 2], dtype='float')
         i = 0
-        for param in self.values():
+        for param in list(self.values()):
             if param.isUncertain():
                 if param.getCount() == 1:
                     xlim[i] = param.getDistribution().getBounds()
                 else:
                     bounds = param.getDistribution().getBounds()
                     # add the boundaries for each dimension
-                    for j in xrange(param.getCount()):
+                    for j in range(param.getCount()):
                         xlim[i + j, :] = bounds[j]
             else:
                 # the interval is just a value for deterministic parameters
@@ -287,12 +287,12 @@ class ParameterSet(object):
         """
         name = [None] * self.__dim
         i = 0
-        for param in self.values():
+        for param in list(self.values()):
             if param.getCount() == 1:
                 name[i] = param.getName()
             else:
                 names = param.getName()
-                for j in xrange(param.getCount()):
+                for j in range(param.getCount()):
                     name[i + j] = names[j]
             i += param.getCount()
         return name
@@ -320,7 +320,7 @@ class ParameterSet(object):
         is defined as the number of active parameters.
         """
         ans = 0
-        for param in self.values():
+        for param in list(self.values()):
             if param.isActive():
                 ans += param.getCount()
         return ans
@@ -334,10 +334,10 @@ class ParameterSet(object):
 
         ans = [0] * self.getStochasticDim()
         k = accLevel = 0
-        for param in self.values():
+        for param in list(self.values()):
             cnt = param.getCount()
             if param.isActive():
-                for j in xrange(cnt):
+                for j in range(cnt):
                     ans[k + j] = p[accLevel + j]
                 k += cnt
 
@@ -353,7 +353,7 @@ class ParameterSet(object):
         # find data points which correspond to current setting
         ans = {}
         cnt = 0
-        for p, v in data.items():
+        for p, v in list(data.items()):
             if len(p) == self.getDim():
                 up = self.extractActiveTuple(p)
                 ans[up] = v
@@ -376,11 +376,11 @@ class ParameterSet(object):
 
         ans = np.ndarray(self.__dim, dtype='float')
         k = accLevel = 0
-        for param in self.values():
+        for param in list(self.values()):
             cnt = param.getCount()
             # if the parameter is active then it must be available in p
             if param.isActive():
-                for j in xrange(cnt):
+                for j in range(cnt):
                     ans[accLevel + j] = p[k + j]
                 k += cnt
             # ... otherwise we need to get the value from its specification
@@ -400,7 +400,7 @@ class ParameterSet(object):
         return self.__expandParameter(p, isUnit=True)
 
     def keys(self):
-        return [key for key in xrange(len(self.__params))
+        return [key for key in range(len(self.__params))
                 if self.__params[key] is not None]
 
     def values(self):
@@ -415,7 +415,7 @@ class ParameterSet(object):
 
     def __str__(self):
         return "\n".join(["%i: %s" % (key, value)
-                          for key, value in self.items()])
+                          for key, value in list(self.items())])
 
     def __len__(self):
         return self.__dim
@@ -431,7 +431,7 @@ class ParameterSet(object):
             return False
 
         # get parameters from other
-        params = [param for _, param in other.items()]
+        params = [param for _, param in list(other.items())]
 
         i = 0
         while i < len(self.__params):
@@ -472,7 +472,7 @@ class ParameterSet(object):
                 else:
                     # marginalize the densities and update the transformations
                     innertrans = trans.getTransformations()
-                    for idim in xrange(dist.getDim()):
+                    for idim in range(dist.getDim()):
                         margDist = dist.marginalizeToDimX(idim)
                         margDistList.append(margDist)
                         # update transformations
@@ -485,7 +485,7 @@ class ParameterSet(object):
             assert len(margDistList) == len(margTransformations) == activeParams.getDim()
 
             # update the parameter setting
-            from ParameterBuilder import ParameterBuilder
+            from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
             builder = ParameterBuilder()
             up = builder.defineUncertainParameters()
             for name, dist, trans in zip(activeParams.getNames(),
@@ -516,7 +516,7 @@ class ParameterSet(object):
         obj = jsonObject['_ParameterSet__params']
         if obj:
             params = {}
-            for key, value in obj.items():
+            for key, value in list(obj.items()):
                 params[int(key)] = Parameter.fromJson(value)
 
         ans = ParameterSet(len(params))
@@ -534,7 +534,7 @@ class ParameterSetIterator(object):
         self.__params = params
         self.__current = 0
 
-    def next(self):
+    def __next__(self):
         if self.__current == len(self.__params):
             raise StopIteration
         else:

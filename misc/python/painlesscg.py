@@ -63,11 +63,11 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
 
     d = r.dotProduct(r)
     d0 = d * epsilon * epsilon
-    print "delta_0 %g" % d0
+    print( "delta_0 %g" % d0 )
 
     while i < imax+1 and d > d0:
         ApplyA(B, C, r, temp, x, l)
-        a = d/r.dotProduct(temp)
+        a = d / r.dotProduct(temp)
 
         # x = x + ar
         alpha.axpy(a, r)
@@ -81,12 +81,12 @@ def sd(y, alpha, grid, x, imax, epsilon, l):
             r.axpy(-a, temp)
 
         d = r.dotProduct(r)
-        print "delta: %g" % d
+        print( "delta: %g" % d )
         i += 1
-    print i
-    print imax
-    print d0
-    print d
+    print( i )
+    print( imax )
+    print( d0 )
+    print( d )
 
 
 def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
@@ -114,13 +114,13 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
     delta_0 = delta_new*epsilon2
 
     if verbose:
-        print "delta_0 %g" % delta_0
+        print ("delta_0 %g" % delta_0 )
 
     while (i < imax+1) and (delta_new > delta_0):
     	# q = A*d
         ApplyA(B, C, d, q, x, l)
 	    # a = d_new / d.q
-        a = delta_new/d.dotProduct(q)
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -135,11 +135,11 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
             r.axpy(-a, q)
 
         if verbose:
-            print "delta: %g" % delta_new
+            print( "delta: %g" % delta_new )
 
         delta_old = delta_new
         delta_new = r.dotProduct(r)
-        beta = delta_new/delta_old
+        beta = delta_new / delta_old
 
         d.mult(beta)
         d.add(r)
@@ -147,10 +147,10 @@ def cg(y, alpha, grid, x, imax, epsilon, l, verbose=True):
         i += 1
 
     if verbose:
-        print i
-        print imax
-        print delta_0
-        print delta_new
+        print( i )
+        print( imax )
+        print( delta_0 )
+        print( delta_new )
 
 
 def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
@@ -172,7 +172,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
     delta_0 = r.dotProduct(r)*epsilon2
     delta = 0.0
     if verbose:
-        print "delta_0 %g" % delta_0
+        print( "delta_0 %g" % delta_0 )
 
     # Choose r0 as r
     r0 = DataVector(r)
@@ -191,7 +191,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
         if sigma == 0.0:
             break
 
-        a = rho/sigma
+        a = rho / sigma
 
         #w = r - a*s
         w = DataVector(r)
@@ -215,7 +215,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 
         delta = r.dotProduct(r)
         if verbose:
-            print "delta: %g" % delta
+            print( "delta: %g" % delta )
         # stoppe falls genauigkeit
         if delta < delta_0:
             break
@@ -246,7 +246,7 @@ def BiCGStab(b, alpha, imax, epsilon, ApplyMatrix, verbose=True):
 # @return tuple (number of iterations, final norm of residuum)
 def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, max_threshold=None):
     if verbose:
-        print "Starting Conjugated Gradients"
+        print( "Starting Conjugated Gradients" )
 
 #    Apply B to y
 #    b = DataVector(len(alpha))
@@ -283,14 +283,14 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         delta_0 = delta_new*epsilon2
 
     if verbose:
-        print "Starting norm of residuum: %g" % (delta_0/epsilon2)
-        print "Target norm:               %g" % (delta_0)
+        print( "Starting norm of residuum: %g" % (delta_0 / epsilon2) )
+        print( "Target norm:               %g" % (delta_0) )
 
     while (i < imax) and (delta_new > delta_0) and (max_threshold == None or delta_new > max_threshold):
         # q = A*d
         ApplyMatrix(d, q)
         # a = d_new / d.q
-        a = delta_new/d.dotProduct(q)
+        a = delta_new / d.dotProduct(q)
 
         # x = x + a*d
         alpha.axpy(a, d)
@@ -306,10 +306,10 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
 
         delta_old = delta_new
         delta_new = r.dotProduct(r)
-        beta = delta_new/delta_old
+        beta = delta_new / delta_old
 
         if verbose:
-            print "delta: %g" % delta_new
+            print( "delta: %g" % delta_new )
 
         d.mult(beta)
         d.add(r)
@@ -317,7 +317,7 @@ def cg_new(b, alpha, imax, epsilon, ApplyMatrix, reuse = False, verbose=True, ma
         i += 1
 
     if verbose:
-        print "Number of iterations: %d (max. %d)" % (i, imax)
-        print "Final norm of residuum: %g" % delta_new
+        print( "Number of iterations: %d (max. %d)" % (i, imax) )
+        print( "Final norm of residuum: %g" % delta_new )
 
     return (i,delta_new)
