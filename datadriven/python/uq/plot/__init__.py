@@ -55,7 +55,7 @@ from pysgpp.extensions.datadriven.uq.parameters.plot.colors import intToRGB, rgb
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from from pysgpp.extensions.datadriven.uq.parameters.plot.colors import initialize_plotting_style
+    from pysgpp.extensions.datadriven.uq.parameters.plot.colors import initialize_plotting_style
 
     initialize_plotting_style()
 
