@@ -614,8 +614,6 @@ def configureIntelCompiler(config):
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
 
-  config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-
 def detectZlib(config):
   if config.CheckLib("z", language="c++", autoadd=0) and config.CheckCXXHeader("zlib.h"):
     Helper.printInfo("zlib is installed, enabling ZLIB support.")
