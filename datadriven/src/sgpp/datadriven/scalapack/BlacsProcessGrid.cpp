@@ -25,6 +25,7 @@ namespace sgpp {
 namespace datadriven {
 
 int BlacsProcessGrid::systemContext = 0;
+int BlacsProcessGrid::mypnum = 0;
 int BlacsProcessGrid::numberOfProcesses = 0;
 bool BlacsProcessGrid::blacsInitialized = false;
 
@@ -77,7 +78,7 @@ int BlacsProcessGrid::getCurrentRow() const { return this->myrow; }
 
 int BlacsProcessGrid::getCurrentColumn() const { return this->mycolumn; }
 
-int BlacsProcessGrid::getCurrentProcess() const { return this->mypnum; }
+int BlacsProcessGrid::getCurrentProcess() { return mypnum; }
 
 bool BlacsProcessGrid::isProcessInGrid() const { return this->partOfGrid; }
 
@@ -92,7 +93,6 @@ void BlacsProcessGrid::initializeBlacs() {
   // init BLACS and the MPI environment
   std::cout << "Init BLACS and MPI" << std::endl;
   MPI_Init(nullptr, nullptr);
-  int mypnum;
   Cblacs_pinfo(mypnum, numberOfProcesses);
 }
 

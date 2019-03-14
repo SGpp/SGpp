@@ -825,5 +825,22 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   return hasLearnerConfig;
 }
 
+bool DataMiningConfigParser::getFitterParallelConfig(
+    datadriven::ParallelConfiguration &config,
+    const datadriven::ParallelConfiguration &defaults) const {
+  bool hasParallelConfig = hasFitterConfig() ? (*configFile)[fitter].contains("parallel") : false;
+
+  if (hasParallelConfig) {
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallel"]);
+
+    config.rowBlockSize_ =
+        parseInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+    config.columnBlockSize_ =
+        parseInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+  }
+
+  return hasParallelConfig;
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

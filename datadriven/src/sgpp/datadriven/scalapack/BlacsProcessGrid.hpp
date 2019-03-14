@@ -80,7 +80,7 @@ class BlacsProcessGrid {
   /**
    * @returns Number of the current process
    */
-  int getCurrentProcess() const;
+  static int getCurrentProcess();
 
   /**
    * @returns True if the current process is part of this grid, else false
@@ -107,6 +107,9 @@ class BlacsProcessGrid {
   // flag to check if BLACS was initialized
   static bool blacsInitialized;
 
+  // rank of the current process
+  static int mypnum;
+
   // system context for use in gridinit
   static int systemContext;
 
@@ -124,9 +127,6 @@ class BlacsProcessGrid {
 
   // describes if the current process is part of this grid
   bool partOfGrid;
-
-  // current process number
-  int mypnum;
 
   // row of the current process
   int myrow;
