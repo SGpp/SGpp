@@ -65,7 +65,8 @@ int main() {
 
   // Only calculation after here, no additional parameters set
 
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFFFromFile(filepath + filename);
+  sgpp::datadriven::Dataset dataset =
+      sgpp::datadriven::ARFFTools::readARFFFromFile(filepath + filename);
   sgpp::base::DataMatrix dataTrain = dataset.getData();
   sgpp::base::DataVector targetTrain = dataset.getTargets();
 
