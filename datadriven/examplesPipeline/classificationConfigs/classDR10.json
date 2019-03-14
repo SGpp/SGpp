@@ -1,0 +1,47 @@
+{
+	"dataSource": {
+		"filePath": "../../datasets/DR10/DR10_train_v2.arff",
+		"hasTargets" : true,
+		"batchSize" : 30,
+		"validationPortion" : 0.9,
+		"epochs" : 1,
+		"shuffling" : "random",
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [0, 1]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"generalGridType": "component",
+			"gridType": "linear",
+			"level": 2
+		},
+		"adaptivityConfig": {
+				"numRefinements": 2,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-6
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
+
+

@@ -1,0 +1,46 @@
+{
+	"dataSource": {
+		"filePath": "../../datasets/ripley/ripleyGarcke.train.arff",
+		"hasTargets" : true,
+		"batchSize" : 10,
+		"validationPortion" : 0.2,
+		"epochs" : 2,
+		"shuffling" : "random",
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [-1, 1],
+		"readinColumns": [0, 1]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"generalGridType": "component",
+			"gridType": "linear",
+			"level": 2
+		},
+		"adaptivityConfig": {
+				"numRefinements": 3,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
