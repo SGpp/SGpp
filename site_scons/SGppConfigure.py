@@ -5,6 +5,7 @@
 
 
 import distutils.sysconfig
+import errno
 import os
 import re
 import subprocess
@@ -368,7 +369,7 @@ def python3_is_installed():
     return False
   except OSError as e:
     # file not found
-    if e.errno == os.errno.ENOENT:
+    if e.errno == errno.ENOENT:
       return False
     else:
       raise
