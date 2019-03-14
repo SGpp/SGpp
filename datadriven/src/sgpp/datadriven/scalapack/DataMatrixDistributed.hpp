@@ -47,7 +47,7 @@ class DataMatrixDistributed {
    * Creates an two-dimensional DataMatrixDistributed filled with a value.
    */
   DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows, int globalColumns,
-                        int columnBlockSize, int rowBlockSize, double value = 0.0,
+                        int rowBlockSize, int columnBlockSize, double value = 0.0,
                         DTYPE dtype = DTYPE::DENSE);
 
   /**
@@ -56,7 +56,7 @@ class DataMatrixDistributed {
    * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
    */
   DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
-                        int globalColumns, int columnBlockSize, int rowBlockSize,
+                        int globalColumns, int rowBlockSize, int columnBlockSize,
                         DTYPE dtype = DTYPE::DENSE);
 
   /**
@@ -83,11 +83,6 @@ class DataMatrixDistributed {
    * @return Index of new col
    */
   size_t appendCol(const DataVectorDistributed& vec);
-
-  /**
-   * Transposes this matrix
-   */
-  void transpose();
 
   /**
    * Returns the value of the element at position [row,col].
@@ -118,6 +113,24 @@ class DataMatrixDistributed {
   void set(size_t row, size_t col, double value);
 
   /**
+   * Transposes this matrix.
+   * @returns the transposed version of this matrix
+   */
+  DataMatrixDistributed transpose();
+
+  /**
+   * Transposes matrix A and stores the result in C:
+   * sub(C):=beta*sub(C) + alpha*sub(A)'
+   *
+   * @param[in] a matrix A to transpose
+   * @param[out] c result matrix C
+   * @param[in] alpha factor for matrix A, default 1.0
+   * @param[in] beta factor for matrix C, default 0.0
+   */
+  static void transpose(const DataMatrixDistributed& a, DataMatrixDistributed& c,
+                        double alpha = 1.0, double beta = 0.0);
+
+  /**
    * Adds the values from another DataMatrix to the current values.
    * Modifies the current values.
    *
@@ -126,7 +139,7 @@ class DataMatrixDistributed {
   void add(const DataMatrixDistributed& a);
 
   /**
-   * Calculates sub(C):=beta*sub(C) - alpha*op(sub(A))
+   * Calculates sub(C):=beta*sub(C) + alpha*op(sub(A))
    *
    * @param c matrix C
    * @param a matrix A

@@ -40,6 +40,31 @@ double DataVectorDistributed::get(size_t row) const { return data.get(0, row); }
 
 void DataVectorDistributed::set(size_t row, double value) { data.set(0, row, value); }
 
+void DataVectorDistributed::add(const DataVectorDistributed& x) {
+  DataVectorDistributed::add(*this, x);
+}
+
+void DataVectorDistributed::add(DataVectorDistributed& y, const DataVectorDistributed& x,
+                                double a) {
+  pdaxpy_(y.getGlobalRows(), a, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
+          y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+}
+
+double DataVectorDistributed::dot(const DataVectorDistributed& y) const {
+  return DataVectorDistributed::dot(*this, y);
+}
+
+double DataVectorDistributed::dot(const DataVectorDistributed& x, const DataVectorDistributed& y) {
+  double dot = 0.0;
+  pddot_(x.getGlobalRows(), dot, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
+         y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+  return dot;
+}
+
+void DataVectorDistributed::scale(double a) {
+  pdscal_(getGlobalRows(), a, getLocalPointer(), 1, 1, getDescriptor(), 1);
+}
+
 double* DataVectorDistributed::getLocalPointer() { return data.getLocalPointer(); }
 
 const double* DataVectorDistributed::getLocalPointer() const { return data.getLocalPointer(); }
@@ -69,6 +94,10 @@ void DataVectorDistributed::printVector() const {
 }
 
 bool DataVectorDistributed::isProcessMapped() const { return data.isProcessMapped(); }
+
+DataMatrixDistributed& DataVectorDistributed::getMatrix() { return data; }
+
+const DataMatrixDistributed& DataVectorDistributed::getMatrix() const { return data; }
 
 }  // namespace datadriven
 }  // namespace sgpp

@@ -181,11 +181,13 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
     DataMatrix testMatrixLocal = testMatrix.toLocalDataMatrix();
 
     // check that both matrices are equal
-    for (int i = 0; i < 5; i++) {
-      for (int j = 0; j < 5; j++) {
-        BOOST_CHECK_CLOSE(checkMatrix.get(i, j), testMatrix.get(i, j), 0.0001);
-        if (grid->getCurrentProcess() == 0) {
-          BOOST_CHECK_CLOSE(checkMatrix.get(i, j), testMatrixLocal.get(i, j), 0.0001);
+    if (testMatrix.isProcessMapped()) {
+      for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+          BOOST_CHECK_CLOSE(checkMatrix.get(i, j), testMatrix.get(i, j), 0.0001);
+          if (grid->getCurrentProcess() == 0) {
+            BOOST_CHECK_CLOSE(checkMatrix.get(i, j), testMatrixLocal.get(i, j), 0.0001);
+          }
         }
       }
     }
@@ -202,8 +204,10 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
         double value = (i + 1) * (j + 1);
         matrix.set(i, j, value);
         MPI_Barrier(MPI_COMM_WORLD);
-        double getValue = matrix.get(i, j);
-        BOOST_CHECK_CLOSE(getValue, value, 0.0001);
+        if (matrix.isProcessMapped()) {
+          double getValue = matrix.get(i, j);
+          BOOST_CHECK_CLOSE(getValue, value, 0.0001);
+        }
       }
     }
   }
@@ -216,6 +220,23 @@ BOOST_AUTO_TEST_CASE(testSetUp) {
         BOOST_CHECK_EQUAL(d_rand.get(i, j), l_rand[i][j]);
       }
     }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testTranspose) {
+  DataMatrixDistributed d_rand_transposed = d_rand.transpose();
+  d_rand_local.transpose();
+
+  assertMatrixClose(d_rand_local, d_rand_transposed);
+
+  if (processGrid->availableProcesses() >= 4) {
+    std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 2);
+    DataMatrixDistributed a(d_rand_local.data(), grid, ncols, nrows, 2, 2);
+
+    DataMatrixDistributed a_transposed = a.transpose();
+    d_rand_local.transpose();
+
+    assertMatrixClose(d_rand_local, a_transposed);
   }
 }
 
@@ -237,6 +258,17 @@ BOOST_AUTO_TEST_CASE(testPdgemv) {
   d_rand_local.mult(expectedX, expected);
 
   assertVectorClose(expected, result);
+
+  if (BlacsProcessGrid::availableProcesses() >= 4) {
+    std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 2);
+    DataMatrixDistributed a(d_rand_local.data(), grid, nrows, ncols, 2, 2);
+    DataVectorDistributed x(testVectorData.data(), grid, ncols, 2);
+    DataVectorDistributed result(grid, nrows, 2);
+
+    DataMatrixDistributed::mult(a, x, result);
+
+    assertVectorClose(expected, result);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testPdgemm) {
@@ -304,6 +336,47 @@ BOOST_AUTO_TEST_CASE(testPdgemm) {
     DataMatrixDistributed::mult(a, b, c);
 
     assertMatrixClose(result, c);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testPgdeadd) {
+  std::vector<double> testData;
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
+      testData.push_back((i + j) * 1.25);
+    }
+  }
+
+  DataMatrixDistributed x(testData.data(), processGrid, nrows, ncols, 2, 2);
+
+  DataMatrixDistributed::add(d_rand, x);
+
+  DataMatrix localX(testData.data(), nrows, ncols);
+
+  d_rand_local.add(localX);
+
+  assertMatrixClose(d_rand_local, d_rand);
+
+  d_rand.sub(x);
+  d_rand_local.sub(localX);
+
+  assertMatrixClose(d_rand_local, d_rand);
+
+  if (BlacsProcessGrid::availableProcesses() >= 4) {
+    std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 2);
+    DataMatrixDistributed c(d_rand_local.data(), grid, nrows, ncols, 2, 2);
+    DataMatrixDistributed x(testData.data(), grid, nrows, ncols, 2, 2);
+
+    DataMatrixDistributed::add(c, x);
+
+    d_rand_local.add(localX);
+
+    assertMatrixClose(d_rand_local, c);
+
+    c.sub(x);
+    d_rand_local.sub(localX);
+
+    assertMatrixClose(d_rand_local, c);
   }
 }
 

@@ -72,6 +72,40 @@ class DataVectorDistributed {
   void set(size_t row, double value);
 
   /**
+   * Adds another vector to this vector, modifies this vector.
+   * @param x vector that is added to this vector
+   */
+  void add(const DataVectorDistributed& x);
+
+  /**
+   * Performs the following operation
+   * sub(y) := sub(y) + a*sub(x)
+   * @param y
+   * @param x
+   * @param a factor for x, default 1.0
+   */
+  static void add(DataVectorDistributed& y, const DataVectorDistributed& x, double a = 1.0);
+
+  /**
+   * @param y
+   * @returns the dot product of this vector transposed and y
+   */
+  double dot(const DataVectorDistributed& y) const;
+
+  /**
+   * @param x
+   * @param y
+   * @returns dot = sub(x)'*sub(y); vector x is transposed
+   */
+  static double dot(const DataVectorDistributed& x, const DataVectorDistributed& y);
+
+  /**
+   * Scales this vector by factor a.
+   * @param a
+   */
+  void scale(double a);
+
+  /**
    * @return pointer to the local data of this process
    */
   double* getLocalPointer();
@@ -117,6 +151,16 @@ class DataVectorDistributed {
    * @returns true if part of the vector is mapped to the current process, false otherwise
    */
   bool isProcessMapped() const;
+
+  /**
+   * @returns reference to the underlying DataMatrixDistributed object.
+   */
+  DataMatrixDistributed& getMatrix();
+
+  /**
+   * @returns const ref to the underlying DataMatrixDistributed object.
+   */
+  const DataMatrixDistributed& getMatrix() const;
 
  private:
   // vector is mapped to a matrix with 1 column

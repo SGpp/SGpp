@@ -24,8 +24,8 @@ namespace sgpp {
 namespace datadriven {
 
 DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
-                                             int globalColumns, int columnBlockSize,
-                                             int rowBlockSize, double value,
+                                             int globalColumns, int rowBlockSize,
+                                             int columnBlockSize, double value,
                                              DataMatrixDistributed::DTYPE dtype)
     : grid(grid),
       globalRows(globalColumns),  // transpose for column-major layout
@@ -60,8 +60,9 @@ DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> g
 }
 
 DataMatrixDistributed::DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid,
-                                             int globalRows, int globalColumns, int columnBlockSize,
-                                             int rowBlockSize, DataMatrixDistributed::DTYPE dtype)
+                                             int globalRows, int globalColumns, int rowBlockSize,
+                                             int columnBlockSize,
+                                             DataMatrixDistributed::DTYPE dtype)
     : DataMatrixDistributed(grid, globalRows, globalColumns, columnBlockSize, rowBlockSize, 0.0,
                             dtype) {
   if (isProcessMapped()) {
@@ -131,6 +132,22 @@ void DataMatrixDistributed::set(size_t row, size_t col, double value) {
   }
 }
 
+DataMatrixDistributed DataMatrixDistributed::transpose() {
+  // note that globalRows/columns and row/columnBlockSize are switched
+  DataMatrixDistributed transposed =
+      DataMatrixDistributed(grid, globalRows, globalColumns, rowBlockSize, columnBlockSize);
+  DataMatrixDistributed::transpose(*this, transposed);
+  return transposed;
+}
+
+void DataMatrixDistributed::transpose(const DataMatrixDistributed& a, DataMatrixDistributed& c,
+                                      double alpha, double beta) {
+  if (a.isProcessMapped() || c.isProcessMapped()) {
+    pdtran_(c.getGlobalCols(), c.getGlobalRows(), alpha, a.getLocalPointer(), 1, 1,
+            a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
+  }
+}
+
 void DataMatrixDistributed::add(const DataMatrixDistributed& a) {
   DataMatrixDistributed::add(*this, a);
 }
@@ -140,7 +157,7 @@ void DataMatrixDistributed::add(DataMatrixDistributed& c, const DataMatrixDistri
   if (a.isProcessMapped() || c.isProcessMapped()) {
     const char* transA = (transposeA ? pblasTranspose : pblasNoTranspose);
 
-    pdgeadd_(transA, a.getGlobalRows(), a.getGlobalCols(), alpha, a.getLocalPointer(), 1, 1,
+    pdgeadd_(transA, a.getGlobalCols(), a.getGlobalRows(), alpha, a.getLocalPointer(), 1, 1,
              a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
   }
 }
@@ -151,7 +168,7 @@ void DataMatrixDistributed::sub(const DataMatrixDistributed& a) {
 
 void DataMatrixDistributed::sub(DataMatrixDistributed& c, const DataMatrixDistributed& a,
                                 bool transa, double beta, double alpha) {
-  DataMatrixDistributed::add(c, a, transa, -alpha, beta);
+  DataMatrixDistributed::add(c, a, transa, beta, -alpha);
 }
 
 void DataMatrixDistributed::mult(const DataVectorDistributed& x, DataVectorDistributed& y,
