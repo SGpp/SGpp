@@ -1,0 +1,47 @@
+{
+	"dataSource": {
+		"filePath": "../../datasets/iris/irisnumeric.arff",
+		"fileType": "arff",
+		"hasTargets" : true,
+		"batchSize" : 0,
+		"epochs": 10,
+		"validationPortion" : 0.6,
+		"shuffling" : "random",
+		"randomSeed": -1,
+		"readinClasses": [1,2,3]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"generalGridType": "regular",
+			"gridType": "linear",
+			"level": 2
+		},
+		"adaptivityConfig": {
+				"numRefinements": 3,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 0,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
+
+
