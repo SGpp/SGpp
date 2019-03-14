@@ -231,27 +231,6 @@ def createLanguageExampleDoxy(examples):
 
       examplesFile.write("**/\n")
 
-# create module page listing all the available modules
-def createModuleDoxy(modules):
-  with open(os.path.join("base", "doc", "doxygen", "modules.stub0"), "r") as f:
-    stub0 = f.read()
-  with open(os.path.join("base", "doc", "doxygen", "modules.stub1"), "r") as f:
-    stub1 = f.read()
-
-  with open(os.path.join("base", "doc", "doxygen", "modules.doxy"), "w") as f:
-    f.write(stub0)
-
-    for moduleName in modules:
-      for subpage in glob.glob(os.path.join(moduleName, "doc", "doxygen", "module_*.doxy")):
-        short_discription = ''
-        page = open(subpage, 'rt')
-        for line in page.xreadlines():
-          if "@short" in line:
-            short_discription = line.strip().replace('@short', '')
-        f.write("- @subpage %s %s\n"%(os.path.splitext(os.path.split(subpage)[-1])[0], short_discription))
-
-    f.write(stub1)
-
 # patch Doxygen navigation tree to extend specific navtree points by default
 # to ensure that users see and read those pages more likely;
 # has to be called after executing Doxygen
@@ -307,4 +286,3 @@ def prepareDoxygen(modules):
   createDoxyfile(modules)
   examples = convertExampleSourcesToDoxy(modules)
   createLanguageExampleDoxy(examples)
-  createModuleDoxy(modules)
