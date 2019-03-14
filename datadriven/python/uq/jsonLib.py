@@ -20,21 +20,21 @@ def reprVal(attrValue):
     10) objects with ".serialize" method
     @param attrValue: arbitrary object
     """
-    if isinstance(attrValue, types.BooleanType):
+    if isinstance(attrValue, bool):
         return reprBool(attrValue)
-    elif isinstance(attrValue, types.IntType):
+    elif isinstance(attrValue, int):
         return reprInt(attrValue)
-    elif isinstance(attrValue, types.DictType):
+    elif isinstance(attrValue, dict):
         return reprDict(attrValue)
-    elif type(attrValue) in (types.FloatType, np.float64, np.float32, np.float):
+    elif type(attrValue) in (float, np.float64, np.float32, np.float):
         return reprFloat(attrValue)
-    elif isinstance(attrValue, types.ListType) or \
+    elif isinstance(attrValue, list) or \
             isinstance(attrValue, np.ndarray):
         return reprList(attrValue)
     elif isinstance(attrValue, tuple):
         return reprTuple(attrValue)
-    elif isinstance(attrValue, types.StringType) or \
-            isinstance(attrValue, types.UnicodeType):
+    elif isinstance(attrValue, bytes) or \
+            isinstance(attrValue, str):
         return reprString(attrValue)
     elif isinstance(attrValue, DataVector):
         return reprList(attrValue.array())
@@ -113,8 +113,8 @@ def parseAttribute(attrValue, attrName):
         try:
             s = reprVal(attrValue)
             return '%s: %s,\n' % (reprString(attrName), s)
-        except AttributeError, e:
-            print e
+        except AttributeError as e:
+            print( e )
             return ''
     else:
         return ''
@@ -126,12 +126,12 @@ def parseKeyAsTuple(d):
     @param d: dictionary
     """
     ans = {}
-    for key, value in d.items():
-        if (isinstance(key, types.StringType) or isinstance(key, types.UnicodeType)) and \
+    for key, value in list(d.items()):
+        if (isinstance(key, bytes) or isinstance(key, str)) and \
                 key[0] == "(" and key[-1] == ")":
             kt = stringToTupleOfFloats(key)
 
-        if (isinstance(value, types.StringType) or isinstance(value, types.UnicodeType)) and \
+        if (isinstance(value, bytes) or isinstance(value, str)) and \
                 value[0] == "(" and value[-1] == ")":
             vt = stringToTupleOfFloats(value)
         else:
@@ -159,10 +159,10 @@ def stringToTupleOfFloats(s):
 
 
 def stringToList(s, f=float):
-    return map(f, s[1:-1].split(','))
+    return list(map(f, s[1:-1].split(',')))
 
 
 def stringToListOfLists(s, f=float):
     strs = s.replace('[', '').split('],')
-    lists = [map(f, st.replace(']', '').split(',')) for st in strs]
+    lists = [list(map(f, st.replace(']', '').split(','))) for st in strs]
     return lists

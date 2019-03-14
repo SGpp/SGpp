@@ -63,7 +63,7 @@ if __name__ == '__main__':
 
     processes = []
     if args.surrogate in ["both", "sg"]:
-        for model, surrogate in scenarions_sg.items():
+        for model, surrogate in list(scenarions_sg.items()):
             if args.full and model == "reduced":
                 continue
             if args.reduced and model == "full":
@@ -76,9 +76,9 @@ if __name__ == '__main__':
                         maxGridPoints = surrogate['maxGridPoints']
                     for level in surrogate['level']:
                         for maxGridPoint in maxGridPoints:
-                            print "-" * 80
-                            print "scenario: (%s, %s, %i, %i, %s)" % (model, gridType, level, maxGridPoint, refinement)
-                            print "-" * 80
+                            print("-" * 80)
+                            print("scenario: (%s, %s, %i, %i, %s)" % (model, gridType, level, maxGridPoint, refinement))
+                            print("-" * 80)
 
                             if args.parallel:
                                 myargs = (model == "full",
@@ -97,7 +97,7 @@ if __name__ == '__main__':
                                     checkSobolIndices(sobol_indices_analytic, sobol_indices, N, False)
 
     if args.surrogate in ["both", "pce"]:
-        for model, surrogate in scenarions_pce.items():
+        for model, surrogate in list(scenarions_pce.items()):
             if args.full and model == "reduced":
                 continue
             if args.reduced and model == "full":
@@ -105,9 +105,9 @@ if __name__ == '__main__':
 
             for sampler in surrogate['sampler']:
                 for degree_1d in surrogate['degree']:
-                    print "-" * 80
-                    print "scenario: (%s, %s, %i)" % (model, sampler, degree_1d)
-                    print "-" * 80
+                    print("-" * 80)
+                    print("scenario: (%s, %s, %i)" % (model, sampler, degree_1d))
+                    print("-" * 80)
 
                     if args.parallel:
                         myargs = (model == "full", sampler, degree_1d, True)

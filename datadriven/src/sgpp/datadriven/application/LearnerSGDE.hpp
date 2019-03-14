@@ -18,9 +18,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 namespace sgpp {
 namespace datadriven {
@@ -135,12 +135,15 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   /**
   * returns the surpluses
   */
-  virtual std::shared_ptr<base::DataVector> getSurpluses();
+  virtual base::DataVector* getSurpluses();
 
   /**
   * returns the grid
   */
-  virtual std::shared_ptr<base::Grid> getGrid();
+  virtual base::Grid* getGrid();
+
+  std::shared_ptr<base::DataVector> getSharedSurpluses();
+  std::shared_ptr<base::Grid> getSharedGrid();
 
   /**
    * Does the learning step (i.e. computes pdf) on a given grid,

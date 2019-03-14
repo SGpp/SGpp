@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
+
 #define BOOST_TEST_DYN_LINK
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
@@ -691,3 +693,4 @@ BOOST_AUTO_TEST_CASE(testPrewaveletAdaptiveD_two) {
   compareStiffnessMatrices(&m, mRef.get());
 }
 BOOST_AUTO_TEST_SUITE_END()
+#endif

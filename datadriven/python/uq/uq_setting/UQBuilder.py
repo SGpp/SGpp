@@ -144,7 +144,7 @@ class UQBuilder(object):
                 n_setting = UQSetting.fromJson(m)
                 ans.mergeStats(n_setting)
             else:
-                print "WARNING: the specified file does not exist ('%s') in cwd '%s'" % (filename, os.getcwd())
+                print( "WARNING: the specified file does not exist ('%s') in cwd '%s'" % (filename, os.getcwd()) )
 
         ans.setVerbose(self.__verbose)
         return ans

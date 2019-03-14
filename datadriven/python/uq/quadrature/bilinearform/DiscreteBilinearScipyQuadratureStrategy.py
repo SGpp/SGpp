@@ -1,4 +1,4 @@
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from scipy.integrate import quad, dblquad
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport
 

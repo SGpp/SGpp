@@ -173,9 +173,9 @@ def load_results(path="results"):
         for filename in files:
             if "pkl" in filename:
                 path = os.path.join(root, filename)
-                print "=" * 80
-                print "loading '%s'" % path
-                print "=" * 80
+                print("=" * 80)
+                print("loading '%s'" % path)
+                print("=" * 80)
                 fd = open(path, "r")
                 currentStats = pkl.load(fd)
                 fd.close()
@@ -219,7 +219,7 @@ if __name__ == "__main__":
 
     # export values from scenarios to the table
     model = "full"
-    for i, perm in enumerate(xrange(8)):
+    for i, perm in enumerate(range(8)):
         perm = (perm,)
         row_entries[model][i] = row_entries[model][i] % (np.abs(results[model]["pce"][pce[model][0]]["total_effects_estimated"][perm]),
                                                          np.abs(results[model]["pce"][pce[model][1]]["total_effects_estimated"][perm]),
@@ -247,7 +247,7 @@ if __name__ == "__main__":
     fd.close()
 
     model = "reduced"
-    for i, perm in enumerate(xrange(4)):
+    for i, perm in enumerate(range(4)):
         perm = (perm,)
         row_entries[model][i] = row_entries[model][i] % (np.abs(results[model]["pce"][pce[model][0]]["total_effects_estimated"][perm]),
                                                          np.abs(results[model]["pce"][pce[model][1]]["total_effects_estimated"][perm]),

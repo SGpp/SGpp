@@ -3,26 +3,26 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-from LearnedKnowledge import LearnedKnowledge
-from Classifier import Classifier
-from TrainingStopPolicy import TrainingStopPolicy
+from pysgpp.extensions.datadriven.learner.LearnedKnowledge import LearnedKnowledge
+from pysgpp.extensions.datadriven.learner.Classifier import Classifier
+from pysgpp.extensions.datadriven.learner.TrainingStopPolicy import TrainingStopPolicy
 
-from TrainingSpecification import TrainingSpecification
-from solver.CGSolver import CGSolver
-from Types import BorderTypes
+from pysgpp.extensions.datadriven.learner.TrainingSpecification import TrainingSpecification
+from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
+from pysgpp.extensions.datadriven.learner.Types import BorderTypes
 
 from pysgpp import *
 from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 from pysgpp.extensions.datadriven.data.CSVAdapter import CSVAdapter
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
-from Regressor import Regressor
+from pysgpp.extensions.datadriven.learner.Regressor import Regressor
 
-import pysgpp.extensions.datadriven.utils.json as json
-from folding.SequentialFoldingPolicy import SequentialFoldingPolicy
-from folding.RandomFoldingPolicy import RandomFoldingPolicy
-from folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
-from folding.FilesFoldingPolicy import FilesFoldingPolicy
-from formatter import LearnedKnowledgeFormatter
+from pysgpp.extensions.datadriven.utils import json
+from pysgpp.extensions.datadriven.learner.folding.SequentialFoldingPolicy import SequentialFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.RandomFoldingPolicy import RandomFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.StratifiedFoldingPolicy import StratifiedFoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FilesFoldingPolicy import FilesFoldingPolicy
+from pysgpp.extensions.datadriven.learner.formatter import LearnedKnowledgeFormatter
 
 ## Implement mechanisms to create customized learning system
 #
@@ -394,7 +394,7 @@ class LearnerBuilder(object):
     ##
     # Grid Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the grid
-    class GridDescriptor:
+    class GridDescriptor(object):
         __builder = None
         __deg = None
         __level = None
@@ -431,19 +431,19 @@ class LearnerBuilder(object):
                 self.__builder.getLearner().setGrid(grid)
             else:
                 if self.__dim == None or self.__level == None:
-                    raise AttributeError, "Not all attributes assigned to create grid"
+                    raise AttributeError ("Not all attributes assigned to create grid" )
                 if self.__border != None:
                     if self.__border == BorderTypes.TRAPEZOIDBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim, 1)
                     elif self.__border == BorderTypes.COMPLETEBOUNDARY:
                         grid = Grid.createLinearBoundaryGrid(self.__dim, 0)
                     else:
-                        if self.__deg > 1:
+                        if self.__deg != None and self.__deg > 1:
                             grid = Grid.createModPolyGrid(self.__dim, self.__deg)
                         else:
                             grid = Grid.createModLinearGrid(self.__dim)
                 else: #no border points
-                        if self.__deg > 1:
+                        if self.__deg != None and self.__deg > 1:
                             grid = Grid.createPolyGrid(self.__dim, self.__deg)
                         else:
                             grid = Grid.createLinearGrid(self.__dim)
@@ -519,7 +519,7 @@ class LearnerBuilder(object):
     # TrainingStopPolicy Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the training stop policy
     ##
-    class StopPolicyDescriptor:
+    class StopPolicyDescriptor(object):
         __builder = None
         __policy = None
 
@@ -616,7 +616,7 @@ class LearnerBuilder(object):
     # TrainingSpecification Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the training specification
     ##
-    class SpecificationDescriptor:
+    class SpecificationDescriptor(object):
         __builder = None
         __specification = None
 
@@ -721,7 +721,7 @@ class LearnerBuilder(object):
     # CGSolver Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning creation of the CG-Solver
     ##
-    class CGSolverDescriptor:
+    class CGSolverDescriptor(object):
         __builder = None
         __solver = None
 
@@ -796,7 +796,7 @@ class LearnerBuilder(object):
     # Folding Descriptor helps to implement fluid interface patter on python
     # it encapsulates functionality concerning the usage for N-fold cross-validation
     ##
-    class FoldingDescriptor:
+    class FoldingDescriptor(object):
 
         SEQUENTIAL = 100 ## Sequential folding policy
         RANDOM = 200 ## Random folding policy

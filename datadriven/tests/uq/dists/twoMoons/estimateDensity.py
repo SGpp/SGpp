@@ -3,7 +3,6 @@ Created on Apr 18, 2016
 
 @author: franzefn
 '''
-
 import sys
 import os
 import json
@@ -61,9 +60,9 @@ def estimateSGDEDensity(functionName,
                         out=True,
                         label="sgde_zero",
                         candidates="intersections", interpolation="setToZero"):
-    print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
+    print("train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples)))
     if testSamples is not None:
-        print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
+        print("test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples)))
 
     candidateSearchAlgorithm = strToCandidateSearchAlgorithm(candidates)
     interpolationAlgorithm = strToInterpolationAlgorithm(interpolation)
@@ -101,10 +100,10 @@ def estimateSGDEDensity(functionName,
              'trainSamples': trainSamples,
              'testSamples': testSamples}
 
-    for level in xrange(2, 7):
-        print "-" * 60
-        print "l=%i" % level
-        for refinementSteps in xrange(0, 5):
+    for level in range(2, 7):
+        print("-" * 60)
+        print("l=%i" % level)
+        for refinementSteps in range(0, 5):
             config["grid_level"] = level
             config["refinement_numSteps"] = refinementSteps
             sgdeDist = SGDEdist.byLearnerSGDEConfig(trainSamples, config=config,
@@ -116,10 +115,10 @@ def estimateSGDEDensity(functionName,
             maxLevel = grid.getStorage().getMaxLevel()
             numDims = grid.getStorage().getDimension()
 
-            print "  " + "-" * 30
-            print "  #ref = %i: gs=%i -> CV test = %g" % (refinementSteps,
+            print("  " + "-" * 30)
+            print("  #ref = %i: gs=%i -> CV test = %g" % (refinementSteps,
                                                           sgdeDist.grid.getSize(),
-                                                          cvSgde)
+                                                          cvSgde))
             # -----------------------------------------------------------
             # make it positive
             positiveGrid = grid.clone()
@@ -151,7 +150,7 @@ def estimateSGDEDensity(functionName,
 
 
             # -----------------------------------------------------------
-            print "  positive: gs=%i -> CV test = %g" % (positiveGrid.getSize(), cvPositiveSgde)
+            print("  positive: gs=%i -> CV test = %g" % (positiveGrid.getSize(), cvPositiveSgde))
             # -----------------------------------------------------------
             # select the best density available based on the given criterion
             results[key] = {'config': config,
@@ -168,8 +167,8 @@ def estimateSGDEDensity(functionName,
                 # update the stats -> just for the current best one
                 # write the stats of the current best results to the stats dict
                 C = np.ndarray(numDims - 1, dtype="int")
-                M = np.sum([1 for i in xrange(len(alpha)) if alpha[i] < 0])
-                for d in xrange(2, numDims + 1):
+                M = np.sum([1 for i in range(len(alpha)) if alpha[i] < 0])
+                for d in range(2, numDims + 1):
                     C[d - 2] = binom(M, d)
 
                 stats['config']['refnums'] = refinementSteps
@@ -233,7 +232,7 @@ def estimateSGDEDensity(functionName,
         fd = open(filename, "w")
         pkl.dump(stats, fd)
         fd.close()
-        print "stats saved to -> '%s'" % filename
+        print("stats saved to -> '%s'" % filename)
 
         # dictionary that stores the information on the estimated densities
         myjson = {"Grid": {"dimNames": ["phi", "log(K_A)"],
@@ -244,7 +243,7 @@ def estimateSGDEDensity(functionName,
                           "paramValues": [],
                           "paramName": "grid_size"}}
     
-        for key, result in results.items():
+        for key, result in list(results.items()):
             config = result['config']
             dist = result['dist']
             # serialize grid and coefficients
@@ -284,7 +283,7 @@ def estimateSGDEDensity(functionName,
         fd = open(out_crossEntropies, 'wb')
         file_writer = csv.writer(fd)
         file_writer.writerow(["crossEntropy", "grid", "alpha", "sgdeConfig"])
-        for out in crossEntropies.values():
+        for out in list(crossEntropies.values()):
             file_writer.writerow(out)
         fd.close()
     
@@ -310,9 +309,9 @@ def estimateKDEDensity(functionName,
                        out=True,
                        label="kde_gaussian",
                        bandwidthOptimizationTypeStr="rot"):
-    print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
+    print("train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples)))
     if testSamples is not None:
-        print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
+        print("test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples)))
 
     if "gaussian" in label:
         kernelType = KernelType_GAUSSIAN
@@ -341,7 +340,7 @@ def estimateKDEDensity(functionName,
         else:
             plt.show()
 
-    print "CV test = %g" % cvKDE
+    print("CV test = %g" % cvKDE)
 
     # -----------------------------------------------------------
     if out:        
@@ -400,9 +399,9 @@ def estimateNatafDensity(functionName,
                          label="nataf"):
     if "samples" in natafType:
         trainSamples = natafType["samples"]
-        print "train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples))
+        print("train: %i x %i (mean=%g, var=%g)" % (trainSamples.shape[0], trainSamples.shape[1], np.mean(trainSamples), np.var(trainSamples)))
     if testSamples is not None:
-        print "test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples))
+        print("test : %i x %i (mean=%g, var=%g)" % (testSamples.shape[0], testSamples.shape[1], np.mean(testSamples), np.var(testSamples)))
 
     # -----------------------------------------------------------
     if natafType["name"] == "samples":
@@ -442,7 +441,7 @@ def estimateNatafDensity(functionName,
         else:
             plt.show()
 
-    print "CV test = %g" % cvNataf
+    print("CV test = %g" % cvNataf)
 
     # -----------------------------------------------------------
     if out:
@@ -523,11 +522,11 @@ def load_data_set(data_set, numSamples, numDims=2):
             samples = np.array([])
             for sample in rvs_samples:
                 isValid = True
-                for idim in xrange(numDims):
+                for idim in range(numDims):
                     isValid &= np.all(sample[idim] < bounds[0][1])
                 if isValid:
                     samples = np.append(samples, sample)
-            samples = samples.reshape(samples.size / numDims, numDims)
+            samples = samples.reshape((samples.size // numDims), numDims)
 
             natafType["name"] = "gamma"
             natafType["alpha"] = alpha
@@ -543,11 +542,11 @@ def load_data_set(data_set, numSamples, numDims=2):
             samples = np.array([])
             for sample in rvs_samples:
                 isValid = True
-                for idim in xrange(numDims):
+                for idim in range(numDims):
                     isValid &= np.all(sample[idim] < bounds[0][1])
                 if isValid:
                     samples = np.append(samples, sample)
-            samples = samples.reshape(samples.size / numDims, numDims)
+            samples = samples.reshape((samples.size // numDims), numDims)
 
             natafType["name"] = "beta"
             natafType["alpha"] = alpha
@@ -594,11 +593,11 @@ def run_densityEstimation(functionName,
     learnSamples, validationSamples = splitset(samples, splitPercentage=0.7)
 
     stats = {}
-    for i in xrange(kfold):
-        print "=" * 100
-        print "run (%s)= %i/%i" % (method, i + 1, kfold)
-        print "=" * 100
-        print "valid: %i x %i (mean=%g, var=%g)" % (validationSamples.shape[0], validationSamples.shape[1], np.mean(validationSamples), np.var(validationSamples))
+    for i in range(kfold):
+        print("=" * 100)
+        print("run (%s)= %i/%i" % (method, i + 1, kfold))
+        print("=" * 100)
+        print("valid: %i x %i (mean=%g, var=%g)" % (validationSamples.shape[0], validationSamples.shape[1], np.mean(validationSamples), np.var(validationSamples)))
 
         np.random.seed(i * 123456 + i % 2)
         trainSamples, testSamples = splitset(learnSamples, splitPercentage=1. - 1. / kfold)
@@ -648,7 +647,7 @@ def run_densityEstimation(functionName,
                                                                          shuffle=True)
         kstests = [None] * numDims
 
-        for idim in xrange(numDims):
+        for idim in range(numDims):
             samples1d = stats[i]["samples"]["shuffled"]["uniform_validation"][:, idim]
             res_test = kstest(samples1d, Uniform(0, 1).cdf)
             kstests[idim] = res_test.statistic, res_test.pvalue
@@ -658,8 +657,8 @@ def run_densityEstimation(functionName,
                 xs = np.linspace(0, 1, 10)
                 plt.plot(xs, [Uniform(0, 1).cdf(xi) for xi in xs])
                 plt.title("shuffled: %i, %s" % (idim, kstests[idim]))
-        print "-" * 80
-        print "shuffled    ", kstests, np.min(kstests), np.max(kstests)
+        print("-" * 80)
+        print("shuffled    ", kstests, np.min(kstests), np.max(kstests))
         if plot:
             plt.show()
 
@@ -668,7 +667,7 @@ def run_densityEstimation(functionName,
         stats[i]["samples"]["not_shuffled"]["uniform_validation"] = dist.cdf(validationSamples,
                                                                              shuffle=False)
         kstests = [None] * numDims
-        for idim in xrange(numDims):
+        for idim in range(numDims):
             samples1d = stats[i]["samples"]["not_shuffled"]["uniform_validation"][:, idim]
             res_test = kstest(samples1d, Uniform(0, 1).cdf)
             kstests[idim] = res_test.statistic, res_test.pvalue
@@ -678,13 +677,13 @@ def run_densityEstimation(functionName,
                 xs = np.linspace(0, 1, 1000)
                 plt.plot(xs, [Uniform(0, 1).cdf(xi) for xi in xs])
                 plt.title("not shuffled: %i, %s" % (idim, kstests[idim]))
-        print "not shuffled", kstests, np.min(kstests), np.max(kstests)
+        print("not shuffled", kstests, np.min(kstests), np.max(kstests))
         if plot:
             plt.show()
 
         stats[i]["samples"]["not_shuffled"]["kstests"] = kstests
 
-        print "CV valid = %g" % crossEntropyValidation[i, 1]
+        print("CV valid = %g" % crossEntropyValidation[i, 1])
 
         # write results to file
         if out:
@@ -705,9 +704,9 @@ def run_plotRoutine(tikz=False):
             for filename in files:
                 if "pkl" in filename:
                     path = os.path.join(root, filename)
-                    print "=" * 80
-                    print "plotting '%s'" % path
-                    print "=" * 80
+                    print("=" * 80)
+                    print("plotting '%s'" % path)
+                    print("=" * 80)
                     fd = open(path, "r")
                     currentStats = pkl.load(fd)
                     fd.close()

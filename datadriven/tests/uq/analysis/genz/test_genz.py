@@ -137,9 +137,9 @@ class AnovaGenzTest(object):
 
         stats = {}
         while boundaryLevel <= level:
-            print "-" * 80
-            print "level = %i, boundary level = %i" % (level, boundaryLevel)
-            print "-" * 80
+            print("-" * 80)
+            print("level = %i, boundary level = %i" % (level, boundaryLevel))
+            print("-" * 80)
             uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                          self.simulation,
                                                          level,
@@ -172,8 +172,8 @@ class AnovaGenzTest(object):
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test, l1test, maxErrorTest = \
                 self.getErrors(test_values, test_values_pred)
-            print "-" * 60
-            print "test:  |.|_2 = %g" % l2test
+            print("-" * 60)
+            print("test:  |.|_2 = %g" % l2test)
             # ----------------------------------------------------------
             # ----------------------------------------------------------
             stats[boundaryLevel] = {'num_model_evaluations': grid.getSize(),
@@ -217,9 +217,9 @@ class AnovaGenzTest(object):
 
         stats = {}
         while True:
-            print "-" * 80
-            print "level = %i, boundary level = %i" % (level, boundaryLevel)
-            print "-" * 80
+            print("-" * 80)
+            print("level = %i, boundary level = %i" % (level, boundaryLevel))
+            print("-" * 80)
             uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                          self.simulation,
                                                          level,
@@ -230,7 +230,7 @@ class AnovaGenzTest(object):
                                                          knowledgeTypes=[KnowledgeTypes.SIMPLE])
 
             if uqManager.sampler.getSize() > maxGridSize:
-                print "DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize)
+                print("DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize))
                 break
 
             # ----------------------------------------------
@@ -270,8 +270,8 @@ class AnovaGenzTest(object):
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test, l1test, maxErrorTest = \
                 self.getErrors(test_values, test_values_pred)
-            print "-" * 60
-            print "test:  |.|_2 = %g" % l2test
+            print("-" * 60)
+            print("test:  |.|_2 = %g" % l2test)
             # ----------------------------------------------------------
             stats[level] = {'num_model_evaluations': grid.getSize(),
                             'l2test': l2test,
@@ -319,9 +319,9 @@ class AnovaGenzTest(object):
         test_samples, test_values = self.getTestSamples()
         gridType = Grid.stringToGridType(gridTypeStr)
 
-        print "-" * 80
-        print "level = %i, boundary level = %i" % (level, boundaryLevel)
-        print "-" * 80
+        print("-" * 80)
+        print("level = %i, boundary level = %i" % (level, boundaryLevel))
+        print("-" * 80)
         uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                      self.simulation,
                                                      level,
@@ -360,9 +360,9 @@ class AnovaGenzTest(object):
             test_values_pred = evalSGFunction(grid, alpha, test_samples)
             l2test, l1test, maxErrorTest = \
                 self.getErrors(test_values, test_values_pred)
-            print "-" * 60
-            print "iteration=%i, N=%i" % (iteration, grid.getSize())
-            print "test:  |.|_2 = %g" % l2test
+            print("-" * 60)
+            print("iteration=%i, N=%i" % (iteration, grid.getSize()))
+            print("test:  |.|_2 = %g" % l2test)
 #             sg_mean, sg_var = analysis.mean(iterations=[iteration]), analysis.var(iterations=[iteration])
             # ----------------------------------------------------------
             stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
@@ -405,9 +405,9 @@ class AnovaGenzTest(object):
         # ----------------------------------------------------------
         np.random.seed(1234567)
 
-        print "-" * 60
-        print "Latin Hypercube Sampling"
-        print "-" * 60
+        print("-" * 60)
+        print("Latin Hypercube Sampling")
+        print("-" * 60)
         mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, N)
         mcUQSettingBuilder = UQBuilder()
         self.defineUQSetting(mcUQSettingBuilder)
@@ -421,7 +421,7 @@ class AnovaGenzTest(object):
         samples = mcUQSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
 
         # split the results into chunk of Ni samples
-        num_samples = len(samples.itervalues().next())
+        num_samples = len(next(iter(samples.values())))
         analysis = MCAnalysis(self.params, samples)
         analysis.setVerbose(False)
 

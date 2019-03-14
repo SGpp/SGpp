@@ -40,9 +40,9 @@ class TestTerminalController(unittest.TestCase):
         command = "python../../../bin/controller/TerminalController.py --jobfile ./" + jobfile
         [out,err] = Popen(command.split(" "), stdout = PIPE).communicate()
         if err:
-            print err
+            print(err)
         if out:
-            print out
+            print(out)
 
 
 

@@ -104,7 +104,7 @@ class QuadratureTest(unittest.TestCase):
             alpha[ix] = 1.
             gp = grid.getStorage().getPoint(ix)
 
-            accLevel = sum([max(1, gp.getLevel(d)) for d in xrange(gp.getDimension())])
+            accLevel = sum([max(1, gp.getLevel(d)) for d in range(gp.getDimension())])
             self.assertTrue(createOperationQuadrature(grid).doQuadrature(alpha) == 2 ** -accLevel,
                             "%g != %g" % (createOperationQuadrature(grid).doQuadrature(alpha), 2 ** -accLevel))
 
@@ -199,7 +199,7 @@ class QuadratureTest(unittest.TestCase):
         xlim = np.array([[-1, 1], [-1, 1]])
         trans = JointTransformation()
         dists = []
-        for idim in xrange(xlim.shape[0]):
+        for idim in range(xlim.shape[0]):
             trans.add(LinearTransformation(xlim[idim, 0], xlim[idim, 1]))
             dists.append(Uniform(xlim[idim, 0], xlim[idim, 1]))
         dist = J(dists)

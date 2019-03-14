@@ -1,4 +1,4 @@
-from ASGCUQManager import ASGCUQManager
+from pysgpp.extensions.datadriven.uq.manager.ASGCUQManager import ASGCUQManager
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
 from pysgpp.extensions.datadriven.uq.learner.builder.LearnerBuilder import LearnerBuilder

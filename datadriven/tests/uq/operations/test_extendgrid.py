@@ -12,7 +12,7 @@ def plotGrid2d(grid):
     plt.xlim(0, 1)
     plt.ylim(0, 1)
     p = DataVector(2)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
         gs.getCoordinates(gp, p)
         plt.plot(p[0], p[1], marker='o', color='blue')
@@ -30,7 +30,7 @@ def plotGrid3dSlices(grid):
 
     d = {}
 
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gp = gs.getPoint(i)
         gs.getCoordinates(gp, p)
         if p[2] in d:
@@ -42,9 +42,9 @@ def plotGrid3dSlices(grid):
                         gp.getLevel(0), gp.getLevel(1),
                         gp.getIndex(0), gp.getIndex(1)]]
 
-    print sum([len(dd) for dd in d.values()])
+    print(sum([len(dd) for dd in list(d.values())]))
 
-    for z, items in d.items():
+    for z, items in list(d.items()):
         fig = plt.figure()
         plt.xlim(0, 1)
         plt.ylim(0, 1)

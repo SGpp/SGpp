@@ -37,11 +37,11 @@ fig, ax, _ = plotSG3d(dist.grid, dist.alpha)
 ax.set_title("estimated density")
 fig.show()
 
-print "mean = %g ~ %g" % (m.prod(), dist.mean())
-print "var = %g ~ %g" % (np.var(testSamples), dist.var())
-print "KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples)
-print "cross entropy = %g" % dist.crossEntropy(testSamples)
-print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+print("mean = %g ~ %g" % (m.prod(), dist.mean()))
+print("var = %g ~ %g" % (np.var(testSamples), dist.var()))
+print("KL-divergence = %g" % U.klDivergence(dist, testSamples, testSamples))
+print("cross entropy = %g" % dist.crossEntropy(testSamples))
+print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
 
 # sampling
 uniform_samples = np.random.random((1000, 2))

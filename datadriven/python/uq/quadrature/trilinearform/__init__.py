@@ -1,2 +1,2 @@
-from TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
-from TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.trilinearform.TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.trilinearform.TrilinearGaussQuadratureStrategy import TrilinearGaussQuadratureStrategy

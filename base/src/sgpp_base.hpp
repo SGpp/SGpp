@@ -17,12 +17,14 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
