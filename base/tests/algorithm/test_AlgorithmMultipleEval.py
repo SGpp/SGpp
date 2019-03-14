@@ -16,7 +16,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
         num = [5, 10, 50]
         l = [2, 3, 5]
 
-        for i in xrange(10000):
+        for i in range(10000):
             d_k = random.choice(d)
             l_k = random.choice(l)
             n_k = random.choice(num) 
@@ -26,17 +26,17 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
 
         test_desc = "dim=%d, level=%d, len(x)=%s" % (d, l, len(xs))
 
-        print test_desc
+        print(test_desc)
 
         self.grid = Grid.createLinearGrid(d)
         self.grid_gen = self.grid.getGenerator()
         self.grid_gen.regular(l)
 
-        alpha = DataVector([self.get_random_alpha() for i in xrange(self.grid.getSize())])
+        alpha = DataVector([self.get_random_alpha() for i in range(self.grid.getSize())])
 
         bb_ = BoundingBox(d)
 
-        for d_k in xrange(d):
+        for d_k in range(d):
             dimbb = BoundingBox1D()
             dimbb.leftBoundary = bb[d_k][0]
             dimbb.rightBoundary = bb[d_k][1]
@@ -65,7 +65,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
         #multEval.mult(alpha, actual_transposed)
 
         actual_normal_list = []
-        for k in xrange(len(xs)):
+        for k in range(len(xs)):
             actual_normal_list.append(actual_normal.__getitem__(k))
 
         #actual_transposed_list = []
@@ -81,26 +81,26 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
         base = [[0, 1], [0, 0.5], [0.5, 1], [0, 0.25], [0.25, 0.5], [0.5, 0.75], [0.75, 1]]
 
         bb = []
-        for i in xrange(d):
+        for i in range(d):
             bb.append(random.choice(base))
 
         return bb
 
     def get_random_x(self, d):
-        base = [i * 0.1 for i in xrange (11)]
+        base = [i * 0.1 for i in range (11)]
 
         x = []
-        for i in xrange(d):
+        for i in range(d):
             x.append(random.choice(base))
 
         return x
 
     def get_random_alpha(self):
-        return random.choice([(i * 0.1-0.5) for i in xrange (11)])
+        return random.choice([(i * 0.1-0.5) for i in range (11)])
 
     def get_random_x_collection(self, d, num):
 
-        xs = [self.get_random_x(d) for i in xrange(num)]
+        xs = [self.get_random_x(d) for i in range(num)]
 
         dupl = True
         while dupl:
@@ -113,7 +113,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
                 if dupl:
                     break
             dupl = dupl_tmp
-            xs = [self.get_random_x(d) for i in xrange(num)]
+            xs = [self.get_random_x(d) for i in range(num)]
         
         return xs
 
@@ -125,7 +125,7 @@ class TestAlgorithmMultipleEval(unittest.TestCase):
 
         x_trans = DataVector(d)
 
-        for d_k in xrange(d):
+        for d_k in range(d):
             if not (bb[d_k][0] <= x[d_k] and x[d_k] <= bb[d_k][1]):
                 inside = False
                 break

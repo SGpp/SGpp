@@ -35,7 +35,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
         # interpolate parabola
         nodalValues = np.zeros(gs.getSize())
         x = DataVector(cls.numDims)
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), x)
             nodalValues[i] = 16 * (1 - x[0]) * (1 - x[1])
         cls.alpha = hierarchize(cls.grid, nodalValues)

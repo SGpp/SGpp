@@ -1,9 +1,9 @@
 import numpy as np
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 from copy import copy
 
 
-class SampleType:
+class SampleType(object):
     """
     Describes the type of a sample:
     An active sample is a sample that just contains uncertain
@@ -27,7 +27,7 @@ class SampleType:
     EXPANDEDPROBABILISTIC = 4
 
 
-class DistributionType:
+class DistributionType(object):
     """
     Describes how the samples are drawn:
     1) unit and uniform: the samples are all in the unit hyper cube and are
@@ -98,7 +98,7 @@ class Samples(object):
         return self
 
     def __getitem__(self, i):
-        keys, values = zip(*self._samples.items())
+        keys, values = list(zip(*list(self._samples.items())))
         if isinstance(i, slice):
             # copy object but samples
             ans = Samples(self._params, dtype=self._dtype)
@@ -116,7 +116,7 @@ class Samples(object):
         return len(self._samples)
 
     def getDim(self, *args, **kws):
-        self._samples.itervalues().next().getDim(*args, **kws)
+        iter(self._samples.values()).next().getDim(*args, **kws)
 
     def array(self):
         self._samples
@@ -158,9 +158,9 @@ class SamplesIterator(object):
     def __init__(self, samples):
         self.samples = samples
         self.__current = 0
-        self.__values = self.samples.values()
+        self.__values = list(self.samples.values())
 
-    def next(self):
+    def __next__(self):
         if self.__current == len(self.samples):
             raise StopIteration()
 

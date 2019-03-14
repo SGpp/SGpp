@@ -93,21 +93,21 @@ class AnovaTest(unittest.TestCase):
         # main effects
         me = anova.getSobolIndices()
 
-        print "-------------- Sobol Indices (t = %i) ------------------" % 1
+        print("-------------- Sobol Indices (t = %i) ------------------" % 1)
         for (key, val) in sorted(me.items()):
-            print "%s: %s" % (key, val)
-        print sum([val for val in me.values()]), "==", 1
+            print("%s: %s" % (key, val))
+        print(sum([val for val in list(me.values())]), "==", 1)
 
         # ----------------------------------------------------------
         # total effects
         te = anova.getTotalEffects()
-        print "-------------- Total Effects (t = %i) -----------------" % 1
+        print("-------------- Total Effects (t = %i) -----------------" % 1)
         for key, val in sorted(te.items()):
-            print "%s: %s" % (key, val)
-        print "---------------------------------------------"
-        print
+            print("%s: %s" % (key, val))
+        print("---------------------------------------------")
+        print()
 
-        names = anova.getSortedPermutations(me.keys())
+        names = anova.getSortedPermutations(list(me.keys()))
         values = [me[name] for name in names]
         fig, _ = plotSobolIndices(values, legend=True, names=names)
         fig.show()

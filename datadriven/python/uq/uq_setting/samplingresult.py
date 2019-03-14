@@ -1,11 +1,12 @@
+
 from numpy import array
 
 
-from UQSetting import UQSetting
-from UQSettingFormatter import UQSettingFormatter
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSetting import UQSetting
+from pysgpp.extensions.datadriven.uq.uq_setting.UQSettingFormatter import UQSettingFormatter
 
 
-class Samplingresult:
+class Samplingresult(object):
 
     def __init__(self, uqsetting):
         """
@@ -53,10 +54,10 @@ class Samplingresult:
         """
         ok = True
         if isinstance(tag, dict):
-            tk = tag.items()
+            tk = list(tag.items())
         else:
             tk = tag
-        for keyval in chunk_ref.iteritems():
+        for keyval in chunk_ref.items():
             if keyval not in tk:
                 ok = False
         not_matched = False
@@ -85,18 +86,18 @@ class Samplingresult:
         elif chunktag is None:
             chunk_ref.update(kwargs)
         else:
-            print "Warning: illegal chunktag", chunktag
+            print(( "Warning: illegal chunktag", chunktag ))
             return []
         items = []
         if hasattr(self, 'index'):
-            for tk, v in self.index.iteritems():
+            for tk, v in self.index.items():
                 if self.tagMatch(tk, chunk_ref, not_match):
                     for k in v:
                         t = self.tag_stats[k]
                         idx = t[0]['__index']
                         items.append((idx, k, self.sim_stats[k]))
         else:
-            for k, v in self.tag_stats.iteritems():
+            for k, v in self.tag_stats.items():
                 for t in v:
                     if self.tagMatch(t, chunk_ref, not_match):
                         idx = t['__index']
@@ -145,7 +146,7 @@ class Samplingresult:
         """
         index = {}
         self.index = index
-        for k, ts in self.tag_stats.iteritems():
+        for k, ts in self.tag_stats.items():
             for t in ts:
                 tk = self.__tagToTuple(t)
                 if tk not in index:
@@ -197,13 +198,13 @@ class Samplingresult:
         Return the timesteps in the dataset as a list.
         """
         # TODO: This is inefficient and kind of useless.
-        return range(0, len(self.post_stats.values()[0][self.qoi]))
+        return list(range(0, len(list(self.post_stats.values())[0][self.qoi])))
 
     def __tagToTuple(self, t):
         """
         convert a tag given as a dict to something suitable as a dict key.
         """
-        return tuple(i for i in sorted(t.iteritems())
+        return tuple(i for i in sorted(t.items())
                      if not i[0].startswith('__'))
 
     def listChunks(self, chunk_ref=None, **kwargs):
@@ -217,15 +218,15 @@ class Samplingresult:
         if chunk_ref is None:
             chunk_ref = kwargs
         tags = {}
-        for ts in self.tag_stats.itervalues():
+        for ts in self.tag_stats.values():
             for t in ts:
                 # all key-value pairs except __index
                 ok = True
-                for key, val in chunk_ref.iteritems():
+                for key, val in chunk_ref.items():
                     if key not in t or t[key] != val:
                         ok = False
                 if ok:
                     k = self.__tagToTuple(t)
                     tags[k] = t
-        return [{k: v for k, v in t.iteritems() if not k.startswith('__')}
-                for t in tags.itervalues()]
+        return [{k: v for k, v in t.items() if not k.startswith('__')}
+                for t in tags.values()]

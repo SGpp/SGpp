@@ -83,10 +83,10 @@ if __name__ == '__main__':
                     for full in fulls:
                         for maxGridPoint in maxGridPoints:
                             for full in fulls:
-                                print "-" * 80
-                                print "scenario: (%s, %s, %i, %s, %s)" % (args.model, gridType, maxGridPoint, refinement,
-                                                                          "full" if full else "sparse")
-                                print "-" * 80
+                                print("-" * 80)
+                                print("scenario: (%s, %s, %i, %s, %s)" % (args.model, gridType, maxGridPoint, refinement,
+                                                                          "full" if full else "sparse"))
+                                print("-" * 80)
 
                                 if args.parallel:
                                     myargs = (args.model, gridType, level, maxGridPoint,
@@ -109,9 +109,9 @@ if __name__ == '__main__':
         for sampler in surrogate['sampler']:
             for expansion in surrogate["expansion"]:
                 for max_num_samples in surrogate["max_num_samples"]:
-                    print "-" * 80
-                    print "scenario: (%s, %s, %s, %i)" % (args.model, sampler, expansion, max_num_samples)
-                    print "-" * 80
+                    print("-" * 80)
+                    print("scenario: (%s, %s, %s, %i)" % (args.model, sampler, expansion, max_num_samples))
+                    print("-" * 80)
 
                     if args.parallel:
                         myargs = (args.model, sampler, expansion, max_num_samples, args.out, args.plot)

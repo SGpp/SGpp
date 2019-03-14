@@ -1,13 +1,13 @@
-from BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
-from SparseGridQuadratureStrategy import SparseGridQuadratureStrategy
-from UniformQuadratureStrategy import UniformQuadratureStrategy
-from PiecewiseConstantQuadratureStrategy import PiecewiseConstantQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearGaussQuadratureStrategy import BilinearGaussQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.SparseGridQuadratureStrategy import SparseGridQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.UniformQuadratureStrategy import UniformQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.PiecewiseConstantQuadratureStrategy import PiecewiseConstantQuadratureStrategy
 
-from bilinear_form import (computeBilinearForm,
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.bilinear_form import (computeBilinearForm,
                            computePiecewiseConstantBilinearForm,
                            computeBilinearFormQuad)
 
-from bilinear_form_admissible_set import (computeBF, computeBFGridPoint,
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.bilinear_form_admissible_set import (computeBF, computeBFGridPoint,
                                           computeBFQuad,
                                           computePiecewiseConstantBF,
                                           computeExpectationValueEstimation)

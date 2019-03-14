@@ -41,12 +41,12 @@ if __name__ == '__main__':
                 for level in surrogate["level"]:
                     for gridType in surrogate['gridType']:
                         for refinement in surrogate['refinement']:
-                            print "-" * 80
-                            print "scenario: SG (%s, %s, %i, %s)" % (args.model,
+                            print("-" * 80)
+                            print("scenario: SG (%s, %s, %i, %s)" % (args.model,
                                                                      gridType,
                                                                      maxGridPoints,
-                                                                     refinement)
-                            print "-" * 80
+                                                                     refinement))
+                            print("-" * 80)
 
                             if args.parallel:
                                 myargs = (gridType,
@@ -78,10 +78,10 @@ if __name__ == '__main__':
         maxSamples = 100000
         for setting in surrogate["settings"]:
             for qoi in surrogate["qois"]:
-                print "-" * 80
-                print "scenario: MC (%s, %i)" % (args.model,
-                                                 maxSamples)
-                print "-" * 80
+                print("-" * 80)
+                print("scenario: MC (%s, %i)" % (args.model,
+                                                 maxSamples))
+                print("-" * 80)
 
                 if args.parallel:
                     myargs = (setting,

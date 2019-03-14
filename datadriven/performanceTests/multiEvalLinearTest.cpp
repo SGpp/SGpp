@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
@@ -34,8 +35,8 @@
 #define OUT_FILENAME "results.csv"
 // #define REFINEMENT_POINTS 100
 
-// std::vector<std::string> fileNames = { "datadriven/tests/data/friedman2_4d_10000.arff.gz",
-//        "datadriven/tests/data/friedman1_10d_2000.arff.gz", "datadriven/tests/data/DR5_train.arff.gz" };
+// std::vector<std::string> fileNames = { "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz",
+//        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", "datadriven/datasets/DR5/DR5_train.arff.gz" };
 //
 // std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 //
@@ -45,7 +46,7 @@
 // std::vector<size_t> levelsModLinear = { 9, 5, 7 };
 // std::vector<size_t> refinementStepsModLinear = { 70, 70, 70 };
 
-std::vector<std::string> fileNames = {"datadriven/tests/data/DR5_train.arff.gz"};
+std::vector<std::string> fileNames = {"datadriven/datasets/DR5/DR5_train.arff.gz"};
 
 std::vector<std::string> datasetNames = {"DR5"};
 
@@ -776,4 +777,5 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif
 #endif

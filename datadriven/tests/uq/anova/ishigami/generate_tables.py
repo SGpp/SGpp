@@ -110,9 +110,9 @@ def load_results(path="results"):
         for filename in files:
             if "pkl" in filename:
                 path = os.path.join(root, filename)
-                print "=" * 80
-                print "loading '%s'" % path
-                print "=" * 80
+                print("=" * 80)
+                print("loading '%s'" % path)
+                print("=" * 80)
                 fd = open(path, "r")
                 currentStats = pkl.load(fd)
                 fd.close()
@@ -146,12 +146,12 @@ if __name__ == "__main__":
 
     # export values from scenarios to the table
     perms = []
-    for k in xrange(3):
+    for k in range(3):
         for perm in combinations([0, 1, 2], r=k + 1):
             perms.append(perm)
 
     for i, perm in enumerate(sortPermutations(perms)):
-        print i, perm
+        print(i, perm)
         row_entries[i] = row_entries[i] % (np.abs(results["pce"][pce[0]]["sobol_indices_estimated"][perm]),
                                            np.abs(results["pce"][pce[1]]["sobol_indices_estimated"][perm]),
                                            np.abs(results["pce"][pce[2]]["sobol_indices_estimated"][perm]),

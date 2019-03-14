@@ -8,7 +8,7 @@ import time
 import random
 import math
 
-from FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 
 ## Provides functionality for accomplishment of learning with cross-validation
 # by generating a set of training data/validation data pairs randomly
@@ -30,8 +30,8 @@ class RandomFoldingPolicy(FoldingPolicy):
             self.seed = seed
         ## Random number generator
         self.random = random.seed(self.seed)
-        self.seq = range(self.size)
+        self.seq = list(range(self.size))
         random.shuffle(self.seq, self.random)
-        for step in xrange(self.level):
+        for step in range(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
             self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))

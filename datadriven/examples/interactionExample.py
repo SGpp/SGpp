@@ -34,13 +34,13 @@ def scale(df, scaler=None):
 def get_dataset():
     train_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/optdigits/optdigits.tra"
     test_url = 'https://archive.ics.uci.edu/ml/machine-learning-databases/optdigits/optdigits.tes'   
-    print "Loading dataset from UCI repository."
+    print("Loading dataset from UCI repository.")
     columns = ["x{}".format(i) for i in range(0, 64)] + ['digit']
     df_train = pd.read_csv(train_url, header=None, index_col=None)
     df_test = pd.read_csv(train_url, header=None, index_col=None)
     df_train.columns=columns
     df_test.columns=columns
-    print "Preprocessing dataset."
+    print("Preprocessing dataset.")
     df_complete = df_train.append(df_test, ignore_index=True)
     scaler , _ = scale(df_complete)
     _, df_train = scale(df_train, scaler)
@@ -102,9 +102,9 @@ def main():
     ## We then compare a standard sparse grid with a sparse grid learner that only contains the
     ## aforementioned interaction terms.
     standard_accuracy = evaluate(X_tr, y_tr, X_te, y_te)
-    print "The standard sparse grid achieved an accuracy of {:2.3f}".format(standard_accuracy)
+    print("The standard sparse grid achieved an accuracy of {:2.3f}".format(standard_accuracy))
     ia_accuracy = evaluate(X_tr, y_tr, X_te, y_te, interactions)
-    print "The interaction aware grid achieved an accuracy of {:2.3f}".format(ia_accuracy)
+    print("The interaction aware grid achieved an accuracy of {:2.3f}".format(ia_accuracy))
 
 if __name__ == '__main__':
     main()

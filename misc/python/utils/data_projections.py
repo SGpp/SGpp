@@ -13,7 +13,7 @@
 #
 
 import sys, os, re, optparse
-if os.environ.has_key("SGPP"):
+if "SGPP" in os.environ:
     sys.path.append(os.environ["SGPP"]+"/bin")
 from bin import tools
 
@@ -25,8 +25,8 @@ def getminmax(filename, separator=None):
     mmax = [-10e10 for d in range(dim)]
     mmin = [10e10 for d in range(dim)]
     for line in fd.readlines():
-    	if "@" in line or len(line)==0:
-    		continue
+        if "@" in line or len(line)==0:
+            continue
         line = line.split(separator)
         for d in range(len(line)-1):
             mmax[d] = max(float(line[d]), mmax[d])
@@ -76,7 +76,7 @@ if __name__=='__main__':
     
     # check arguments
     if not options.data:
-        print "--data missing"
+        print( "--data missing" )
         parser.parse_args(['-h'])
         
     # read data
@@ -100,7 +100,7 @@ if __name__=='__main__':
     # sense to take one the last lines
     line = data[-2].strip().split(options.datsep)
     dim = len(line)-1
-    print "# dim =", dim
+    print(( "# dim =", dim ))
     
     # prepare dotwidth
     if options.dotwidth:
@@ -110,8 +110,8 @@ if __name__=='__main__':
     
     # get bounds of intervals
     if options.minima and options.maxima:
-        mmin = map(lambda x: float(x), options.minima.split())
-        mmax = map(lambda x: float(x), options.maxima.split())
+        mmin = [float(x) for x in options.minima.split()]
+        mmax = [float(x) for x in options.maxima.split()]
     else:
         (mmin, mmax) = getminmax(options.data, options.datsep)
     
@@ -122,10 +122,10 @@ if __name__=='__main__':
             xoffset = 0.02
             yoffset = 0.02
         else:
-            xoffset = 1.0/12.0
-            yoffset = 1.0/12.0
-        dx = (1.0-xoffset)/dim
-        dy = (1.0-yoffset)/dim
+            xoffset = 1.0 / 12.0
+            yoffset = 1.0 / 12.0
+        dx = (1.0-xoffset) / dim
+        dy = (1.0-yoffset) / dim
     
         s = """
     # taking data from %s
@@ -175,13 +175,13 @@ if __name__=='__main__':
                 cin.write("""set terminal postscript color enhanced size 10in,10in font "Arial" 10
     set output '%sprojection.eps'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print( couterr.read() )
         elif options.png:
             (cin, couterr) = os.popen2('gnuplot')
             cin.write("""set terminal png enhanced small size 1000,1000 enhanced
     set output '%sprojection.png'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print( couterr.read() )
         else:
-    #        print "set terminal x11"
-            print s
+    #        print( "set terminal x11" )
+            print( s )
