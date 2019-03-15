@@ -172,7 +172,7 @@ vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
 vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
                                    "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
-                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
+                                     "(only relevant for sgpp::datadriven)", False))
 vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Library should be used " +
                                      "(only relevant for new_sgde)", False))
 
