@@ -10,8 +10,8 @@
  * Versions of the example are given in all languages
  * currently supported by SG++: C++, Python, Java, and MATLAB.
  *
- * The example interpolates a bivariate test function like the \ref example_tutorial_cpp example.
- * However, we use B-splines here instead to obtain a smoother interpolant.
+ * The example interpolates a bivariate test function with B-splines instead
+ * of piecewise linear basis functions to obtain a smoother interpolant.
  * The resulting sparse grid function is then minimized with the method of steepest descent.
  * For comparison, we also minimize the objective function with Nelder-Mead's method.
  */
