@@ -10,21 +10,24 @@
  *      Author: dominik
  */
 
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
+// FOR EVALUATION ONLY
+#include <sgpp/datadriven/datamining/base/evaluationtools.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <iostream>
 #include <vector>
+using evalu::getTime;
 
 namespace sgpp {
 namespace datadriven {
 
 SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
-    DataSourceCrossValidation* dataSource,
-    ModelFittingBase* fitter, Scorer* scorer) : SparseGridMiner(fitter, scorer),
-        dataSource{dataSource} {}
+    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer)
+    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
 
 double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below
@@ -44,58 +47,62 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     // really support batch based learning with cv and not only regression.
     // What should be done is reimplementing the data source such that it provides batches
 
-    std::cout << "###############" << "Fold #" << fold << std::endl;
+    std::cout << "###############"
+              << "Fold #" << fold << std::endl;
 
     // Create a refinement monitor for this fold
     RefinementMonitorFactory monitorFactory;
-    RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
+    RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
         fitter->getFitterConfiguration().getRefinementConfig());
 
     // Reset the fitter
     fitter->reset();
 
-
-    for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++)  {
-        std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
-        dataSource->reset();
-        Dataset *validationData = dataSource->getValidationData();
-        size_t validationSize = validationData->getNumberInstances();
-        std::cout << "Validation data size: " << validationSize << std::endl;
-        // Process dataset iteratively
-        size_t iteration = 0;
-        while (true) {
-          std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
-          size_t numInstances = dataset->getNumberInstances();
-          if (numInstances == 0) {
-            // The source does not provide any more samples
-            break;
-          }
-          std::cout << "###############" << "Itertation #" << (iteration++) << std::endl <<
-              "Batch size: " << numInstances << std::endl;
-
-          // Train model on new batch
-          fitter->update(*dataset);
-
-          // Evaluate the score on the training and validation data
-          double scoreTrain = scorer->test(*fitter, *dataset);
-          double scoreVal = scorer->test(*fitter, *validationData);
-
-          std::cout << "Score on batch: " << scoreTrain << std::endl <<
-              "Score on validation data: " << scoreVal << std::endl;
-
-          // Refine the model if neccessary
-          monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
-          size_t refinements = monitor->refinementsNecessary();
-          while (refinements--) {
-            fitter->refine();
-          }
-
-          std::cout << "###############" << "Iteration finished." << std::endl;
+    for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
+      std::cout << "###############"
+                << "Starting training epoch #" << epoch << std::endl;
+      dataSource->reset();
+      Dataset* validationData = dataSource->getValidationData();
+      size_t validationSize = validationData->getNumberInstances();
+      std::cout << "Validation data size: " << validationSize << std::endl;
+      // Process dataset iteratively
+      size_t iteration = 0;
+      while (true) {
+        std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+        size_t numInstances = dataset->getNumberInstances();
+        if (numInstances == 0) {
+          // The source does not provide any more samples
+          break;
         }
+        std::cout << "###############" << getTime() << "Itertation #" << (iteration++) << std::endl
+                  << "Batch size: " << numInstances << std::endl;
+
+        // Train model on new batch
+        fitter->update(*dataset);
+
+        // Evaluate the score on the training and validation data
+        double scoreTrain = scorer->test(*fitter, *dataset);
+        double scoreVal = scorer->test(*fitter, *validationData);
+
+        std::cout << getTime() << std::endl
+                  << "Score on batch: " << scoreTrain << std::endl
+                  << "Score on validation data: " << scoreVal << std::endl;
+
+        // Refine the model if neccessary
+        monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
+        size_t refinements = monitor->refinementsNecessary();
+        while (refinements--) {
+          std::cout << getTime();
+          fitter->refine();
+          std::cout << getTime();
+        }
+
+        std::cout << "###############" << getTime() << "Iteration finished." << std::endl;
+      }
     }
     // Evaluate the final score on the validation data
     dataSource->reset();
-    Dataset *validationData = dataSource->getValidationData();
+    Dataset* validationData = dataSource->getValidationData();
     scores.push_back(scorer->test(*fitter, *validationData));
   }
 
@@ -110,17 +117,10 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     stdDeviation += std::pow(scores[idx] - meanScore, 2);
   }
   stdDeviation = std::sqrt(stdDeviation / static_cast<double>(crossValidationConfig.kfold_ - 1));
-  std::cout << "###############" << std::endl << "Mean score: " << meanScore << std::endl
-      << "Standard deviation: " << stdDeviation << std::endl;
+  std::cout << "###############" << std::endl
+            << "Mean score: " << meanScore << std::endl
+            << "Standard deviation: " << stdDeviation << std::endl;
   return meanScore;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-
-
-
-
-
-
-

@@ -11,7 +11,9 @@
 #include <iostream>
 #include <memory>
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
+#include <sgpp/datadriven/datamining/base/evaluationtools.hpp>
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -21,14 +23,7 @@ using std::cout;
 using std::string;
 using std::to_string;
 using std::vector;
-
-string getTime() {
-  time_t now = time(0);
-  std::tm *time = std::localtime(&now);
-  return to_string(1900 + time->tm_year) + "_" + to_string(1 + time->tm_mon) + "_" +
-         to_string(time->tm_mday) + "_" + to_string(time->tm_hour) + "_" + to_string(time->tm_min) +
-         "_" + to_string(time->tm_sec);
-}
+using evalu::getTime;
 
 int main(int argc, char **argv) {
   cout << "Starting the evaluation. Time: " << getTime() << std::endl;
@@ -44,13 +39,25 @@ int main(int argc, char **argv) {
 
   ClassificationMinerFactory factory;
   for (string path : paths) {
-    freopen((titel + "_" + path).c_str(), "w", stdout);
-    cout << path;
+    // timestamp in main evaluation file
     myfile << std::endl << std::endl << getTime() << path << std::endl;
+
+    // writing in the child file
+    freopen((titel + "_" + path).c_str(), "w", stdout);
+    cout << path << std::endl << std::endl;
+    // copying the config.json
+    std::ifstream inFile;
+    inFile.open("classificationConfigs/" + path + ".json");
+    string line;
+    while (std::getline(inFile, line)) {
+      cout << line;
+    }
+    cout << std::endl << std::endl;
+
     auto miner = std::unique_ptr<SparseGridMiner>(
         factory.buildMiner("classificationConfigs/" + path + ".json"));
     miner->learn(true);
-    std::cout << std::endl;
+    std::cout << std::endl << "THIS EVALUATION RUN TERMINATED JUST AS PLANED";
   }
 
   myfile.close();
