@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
         << std::endl;
 
   double mse = testDistributionOnOff(
-      "datadrive/datasets/densityEstimation/3D_KurB4B1F.csv", config);
+      "datadriven/datasets/densityEstimation/3D_KurB4B1F.csv", config);
   std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());
