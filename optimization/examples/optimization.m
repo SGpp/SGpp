@@ -16,8 +16,7 @@
 %% The resulting sparse grid function is then minimized with the method of steepest descent.
 %% For comparison, we also minimize the objective function with Nelder-Mead's method.
 %%
-%% For instructions on how to use SG++ within MATLAB, please see \ref installation.
-%% However, for this example to work, some extra steps are necessary.
+%% For this example to work, some extra steps are necessary.
 %% In the following, we assume that we want to run the example on Linux.
 %%
 %% Please note that in order to get sgpp::optimization to work with MATLAB,
