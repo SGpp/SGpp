@@ -20,8 +20,6 @@
 ## arguments as well as how to omit the recomputation of the last iteration resuming
 ## the learning.
 ##
-## For instructions how to run the example, please see \ref installation.
-##
 ## In order to create a Learner object one should use the
 ## @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink.
 ## You can let the

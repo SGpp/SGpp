@@ -206,8 +206,6 @@ def createLanguageExampleDoxy(examples):
       languageName = {"cpp" : "C++", "py" : "Python", "java" : "Java", "m" : "MATLAB"}[language]
       examplesFile.write("@page examples_{} {} Examples\n".format(language, languageName))
       examplesFile.write("This is a list of all {} examples.\n".format(languageName))
-      examplesFile.write("If you don't know where to start, look at the @ref " +
-                         "example_tutorial_{} example first.\n".format(language))
       examplesFile.write("All examples can be found in the <tt>MODULE_NAME/example/</tt> " +
                          "directories.\n")
       if language == "cpp":
@@ -216,8 +214,6 @@ def createLanguageExampleDoxy(examples):
                            "same directory in which the examples reside and can be run " +
                            "directly, if <tt>LD_LIBRARY_PATH</tt> (on Linux/Mac) or " +
                            "<tt>PATH</tt> (on Windows) is set correctly.\n")
-      examplesFile.write("\nFor more instructions on how to run the examples, " +
-                         "please see @ref installation.\n\n")
 
       # split examples of current language into the different modules
       moduleNames = sorted(list(set([example["moduleName"] for example in examplesInLanguage])))
