@@ -20,11 +20,7 @@ def convertExampleSourceToDoxy(sourcePath):
   sourceFileName = sourcePathComponents[-1]
   sourceFileType = os.path.splitext(sourceFileName)[1][1:]
   moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
-
   doxyFolder = os.path.join(moduleName, "doc", "doxygen")
-  snippetFolder = os.path.join(doxyFolder, "snippets")
-  # create path if not there
-  if not os.path.exists(snippetFolder): os.makedirs(snippetFolder)
 
   # feasible languages
   if sourceFileType == "cpp":
@@ -143,6 +139,9 @@ def convertExampleSourcesToDoxy(modules):
   # for each module
   for moduleName in modules:
     examplePath = os.path.join(moduleName, "examples")
+
+    snippetsFolder = os.path.join(moduleName, "doc", "doxygen", "snippets")
+    if not os.path.exists(snippetsFolder): os.makedirs(snippetsFolder)
 
     # search for examples
     for exampleFileName in os.listdir(examplePath):
