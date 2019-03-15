@@ -19,14 +19,10 @@
  * the function itself using 100000 Monte Carlo points, and we then
  * compute the L2-error.
  *
- * For instructions on how to compile and run the example, please see \ref installation.
- *
  * The function, which sgpp::base::OperationQuadratureMC takes, has three parameters.
  * First, the dimensionality (int),
  * then a double* with the coordinates of the grid point \f$\in[0,1]^d\f$,
  * and finally a void* with clientdata for the function, see \ref sgpp::base::FUNC.
- *
- * This example can be found in the file quadrature.cpp
  */
 
 // include all SG++ base headers

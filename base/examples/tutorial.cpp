@@ -13,8 +13,6 @@
  * Identical versions of the example are given in all languages
  * currently supported by SG++: C++, Python, Java, and MATLAB.
  *
- * For instructions on how to compile and run the example, please see \ref installation.
- *
  * In the example, we create a two-dimensional regular sparse grid with level 3
  * (with grid points \f$\vec{x}_j \in [0, 1]^2\f$)
  * using piecewise bilinear basis functions
