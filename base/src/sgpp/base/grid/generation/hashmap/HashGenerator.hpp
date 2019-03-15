@@ -142,6 +142,86 @@ class HashGenerator {
   }
 
   /**
+   * Generates a full grid with different levels on each dimenson.
+   * @param storage  Hashmap that stores the grid points
+   * @param ind Vector that stores the desired level of each dimension
+   */
+  void full(GridStorage& storage, std::vector<size_t> ind){
+
+      if (storage.getDimension() == 0) return;
+
+
+      GridPoint idx_1d(storage.getDimension());
+
+      for (size_t d = 0; d < storage.getDimension(); d++) {
+        idx_1d.push(d, 1, 1, false);
+      }
+      /*if(ind[0]==0)
+      {
+          storage.insert(idx_1d);
+      }*/
+      // Generate 1D grid in first dimension
+      for (level_t l = 1; l <= ind[0]; l++) {
+        for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+          if (l == ind[0]) {
+            idx_1d.push(0, l, i, true);
+          } else {
+            idx_1d.push(0, l, i, false);
+          }
+          storage.insert(idx_1d);
+
+        }
+      }
+
+      // Generate grid points in all other dimensions:
+      // loop dim times over intermediate grid, take all grid points and
+      // modify them in current dimension d
+      for (size_t d = 1; d < storage.getDimension(); d++) {
+        // current size
+        size_t grid_size = storage.getSize();
+
+        // loop over all current grid points
+        for (size_t g = 0; g < grid_size; g++) {
+          bool first = true;
+          GridPoint idx(storage.getPoint(g));
+
+          // add remaining level-index pairs in current dimension d
+          for (level_t l = 1; l <= ind[d]; l++) {
+            // for leaf check, set current level to l
+            idx.push(d, l, 1, false);
+
+            for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
+              // first grid point is updated, all others inserted
+              if (first == false) {
+                // is leaf?
+                if (idx.getLevelSum() == ind[d] * storage.getDimension()) {
+                  idx.push(d, l, i, true);
+                } else {
+                  idx.push(d, l, i, false);
+                }
+
+                storage.insert(idx);
+
+              } else {
+                // is leaf?
+                if (idx.getLevelSum() == ind[d] * storage.getDimension()) {
+                  idx.push(d, l, i, true);
+                } else {
+                  idx.push(d, l, i, false);
+                }
+
+                storage.update(idx, g);
+
+                first = false;
+              }
+            }
+          }
+        }
+      }
+
+    }
+
+  /**
    * Generates a full grid of level @p level, with boundary grid points.
    *
    * @param storage Hashmap that stores the grid points

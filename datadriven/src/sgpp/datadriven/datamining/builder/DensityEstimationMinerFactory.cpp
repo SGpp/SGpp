@@ -24,6 +24,7 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 
 #include <string>
+#include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -32,7 +33,10 @@ ModelFittingBase* DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  return new ModelFittingDensityEstimationOnOff(config);
+  if (config.getCombi())
+    return new PDFCombigrid(config);
+  else
+    return new ModelFittingDensityEstimationOnOff(config);
 }
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);

@@ -85,6 +85,7 @@ else:
 
 
 # define the flags
+vars.Add(BoolVariable("USE_COMBI", "Link combigrid module to datadriven", False))
 vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +
                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
                      converter=Helper.multiParamConverter)

@@ -13,8 +13,25 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
+#include <algorithm>
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
+
+#include <sgpp/base/exception/generation_exception.hpp>
+
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
 #include <memory>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 
 namespace sgpp {
 
@@ -131,10 +148,20 @@ class ModelFittingBase {
    */
   const FitterConfiguration &getFitterConfiguration() const;
 
+  FitterConfiguration &getFitterConfigurationVar();
+
+  void setConfiguration(ModelFittingBase& m);
+
+  void setParser(sgpp::datadriven::DataMiningConfigParser& pars);
+
   /**
    * Whether the Solver produces output or not.
    */
   bool verboseSolver;
+
+  void setDataset(Dataset *new_dataset);
+
+  Dataset *getDataset();
 
  protected:
   /**
@@ -142,9 +169,10 @@ class ModelFittingBase {
    * @param gridConfig configuration for the grid object
    * @return new grid object that is owned by the caller.
    */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig) const;
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig,std::vector<size_t> *ind=NULL) const;
 
-  /**
+
+    /**
    * Factory member function to build the solver for the least squares regression problem according
    * to the config.
    * @param config configuratin for the solver object

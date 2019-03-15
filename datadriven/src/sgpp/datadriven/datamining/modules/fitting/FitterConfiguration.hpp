@@ -187,6 +187,7 @@ class FitterConfiguration {
    */
   datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig();
 
+
   /**
    * set default values for all members based on the desired scenario.
    */
@@ -197,8 +198,15 @@ class FitterConfiguration {
    * @param parser: the parser object to read from
    */
   virtual void readParams(const DataMiningConfigParser &parser) = 0;
+  /**
+   * Copies a configuration object
+   * @param m
+   */
+  void  create(FitterConfiguration& m);
 
- protected:
+  bool getCombi(){return gridConfig.comb;}
+
+protected:
   /**
    * Initial conditions for the grid before adaptive refinement.
    */
@@ -250,6 +258,11 @@ class FitterConfiguration {
    * Configuration for the learner's behaviour
    */
   datadriven::LearnerConfiguration learnerConfig;
+
+  /**
+   * Configuration option for Combigrid PDE
+   */
+   bool combi;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

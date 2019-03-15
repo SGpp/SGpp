@@ -125,6 +125,13 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   return getResult();
 }
 
+double CombigridOperation::evaluateParallel(size_t q, base::DataVector const& param, size_t numThreads) {
+  setParameters(param);
+  impl->levelManager->addRegularLevelsParallel(q,numThreads);
+
+  return getResult();
+}
+
 std::shared_ptr<AbstractCombigridStorage> CombigridOperation::getStorage() { return impl->storage; }
 
 void CombigridOperation::setStorage(std::shared_ptr<AbstractCombigridStorage> storage) {

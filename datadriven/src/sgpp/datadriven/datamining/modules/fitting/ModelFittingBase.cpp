@@ -40,7 +40,7 @@ ModelFittingBase::ModelFittingBase()
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig, std::vector<size_t> *ind) const {
   // load grid
   Grid *tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
@@ -55,10 +55,39 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) co
   } else {
     throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
   }
+  if (ind==NULL) {
 
-  GridGenerator &gridGen = tmpGrid->getGenerator();
-  gridGen.regular(gridConfig.level_);
+      GridGenerator &gridGen = tmpGrid->getGenerator();
+      gridGen.regular(gridConfig.level_);
+  } else {
+
+      sgpp::base::HashGenerator gridGen;
+      gridGen.full(tmpGrid->getStorage(), *ind);
+      tmpGrid->getStorage().recalcLeafProperty();
+  }
   return tmpGrid;
+}
+
+void ModelFittingBase::setDataset(sgpp::datadriven::Dataset *new_dataset) {
+  dataset = new_dataset;
+}
+
+Dataset* ModelFittingBase::getDataset() {
+  return dataset;
+}
+
+void ModelFittingBase::setParser(sgpp::datadriven::DataMiningConfigParser &pars) {
+  FitterConfigurationDensityEstimation conf{};
+  conf.readParams(pars);
+}
+
+void ModelFittingBase::setConfiguration(sgpp::datadriven::ModelFittingBase &m) {
+  config = std::make_unique<FitterConfigurationDensityEstimation>();
+  config->create(m.getFitterConfigurationVar());
+}
+
+FitterConfiguration &ModelFittingBase::getFitterConfigurationVar() {
+  return *config;
 }
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {

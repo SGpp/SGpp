@@ -35,6 +35,7 @@ using sgpp::base::application_exception;
 namespace sgpp {
 namespace datadriven {
 
+
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     const FitterConfigurationDensityEstimation& config) : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
@@ -69,16 +70,13 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
-  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   // build surplus vector
   alpha = DataVector{grid->getSize()};
-
   // Build the offline instance first
   DBMatOffline *offline = nullptr;
-
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
@@ -99,7 +97,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
+    online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
      *grid, regularizationConfig.lambda_)};
 
   online->computeDensityFunction(alpha, newDataset, *grid,

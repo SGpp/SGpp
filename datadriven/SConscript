@@ -10,7 +10,10 @@ import os
 
 Import("*")
 
-moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
+if env["USE_COMBI"]:
+	moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase","sgppcombigrid"]
+else:
+	moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]
 
 additionalDependencies = []
 additionalBoostTestDependencies = []

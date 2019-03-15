@@ -52,6 +52,12 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
+   * Empty Constructor
+   */
+  ModelFittingDensityEstimationOnOff(){};
+
+
+    /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
@@ -112,7 +118,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   void reset() override;
 
- private:
+protected:
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

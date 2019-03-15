@@ -23,6 +23,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <string>
+#include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -38,7 +39,10 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
-    model = new ModelFittingDensityEstimationOnOff(config);
+    if (!config.getCombi())
+      model = new ModelFittingDensityEstimationOnOff(config);
+    else
+      return new PDFCombigrid(config);
   } else {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);

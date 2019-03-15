@@ -81,6 +81,18 @@ Dataset* DataSource::getNextSamples() {
   }
 }
 
+Dataset* DataSource::getAllSamples() {
+  Dataset* dataset = nullptr;
+  dataset = sampleProvider->getAllSamples();
+  // Transform dataset if wanted
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+    dataTransformation->initialize(dataset, config.dataTransformationConfig);
+    return dataTransformation->doTransformation(dataset);
+  } else {
+    return dataset;
+  }
+}
+
 const DataSourceConfig& DataSource::getConfig() const { return config; }
 
 size_t DataSource::getCurrentIteration() const { return currentIteration; }

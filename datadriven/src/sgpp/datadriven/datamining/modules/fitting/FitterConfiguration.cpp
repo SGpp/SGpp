@@ -56,6 +56,102 @@ const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
   return learnerConfig;
 }
 
+void FitterConfiguration::create(sgpp::datadriven::FitterConfiguration &m) {
+
+    //Set Grid Config
+
+    gridConfig.level_ = m.gridConfig.level_;
+    gridConfig.boundaryLevel_ = m.gridConfig.boundaryLevel_;
+    gridConfig.filename_ = m.gridConfig.filename_;
+    gridConfig.generalType_ = m.gridConfig.generalType_;
+    gridConfig.maxDegree_ = m.gridConfig.maxDegree_;
+    gridConfig.dim_= m.gridConfig.dim_;
+    gridConfig.t_ = m.gridConfig.t_;
+    gridConfig.type_ = m.gridConfig.type_;
+
+    //Set Adaptivity Config
+
+    adaptivityConfig.errorBasedRefinement = m.adaptivityConfig.errorBasedRefinement;
+    adaptivityConfig.errorBufferSize = m.adaptivityConfig.errorBufferSize;
+    adaptivityConfig.errorConvergenceThreshold = m.adaptivityConfig.errorConvergenceThreshold;
+    adaptivityConfig.errorMinInterval = m.adaptivityConfig.errorMinInterval;
+    adaptivityConfig.levelPenalize = m.adaptivityConfig.levelPenalize;
+    adaptivityConfig.maxLevelType_ = m.adaptivityConfig.maxLevelType_;
+    adaptivityConfig.noPoints_ = m.adaptivityConfig.noPoints_;
+    adaptivityConfig.numRefinements_ = m.adaptivityConfig.numRefinements_;
+    adaptivityConfig.percent_ = m.adaptivityConfig.percent_;
+    adaptivityConfig.precomputeEvaluations = m.adaptivityConfig.precomputeEvaluations;
+    adaptivityConfig.refinementFunctorType = m.adaptivityConfig.refinementFunctorType;
+    adaptivityConfig.refinementPeriod = m.adaptivityConfig.refinementPeriod;
+    adaptivityConfig.scalingCoefficients = m.adaptivityConfig.scalingCoefficients;
+    adaptivityConfig.threshold_ = m.adaptivityConfig.threshold_;
+
+    //Set Cross-Validation Config
+
+    crossvalidationConfig.enable_= m.crossvalidationConfig.enable_;
+    crossvalidationConfig.kfold_ = m.crossvalidationConfig.kfold_;
+    crossvalidationConfig.lambda_= m.crossvalidationConfig.lambda_;
+    crossvalidationConfig.lambdaEnd_ = m.crossvalidationConfig.lambdaEnd_;
+    crossvalidationConfig.lambdaStart_ = m.crossvalidationConfig.lambdaStart_;
+    crossvalidationConfig.logScale_= m.crossvalidationConfig.logScale_;
+    crossvalidationConfig.lambdaSteps_ = m.crossvalidationConfig.lambdaSteps_;
+    crossvalidationConfig.seed_ = m.crossvalidationConfig.seed_;
+    crossvalidationConfig.shuffle_ = m.crossvalidationConfig.shuffle_;
+    crossvalidationConfig.silent_ = m.crossvalidationConfig.silent_;
+
+
+    //Set Density Estimation Configuration
+
+    densityEstimationConfig.type_ = m.densityEstimationConfig.type_;
+    densityEstimationConfig.decomposition_= m.densityEstimationConfig.decomposition_;
+    densityEstimationConfig.iCholSweepsDecompose_= m.densityEstimationConfig.iCholSweepsDecompose_;
+    densityEstimationConfig.iCholSweepsRefine_= m.densityEstimationConfig.iCholSweepsRefine_;
+    densityEstimationConfig.iCholSweepsSolver_ = m.densityEstimationConfig.iCholSweepsSolver_;
+    densityEstimationConfig.iCholSweepsUpdateLambda_ = m.densityEstimationConfig.iCholSweepsUpdateLambda_;
+
+
+    // Set database Config
+
+    databaseConfig.filepath = m.databaseConfig.filepath ;
+
+    // Set solver Refine Config
+
+
+    solverRefineConfig.type_ = m.solverRefineConfig.type_;
+    solverRefineConfig.threshold_ = m.solverRefineConfig.threshold_;
+    solverRefineConfig.eps_ = m.solverRefineConfig.eps_;
+    solverRefineConfig.maxIterations_ = m.solverRefineConfig.maxIterations_;
+    solverRefineConfig.verbose_ = m.solverRefineConfig.verbose_;
+
+
+    // Set Solver Final Config
+
+    solverFinalConfig.verbose_ = m.solverFinalConfig.verbose_;
+    solverFinalConfig.maxIterations_ = m.solverFinalConfig.maxIterations_;
+    solverFinalConfig.eps_ = m.solverFinalConfig.eps_;
+    solverFinalConfig.threshold_= m.solverFinalConfig.threshold_;
+    solverFinalConfig.type_ = m.solverFinalConfig.type_;
+
+
+    // Set Regularization Config
+
+
+    regularizationConfig.type_ = m.regularizationConfig.type_;
+    regularizationConfig.lambda_ = m.regularizationConfig.lambda_;
+    regularizationConfig.exponentBase_ = m.regularizationConfig.exponentBase_;
+    regularizationConfig.l1Ratio_ = m.regularizationConfig.l1Ratio_;
+
+
+    // Set multiple Eval  Config
+    multipleEvalConfig = m.getMultipleEvalConfig();
+
+
+    // Set learner Config
+
+    learnerConfig.beta = m.learnerConfig.beta;
+    learnerConfig.usePrior = m.learnerConfig.usePrior;
+}
+
 base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
   return const_cast<base::RegularGridConfiguration&>(
       static_cast<const FitterConfiguration&>(*this).getGridConfig());

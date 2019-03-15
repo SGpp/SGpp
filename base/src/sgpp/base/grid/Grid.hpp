@@ -87,6 +87,10 @@ struct GeneralGridConfiguration {
   level_t boundaryLevel_ = 0;
   /// string to serialized grid
   std::string filename_;
+  /// Parallelization level
+  int threads=1;
+  /// Combigrid mode
+  bool comb = false;
   /// subgrid selection value t
   double t_ = 0.0;
 };

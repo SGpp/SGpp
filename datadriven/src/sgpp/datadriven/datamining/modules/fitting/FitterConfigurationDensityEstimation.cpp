@@ -22,6 +22,7 @@ FitterConfiguration *FitterConfigurationDensityEstimation::clone() const {
 }
 
 void FitterConfigurationDensityEstimation::setupDefaults() {
+  combi = false;
   // configure initial grid
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
@@ -72,6 +73,7 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterDensityEstimationConfig(densityEstimationConfig, densityEstimationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
   parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
+
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
