@@ -357,9 +357,9 @@ if env["PLATFORM"] == "win32":
   # could cause trouble
   try:
     import pysgpp
-    Helper.printWarning("An existing installation of pysgpp was detected."
-                        "To get rid of this warning remove the pysgpp package"
-                        "from your local Oython installation.")
+    Helper.printWarning("An existing installation of pysgpp was detected. "
+                        "To get rid of this warning remove the pysgpp package "
+                        "from your local Python installation.")
   except:
     pass
 
