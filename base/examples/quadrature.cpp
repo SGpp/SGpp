@@ -45,8 +45,8 @@ double f(int dim, double* x, void* clientdata) {
 
 int main() {
   /**
-     * Create a two-dimensional piecewise bi-linear grid with level 3
-     */
+   * Create a two-dimensional piecewise bi-linear grid of level 3
+   */
   int dim = 2;
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createLinearGrid(dim));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();

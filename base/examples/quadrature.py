@@ -40,7 +40,7 @@ def g(x):
   return res
 
 
-## Create a two-dimensional piecewise bi-linear grid with level 3
+## Create a two-dimensional piecewise bi-linear grid of level 3
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
