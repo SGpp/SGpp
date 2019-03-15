@@ -4,8 +4,8 @@
 		"fileType": "arff",
 		"hasTargets" : true,
 		"batchSize" : 0,
-		"epochs": 10,
-		"validationPortion" : 0.6,
+		"epochs": 20,
+		"validationPortion" : 0.3,
 		"shuffling" : "random",
 		"randomSeed": -1,
 		"readinClasses": [1,2,3]
@@ -21,7 +21,7 @@
 			"level": 2
 		},
 		"adaptivityConfig": {
-				"numRefinements": 3,
+				"numRefinements": 20,
 				"threshold": 0.001,
 				"maxLevelType": false,
 				"noPoints": 0,
