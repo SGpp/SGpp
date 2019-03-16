@@ -119,6 +119,9 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
 
   // pointer to the BLACS process grid for distributed matrices
   std::shared_ptr<BlacsProcessGrid> processGrid;
+
+  // distributed version of the alpha vector (note that it is created after the process grid)
+  DataVectorDistributed alphaDistributed;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

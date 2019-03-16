@@ -39,7 +39,7 @@ namespace datadriven {
 
 ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffParallel(
     const FitterConfigurationDensityEstimation& config)
-    : ModelFittingDensityEstimation() {
+    : ModelFittingDensityEstimation(), processGrid(), alphaDistributed(processGrid, 0, 0) {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -110,19 +110,21 @@ void ModelFittingDensityEstimationOnOffParallel::fitParallel(DataMatrix& newData
   }
 
   // distribute offline, data and alpha
-  /*DataMatrixDistributed dataDistributed(data.data(), processGrid, data.getNrows(),
-  data.getNcols(), parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed dataDistributed(newDataset.data(), processGrid, newDataset.getNrows(),
+                                        newDataset.getNcols(), parallelConfig.rowBlockSize_,
+                                        parallelConfig.columnBlockSize_);
 
-  DataVectorDistributed alphaDistributed(alpha.data(), processGrid, alpha.getSize(),
-                                         parallelConfig.rowBlockSize_);*/
+  alphaDistributed = DataVectorDistributed(alpha.data(), processGrid, alpha.getSize(),
+                                           parallelConfig.rowBlockSize_);
 
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
 
-  /*online->computeDensityFunctionParallel(alpha, newDataset, *grid,
-                                         this->config->getDensityEstimationConfig(), true,
-                                         this->config->getCrossvalidationConfig().enable_);*/
+  online->computeDensityFunctionParallel(alphaDistributed, dataDistributed, *grid,
+                                         this->config->getDensityEstimationConfig(),
+                                         this->config->getParallelConfig(), this->processGrid, true,
+                                         this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().beta);
   // online->normalize(alpha, *grid);
 }
@@ -158,16 +160,24 @@ void ModelFittingDensityEstimationOnOffParallel::update(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) {
-  /*if (grid == nullptr) {
+  if (grid == nullptr) {
     // Initial fitting of dataset
-    fit(newDataset);
+    fitParallel(newDataset);
   } else {
+    auto& parallelConfig = this->config->getParallelConfig();
+
+    // distribute the new data
+    DataMatrixDistributed dataDistributed(newDataset.data(), processGrid, newDataset.getNrows(),
+                                          newDataset.getNcols(), parallelConfig.rowBlockSize_,
+                                          parallelConfig.columnBlockSize_);
+
     // Update the fit (streaming)
-    online->computeDensityFunction(alpha, newDataset, *grid,
-                                   this->config->getDensityEstimationConfig(), true,
-                                   this->config->getCrossvalidationConfig().enable_);
+    online->computeDensityFunctionParallel(alphaDistributed, dataDistributed, *grid,
+                                           this->config->getDensityEstimationConfig(),
+                                           this->config->getParallelConfig(), processGrid, true,
+                                           this->config->getCrossvalidationConfig().enable_);
     // online->normalize(alpha, *grid);
-  }*/
+  }
 }
 
 bool ModelFittingDensityEstimationOnOffParallel::isRefinable() {

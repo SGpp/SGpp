@@ -6,8 +6,8 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
@@ -19,9 +19,9 @@
 #include <gsl/gsl_blas.h>
 #endif /* USE_GSL */
 
+#include <algorithm>
 #include <list>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace datadriven {
@@ -42,7 +42,7 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
   oDim = grid.getDimension();
 }
 
-void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t> *deletedPoints) {
+void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints) {
   if (functionComputed) {
     // Coarsening -> remove all idx in deletedPoints
     if (deletedPoints != nullptr && deletedPoints->size() > 0) {
@@ -59,7 +59,8 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t> *deletedPoints)
 }
 
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+                                           DensityEstimationConfiguration& densityEstimationConfig,
+                                           bool do_cv) {
   if (functionComputed) {
     if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
       // Assemble the rhs
@@ -71,18 +72,18 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
       solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
     } else {
       throw sgpp::base::algorithm_exception(
-                    "Recomputation of density function with mismatching alpha size and b size");
+          "Recomputation of density function with mismatching alpha size and b size");
     }
   } else {
     throw sgpp::base::algorithm_exception(
-              "Density function can not be recomputed without any b stored in DBMatOnlineDE");
+        "Density function can not be recomputed without any b stored in DBMatOnlineDE");
   }
 }
 
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv,
-    std::list<size_t>* deletedPoints,
-    size_t newPoints) {
+                                           DensityEstimationConfiguration& densityEstimationConfig,
+                                           bool save_b, bool do_cv,
+                                           std::list<size_t>* deletedPoints, size_t newPoints) {
   std::cout << "Computing density function..." << std::endl;
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
@@ -131,10 +132,10 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
-        updateRhs(grid.getSize(), deletedPoints);
-        // Old rhs is weighted by beta
-        bSave.mult(beta);
-        b.add(bSave);
+      updateRhs(grid.getSize(), deletedPoints);
+      // Old rhs is weighted by beta
+      bSave.mult(beta);
+      b.add(bSave);
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
@@ -151,6 +152,21 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     functionComputed = true;
   }
+}
+
+void DBMatOnlineDE::computeDensityFunctionParallel(
+    DataVectorDistributed& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) {
+  // TODO(jan)
+}
+
+void DBMatOnlineDE::computeDensityFunctionParallel(
+    DataVectorDistributed& alpha, DataMatrixDistributed& m, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool save_b, bool do_cv,
+    std::list<size_t>* deletedPoints, size_t newPoints) {
+  // TODO(jan)
 }
 
 double DBMatOnlineDE::resDensity(DataVector& alpha, Grid& grid) {
@@ -185,8 +201,7 @@ double DBMatOnlineDE::computeL2Error(DataVector& alpha, Grid& grid) {
 double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force) {
   if (functionComputed || force == true) {
     double res;
-    std::unique_ptr<sgpp::base::OperationEval> opEval(
-        sgpp::op_factory::createOperationEval(grid));
+    std::unique_ptr<sgpp::base::OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
     res = opEval->eval(alpha, p);
     return res * normFactor;
   } else {
@@ -195,7 +210,7 @@ double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, b
 }
 
 void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
-    bool force) {
+                         bool force) {
   if (functionComputed || force == true) {
     std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
         (offlineObject.interactions.size() == 0)
@@ -208,7 +223,6 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
     throw algorithm_exception("Density function not computed, yet!");
   }
 }
-
 
 bool DBMatOnlineDE::isComputed() { return functionComputed; }
 
@@ -230,8 +244,7 @@ double DBMatOnlineDE::normalize(DataVector& alpha, Grid& grid, size_t samples) {
 
 double DBMatOnlineDE::normalizeQuadrature(DataVector& alpha, Grid& grid) {
   this->normFactor = 1.;
-  double quadrature =
-      sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
+  double quadrature = sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
 }

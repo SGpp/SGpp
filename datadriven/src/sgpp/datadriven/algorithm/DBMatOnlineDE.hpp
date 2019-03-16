@@ -7,8 +7,13 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #include <list>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -41,19 +46,20 @@ class DBMatOnlineDE : public DBMatOnline {
    * points added during refinement after coarsening)
    * @param deletedPoints pointer to list of indexes that will be removed from b
    */
-  void updateRhs(size_t gridSize, std::list<size_t> *deletedPoints);
+  void updateRhs(size_t gridSize, std::list<size_t>* deletedPoints);
 
   /**
-  * Computes the density function again based on the saved b's (only applicable for streaming)
-  *
-  * @param alpha the vector where surplusses for the density function will be stored
-  * @param grid The underlying grid
-  * @param densityEstimationConfig Configuration for the density estimation
-  *        combined with the new right hand side (aka streaming)
-  * @param do_cv Indicates whether crossvalidation should take place
-  */
+   * Computes the density function again based on the saved b's (only applicable for streaming)
+   *
+   * @param alpha the vector where surplusses for the density function will be stored
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   *        combined with the new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   */
   void computeDensityFunction(DataVector& alpha, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv = false);
+                              DensityEstimationConfiguration& densityEstimationConfig,
+                              bool do_cv = false);
 
   /**
    * Computes the density function for a certain data matrix
@@ -70,8 +76,52 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param newPoints indicates the amount of added points due to refinement
    */
   void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool save_b = false,
-      bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+                              DensityEstimationConfiguration& densityEstimationConfig,
+                              bool save_b = false, bool do_cv = false,
+                              std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+
+  /**
+   * Computes the density function again based on the saved b's (only applicable for streaming) in
+   * parallel on a cluster using ScaLAPACK
+   *
+   * @param alpha the vector where surplusses for the density function will be stored
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   *        combined with the new right hand side (aka streaming)
+   * @param parallelConfig configuration for ScaLAPACK
+   * @param processGrid pointer to BlacsProcessGrid
+   * @param do_cv Indicates whether crossvalidation should take place
+   */
+  void computeDensityFunctionParallel(DataVectorDistributed& alpha, Grid& grid,
+                                      DensityEstimationConfiguration& densityEstimationConfig,
+                                      const ParallelConfiguration& parallelConfig,
+                                      std::shared_ptr<BlacsProcessGrid> processGrid,
+                                      bool do_cv = false);
+
+  /**
+   * Computes the density function for a certain data matrix in parallel using ScaLAPACK.
+   *
+   * @param alpha the distributed vector where surplusses for the density function will be stored
+   * @param m the distributed matrix that contains the data points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   * @param parallelConfig configuration for ScaLAPACK
+   * @param processGrid pointer to BlacsProcessGrid
+   * @param save_b Indicates whether the old right hand side should be saved and
+   *        combined with the new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   * @param deletedPoints indicates the indices of removed grid points due to
+   * coarsening
+   * @param newPoints indicates the amount of added points due to refinement
+   */
+  void computeDensityFunctionParallel(DataVectorDistributed& alpha, DataMatrixDistributed& m,
+                                      Grid& grid,
+                                      DensityEstimationConfiguration& densityEstimationConfig,
+                                      const ParallelConfiguration& parallelConfig,
+                                      std::shared_ptr<BlacsProcessGrid> processGrid,
+                                      bool save_b = false, bool do_cv = false,
+                                      std::list<size_t>* deletedPoints = nullptr,
+                                      size_t newPoints = 0);
 
   /**
    * Evaluates the density function at a certain point
@@ -94,7 +144,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param force if set, it will even try to evaluate if the internal state recommends otherwise
    */
   void eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
-      bool force = false);
+            bool force = false);
 
   /**
    * Returns if the surplus has already been computed
@@ -133,7 +183,12 @@ class DBMatOnlineDE : public DBMatOnline {
 
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
+                        DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
+
+  virtual void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+                                DensityEstimationConfiguration& densityEstimationConfig,
+                                const ParallelConfiguration& parallelConfig,
+                                std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv = 0) = 0;
   double computeL2Error(DataVector& alpha, Grid& grid);
   double resDensity(DataVector& alpha, Grid& grid);
 

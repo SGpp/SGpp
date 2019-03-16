@@ -25,7 +25,7 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param beta The initial weighting factor
    */
   explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
-      double beta = 0.);
+                                   double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
@@ -60,7 +60,6 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
 
-
   /**
    * @param densityEstimationConfig configuration for the density estimation
    * @param grid the underlying grid
@@ -70,9 +69,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
-      DensityEstimationConfiguration& densityEstimationConfig,
-      Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
-      double lambda) override;
+      DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
 
  protected:
   // matrix, which holds information about refined/coarsened points
@@ -100,7 +98,24 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+                DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+
+  /**
+   * Solves the distributed system (R + lambda*I) * alpha = b in parallel and obtains alpha.
+   * For more information, see solveSLE.
+   *
+   * @param alpha distributed datavector for surplusses
+   * @param b distributed right hand side
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param parllelConfig configuration for ScaLAPACK
+   * @param processGrid shared pointer to the BlacsProcessGrid
+   * @param do_cv cross-validation (currently not implemented)
+   */
+  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+                        DensityEstimationConfiguration& densityEstimationConfig,
+                        const ParallelConfiguration& parallelConfig,
+                        std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) override;
 
  private:
   /**
