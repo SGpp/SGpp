@@ -89,5 +89,15 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   throw sgpp::base::algorithm_exception("USE_GSL not set");
 #endif /* USE_GSL */
 }
+
+void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrix& Q,
+                                       DataMatrixDistributed& B, DataVectorDistributed& b,
+                                       DataVectorDistributed& alpha) {
+#ifdef USE_SCALAPACK
+// TODO(jan) implement
+#else
+  throw sgpp::base::algorithm_exception("USE_SCALAPACK not set");
+#endif /* USE_SCALAPACK */
+}
 }  // namespace datadriven
 }  // namespace sgpp

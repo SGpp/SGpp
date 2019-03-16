@@ -7,6 +7,8 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -36,6 +38,18 @@ class DBMatDMSOrthoAdapt : public DBMatDecompMatrixSolver {
    */
   void solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMatrix& Q, sgpp::base::DataMatrix& B,
              sgpp::base::DataVector& b, sgpp::base::DataVector& alpha);
+
+  /**
+   * Parallel (distributed) version of solve.
+   *
+   * @param T_inv Inverse of a tridiagonal matrix
+   * @param Q     Orthogonal matrix, part of hessenberg_decomp of the lhs matrix
+   * @param B     Storage of the online objects refined/coarsened points
+   * @param b     The right side of the system
+   * @param alpha The solution vector of the system, computed values go there
+   */
+  void solveParallel(DataMatrixDistributed& T_inv, DataMatrix& Q, DataMatrixDistributed& B,
+                     DataVectorDistributed& b, DataVectorDistributed& alpha);
 };
 
 }  // namespace datadriven

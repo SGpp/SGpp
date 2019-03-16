@@ -13,6 +13,7 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 
 #include <list>
@@ -50,18 +51,28 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
-      DensityEstimationConfiguration& densityEstimationConfig,
-      Grid& grid,
-      size_t numAddedGridPoints,
-      std::list<size_t> deletedGridPointIndices,
-      double lambda) override;
+      DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
 
  protected:
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+                DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+
+  /**
+   * Not implemented for this decomposition
+   */
+  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+                        DensityEstimationConfiguration& densityEstimationConfig,
+                        const ParallelConfiguration& parallelConfig,
+                        std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) override {
+    // TODO(jan) implement for this decomposition
+    throw base::not_implemented_exception(
+        "Distributed parallel solve not implemented for this decomposition");
+  }
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool doCV) const;
+                                DensityEstimationConfiguration& densityEstimationConfig,
+                                bool doCV) const;
 };
 
 } /* namespace datadriven */

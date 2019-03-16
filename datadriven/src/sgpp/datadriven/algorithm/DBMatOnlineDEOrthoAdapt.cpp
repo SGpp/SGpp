@@ -26,10 +26,9 @@ namespace sgpp {
 namespace datadriven {
 
 DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
-    double beta)
+                                                 double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
-  if (offline.getDecompositionType()!=
-      sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+  if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt: offline object has wrong "
         "decomposition type: DecompositionType::OrthoAdapt needed!");
@@ -45,9 +44,8 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& gr
 }
 
 std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
-    DensityEstimationConfiguration& densityEstimationConfig,
-    Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
-    double lambda) {
+    DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices, double lambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
@@ -84,7 +82,8 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
 }
 
 void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+                                       DensityEstimationConfiguration& densityEstimationConfig,
+                                       bool do_cv) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   // create solver
@@ -94,6 +93,21 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& g
   solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
 
   free(solver);
+}
+
+void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
+    DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) {
+  // TODO(jan) parallelize offline version at this point?
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
+      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
+  DataMatrix Tinv = offline->getTinv();
+  DataMatrixDistributed TinvDistributed =
+      DataMatrixDistributed(Tinv.data(), processGrid, Tinv.getNrows(), Tinv.getNcols(),
+                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  // TODO(jan)
 }
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,
@@ -362,7 +376,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
  * Dima
  */
 void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoints,
-    double newLambda) {
+                                                     double newLambda) {
   if (newPoints > 0) {
     size_t gridSize = grid.getStorage().getSize();
     size_t gridDim = grid.getStorage().getDimension();
@@ -447,7 +461,6 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoint
     //### end adjusted part
   }
 }
-
 
 }  // namespace datadriven
 }  // namespace sgpp
