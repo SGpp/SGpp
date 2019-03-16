@@ -10,6 +10,7 @@
  *      Author: dominik
  */
 // FOR EVALUATION ONLY
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/datamining/base/evaluationtools.hpp>
 
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
@@ -28,7 +29,7 @@ double Accuracy::measure(const DataVector& predictedValues, const DataVector& tr
   size_t correct = 0;
 
   vector<double> labels{};
-  vector<vector<size_t>> classificationMatrix{};
+  sgpp::base::DataMatrix cM(0, 0, 0.0);
 
   for (size_t i = 0; i < predictedValues.size(); i++) {
     size_t x = 0;
@@ -42,38 +43,28 @@ double Accuracy::measure(const DataVector& predictedValues, const DataVector& tr
       }
     }
 
+    // resizing of the classification matrix as response to unseen class labels
     if (x == 0) {
-      std::cout << "x==0";
-      classificationMatrix.resize(classificationMatrix.size() + 1);
-      for (size_t g = 0; g < classificationMatrix.size(); g++) {
-        std::cout << "x==0 for";
-        classificationMatrix.at(g).resize(classificationMatrix.size());
-      }
       labels.push_back(trueValues.at(i));
+      cM.resizeZero(labels.size(), labels.size());
       x = labels.size();
     }
 
     if (y == 0) {
-      std::cout << "y==0";
       if (trueValues.at(i) != predictedValues.at(i)) {
-        classificationMatrix.resize(classificationMatrix.size() + 1);
-        for (size_t g = 0; g < classificationMatrix.size(); g++) {
-          std::cout << "y==0 for";
-          classificationMatrix.at(g).resize(classificationMatrix.size());
-        }
         labels.push_back(predictedValues.at(i));
+        cM.resizeZero(labels.size(), labels.size());
       }
       y = labels.size();
     }
-    classificationMatrix.at(x - 1).at(y - 1)++;
-
-    std::cout << evalu::getTime() << "classification matrix:\n"
-              << evalu::mtS(classificationMatrix) << std::endl;
-
+    cM.set(x - 1, y - 1, cM.get(x - 1, y - 1) + 1);
     if (predictedValues.get(i) == trueValues.get(i)) {
       correct++;
     }
   }
+
+  std::cout << evalu::getTime() << "classification matrix:\n" << evalu::dmtS(cM) << std::endl;
+
   return static_cast<double>(correct) / static_cast<double>(predictedValues.size());
 }
 
