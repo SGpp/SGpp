@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
