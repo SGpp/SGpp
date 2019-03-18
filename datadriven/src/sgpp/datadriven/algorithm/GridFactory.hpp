@@ -39,14 +39,15 @@ class GridFactory {
    * @return pointer to the grid object created
    */
   sgpp::base::Grid *createGrid(const sgpp::base::GeneralGridConfiguration& gridConfig,
-		  const std::vector<std::vector <size_t>> interactions) const;
+    const std::vector<std::vector <size_t>> interactions) const;
 
   /*
    * method to decide which interactions have to be calculated based on the stencil
    * @param stencil(geometry relation of pixels) e.g. DirectNeighbours
    * @return returns the calculated interaction that have been choosen by the stencil
    */
-  std::vector<std::vector<size_t>> getInteractions(std::string& stencil, std::vector<int64_t>& dim) const;
+  std::vector<std::vector<size_t>> getInteractions(std::string& stencil,
+    std::vector<int64_t>& dim) const;
 
   /*
    * calculates direct neighbour interactions

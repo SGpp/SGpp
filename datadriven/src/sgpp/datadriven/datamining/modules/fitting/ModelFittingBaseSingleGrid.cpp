@@ -12,6 +12,8 @@
 
 #include <sgpp/base/exception/application_exception.hpp>
 
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 
