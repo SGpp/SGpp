@@ -18,6 +18,7 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -49,13 +50,14 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) co
   return gridFactory.createGrid(gridConfig, interactions);
 }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig, const GeometryConfiguration &geometryConfig) const {
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
+    const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;
 
   std::string tmpString = geometryConfig.stencil;
   std::vector<int64_t> dim = geometryConfig.dim;
 
-  if(!tmpString.compare("none")) {
+  if (!tmpString.compare("none")) {
     // interaction with size 0
     std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
     return gridFactory.createGrid(gridConfig, interactions);
