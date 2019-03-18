@@ -3,14 +3,14 @@
 # use, please see the copyright notice provided with SG++ or at 
 # sgpp.sparsegrids.org
 
-import test_Classifier
-import test_FilesFoldingPolicy
-import test_GridFormatter
-import test_LearnedKnowledge
-import test_LearnedKnowledgeFormatter
-import test_LearnerBuilder
-#import test_LinearSystem
-import test_RandomFoldingPolicy
-import test_SequentialFoldingPolicy
-import test_TrainingSpecification
-import test_StratifiedFoldingPolicy
+import tbin.tlearner.test_Classifier
+import tbin.tlearner.test_FilesFoldingPolicy
+import tbin.tlearner.test_GridFormatter
+import tbin.tlearner.test_LearnedKnowledge
+import tbin.tlearner.test_LearnedKnowledgeFormatter
+import tbin.tlearner.test_LearnerBuilder
+#import tbin.tlearner.test_LinearSystem
+import tbin.tlearner.test_RandomFoldingPolicy
+import tbin.tlearner.test_SequentialFoldingPolicy
+import tbin.tlearner.test_TrainingSpecification
+import tbin.tlearner.test_StratifiedFoldingPolicy

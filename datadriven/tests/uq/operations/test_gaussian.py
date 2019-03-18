@@ -16,7 +16,7 @@ gs = grid.getStorage()
 
 nodalValues = np.ndarray(gs.getSize())
 p = DataVector(2)
-for i in xrange(gs.getSize()):
+for i in range(gs.getSize()):
     gs.getCoordinates(gs.getPoint(i), p)
     nodalValues[i] = U.pdf(p.array())
 

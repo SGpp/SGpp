@@ -42,8 +42,8 @@ class TestFilesFoldingPolicy(unittest.TestCase):
 
         self.policy = FilesFoldingPolicy(self.dataContainer)
 
-        self.points = range(9)
-        self.values = range(9)
+        self.points = list(range(9))
+        self.values = list(range(9))
         self.values.reverse()
 
 
@@ -61,7 +61,7 @@ class TestFilesFoldingPolicy(unittest.TestCase):
             self.assertEqual(points.getNrows(), len(testPoints))
             self.assertEqual(len(values), len(testValues))
 
-            for i in xrange(points.getSize()):
+            for i in range(points.getSize()):
                 self.assertEqual(points.get(i,0), testPoints[i])
                 self.assertEqual(values[i], testValues[i])
             step += 1

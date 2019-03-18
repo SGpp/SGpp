@@ -41,8 +41,7 @@ class NatafDistTest(unittest.TestCase):
         # prepare data
         numDims = 2
         mean = 0.5
-        C = np.array([[0.1, 0.08],
-                      [0.08, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         stddev = np.sqrt(C[0, 0])
         U = dists.MultivariateNormal(np.ones(numDims) * mean, C, 0, 1)
 

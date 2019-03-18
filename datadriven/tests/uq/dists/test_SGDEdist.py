@@ -138,11 +138,11 @@ class SGDEdistTest(unittest.TestCase):
 #                                                                        np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples)
 #                                                                        ))
 
-        print "1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))
-        print "1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))
-        print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
-        print "CE = %g" % dist.crossEntropy(testSamples)
-        print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+        print("1d: mean = %g ~ %g (err=%g)" % (np.mean(trainSamples), dist.mean(), (np.abs(np.mean(trainSamples) - dist.mean()) / np.mean(trainSamples))))
+        print("1d: var = %g ~ %g (err=%g)" % (np.var(trainSamples), dist.var(), (np.abs(np.var(trainSamples) - dist.var()) / np.var(trainSamples))))
+        print("KL = %g" % U.klDivergence(dist, testSamples, testSamples))
+        print("CE = %g" % dist.crossEntropy(testSamples))
+        print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
         plt.show()
 
     def test2DNormalDist(self):
@@ -184,12 +184,12 @@ class SGDEdistTest(unittest.TestCase):
                  show_negative=True, show_grid_points=True)
         fig.show()
 
-        print "2d: mean = %g ~ %g" % (U.mean(), dist.mean())
-        print "2d: var = %g ~ %g" % (U.var(), dist.var())
+        print("2d: mean = %g ~ %g" % (U.mean(), dist.mean()))
+        print("2d: var = %g ~ %g" % (U.var(), dist.var()))
         plt.show()
-        print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
-        print "CE = %g" % dist.crossEntropy(testSamples)
-        print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+        print("KL = %g" % U.klDivergence(dist, testSamples, testSamples))
+        print("CE = %g" % dist.crossEntropy(testSamples))
+        print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
 
     def test2DNormalMoments(self):
         mean = 0
@@ -221,14 +221,14 @@ class SGDEdistTest(unittest.TestCase):
         # -----------------------------------------------
 
         # print the results
-        print "E(x) ~ %g ~ %g" % (kde.mean(), dist.mean())
-        print "V(x) ~ %g ~ %g" % (kde.var(), dist.var())
-        print "log  ~ %g ~ %g" % (kde.crossEntropy(trainSamples),
-                                  dist.crossEntropy(trainSamples))
-        print "-" * 60
+        print("E(x) ~ %g ~ %g" % (kde.mean(), dist.mean()))
+        print("V(x) ~ %g ~ %g" % (kde.var(), dist.var()))
+        print("log  ~ %g ~ %g" % (kde.crossEntropy(trainSamples),
+                                  dist.crossEntropy(trainSamples)))
+        print("-" * 60)
 
-        print dist.cov()
-        print kde.cov()
+        print(dist.cov())
+        print(kde.cov())
 
         sgde_x1 = dist.marginalizeToDimX(0)
         kde_x1 = kde.marginalizeToDimX(0)
@@ -304,8 +304,7 @@ class SGDEdistTest(unittest.TestCase):
 
     def test2DPPF(self):
         # prepare data
-        C = np.array([[0.1, 0.08],
-                      [0.08, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         train_samples = U.rvs(1000)
@@ -353,8 +352,7 @@ class SGDEdistTest(unittest.TestCase):
 
     def test2DCDFandPPF(self, plot=True):
         # prepare data
-        C = np.array([[0.1, 0.08],
-                      [0.08, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         train_samples = U.rvs(1000)
 
@@ -394,8 +392,8 @@ class SGDEdistTest(unittest.TestCase):
             plt.ylim(0, 1)
             fig.show()
         else:
-            print "-" * 80
-            print samples
+            print("-" * 80)
+            print(samples)
 
         transformed_samples = dist.ppf(samples, shuffle=False)
 
@@ -407,8 +405,8 @@ class SGDEdistTest(unittest.TestCase):
             plt.ylim(0, 1)
             fig.show()
         else:
-            print "-" * 80
-            print transformed_samples
+            print("-" * 80)
+            print(transformed_samples)
 
         samples = dist.cdf(transformed_samples, shuffle=False)
 
@@ -422,14 +420,13 @@ class SGDEdistTest(unittest.TestCase):
 
             plt.show()
         else:
-            print "-" * 80
-            print samples
+            print("-" * 80)
+            print(samples)
 
     def test2DCovarianceMatrix(self):
         # prepare data
         np.random.seed(1234567)
-        C = np.array([[0.3, 0.09],
-                      [0.09, 0.3]]) / 10.
+        C = np.array([[0.3, 0.09], [0.09, 0.3]]) / 10.
 
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         samples = U.rvs(2000)
@@ -485,12 +482,12 @@ class SGDEdistTest(unittest.TestCase):
         plt.title("sgde (I(f) = %g)" % (doQuadrature(sgde.grid, sgde.alpha),))
 
         # print the results
-        print "E(x) ~ %g ~ %g" % (kde.mean(), sgde.mean())
-        print "V(x) ~ %g ~ %g" % (kde.var(), sgde.var())
-        print "-" * 60
+        print("E(x) ~ %g ~ %g" % (kde.mean(), sgde.mean()))
+        print("V(x) ~ %g ~ %g" % (kde.var(), sgde.var()))
+        print("-" * 60)
 
-        print kde.cov()
-        print sgde.cov()
+        print(kde.cov())
+        print(sgde.cov())
 
         self.assertTrue(np.linalg.norm(C - kde.cov()) < 1e-2, "KDE cov wrong")
         self.assertTrue(np.linalg.norm(np.corrcoef(samples.T) - kde.corrcoeff()) < 1e-1, "KDE corrcoef wrong")
@@ -516,7 +513,7 @@ class SGDEdistTest(unittest.TestCase):
         nodalValues = np.ndarray(gs.getSize())
 
         # set function values in alpha
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getPoint(i).getStandardCoordinates(p)
             nodalValues[i] = U.pdf(trans.unitToProbabilistic(p.array()))
 
@@ -538,8 +535,8 @@ class SGDEdistTest(unittest.TestCase):
                       interval_label="$\alpha=0.1$")
         fig.show()
 
-        print "1d: mean = %g ~ %g" % (U.mean(), dist.mean())
-        print "1d: var = %g ~ %g" % (U.var(), dist.var())
+        print("1d: mean = %g ~ %g" % (U.mean(), dist.mean()))
+        print("1d: var = %g ~ %g" % (U.var(), dist.var()))
         plt.show()
 
     def test_2DNormalDist_variance(self):
@@ -564,7 +561,7 @@ class SGDEdistTest(unittest.TestCase):
         nodalValues = np.ndarray(gs.getSize())
 
         # set function values in alpha
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getPoint(i).getStandardCoordinates(p)
             nodalValues[i] = U.pdf(trans.unitToProbabilistic(p.array()))
 
@@ -587,8 +584,8 @@ class SGDEdistTest(unittest.TestCase):
                  show_negative=True, show_grid_points=True)
         fig.show()
 
-        print "2d: mean = %g ~ %g" % (U.mean(), dist.mean())
-        print "2d: var = %g ~ %g" % (U.var(), dist.var())
+        print("2d: mean = %g ~ %g" % (U.mean(), dist.mean()))
+        print("2d: var = %g ~ %g" % (U.var(), dist.var()))
         plt.show()
 
 

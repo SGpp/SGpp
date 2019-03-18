@@ -28,8 +28,8 @@ a = MCSampler(params).nextSamples(n).ndarray()
 b = MCSampler(params).nextSamples(n + 1).ndarray()
 
 
-print a
-print "-" * 80
-print b
+print(a)
+print("-" * 80)
+print(b)
 
-print a[:n, :] - b[:n, :]
+print(a[:n, :] - b[:n, :])

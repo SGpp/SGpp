@@ -21,7 +21,7 @@ class PiecewiseConstantIntegralStrategy(EstimationStrategy):
         n_grid, n_alpha = discretize(grid, alpha, f, refnums=0)
 
         # add the density measure
-        for i in xrange(gs.size()):
+        for i in range(gs.size()):
             p = [gs.getCoordinates(gs.getPoint(i), j) for j in range(gs.getDimension())]
             q = U.pdf(tr.trans(p), marginal=True)
             n_alpha[i] *= prod(q)

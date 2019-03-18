@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef ZLIB
+
 #include <boost/lexical_cast.hpp>
 #include <zlib.h>
 
@@ -102,3 +104,5 @@ void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgp
     dummySurplusValue += 1.0;
   }
 }
+
+#endif

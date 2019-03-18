@@ -13,10 +13,10 @@ __all__ = ["ParameterBuilder", "Parameter", "ParameterSet",
 __author__ = "Fabian Franzelin, fabian.franzelin@ipvs.uni-stuttgart.de"
 
 
-from DeterministicParameter import DeterministicParameter
-from Parameter import Parameter
-from ParameterBuilder import (ParameterBuilder,
+from pysgpp.extensions.datadriven.uq.parameters.DeterministicParameter import DeterministicParameter
+from pysgpp.extensions.datadriven.uq.parameters.Parameter import Parameter
+from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import (ParameterBuilder,
                               UncertainParameterBuilder,
                               DeterministicParameterBuilder)
-from ParameterSet import ParameterSet
-from UncertainParameter import UncertainParameter
+from pysgpp.extensions.datadriven.uq.parameters.ParameterSet import ParameterSet
+from pysgpp.extensions.datadriven.uq.parameters.UncertainParameter import UncertainParameter

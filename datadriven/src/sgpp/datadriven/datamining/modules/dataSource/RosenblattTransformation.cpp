@@ -10,8 +10,8 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/application/LearnerSGDE.hpp>
@@ -22,13 +22,9 @@ namespace sgpp {
 namespace datadriven {
 
 RosenblattTransformation::RosenblattTransformation()
-    : grid(nullptr),
-      alpha(nullptr),
-      datasetTransformed(nullptr),
-      datasetInvTransformed(nullptr) {}
+    : grid(nullptr), alpha(nullptr), datasetTransformed(nullptr), datasetInvTransformed(nullptr) {}
 
-void RosenblattTransformation::initialize(Dataset *dataset,
-                                          DataTransformationConfig config) {
+void RosenblattTransformation::initialize(Dataset *dataset, DataTransformationConfig config) {
   RosenblattTransformationConfig rbConfig = config.rosenblattConfig;
 
   // Sample #numSamples random samples from dataset
@@ -52,8 +48,8 @@ void RosenblattTransformation::initialize(Dataset *dataset,
   learner.train();
 
   // Get grid and alpha
-  grid = learner.getGrid();
-  alpha = learner.getSurpluses();
+  grid = learner.getSharedGrid();
+  alpha = learner.getSharedSurpluses();
 
   std::cout << "Rosenblatt transformation initialized" << std::endl;
 }

@@ -36,7 +36,7 @@ class TestRandomFoldingPolicy(unittest.TestCase):
         self.seed = 42
         points = DataMatrix(self.size,1)
         values = DataVector(self.size)
-        for i in xrange(self.size):
+        for i in range(self.size):
             points.set(i,0, i)
             values[i] = i
         self.dataContainer = DataContainer(points=points, values=values)

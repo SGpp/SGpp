@@ -55,7 +55,7 @@ class BilinearFormTest(unittest.TestCase):
         nodalValues = DataVector(gs.getSize())
         p = DataVector(gs.getDimension())
 
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p.array())
 

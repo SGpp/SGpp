@@ -8,7 +8,7 @@
 #############################################################################
 
 from pysgpp import DataVector
-from bin.learner.formatter import GridFormatter
+from pysgpp.extensions.datadriven.learner.formatter import GridFormatter
 import matplotlib.pyplot as plt 
 from numpy import zeros, sqrt, ceil, floor
 
@@ -52,7 +52,7 @@ class GridImageFormatter(GridFormatter):
             storage = grid.getStorage()
             coord_vector = DataVector(storage.getDimension())
             points = zeros([storage.getSize(), storage.getDimension()])
-            for i in xrange(storage.getSize()):
+            for i in range(storage.getSize()):
                 point = storage.getPoint(i)
                 storage.getCoordinates(point, coord_vector)
                 points[i] = [j for j in coord_vector.array()]
@@ -61,8 +61,8 @@ class GridImageFormatter(GridFormatter):
             cols = int(floor(sqrt(num_of_sublots)))
             i = 1
             
-            for x1 in xrange(1,storage.getDimension()):
-                for x2 in xrange(2,storage.getDimension()+1):
+            for x1 in range(1,storage.getDimension()):
+                for x2 in range(2,storage.getDimension()+1):
                      figure.add_subplot(rows*100 + cols*10 + i)
                      figure.add_subplot(rows, cols, i)
                      plt.xlabel('x%d'%x1, figure=figure)

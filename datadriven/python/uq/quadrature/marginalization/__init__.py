@@ -1,1 +1,1 @@
-from marginalization import doMarginalize
+from pysgpp.extensions.datadriven.uq.quadrature.marginalization.marginalization import doMarginalize

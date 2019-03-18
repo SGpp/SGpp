@@ -15,7 +15,7 @@ class JTest(unittest.TestCase):
     def testProductCopula(self):
         U = dists.J([dists.Uniform(0, 1), dists.Uniform(0, 1)])
         self.assertEqual(U.mean(), 0.25)
-        self.assertEqual(U.var(), 1. / 9 - 1. / 16)
+        self.assertEqual(U.var(), 1./9 - 1./16)
 
         U = dists.J([dists.TNormal(0, 2, -5, 5)])
         self.assertEqual(U.mean(), 0)
