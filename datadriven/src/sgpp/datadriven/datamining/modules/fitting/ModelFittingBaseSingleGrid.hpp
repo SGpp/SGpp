@@ -85,6 +85,10 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    */
   DataVector& getSurpluses();
 
+  /*
+   * Get the grid and alphas of the current model
+   * @return string with grid and alphas
+   */
   std::string storeFitter();
 
  protected:

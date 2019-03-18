@@ -45,20 +45,13 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
-  std::cout << interactions.size() << std::endl;
-
   // Generate regular Grid with LEVELS Levels
   if (interactions.size() == 0) {
     tmpGrid->getGenerator().regular(gridConfig.level_);
   } else {
-    if (gridConfig.generalType_ != sgpp::base::GeneralGridType::GeometryAwareSparseGrid) {
-      // No geometry aware sparse grid but passed interactions nonetheless
-      std::cout << "Passed grid configuration for non geometry aware sparse grids and" <<
-          " interactions vector nonetheless. Geometry aware sparse grid will be created!" <<
-          std::endl;
-    }
+    std::cout << "Creating geometry aware sparse grid..." << std::endl;
     tmpGrid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
-    std::cout << "interactions set" << std::endl;
+    std::cout << "Interactions set!" << std::endl;
   }
   return tmpGrid;
 }
@@ -69,6 +62,7 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
 
   std::vector<int64_t> res = dim;
 
+  // TODO: Add more stencils, e.g. diagonals
   if (!stencil.compare("DirectNeighbour")) {
     interactions = getDirectNeighbours(res);
   } else {
@@ -81,42 +75,45 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(std::vector<int64_t>& res)
     const {
-  // std::vector<int64_t> geodim = res;
-  size_t geodim = 28;
+  std::vector<int64_t> geodim1 = res;
+  size_t geodimX = res.at(0);
+  size_t geodimY = res.at(1);
   std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
 
-  for (size_t i = 0; i < geodim; i++) {
-    for (size_t j = 0; j < geodim-1; j++) {
-      std::vector<size_t> xdir = std::vector<size_t>();
+  for (size_t i = 0; i < geodimY; i++) {
+    for (size_t j = 0; j < geodimX-1; j++) {
+	  std::vector<size_t> xdir = std::vector<size_t>();
 
-      xdir.push_back(i*geodim+j);
+	  xdir.push_back(i*geodimX+j);
 
-      xdir.push_back(i*geodim+j+1);
+	  xdir.push_back(i*geodimX+j+1);
 
-      vec.push_back(xdir);
+	  vec.push_back(xdir);
     }
   }
-  for (size_t i = 0; i < geodim-1; i++) {
-    for (size_t j = 0; j < geodim; j++) {
-      std::vector<size_t> ydir = std::vector<size_t>();
 
-      ydir.push_back(i*geodim+j);
+  for (size_t i = 0; i < geodimX; i++) {
+    for (size_t j = 0; j < geodimY-1; j++) {
+	  std::vector<size_t> ydir = std::vector<size_t>();
 
-      ydir.push_back((i+1)*geodim+j);
+	  ydir.push_back(i+j*geodimX);
 
-      vec.push_back(ydir);
+	  ydir.push_back(i+(j+1)*geodimX);
+
+	  vec.push_back(ydir);
     }
   }
+
   // 1d vector for all dimensions
-  for (size_t i = 0; i < geodim*geodim; i++) {
+  for (size_t i = 0; i < geodimX*geodimY; i++) {
     std::vector<size_t> tmp = std::vector<size_t>();
-    tmp.push_back(i);
-    vec.push_back(tmp);
+	tmp.push_back(i);
+	vec.push_back(tmp);
   }
+
   // add empty vector
   std::vector<size_t> empty = std::vector<size_t>();
   vec.push_back(empty);
-
 
   return vec;
 }

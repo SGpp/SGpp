@@ -102,9 +102,8 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 }
 
 void ModelFittingClassification::fit(Dataset& newDataset) {
-  /*reset();
-  update(newDataset);*/
-  storeClassificator();
+  reset();
+  update(newDataset);
 }
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::createNewModel(
@@ -282,49 +281,44 @@ void ModelFittingClassification::reset() {
 
 void ModelFittingClassification::storeClassificator() {
   std::cout << "Storing Classificator..." << std::endl;
-  //std::cout << test << std::endl;
 
-
-  //store labels
+  // store labels
   std::string labels;
   for (const auto &p : classIdx) {
-    std::cout << "label[" << p.first << "] = " << p.second << '\n';
     labels = labels + std::to_string(p.first) + ", " + std::to_string(p.second) + "\n";
   }
   std::ofstream labelsFile;
-  labelsFile.open("/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/labels.txt");
+  // add the path of your labels.txt file here, in which the labels should be stored
+  std::string pathToLabelsFile = "";
+  labelsFile.open(pathToLabelsFile);
   labelsFile << labels;
   labelsFile.close();
 
-  /*for (auto i = classNumberInstances.begin(); i != classNumberInstances.end(); ++i){
-      std::cout << *i << ' ';
-  }*/
-
-  //store instances
+  // store instances
   std::string instances;
   for(size_t i = 0; i < classNumberInstances.size(); i++){
     instances = instances + std::to_string(classNumberInstances[i]) +"\n";
   }
   std::ofstream instancesFile;
-  instancesFile.open("/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/instances.txt");
+  // add the path of your instances.txt file here, in which the instances should be stored
+  std::string pathToInstancesFile = "";
+  instancesFile.open(pathToInstancesFile);
   instancesFile << instances;
   instancesFile.close();
 
-  //store grids and alphas
+  // store grids and alphas
+  std::string classificatorFile;
+  std::string classificator;
   for(size_t i = 0; i < models.size(); i++){
-	  std::string test;
-	  std::string classificator;
 	  classificator = "";
-	  test = "";
-	  classificator = classificator + "/home/jamal/eclipse-workspace/SGpp/datadriven/classificator/" + "Grid_Alpha" + std::to_string(i) +".txt";
-	  //test = test + std::to_string(classNumberInstances[i]) + "\n";
-	  //std::cout << classificator << std::endl;
-	  //std::cout << "Calling storeFitter()" << std::endl;
-  	  test = test + models[i]->storeFitter();
-  	  //std::cout << test << std::endl;
+	  classificatorFile = "";
+	  // add the path of you Grid_AlphaX.txt file here, in which the grids and alphas should be stored
+	  std::string pathToGridAlphaFile = "";
+	  classificator = classificator + pathToGridAlphaFile + "Grid_Alpha" + std::to_string(i) +".txt";
+	  classificatorFile = classificatorFile + models[i]->storeFitter();
   	  std::ofstream file;
   	  file.open(classificator);
-  	  file <<  test;
+  	  file <<  classificatorFile;
   	  file.close();
   }
 }

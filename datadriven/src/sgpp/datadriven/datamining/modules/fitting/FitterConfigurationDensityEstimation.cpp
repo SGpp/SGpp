@@ -60,9 +60,9 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   solverRefineConfig.threshold_ = 1e-14;
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
 
-  //configure geometry configuration
-  geometryConfig.stencil = "Direct Neighbour";
-  //geometryConfig.dim;
+  // configure geometry configuration
+  geometryConfig.stencil = "none";
+  geometryConfig.dim = std::vector<int64_t>();
 }
 
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser &parser) {
