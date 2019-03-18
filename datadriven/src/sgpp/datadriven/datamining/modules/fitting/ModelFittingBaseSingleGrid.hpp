@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 #include <memory>
+#include <string>
 
 namespace sgpp {
 

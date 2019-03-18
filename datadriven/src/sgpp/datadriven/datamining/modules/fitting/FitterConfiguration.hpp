@@ -194,12 +194,6 @@ class FitterConfiguration {
    */
   datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig();
 
-  /*
-   * Get or set geometry aware parameters
-   * @return Geometry Configuration
-   */
-  //datadriven::GeometryConfiguration &getGeometryConfig();
-
   /**
    * set default values for all members based on the desired scenario.
    */

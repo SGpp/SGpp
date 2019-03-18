@@ -29,7 +29,7 @@ namespace sgpp {
 namespace datadriven {
 
 sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfiguration& gridConfig,
-		const std::vector<std::vector <size_t>> interactions) const {
+    const std::vector<std::vector <size_t>> interactions) const {
   Grid *tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
     tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
@@ -56,13 +56,13 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
   return tmpGrid;
 }
 
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(std::string& stencil, std::vector<int64_t>& dim)
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(std::string& stencil,
+    std::vector<int64_t>& dim)
     const {
   std::vector<std::vector<size_t>> interactions;
 
   std::vector<int64_t> res = dim;
 
-  // TODO: Add more stencils, e.g. diagonals
   if (!stencil.compare("DirectNeighbour")) {
     interactions = getDirectNeighbours(res);
   } else {
@@ -82,33 +82,33 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbo
 
   for (size_t i = 0; i < geodimY; i++) {
     for (size_t j = 0; j < geodimX-1; j++) {
-	  std::vector<size_t> xdir = std::vector<size_t>();
+      std::vector<size_t> xdir = std::vector<size_t>();
 
-	  xdir.push_back(i*geodimX+j);
+      xdir.push_back(i*geodimX+j);
 
-	  xdir.push_back(i*geodimX+j+1);
+      xdir.push_back(i*geodimX+j+1);
 
-	  vec.push_back(xdir);
+      vec.push_back(xdir);
     }
   }
 
   for (size_t i = 0; i < geodimX; i++) {
     for (size_t j = 0; j < geodimY-1; j++) {
-	  std::vector<size_t> ydir = std::vector<size_t>();
+      std::vector<size_t> ydir = std::vector<size_t>();
 
-	  ydir.push_back(i+j*geodimX);
+      ydir.push_back(i+j*geodimX);
 
-	  ydir.push_back(i+(j+1)*geodimX);
+      ydir.push_back(i+(j+1)*geodimX);
 
-	  vec.push_back(ydir);
+      vec.push_back(ydir);
     }
   }
 
   // 1d vector for all dimensions
   for (size_t i = 0; i < geodimX*geodimY; i++) {
     std::vector<size_t> tmp = std::vector<size_t>();
-	tmp.push_back(i);
-	vec.push_back(tmp);
+    tmp.push_back(i);
+    vec.push_back(tmp);
   }
 
   // add empty vector

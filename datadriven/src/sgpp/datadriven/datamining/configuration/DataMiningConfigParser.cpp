@@ -833,7 +833,8 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
 bool DataMiningConfigParser::getGeometryConfig(
     datadriven::GeometryConfiguration &config,
     const datadriven::GeometryConfiguration &defaults) const {
-  bool hasGeometryConfig = hasFitterConfig() ? (*configFile)[fitter].contains("geometryConfig") : false;
+  bool hasGeometryConfig = hasFitterConfig() ?
+    (*configFile)[fitter].contains("geometryConfig") : false;
 
   if (hasGeometryConfig) {
     std::cout << "Has geometry config" << std::endl;
