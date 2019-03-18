@@ -820,7 +820,7 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config";
+    std::cout << "Has Learner config" << std::endl;
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");

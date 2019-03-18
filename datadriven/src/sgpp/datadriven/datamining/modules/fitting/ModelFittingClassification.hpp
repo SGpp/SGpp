@@ -85,7 +85,7 @@ class ModelFittingClassification : public ModelFittingBase {
   void reset() override;
 
   /*
-   * store Fitter into text file
+   * store Fitter into text file in folder /datadriven/classificator/
    */
   void storeClassificator();
 
