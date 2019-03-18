@@ -80,7 +80,7 @@ class DataSpecification(object):
     # @param dim the number of attributes
     def createNumericAttributes(self, dim):
         self.cleanAttributes()
-        for i in xrange(0,dim):
+        for i in range(0,dim):
             self.addAttribute('x'+str(i), 'NUMERIC')
         self.addAttribute('class', 'NUMERIC')
     
@@ -91,7 +91,7 @@ class DataSpecification(object):
     def toString(self):
         serializationString = "'module' : '" + self.__module__ + "',\n"
         serializationString += '"filename":"' + self.getFilename() + '"\n'
-        for key, value in self.getAttributes().items():
+        for key, value in list(self.getAttributes().items()):
             serializationString = serializationString + ',"' + key + '" : "' + value + '"'
         return '{' + serializationString + '}'
 

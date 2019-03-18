@@ -8,7 +8,7 @@ def normiere_liste(liste, dimensions):
       minimum = min(teil)
       maximum = max(teil)
       for i in range(0, len(teil)):
-         teil[i] = (teil[i]-minimum)/(maximum-minimum)
+         teil[i] = (teil[i]-minimum) / (maximum-minimum)
          teil[i] = (teil[i]+0.1)*0.8
       B[:, dimension] = teil
    return B
@@ -81,7 +81,7 @@ dim=10
 dataset_size=start_size
 for i in range(0, 10):
    N = pow(2, i)
-   print "creating" + "datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + ".arff"
+   print("creating" + "datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + ".arff")
    dataset1, Y1 = generate_dataset(dim, clusters, dataset_size, 0.1, 0)
    np.savetxt("datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + ".arff", dataset1)
    np.savetxt("datasets/weak_N" + str(N) + "_c" + str(clusters) + "_size" + str(dataset_size) + "_dim" + str(dim) + "_erg.txt", Y1)

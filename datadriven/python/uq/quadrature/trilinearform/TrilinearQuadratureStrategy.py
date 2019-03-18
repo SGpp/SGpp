@@ -110,7 +110,7 @@ class TrilinearQuadratureStrategy(HashQuadrature):
         ans, err = 1.0, 0.0
 
         # run over all dimensions
-        for d in xrange(gpi.getDimension()):
+        for d in range(gpi.getDimension()):
             # compute linear form for one entry
             available, keyd = self.hasValue(gpk, gpi, gpj, d)
             if not available:

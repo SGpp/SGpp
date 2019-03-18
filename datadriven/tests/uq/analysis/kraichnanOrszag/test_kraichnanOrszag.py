@@ -86,18 +86,18 @@ class KraichnanOrszagTest(object):
         levels = ['ref']
         filenames = [self.radix + '.' + label + '.uqSetting.gz'
                      for label in levels]
-        self.uqSettingsFilenames = dict(zip(levels, filenames))
+        self.uqSettingsFilenames = dict(list(zip(levels, filenames)))
 
         # define UQSettings
         self.uqSettings = {}
-        for label, filename in self.uqSettingsFilenames.items():
-            print "Read %s" % filename,
+        for label, filename in list(self.uqSettingsFilenames.items()):
+            print("Read %s" % filename, end=' ')
             builder = UQBuilder()
             self.defineUQSetting(builder, filename)
             self.uqSettings[label] = builder.andGetResult()
 
-            print self.uqSettings[label].getSize(), \
-                self.uqSettings[label].getAvailableQoI()
+            print(self.uqSettings[label].getSize(), \
+                self.uqSettings[label].getAvailableQoI())
             self.uqSettings[label].convert(self.params)
 
         # time steps of interest
@@ -143,20 +143,20 @@ class KraichnanOrszagTest(object):
                 # -----------------------------
                 k1 = dt * np.array([fi(y, ti) for fi in f])
                 # -----------------------------
-                k2 = dt * np.array([fi(y + k1 / 2., ti + dt / 2.)
+                k2 = dt * np.array([fi(y + (k1 / 2.), ti + (dt / 2.))
                                     for fi in f])
                 # -----------------------------
-                k3 = dt * np.array([fi(y + k2 / 2., ti + dt / 2.)
+                k3 = dt * np.array([fi(y + (k2 / 2.), ti + (dt / 2.))
                                     for fi in f])
                 # -----------------------------
                 k4 = dt * np.array([fi(y + k3, ti + dt) for fi in f])
                 # -----------------------------
-                y += k1 / 6. + k2 / 3. + k3 / 3. + k4 / 6.
+                y += (k1 / 6.) + (k2 / 3.) + (k3 / 3.) + (k4 / 6.)
                 ans[i + 1, :] = y
             return ans
 
         def simulation(y0, t0, tn, dt):
-            t = np.linspace(t0, tn, (tn - t0) / dt + 1, endpoint=True)
+            t = np.linspace(t0, tn, ((tn - t0) / dt) + 1, endpoint=True)
             return rungeKutta4thOrder(self.f, y0, t)
 
         class KraichnanOrszagPreprocessor(Transformation):
@@ -170,7 +170,7 @@ class KraichnanOrszagTest(object):
 
             def probabilisticToUnit(self, q, *args, **kws):
                 y1, y2, y3 = q
-                return (y1, y2 / self.c_y2, y3)
+                return (y1, (y2 / self.c_y2), y3)
 
         def postprocessor(res, **kws):
             return {'y1': res[:, 0], 'y2': res[:, 1], 'y3': res[:, 2]}
@@ -199,9 +199,9 @@ class KraichnanOrszagTest(object):
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
         if uqSetting.getSize() < n:
-            print "-" * 60
-            print "Latin Hypercube sampling"
-            print "-" * 60
+            print("-" * 60)
+            print("Latin Hypercube sampling")
+            print("-" * 60)
             mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, n - uqSetting.getSize())
             while uqSetting.getSize() < n:
                 samples = mcSampler.nextSamples(n - uqSetting.getSize())
@@ -212,7 +212,7 @@ class KraichnanOrszagTest(object):
             return [fi(y, t) for fi in self.f]
 
         self.y0 = [1., .5, 0.]
-        self.n = (self.tn - self.t0) / self.dt + 1
+        self.n = ((self.tn - self.t0) / self.dt) + 1
         self.t = np.linspace(self.t0, self.tn, self.n, endpoint=True)
 
         # solve the ODEs
@@ -235,7 +235,7 @@ class KraichnanOrszagTest(object):
 
         # define uq setting
         self.defineUQSetting(builder.defineUQSetting())
-        
+
         samplerSpec = builder.defineSampler()
         samplerSpec.withGrid().withLevel(4)
 
@@ -272,9 +272,9 @@ class KraichnanOrszagTest(object):
         # ----------------------------------------------------------
         np.random.seed(1234567)
 
-        print "-" * 60
-        print "Latin Hypercube Sampling"
-        print "-" * 60
+        print("-" * 60)
+        print("Latin Hypercube Sampling")
+        print("-" * 60)
         mcSampler = MCSampler.withLatinHypercubeSampleGenerator(self.params, N)
         mcUQSettingBuilder = UQBuilder()
         self.defineUQSetting(mcUQSettingBuilder)
@@ -288,7 +288,7 @@ class KraichnanOrszagTest(object):
         samples = mcUQSetting.getTimeDependentResults(self.toi, qoi=self.qoi)
 
         # split the results into chunk of Ni samples
-        num_samples = len(samples.itervalues().next())
+        num_samples = len(next(iter(samples.values())))
         analysis = MCAnalysis(self.params, samples)
         analysis.setVerbose(False)
 
@@ -325,15 +325,15 @@ class KraichnanOrszagTest(object):
             if not os.path.exists(pathResults):
                 os.mkdir(pathResults)
             if self.numDims > 1:
-                print "sobol indices"
+                print("sobol indices")
                 analysis.writeSensitivityValues(os.path.join(pathResults, alabel))
-            print "surpluses"
+            print("surpluses")
             analysis.writeSurplusesLevelWise(os.path.join(pathResults, alabel))
-            print "stats"
+            print("stats")
             analysis.writeStats(os.path.join(pathResults, alabel))
-            print "moments"
+            print("moments")
             analysis.writeMoments(os.path.join(pathResults, alabel))
-            print "sampling"
+            print("sampling")
             path = os.path.join(pathResults, "samples")
             if not os.path.exists(path):
                 os.mkdir(path)
@@ -347,8 +347,8 @@ class KraichnanOrszagTest(object):
         for i, t in enumerate(ts):
             grid, alpha = uqManager.getKnowledge()\
                                    .getSparseGridFunction(uqManager.getQoI(), t)
-            print "-" * 80
-            print "plot: t=%g (i=%i), N=%i" % (t, i, grid.getSize())
+            print("-" * 80)
+            print("plot: t=%g (i=%i), N=%i" % (t, i, grid.getSize()))
 
             # scatter plot of surpluses level wise
             surpluses = analysis.computeSurplusesLevelWise(t)
@@ -389,20 +389,20 @@ class KraichnanOrszagTest(object):
             if self.numDims > 1:
                 anova = analysis.getAnovaDecomposition(t=t)
                 me = anova.getSobolIndices()
-                print "-------------- Sobol Indices (t = %i) ------------------" % t
-                for j, perm in enumerate(anova.getSortedPermutations(me.keys())):
-                    print "%s: %s" % (perm, me[perm])
+                print("-------------- Sobol Indices (t = %i) ------------------" % t)
+                for j, perm in enumerate(anova.getSortedPermutations(list(me.keys()))):
+                    print("%s: %s" % (perm, me[perm]))
                     sobolIndices[i, j] = me[perm]
-                print sum(sobolIndices[i, :]), "==", 1
+                print(sum(sobolIndices[i, :]), "==", 1)
 
                 # ----------------------------------------------------------
                 # total effects
                 te = anova.getTotalEffects()
-                print "-------------- Total Effects (t = %i) -----------------" % t
+                print("-------------- Total Effects (t = %i) -----------------" % t)
                 for key, val in sorted(te.items()):
-                    print "%s: %s" % (key, val)
-                print "---------------------------------------------------------"
-                print
+                    print("%s: %s" % (key, val))
+                print("---------------------------------------------------------")
+                print()
 
             if t not in results["results"]:
                 results["results"][t] = {}
@@ -415,9 +415,9 @@ class KraichnanOrszagTest(object):
             results["results"][t][maxLevel]["sobol_indices"] = me
             results["results"][t][maxLevel]["total_effects"] = te
             results["results"][t][maxLevel]["stats"] = uqManager.stats
-            
+
             results["results"][t][maxLevel]["mean_estimated_per_iteration"] = {}
-            for it, res in analysis.mean(ts=[t], reduce=False).items():
+            for it, res in list(analysis.mean(ts=[t], reduce=False).items()):
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it] = res["value"]
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["mean_estimated_per_iteration"].keys())
@@ -425,7 +425,7 @@ class KraichnanOrszagTest(object):
                 results["results"][t][maxLevel]["mean_estimated_per_iteration"][it]
 
             results["results"][t][maxLevel]["var_estimated_per_iteration"] = {}
-            for it, res in analysis.var(ts=[t], reduce=False).items():
+            for it, res in list(analysis.var(ts=[t], reduce=False).items()):
                 results["results"][t][maxLevel]["var_estimated_per_iteration"][it] = res["value"]
             # maximum iteration -> final value
             it = max(results["results"][t][maxLevel]["var_estimated_per_iteration"].keys())
@@ -434,7 +434,7 @@ class KraichnanOrszagTest(object):
         # --------------------------------------------
 
         if out and plot and self.numDims > 1:
-            names = anova.getSortedPermutations(me.keys())
+            names = anova.getSortedPermutations(list(me.keys()))
             fig = plotSobolIndices(sobolIndices, ts=ts, legend=True, names=names)
             fig.savefig(os.path.join(pathResults, "sobol.png"))
             plt.close(fig)
@@ -481,8 +481,8 @@ class KraichnanOrszagTest(object):
                    'results': {}}
 
         while True:
-            print "-" * 80
-            print "level = %i, grid type = %s" % (level, gridTypeStr)
+            print("-" * 80)
+            print("level = %i, grid type = %s" % (level, gridTypeStr))
             builder = UQBuilder()
             self.defineUQSetting(builder)
             uqSetting = builder.andGetResult()
@@ -500,7 +500,7 @@ class KraichnanOrszagTest(object):
                                                          uqSettingRef=self.uqSettings['ref'])
 
             if uqManager.sampler.getSize() > maxGridSize:
-                print "DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize)
+                print("DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize))
                 break
 
             # ----------------------------------------------

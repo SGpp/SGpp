@@ -23,7 +23,7 @@ class EvalTest(unittest.TestCase):
 
         # interpolation on nodal basis
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             nodalValues[i] = f(p[0])
             # nodalValues[i] = f(p[0], p[1])

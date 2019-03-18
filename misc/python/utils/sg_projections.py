@@ -53,7 +53,7 @@ if __name__ == '__main__':
     
     # check arguments
     if not options.grid:
-        print "--grid missing"
+        print ("--grid missing" )
         parser.parse_args(['-h'])
         
     # read grid
@@ -75,10 +75,10 @@ if __name__ == '__main__':
             xoffset = 0.05
             yoffset = 0.05
         else:
-            xoffset = 1.0/12.0
-            yoffset = 1.0/12.0
-        dx = (1.0-xoffset)/dim
-        dy = (1.0-yoffset)/dim
+            xoffset = 1.0 / 12.0
+            yoffset = 1.0 / 12.0
+        dx = (1.0-xoffset) / dim
+        dy = (1.0-yoffset) / dim
         if options.nolabel:
             xoffset = 0
             yoffset = 0
@@ -98,7 +98,7 @@ if __name__ == '__main__':
     #set size square 2,2
     set multiplot
     #
-    """ % (options.grid, 1.0/dim, 1.0/dim, dim, dim)
+    """ % (options.grid, (1.0 / dim), (1.0 / dim), dim, dim)
     
         for i in range(dim):
             for j in range(dim):
@@ -131,14 +131,14 @@ if __name__ == '__main__':
                 
                 # project grid
                 gridpoints = {} # count, how often projected grid point at same place
-                for k in xrange(gridStorage.getSize()):
+                for k in range(gridStorage.getSize()):
                     gridStorage.getPoint(k).getStandardCoordinates(p)
-                    if not gridpoints.has_key((p[i], p[j])):
+                    if (p[i], p[j]) not in gridpoints:
                         gridpoints[(p[i], p[j])] = 1
                     else:
                         gridpoints[(p[i], p[j])] += 1
                     
-                for key in gridpoints.keys():
+                for key in list(gridpoints.keys()):
                     s += "%g %g %g\n" % (key[0], key[1], gridpoints[key])
     
                 s += "e\n"
@@ -155,13 +155,13 @@ if __name__ == '__main__':
                 cin.write("""set terminal postscript color enhanced size 10in,10in font "Arial" 10
     set output '%sprojection.eps'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print (couterr.read() )
         elif options.png:
             (cin, couterr) = os.popen2('gnuplot')
             cin.write("""set terminal png enhanced small size 1000,1000 enhanced
     set output '%sprojection.png'"""%(options.prefix) + s)
             cin.close()
-            print couterr.read()
+            print (couterr.read() )
         else:
-            #print "set terminal x11"
-            print s
+            #print ("set terminal x11" )
+            print (s )

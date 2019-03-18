@@ -3,7 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-from LinearSolver import LinearSolver, LinearSolverEvents
+from pysgpp.extensions.datadriven.learner.solver.LinearSolver import LinearSolver, LinearSolverEvents
 from pysgpp import *
 import types
 
@@ -122,11 +122,11 @@ class CGSolver(ConjugateGradients, LinearSolver):
             attrValue = self.__getattribute__(attrName)
 
             #lists, integers, floats, dictionaries can serialized with str()
-            if type(attrValue) in [types.ListType, types.IntType,
-                             types.FloatType, types.DictType] and attrName.find("__") != 0:
+            if type(attrValue) in [list, int,
+                             float, dict] and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             # serialize strings with quotes
-            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+            elif type(attrValue) == bytes and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
 
         serializationString = "{" + serializationString.rstrip(",\n") + "}\n"
@@ -145,16 +145,16 @@ class CGSolver(ConjugateGradients, LinearSolver):
 #            cg.setEpsilon( jsonObject['accuracy'] )
 #        if jsonObject.has_key('imax'):
 #            cg.setImax( jsonObject['imax'] )
-        if jsonObject.has_key('delta_0'):
+        if 'delta_0' in jsonObject:
             cg.delta_0 = jsonObject['delta_0']
-        if jsonObject.has_key('delta_new'):
+        if 'delta_new' in jsonObject:
             cg.delta_new = jsonObject['delta_new']
-        if jsonObject.has_key('nIterations'):
+        if 'nIterations' in jsonObject:
             cg.nIterations = jsonObject['nIterations']
-        if jsonObject.has_key('nMaxIterations'):
+        if 'nMaxIterations' in jsonObject:
             cg.nMaxIterations = jsonObject['nMaxIterations']
-        if jsonObject.has_key('myEpsilon'):
+        if 'myEpsilon' in jsonObject:
             cg.setEpsilon( jsonObject['myEpsilon'] )
-        if jsonObject.has_key('residuum'):
+        if 'residuum' in jsonObject:
             cg.residuum = float(jsonObject['residuum'])
         return cg

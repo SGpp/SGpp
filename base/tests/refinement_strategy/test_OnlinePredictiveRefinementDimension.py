@@ -32,12 +32,12 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         DELTA = 0.05
         DELTA_RECI = int(1/DELTA)
 
-        for i in xrange(DELTA_RECI):
-            for j in xrange(DELTA_RECI):
+        for i in range(DELTA_RECI):
+            for j in range(DELTA_RECI):
                 xs.append([DELTA*i, DELTA*j])
 
         random.seed(1208813)
-        ys = [ random.randint(-10, 10) for i in xrange(DELTA_RECI**2)]
+        ys = [ random.randint(-10, 10) for i in range(DELTA_RECI**2)]
 
         self.trainData = DataMatrix(xs)
         self.classes = DataVector(ys)
@@ -48,7 +48,7 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         self.errors = DataVector(DELTA_RECI**2)
         coord = DataVector(DIM)
 
-        for i in xrange(self.trainData.getNrows()):
+        for i in range(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
             self.errors.__setitem__ (i, abs(self.classes[i] - opEval.eval(self.alpha, coord)))
 
@@ -68,20 +68,20 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         gridSize = self.grid.getSize()
         numDim = storage.getDimension()
 
-        print "######"
-        print "Expected result:"
-        print "######"
+        print("######")
+        print("Expected result:")
+        print("######")
 
         expected = {}
 
-        for j in xrange(gridSize):
+        for j in range(gridSize):
 
             HashGridPoint = storage.getPoint(j)
             HashGridPoint.setLeaf(False)
                 
-            print "Point: ", j, " (", HashGridPoint.toString(), ")"
+            print("Point: ", j, " (", HashGridPoint.toString(), ")")
 
-            for d in xrange(numDim):
+            for d in range(numDim):
 
                 #
                 # Get left and right child
@@ -113,33 +113,33 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
                 storage.deleteLast()
                 storage.deleteLast()
 
-                print "Dimension: ", d
-                print "Left Child: ", val1
-                print "Right Child: ", val2
-                print ""
+                print("Dimension: ", d)
+                print("Left Child: ", val1)
+                print("Right Child: ", val2)
+                print("")
 
                 expected[(j, d)] = val1 + val2
             
-            print ""
+            print("")
 
-        for k, v in expected.iteritems():
-            print(k, v)
+        for k, v in list(expected.items()):
+            print((k, v))
 
-        print "######"
-        print "Actual result:"
-        print "######"
+        print("######")
+        print("Actual result:")
+        print("######")
 
         actual = refinement_map({})
         self.strategy.collectRefinablePoints(storage, 10, actual)
         
-        for k, v in actual.iteritems():
-            print(k, v)
+        for k, v in list(actual.items()):
+            print((k, v))
 
         #
         # Assertions
         #
 
-        for k, v in expected.iteritems():
+        for k, v in list(expected.items()):
             self.assertEqual(actual[k], v)
 
     def calc_indicator_value(self, index):
@@ -167,10 +167,10 @@ class TestOnlinePredictiveRefinementDimension(unittest.TestCase):
         denom = col.sum()
 
         if denom == 0:
-            print "Denominator is zero"
+            print("Denominator is zero")
             value = 0
         else:
-            value = num/denom 
+            value = num / denom 
 
         return value
 

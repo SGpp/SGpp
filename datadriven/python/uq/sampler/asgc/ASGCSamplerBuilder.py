@@ -1,7 +1,8 @@
+from pysgpp.extensions.datadriven.uq.learner.builder.StopPolicyDescriptor import StopPolicyDescriptor
 from pysgpp.extensions.datadriven.uq.learner.builder import GridDescriptor
 
-from ASGCSampler import ASGCSampler
-from ASGCSamplerSpecification import ASGCSamplerSpecification
+from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSampler import ASGCSampler
+from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerSpecification import ASGCSamplerSpecification
 
 from pysgpp.extensions.datadriven.uq.refinement.RefinementManagerDescriptor import RefinementManagerDescriptor
 from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerStopPolicy import ASGCSamplerStopPolicy

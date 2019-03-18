@@ -4,7 +4,7 @@ from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.analysis.asgc.ASGCKnowledge import ASGCKnowledge
 from pysgpp import DataVector, DataMatrix
 
-from SimulationLearnerSpecification import SimulationLearnerSpecification
+from pysgpp.extensions.datadriven.uq.learner.SimulationLearnerSpecification import SimulationLearnerSpecification
 import numpy as np
 import copy
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import copyGrid, dehierarchize
@@ -86,7 +86,7 @@ class SimulationLearner(Learner):
             tmp = KnowledgeTypes.transformData(data, U, dtype)
 
             # load data for all time steps
-            for t, values in tmp.items():
+            for t, values in list(tmp.items()):
                 size = len(values)
                 mydata = DataMatrix(size, dim)
                 sol = DataVector(size)
@@ -116,7 +116,7 @@ class SimulationLearner(Learner):
         ps = []
         for dtype, dataDict in self.dataContainer:
             for t, dataContainer in dataDict:
-                for sample in trainUQSetting.getSamplesStats().values():
+                for sample in list(trainUQSetting.getSamplesStats().values()):
                     if sample.getActiveUnit() not in dataContainer:
                         ps.append(sample)
 
@@ -129,11 +129,11 @@ class SimulationLearner(Learner):
         # prepare the
         dataContainerDict = self.__prepareDataContainer(resultsDict, 'train')
         # set the new dataContainerDict container
-        for dtype, values in dataContainerDict.items():
+        for dtype, values in list(dataContainerDict.items()):
             if dtype not in self.dataContainer:
                 self.dataContainer[dtype] = {}
 
-            for t, newDataContainer in values.items():
+            for t, newDataContainer in list(values.items()):
                 if t not in self.dataContainer[dtype]:
                     self.dataContainer[dtype][t] = newDataContainer
                 else:
@@ -144,20 +144,20 @@ class SimulationLearner(Learner):
         if testUQSetting is not None:
             dataContainerDict = testUQSetting.getTimeDependentResults(toi, qoi)
             dataContainerDict = self.__prepareDataContainer(dataContainerDict, 'test')
-            for dtype, values in dataContainerDict.items():
-                for t, newDataContainer in values.items():
+            for dtype, values in list(dataContainerDict.items()):
+                for t, newDataContainer in list(values.items()):
                     self.dataContainer[dtype][t] = \
                         self.dataContainer[dtype][t].combine(newDataContainer)
 
     # ----------------------------------------------------------------
     def learnData(self, *args, **kws):
         # learn data
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
-            print KnowledgeTypes.toString(dtype)
+            print( KnowledgeTypes.toString(dtype) )
             # do the learning
-            for t, dataContainer in values.items():
-                print "t = %g, " % t,
+            for t, dataContainer in list(values.items()):
+                print(( "t = %g, " % t, ))
                 if dataContainer is not None:
                     learner = self._learners[t]
                     # learn data, if there is any available
@@ -167,18 +167,18 @@ class SimulationLearner(Learner):
 
                     # prepare the answer
                     knowledge[t] = copyGrid(learner.grid), DataVector(alpha)
-            print
+            print( )
             # update results
             if len(knowledge) > 0:
                 self.updateResults(knowledge, dtype)
 
     def learnDataWithTest(self, dataset=None, *args, **kws):
         # learn data
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
             # do the learning
-            for t, dataContainer in values.items():
-                print "t = %g, " % t,
+            for t, dataContainer in list(values.items()):
+                print(( "t = %g, " % t, ))
                 if dataContainer is not None:
                     learner = self._learners[t]
                     # learn data, if there is any available
@@ -188,18 +188,18 @@ class SimulationLearner(Learner):
 
                     # prepare the answer
                     knowledge[t] = copyGrid(learner.grid), DataVector(alpha)
-            print
+            print( )
             # update results
             if len(knowledge) > 0:
                 self.updateResults(knowledge, dtype)
 
     def learnDataWithFolding(self, *args, **kws):
         # learn data
-        for dtype, values in self.dataContainer.items():
+        for dtype, values in list(self.dataContainer.items()):
             knowledge = {}
 
             # do the learning
-            for t, dataContainer in values.items():
+            for t, dataContainer in list(values.items()):
                 if dataContainer is not None:
                     learner = self._learners[t]
                     # learn data, if there is any available
@@ -272,7 +272,7 @@ class SimulationLearner(Learner):
         gs = self.grid.getStorage()
         ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float')
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             ps[i, :] = p.array()
 
@@ -293,14 +293,14 @@ class SimulationLearner(Learner):
 
         # print some information
         if self._verbose:
-            print "iteration: %i" % self.iteration
-            print "old grid size: %i" % oldGridSize
-            print "old AS size: %i" % oldAdmissibleSetSize
-            print "new collocation nodes: %i" % len(newCollocationNodes)
-            print "new grid size:", self.getGrid().getSize()
-            print "new AS size: %i" % self.getRefinement()\
+            print( "iteration: %i" % self.iteration )
+            print( "old grid size: %i" % oldGridSize )
+            print( "old AS size: %i" % oldAdmissibleSetSize )
+            print( "new collocation nodes: %i" % len(newCollocationNodes) )
+            print(( "new grid size:", self.getGrid().getSize() ))
+            print( "new AS size: %i" % self.getRefinement()\
                                           .getAdmissibleSet()\
-                                          .getSize()
+                                          .getSize())
 
 #         fig = plotGrid(self.__grid, self.__knowledge.getAlpha(self.getQoI()),
 #                        self.getRefinement().getAdmissibleSetCreator()

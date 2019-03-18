@@ -21,9 +21,9 @@ if __name__ == '__main__':
     processes = []
     for estimationMethod in scenarions['density_configs']:
         for functionName, numDims in scenarions["function_configs"]:
-            print "-" * 80
-            print "scenario: %s, d=%i, %s" % (functionName, numDims, estimationMethod)
-            print "-" * 80
+            print("-" * 80)
+            print("scenario: %s, d=%i, %s" % (functionName, numDims, estimationMethod))
+            print("-" * 80)
 
             if args.parallel:
                 myargs = (functionName,

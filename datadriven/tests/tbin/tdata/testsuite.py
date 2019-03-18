@@ -10,9 +10,9 @@ import sys, os
 pathname = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from test_ARFFAdapter import TestARFFAdapter
-from test_DataContainer import TestDataContainer
-from test_DataEntry import TestDataEntry 
+from tbin.tdata.test_ARFFAdapter import TestARFFAdapter
+from tbin.tdata.test_DataContainer import TestDataContainer
+from tbin.tdata.test_DataEntry import TestDataEntry 
 
 suite1 = unittest.makeSuite(TestARFFAdapter,'test')
 suite2 = unittest.makeSuite(TestDataContainer,'test')
