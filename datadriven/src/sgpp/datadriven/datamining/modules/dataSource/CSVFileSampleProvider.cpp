@@ -59,8 +59,7 @@ void CSVFileSampleProvider::readFile(const std::string& fileName,
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
     // exception safe implementation.
-    const std::string msg{"Failed to parse CSV File " + fileName + "."};
-    throw base::data_exception{msg.c_str()};
+    throw base::data_exception{"Failed to parse CSV File."};
   }
 }
 

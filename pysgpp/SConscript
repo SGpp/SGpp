@@ -4,9 +4,22 @@
 # sgpp.sparsegrids.org
 
 import os
+import subprocess
 import sys
 
 Import("*")
+
+def getOutput(command):
+  # redirect stderr to stdout
+  try:
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    output = e.output
+  # in Python 3.x, check_output returns bytes
+  if sys.version_info >= (3, 0): output = output.decode()
+  # strip trailing newlines
+  output = output.rstrip("\r\n")
+  return output
 
 # as the dependency tracking for swig is buggy in scons,
 # always trigger a "reswig" by removing the swig wrapper
@@ -64,8 +77,9 @@ if env["USE_ZLIB"]:
 
 if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])
-  # TODO: replace hard-coded "python27"
-  #libs.append("python27")
+  pythonVersion = getOutput(["python3", "-c", "import distutils.sysconfig; "
+                             "print(distutils.sysconfig.get_config_var(\"VERSION\"))"])
+  libs.append("python{}".format(pythonVersion))
 
 pyEnv.AppendUnique(LIBPATH=pythonLibPaths)
 pyEnv.AppendUnique(LIBS=libs)
