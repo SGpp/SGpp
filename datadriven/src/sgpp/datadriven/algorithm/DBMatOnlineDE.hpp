@@ -193,8 +193,22 @@ class DBMatOnlineDE : public DBMatOnline {
   double resDensity(DataVector& alpha, Grid& grid);
 
   bool functionComputed;
+
+  // flag for initialization of bSave and bTotalPoints
+  bool localVectorsInitialized;
+
   DataVector bSave;
   DataVector bTotalPoints;
+
+  // flag for initialization of bSaveDistributed and bTotalPointsDistributed
+  bool distributedVectorsInitialized;
+
+  // pointer to distributed b (vector is only created if ScaLAPACK version is enables)
+  std::unique_ptr<DataVectorDistributed> bSaveDistributed;
+
+  // pointer to distributed b total points
+  std::unique_ptr<DataVectorDistributed> bTotalPointsDistributed;
+
   double beta;
   size_t totalPoints;
   DataMatrix *testMat, *testMatRes;

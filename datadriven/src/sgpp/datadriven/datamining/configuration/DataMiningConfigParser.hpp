@@ -55,6 +55,7 @@ class DataMiningConfigParser {
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
   bool hasFitterConfig() const;
+  bool hasParallelConfig() const;
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
                           std::map<std::string, DiscreteParameter> &dispar,

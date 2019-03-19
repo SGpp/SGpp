@@ -97,8 +97,9 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& g
 
 void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
     DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, const ParallelConfiguration& parallelConfig,
-    std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) {
+    DensityEstimationConfiguration& densityEstimationConfig,
+    const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
+    bool do_cv) {
   // TODO(jan) parallelize offline version at this point?
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
@@ -107,7 +108,22 @@ void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
       DataMatrixDistributed(Tinv.data(), processGrid, Tinv.getNrows(), Tinv.getNcols(),
                             parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
-  // TODO(jan)
+  DataMatrix Q = offline->getQ();
+  DataMatrixDistributed QDistributed =
+      DataMatrixDistributed(Q.data(), processGrid, Q.getNrows(), Q.getNcols(),
+                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  DataMatrix B = this->getB();
+  DataMatrixDistributed BDistributed =
+      DataMatrixDistributed(B.data(), processGrid, B.getNrows(), B.getNcols(),
+                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  // create solver
+  sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
+
+  alpha.resize(b.getGlobalRows());
+  solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha, processGrid,
+                        parallelConfig);
 }
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,

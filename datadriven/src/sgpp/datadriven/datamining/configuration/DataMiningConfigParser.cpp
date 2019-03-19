@@ -76,6 +76,12 @@ bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contai
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasParallelConfig() const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+  return hasParallelConfig;
+}
+
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
@@ -828,10 +834,11 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
 bool DataMiningConfigParser::getFitterParallelConfig(
     datadriven::ParallelConfiguration &config,
     const datadriven::ParallelConfiguration &defaults) const {
-  bool hasParallelConfig = hasFitterConfig() ? (*configFile)[fitter].contains("parallel") : false;
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
 
   if (hasParallelConfig) {
-    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallel"]);
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
 
     config.rowBlockSize_ =
         parseInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");

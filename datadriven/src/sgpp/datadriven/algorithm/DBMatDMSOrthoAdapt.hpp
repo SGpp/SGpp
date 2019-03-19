@@ -7,6 +7,7 @@
 
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
@@ -48,8 +49,10 @@ class DBMatDMSOrthoAdapt : public DBMatDecompMatrixSolver {
    * @param b     The right side of the system
    * @param alpha The solution vector of the system, computed values go there
    */
-  void solveParallel(DataMatrixDistributed& T_inv, DataMatrix& Q, DataMatrixDistributed& B,
-                     DataVectorDistributed& b, DataVectorDistributed& alpha);
+  void solveParallel(DataMatrixDistributed& T_inv, DataMatrixDistributed& Q,
+                     DataMatrixDistributed& B, DataVectorDistributed& b,
+                     DataVectorDistributed& alpha, std::shared_ptr<BlacsProcessGrid> processGrid,
+                     const ParallelConfiguration& parallelConfig);
 };
 
 }  // namespace datadriven

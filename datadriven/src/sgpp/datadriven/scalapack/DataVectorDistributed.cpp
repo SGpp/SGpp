@@ -65,6 +65,10 @@ void DataVectorDistributed::scale(double a) {
   pdscal_(getGlobalRows(), a, getLocalPointer(), 1, 1, getDescriptor(), 1);
 }
 
+void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
+
+void DataVectorDistributed::resize(size_t rows) { data.resize(1, rows); }
+
 double* DataVectorDistributed::getLocalPointer() { return data.getLocalPointer(); }
 
 const double* DataVectorDistributed::getLocalPointer() const { return data.getLocalPointer(); }

@@ -16,6 +16,7 @@
 #include <mpi.h>
 #include <cmath>
 #include <iostream>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 #include <sgpp/datadriven/scalapack/scalapack.hpp>
 
@@ -31,16 +32,17 @@ bool BlacsProcessGrid::blacsInitialized = false;
 
 BlacsProcessGrid::BlacsProcessGrid() {
   if (!blacsInitialized) {
-    // TODO(jan) exception
+    throw sgpp::base::application_exception("BLACS not initialized!");
   }
   int rows = static_cast<int>(std::sqrt(numberOfProcesses));
   int columns = static_cast<int>(std::sqrt(numberOfProcesses));
+  std::cout << "r " << rows << " c " << columns << std::endl;
   BlacsProcessGrid(rows, columns);
 }
 
 BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(columns) {
   if (!blacsInitialized) {
-    // TODO(jan) exception
+    throw sgpp::base::application_exception("BLACS not initialized!");
   }
 
   int ignore = -1;
@@ -84,7 +86,7 @@ bool BlacsProcessGrid::isProcessInGrid() const { return this->partOfGrid; }
 
 size_t BlacsProcessGrid::availableProcesses() {
   if (!blacsInitialized) {
-    // TODO(jan) exception
+    throw sgpp::base::application_exception("BLACS not initialized!");
   }
   return static_cast<size_t>(numberOfProcesses);
 }
@@ -94,6 +96,7 @@ void BlacsProcessGrid::initializeBlacs() {
   std::cout << "Init BLACS and MPI" << std::endl;
   MPI_Init(nullptr, nullptr);
   Cblacs_pinfo(mypnum, numberOfProcesses);
+  blacsInitialized = true;
 }
 
 void BlacsProcessGrid::exitBlacs() {

@@ -15,6 +15,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
@@ -213,6 +214,104 @@ void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataMatri
   }
 }
 
+void DataMatrixDistributed::appendRows(size_t rows) {
+  if (rows == 0) {
+    return;
+  }
+  if (this->localColumns > 1) {
+    throw sgpp::base::not_implemented_exception(
+        "DataMatrixDistributed::resizeRows currently only works if there is just one localColumn");
+  }
+
+  size_t newRows = globalRows + rows;
+
+  for (size_t row = globalRows; row < newRows; row += rowBlockSize) {
+    for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
+      // first and last block might be smaller
+
+      size_t rowsToInsert = rowBlockSize - (row % rowBlockSize);
+      if (row + rowsToInsert > globalRows) {
+        rowsToInsert = globalRows - row;
+      }
+
+      size_t colsToInsert = columnBlockSize;
+      if (col + colsToInsert > globalColumns) {
+        colsToInsert = globalColumns - col;
+      }
+
+      int processRow = globalToProcessIndex(row, grid->getTotalRows(), rowBlockSize, 0);
+      int processCol = globalToProcessIndex(col, grid->getTotalColumns(), columnBlockSize, 0);
+
+      if (grid->getCurrentRow() == processRow && grid->getCurrentColumn() == processCol) {
+        localData.insert(localData.end(), colsToInsert * rowsToInsert, 0.0);
+      }
+
+      if (row == globalRows) {
+        // align to block size if needed
+        row -= globalRows % rowBlockSize;
+      }
+    }
+  }
+
+  globalRows = newRows;
+}
+
+void DataMatrixDistributed::appendColumns(size_t cols) {
+  if (cols == 0) {
+    return;
+  }
+
+  size_t newColumns = globalColumns + cols;
+
+  // add new columns
+  for (size_t row = 0; row < globalRows; row += rowBlockSize) {
+    for (size_t col = globalColumns; col < newColumns; col += columnBlockSize) {
+      // first and last block might be smaller
+
+      size_t rowsToInsert = rowBlockSize;
+      if (row + rowsToInsert > globalRows) {
+        rowsToInsert = globalRows - row;
+      }
+
+      size_t colsToInsert = columnBlockSize - (col % columnBlockSize);
+      if (col + colsToInsert > newColumns) {
+        colsToInsert = globalColumns - col;
+      }
+
+      int processRow = globalToProcessIndex(row, grid->getTotalRows(), rowBlockSize, 0);
+      int processCol = globalToProcessIndex(col, grid->getTotalColumns(), columnBlockSize, 0);
+
+      if (grid->getCurrentRow() == processRow && grid->getCurrentColumn() == processCol) {
+        localData.insert(localData.end(), colsToInsert * rowsToInsert, 0.0);
+      }
+
+      if (col == globalColumns) {
+        // align to block size if needed
+        col -= globalColumns % columnBlockSize;
+      }
+    }
+  }
+
+  globalColumns = newColumns;
+}
+
+void DataMatrixDistributed::resize(size_t rows, size_t cols) {
+  DataMatrixDistributed(grid, rows, cols, columnBlockSize, rowBlockSize);
+}
+
+DataVectorDistributed DataMatrixDistributed::toVector() const {
+  if (globalRows != 1 && globalColumns != 1) {
+    throw base::algorithm_exception(
+        "matrix with more than one rows and columns can not be converted to a vector");
+  }
+  DataMatrix localMatrix;
+  if (grid->getCurrentRow() == 0 && grid->getCurrentColumn() == 0) {
+    localMatrix = this->toLocalDataMatrix();
+  }
+  size_t globalSize = (globalRows == 1 ? globalColumns : globalRows);
+  return DataVectorDistributed(localMatrix.data(), grid, globalSize, rowBlockSize);
+}
+
 void DataMatrixDistributed::printMatrix() const {
   DataMatrix localMatrix = toLocalDataMatrix();
   if (grid->getCurrentProcess() == 0) {
@@ -321,11 +420,21 @@ DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
 
 size_t DataMatrixDistributed::globalToLocalIndex(size_t globalIndex, size_t numberOfProcesses,
                                                  size_t blockSize) const {
-  // note that the division is rounded
+  // note that the division is rounded down
   size_t localBlockIndex = globalIndex / (numberOfProcesses * blockSize);
   size_t elementIndex = globalIndex % blockSize;
   return (localBlockIndex * blockSize) + elementIndex;
 }
+
+/*size_t DataMatrixDistributed::localToGlobalIndex(size_t localIndex, size_t process,
+                                                 size_t numberOfProcesses, size_t blockSize,
+                                                 size_t processOffset) const {
+  // note that the division is rounded down
+  size_t x1 = numberOfProcesses * blockSize * (localIndex / blockSize);
+  size_t x2 = localIndex % blockSize;
+  size_t offset = ((numberOfProcesses + process - processOffset) % numberOfProcesses) * blockSize;
+  return x1 + x2 + offset;
+}*/
 
 int DataMatrixDistributed::globalToProcessIndex(size_t globalIndex, size_t numberOfProcesses,
                                                 size_t blockSize, int processOffset) const {
