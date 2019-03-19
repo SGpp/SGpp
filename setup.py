@@ -42,19 +42,24 @@ for moduleFolder, srcdir in pythonModuleFolders:
 
 # write init file for pysgpp
 initFile = os.path.join(libpath, "__init__.py")
-fd = open(initFile, "w")
-fd.write("from pysgpp_swig import *%s" % os.linesep)
-if len(moduleFolders) > 0:
-    fd.write("import pysgpp.extensions%s" % os.linesep)
-fd.close()
+with open(initFile, "w") as f:
+    f.write("""
+# add current directory to PYTHONPATH such that pysgpp_swig can be imported
+import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+
+# import pysgpp_swig and extensions
+from pysgpp_swig import *
+import pysgpp.extensions
+""")
 
 if len(moduleFolders) > 0:
     # create __init__.py file which imports all the extensions
     initFile = os.path.join("__init__.py")
-    fd = open(initFile, "w")
-    for moduleFolder, _ in pythonModuleFolders:
-        fd.write("import %s%s" % (moduleFolder, os.linesep))
-    fd.close()
+    with open(initFile, "w") as f:
+        for moduleFolder, _ in pythonModuleFolders:
+            f.write("import %s\n" % moduleFolder)
 
     dataFiles += [(os.path.join("pysgpp", "extensions"), [initFile])]
 

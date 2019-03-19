@@ -52,10 +52,7 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName,
         gzread(inFileZ, unzippedData.data(), static_cast<unsigned int>(unzippedData.size() - 1));
 
     if (unzippedBytes > 0) {
-      auto& last = convert.back();
-      last = '\0';
-      convert.append(unzippedData.data());
-
+      convert.append(unzippedData.begin(), unzippedData.begin() + unzippedBytes);
     } else {
       break;
     }
