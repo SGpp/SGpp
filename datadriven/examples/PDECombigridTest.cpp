@@ -16,20 +16,7 @@
 #include <memory>
 #include <string>
 int main(int argc, char **argv) {
-    std::string s = "../../../../myconfig.json";
-
     sgpp::datadriven::UniversalMinerFactory factory;
-
     auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("../../../../myconfig.json"));
-    std::cout<< typeid(miner->getModel()).name()<<std::endl;
     miner->learn(false);
-    std::vector<double>  a;
-    a.push_back(0.1);
-    a.push_back(0.2);
-    DataVector param(a);
-    std::cout<<std::endl<<std::endl<<miner->getModel()->evaluate(param);
-   // auto miner2 = std::unique_ptr<SparseGridMiner>(factory.buildMiner("../../../../miner.json"));
-    //miner2->learn(false);
-    //std::cout<<std::endl<<std::endl<<miner2->getModel()->evaluate(param);
-
 }

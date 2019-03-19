@@ -39,10 +39,11 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
-    if (!config.getCombi())
+    if (!config.getCombi()) {
       model = new ModelFittingDensityEstimationOnOff(config);
-    else
-      return new PDFCombigrid(config);
+    } else {
+        return new PDFCombigrid(config);
+    }
   } else {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);

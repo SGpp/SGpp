@@ -50,24 +50,54 @@ using sgpp::datadriven::ModelFittingDensityEstimationOnOff;
 
 class PDFCombigrid : public ModelFittingDensityEstimationOnOff {
  private:
-    size_t dimensions;
+    // number of dimensions
+    int dimensions;
+    // Model's dataset
     sgpp::datadriven::Dataset* dataset;
-    std::unique_ptr<SparseGridMiner> miner;
+    // PDFFitter main model
     sgpp::datadriven::PDFFitter* model;
+    // model's configuration
     std::string configuration;
+    // Parallel option
     bool parallel;
+    // Grid's Level
     int level;
+    // number of threads
     int numthreads;
-
+    // Combigrid's Operation object
     std::shared_ptr<sgpp::combigrid::CombigridOperation> operation;
+    // True if model is in evaluation mode, False if the model has not been fitted
     bool fitted;
-
+    // Hash map containing the model for each subspace
+    std::unordered_map<std::string,sgpp::datadriven::PDFFitter*> models;
+    // Initialized  model pool to be used by each subspace.
+    std::vector<sgpp::datadriven::PDFFitter*> modelpool;
+    // Estimated number of components
+    int numcomponents;
+    // Index of component subspace used to grab model from pool.
+    int current;
 public:
-    PDFCombigrid(int lev, int threads, std::string conf, bool par);
     PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEstimation& conf);
+    /**
+     * Model update on the given dataset
+     * @param newDataset
+     */
     void update(sgpp::datadriven::Dataset& newDataset);
+    /**
+     * Fit themodel
+     */
     void fit();
+    /**
+     * Evaluate function on test_points
+     * @param test_points
+     * @return evaluation
+     */
     double evaluate(std::vector<double> test_points);
+    /**
+     * Function to skip refine in scorer
+     * @return false
+     */
+    bool refine() override;
     /**
      * Evaluate the fitted density on a set of data points - requires a trained grid.
      * @param samples matrix where each row represents a sample and the columns contain the
@@ -76,6 +106,7 @@ public:
      * the current model.
         */
     void evaluate(DataMatrix& samples, DataVector& results) override;
+
 };
 
 

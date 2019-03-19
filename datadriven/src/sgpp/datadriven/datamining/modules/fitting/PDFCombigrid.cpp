@@ -8,57 +8,28 @@
 
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <string>
+#include <vector>
 
+std::mutex mymut;
 
 PDFCombigrid::PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEstimation &conf) {
     ModelFittingDensityEstimationOnOff();
     this->config = std::unique_ptr<sgpp::datadriven::FitterConfiguration>(
             std::make_unique<sgpp::datadriven::FitterConfigurationDensityEstimation>(conf));
-    //dimensions = dataset->getDimension()+1;
-    //model = new sgpp::datadriven::PDFFitter();
-    //model->setDataset(dataset);
-    //model->setConfiguration(*miner->getModel());
-    this->level = conf.getGridConfig().level_ - 1 ;
+    this->level = conf.getGridConfig().level_ - 1;
     this->numthreads = conf.getGridConfig().threads;
     if ( this->numthreads > 1 )
         this->parallel = true;
     else
         this->parallel = false;
-}
-
-PDFCombigrid::PDFCombigrid(int lev, int threads, std::string conf, bool par) {
-    DensityEstimationMinerFactory factory;
-    configuration = conf;
-    miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(conf));
-    sgpp::datadriven::DataSourceSplitting* datasource;
-    sgpp::datadriven::DataSourceCrossValidation* dcross;
-    sgpp::datadriven::DataMiningConfigParser  parser(conf);
-    sgpp::datadriven::DataSourceConfig dconfig{};
-    parser.getDataSourceConfig(dconfig, dconfig);
-    dataset = new sgpp::datadriven::Dataset();
-    sgpp::datadriven::DataSourceBuilder builder;
-    sgpp::datadriven::DataSourceBuilder b = builder.withPath(dconfig.filePath);
-    if (parser.hasFitterConfigCrossValidation()) {
-        CrossvalidationConfiguration crossValidationconfig{};
-        parser.getFitterCrossvalidationConfig(crossValidationconfig, crossValidationconfig);
-        dcross = b.crossValidationFromConfig(dconfig, crossValidationconfig);
-        dataset = dcross->getAllSamples();
-    } else {
-        datasource = b.splittingFromConfig(dconfig);
-        dataset = datasource->getAllSamples();
-    }
-    dimensions = dataset->getDimension()+1;
-    model = new sgpp::datadriven::PDFFitter();
-    model->setDataset(dataset);
-    model->setConfiguration(*miner->getModel());
-    this->parallel = par;
-    this->level = lev;
-    this->numthreads = threads;
+    current = 0;
+    fitted = false;
 }
 
 void PDFCombigrid::fit() {
     // grid function
-    dimensions = dataset->getDimension()+1;
+    dimensions = dataset->getDimension() + 1;
     model = new sgpp::datadriven::PDFFitter();
     model->setDataset(dataset);
     model->setConfiguration(*this);
@@ -72,13 +43,13 @@ void PDFCombigrid::fit() {
         // make a model out of it
         // fit it
         // evaluate
-        /**
-        * The miner object is constructed by the factory from a supplied configuration file.
-        */
         auto parallel = this->parallel;
         sgpp::datadriven::PDFFitter *modelp = nullptr;
-        if (parallel) {
-            modelp = new sgpp::datadriven::PDFFitter();
+        if (!fitted) {
+            mymut.lock();
+            modelp = modelpool[current];
+            current++;
+            mymut.unlock();
             modelp->setDataset(this->dataset);
             modelp->setConfiguration(*model);
         }
@@ -92,17 +63,28 @@ void PDFCombigrid::fit() {
         }
         // fit dataset to Grid
         if (!parallel) {
-            model->fit(*dataset, grids, an, true);
+            if (!fitted) {
+                modelp->fit(*dataset, grids, an, true);
+                models.insert(std::make_pair(m, modelp));
+            } else {
+                modelp = models.at(m);
+            }
         } else {
-            modelp->fit(*dataset, grids, an, true);
+            if (!fitted) {
+                modelp->fit(*dataset, grids, an, true);
+                mymut.lock();
+                models.insert(std::make_pair(m, modelp));
+                mymut.unlock();
+            } else {
+                modelp = models.at(m);
+            }
         }
-
         while (it.isValid()) {
             auto ik = it.getMultiIndex();
             // evaluate grid point
             double value = 0.0;
             if (!parallel) {
-                value = model->evaluate(grid->getGridPoint(ik));
+                value = modelp->evaluate(grid->getGridPoint(ik));
             } else {
                 value = modelp->evaluate(grid->getGridPoint(ik));
             }
@@ -120,24 +102,22 @@ void PDFCombigrid::fit() {
     std::shared_ptr<sgpp::combigrid::LevelManager> levelManager(
             new sgpp::combigrid::AveragingLevelManager());
 
-    /**
-     * We have to specify if the function always produces the same value for the same grid points.
-     * This can make the storage smaller if the grid points are nested. In this implementation, this
-     * is true. However, it would be false in the PDE case, so we set it to false here.
-     */
     bool exploitNesting = false;
-
 
     operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
             grids, evaluators, levelManager, gf, exploitNesting);
 }
 
 void PDFCombigrid::update(sgpp::datadriven::Dataset &newDataset) {
-    std::cout<<"PAME GERA"<<std::endl;
     dataset = &newDataset;
-    std::cout<<" Dimension "<< dataset->getDimension()<<std::endl;
     fit();
-    std::cout<< " Out of fit "<<std::endl;
+    numcomponents = pow(2, pow(this->level, this->dimensions));
+    for (int i = 0 ; i < numcomponents; i++) {
+        sgpp::datadriven::PDFFitter *modelp =  new sgpp::datadriven::PDFFitter();
+        modelpool.push_back(modelp);
+    }
+    auto& gridConfig = this->config->getGridConfig();
+    grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
 }
 
 double PDFCombigrid::evaluate(std::vector<double> test_points) {
@@ -147,19 +127,22 @@ double PDFCombigrid::evaluate(std::vector<double> test_points) {
         result = operation->evaluate(this->level, parameter);
     else
         result = operation->evaluateParallel(this->level, parameter, numthreads);
-
+    fitted = true;
     return result;
 }
 
 void PDFCombigrid::evaluate(DataMatrix &samples, DataVector &results) {
-    for ( auto i=0; i <= samples.getNrows(); i++)
-    {
+    for ( auto i = 0; i < samples.getNrows(); i++) {
         std::vector<double> row;
-        size_t current = 0;
-        for ( auto j= i * samples.getNcols(); j <= (i + 1)*samples.getNcols(); j++)
-        {
-            row.push_back(samples[j]);
+        for (auto j=0; j <= samples.getNcols() ; j++) {
+            auto index = i*(samples.getNcols()+1)+j;
+            row.push_back(samples[index]);
         }
-        results.push_back(evaluate(row));
+        DataVector param(row);
+        results[i]=(evaluate(param));
     }
+}
+
+bool PDFCombigrid::refine() {
+    return false;
 }
