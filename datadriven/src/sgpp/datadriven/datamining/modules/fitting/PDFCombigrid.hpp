@@ -51,7 +51,7 @@ using sgpp::datadriven::ModelFittingDensityEstimationOnOff;
 class PDFCombigrid : public ModelFittingDensityEstimationOnOff {
  private:
     // number of dimensions
-    int dimensions;
+    size_t dimensions;
     // Model's dataset
     sgpp::datadriven::Dataset* dataset;
     // PDFFitter main model
@@ -78,6 +78,10 @@ class PDFCombigrid : public ModelFittingDensityEstimationOnOff {
     int current;
 public:
     PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEstimation& conf);
+    /**
+     * Destructor to clear the pool of models
+     */
+    ~PDFCombigrid();
     /**
      * Model update on the given dataset
      * @param newDataset

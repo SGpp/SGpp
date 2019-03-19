@@ -27,6 +27,12 @@ PDFCombigrid::PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEst
     fitted = false;
 }
 
+PDFCombigrid::~PDFCombigrid() {
+    for (auto i : modelpool){
+        delete i;
+    }
+}
+
 void PDFCombigrid::fit() {
     // grid function
     dimensions = dataset->getDimension() + 1;
@@ -111,13 +117,17 @@ void PDFCombigrid::fit() {
 void PDFCombigrid::update(sgpp::datadriven::Dataset &newDataset) {
     dataset = &newDataset;
     fit();
-    numcomponents = pow(2, pow(this->level, this->dimensions));
+    double l = this->level;
+    double d = this->dimensions;
+    numcomponents = pow(2, pow(l, d));
     for (int i = 0 ; i < numcomponents; i++) {
         sgpp::datadriven::PDFFitter *modelp =  new sgpp::datadriven::PDFFitter();
         modelpool.push_back(modelp);
     }
-    auto& gridConfig = this->config->getGridConfig();
-    grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+    if (!fitted) {
+        auto &gridConfig = this->config->getGridConfig();
+        grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+    }
 }
 
 double PDFCombigrid::evaluate(std::vector<double> test_points) {
