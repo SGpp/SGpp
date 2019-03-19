@@ -26,7 +26,7 @@ using sgpp::base::DataVector;
 
 class DataVectorDistributed {
  public:
-   /**
+  /**
    * Creates a distributed data vector of specified size and initializes the elements to value.
    * @param grid blacs grid for distribution
    * @param globalSize global size (rows) of this vector
@@ -104,6 +104,18 @@ class DataVectorDistributed {
    * @param a
    */
   void scale(double a);
+
+  /**
+   * Appends rows to the vector
+   * @param rows
+   */
+  void append(size_t rows);
+
+  /**
+   * Resizes the vector to rows, discards the data.
+   * @param rows
+   */
+  void resize(size_t rows);
 
   /**
    * @return pointer to the local data of this process

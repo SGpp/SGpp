@@ -1,0 +1,81 @@
+{
+  "dataSource": {
+    "filePath": "../datasets/DR5/DR5_train.arff",
+    "validationPortion": 0.99
+  },
+  "scorer": {
+    "metric": "MSE"
+  },
+  "fitter": {
+    "type": "densityestimation",
+    "gridConfig": {
+      "gridType": {
+        "value": "modlinear",
+        "optimize": true,
+        "options": [
+          "linear",
+          "modlinear"
+        ]
+      },
+      "level": {
+        "value": 3,
+        "optimize": true,
+        "min": 1,
+        "max": 4
+      }
+    },
+    "adaptivityConfig": {
+      "numRefinements": 10,
+      "threshold": {
+        "value": -3,
+        "optimize": true,
+        "min": -5,
+        "max": -1,
+        "bits": 3,
+        "logscale": true
+      },
+      "maxLevelType": false,
+      "noPoints": {
+        "value": 1,
+        "optimize": true,
+        "min": 1,
+        "max": 4
+      }
+    },
+    "regularizationConfig": {
+      "lambda": {
+        "value": -4,
+        "optimize": true,
+        "min": -4,
+        "max": -1,
+        "bits": 5,
+        "logscale": true
+      }
+    },
+    "parallelConfig": {
+      "rowBlockSize": 128,
+      "columnBlockSize": 128
+    }
+  },
+  "hpo": {
+    "method": "bayesian",
+    "randomSeed": 41,
+    "trainSize": 500,
+    "harmonica": {
+      "stages": [
+        10,
+        5,
+        3
+      ],
+      "constraints": [
+        1,
+        1
+      ],
+      "lambda": 0.1
+    },
+    "bayesianOptimization": {
+      "nRandom": 2,
+      "nRuns": 3
+    }
+  }
+}

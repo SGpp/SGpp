@@ -39,8 +39,7 @@ namespace datadriven {
  * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
  * regularization.
  *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Based on ModelFittingDensityEstimationOnOff, but use ScaLAPACK for parallelization.
  */
 class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEstimation {
  public:
@@ -62,25 +61,31 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
-   * density estimation whatsoever)
+   * density estimation whatsoever).
+   * This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fitParallel(DataMatrix& dataset);
+  void fit(DataMatrix& dataset);
 
   /**
-   * Performs a refinement given the new grid size and the points to coarsened
+   * Performs a refinement given the new grid size and the points to coarsened.
    * @param newNoPoints the grid size after refinement and coarsening
    * @param deletedGridPoints a list of indexes for grid points that will be removed
-   * @return if the grid was refined (true)
+   * @return if the grid was refined (always returns true)
    */
   bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
+  /**
+   * Update the density estimation with new data.
+   * @param dataset
+   */
   void update(Dataset& dataset) override;
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
    * the data samples and no targets (since those are irrelevant for the density estimation
-   * whatsoever)
+   * whatsoever).
+   * This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
    */
   void update(DataMatrix& samples);
@@ -117,7 +122,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 
-  // pointer to the BLACS process grid for distributed matrices
+  // pointer to the BLACS process grid for distributed matrices (init before alpha)
   std::shared_ptr<BlacsProcessGrid> processGrid;
 
   // distributed version of the alpha vector (note that it is created after the process grid)

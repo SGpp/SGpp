@@ -39,7 +39,9 @@ namespace datadriven {
 
 ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffParallel(
     const FitterConfigurationDensityEstimation& config)
-    : ModelFittingDensityEstimation(), processGrid(), alphaDistributed(processGrid, 0, 0) {
+    : ModelFittingDensityEstimation(),
+      processGrid(std::make_shared<BlacsProcessGrid>()),
+      alphaDistributed(processGrid, 0, 0) {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -56,10 +58,10 @@ void ModelFittingDensityEstimationOnOffParallel::evaluate(DataMatrix& samples,
 
 void ModelFittingDensityEstimationOnOffParallel::fit(Dataset& newDataset) {
   dataset = &newDataset;
-  fitParallel(newDataset.getData());
+  fit(newDataset.getData());
 }
 
-void ModelFittingDensityEstimationOnOffParallel::fitParallel(DataMatrix& newDataset) {
+void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   // Get configurations
   auto& databaseConfig = this->config->getDatabaseConfig();
   auto& gridConfig = this->config->getGridConfig();
@@ -131,28 +133,44 @@ void ModelFittingDensityEstimationOnOffParallel::fitParallel(DataMatrix& newData
 
 bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
                                                         std::list<size_t>* deletedGridPoints) {
-  /*
-  // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
-    // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+  // alpha is currently updated on master and then distributed again TODO(jan) check performance
+  alpha = alphaDistributed.toLocalDataVector();
+
+  if (BlacsProcessGrid::getCurrentProcess() == 0) {
+    // Coarsening, remove idx from alpha
+    if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+      // Restructure alpha
+      std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
+      alpha.remove(idxToDelete);
+    }
   }
+
   // oldNoPoint refers to the grid size after coarsening
-  auto oldNoPoints = alpha.size();
+  auto oldNoPoints = alphaDistributed.getGlobalRows();
+  size_t alphaSize = oldNoPoints;
 
   // Refinement, expand alpha
-  if (newNoPoints > oldNoPoints) {
-    alpha.resizeZero(newNoPoints);
+  if (newNoPoints > alphaSize) {
+    if (BlacsProcessGrid::getCurrentProcess() == 0) {
+      alpha.resizeZero(newNoPoints);
+    }
+    alphaSize = newNoPoints;
   }
+
+  auto& parallelConfig = this->config->getParallelConfig();
+  alphaDistributed =
+      DataVectorDistributed(alpha.data(), processGrid, alphaSize, parallelConfig.rowBlockSize_);
+
+  // every process does exactly the same steps to update the matrix decomposition
+  // TODO(jan) check performance
 
   // Update online object: lhs, rhs and recompute the density function based on the b stored
   online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
                                           newNoPoints - oldNoPoints, *deletedGridPoints,
                                           config->getRegularizationConfig().lambda_);
-  online->updateRhs(newNoPoints, deletedGridPoints);*/
+  online->updateRhs(newNoPoints, deletedGridPoints);
   return true;
-}
+}  // namespace datadriven
 
 void ModelFittingDensityEstimationOnOffParallel::update(Dataset& newDataset) {
   dataset = &newDataset;
@@ -162,7 +180,7 @@ void ModelFittingDensityEstimationOnOffParallel::update(Dataset& newDataset) {
 void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) {
   if (grid == nullptr) {
     // Initial fitting of dataset
-    fitParallel(newDataset);
+    fit(newDataset);
   } else {
     auto& parallelConfig = this->config->getParallelConfig();
 

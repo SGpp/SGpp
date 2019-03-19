@@ -60,31 +60,6 @@ class DataMatrixDistributed {
                         DTYPE dtype = DTYPE::DENSE);
 
   /**
-   * Append nrows and ncols filled with zero
-   * @param nrows
-   * @param ncols
-   */
-  void appendZero(size_t nrows, size_t ncols);
-
-  /**
-   * Appends a new row with data contained in DataVector vec
-   * and returns index of new row.
-   *
-   * @param vec DataVectorDistributed (length has to match getNcols()) with data
-   * @return Index of new row
-   */
-  size_t appendRow(const DataVectorDistributed& vec);
-
-  /**
-   * Appends a new Col with data contained in DataVector vec
-   * and returns index of new col.
-   *
-   * @param vec DataVectorDistributed (length has to match getNcols()) with data
-   * @return Index of new col
-   */
-  size_t appendCol(const DataVectorDistributed& vec);
-
-  /**
    * Returns the value of the element at position [row,col].
    * Only a const version exists as setting an element is not necessarily done in local memory.
    *
@@ -235,12 +210,35 @@ class DataMatrixDistributed {
                    double alpha = 1.0, double beta = 0.0);
 
   /**
+   * Append newRows to the global rows, can currently only be done if there is only one
+   * local column in each process. TODO(jan) implement functionality to resize with more than one
+   * column
+   *
+   * @param rows
+   */
+  void appendRows(size_t rows);
+
+  /**
+   * Append newColumns to the global columns.
+   *
+   * @param cols
+   */
+  void appendColumns(size_t cols);
+
+  /**
+   * Resizes the matrix to rows and cols, data is discarded.
+   * @param rows
+   * @param cols
+   */
+  void resize(size_t rows, size_t cols);
+
+  /**
    * Convert this matrix to a vector. This operation is only possible if either globalRows or
    * globalColumns equals one.
    *
    * @returns A DataVectorDistributed object with the same size and data
    */
-  DataVectorDistributed toVector();
+  DataVectorDistributed toVector() const;
 
   /**
    * @return Pointer to the local data of this process
@@ -301,6 +299,35 @@ class DataMatrixDistributed {
    */
   bool isProcessMapped() const;
 
+  /**
+   * Calculates the row or column index of the element in the local process.
+   * @param globalIndex global index of the element
+   * @param numberOfProcesses number of processes in the grid in a row or column
+   * @param blockSize size of one block
+   */
+  size_t globalToLocalIndex(size_t globalIndex, size_t numberOfProcesses, size_t blockSize) const;
+
+  /**
+   * Calculates the global row or column index of the element.
+   * @param localIndex local index of the element
+   * @param process process of the element
+   * @param numberOfProcesses number of processes in the grid in a row or column
+   * @param blockSize size of one block
+   * @param processOffset process offset in the blacs grid, default 0
+   */
+  /*static size_t localToGlobalIndex(size_t localIndex, size_t process, size_t numberOfProcesses,
+                                   size_t blockSize, size_t processOffset = 0);*/
+
+  /**
+   * Calculates the row or column index of the process of an element from its global index
+   * @param globalIndex global index of the element
+   * @param numberOfProcesses number of processes in the grid in a row or column
+   * @param blockSize size of one block
+   * @param processOffset process offset in the blacs grid, default 0
+   */
+  int globalToProcessIndex(size_t globalIndex, size_t numberOfProcesses, size_t blockSize,
+                           int processOffset = 0) const;
+
  private:
   /**
    * Distribute the matrix on the process grid according to the 2d block cyclic scheme used in
@@ -319,11 +346,6 @@ class DataMatrixDistributed {
    * @param masterCol col coordinate of the master process, default 0
    */
   DataMatrix gather(int masterRow = 0, int masterCol = 0) const;
-
-  size_t globalToLocalIndex(size_t globalIndex, size_t numberOfProcesses, size_t blockSize) const;
-
-  int globalToProcessIndex(size_t globalIndex, size_t numberOfProcesses, size_t blockSize,
-                           int processOffset) const;
 
   // vector to store the local data
   std::vector<double> localData;
