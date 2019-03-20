@@ -190,7 +190,7 @@ class FitterConfiguration {
   /**
    * set default values for all members based on the desired scenario.
    */
-  virtual void setupDefaults() = 0;
+  virtual void setupDefaults();
 
   /**
    * obtain parameters from a parser
