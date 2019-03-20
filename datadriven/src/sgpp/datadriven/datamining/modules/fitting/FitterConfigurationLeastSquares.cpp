@@ -20,37 +20,7 @@ FitterConfiguration *FitterConfigurationLeastSquares::clone() const {
 }
 
 void FitterConfigurationLeastSquares::setupDefaults() {
-  // configure initial grid
-  gridConfig.dim_ = 0;
-  gridConfig.level_ = 2;
-  gridConfig.type_ = sgpp::base::GridType::Linear;
-  gridConfig.maxDegree_ = 1;
-  gridConfig.boundaryLevel_ = 0;
-
-  // configure adaptive refinement
-  adaptivityConfig.maxLevelType_ = false;
-  adaptivityConfig.noPoints_ = 0;
-  adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.percent_ = 100.0;
-  adaptivityConfig.threshold_ = 0.0,
-
-      // configure solver
-      solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverRefineConfig.maxIterations_ = 100;
-  solverRefineConfig.eps_ = 1e-10;
-  solverRefineConfig.threshold_ = 1e-10;
-
-  // configure solver
-  solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
-  solverFinalConfig.maxIterations_ = 100;
-  solverFinalConfig.eps_ = 1e-10;
-  solverFinalConfig.threshold_ = 1e-10;
-
-  // configure regularization
-  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
-  regularizationConfig.lambda_ = 0.0;
-  regularizationConfig.l1Ratio_ = 0.0;
-  regularizationConfig.exponentBase_ = 0.0;
+  // (Sebastian) Now all default-setup moved to parent class
 }
 
 void FitterConfigurationLeastSquares::readParams(const DataMiningConfigParser &parser) {
