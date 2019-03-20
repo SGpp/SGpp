@@ -1,0 +1,21 @@
+{
+	"dataSource": {
+		"filePath": "/home/nikogiannis/newfried2.arff",
+		"validationPortion" : 0.01
+	},
+	"scorer": {
+		"metric": "MSE"
+	},
+	"fitter": {
+		"type": "densityestimation",
+		"gridConfig": {
+			"gridType": "linear",
+				
+			"level": 3
+		},
+		
+		"regularizationConfig": {
+			"lambda": 0
+		}
+	}
+}
