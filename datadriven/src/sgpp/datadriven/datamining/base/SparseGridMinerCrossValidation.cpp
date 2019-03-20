@@ -78,7 +78,9 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
                   << "Batch size: " << numInstances << std::endl;
 
         // Train model on new batch
+        std::cout << "TIME BEVOR UPDATE" << evalu::getMSek();
         fitter->update(*dataset);
+        std::cout << "TIME AFTER UPDATE" << evalu::getMSek();
 
         // Evaluate the score on the training and validation data
         double scoreTrain = scorer->test(*fitter, *dataset);
@@ -96,8 +98,8 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
           fitter->refine();
           std::cout << getTime();
         }
-
-        std::cout << "###############" << getTime() << "Iteration finished." << std::endl;
+        std::cout << std::endl << evalu::getMSek();
+        std::cout << "###############Iteration finished." << std::endl;
       }
     }
     // Evaluate the final score on the validation data
