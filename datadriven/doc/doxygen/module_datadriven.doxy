@@ -1,30 +1,31 @@
 /**
 @page module_datadriven Module sgpp::datadriven
 
-@short Data mining and machine learning.
+@short Datamining and machine learning.
 
-Functionality includes
-- operations depending on datasets
-- data mining support
-- specialized regularization
-- vectorization of evaluation of multiple on x86
+Functionality of this module includes
+- Operations depending on datasets
+- Datamining support
+- Specialized regularization
+- Vectorization of evaluation of multiple on x86
 
-Please refer to \ref examples_cpp_module_datadriven "usage examples".
+Please refer to \ref examples_cpp_module_datadriven "examples".
 
 
 @section datamining_pipeline Datamining Pipeline
 
 The datamining pipeline is a submodule of sgpp::datadriven intended for
 out-of-the-box application of SG++ machine learning methods.
-Using the pipeline many algorithms of the
-datadriven module can be used with minimal setup in C++. All boilerplate code
+By using the pipeline many algorithms of the
+datadriven module can be applied with minimal setup in C++. All boilerplate code
 is hidden from the user and configuration is done via JSON config files
 (see below).
 
 @subsection datamining_config Pipeline Configuration
 
 The datamining pipeline is configured via JSON config files. Please refer to
-this page for documentation of format, parameters and examples.
+the page linked below for documentation of the configuration format, attributes
+and default values.
 
 @subpage pipeline_config
 
