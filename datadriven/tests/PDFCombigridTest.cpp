@@ -33,15 +33,14 @@ using sgpp::datadriven::ModelFittingBase;
 using sgpp::datadriven::CSVFileSampleProvider;
 using sgpp::datadriven::DataVector;
 
-double test() {
+double test(int dim) {
     sgpp::datadriven::UniversalMinerFactory factory;
     auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("PDFCombi.json"));
     miner->learn(false);
     auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("miner.json"));
     minertrue->learn(false);
     std::vector<double> a;
-    auto dim = miner->getModel()->getDataset()->getDimension();
-    for (auto i = 0; i <= dim ; i++) {
+    for (auto i = 0; i < dim ; i++) {
         a.push_back(0.1);
     }
     std::cout << " Result  Predicted " << dynamic_cast<PDFCombigrid*>((miner->getModel()))->evaluate(DataVector(a)) << " Ground truth " << minertrue->getModel()->evaluate(DataVector(a));
@@ -51,7 +50,7 @@ double test() {
 BOOST_AUTO_TEST_SUITE(testPDFCombigridTest)
 
 BOOST_AUTO_TEST_CASE(testResult) {
-  double diff = test();
+  double diff = test(2);
   BOOST_CHECK(diff < 2);
 }
 
