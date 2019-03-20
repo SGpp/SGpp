@@ -190,62 +190,64 @@ is a sub-type of densityEstimation.
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
 <tr><td>densityEstimationType</td><td>String</td><td>"cg", "decomposition"</td><td>Should conjugate gradient or matrix decomposition be used?</td><td></td></tr>
 <tr><td>matrixDecompositionType</td><td>String</td><td>"cg", "eigen", "chol", "denseichol", "orthoadapt"</td><td>The type of matrix decomposition. "cg" means LU decomposition</td><td>densityEstimationType="decomposition"</td></tr>
-<tr><td>iCholSweepsDecompose</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType is chol or denseichol</td></tr>
-<tr><td>iCholSweepsRefine</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType is chol or denseichol</td></tr>
-<tr><td>iCholSweepsUpdateLambda</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType is chol or denseichol</td></tr>
-<tr><td>iCholSweepsSolver</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType is chol or denseichol TODO</td></tr>
+<tr><td>iCholSweepsDecompose</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType="denseichol"</td></tr>
+<tr><td>iCholSweepsRefine</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType="denseichol"</td></tr>
+<tr><td>iCholSweepsUpdateLambda</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType="denseichol"</td></tr>
+<tr><td>iCholSweepsSolver</td><td>Integer</td><td>[0, inf)</td><td></td><td>matrixDecompositionType="denseichol"</td></tr>
 </table>
 
 The database configuration includes a single attribute "filePath" that may be
-set to point to a JSON file containing information about how a decomposition
-is to be stored as a file. This may be useful if the computation of a decomposition is very expensive. TODO
+set to point to a JSON file containing information about how a densityEstimation decomposition
+is to be stored as a file. This may be useful if the computation of a decomposition is expensive.
 
 <table>
 <caption>database</caption>
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
-<tr><td>filePath</td><td>String</td><td></td><td>Path to a JSON file containing information about how and where a decomposition is (to be) stored</td><td>TODO</td></tr>
+<tr><td>filePath</td><td>String</td><td></td><td>Path to a JSON file containing information about how and where a decomposition is (to be) stored</td><td>densityEstimationConfig.densityEstimationType="decomposition"</td></tr>
 </table>
 
 The solver configuration controls how the SGpp solver module behaves in order to solve
-systems of linear equations. TODO(refine vs final)?
+systems of linear equations. solverRefineConfig applies for systems that are solved during
+refinement. solverFinalConfig is used for anything else.
 
 <table>
 <caption>solverRefineConfig</caption>
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
 <tr><td>solverType</td><td>String</td><td>"cg", "bicgstab", "fista"</td><td>The type of solver to be used</td><td></td></tr>
-<tr><td>eps</td><td>Float</td><td>(0, inf)</td><td>TODO</td><td></td></tr>
+<tr><td>eps</td><td>Float</td><td>(0, inf)</td><td></td><td></td></tr>
 <tr><td>maxIterations</td><td>Integer</td><td>[0, inf)</td><td>The upper boundary for solver iterations</td><td></td></tr>
-<tr><td>threshold</td><td>Float</td><td>[0, inf) TODO</td><td>TODO</td><td></td></tr>
+<tr><td>threshold</td><td>Float</td><td>[0, inf)</td><td>An additional abort cricterium for the solver</td><td></td></tr>
 </table>
 
 <table>
 <caption>solverFinalConfig</caption>
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
 <tr><td>solverType</td><td>String</td><td>"cg", "bicgstab", "fista"</td><td>The type of solver to be used</td><td></td></tr>
-<tr><td>eps</td><td>Float</td><td>(0, inf)</td><td>TODO</td><td></td></tr>
+<tr><td>eps</td><td>Float</td><td>(0, inf)</td><td></td><td></td></tr>
 <tr><td>maxIterations</td><td>Integer</td><td>[0, inf)</td><td>The upper boundary for solver iterations</td><td></td></tr>
-<tr><td>threshold</td><td>Float</td><td>[0, inf) TODO</td><td>TODO</td><td></td></tr>
+<tr><td>threshold</td><td>Float</td><td>[0, inf)</td><td>An additional abort cricterium for the solver</td><td></td></tr>
 </table>
 
 The regularization configuration controls what type and to what extend the learning
-process is impacted by the regularization lambda. (TODO only LSQ?).
+process is impacted by the regularization lambda.
 
 <table>
 <caption>regularizationConfig</caption>
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
 <tr><td>regularizationType</td><td>String</td><td>"identity", "laplace", "diagonal", "lasso", "elasticNet", "groupLasso"</td><td>The method used to do regularization</td><td></td></tr>
 <tr><td>lambda</td><td>Float</td><td>[0, inf)</td><td>Lambda parameter commonly used for regularization. Regulates much smoothness is enforced by the regularization.</td><td></td></tr>
-<tr><td>l1Ratio</td><td>Float</td><td>TODO</td><td>TODO</td><td></td></tr>
-<tr><td>exponentBase</td><td>Float</td><td>TODO</td><td>TODO</td><td></td></tr>
+<tr><td>l1Ratio</td><td>Float</td><td>[0,1]</td><td>Controls the amount of l1 regularization. A value of one corresponds to the lasso, and a value of zero to the ridge regularization</td><td>regularizationType="elasticNet"</td></tr>
+<tr><td>exponentBase</td><td>Float</td><td></td><td>Currently unused</td><td>regularizationType="diagonal"</td></tr>
 </table>
 
-TODO (only classification with Bayes?)
+The learner configuration applies only for classification fitting and controls
+how (new) data is integrated into the model.
 
 <table>
 <caption>learner</caption>
 <tr><th>Attribute Name</th><th>Attribute Type</th><th>Valid value range</tr><th>Comment</th><th>Depends on</th></tr>
-<tr><td>usePrior</td><td>Boolean</td><td>true, false</td><td>Should the prior (distribution of data points into classes) be used?</td><td></td></tr>
-<tr><td>beta</td><td>float</td><td>TODO</td><td>TODO</td><td></td></tr>
+<tr><td>usePrior</td><td>Boolean</td><td>true, false</td><td>Should the prior (distribution of data points into classes) be used?</td><td>fitter.type="classification"</td></tr>
+<tr><td>beta</td><td>float</td><td>(0, 1)</td><td>Weight for scaling the impact of new data compared to old data batches</td><td>fitter.type="classification"</td></tr>
 </table>
 
 
@@ -254,7 +256,7 @@ TODO (only classification with Bayes?)
 
 
 
-@section default_config Default and Madatory Configuration
+@section default_config Default and Mandatory Configuration
 
 Many of the attributes above are optional and need not necessarily be supplied
 in the JSON configuration. All (except for very few mandatory attributes) have
