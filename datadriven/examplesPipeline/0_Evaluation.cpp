@@ -27,23 +27,33 @@ using evalu::getTime;
 
 int main(int argc, char **argv) {
   cout << "Starting the evaluation. Time: " << getTime() << std::endl;
+  cout << evalu::getMSek();
   std::ofstream myfile;
   string titel = "evaluation" + getTime();
   myfile.open(titel);
   myfile << "EVALUATION " << getTime() << std::endl;
 
   vector<string> paths;
-  paths.push_back("classRipley");
-  paths.push_back("classIris");
-  paths.push_back("classDR10");
+  for (size_t i = 0; i < 100; i++) {
+    paths.push_back("classRipley_component");
+    paths.push_back("classRipley_regular");
+  }
+  for (size_t i = 0; i < 50; i++) {
+    paths.push_back("classIris_component");
+    paths.push_back("classIris_regular");
+  }
+  for (size_t i = 0; i < 100; i++) {
+    paths.push_back("classDR10_component");
+    paths.push_back("classDR10_regular");
+  }
 
   ClassificationMinerFactory factory;
   for (string path : paths) {
     // timestamp in main evaluation file
-    myfile << std::endl << std::endl << getTime() << path << std::endl;
+    myfile << std::endl << std::endl << getTime() << " " << evalu::getMSek() << path << std::endl;
 
     // writing in the child file
-    freopen((titel + "_" + path).c_str(), "w", stdout);
+    freopen((titel + "_" + path + evalu::getTime()).c_str(), "w", stdout);
     cout << path << std::endl << std::endl;
     // copying the config.json
     std::ifstream inFile;
@@ -59,7 +69,7 @@ int main(int argc, char **argv) {
     miner->learn(true);
     std::cout << std::endl << "THIS EVALUATION RUN TERMINATED JUST AS PLANED";
   }
-
+  myfile << std::endl << "DONE" << std::endl << getTime() << std::endl << evalu::getMSek();
   myfile.close();
   return 0;
 }

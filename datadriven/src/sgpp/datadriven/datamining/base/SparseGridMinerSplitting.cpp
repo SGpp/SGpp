@@ -55,7 +55,9 @@ double SparseGridMinerSplitting::learn(bool verbose) {
                   << "Batch size: " << numInstances << std::endl;
       }
       // Train model on new batch
+      std::cout << "TIME BEVOR UPDATE" << evalu::getMSek();
       fitter->update(*dataset);
+      std::cout << "TIME AFTER UPDATE" << evalu::getMSek();
 
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
@@ -74,6 +76,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         fitter->refine();
         std::cout << getTime();
       }
+      std::cout << std::endl << evalu::getMSek();
       if (verbose) {
         std::cout << "###############"
                   << "Iteration finished." << std::endl;
