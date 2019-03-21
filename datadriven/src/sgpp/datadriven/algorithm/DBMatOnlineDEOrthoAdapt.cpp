@@ -119,7 +119,8 @@ void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
                             parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
   // create solver
-  sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
+  std::unique_ptr<sgpp::datadriven::DBMatDMSOrthoAdapt> solver =
+      std::make_unique<sgpp::datadriven::DBMatDMSOrthoAdapt>();
 
   alpha.resize(b.getGlobalRows());
   solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha, processGrid,

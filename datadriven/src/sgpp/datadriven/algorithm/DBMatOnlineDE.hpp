@@ -102,7 +102,8 @@ class DBMatOnlineDE : public DBMatOnline {
    * Computes the density function for a certain data matrix in parallel using ScaLAPACK.
    *
    * @param alpha the distributed vector where surplusses for the density function will be stored
-   * @param m the distributed matrix that contains the data points
+   * @param m the matrix that contains the data points, currently every process has to have the data
+   * points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    * @param parallelConfig configuration for ScaLAPACK
@@ -114,8 +115,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * coarsening
    * @param newPoints indicates the amount of added points due to refinement
    */
-  void computeDensityFunctionParallel(DataVectorDistributed& alpha, DataMatrixDistributed& m,
-                                      Grid& grid,
+  void computeDensityFunctionParallel(DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
                                       DensityEstimationConfiguration& densityEstimationConfig,
                                       const ParallelConfiguration& parallelConfig,
                                       std::shared_ptr<BlacsProcessGrid> processGrid,

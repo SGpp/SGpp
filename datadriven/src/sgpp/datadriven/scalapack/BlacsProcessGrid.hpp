@@ -50,6 +50,8 @@ class BlacsProcessGrid {
    */
   BlacsProcessGrid(const BlacsProcessGrid&) = delete;
 
+  BlacsProcessGrid& operator=(const BlacsProcessGrid&) = delete;
+
   ~BlacsProcessGrid();
 
   /**

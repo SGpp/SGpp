@@ -46,8 +46,10 @@ void DataVectorDistributed::add(const DataVectorDistributed& x) {
 
 void DataVectorDistributed::add(DataVectorDistributed& y, const DataVectorDistributed& x,
                                 double a) {
-  pdaxpy_(y.getGlobalRows(), a, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
-          y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+  if (y.isProcessMapped() || x.isProcessMapped()) {
+    pdaxpy_(y.getGlobalRows(), a, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
+            y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+  }
 }
 
 double DataVectorDistributed::dot(const DataVectorDistributed& y) const {
@@ -56,13 +58,17 @@ double DataVectorDistributed::dot(const DataVectorDistributed& y) const {
 
 double DataVectorDistributed::dot(const DataVectorDistributed& x, const DataVectorDistributed& y) {
   double dot = 0.0;
-  pddot_(x.getGlobalRows(), dot, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
-         y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+  if (x.isProcessMapped() || y.isProcessMapped()) {
+    pddot_(x.getGlobalRows(), dot, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
+           y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
+  }
   return dot;
 }
 
 void DataVectorDistributed::scale(double a) {
-  pdscal_(getGlobalRows(), a, getLocalPointer(), 1, 1, getDescriptor(), 1);
+  if (isProcessMapped()) {
+    pdscal_(getGlobalRows(), a, getLocalPointer(), 1, 1, getDescriptor(), 1);
+  }
 }
 
 void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
@@ -75,11 +81,17 @@ const double* DataVectorDistributed::getLocalPointer() const { return data.getLo
 
 DataVector DataVectorDistributed::toLocalDataVector() const {
   DataMatrix localMatrix = data.toLocalDataMatrix();
-  if (grid->getCurrentProcess() == 0) {
-    DataVector localVector(localMatrix.data(), localMatrix.getNrows());
+  if (grid->getCurrentRow() == 0 && grid->getCurrentColumn() == 0) {
+    DataVector localVector(localMatrix.data(), localMatrix.getNcols());
     return localVector;
   }
   return DataVector();
+}
+
+DataVector DataVectorDistributed::toLocalDataVectorBroadcast() const {
+  DataMatrix localMatrix = data.toLocalDataMatrixBroadcast();
+  DataVector localVector(localMatrix.data(), localMatrix.getNcols());
+  return localVector;
 }
 
 int* DataVectorDistributed::getDescriptor() { return data.getDescriptor(); }
@@ -92,7 +104,7 @@ size_t DataVectorDistributed::getLocalRows() const { return data.getLocalColumns
 
 void DataVectorDistributed::printVector() const {
   DataVector localVector = toLocalDataVector();
-  if (grid->getCurrentProcess()) {
+  if (grid->getCurrentRow() == 0 && grid->getCurrentColumn() == 0) {
     std::cout << localVector.toString() << std::endl;
   }
 }
