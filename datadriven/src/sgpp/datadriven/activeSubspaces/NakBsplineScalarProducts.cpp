@@ -10,24 +10,31 @@
 namespace sgpp {
 namespace datadriven {
 
-std::unique_ptr<sgpp::base::SBasis> NakBsplineScalarProducts::initializeBasis(
+std::shared_ptr<sgpp::base::SBasis> NakBsplineScalarProducts::initializeBasis(
     sgpp::base::GridType gridType, size_t degree) {
   if (gridType == sgpp::base::GridType::NakBspline) {
-    return std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+    return std::make_shared<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    return std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+    return std::make_shared<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-    return std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+    return std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
-    return std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+    return std::make_shared<sgpp::base::SNakBsplineExtendedBase>(degree);
   } else {
-    throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
+    throw sgpp::base::generation_exception("NakBsplineScalarProducts: gridType not supported.");
   }
 }
 
 double NakBsplineScalarProducts::basisScalarProduct(unsigned int level1, unsigned int index1,
                                                     bool dx1, unsigned int level2,
                                                     unsigned int index2, bool dx2) {
+  auto pdf = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
+  return weightedBasisScalarProduct(level1, index1, dx1, level2, index2, dx2, pdf);
+}
+
+double NakBsplineScalarProducts::weightedBasisScalarProduct(
+    unsigned int level1, unsigned int index1, bool dx1, unsigned int level2, unsigned int index2,
+    bool dx2, std::shared_ptr<sgpp::base::Distribution> pdf) {
   std::map<asMatrixHashType, double>::iterator it;
   asMatrixHashType hashKey = std::make_tuple(level1, index1, dx1, level2, index2, dx2);
   // Check if this scalar products has already been caluclated and is stored
@@ -76,7 +83,8 @@ double NakBsplineScalarProducts::basisScalarProduct(unsigned int level1, unsigne
 
       double segmentIntegral = 0;
       for (size_t j = 0; j < segmentCoordinates.getSize(); j++) {
-        segmentIntegral += weights[j] * func(segmentCoordinates[j]);
+        segmentIntegral +=
+            weights[j] * func(segmentCoordinates[j]) * pdf->eval(segmentCoordinates[j]);
       }
       segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
       result += segmentIntegral;
@@ -90,18 +98,30 @@ double NakBsplineScalarProducts::calculateScalarProduct(std::shared_ptr<sgpp::ba
                                                         sgpp::base::DataVector coeff1,
                                                         std::shared_ptr<sgpp::base::Grid> grid2,
                                                         sgpp::base::DataVector coeff2) {
+  auto pdf = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
+  return calculateWeightedScalarProduct(grid1, coeff1, grid2, coeff2, pdf);
+}
+
+double NakBsplineScalarProducts::calculateWeightedScalarProduct(
+    std::shared_ptr<sgpp::base::Grid> grid1, sgpp::base::DataVector coeff1,
+    std::shared_ptr<sgpp::base::Grid> grid2, sgpp::base::DataVector coeff2,
+    std::shared_ptr<sgpp::base::Distribution> pdf) {
   sgpp::base::GridStorage& gridStorage1 = grid1->getStorage();
   sgpp::base::GridStorage& gridStorage2 = grid2->getStorage();
-  double sp = 0.0;
+  double weightedSP = 0.0;
+  size_t dim = grid1->getDimension();
   for (size_t k = 0; k < coeff1.getSize(); k++) {
     for (size_t l = 0; l < coeff2.getSize(); l++) {
-      sp += coeff1[k] * coeff2[l] *
-            basisScalarProduct(gridStorage1.getPointLevel(k, 0), gridStorage1.getPointIndex(k, 0),
-                               false, gridStorage2.getPointLevel(l, 0),
-                               gridStorage2.getPointIndex(l, 0), false);
+      double sp = 1;
+      for (size_t d = 0; d < dim; d++) {
+        sp *= weightedBasisScalarProduct(
+            gridStorage1.getPointLevel(k, d), gridStorage1.getPointIndex(k, d), false,
+            gridStorage2.getPointLevel(l, d), gridStorage2.getPointIndex(l, d), false, pdf);
+      }
+      weightedSP += coeff1[k] * coeff2[l] * sp;
     }
   }
-  return sp;
+  return weightedSP;
 }
 
 sgpp::base::DataVector NakBsplineScalarProducts::nakBSplineSupport(size_t level, size_t index,

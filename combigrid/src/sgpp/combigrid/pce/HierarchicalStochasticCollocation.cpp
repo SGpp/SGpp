@@ -317,7 +317,7 @@ double HierarchicalStochasticCollocation::computeMean() {
     mean = wopQ.doQuadrature(coefficients);
   } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
     size_t degree = dynamic_cast<base::NakBsplineModifiedGrid*>(grid.get())->getDegree();
-    OperationWeightedQuadratureNakBsplineModified wopQ(gridStorage, degree, weightFunctions,
+    OperationWeightedQuadratureNakBsplineModifiedCombigrid wopQ(gridStorage, degree, weightFunctions,
                                                        bounds);
     mean = wopQ.doQuadrature(coefficients);
   } else {

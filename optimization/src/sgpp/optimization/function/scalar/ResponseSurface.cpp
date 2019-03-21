@@ -5,10 +5,10 @@
 
 // #ifdef USE_EIGEN
 
-#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
+#include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 
 namespace sgpp {
-namespace datadriven {
+namespace optimization {
 
 double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
                                 size_t numMCPoints) {
@@ -25,7 +25,7 @@ double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFuncti
   return l2Err;
 }
 
-}  // namespace datadriven
+}  // namespace optimization
 }  // namespace sgpp
 
 // #endif /* USE_EIGEN */

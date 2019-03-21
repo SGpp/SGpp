@@ -137,15 +137,7 @@
 #include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/tools/ScopedLock.hpp>
 
-// active subspaces
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrix.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixGradientMC.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
-#include "../../datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceBspline.hpp"
+#include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
+#include "sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */

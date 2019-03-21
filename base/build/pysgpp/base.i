@@ -9,7 +9,7 @@
 // These 3 shared_ptr calls break the SWIG directors !!!
 //%shared_ptr(sgpp::base::DataVector)
 //%shared_ptr(sgpp::base::DataMatrix)
-//%shared_ptr(sgpp::base::Grid)
+%shared_ptr(sgpp::base::Grid)
 
 %shared_ptr(sgpp::base::OperationMatrix)
 %shared_ptr(sgpp::base::OperationIdentity)
@@ -23,6 +23,9 @@
 %shared_ptr(sgpp::base::OperationQuadratureMC)
 %shared_ptr(sgpp::base::OperationEvalPeriodic)
 %shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::base::Distribution)
+%shared_ptr(sgpp::base::DistributionUniform)
+%shared_ptr(sgpp::base::DistributionNormal)
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemDirichlet)
 %shared_ptr(sgpp::parallel::HeatEquationParabolicPDESolverSystem)
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemFreeBoundaries)
@@ -172,6 +175,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp"
 
@@ -186,6 +190,10 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
 
+//UQ
+%include "base/src/sgpp/base/tools/Distribution.hpp"
+%include "base/src/sgpp/base/tools/DistributionUniform.hpp"
+%include "base/src/sgpp/base/tools/DistributionNormal.hpp"
 
 // and the rest
 %apply std::string *INPUT { std::string& istr };
@@ -216,6 +224,7 @@ namespace std {
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryCombigridBase) sgpp::base::NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>;
+%template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SNakBsplineExtendedBase) sgpp::base::NakBsplineExtendedBasis<unsigned int, unsigned int>;
 

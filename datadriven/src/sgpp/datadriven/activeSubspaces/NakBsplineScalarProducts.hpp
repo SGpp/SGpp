@@ -12,6 +12,8 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
 
 #include <map>
@@ -23,6 +25,9 @@ namespace datadriven {
 
 /**
  * Calculates and stores the scalar products of not a knot B-spline functions
+ * Attention: Currently all scalar product calculations are saved to the same innerProducts entity.
+ * When using different probability density functions, they get mixed up!
+ * Initialize a NakBsplineScalarProducts for each pdf.
  */
 class NakBsplineScalarProducts {
  public:
@@ -54,7 +59,7 @@ class NakBsplineScalarProducts {
    * @param degree		degree of the basis
    * @return 			the nak Bsplien basis
    */
-  std::unique_ptr<sgpp::base::SBasis> initializeBasis(sgpp::base::GridType gridType, size_t degree);
+  std::shared_ptr<sgpp::base::SBasis> initializeBasis(sgpp::base::GridType gridType, size_t degree);
 
   /**
    * calculates the one dimensional integral \int f*g dx where f and g are B-spline basis
@@ -74,6 +79,26 @@ class NakBsplineScalarProducts {
                             unsigned int index2, bool dx2);
 
   /**
+   * calculates the one dimensional integral \int f*g \rho dx where f and g are B-spline basis
+   * functions or first derivatives of B-spline basis functions and \rho is a probability
+   * DensityFunction
+   *
+   * @param level1 	level of the first B-spline
+   * @param index1 	index of the first B-spline
+   * @param dx1 	evaluate B-spline if False, evaluate d/dx B-spline if True
+   * @param level2 	level of the second B-spline
+   * @param index2 	index of the second B-spline
+   * @param dx2 	evaluate B-spline if False, evaluate d/dx B-spline if True
+   * @param pdf		probability density function
+   *
+   * @return  integral (derivative of) first basis function * (derivative of) second basis
+   * function * probability density function
+   */
+  double weightedBasisScalarProduct(unsigned int level1, unsigned int index1, bool dx1,
+                                    unsigned int level2, unsigned int index2, bool dx2,
+                                    std::shared_ptr<sgpp::base::Distribution> pdf);
+
+  /**
    * calculates the scalar product of two sparse grid nak B-spline interpolants given through their
    * grids and coefficients
    *
@@ -90,6 +115,25 @@ class NakBsplineScalarProducts {
                                 std::shared_ptr<sgpp::base::Grid> grid2,
                                 sgpp::base::DataVector coeff2);
 
+  /**
+   * calculates the scalar product of two sparse grid nak B-spline interpolants given through their
+   * grids and coefficients w.r.t a probability density function \rho
+   *
+   * @param grid1	grid of the first interpolant
+   * @param coeff1	coefficients of the first intepolant
+   * @param grid2 	grid of the second interpolant
+   * @param coeff2	coefficients of the second interpolant
+   * @param pdf		probability density function
+   *
+   * @return the scalar product \int \sum coeff1_i b_i(x) \sum coeff2_jb_j(x) \rho dx
+   *
+   */
+  double calculateWeightedScalarProduct(std::shared_ptr<sgpp::base::Grid> grid1,
+                                        sgpp::base::DataVector coeff1,
+                                        std::shared_ptr<sgpp::base::Grid> grid2,
+                                        sgpp::base::DataVector coeff2,
+                                        std::shared_ptr<sgpp::base::Distribution> pdf);
+
  private:
   // type of first and second basis
   sgpp::base::GridType gridType1;
@@ -104,8 +148,8 @@ class NakBsplineScalarProducts {
   // quadrature weights
   sgpp::base::DataVector weights;
   // instances of first and second basis
-  std::unique_ptr<sgpp::base::SBasis> basis1;
-  std::unique_ptr<sgpp::base::SBasis> basis2;
+  std::shared_ptr<sgpp::base::SBasis> basis1;
+  std::shared_ptr<sgpp::base::SBasis> basis2;
   // tuple used as hash to store scalar products in innerProducts
   typedef std::tuple<size_t, size_t, bool, size_t, size_t, bool> asMatrixHashType;
   // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to

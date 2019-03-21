@@ -8,7 +8,6 @@
 
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunctionGradient.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
@@ -17,7 +16,7 @@
 #include <iostream>
 
 namespace sgpp {
-namespace datadriven {
+namespace optimization {
 
 /**
  * General response surface. Represents an approximation of some function. Usually the approximation
@@ -70,7 +69,7 @@ class ResponseSurface {
   std::shared_ptr<sgpp::optimization::ScalarFunctionGradient> interpolantGradient;
 };
 
-}  // namespace datadriven
+}  // namespace optimization
 }  // namespace sgpp
 
 // #endif /* USE_EIGEN */

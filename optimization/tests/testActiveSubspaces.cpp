@@ -8,11 +8,11 @@
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
-#include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
-#include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
-#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
-#include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
-#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
+//#include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
+//#include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
+//#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
+//#include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
+//#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>

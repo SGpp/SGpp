@@ -12,17 +12,17 @@
 #include <random>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  */
-class ProbabilityDensityFunction {
+class Distribution {
  public:
   /**
    * Constructor
    */
-  ProbabilityDensityFunction() {
+  Distribution() {
     // set seed
     gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
   }
@@ -30,12 +30,17 @@ class ProbabilityDensityFunction {
   /**
    * Destructor
    */
-  virtual ~ProbabilityDensityFunction() {}
+  virtual ~Distribution() {}
 
   /**
    *
    */
   virtual double sample() = 0;
+
+  /**
+   *
+   */
+  virtual double eval(double x) = 0;
 
   sgpp::base::DataVector samples(size_t num);
 
@@ -43,5 +48,5 @@ class ProbabilityDensityFunction {
   std::default_random_engine gen;
 };
 
-}  // namespace datadriven
+}  // namespace base
 }  // namespace sgpp

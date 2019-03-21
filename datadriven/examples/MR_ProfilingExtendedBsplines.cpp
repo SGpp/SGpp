@@ -17,7 +17,8 @@
 
 #include <functional>
 #include <iostream>
-#include "../src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceBspline.hpp"
+
+#include "../../optimization/src/sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
 
 double f(sgpp::base::DataVector v) { return exp(-v.sum()); }
 
@@ -32,7 +33,7 @@ int main() {
   size_t initialLevel = 2;
   size_t numRefine = 250;
 
-  auto reSurf = sgpp::datadriven::SparseGridResponseSurfaceBspline(objFunc, gridType, degree);
+  auto reSurf = sgpp::optimization::SparseGridResponseSurfaceBspline(objFunc, gridType, degree);
   reSurf.surplusAdaptive(numPoints, initialLevel, numRefine);
   std::cout << reSurf.l2Error(objFunc, 10000) << "\n";
 }

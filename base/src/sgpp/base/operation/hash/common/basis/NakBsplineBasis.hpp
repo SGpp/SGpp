@@ -6,8 +6,9 @@
 #pragma once
 
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
@@ -1880,19 +1881,26 @@ class NakBsplineBasis : public Basis<LT, IT> {
     }
   }
 
+  inline double getIntegral(LT l, IT i) {
+    size_t quadOrder = getDegree() + 1;
+    auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
+    return getMean(l, i, pdf_uniform, quadOrder);
+  }
+
   /**
    * @param l     level of basis function
    * @param i     index of basis function
    * @return      integral of basis function
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
+                        size_t quadOrder) {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
           "NakBsplineModified: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
-    size_t quadOrder = degree + 1;
+
     base::DataVector quadCoordinates, quadWeights;
     base::GaussLegendreQuadRule1D gauss;
 
@@ -1929,7 +1937,7 @@ class NakBsplineBasis : public Basis<LT, IT> {
     }
 
     double temp_res =
-        integrateBspline(l, i, start, stop, offset, hik, quadCoordinates, quadWeights);
+        bSplineMean(l, i, start, stop, offset, hik, quadCoordinates, quadWeights, pdf);
     double integral = temp_res * hik;
 
     return integral;
@@ -1959,8 +1967,9 @@ class NakBsplineBasis : public Basis<LT, IT> {
    *
    * @return integral
    */
-  double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double hik,
-                          base::DataVector quadCoordinates, base::DataVector quadWeights) {
+  double bSplineMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
+                     base::DataVector quadCoordinates, base::DataVector quadWeights,
+                     std::shared_ptr<sgpp::base::Distribution> pdf) {
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
@@ -1969,7 +1978,7 @@ class NakBsplineBasis : public Basis<LT, IT> {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated
         const double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
-        temp_res += quadWeights[c] * this->eval(l, i, x);
+        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(x);
       }
     }
     return temp_res;

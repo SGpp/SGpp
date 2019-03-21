@@ -10,10 +10,13 @@
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
-#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
+//#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
+#include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
@@ -24,7 +27,7 @@
 #include <iostream>
 
 namespace sgpp {
-namespace datadriven {
+namespace optimization {
 
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
@@ -83,8 +86,8 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param functionValues		data values
    * @param lambda				Tikhonov regularization parameter
    */
-  void regularData(size_t level, sgpp::base::DataMatrix evaluationPoints,
-                   sgpp::base::DataVector functionValues, double lambda = 1e-6);
+  // void regularData(size_t level, sgpp::base::DataMatrix evaluationPoints,
+  //                 sgpp::base::DataVector functionValues, double lambda = 1e-6);
 
   /**
    * evaluates this response surface
@@ -128,6 +131,21 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * return the integral of the response surface
    */
   double getIntegral();
+
+  /**
+   * return the mean of the response surface w.r.t. a probability density function
+   *
+   * @param 	pdf			the probability density function
+   * @param     quadOrder	order of the Gauss Legendre quadrature
+   */
+  double getMean(std::shared_ptr<sgpp::base::Distribution> pdf, size_t quadOrder);
+  /**
+   * return the variance of the response surface w.r.t. a probability density function
+   *
+   * @param 	pdf			the probability density function
+   * @param     quadOrder	order of the Gauss Legendre quadrature
+   */
+  double getVariance(std::shared_ptr<sgpp::base::Distribution> pdf, size_t quadOrder);
 
   /**
    * @return the interpolation grid
@@ -186,5 +204,5 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
                       sgpp::base::DataVector newuBounds);
 };
 
-}  // namespace datadriven
+}  // namespace optimization
 }  // namespace sgpp

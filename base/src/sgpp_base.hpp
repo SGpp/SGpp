@@ -130,6 +130,9 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionNormal.hpp>
+#include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/base/tools/EvalCuboidGenerator.hpp>
 #include <sgpp/base/tools/EvalCuboidGeneratorForStretching.hpp>
 #include <sgpp/base/tools/GaussHermiteQuadRule1D.hpp>

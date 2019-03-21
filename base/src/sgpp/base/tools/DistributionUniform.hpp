@@ -5,39 +5,40 @@
 
 #pragma once
 
-#include <sgpp/datadriven/tools/probabilityDensityFunctions/ProbabilityDensityFunction.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
 
 #include <iostream>
 #include <random>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 /**
  */
-class Normal : public ProbabilityDensityFunction {
+class DistributionUniform : public Distribution {
  public:
   /**
    * Constructor
    */
-  Normal(double mean, double stddev)
-      : ProbabilityDensityFunction(), mean(mean), stddev(stddev), dist(mean, stddev) {}
+  explicit DistributionUniform(double l = 0, double h = 1)
+      : Distribution(), l(l), h(h), dist(l, h) {}
 
   /**
    * Destructor
    */
-  virtual ~Normal() {}
+  virtual ~DistributionUniform() {}
 
   /**
    *
    */
   double sample() { return dist(gen); }
 
- private:
-  double mean;
-  double stddev;
-  std::normal_distribution<double> dist;
-};
+  double eval(double x) { return 1.0 / (h - l); }
 
-}  // namespace datadriven
+ private:
+  double l;
+  double h;
+  std::uniform_real_distribution<double> dist;
+};
+}  // namespace base
 }  // namespace sgpp

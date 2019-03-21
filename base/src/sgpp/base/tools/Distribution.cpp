@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/tools/probabilityDensityFunctions/ProbabilityDensityFunction.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
 
 #include <iostream>
 #include <random>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 // sgpp::base::DataVector sgpp::datadriven::ProbabilityDensityFunction samples(size_t num) {
 //  sgpp::base::DataVector V(num);
 //}
-sgpp::base::DataVector ProbabilityDensityFunction::samples(size_t num) {
+sgpp::base::DataVector Distribution::samples(size_t num) {
   sgpp::base::DataVector S(num);
   for (size_t i = 0; i < num; i++) {
     S[i] = this->sample();
@@ -22,5 +22,5 @@ sgpp::base::DataVector ProbabilityDensityFunction::samples(size_t num) {
   return S;
 }
 
-}  // namespace datadriven
+}  // namespace base
 }  // namespace sgpp

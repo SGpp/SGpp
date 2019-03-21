@@ -85,10 +85,14 @@
 #include <sgpp/base/operation/hash/OperationQuadratureModPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureNakBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureNakBsplineBoundaryCombigrid.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakBsplineExtended.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyClenshawCurtisBoundary.hpp>
+
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineExtended.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineModified.hpp>
 
 #include <sgpp/base/operation/hash/OperationSecondMomentBspline.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentBsplineBoundary.hpp>
@@ -104,6 +108,8 @@
 #include <sgpp/base/operation/hash/OperationSecondMomentPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationSecondMomentPolyClenshawCurtisBoundary.hpp>
+
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
@@ -219,6 +225,7 @@
 
 #include <cstring>
 #include <vector>
+#include "hash/OperationWeightedSecondMomentNak.hpp"
 
 namespace sgpp {
 
@@ -357,9 +364,25 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
     return new base::OperationQuadratureNakBsplineBoundaryCombigrid(
         grid.getStorage(),
         dynamic_cast<base::NakBsplineBoundaryCombigridGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationQuadratureNakBsplineExtended(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
+  }
+}
+
+base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid) {
+  if (grid.getType() == base::GridType::NakBsplineModified) {
+    return new base::OperationWeightedQuadratureNakBsplineModified(
+        grid.getStorage(), dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationWeightedQuadratureNakBsplineExtended(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
+  } else {
+    throw base::factory_exception(
+        "createOperationWeightedQuadrature is not implemented for this grid type.");
   }
 }
 
@@ -434,6 +457,28 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
+  }
+}
+
+base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid) {
+  if (grid.getType() == base::GridType::NakBspline) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineModified) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
+  } else {
+    throw base::factory_exception(
+        "createOperationWeightedSecondMoment is not implemented for this grid type.");
   }
 }
 

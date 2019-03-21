@@ -42,7 +42,7 @@
 #include <cmath>
 #include <vector>
 #include "../../../../../base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
-#include "../operation/hierarchical/OperationWeightedQuadratureNakBsplineModified.hpp"
+#include "../operation/hierarchical/OperationWeightedQuadratureNakBsplineModifiedCombigrid.hpp"
 #include "../operation/multidim/sparsegrid/LTwoScalarProductNakBsplineModified.hpp"
 
 namespace sgpp {

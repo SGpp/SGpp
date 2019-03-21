@@ -6,8 +6,9 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
+
 #include <iostream>
-#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -15,14 +16,14 @@ namespace datadriven {
 /**
  * Reduced response surface on the active subspace of some objective function
  */
-class ASResponseSurface : public ResponseSurface {
+class ASResponseSurface : public sgpp::optimization::ResponseSurface {
  public:
   /**
    * Constructor
    *
    * @param W1	the eigenvectors defining the active subspace
    */
-  explicit ASResponseSurface(Eigen::MatrixXd W1) : ResponseSurface(), W1(W1) {}
+  explicit ASResponseSurface(Eigen::MatrixXd W1) : sgpp::optimization::ResponseSurface(), W1(W1) {}
 
   /**
    * Destructor

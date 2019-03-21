@@ -20,7 +20,7 @@ namespace combigrid {
  * knot B-spline combigrid In UQ the weights are probability density functions.
  * It is designed analogously to the operations in BaseOpFactory
  */
-class OperationWeightedQuadratureNakBsplineModified : public sgpp::base::OperationQuadrature {
+class OperationWeightedQuadratureNakBsplineModifiedCombigrid : public sgpp::base::OperationQuadrature {
  public:
   /**
    * Constructor of OperationWeightedQuadratureNakBsplineModified
@@ -28,7 +28,7 @@ class OperationWeightedQuadratureNakBsplineModified : public sgpp::base::Operati
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
    */
-  OperationWeightedQuadratureNakBsplineModified(sgpp::base::GridStorage& storage, size_t degree,
+  OperationWeightedQuadratureNakBsplineModifiedCombigrid(sgpp::base::GridStorage& storage, size_t degree,
                                                 WeightFunctionsCollection weightFunctionsCollection,
                                                 sgpp::base::DataVector bounds)
       : storage(storage),
@@ -36,7 +36,7 @@ class OperationWeightedQuadratureNakBsplineModified : public sgpp::base::Operati
         weightFunctionsCollection(weightFunctionsCollection),
         bounds(bounds) {}
 
-  ~OperationWeightedQuadratureNakBsplineModified() override {}
+  ~OperationWeightedQuadratureNakBsplineModifiedCombigrid() override {}
 
   /**
    * Quadrature for weighted not a knot B-spline basis functions

@@ -20,12 +20,12 @@
 #include <sgpp/datadriven/activeSubspaces/MSplineBasis.hpp>
 #include <sgpp/datadriven/activeSubspaces/MSplineNakBsplineScalarProducts.hpp>
 #include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-#include <sgpp/datadriven/activeSubspaces/ResponseSurface.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/HaltonSequence.hpp>
 #include <sgpp/datadriven/tools/SobolSequence.hpp>
 #include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>

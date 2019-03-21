@@ -59,11 +59,9 @@
 %include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp"
 %include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp"
 %include "datadriven/src/sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp"
-%include "datadriven/src/sgpp/datadriven/activeSubspaces/ResponseSurface.hpp"
 %include "datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp"
 %include "datadriven/src/sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp"
-%include "datadriven/src/sgpp/datadriven/activeSubspaces/SparseGridResponseSurfaceBspline.hpp"
-
+%include "datadriven/src/sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
@@ -267,3 +265,5 @@ public:
 }
 
 //- end namespace datadriven ------------------------------------------
+
+

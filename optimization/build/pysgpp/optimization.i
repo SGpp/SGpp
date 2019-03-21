@@ -400,6 +400,8 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/ResponseSurface.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
 
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunction.hpp"
 %include "optimization/src/sgpp/optimization/function/vector/VectorFunctionGradient.hpp"
