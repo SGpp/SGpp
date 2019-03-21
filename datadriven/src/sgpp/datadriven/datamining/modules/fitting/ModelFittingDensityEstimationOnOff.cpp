@@ -83,8 +83,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
-  std::cout << grid->getSize() << std::endl;
-
   // Build the offline instance first
   DBMatOffline *offline = nullptr;
 
@@ -107,6 +105,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
         regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    offline->interactions = getInteractions(geometryConfig);
   }
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
      *grid, regularizationConfig.lambda_)};

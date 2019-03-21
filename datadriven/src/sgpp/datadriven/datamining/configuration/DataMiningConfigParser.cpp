@@ -82,8 +82,8 @@ bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   return hasFitterCrossValidationConfig;
 }
 
-bool DataMiningConfigParser::hasGeometryConfig() const{
-	return configFile->contains("geometryConfig");
+bool DataMiningConfigParser::hasGeometryConfig() const {
+  return configFile->contains("geometryConfig");
 }
 
 
