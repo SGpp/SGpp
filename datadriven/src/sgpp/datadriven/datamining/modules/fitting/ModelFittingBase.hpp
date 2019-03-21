@@ -16,7 +16,7 @@
 
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
-
+#include <vector>
 #include <memory>
 
 namespace sgpp {
@@ -171,6 +171,14 @@ class ModelFittingBase {
    * @param config configuration updating the for the solver.
    */
   void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
+
+  /*
+   * This method is used to pass the interactions for a geometry aware sparse grid to the offline object
+   * @param geometryConfig from configuration file
+   * @return interactions
+   */
+  std::vector<std::vector<size_t>> getInteractions(
+    const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Configuration object for the fitter.

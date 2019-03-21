@@ -56,9 +56,8 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
   return tmpGrid;
 }
 
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(std::string& stencil,
-    std::vector<int64_t>& dim)
-    const {
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
+    std::string& stencil, std::vector<int64_t>& dim) const {
   std::vector<std::vector<size_t>> interactions;
 
   std::vector<int64_t> res = dim;
@@ -73,8 +72,8 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   return interactions;
 }
 
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(std::vector<int64_t>& res)
-    const {
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(
+    std::vector<int64_t>& res) const {
   std::vector<int64_t> geodim1 = res;
   size_t geodimX = res.at(0);
   size_t geodimY = res.at(1);

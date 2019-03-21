@@ -57,6 +57,7 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
   std::string tmpString = geometryConfig.stencil;
   std::vector<int64_t> dim = geometryConfig.dim;
 
+  // a regular sparse grid is created, if no geometryConfig is defined,
   if (!tmpString.compare("none")) {
     // interaction with size 0
     std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
@@ -65,6 +66,24 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
 
   return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(tmpString, dim));
 }
+
+std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
+    const GeometryConfiguration &geometryConfig) const {
+  GridFactory gridFactory;
+
+  std::string tmpString = geometryConfig.stencil;
+  std::vector<int64_t> dim = geometryConfig.dim;
+
+  // no interactions get returned, if no geometryConfig is defined
+  if (!tmpString.compare("none")) {
+    // interaction with size 0
+    std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
+    return interactions;
+  }
+
+  return gridFactory.getInteractions(tmpString, dim);
+}
+
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {
   if (sleConfig.type_ == SLESolverType::CG) {

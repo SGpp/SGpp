@@ -296,7 +296,7 @@ void ModelFittingClassification::storeClassificator() {
 
   // store instances
   std::string instances;
-  for(size_t i = 0; i < classNumberInstances.size(); i++) {
+  for (size_t i = 0; i < classNumberInstances.size(); i++) {
     instances = instances + std::to_string(classNumberInstances[i]) +"\n";
   }
   std::ofstream instancesFile;
@@ -309,7 +309,7 @@ void ModelFittingClassification::storeClassificator() {
   // store grids and alphas
   std::string classificatorFile;
   std::string classificator;
-  for(size_t i = 0; i < models.size(); i++) {
+  for (size_t i = 0; i < models.size(); i++) {
     classificator = "";
     classificatorFile = "";
     // add the path of you Grid_AlphaX.txt file here, in which the grids and alphas should be stored
