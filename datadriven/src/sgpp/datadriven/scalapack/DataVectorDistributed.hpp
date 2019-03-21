@@ -133,6 +133,11 @@ class DataVectorDistributed {
   DataVector toLocalDataVector() const;
 
   /**
+   * @returns the broadcasted DataVector on all processes
+   */
+  DataVector toLocalDataVectorBroadcast() const;
+
+  /**
    * @return pointer to the descriptor array for the underlying data matrix
    */
   int* getDescriptor();

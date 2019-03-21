@@ -52,6 +52,9 @@
         "logscale": true
       }
     },
+    "densityEstimationConfig": {
+      "matrixDecompositionType": "orthoadapt"
+    },
     "parallelConfig": {
       "rowBlockSize": 128,
       "columnBlockSize": 128

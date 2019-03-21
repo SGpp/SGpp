@@ -84,6 +84,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
   //   std::cout << alpha.get(i) << "   ";
   // }
   // std::cout << std::endl;
+
   gsl_vector_free(interim2);
 #else
   throw sgpp::base::algorithm_exception("USE_GSL not set");
@@ -109,19 +110,6 @@ void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixD
           "In DBMatDMSOrthoAdapt::solve: Matrix B and vector alpha don't match for mult.");
     }
   }
-
-  // creating gsl_matrix_views to be able to use BLAS operations
-
-  // gsl_matrix_view q_view = gsl_matrix_view_array(Q.getPointer(), Q.getNrows(), Q.getNcols());
-  // gsl_matrix_view t_inv_view =
-  // gsl_matrix_view_array(T_inv.getPointer(), T_inv.getNrows(), T_inv.getNcols());
-  // gsl_matrix_view b_matrix_view = gsl_matrix_view_array(B.getPointer(), B.getNrows(),
-  // B.getNcols());
-
-  // gsl_vector_view b_vector_view_cut = gsl_vector_view_array(b.getPointer(), Q.getNrows());
-  // gsl_vector_view b_vector_view = gsl_vector_view_array(b.getPointer(), b.getSize());
-  // gsl_vector_view alpha_view_cut = gsl_vector_view_array(alpha.getPointer(), Q.getNrows());
-  // gsl_vector_view alpha_view = gsl_vector_view_array(alpha.getPointer(), alpha.getSize());
 
   DataVectorDistributed tmp(processGrid, Q.getGlobalRows(), parallelConfig.rowBlockSize_);
 
@@ -153,11 +141,7 @@ void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixD
   }
 
   // DEBUG: print alpha after solving
-  std::cout << "alpha after ortho_adapt_solve: \n";
-  for (size_t i = 0; i < alpha.getGlobalRows(); i++) {
-    std::cout << alpha.get(i) << "   ";
-  }
-  std::cout << std::endl;
+  // alpha.printVector();
 #else
   throw sgpp::base::algorithm_exception("USE_SCALAPACK not set");
 #endif /* USE_SCALAPACK */

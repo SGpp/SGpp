@@ -30,15 +30,9 @@ int BlacsProcessGrid::mypnum = 0;
 int BlacsProcessGrid::numberOfProcesses = 0;
 bool BlacsProcessGrid::blacsInitialized = false;
 
-BlacsProcessGrid::BlacsProcessGrid() {
-  if (!blacsInitialized) {
-    throw sgpp::base::application_exception("BLACS not initialized!");
-  }
-  int rows = static_cast<int>(std::sqrt(numberOfProcesses));
-  int columns = static_cast<int>(std::sqrt(numberOfProcesses));
-  std::cout << "r " << rows << " c " << columns << std::endl;
-  BlacsProcessGrid(rows, columns);
-}
+BlacsProcessGrid::BlacsProcessGrid()
+    : BlacsProcessGrid(static_cast<int>(std::sqrt(numberOfProcesses)),
+                       static_cast<int>(std::sqrt(numberOfProcesses))) {}
 
 BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(columns) {
   if (!blacsInitialized) {

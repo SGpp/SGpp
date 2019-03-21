@@ -192,14 +192,15 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 }
 
 void DBMatOnlineDE::computeDensityFunctionParallel(
-    DataVectorDistributed& alpha, DataMatrixDistributed& m, Grid& grid,
+    DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig,
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool save_b, bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
   std::cout << "Computing density function..." << std::endl;
 
   if (!distributedVectorsInitialized) {
-    // init bsave and bTotalPoints only here, as they are not needed in the local version
+    // init bSaveDistributed and bTotalPointsDistributed only here, as they are not needed in the
+    // local version
     bSaveDistributed = std::make_unique<DataVectorDistributed>(
         processGrid, offlineObject.getDecomposedMatrix().getNcols(), parallelConfig.rowBlockSize_);
     bTotalPointsDistributed = std::make_unique<DataVectorDistributed>(
@@ -208,7 +209,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     distributedVectorsInitialized = true;
   }
 
-  if (m.getGlobalRows() > 0) {
+  if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt, the current size is not lhs size, but B size
@@ -223,7 +224,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     }
 
     // Compute right hand side of the equation:
-    size_t numberOfPoints = m.getGlobalRows();
+    size_t numberOfPoints = m.getNrows();
     totalPoints++;
 
     size_t bSize = use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols();
@@ -237,12 +238,10 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
           "matrix");
     }
 
-    DataMatrix mLocal = m.toLocalDataMatrix();
-
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
         (offlineObject.interactions.size() == 0)
-            ? sgpp::op_factory::createOperationMultipleEval(grid, mLocal)
-            : sgpp::op_factory::createOperationMultipleEvalInter(grid, mLocal,
+            ? sgpp::op_factory::createOperationMultipleEval(grid, m)
+            : sgpp::op_factory::createOperationMultipleEvalInter(grid, m,
                                                                  offlineObject.interactions));
 
     DataVector y(numberOfPoints);
@@ -263,9 +262,10 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getGlobalRows(); i++) {
-        bSave.set(i, b.get(i));
-        bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
-        b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
+        bSaveDistributed->set(i, b.get(i));
+        bTotalPointsDistributed->set(
+            i, static_cast<double>(numberOfPoints) + bTotalPointsDistributed->get(i));
+        b.set(i, bSaveDistributed->get(i) * (1. / bTotalPointsDistributed->get(i)));
       }
     } else {
       // 1/M * (Bt * 1)

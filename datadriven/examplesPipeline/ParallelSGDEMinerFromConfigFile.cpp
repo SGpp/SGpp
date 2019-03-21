@@ -33,35 +33,37 @@ int main(int argc, char **argv) {
    */
   sgpp::datadriven::BlacsProcessGrid::initializeBlacs();
 
-  /**
-   * use immediately invoked lambda expression to get the path to a configuration file.
-   */
-  const std::string path = [argc, &argv]() {
-    if (argc != 2) {
-      std::cout << "No or bad path given, aborting\n";
-      exit(1);
-      return std::string{};
-    } else {
-      return std::string{argv[1]};
-    }
-  }();
+  {
+    /**
+     * use immediately invoked lambda expression to get the path to a configuration file.
+     */
+    const std::string path = [argc, &argv]() {
+      if (argc != 2) {
+        std::cout << "No or bad path given, aborting\n";
+        exit(1);
+        return std::string{};
+      } else {
+        return std::string{argv[1]};
+      }
+    }();
+
+    /**
+     * We need a factory class to actually build the #sgpp::datadriven::SparseGridMiner.
+     */
+    DensityEstimationMinerFactory factory;
+    /**
+     * The miner object is constructed by the factory from a supplied configuration file.
+     */
+    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
+    /**
+     * Once we have a configured miner object, we can start the learning process.
+     */
+    miner->learn(true);
+    std::cout << std::endl;
+  }
 
   /**
-   * We need a factory class to actually build the #sgpp::datadriven::SparseGridMiner.
-   */
-  DensityEstimationMinerFactory factory;
-  /**
-   * The miner object is constructed by the factory from a supplied configuration file.
-   */
-  auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
-  /**
-   * Once we have a configured miner object, we can start the learning process.
-   */
-  miner->learn(true);
-  std::cout << std::endl;
-
-  /**
-   * exit BLACS, MPI
+   * exit BLACS, MPI (in outer scope to ensure all blacs grids were destructed before)
    */
   sgpp::datadriven::BlacsProcessGrid::exitBlacs();
 }

@@ -65,12 +65,6 @@ void descinit_(int *desc, int m, int n, int mb, int nb, int irsrc, int icsrc, in
 
 int numroc_(const int &n, const int &nb, const int &iproc, const int &isrcproc, const int &nprocs);
 
-int indxl2g();
-
-int indxg2l();
-
-int indxg2p();
-
 // redistribute matrix
 void pdgemr2d_(const int &m, const int &n, const double *a, const int &ia, const int &ja,
                const int *desca, double *b, const int &ib, const int &jb, const int *descb,

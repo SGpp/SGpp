@@ -256,6 +256,11 @@ class DataMatrixDistributed {
   DataMatrix toLocalDataMatrix() const;
 
   /**
+   * @returns the whole DataMatrix on broadcasted to all processes in the grid
+   */
+  DataMatrix toLocalDataMatrixBroadcast() const;
+
+  /**
    * @returns The ScaLAPACK matrix descriptor
    */
   int* getDescriptor();
@@ -346,6 +351,11 @@ class DataMatrixDistributed {
    * @param masterCol col coordinate of the master process, default 0
    */
   DataMatrix gather(int masterRow = 0, int masterCol = 0) const;
+
+  /**
+   * Broadcasts the whole matrix to all processes in the grid.
+   */
+  DataMatrix broadcast() const;
 
   // vector to store the local data
   std::vector<double> localData;
