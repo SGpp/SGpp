@@ -55,7 +55,7 @@ int main() {
       /**
        * Get the training, test and validation data
        */
-      std::string filename = "../../datasets/ripley/ripleyGarcke.train.arff";
+      std::string filename = "../datasets/ripley/ripleyGarcke.train.arff";
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset =
@@ -64,7 +64,7 @@ int main() {
       // extract training classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
 
-      filename = "../../datasets/ripley/ripleyGarcke.test.arff";
+      filename = "../datasets/ripley/ripleyGarcke.test.arff";
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset =
