@@ -13,7 +13,6 @@
 
 namespace sgpp {
 namespace base {
-
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  */

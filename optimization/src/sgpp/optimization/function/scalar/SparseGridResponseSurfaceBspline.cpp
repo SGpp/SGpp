@@ -129,56 +129,21 @@ double SparseGridResponseSurfaceBspline::evalGradientNonUniform(sgpp::base::Data
 double SparseGridResponseSurfaceBspline::getIntegral() {
   sgpp::base::OperationQuadrature* opQuad = sgpp::op_factory::createOperationQuadrature(*grid);
   return opQuad->doQuadrature(coefficients);
-  //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  //  double integral = 0;
-  //  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-  //    double integral1D = 1;
-  //    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-  //      integral1D *=
-  //          basis->getIntegral(gridStorage.getPointLevel(i, d), gridStorage.getPointIndex(i,
-  //          d));
-  //    }
-  //    integral += coefficients[i] * integral1D;
-  //  }
-  //  return integral;
 }
 
-double SparseGridResponseSurfaceBspline::getMean(std::shared_ptr<sgpp::base::Distribution> pdf,
+double SparseGridResponseSurfaceBspline::getMean(sgpp::base::DistributionsVector pdfs,
                                                  size_t quadOrder) {
   sgpp::base::OperationWeightedQuadrature* opWQuad =
       sgpp::op_factory::createOperationWeightedQuadrature(*grid);
-  return opWQuad->doWeightedQuadrature(coefficients, pdf, quadOrder);
-  //  sgpp::base::GridStorage& gridStorage = grid->getStorage();
-  //  // todo (rehmemk)
-  //  std::cout << "SparseGridResponseSurface.cpp: Warning: Hard Coded NakBsplineExtendedBase. "
-  //               "Generalise this!\n";
-  //  auto tempBasis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
-  //
-  //  double mean = 0;
-  //  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-  //    double mean1D = 1;
-  //    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-  //      mean1D *= tempBasis->getMean(gridStorage.getPointLevel(i, d), gridStorage.getPointIndex(i,
-  //      d),
-  //                                   pdf, quadOrder);
-  //    }
-  //    //    std::cout << "coeff[" << i << "] = " << coefficients[i] << " mean1D = " << mean1D <<
-  //    "\n"; mean += coefficients[i] * mean1D;
-  //  }
-  //  return mean;
+  return opWQuad->doWeightedQuadrature(coefficients, pdfs, quadOrder);
 }
 
-double SparseGridResponseSurfaceBspline::getVariance(std::shared_ptr<sgpp::base::Distribution> pdf,
+double SparseGridResponseSurfaceBspline::getVariance(sgpp::base::DistributionsVector pdfs,
                                                      size_t quadOrder) {
-  // the whole scalar product thing is moved to base::OperationSecondMoment. When moved there use it
-  // here!
-  //  sgpp::datadriven::NakBsplineScalarProducts sp(gridType, gridType, degree, degree, quadOrder);
-  //      sp.calculateWeightedScalarProduct(grid, coefficients, grid, coefficients, pdf);
-  //  return meanSquare - mean * mean;
-  double mean = getMean(pdf, quadOrder);
+  double mean = getMean(pdfs, quadOrder);
   sgpp::base::OperationWeightedSecondMoment* opWSM =
       sgpp::op_factory::createOperationWeightedSecondMoment(*grid);
-  double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdf, quadOrder);
+  double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs, quadOrder);
   double variance = meanSquare - mean * mean;
   return variance;
 }

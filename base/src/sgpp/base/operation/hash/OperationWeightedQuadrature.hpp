@@ -6,7 +6,7 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionsVector.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -37,8 +37,7 @@ class OperationWeightedQuadrature {
    * @param pdf			probability density function
    * @parm quadOrder	order for the Gauss Legendre quadrature
    */
-  virtual double doWeightedQuadrature(DataVector& alpha,
-                                      std::shared_ptr<sgpp::base::Distribution> pdf,
+  virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
                                       size_t quadOrder) = 0;
 };
 

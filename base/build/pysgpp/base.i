@@ -192,6 +192,7 @@ namespace std {
 
 //UQ
 %include "base/src/sgpp/base/tools/Distribution.hpp"
+%include "base/src/sgpp/base/tools/DistributionsVector.hpp"
 %include "base/src/sgpp/base/tools/DistributionUniform.hpp"
 %include "base/src/sgpp/base/tools/DistributionNormal.hpp"
 

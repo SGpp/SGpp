@@ -38,7 +38,7 @@ class OperationWeightedQuadratureNakBsplineExtended : public OperationWeightedQu
    * @param pdf			probability density function
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
-  double doWeightedQuadrature(DataVector& alpha, std::shared_ptr<sgpp::base::Distribution> pdf,
+  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
                               size_t quadOrder);
 
  protected:

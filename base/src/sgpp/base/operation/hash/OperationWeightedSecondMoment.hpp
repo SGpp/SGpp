@@ -6,7 +6,7 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionsVector.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -34,11 +34,10 @@ class OperationWeightedSecondMoment {
    * Integrate the sparse grid function
    *
    * @param alpha   	Coefficient vector for current grid
-   * @param pdf			probability density function
+   * @param pdfs			probability density functions
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
-  virtual double doWeightedQuadrature(DataVector& alpha,
-                                      std::shared_ptr<sgpp::base::Distribution> pdf,
+  virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
                                       size_t quadOrder) = 0;
 };
 

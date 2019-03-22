@@ -15,7 +15,6 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
-//#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
@@ -138,14 +137,14 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param 	pdf			the probability density function
    * @param     quadOrder	order of the Gauss Legendre quadrature
    */
-  double getMean(std::shared_ptr<sgpp::base::Distribution> pdf, size_t quadOrder);
+  double getMean(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
   /**
    * return the variance of the response surface w.r.t. a probability density function
    *
    * @param 	pdf			the probability density function
    * @param     quadOrder	order of the Gauss Legendre quadrature
    */
-  double getVariance(std::shared_ptr<sgpp::base::Distribution> pdf, size_t quadOrder);
+  double getVariance(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
 
   /**
    * @return the interpolation grid

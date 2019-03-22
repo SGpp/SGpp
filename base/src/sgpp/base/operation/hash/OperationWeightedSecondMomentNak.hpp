@@ -54,10 +54,10 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
    * Quadrature for not a knot B-spline basis functions w.r.t. a probability density function
    *
    * @param alpha   	Coefficient vector for current grid
-   * @param pdf			probability density function
+   * @param pdfs			probability density functions
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
-  double doWeightedQuadrature(DataVector& alpha, std::shared_ptr<sgpp::base::Distribution> pdf,
+  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
                               size_t quadOrder);
 
  private:
