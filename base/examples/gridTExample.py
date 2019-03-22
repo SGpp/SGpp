@@ -12,14 +12,11 @@
 from pysgpp import *
 import sys
 
-if len(sys.argv) != 4:
-	print("The number of arguments is wrong, but the answer is 42")
-else:
-	dimensions = int(sys.argv[1])
-	level = int(sys.argv[2])
-	T = float(sys.argv[3])
+dimensions = (int(sys.argv[1]) if len(sys.argv) >= 2 else 2)
+level = (int(sys.argv[2]) if len(sys.argv) >= 3 else 3)
+T = (float(sys.argv[3]) if len(sys.argv) >= 4 else 0)
 
-	grid = Grid.createModLinearGrid(dimensions)
-	generator = grid.getGenerator()
-	generator.regular(level, T)
-	print(grid.getSize())
+grid = Grid.createModLinearGrid(dimensions)
+generator = grid.getGenerator()
+generator.regular(level, T)
+print(grid.getSize())
