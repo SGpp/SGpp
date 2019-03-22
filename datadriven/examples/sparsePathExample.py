@@ -119,12 +119,12 @@ def main():
     penalties = {'lasso': sg.RegularizationType_Lasso,
                  'elasticNet': sg.RegularizationType_ElasticNet,
                  'groupLasso': sg.RegularizationType_GroupLasso}
-    if len(sys.argv) <= 1 or sys.argv[1] not in penalties:
+    if (len(sys.argv) >= 2) and (sys.argv[1] not in penalties):
         print("Call this script by ./sparsePathExample.py <regularization method> <l1_ratio>")
         print("Acceptable regularization methods are:")
         print(list(penalties.keys()))
         return
-    reg_method = penalties[sys.argv[1]]
+    reg_method = penalties[sys.argv[1] if len(sys.argv) >= 2 else 'lasso']
     if len(sys.argv) > 2 and sys.argv[1]=='elasticNet':
         l1_ratio = float(sys.argv[2])
     else:
