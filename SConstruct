@@ -160,6 +160,8 @@ vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_CPPLINT",
                       "Check compliance to Google's style guide using cpplint", True))
+vars.Add(BoolVariable("RUN_CPP_EXAMPLES", "Run all C++ examples", False))
+vars.Add(BoolVariable("RUN_PYTHON_EXAMPLES", "Run all Python examples", False))
 
 vars.Add(BoolVariable("USE_ARMADILLO", "Set if Armadillo should be used " +
                                        "(only relevant for sgpp::optimization)", False))
@@ -419,16 +421,14 @@ def lintAction(target, source, env):
 
 env.Export("lintAction")
 
-# Custom builders for Python and Boost tests
+# Custom builders for running Python/Boost tests and examples
 #########################################################################
 
 if env["RUN_PYTHON_TESTS"]:
   if env["SG_PYTHON"]:
-    # do the actual thing
-    python = "python3"
-    builder = Builder(action=python + " $SOURCE", chdir=0)
+    builder = Builder(action="python3 $SOURCE", chdir=0)
     env.Append(BUILDERS={"Test" : builder})
-    builder = Builder(action=python + " $SOURCE")
+    builder = Builder(action="python3 $SOURCE")
     env.Append(BUILDERS={"SimpleTest" : builder})
   else:
     Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
@@ -436,6 +436,18 @@ if env["RUN_PYTHON_TESTS"]:
 if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
+
+if env["RUN_CPP_EXAMPLES"]:
+  builder = Builder(action="./${SOURCE.file}", chdir=1)
+  env.Append(BUILDERS={"CppExample" : builder})
+
+if env["RUN_PYTHON_EXAMPLES"]:
+  if env["SG_PYTHON"]:
+    builder = Builder(action="python3 ${SOURCE.file}", chdir=1)
+    env.Append(BUILDERS={"PythonExample" : builder})
+  else:
+    Helper.printWarning("Running of Python examples disabled "
+                        "because SG_PYTHON is disabled.")
 
 # Building the modules
 #########################################################################
@@ -445,6 +457,8 @@ pythonTestTargetList = []
 boostTestTargetList = []
 boostTestRunTargetList = []
 exampleTargetList = []
+cppTestRunTargetList = []
+pythonTestRunTargetList = []
 pydocTargetList = []
 headerSourceList = []
 headerDestList = []
@@ -453,6 +467,8 @@ env.Export("pythonTestTargetList")
 env.Export("boostTestTargetList")
 env.Export("boostTestRunTargetList")
 env.Export("exampleTargetList")
+env.Export("cppTestRunTargetList")
+env.Export("pythonTestRunTargetList")
 env.Export("pydocTargetList")
 env.Export("headerSourceList")
 env.Export("headerDestList")
@@ -545,6 +561,16 @@ if env["COMPILE_BOOST_TESTS"]:
 env.Depends(exampleTargetList, finalStepDependencies)
 finalStepDependencies.append(exampleTargetList)
 env.SideEffect("sideEffectFinalSteps", exampleTargetList)
+
+if env["RUN_CPP_EXAMPLES"]:
+  env.Depends(cppTestRunTargetList, finalStepDependencies)
+  finalStepDependencies.append(cppTestRunTargetList)
+  env.SideEffect("sideEffectFinalSteps", cppTestRunTargetList)
+
+if env["RUN_PYTHON_EXAMPLES"]:
+  env.Depends(pythonTestRunTargetList, finalStepDependencies)
+  finalStepDependencies.append(pythonTestRunTargetList)
+  env.SideEffect("sideEffectFinalSteps", pythonTestRunTargetList)
 
 # System-wide installation
 #########################################################################
