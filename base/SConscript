@@ -20,6 +20,7 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 if env["ARCH"] != "mic":
   module.buildExamples()
+  module.runExamples()
 
 module.runPythonTests() 
 module.buildBoostTests()
