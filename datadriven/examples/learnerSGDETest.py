@@ -11,6 +11,8 @@ import pysgpp as sg
 def generate_friedman1(seed):
     (X,y) = data.make_friedman1(n_samples=2000, random_state=seed, noise=1.0)
     
+    print(X.shape, y.shape)
+    
     # transform values to DataMatrix/DataVector types
     X = sg.DataMatrix(X)
     y = sg.DataVector(y)
