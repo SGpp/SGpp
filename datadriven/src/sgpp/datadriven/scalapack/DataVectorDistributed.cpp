@@ -40,6 +40,8 @@ double DataVectorDistributed::get(size_t row) const { return data.get(0, row); }
 
 void DataVectorDistributed::set(size_t row, double value) { data.set(0, row, value); }
 
+void DataVectorDistributed::setAll(double value) { data.setAll(value); }
+
 void DataVectorDistributed::add(const DataVectorDistributed& x) {
   DataVectorDistributed::add(*this, x);
 }
@@ -79,6 +81,10 @@ double* DataVectorDistributed::getLocalPointer() { return data.getLocalPointer()
 
 const double* DataVectorDistributed::getLocalPointer() const { return data.getLocalPointer(); }
 
+std::shared_ptr<BlacsProcessGrid> DataVectorDistributed::getProcessGrid() const {
+  return data.getProcessGrid();
+}
+
 DataVector DataVectorDistributed::toLocalDataVector() const {
   DataMatrix localMatrix = data.toLocalDataMatrix();
   if (grid->getCurrentRow() == 0 && grid->getCurrentColumn() == 0) {
@@ -90,8 +96,25 @@ DataVector DataVectorDistributed::toLocalDataVector() const {
 
 DataVector DataVectorDistributed::toLocalDataVectorBroadcast() const {
   DataMatrix localMatrix = data.toLocalDataMatrixBroadcast();
-  DataVector localVector(localMatrix.data(), localMatrix.getNcols());
-  return localVector;
+  if (grid->isProcessInGrid()) {
+    DataVector localVector(localMatrix.data(), localMatrix.getNcols());
+    return localVector;
+  }
+  return DataVector();
+}
+
+void DataVectorDistributed::toLocalDataVector(DataVector& localVector) const {
+  DataMatrix localMatrix = data.toLocalDataMatrix();
+  if (grid->getCurrentRow() == 0 && grid->getCurrentColumn() == 0) {
+    localVector.assign(localMatrix.begin(), localMatrix.end());
+  }
+}
+
+void DataVectorDistributed::toLocalDataVectorBroadcast(DataVector& localVector) const {
+  DataMatrix localMatrix = data.toLocalDataMatrixBroadcast();
+  if (grid->isProcessInGrid()) {
+    localVector.assign(localMatrix.begin(), localMatrix.end());
+  }
 }
 
 int* DataVectorDistributed::getDescriptor() { return data.getDescriptor(); }
@@ -101,6 +124,8 @@ const int* DataVectorDistributed::getDescriptor() const { return data.getDescrip
 size_t DataVectorDistributed::getGlobalRows() const { return data.getGlobalCols(); }
 
 size_t DataVectorDistributed::getLocalRows() const { return data.getLocalColumns(); }
+
+size_t DataVectorDistributed::getBlockSize() const { return data.getColumnBlockSize(); }
 
 void DataVectorDistributed::printVector() const {
   DataVector localVector = toLocalDataVector();
@@ -114,6 +139,22 @@ bool DataVectorDistributed::isProcessMapped() const { return data.isProcessMappe
 DataMatrixDistributed& DataVectorDistributed::getMatrix() { return data; }
 
 const DataMatrixDistributed& DataVectorDistributed::getMatrix() const { return data; }
+
+void DataVectorDistributed::distribute(double* input, int masterRow, int masterCol) {
+  data.distribute(input, masterRow, masterCol);
+}
+
+size_t DataVectorDistributed::globalToLocalRowIndex(size_t globalRowIndex) const {
+  return data.globalToLocalColumnIndex(globalRowIndex);
+}
+
+size_t DataVectorDistributed::localToGlobalRowIndex(size_t localRowIndex) const {
+  return data.localToGlobalColumnIndex(localRowIndex);
+}
+
+size_t DataVectorDistributed::globalToRowProcessIndex(size_t globalRowIndex) const {
+  return data.globalToColumnProcessIndex(globalRowIndex);
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

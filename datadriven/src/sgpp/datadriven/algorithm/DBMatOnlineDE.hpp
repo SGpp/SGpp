@@ -147,6 +147,18 @@ class DBMatOnlineDE : public DBMatOnline {
             bool force = false);
 
   /**
+   * Evaluates the density function on multiple points using parallization
+   *
+   * @param alpha the vector of surplusses
+   * @param values the points at which the function is evaluated
+   * @param results the result of the evaluation
+   * @param grid the underlying grid
+   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
+   */
+  void evalParallel(DataVector& alpha, DataMatrix& values, DataVectorDistributed& results,
+                    Grid& grid, bool force = false);
+
+  /**
    * Returns if the surplus has already been computed
    */
   bool isComputed();

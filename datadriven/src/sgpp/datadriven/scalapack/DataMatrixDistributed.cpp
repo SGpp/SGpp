@@ -44,6 +44,11 @@ DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> g
     localColumns = numroc_(this->globalColumns, this->columnBlockSize, grid->getCurrentColumn(), 0,
                            grid->getTotalColumns());
 
+    if (localRows == 0 || localColumns == 0) {
+      localRows = 0;
+      localColumns = 0;
+    }
+
     leadingDimension = std::max(1, localRows);
 
     // initialize local matrix
@@ -87,6 +92,18 @@ DataMatrix DataMatrixDistributed::toLocalDataMatrixBroadcast() const {
   return localMatrix;
 }
 
+void DataMatrixDistributed::toLocalDataMatrix(DataMatrix& localMatrix) const {
+  if (isProcessMapped()) {
+    gather(localMatrix);
+  }
+}
+
+void DataMatrixDistributed::toLocalDataMatrixBroadcast(DataMatrix& localMatrix) const {
+  if (isProcessMapped()) {
+    broadcast(localMatrix);
+  }
+}
+
 double* DataMatrixDistributed::getLocalPointer() { return this->localData.data(); }
 
 const double* DataMatrixDistributed::getLocalPointer() const { return this->localData.data(); }
@@ -95,9 +112,33 @@ int* DataMatrixDistributed::getDescriptor() { return this->descriptor; }
 
 const int* DataMatrixDistributed::getDescriptor() const { return this->descriptor; }
 
-int DataMatrixDistributed::getLocalRows() const { return this->localRows; }
+size_t DataMatrixDistributed::getLocalRows() const {
+  // internal storage is transposed
+  return this->localColumns;
+}
 
-int DataMatrixDistributed::getLocalColumns() const { return this->localColumns; }
+size_t DataMatrixDistributed::getLocalColumns() const {
+  // internal storage is transposed
+  return this->localRows;
+}
+
+size_t DataMatrixDistributed::getRowBlockSize() const { return this->rowBlockSize; }
+
+size_t DataMatrixDistributed::getColumnBlockSize() const { return this->columnBlockSize; }
+
+size_t DataMatrixDistributed::getGlobalRows() const {
+  // internal storage is transposed
+  return globalColumns;
+}
+
+size_t DataMatrixDistributed::getGlobalCols() const {
+  // internal storage is transposed
+  return globalRows;
+}
+
+std::shared_ptr<BlacsProcessGrid> DataMatrixDistributed::getProcessGrid() const {
+  return this->grid;
+}
 
 double DataMatrixDistributed::operator()(size_t row, size_t col) const {
   return this->get(row, col);
@@ -138,6 +179,12 @@ void DataMatrixDistributed::set(size_t row, size_t col, double value) {
     size_t localColumnIndex = globalToLocalIndex(row, grid->getTotalColumns(), columnBlockSize);
 
     getLocalPointer()[(localColumnIndex * localRows) + localRowIndex] = value;
+  }
+}
+
+void DataMatrixDistributed::setAll(double value) {
+  if (isProcessMapped()) {
+    std::fill(localData.begin(), localData.end(), value);
   }
 }
 
@@ -329,14 +376,30 @@ void DataMatrixDistributed::printMatrix() const {
 
 bool DataMatrixDistributed::isProcessMapped() const { return grid->isProcessInGrid(); }
 
-size_t DataMatrixDistributed::getGlobalRows() const {
-  // internal storage is transposed
-  return globalColumns;
+size_t DataMatrixDistributed::globalToLocalRowIndex(size_t globalRowIndex) const {
+  return globalToLocalIndex(globalRowIndex, grid->getTotalRows(), rowBlockSize);
 }
 
-size_t DataMatrixDistributed::getGlobalCols() const {
-  // internal storage is transposed
-  return globalRows;
+size_t DataMatrixDistributed::globalToLocalColumnIndex(size_t globalColumnIndex) const {
+  return globalToLocalIndex(globalColumnIndex, grid->getTotalColumns(), columnBlockSize);
+}
+
+size_t DataMatrixDistributed::localToGlobalRowIndex(size_t localRowIndex) const {
+  return localToGlobalIndex(localRowIndex, grid->getCurrentRow(), grid->getTotalRows(),
+                            rowBlockSize);
+}
+
+size_t DataMatrixDistributed::localToGlobalColumnIndex(size_t localColumnIndex) const {
+  return localToGlobalIndex(localColumnIndex, grid->getCurrentColumn(), grid->getTotalColumns(),
+                            columnBlockSize);
+}
+
+size_t DataMatrixDistributed::globalToRowProcessIndex(size_t globalRowIndex) const {
+  return globalToProcessIndex(globalRowIndex, grid->getTotalRows(), rowBlockSize);
+}
+
+size_t DataMatrixDistributed::globalToColumnProcessIndex(size_t globalColumnIndex) const {
+  return globalToProcessIndex(globalColumnIndex, grid->getTotalColumns(), columnBlockSize);
 }
 
 void DataMatrixDistributed::distribute(const double* matrix, int masterRow, int masterCol) {
@@ -379,12 +442,7 @@ void DataMatrixDistributed::distribute(const double* matrix, int masterRow, int 
   }
 }
 
-DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
-  DataMatrix localMatrix;
-  if (grid->getCurrentRow() == masterRow && grid->getCurrentColumn() == masterCol) {
-    localMatrix = DataMatrix(globalColumns, globalRows);  // transpose
-  }
-
+void DataMatrixDistributed::gather(DataMatrix& localMatrix, int masterRow, int masterCol) const {
   for (size_t row = 0; row < globalRows; row += rowBlockSize) {
     for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
       // last block might be smaller
@@ -423,12 +481,19 @@ DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
       }
     }
   }
+}
+
+DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
+  DataMatrix localMatrix;
+  if (grid->getCurrentRow() == masterRow && grid->getCurrentColumn() == masterCol) {
+    // only init localMatrix on master process
+    localMatrix = DataMatrix(globalColumns, globalRows);  // transpose
+  }
+  gather(localMatrix, masterRow, masterCol);
   return localMatrix;
 }
 
-DataMatrix DataMatrixDistributed::broadcast() const {
-  DataMatrix localMatrix = DataMatrix(globalColumns, globalRows);  // transpose
-
+void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
   for (size_t row = 0; row < globalRows; row += rowBlockSize) {
     for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
       // last block might be smaller
@@ -471,8 +536,13 @@ DataMatrix DataMatrixDistributed::broadcast() const {
       }
     }
   }
+}
+
+DataMatrix DataMatrixDistributed::broadcast() const {
+  DataMatrix localMatrix = DataMatrix(globalColumns, globalRows);  // transpose
+  broadcast(localMatrix);
   return localMatrix;
-}  // namespace datadriven
+}
 
 size_t DataMatrixDistributed::globalToLocalIndex(size_t globalIndex, size_t numberOfProcesses,
                                                  size_t blockSize) const {
@@ -482,15 +552,13 @@ size_t DataMatrixDistributed::globalToLocalIndex(size_t globalIndex, size_t numb
   return (localBlockIndex * blockSize) + elementIndex;
 }
 
-/*size_t DataMatrixDistributed::localToGlobalIndex(size_t localIndex, size_t process,
-                                                 size_t numberOfProcesses, size_t blockSize,
-                                                 size_t processOffset) const {
+size_t DataMatrixDistributed::localToGlobalIndex(size_t localIndex, size_t process,
+                                                 size_t numberOfProcesses, size_t blockSize) const {
   // note that the division is rounded down
-  size_t x1 = numberOfProcesses * blockSize * (localIndex / blockSize);
-  size_t x2 = localIndex % blockSize;
-  size_t offset = ((numberOfProcesses + process - processOffset) % numberOfProcesses) * blockSize;
-  return x1 + x2 + offset;
-}*/
+  size_t localBlockIndex = localIndex / blockSize;
+  size_t elementIndex = localIndex % blockSize;
+  return (localBlockIndex * numberOfProcesses * blockSize) + process * blockSize + elementIndex;
+}
 
 int DataMatrixDistributed::globalToProcessIndex(size_t globalIndex, size_t numberOfProcesses,
                                                 size_t blockSize, int processOffset) const {
