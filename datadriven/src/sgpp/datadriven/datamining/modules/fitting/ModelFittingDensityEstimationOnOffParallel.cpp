@@ -47,7 +47,9 @@ ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffPa
 }
 
 double ModelFittingDensityEstimationOnOffParallel::evaluate(const DataVector& sample) {
-  alpha = alphaDistributed.toLocalDataVector();
+  throw sgpp::base::not_implemented_exception(
+      "This function is not implemented in the parallelized version!");
+  /*alpha = alphaDistributed.toLocalDataVector();
   double result = 0.0;
 
   // TODO(jan) only eval on one process (and broadcast) or an all processes?
@@ -63,17 +65,22 @@ double ModelFittingDensityEstimationOnOffParallel::evaluate(const DataVector& sa
                  "returned!"
               << std::endl;
   }
-  return result;
+  return result;*/
 }
 
 void ModelFittingDensityEstimationOnOffParallel::evaluate(DataMatrix& samples,
                                                           DataVector& results) {
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 
-  // TODO(jan) evaluate on only one process or on all?
+  auto& parallelConfig = this->config->getParallelConfig();
+  DataVectorDistributed resultsDistributed(processGrid, results.size(),
+                                           parallelConfig.rowBlockSize_);
+
   if (processGrid->isProcessInGrid()) {
-    online->eval(alpha, samples, results, *grid);
+    online->evalParallel(alpha, samples, resultsDistributed, *grid);
   }
+
+  resultsDistributed.toLocalDataVectorBroadcast(results);
 }
 
 void ModelFittingDensityEstimationOnOffParallel::fit(Dataset& newDataset) {

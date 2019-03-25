@@ -80,6 +80,16 @@ class BlacsProcessGrid {
   int getCurrentColumn() const;
 
   /**
+   * @returns index of the process in the current grid.
+   */
+  int getRowColumnIndex() const;
+
+  /**
+   * @returns the number of processes in the current grid.
+   */
+  int getProcessesInGrid() const;
+
+  /**
    * @returns Number of the current process
    */
   static int getCurrentProcess();

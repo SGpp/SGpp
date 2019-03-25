@@ -72,6 +72,12 @@ class DataVectorDistributed {
   void set(size_t row, double value);
 
   /**
+   * Set all entries of the vector to one value
+   * @param value
+   */
+  void setAll(double value);
+
+  /**
    * Adds another vector to this vector, modifies this vector.
    * @param x vector that is added to this vector
    */
@@ -128,6 +134,11 @@ class DataVectorDistributed {
   const double* getLocalPointer() const;
 
   /**
+   * @returns process grid used by the vector.
+   */
+  std::shared_ptr<BlacsProcessGrid> getProcessGrid() const;
+
+  /**
    * @returns the gathered DataVector on process 0
    */
   DataVector toLocalDataVector() const;
@@ -136,6 +147,16 @@ class DataVectorDistributed {
    * @returns the broadcasted DataVector on all processes
    */
   DataVector toLocalDataVectorBroadcast() const;
+
+  /**
+   * @param[out] localVector the gathered DataVector on process (0, 0)
+   */
+  void toLocalDataVector(DataVector& localVector) const;
+
+  /**
+   * @param[out] localVector the broadcaster DataVector on all processes
+   */
+  void toLocalDataVectorBroadcast(DataVector& localVector) const;
 
   /**
    * @return pointer to the descriptor array for the underlying data matrix
@@ -160,6 +181,11 @@ class DataVectorDistributed {
   size_t getLocalRows() const;
 
   /**
+   * @returns the block size
+   */
+  size_t getBlockSize() const;
+
+  /**
    * Prints the vector on stdout on process 0.
    */
   void printVector() const;
@@ -178,6 +204,34 @@ class DataVectorDistributed {
    * @returns const ref to the underlying DataMatrixDistributed object.
    */
   const DataMatrixDistributed& getMatrix() const;
+
+  /**
+   * Distribute the input data to the process grid. Overwrites the current data.
+   * For more information, see DataMatrixDistributed::distribute
+   *
+   * @param input input data
+   * @param masterRow row of the process that distributes the data
+   * @param masterCol col of the process that distributes the data
+   */
+  void distribute(double* input, int masterRow = 0, int masterCol = 0);
+
+  /**
+   * Calculates the local row index from the globalRowIndex.
+   * @param globalRowIndex
+   */
+  size_t globalToLocalRowIndex(size_t globalRowIndex) const;
+
+  /**
+   * Calculates the global row index from the local row index.
+   * @param localRowIndex
+   */
+  size_t localToGlobalRowIndex(size_t localRowIndex) const;
+
+  /**
+   * Calculates the row process index from the global row index.
+   * @param globalRowIndex
+   */
+  size_t globalToRowProcessIndex(size_t globalRowIndex) const;
 
  private:
   // vector is mapped to a matrix with 1 column

@@ -74,6 +74,10 @@ int BlacsProcessGrid::getCurrentRow() const { return this->myrow; }
 
 int BlacsProcessGrid::getCurrentColumn() const { return this->mycolumn; }
 
+int BlacsProcessGrid::getRowColumnIndex() const { return (myrow * rows) + mycolumn; }
+
+int BlacsProcessGrid::getProcessesInGrid() const { return rows * columns; }
+
 int BlacsProcessGrid::getCurrentProcess() { return mypnum; }
 
 bool BlacsProcessGrid::isProcessInGrid() const { return this->partOfGrid; }

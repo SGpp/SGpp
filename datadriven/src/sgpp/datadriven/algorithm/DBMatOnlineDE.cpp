@@ -8,12 +8,15 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -229,30 +232,24 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
     size_t bSize = use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols();
 
-    // currently not distributed, as needed for mult with basis function
-    DataVector bLocal(bSize);
-    bLocal.setAll(0);
-    if (bLocal.getSize() != offlineObject.getGridSize()) {
+    DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
+    if (b.getGlobalRows() != offlineObject.getGridSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunctionParallel: b doesn't match size of system "
           "matrix");
     }
 
-    std::unique_ptr<sgpp::base::OperationMultipleEval> B(
-        (offlineObject.interactions.size() == 0)
-            ? sgpp::op_factory::createOperationMultipleEval(grid, m)
-            : sgpp::op_factory::createOperationMultipleEvalInter(grid, m,
-                                                                 offlineObject.interactions));
+    OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
+
+    std::unique_ptr<OperationMultipleEvalDistributed> B(
+        static_cast<OperationMultipleEvalDistributed*>(
+            sgpp::op_factory::createOperationMultipleEval(grid, m, opConfig)));
+    // TODO(jan) support createOperationMultipleEvalInter for interactions?
 
     DataVector y(numberOfPoints);
     y.setAll(1.0);
     // Bt * 1
-    B->multTranspose(y, bLocal);
-
-    DataVectorDistributed b(bLocal.data(), processGrid, bLocal.getSize(),
-                            parallelConfig.rowBlockSize_);
-
-    // std::cout << b.getSize() << std::endl;
+    B->multTransposeDistributed(y, b);
 
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
@@ -330,6 +327,22 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
     results.mult(normFactor);
   } else {
     throw algorithm_exception("Density function not computed, yet!");
+  }
+}
+
+void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
+                                 DataVectorDistributed& results, Grid& grid, bool force) {
+  if (functionComputed || force == true) {
+    OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
+    // TODO(jan) support createOperationMultipleEvalInter?
+    std::unique_ptr<OperationMultipleEvalDistributed> opEval(
+        static_cast<OperationMultipleEvalDistributed*>(
+            sgpp::op_factory::createOperationMultipleEval(grid, values, opConfig)));
+
+    opEval->evalParallel(alpha, results);
+    results.scale(normFactor);
+  } else {
+    throw algorithm_exception("Density function not yet computed!");
   }
 }
 

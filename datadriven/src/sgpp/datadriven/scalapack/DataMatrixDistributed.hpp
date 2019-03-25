@@ -88,6 +88,12 @@ class DataMatrixDistributed {
   void set(size_t row, size_t col, double value);
 
   /**
+   * Set all entries of the matrix to one value
+   * @param value
+   */
+  void setAll(double value);
+
+  /**
    * Transposes this matrix.
    * @returns the transposed version of this matrix
    */
@@ -261,6 +267,17 @@ class DataMatrixDistributed {
   DataMatrix toLocalDataMatrixBroadcast() const;
 
   /**
+   * @param[out] the gathered DataMatrix as a normal, not distributed, DataMatrix. Result can only
+   * be used on the master process.
+   */
+  void toLocalDataMatrix(DataMatrix& localMatrix) const;
+
+  /**
+   * @param[out] the whole DataMatrix is broadcasted to all processes in the grid
+   */
+  void toLocalDataMatrixBroadcast(DataMatrix& localMatrix) const;
+
+  /**
    * @returns The ScaLAPACK matrix descriptor
    */
   int* getDescriptor();
@@ -287,12 +304,27 @@ class DataMatrixDistributed {
   /**
    * @returns number of rows assigned to the current process
    */
-  int getLocalRows() const;
+  size_t getLocalRows() const;
 
   /**
    * @returns number of columns assigned to the current process
    */
-  int getLocalColumns() const;
+  size_t getLocalColumns() const;
+
+  /**
+   * @returns the row block size.
+   */
+  size_t getRowBlockSize() const;
+
+  /**
+   * @returns the column block size.
+   */
+  size_t getColumnBlockSize() const;
+
+  /**
+   * @returns the process grid of this matrix.
+   */
+  std::shared_ptr<BlacsProcessGrid> getProcessGrid() const;
 
   /**
    * Prints the matrix on stdout on process 0.
@@ -303,6 +335,82 @@ class DataMatrixDistributed {
    * @returns true if part of the matrix is mapped to the current process, false otherwise
    */
   bool isProcessMapped() const;
+
+  /**
+   * Calculates the local row index from the globalRowIndex.
+   * @param globalRowIndex
+   */
+  size_t globalToLocalRowIndex(size_t globalRowIndex) const;
+
+  /**
+   * Calculates the local column index from the globalColumnIndex.
+   * @param globalColumn
+   */
+  size_t globalToLocalColumnIndex(size_t globalColumnIndex) const;
+
+  /**
+   * Calculates the global row index from the local row index.
+   * @param localRowIndex
+   */
+  size_t localToGlobalRowIndex(size_t localRowIndex) const;
+
+  /**
+   * Calculates the global column index from the local column index.
+   * @param localColumnIndex
+   */
+  size_t localToGlobalColumnIndex(size_t localColumnIndex) const;
+
+  /**
+   * Calculates the row process index from the global row index.
+   * @param globalRowIndex
+   */
+  size_t globalToRowProcessIndex(size_t globalRowIndex) const;
+
+  /**
+   * Calculates the column process index from the global column index.
+   * @param globalColumnIndex
+   */
+  size_t globalToColumnProcessIndex(size_t globalColumnIndex) const;
+
+  /**
+   * Distribute the matrix from the master on the process grid according to the 2d block cyclic
+   * scheme used in scalapack. More information: http://www.netlib.org/scalapack/slug/node76.html
+   *
+   * @param matrix Pointer to the local matrix, only relevant for the master process
+   * @param masterRow row coordinate of the master process, default 0
+   * @param masterCol col coordinate of the master process, default 0
+   */
+  void distribute(const double* matrix, int masterRow = 0, int masterCol = 0);
+
+ private:
+  /**
+   * Gather the distributed matrix into one local matrix.
+   *
+   * @param masterRow row coordinate of the master process, default 0
+   * @param masterCol col coordinate of the master process, default 0
+   */
+  DataMatrix gather(int masterRow = 0, int masterCol = 0) const;
+
+  /**
+   * Gather the distributed matrix into one local matrix.
+   *
+   * @param[out] localMatrix result
+   * @param masterRow row coordinate of the master process, default 0
+   * @param masterCol col coordinate of the master process, default 0
+   */
+  void gather(DataMatrix& localMatrix, int masterRow = 0, int masterCol = 0) const;
+
+  /**
+   * Broadcasts the whole matrix to all processes in the grid.
+   */
+  DataMatrix broadcast() const;
+
+  /**
+   * Broadcasts the whole matrix to all processes in the grid.
+   *
+   * @param[out] localMatrix result
+   */
+  void broadcast(DataMatrix& localMatrix) const;
 
   /**
    * Calculates the row or column index of the element in the local process.
@@ -318,10 +426,9 @@ class DataMatrixDistributed {
    * @param process process of the element
    * @param numberOfProcesses number of processes in the grid in a row or column
    * @param blockSize size of one block
-   * @param processOffset process offset in the blacs grid, default 0
    */
-  /*static size_t localToGlobalIndex(size_t localIndex, size_t process, size_t numberOfProcesses,
-                                   size_t blockSize, size_t processOffset = 0);*/
+  size_t localToGlobalIndex(size_t localIndex, size_t process, size_t numberOfProcesses,
+                            size_t blockSize) const;
 
   /**
    * Calculates the row or column index of the process of an element from its global index
@@ -332,30 +439,6 @@ class DataMatrixDistributed {
    */
   int globalToProcessIndex(size_t globalIndex, size_t numberOfProcesses, size_t blockSize,
                            int processOffset = 0) const;
-
- private:
-  /**
-   * Distribute the matrix on the process grid according to the 2d block cyclic scheme used in
-   * scalapack. More information: http://www.netlib.org/scalapack/slug/node76.html
-   *
-   * @param matrix Pointer to the local matrix, only relevant for the master process
-   * @param masterRow row coordinate of the master process, default 0
-   * @param masterCol col coordinate of the master process, default 0
-   */
-  void distribute(const double* matrix, int masterRow = 0, int masterCol = 0);
-
-  /**
-   * Gather the distributed matrix into one local matrix.
-   *
-   * @param masterRow row coordinate of the master process, default 0
-   * @param masterCol col coordinate of the master process, default 0
-   */
-  DataMatrix gather(int masterRow = 0, int masterCol = 0) const;
-
-  /**
-   * Broadcasts the whole matrix to all processes in the grid.
-   */
-  DataMatrix broadcast() const;
 
   // vector to store the local data
   std::vector<double> localData;
