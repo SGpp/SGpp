@@ -20,6 +20,7 @@ FitterConfiguration *FitterConfigurationLeastSquares::clone() const {
 }
 
 void FitterConfigurationLeastSquares::setupDefaults() {
+  FitterConfiguration::setupDefaults();
   // (Sebastian) Now all default-setup moved to parent class
 }
 

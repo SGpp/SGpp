@@ -22,6 +22,7 @@ FitterConfiguration *FitterConfigurationDensityEstimation::clone() const {
 }
 
 void FitterConfigurationDensityEstimation::setupDefaults() {
+  FitterConfiguration::setupDefaults();
   // (Sebastian) Previously densityEstimationConfig was here set to
   // chol-decomp but has moved to the parent class FitterConfiguration
 }
