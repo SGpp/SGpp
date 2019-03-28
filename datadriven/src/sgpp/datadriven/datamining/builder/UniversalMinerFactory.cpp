@@ -30,7 +30,7 @@ namespace datadriven {
 
 ModelFittingBase *UniversalMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
-  ModelFittingBase *model;
+  ModelFittingBase *model = nullptr;
 
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
@@ -39,10 +39,14 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
     model = new ModelFittingDensityEstimationOnOff(config);
-  } else {
+  } else if (fType == FitterType::RegressionLeastSquares) {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);
     model = new ModelFittingLeastSquares(config);
+  } else if (fType == FitterType::Classification) {
+    FitterConfigurationClassification config{};
+    config.readParams(parser);
+    model = new ModelFittingClassification(config);
   }
   return model;
 }
@@ -51,12 +55,14 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
-  FitterFactory* fitfac;
+  FitterFactory* fitfac = nullptr;
 
   if (fType == FitterType::DensityEstimation) {
     fitfac = new DensityEstimationFitterFactory(parser);
-  } else {
+  } else if (fType == FitterType::RegressionLeastSquares) {
     fitfac = new LeastSquaresRegressionFitterFactory(parser);
+  } else if (ftType == FitterType::Classification) {
+    // TODO(Sebastian): Missing FitterFactory
   }
   return fitfac;
 }
