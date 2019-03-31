@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(testResult) {
   BOOST_CHECK(diff < 2);
 }
 
-BOOST_AUTO_TEST_CASE(testResult) {
+BOOST_AUTO_TEST_CASE(testResultSequential) {
   double diff = testSequential(2);
   BOOST_CHECK(diff < 2);
 }
