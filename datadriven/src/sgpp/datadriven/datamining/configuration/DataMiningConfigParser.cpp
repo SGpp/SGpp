@@ -840,10 +840,15 @@ bool DataMiningConfigParser::getFitterParallelConfig(
   if (hasParallelConfig) {
     auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
 
+    config.processRows_ =
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig");
+    config.processCols_ =
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig");
+
     config.rowBlockSize_ =
-        parseInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+        parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
     config.columnBlockSize_ =
-        parseInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+        parseUInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
   }
 
   return hasParallelConfig;

@@ -145,15 +145,15 @@ void DataVectorDistributed::distribute(double* input, int masterRow, int masterC
 }
 
 size_t DataVectorDistributed::globalToLocalRowIndex(size_t globalRowIndex) const {
-  return data.globalToLocalColumnIndex(globalRowIndex);
+  return data.globalToLocalRowIndex(globalRowIndex);
 }
 
 size_t DataVectorDistributed::localToGlobalRowIndex(size_t localRowIndex) const {
-  return data.localToGlobalColumnIndex(localRowIndex);
+  return data.localToGlobalRowIndex(localRowIndex);
 }
 
 size_t DataVectorDistributed::globalToRowProcessIndex(size_t globalRowIndex) const {
-  return data.globalToColumnProcessIndex(globalRowIndex);
+  return data.globalToRowProcessIndex(globalRowIndex);
 }
 
 }  // namespace datadriven

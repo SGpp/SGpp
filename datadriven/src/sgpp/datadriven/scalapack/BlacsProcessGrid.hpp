@@ -27,23 +27,16 @@ namespace datadriven {
 class BlacsProcessGrid {
  public:
   /**
-   * Creates a square process grid of maximum size.
-   * Given p processes, creates a sqrt(p) * sqrt(p) process grid.
-   * Always call this method from *all* processes, as the init
-   * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
-   */
-  BlacsProcessGrid();
-
-  /**
    * Creates a BLACS process grid with a certain number of rows and columns.
    * There must be at least rows * columns processes available.
-   * Always call this method from *all* processes, as the init
-   * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
+   * If rows or columns is set to < 1, a square grid of maximum size is created from the available
+   * processes. Always call this method from *all* processes, as the init method of a BLACS grid has
+   * to be called from all processes, otherwise a deadlock will occur.
    *
-   * @param rows
-   * @param columns
+   * @param rows, default -1, which means a square grid is created
+   * @param columns, default -1, which means a square grid is created
    */
-  BlacsProcessGrid(int rows, int columns);
+  BlacsProcessGrid(int rows = -1, int columns = -1);
 
   /**
    * Cannot be copied, otherwise errors with multiple calls to blacs_gridexit are possible
