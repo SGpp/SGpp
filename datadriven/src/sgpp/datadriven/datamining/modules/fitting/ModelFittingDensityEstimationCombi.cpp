@@ -86,25 +86,31 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
-  dataset = &newDataset;
   if (components.empty()) {
     fit(newDataset);
+  } else {
+    if (false) {
+      for (auto& model : components) {
+        model->update(newDataset);
+      }
+    }
   }
-  for (auto& model : components) {
-    model->update(newDataset);
-  }
+  dataset = &newDataset;
 }
 
 void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
-  datamatrix = newDataset;
   if (components.empty()) {
     cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
+  } else {
+    if (false) {
+      cout << "updating components..\n";
+      for (auto& model : components) {
+        model->update(newDataset);
+      }
+    }
   }
-  cout << "updating components..\n";
-  for (auto& model : components) {
-    model->update(newDataset);
-  }
+  datamatrix = newDataset;
   cout << "done\n";
 }
 
