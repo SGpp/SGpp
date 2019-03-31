@@ -34,15 +34,15 @@ int main(int argc, char **argv) {
   myfile << "EVALUATION " << getTime() << std::endl;
 
   vector<string> paths;
-  for (size_t i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 20; i++) {
     paths.push_back("classRipley_component");
     paths.push_back("classRipley_regular");
   }
-  for (size_t i = 0; i < 50; i++) {
+  for (size_t i = 0; i < 0; i++) {
     paths.push_back("classIris_component");
     paths.push_back("classIris_regular");
   }
-  for (size_t i = 0; i < 100; i++) {
+  for (size_t i = 0; i < 0; i++) {
     paths.push_back("classDR10_component");
     paths.push_back("classDR10_regular");
   }
@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     myfile << std::endl << std::endl << getTime() << " " << evalu::getMSek() << path << std::endl;
 
     // writing in the child file
-    freopen((titel + "_" + path + evalu::getTime()).c_str(), "w", stdout);
+    freopen((titel + "_" + path + evalu::getTime() + evalu::getMSek()).c_str(), "w", stdout);
     cout << path << std::endl << std::endl;
     // copying the config.json
     std::ifstream inFile;
