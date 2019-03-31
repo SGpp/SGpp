@@ -10,7 +10,7 @@ import os
 
 Import("*")
 
-if env["USE_COMBI"]:
+if env["USE_SGDECOMBI"]:
 	moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase","sgppcombigrid"]
 else:
 	moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppbase"]

@@ -21,9 +21,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-
-#include <string>
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -35,14 +34,13 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
 
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
-
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
     if (!config.getCombi()) {
       model = new ModelFittingDensityEstimationOnOff(config);
     } else {
-        return new PDFCombigrid(config);
+       return new PDFCombigrid(config);
     }
   } else {
     FitterConfigurationLeastSquares config{};

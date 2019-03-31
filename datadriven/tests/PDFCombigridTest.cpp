@@ -5,10 +5,8 @@
  *
  * Created by Bountos Nikolaos on 12/14/18
  */
-#ifdef USE_GSL
-
+#if defined USE_SGDECOMBI && defined USE_GSL
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
@@ -33,7 +31,7 @@ using sgpp::datadriven::ModelFittingBase;
 using sgpp::datadriven::CSVFileSampleProvider;
 using sgpp::datadriven::DataVector;
 
-double test(int dim) {
+double testParallel(int dim) {
     sgpp::datadriven::UniversalMinerFactory factory;
     auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("PDFCombi.json"));
     miner->learn(false);
@@ -43,18 +41,44 @@ double test(int dim) {
     for (auto i = 0; i < dim ; i++) {
         a.push_back(0.1);
     }
-    std::cout << " Result  Predicted " << dynamic_cast<PDFCombigrid*>((miner->getModel()))->evaluate(DataVector(a)) << " Ground truth " << minertrue->getModel()->evaluate(DataVector(a));
-    return dynamic_cast<PDFCombigrid*>((miner->getModel()))->evaluate(DataVector(a)) - minertrue->getModel()->evaluate(DataVector(a));
+    std::cout << " Result  Predicted " << dynamic_cast<PDFCombigrid*>
+    ((miner->getModel()))->evaluate(DataVector(a))
+    << " Ground truth " << minertrue->getModel()->evaluate(DataVector(a));
+    return dynamic_cast<PDFCombigrid*>((miner->getModel()))->
+    evaluate(DataVector(a)) - minertrue->getModel()->evaluate(DataVector(a));
+}
+
+double testSequential(int dim) {
+    sgpp::datadriven::UniversalMinerFactory factory;
+    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("PDFSequential.json"));
+    miner->learn(false);
+    auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("miner.json"));
+    minertrue->learn(false);
+    std::vector<double> a;
+    for (auto i = 0; i < dim ; i++) {
+        a.push_back(0.1);
+    }
+    std::cout << " Result  Predicted " << dynamic_cast<PDFCombigrid*>
+    ((miner->getModel()))->evaluate(DataVector(a))
+    << " Ground truth " << minertrue->getModel()->evaluate(DataVector(a));
+    return dynamic_cast<PDFCombigrid*>((miner->getModel()))->
+    evaluate(DataVector(a)) - minertrue->getModel()->evaluate(DataVector(a));
 }
 
 BOOST_AUTO_TEST_SUITE(testPDFCombigridTest)
 
 BOOST_AUTO_TEST_CASE(testResult) {
-  double diff = test(2);
+  double diff = testParallel(2);
   BOOST_CHECK(diff < 2);
 }
 
+BOOST_AUTO_TEST_CASE(testResult) {
+  double diff = testSequential(2);
+  BOOST_CHECK(diff < 2);
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()
 
+#endif /* USE_SGDECOMBI */
 
-#endif /* USE_GSL */

@@ -200,12 +200,11 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
 
   bool hasCombiGridConfig =
           hasFitterConfig() ? (*configFile)[fitter].contains("threads") : false;
-
   if (hasFitterGridConfig) {
     auto fitterConfig = static_cast<DictNode *>(&(*configFile)[fitter]["gridConfig"]);
     config.dim_ = parseUInt(*fitterConfig, "dim", defaults.dim_, "gridConfig");
     config.threads = parseUInt(*fitterConfig, "threads", defaults.threads, "gridConfig");
-    config.comb = parseUInt(*fitterConfig, "combi", defaults.comb, "gridConfig");
+    config.use_combigrid = parseUInt(*fitterConfig, "combi", defaults.use_combigrid, "gridConfig");
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");

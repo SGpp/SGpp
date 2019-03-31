@@ -1,10 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Created by Bountos Nikolaos on 12/14/18
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 
 
@@ -36,7 +33,8 @@ namespace sgpp {
 namespace datadriven {
 
 
-void PDFFitter::fit(Dataset& newDataset, std::unique_ptr<sgpp::base::Grid>& grid2, std::vector<size_t> ind, bool val) {
+void PDFFitter::fit(Dataset& newDataset, std::unique_ptr<sgpp::base::Grid>& grid2,
+        std::vector<size_t> ind, bool val) {
     // Get configurations
     auto datas = newDataset.getData();
     auto& databaseConfig = this->config->getDatabaseConfig();
@@ -61,7 +59,7 @@ void PDFFitter::fit(Dataset& newDataset, std::unique_ptr<sgpp::base::Grid>& grid
         if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                    densityEstimationConfig)) {
             std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-                                                                 regularizationConfig, densityEstimationConfig);
+                    regularizationConfig, densityEstimationConfig);
             offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
         }
     }
@@ -69,13 +67,13 @@ void PDFFitter::fit(Dataset& newDataset, std::unique_ptr<sgpp::base::Grid>& grid
     if (offline == nullptr) {
         // Build offline object by factory, build matrix and decompose
         offline = DBMatOfflineFactory::buildOfflineObject(gridConfig, refinementConfig,
-                                                          regularizationConfig, densityEstimationConfig);
+                regularizationConfig, densityEstimationConfig);
         offline->buildMatrix(grid.get(), regularizationConfig);
         offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     }
 
     online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline,
-                                                                                     *grid, regularizationConfig.lambda_)};
+                                            *grid, regularizationConfig.lambda_)};
 
     online->computeDensityFunction(alpha, datas, *grid,
                                    this->config->getDensityEstimationConfig(), false,
@@ -85,5 +83,5 @@ void PDFFitter::fit(Dataset& newDataset, std::unique_ptr<sgpp::base::Grid>& grid
     online->setBeta(this->config->getLearnerConfig().beta);
     online->normalize(alpha, *grid);
         }
-    } // namespace datadriven
-} // namespace sgpp
+    }  // namespace datadriven
+}  // namespace sgpp

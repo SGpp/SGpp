@@ -1,16 +1,9 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Created by Bountos Nikolaos on 12/14/18
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
-
-#ifndef SGPP_PDECOMBIGRID_H
-#define SGPP_PDECOMBIGRID_H
-
 
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
@@ -33,14 +26,14 @@
 #include <sgpp/datadriven/datamining/modules/fitting/PDFFitter.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <cstdlib>
 #include <algorithm>
 #include <iomanip>
 #include <string>
 #include <vector>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
 
 using sgpp::datadriven::DensityEstimationMinerFactory;
@@ -65,19 +58,22 @@ class PDFCombigrid : public ModelFittingDensityEstimationOnOff {
     // number of threads
     int numthreads;
     // Combigrid's Operation object
+    #ifdef USE_SGDECOMBI
     std::shared_ptr<sgpp::combigrid::CombigridOperation> operation;
+    #endif
     // True if model is in evaluation mode, False if the model has not been fitted
     bool fitted;
     // Hash map containing the model for each subspace
-    std::unordered_map<std::string,sgpp::datadriven::PDFFitter*> models;
+    std::unordered_map<std::string, sgpp::datadriven::PDFFitter*> models;
     // Initialized  model pool to be used by each subspace.
     std::vector<sgpp::datadriven::PDFFitter*> modelpool;
     // Estimated number of components
     int numcomponents;
     // Index of component subspace used to grab model from pool.
     int current;
-public:
-    PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEstimation& conf);
+
+ public:
+    explicit PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEstimation& conf);
     /**
      * Destructor to clear the pool of models
      */
@@ -110,8 +106,4 @@ public:
      * the current model.
         */
     void evaluate(DataMatrix& samples, DataVector& results) override;
-
 };
-
-
-#endif  // SGPP_PDECOMBIGRID_H

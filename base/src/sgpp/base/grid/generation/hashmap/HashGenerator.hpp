@@ -136,8 +136,7 @@ class HashGenerator {
    * @param storage  Hashmap that stores the grid points
    * @param ind Vector that stores the desired level of each dimension
    */
-  void full(GridStorage& storage, std::vector<size_t> ind){
-
+  void full(GridStorage& storage, std::vector<size_t> ind) {
       if (storage.getDimension() == 0) return;
 
 
@@ -159,7 +158,6 @@ class HashGenerator {
             idx_1d.push(0, l, i, false);
           }
           storage.insert(idx_1d);
-
         }
       }
 
@@ -208,7 +206,6 @@ class HashGenerator {
           }
         }
       }
-
     }
 
   /**

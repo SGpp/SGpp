@@ -1,10 +1,8 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Created by Bountos Nikolaos on 12/14/18
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
@@ -28,7 +26,7 @@ PDFCombigrid::PDFCombigrid(const sgpp::datadriven::FitterConfigurationDensityEst
 }
 
 PDFCombigrid::~PDFCombigrid() {
-    for (auto i : modelpool){
+    for (auto i : modelpool) {
         delete i;
     }
 }
@@ -39,6 +37,7 @@ void PDFCombigrid::fit() {
     model = new sgpp::datadriven::PDFFitter();
     model->setDataset(dataset);
     model->setConfiguration(*this);
+    #ifdef  USE_SGDECOMBI
     sgpp::combigrid::GridFunction gf([this](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
         // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
         auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(dimensions);
@@ -100,7 +99,6 @@ void PDFCombigrid::fit() {
         }
         return result;
     });
-
     sgpp::combigrid::CombiHierarchies::Collection grids(
             dimensions, sgpp::combigrid::CombiHierarchies::expUniform());
     sgpp::combigrid::CombiEvaluators::Collection evaluators(
@@ -112,6 +110,7 @@ void PDFCombigrid::fit() {
 
     operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
             grids, evaluators, levelManager, gf, exploitNesting);
+    #endif /* USE_SGDECOMBI */
 }
 
 void PDFCombigrid::update(sgpp::datadriven::Dataset &newDataset) {
@@ -133,16 +132,20 @@ void PDFCombigrid::update(sgpp::datadriven::Dataset &newDataset) {
 double PDFCombigrid::evaluate(std::vector<double> test_points) {
     sgpp::base::DataVector parameter(test_points);
     double result;
+    #ifdef  USE_SGDECOMBI
     if (!parallel)
         result = operation->evaluate(this->level, parameter);
     else
         result = operation->evaluateParallel(this->level, parameter, numthreads);
     fitted = true;
     return result;
+    #else /* USE_SGDECOMBI */
+    return 0.0;
+    #endif
 }
 
 void PDFCombigrid::evaluate(DataMatrix &samples, DataVector &results) {
-    for ( auto i = 0; i < samples.getNrows(); i++) {
+    for (auto i = 0; i < samples.getNrows(); i++) {
         std::vector<double> row;
         for (auto j=0; j <= samples.getNcols() ; j++) {
             auto index = i*(samples.getNcols()+1)+j;
@@ -156,3 +159,4 @@ void PDFCombigrid::evaluate(DataMatrix &samples, DataVector &results) {
 bool PDFCombigrid::refine() {
     return false;
 }
+

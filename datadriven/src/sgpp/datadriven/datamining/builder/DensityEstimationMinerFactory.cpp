@@ -22,9 +22,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-
-#include <string>
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

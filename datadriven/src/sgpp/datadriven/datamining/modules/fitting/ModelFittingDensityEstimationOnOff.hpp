@@ -54,7 +54,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   /**
    * Empty Constructor
    */
-  ModelFittingDensityEstimationOnOff(){};
+  ModelFittingDensityEstimationOnOff() {}
 
 
     /**
@@ -118,7 +118,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   void reset() override;
 
-protected:
+ protected:
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

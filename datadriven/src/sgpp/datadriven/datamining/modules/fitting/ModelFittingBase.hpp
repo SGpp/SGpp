@@ -14,24 +14,22 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-
-#include <algorithm>
-#include <iomanip>
-#include <string>
-#include <vector>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
 #include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
-#include <memory>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <vector>
+#include <memory>
+#include <algorithm>
+#include <iomanip>
+#include <string>
+
 
 namespace sgpp {
 
@@ -159,8 +157,17 @@ class ModelFittingBase {
    */
   bool verboseSolver;
 
+  /**
+   * Set model's dataset
+   * @param new_dataset
+   */
+
   void setDataset(Dataset *new_dataset);
 
+  /**
+   * Return model's dataset
+   * @return dataset
+   */
   Dataset *getDataset();
 
  protected:
@@ -169,7 +176,8 @@ class ModelFittingBase {
    * @param gridConfig configuration for the grid object
    * @return new grid object that is owned by the caller.
    */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig,std::vector<size_t> *ind=NULL) const;
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+          std::vector<size_t> *ind = NULL) const;
 
 
     /**

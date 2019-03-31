@@ -17,6 +17,7 @@
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -40,7 +41,8 @@ ModelFittingBase::ModelFittingBase()
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig, std::vector<size_t> *ind) const {
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
+        std::vector<size_t> *ind) const {
   // load grid
   Grid *tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
@@ -55,12 +57,10 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig, st
   } else {
     throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
   }
-  if (ind==NULL) {
-
+  if (ind == NULL) {
       GridGenerator &gridGen = tmpGrid->getGenerator();
       gridGen.regular(gridConfig.level_);
   } else {
-
       sgpp::base::HashGenerator gridGen;
       gridGen.full(tmpGrid->getStorage(), *ind);
       tmpGrid->getStorage().recalcLeafProperty();

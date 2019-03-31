@@ -125,9 +125,10 @@ double CombigridOperation::evaluate(size_t q, base::DataVector const& param) {
   return getResult();
 }
 
-double CombigridOperation::evaluateParallel(size_t q, base::DataVector const& param, size_t numThreads) {
+double CombigridOperation::evaluateParallel(size_t q, base::DataVector const& param,
+        size_t numThreads) {
   setParameters(param);
-  impl->levelManager->addRegularLevelsParallel(q,numThreads);
+  impl->levelManager->addRegularLevelsParallel(q, numThreads);
 
   return getResult();
 }

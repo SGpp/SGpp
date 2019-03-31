@@ -57,19 +57,18 @@ const datadriven::LearnerConfiguration& FitterConfiguration::getLearnerConfig()
 }
 
 void FitterConfiguration::create(sgpp::datadriven::FitterConfiguration &m) {
-
-    //Set Grid Config
+    // Set Grid Config
 
     gridConfig.level_ = m.gridConfig.level_;
     gridConfig.boundaryLevel_ = m.gridConfig.boundaryLevel_;
     gridConfig.filename_ = m.gridConfig.filename_;
     gridConfig.generalType_ = m.gridConfig.generalType_;
     gridConfig.maxDegree_ = m.gridConfig.maxDegree_;
-    gridConfig.dim_= m.gridConfig.dim_;
+    gridConfig.dim_ = m.gridConfig.dim_;
     gridConfig.t_ = m.gridConfig.t_;
     gridConfig.type_ = m.gridConfig.type_;
 
-    //Set Adaptivity Config
+    // Set Adaptivity Config
 
     adaptivityConfig.errorBasedRefinement = m.adaptivityConfig.errorBasedRefinement;
     adaptivityConfig.errorBufferSize = m.adaptivityConfig.errorBufferSize;
@@ -86,33 +85,34 @@ void FitterConfiguration::create(sgpp::datadriven::FitterConfiguration &m) {
     adaptivityConfig.scalingCoefficients = m.adaptivityConfig.scalingCoefficients;
     adaptivityConfig.threshold_ = m.adaptivityConfig.threshold_;
 
-    //Set Cross-Validation Config
+    // Set Cross-Validation Config
 
-    crossvalidationConfig.enable_= m.crossvalidationConfig.enable_;
+    crossvalidationConfig.enable_ = m.crossvalidationConfig.enable_;
     crossvalidationConfig.kfold_ = m.crossvalidationConfig.kfold_;
-    crossvalidationConfig.lambda_= m.crossvalidationConfig.lambda_;
+    crossvalidationConfig.lambda_ = m.crossvalidationConfig.lambda_;
     crossvalidationConfig.lambdaEnd_ = m.crossvalidationConfig.lambdaEnd_;
     crossvalidationConfig.lambdaStart_ = m.crossvalidationConfig.lambdaStart_;
-    crossvalidationConfig.logScale_= m.crossvalidationConfig.logScale_;
+    crossvalidationConfig.logScale_ = m.crossvalidationConfig.logScale_;
     crossvalidationConfig.lambdaSteps_ = m.crossvalidationConfig.lambdaSteps_;
     crossvalidationConfig.seed_ = m.crossvalidationConfig.seed_;
     crossvalidationConfig.shuffle_ = m.crossvalidationConfig.shuffle_;
     crossvalidationConfig.silent_ = m.crossvalidationConfig.silent_;
 
 
-    //Set Density Estimation Configuration
+    // Set Density Estimation Configuration
 
     densityEstimationConfig.type_ = m.densityEstimationConfig.type_;
-    densityEstimationConfig.decomposition_= m.densityEstimationConfig.decomposition_;
-    densityEstimationConfig.iCholSweepsDecompose_= m.densityEstimationConfig.iCholSweepsDecompose_;
-    densityEstimationConfig.iCholSweepsRefine_= m.densityEstimationConfig.iCholSweepsRefine_;
+    densityEstimationConfig.decomposition_ = m.densityEstimationConfig.decomposition_;
+    densityEstimationConfig.iCholSweepsDecompose_ = m.densityEstimationConfig.iCholSweepsDecompose_;
+    densityEstimationConfig.iCholSweepsRefine_ = m.densityEstimationConfig.iCholSweepsRefine_;
     densityEstimationConfig.iCholSweepsSolver_ = m.densityEstimationConfig.iCholSweepsSolver_;
-    densityEstimationConfig.iCholSweepsUpdateLambda_ = m.densityEstimationConfig.iCholSweepsUpdateLambda_;
+    densityEstimationConfig.iCholSweepsUpdateLambda_ =
+            m.densityEstimationConfig.iCholSweepsUpdateLambda_;
 
 
     // Set database Config
 
-    databaseConfig.filepath = m.databaseConfig.filepath ;
+    databaseConfig.filepath = m.databaseConfig.filepath;
 
     // Set solver Refine Config
 
@@ -129,7 +129,7 @@ void FitterConfiguration::create(sgpp::datadriven::FitterConfiguration &m) {
     solverFinalConfig.verbose_ = m.solverFinalConfig.verbose_;
     solverFinalConfig.maxIterations_ = m.solverFinalConfig.maxIterations_;
     solverFinalConfig.eps_ = m.solverFinalConfig.eps_;
-    solverFinalConfig.threshold_= m.solverFinalConfig.threshold_;
+    solverFinalConfig.threshold_ = m.solverFinalConfig.threshold_;
     solverFinalConfig.type_ = m.solverFinalConfig.type_;
 
 

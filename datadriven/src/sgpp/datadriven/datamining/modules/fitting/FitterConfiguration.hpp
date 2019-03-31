@@ -204,9 +204,9 @@ class FitterConfiguration {
    */
   void  create(FitterConfiguration& m);
 
-  bool getCombi(){return gridConfig.comb;}
+  bool getCombi() { return gridConfig.use_combigrid;}
 
-protected:
+ protected:
   /**
    * Initial conditions for the grid before adaptive refinement.
    */
@@ -260,9 +260,9 @@ protected:
   datadriven::LearnerConfiguration learnerConfig;
 
   /**
-   * Configuration option for Combigrid PDE
+   * Configuration option for probability density estimation using combigrid
    */
-   bool combi;
+  bool use_combigrid;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
