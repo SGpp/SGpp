@@ -100,7 +100,7 @@ void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
     DensityEstimationConfiguration& densityEstimationConfig,
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool do_cv) {
-  // TODO(jan) parallelize offline version at this point?
+  // TODO(jan) parallelize offline version on creation
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   DataMatrix Tinv = offline->getTinv();

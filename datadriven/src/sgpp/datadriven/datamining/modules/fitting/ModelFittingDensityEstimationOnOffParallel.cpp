@@ -40,7 +40,8 @@ namespace datadriven {
 ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffParallel(
     const FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation(),
-      processGrid(std::make_shared<BlacsProcessGrid>()),
+      processGrid(std::make_shared<BlacsProcessGrid>(config.getParallelConfig().processRows_,
+                                                     config.getParallelConfig().processCols_)),
       alphaDistributed(processGrid, 1, 1) {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
@@ -52,7 +53,6 @@ double ModelFittingDensityEstimationOnOffParallel::evaluate(const DataVector& sa
   /*alpha = alphaDistributed.toLocalDataVector();
   double result = 0.0;
 
-  // TODO(jan) only eval on one process (and broadcast) or an all processes?
   if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
     result = online->eval(alpha, sample, *grid);
 

@@ -30,13 +30,14 @@ int BlacsProcessGrid::mypnum = 0;
 int BlacsProcessGrid::numberOfProcesses = 0;
 bool BlacsProcessGrid::blacsInitialized = false;
 
-BlacsProcessGrid::BlacsProcessGrid()
-    : BlacsProcessGrid(static_cast<int>(std::sqrt(numberOfProcesses)),
-                       static_cast<int>(std::sqrt(numberOfProcesses))) {}
-
 BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(columns) {
   if (!blacsInitialized) {
     throw sgpp::base::application_exception("BLACS not initialized!");
+  }
+
+  if (rows < 0 || columns < 0) {
+    this->rows = static_cast<int>(std::sqrt(numberOfProcesses));
+    this->columns = static_cast<int>(std::sqrt(numberOfProcesses));
   }
 
   int ignore = -1;
@@ -49,16 +50,15 @@ BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(
   Cblacs_gridinfo(ictxt, this->rows, this->columns, myrow, mycolumn);
 
   if (myrow >= 0 && mycolumn >= 0) {
-    this->mypnum = Cblacs_pnum(ictxt, myrow, mycolumn);
+    Cblacs_pnum(ictxt, myrow, mycolumn);
     this->partOfGrid = true;
   } else {
-    this->mypnum = -1;
     this->partOfGrid = false;
   }
 }
 
 BlacsProcessGrid::~BlacsProcessGrid() {
-  if (this->mypnum >= 0) {
+  if (partOfGrid) {
     // only exit the grid if this process is actually part of it
     Cblacs_gridexit(ictxt);
   }
@@ -74,7 +74,7 @@ int BlacsProcessGrid::getCurrentRow() const { return this->myrow; }
 
 int BlacsProcessGrid::getCurrentColumn() const { return this->mycolumn; }
 
-int BlacsProcessGrid::getRowColumnIndex() const { return (myrow * rows) + mycolumn; }
+int BlacsProcessGrid::getRowColumnIndex() const { return (myrow * columns) + mycolumn; }
 
 int BlacsProcessGrid::getProcessesInGrid() const { return rows * columns; }
 
