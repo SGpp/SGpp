@@ -22,11 +22,11 @@ def initadaptivescheme(dim, level):
 
 def getcombischeme(scheme):
     print("Space-SGDEAdapter: getcombischeme")
-    oldCombi =  scheme.getCombiScheme(1,1,1)
+    oldCombi =  scheme.getCombiScheme(1,1,1,do_print=False)
     return formatCombi(oldCombi)
 
 def isrefinable(scheme, levelvec):
-    print("levelvec: ",levelvec)
+    #print("levelvec: ",levelvec)
     return scheme.is_refinable(sgdecombitolevelvec(levelvec))
 
 def refineblock(scheme, levelvec):
