@@ -640,4 +640,4 @@ def detectZlib(config):
     else:
       Helper.printErrorAndExit("USE_ZLIB is set but either libz or zlib.h is missing!")
   else:
-Helper.printInfo("ZLIB support could not be enabled.")
+    Helper.printInfo("ZLIB support could not be enabled.")
