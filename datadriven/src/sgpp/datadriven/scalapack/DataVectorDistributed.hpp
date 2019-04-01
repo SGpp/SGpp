@@ -78,6 +78,12 @@ class DataVectorDistributed {
   void setAll(double value);
 
   /**
+   * Copies all values of another distributed data matrix to this object, resizes this object to the
+   * size of the other matrix.
+   */
+  void copyFrom(const DataVectorDistributed& other);
+
+  /**
    * Adds another vector to this vector, modifies this vector.
    * @param x vector that is added to this vector
    */

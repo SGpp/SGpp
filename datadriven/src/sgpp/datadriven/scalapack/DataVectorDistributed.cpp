@@ -42,6 +42,10 @@ void DataVectorDistributed::set(size_t row, double value) { data.set(0, row, val
 
 void DataVectorDistributed::setAll(double value) { data.setAll(value); }
 
+void DataVectorDistributed::copyFrom(const DataVectorDistributed& other) {
+  data.copyFrom(other.getMatrix());
+}
+
 void DataVectorDistributed::add(const DataVectorDistributed& x) {
   DataVectorDistributed::add(*this, x);
 }

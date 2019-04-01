@@ -188,6 +188,24 @@ void DataMatrixDistributed::setAll(double value) {
   }
 }
 
+void DataMatrixDistributed::copyFrom(const DataMatrixDistributed& other) {
+  // use std::vector copy constructor
+  this->localData = other.localData;
+
+  // update the dimensions and the descriptor
+  this->localRows = other.localRows;
+  this->localColumns = other.localColumns;
+
+  this->globalRows = other.globalRows;
+  this->globalColumns = other.globalColumns;
+
+  this->leadingDimension = other.leadingDimension;
+
+  descriptor[m_] = this->globalRows;
+  descriptor[n_] = this->globalColumns;
+  descriptor[lld_] = this->leadingDimension;
+}
+
 DataMatrixDistributed DataMatrixDistributed::transpose() {
   // note that globalRows/columns and row/columnBlockSize are switched
   DataMatrixDistributed transposed =
@@ -266,6 +284,19 @@ void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataMatri
     pdgemm_(transB, transA, b.getGlobalCols(), a.getGlobalRows(), b.getGlobalRows(), alpha,
             b.getLocalPointer(), 1, 1, b.getDescriptor(), a.getLocalPointer(), 1, 1,
             a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
+  }
+}
+
+void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l,
+                                          DataVectorDistributed& b) {
+  if (l.isProcessMapped() || b.isProcessMapped()) {
+    int info = 0;
+    pdpotrs_(lowerTriangular, l.getGlobalRows(), 1, l.getLocalPointer(), 1, 1, l.getDescriptor(),
+             b.getLocalPointer(), 1, 1, b.getDescriptor(), info);
+
+    if (info < 0) {
+      throw sgpp::base::algorithm_exception("DataMatrixDistributed::solveCholesky() failed");
+    }
   }
 }
 

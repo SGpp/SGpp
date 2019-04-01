@@ -59,16 +59,12 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
                 DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
 
   /**
-   * Not implemented for this decomposition
+   * Parallel and distributed version of solveSLE.
    */
   void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
                         DensityEstimationConfiguration& densityEstimationConfig,
                         const ParallelConfiguration& parallelConfig,
-                        std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) override {
-    // TODO(jan) implement for this decomposition
-    throw base::not_implemented_exception(
-        "Distributed parallel solve not implemented for this decomposition");
-  }
+                        std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) override;
 
   DBMatDMSChol* buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
                                 DensityEstimationConfiguration& densityEstimationConfig,
