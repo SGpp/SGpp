@@ -94,6 +94,12 @@ class DataMatrixDistributed {
   void setAll(double value);
 
   /**
+   * Copies all values of another distributed data matrix to this object, resizes this object to the
+   * size of the other matrix.
+   */
+  void copyFrom(const DataMatrixDistributed& other);
+
+  /**
    * Transposes this matrix.
    * @returns the transposed version of this matrix
    */
@@ -214,6 +220,15 @@ class DataMatrixDistributed {
   static void mult(const DataMatrixDistributed& a, const DataMatrixDistributed& b,
                    DataMatrixDistributed& c, bool transposeA = false, bool transposeB = false,
                    double alpha = 1.0, double beta = 0.0);
+
+  /**
+   * Solves a linear system of equations Ax=b using a previously computed Cholesky decomposition
+   * A=LL^T
+   *
+   * @param[in] l lower triangular matrix L of the Cholesky decomposition
+   * @param[in, out] input vector b of the linear system, is overwritten with solution x
+   */
+  static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b);
 
   /**
    * Append newRows to the global rows, can currently only be done if there is only one

@@ -31,6 +31,9 @@ const char *const pblasNoTranspose = "N";
 const char *const pblasTranspose = "T";
 const char *const pblasConjugate = "C";
 
+const char *const lowerTriangular = "L";
+const char *const upperTriangular = "U";
+
 extern "C" {
 
 /**
@@ -51,7 +54,7 @@ void sl_init_(int &ictxt, int &nprow, int &npcol);
 void pdgsev(int *n, int *nrhs, double *a, int *ia, int *ja, int *desca, int *ipiv, double *b,
             int *ib, int *jb, int *descb, int *info);
 
-void pdlaset_(char &uplo, int &m, int &n, double &alpha, double &beta, double *a, int &ia, int &ja,
+void pdlaset_(char *uplo, int &m, int &n, double &alpha, double &beta, double *a, int &ia, int &ja,
               int *desca);
 
 void pdlaprnt_(const int &m, const int &n, const double *a, const int &ia, const int &ja,
@@ -72,6 +75,13 @@ void pdgemr2d_(const int &m, const int &n, const double *a, const int &ia, const
 
 void Cpdgemr2d(int m, int n, const double *a, int ia, int ja, const int *desca, double *b, int ib,
                int jb, const int *descb, int ictxt);
+
+// linear equations
+
+// solve Ax=b using Cholesky decomposition
+void pdpotrs_(const char *uplo, const int &n, const int &nrhs, const double *a, const int &ia,
+              const int &ja, const int *desca, double *b, const int &ib, const int &jb,
+              const int *descb, const int &info);
 
 // Level 1 BLAS
 

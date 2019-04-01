@@ -6,6 +6,8 @@
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -33,6 +35,18 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    */
   virtual void solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataVector& alpha,
                      const sgpp::base::DataVector& b, double lambda_old, double lambda_new) const;
+
+  /**
+   * Parallel (distributed) version of solve.
+   * @param decompMatrix the LL' lower triangular cholesky factor
+   * @param x input: the right hand vector of the equation system, output: the vector of unknowns
+   * (the result is stored there)
+   * @param lambda_old the current regularization paramter
+   * @param lambda_new the new regularization paramter (e.g. if cross-validation
+   * is applied)
+   */
+  void solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& alpha,
+                     double lambda_old, double lambda_new) const;
 
   /**
    * Performe a rank one cholesky update

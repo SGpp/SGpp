@@ -44,6 +44,39 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
   choleskyBackwardSolve(decompMatrix, y, alpha);
 }
 
+void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,
+                                 double lambda_old, double lambda_new) const {
+#ifdef USE_SCALAPACK
+
+  // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
+  // rank-One-updates
+  double lambda_up = lambda_new - lambda_old;
+
+  // If regularization paramter is changed enter
+  if (lambda_up != 0.0) {
+    // current implementation: gather and update decomposition on master process
+    DataMatrix decompMatrixLocal = decompMatrix.toLocalDataMatrix();
+
+    auto processGrid = decompMatrix.getProcessGrid();
+    if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
+      choleskyUpdateLambda(decompMatrixLocal, lambda_up);
+    }
+
+    decompMatrix.distribute(decompMatrixLocal.data(), 0, 0);
+  }
+
+  // Solve (R + lambda * I)alpha = b to obtain density declaring coefficents
+  // alpha.
+
+  DataMatrixDistributed::solveCholesky(decompMatrix, x);
+
+  // DEBUG: print alpha after solving
+  // alpha.printVector();
+#else
+  throw sgpp::base::algorithm_exception("build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
+}
+
 // Implement cholesky Update for given Decomposition and update vector
 void DBMatDMSChol::choleskyUpdate(sgpp::base::DataMatrix& decompMatrix,
                                   const sgpp::base::DataVector& update, bool do_cv) const {
