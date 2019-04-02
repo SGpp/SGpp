@@ -32,8 +32,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
 
     pgf_preamble = {"font.family": pysgpp_uq_font["family"],  # use serif/main font for text elements
                     "text.usetex": True,  # use inline math for ticks
-                    "text.latex.preamble": [r"\usepackage[utf8x]{inputenc}",
-                                            r'\usepackage{amsmath}',
+                    "text.latex.preamble": [r'\usepackage{amsmath}',
                                             r"\usepackage{amssymb}",
                                             r"\usepackage{tikz}",
                                             r"\usepackage{pgfplots}",
