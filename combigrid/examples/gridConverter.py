@@ -35,15 +35,21 @@
 ##     conversion type GridConversionTypes_COMPLETESUBSPACES
 ##
 ## First, we import a the methods/classes we need for this example...
-import numpy as np
-from argparse import ArgumentParser
-import matplotlib.pyplot as plt
 
-from pysgpp import CombigridOperation, multiFunc, DataVector, \
-    CombigridMultiOperation, DataMatrix, SurplusRefinementFunctor, \
-    Grid, convertCombigridToHierarchicalSparseGrid, convertHierarchicalSparseGridToCombigrid, \
-    GridConversionTypes_ALLSUBSPACES, GridConversionTypes_COMPLETESUBSPACES, \
-    createOperationHierarchisation, createOperationMultipleEval
+try:
+    import numpy as np
+    from argparse import ArgumentParser
+    import matplotlib.pyplot as plt
+
+    from pysgpp import CombigridOperation, multiFunc, DataVector, \
+        CombigridMultiOperation, DataMatrix, SurplusRefinementFunctor, \
+        Grid, convertCombigridToHierarchicalSparseGrid, convertHierarchicalSparseGridToCombigrid, \
+        GridConversionTypes_ALLSUBSPACES, GridConversionTypes_COMPLETESUBSPACES, \
+        createOperationHierarchisation, createOperationMultipleEval
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 ##
 ## ... and define we define the function we want to interpolate. It is
 ## a parbola, which is zero for any x_i=0 and x_i=1 and evaluates
