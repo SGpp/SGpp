@@ -7,17 +7,22 @@
 ## \page example_plot_2d_sparse_grids_py plot_2d_sparse_grids.py
 ## plots anisotropic full grids that form part of the combination technique
 
-from argparse import ArgumentParser
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Rectangle
+try:
+    from argparse import ArgumentParser
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
 
-import pysgpp
-from pysgpp.pysgpp_swig import DataVector, CombigridOperation
-from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform, Normal
-from pysgpp.extensions.datadriven.uq.plot.colors import load_color, savefig,\
-    load_font_properties
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+    import pysgpp
+    from pysgpp.pysgpp_swig import DataVector, CombigridOperation
+    from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform, Normal
+    from pysgpp.extensions.datadriven.uq.plot.colors import load_color, savefig,\
+        load_font_properties
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 
 def g(x):

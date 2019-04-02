@@ -10,21 +10,26 @@
 ## base module for things like DataVector and DataMatrix.
 
 ## At the beginning of the program, we have to import the pysgpp library.
-from itertools import product, combinations, permutations,\
-    combinations_with_replacement
-from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
-from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
-    load_color, load_font_properties, savefig
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
-import math
-import pysgpp
+try:
+    from itertools import product, combinations, permutations,\
+        combinations_with_replacement
+    from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
+    from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
+        load_color, load_font_properties, savefig
+    from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
+    import math
+    import pysgpp
 
-from matplotlib.patches import Rectangle
-from mpl_toolkits.mplot3d import Axes3D
-import numpy as np
+    from matplotlib.patches import Rectangle
+    from mpl_toolkits.mplot3d import Axes3D
+    import numpy as np
 
-import matplotlib.pyplot as plt
-import numpy as np
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
@@ -401,7 +406,7 @@ def example7(dtype="uniform", maxLevel=2):
         plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
                   fontproperties=load_font_properties())
 
-    savefig(fig, "/home/franzefn/Desktop/tmp/sparse_grid_%s" % dtype,
+    savefig(fig, "sparse_grid_%s" % dtype,
             mpl3d=True)
 
     maxLevel = 1
@@ -446,7 +451,7 @@ def example7(dtype="uniform", maxLevel=2):
         ## plt.xlim(0, 1)
         ## plt.ylim(0, 1)
         fig.set_size_inches(6, 6, forward=True)
-        savefig(fig, "/home/franzefn/Desktop/tmp/tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
+        savefig(fig, "tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
                 mpl3d=True)
 
 

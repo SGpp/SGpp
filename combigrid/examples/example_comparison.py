@@ -6,11 +6,18 @@
 
 ## \page example_example_comparison_py example_comparison.py
 
-import pysgpp
-import math
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from operator import mul
+try:
+    import pysgpp
+    import math
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+    from operator import mul
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
+
+# in python2 reduce is a built-in method
 try:
     from functools import reduce
 except ImportError:
