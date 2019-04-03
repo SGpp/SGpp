@@ -162,9 +162,15 @@ void oldSpeedtest() {
 }
 
 int main() {
-  // testEfficientPCE();
-  testFullGridPCE(sgpp::combigrid::FullGridSummationStrategyType::ONEDSUBSPACEPCE);
-  testFullGridPCE(sgpp::combigrid::FullGridSummationStrategyType::FULLSUBSPACEDPCE);
+  try {
+    // testEfficientPCE();
+    testFullGridPCE(sgpp::combigrid::FullGridSummationStrategyType::ONEDSUBSPACEPCE);
+    testFullGridPCE(sgpp::combigrid::FullGridSummationStrategyType::FULLSUBSPACEDPCE);
+  }
+  catch (sgpp::base::generation_exception& exc)  {
+    std::cout << "Exception: " << exc.what() << std::endl;
+    std::cout << "Skipping example..." << std::endl;
+  }
 
   return 0;
 }

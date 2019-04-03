@@ -531,6 +531,12 @@ int main() {
   std::cout << "\nExample 7: \n";
   example7();
 
-  std::cout << "\nExample 8: \n";
-  example8();
+  try {
+    std::cout << "\nExample 8: \n";
+    example8();
+  }
+  catch (sgpp::base::generation_exception& exc)  {
+    std::cout << "Exception: " << exc.what() << std::endl;
+    std::cout << "Skipping example 8..." << std::endl;
+  }
 }  // end of main
