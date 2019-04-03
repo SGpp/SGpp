@@ -1,30 +1,33 @@
 # -------------------------------------------------------------------------------
 # DataDist tests
 # -------------------------------------------------------------------------------
-import matplotlib.pyplot as plt
-import numpy as np
-import json
-from scipy.integrate.quadpack import dblquad
-from pysgpp import createOperationDensityMarginalize, \
-    createOperationLTwoDotExplicit, createOperationQuadrature, \
-    createOperationMakePositive, DataVector, Grid, \
-    BandwidthOptimizationType_SILVERMANSRULE, \
-    KernelType_GAUSSIAN
-import pysgpp.extensions.datadriven.uq.dists as dists
-from pysgpp.extensions.datadriven.uq.dists import J, Normal, Uniform, SGDEdist, Lognormal
-from pysgpp.extensions.datadriven.uq.plot import plotDensity2d
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSGDE2d, plotSG2d
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
-from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
-from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
-from pysgpp.extensions.datadriven.uq.dists.MultivariateNormal import MultivariateNormal
-from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
-from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
-from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
+try:
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import json
+    from scipy.integrate.quadpack import dblquad
+    from pysgpp import createOperationDensityMarginalize, \
+        createOperationLTwoDotExplicit, createOperationQuadrature, \
+        createOperationMakePositive, DataVector, Grid, \
+        BandwidthOptimizationType_SILVERMANSRULE, \
+        KernelType_GAUSSIAN
+    import pysgpp.extensions.datadriven.uq.dists as dists
+    from pysgpp.extensions.datadriven.uq.dists import J, Normal, Uniform, SGDEdist, Lognormal
+    from pysgpp.extensions.datadriven.uq.plot import plotDensity2d
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSGDE2d, plotSG2d
+    from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
+    from pysgpp.extensions.datadriven.uq.operations.sparse_grid import hierarchize
+    from pysgpp.extensions.datadriven.uq.transformation.JointTransformation import JointTransformation
+    from pysgpp.extensions.datadriven.uq.transformation.LinearTransformation import LinearTransformation
+    from pysgpp.extensions.datadriven.uq.dists.MultivariateNormal import MultivariateNormal
+    from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
+    from pysgpp.extensions.datadriven.uq.quadrature.sparse_grid import doQuadrature
+    from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
-
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 def test_sgdeLaplace():
     l2_samples = 10000

@@ -1,10 +1,15 @@
-import sklearn.datasets as data
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
-from pysgpp.extensions.datadriven.learner import Types
-import pysgpp as sg
+try:
+    import sklearn.datasets as data
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+    from pysgpp.extensions.datadriven.learner import Types
+    import pysgpp as sg
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 
 ## This function generates the Friedman1 dataset on demand

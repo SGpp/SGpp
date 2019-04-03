@@ -1,9 +1,14 @@
-import pysgpp
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+try:
+  import pysgpp
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import math
+  from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
+    
 pi = math.pi
 
 class interpolation_function(object):

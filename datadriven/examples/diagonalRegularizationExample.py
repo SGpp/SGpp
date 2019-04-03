@@ -16,15 +16,20 @@
 ## \f$ d \f$ corresponds to the dimension of the grid and
 ## \f$ \mathbf{\vert \mathbf{l} \vert_1} \f$ to the level sum of the ith grid point.
 
+try:
 import requests as r
 import numpy as np
 import pandas as pd
 import sklearn.preprocessing as pre
-from sklearn.cross_validation import KFold
+    from sklearn.model_selection import KFold
 from scipy import stats
 from zipfile import ZipFile
 import io 
 import pysgpp as sg; sg.omp_set_num_threads(4)
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 ## This function scales all predictors so that they are suitable for sparse grids.
 def scale(df, scaler=None):
