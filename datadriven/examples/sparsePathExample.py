@@ -11,13 +11,17 @@
 ## "Regularization paths for generalized linear models via coordinate descent."
 ## Friedman, Jerome, Trevor Hastie, and Rob Tibshirani, Journal of statistical software, 2010.
 ## \endverbatim
+try:
+    import numpy as np
+    import pysgpp as sg; sg.omp_set_num_threads(4)
+    import pandas as pd
+    import sklearn.datasets as data
+    from scipy.sparse.linalg import LinearOperator, svds
+    import sys
 
-import numpy as np
-import pysgpp as sg; sg.omp_set_num_threads(4)
-import pandas as pd
-import sklearn.datasets as data
-from scipy.sparse.linalg import LinearOperator, svds
-import sys
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 ## This function generates the Friedman1 dataset.
 def generate_friedman1(seed):

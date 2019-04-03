@@ -16,11 +16,16 @@
 ## G_n^T &= \bigcup_{\substack{\vert {\mathbf{l}} \vert_1 - T \vert \mathbf{i} \vert_\infty \\ \leq n + d - 1 - T n}} G_{\mathbf{l}},\\
 ## V_n^T &= \bigoplus_{\substack{\vert {\mathbf{l}} \vert_1 - T \vert \mathbf{i} \vert_\infty \\ \leq n + d - 1 - T n}} W_{\mathbf{l}}\nonumber \f}
 
-## We first import all pysgpp and other utility libraries.
-import numpy as np
-import pysgpp as sg; sg.omp_set_num_threads(4)
-#import pandas as pd
-import sklearn.datasets as data
+try:
+    ## We first import all pysgpp and other utility libraries.
+    import numpy as np
+    import pysgpp as sg; sg.omp_set_num_threads(4)
+    #import pandas as pd
+    import sklearn.datasets as data
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 ## This function generates the Friedman1 dataset on demand.
 def generate_friedman1(seed):

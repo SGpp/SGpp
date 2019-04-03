@@ -10,10 +10,15 @@
 ## a subset of all possible interaction terms.
 ## It uses the optical digits dataset as an example.
 
-import numpy as np
-import pysgpp as sg; sg.omp_set_num_threads(4)
-import pandas as pd
-import sklearn.preprocessing as pre
+try:
+    import numpy as np
+    import pysgpp as sg; sg.omp_set_num_threads(4)
+    import pandas as pd
+    import sklearn.preprocessing as pre
+
+except ImportError as e:
+    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    exit(0)
 
 ## This function scales all predictors so that they are suitable for sparse grids.
 def scale(df, scaler=None):
