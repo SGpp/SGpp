@@ -43,7 +43,7 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
   // Backward Substitution:
   choleskyBackwardSolve(decompMatrix, y, alpha);
 
-  std::cout << alpha.toString() << std::endl;
+  // std::cout << alpha.toString() << std::endl;
 }
 
 void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,

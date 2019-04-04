@@ -167,6 +167,7 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
   // Refinement, expand alpha
   if (newNoPoints > oldNoPoints) {
     alphaDistributed.resize(newNoPoints);
+    alpha.resizeZero(newNoPoints);
   }
 
   // Update online object: lhs, rhs and recompute the density function based on the b stored

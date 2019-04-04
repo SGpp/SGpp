@@ -261,12 +261,15 @@ BOOST_AUTO_TEST_CASE(testPdgemv) {
   std::vector<double> testData(nrows, 1.0);
   result = DataVectorDistributed(testData.data(), processGrid, nrows, 2);
 
-  DataMatrixDistributed::mult(d_rand, x, result, false, 1.0, 1.0);
+  DataMatrixDistributed m = d_rand;
+
+  DataMatrixDistributed::mult(m, x, result, false, 1.0, 1.0);
 
   DataVector offset(testData.data(), nrows);
-  expected.add(offset);
+  DataVector expectedOffset = expected;
+  expectedOffset.add(offset);
 
-  assertVectorClose(expected, result);
+  assertVectorClose(expectedOffset, result);
 
   if (BlacsProcessGrid::availableProcesses() >= 4) {
     std::shared_ptr<BlacsProcessGrid> grid = std::make_shared<BlacsProcessGrid>(2, 2);
@@ -387,6 +390,19 @@ BOOST_AUTO_TEST_CASE(testPgdeadd) {
 
     assertMatrixClose(d_rand_local, c);
   }
+}
+
+BOOST_AUTO_TEST_CASE(testFromSharedData) {
+  std::vector<double> testData{1.0,  2.0,  3.0,  4.0,  5.0,  6.0,  7.0,  8.0,  9.0,
+                               10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0, 18.0,
+                               19.0, 20.0, 21.0, 22.0, 23.0, 24.0, 25.0};
+
+  DataMatrixDistributed test =
+      DataMatrixDistributed::fromSharedData(testData.data(), processGrid, 5, 5, 2, 2);
+
+  DataMatrix expected = DataMatrix(testData.data(), 5, 5);
+
+  assertMatrixClose(expected, test);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
