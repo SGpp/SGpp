@@ -146,7 +146,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
 
     /*
      * DEBUGGING: PRINTING CURRENT SET
-     */
+
     cout << "##CURRENT SET before Refinement: " << refinementsPerformed << " ##" << std::endl;
     for (size_t i = 0; i < componentConfigs.size(); i++) {
       cout << i << " :" << componentConfigs.at(i).coef << " [";
@@ -155,6 +155,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
       }
       cout << "]" << std::endl;
     }
+        */
 
     /*
      * Finding the sub grid with the greatest error.
@@ -167,8 +168,8 @@ bool ModelFittingDensityEstimationCombi::refine() {
           components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
       if (now > max) {
         if (configurator.isRefinable(componentConfigs.at(i))) {
-          cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
-               << components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
+          // cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
+          //<< components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
           max = now;
           ind = i;
         }
@@ -228,13 +229,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
 
     /*
      * DEBUGGING: PRINTING CURRENT SET
-     */
-    size_t gridpoints = 0;
-    for (size_t i = 0; i < components.size(); i++) {
-      gridpoints += components.at(i)->getGrid().getSize();
-    }
-    cout << "##CURRENT SET after Refinement: " << refinementsPerformed
-         << " ## Sum of Gridpoints: " << gridpoints << std::endl;
+
     for (size_t i = 0; i < componentConfigs.size(); i++) {
       cout << i << " :" << componentConfigs.at(i).coef << " [";
       for (size_t l : componentConfigs.at(i).levels) {
@@ -242,6 +237,13 @@ bool ModelFittingDensityEstimationCombi::refine() {
       }
       cout << "]" << std::endl;
     }
+    */
+    size_t gridpoints = 0;
+    for (size_t i = 0; i < components.size(); i++) {
+      gridpoints += components.at(i)->getGrid().getSize();
+    }
+    cout << "##CURRENT SET after Refinement: " << refinementsPerformed
+         << " ## Sum of Gridpoints: " << gridpoints << std::endl;
   }
   return false;
 }
