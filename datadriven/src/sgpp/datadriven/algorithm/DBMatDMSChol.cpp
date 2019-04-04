@@ -42,6 +42,8 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
 
   // Backward Substitution:
   choleskyBackwardSolve(decompMatrix, y, alpha);
+
+  std::cout << alpha.toString() << std::endl;
 }
 
 void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,
@@ -71,7 +73,7 @@ void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVector
   DataMatrixDistributed::solveCholesky(decompMatrix, x);
 
   // DEBUG: print alpha after solving
-  // alpha.printVector();
+  x.printVector();
 #else
   throw sgpp::base::algorithm_exception("build without USE_SCALAPACK");
 #endif /* USE_SCALAPACK */

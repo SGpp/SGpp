@@ -121,7 +121,7 @@ class DataVectorDistributed {
    * Appends rows to the vector
    * @param rows
    */
-  void append(size_t rows);
+  // void append(size_t rows);
 
   /**
    * Resizes the vector to rows, discards the data.

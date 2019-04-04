@@ -47,31 +47,22 @@ ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffPa
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
 
+ModelFittingDensityEstimationOnOffParallel::ModelFittingDensityEstimationOnOffParallel(
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<BlacsProcessGrid> processGrid)
+    : ModelFittingDensityEstimation(),
+      processGrid(processGrid),
+      alphaDistributed(processGrid, 1, 1) {
+  this->config = std::unique_ptr<FitterConfiguration>(
+      std::make_unique<FitterConfigurationDensityEstimation>(config));
+}
+
 double ModelFittingDensityEstimationOnOffParallel::evaluate(const DataVector& sample) {
-  throw sgpp::base::not_implemented_exception(
-      "This function is not implemented in the parallelized version!");
-  /*alpha = alphaDistributed.toLocalDataVector();
-  double result = 0.0;
-
-  if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
-    result = online->eval(alpha, sample, *grid);
-
-    // broadcast value to other processes so that every process returns the same value
-    Cdgebs2d(processGrid->getContextHandle(), "All", "T", 1, 1, &result, 1);
-  } else if (processGrid->isProcessInGrid()) {
-    Cdgebr2d(processGrid->getContextHandle(), "All", "T", 1, 1, &result, 1, 0, 0);
-  } else {
-    std::cout << "Warning! Process not in the grid tried to call evaluate, invalid result will be "
-                 "returned!"
-              << std::endl;
-  }
-  return result;*/
+  return online->eval(alpha, sample, *grid);
 }
 
 void ModelFittingDensityEstimationOnOffParallel::evaluate(DataMatrix& samples,
                                                           DataVector& results) {
-  alpha = alphaDistributed.toLocalDataVectorBroadcast();
-
   auto& parallelConfig = this->config->getParallelConfig();
   DataVectorDistributed resultsDistributed(processGrid, results.size(),
                                            parallelConfig.rowBlockSize_);
@@ -80,7 +71,8 @@ void ModelFittingDensityEstimationOnOffParallel::evaluate(DataMatrix& samples,
     online->evalParallel(alpha, samples, resultsDistributed, *grid);
   }
 
-  resultsDistributed.toLocalDataVectorBroadcast(results);
+  // only the master needs the result, as it calculates the score
+  resultsDistributed.toLocalDataVector(results);
 }
 
 void ModelFittingDensityEstimationOnOffParallel::fit(Dataset& newDataset) {
@@ -106,11 +98,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
 
-  // TODO(jan) only on master?
-  // if (BlacsProcessGrid::getCurrentProcess() == 0) {
-  // build surplus vector
   alpha = DataVector{grid->getSize()};
-  //}
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
@@ -137,34 +125,27 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  //}
 
-  // distribute offline, data and alpha
-  // TODO(jan) which processes get the data, distribute?
-  /*DataMatrixDistributed dataDistributed(newDataset.data(), processGrid, newDataset.getNrows(),
-                                        newDataset.getNcols(), parallelConfig.rowBlockSize_,
-                                        parallelConfig.columnBlockSize_);*/
-
-  alphaDistributed = DataVectorDistributed(alpha.data(), processGrid, grid->getSize(),
-                                           parallelConfig.rowBlockSize_);
+  alphaDistributed =
+      DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
+  online->syncDistributedDecomposition(processGrid, parallelConfig);
 
-  online->computeDensityFunctionParallel(
-      alphaDistributed, newDataset, *grid, this->config->getDensityEstimationConfig(),
-      this->config->getParallelConfig(), processGrid, true,  // TODO(jan) save_b true??
-      this->config->getCrossvalidationConfig().enable_);
+  online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
+                                         this->config->getDensityEstimationConfig(),
+                                         this->config->getParallelConfig(), processGrid, true,
+                                         this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().beta);
   // online->normalize(alpha, *grid);
+
+  alpha = alphaDistributed.toLocalDataVectorBroadcast();
 }
 
 bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
                                                         std::list<size_t>* deletedGridPoints) {
-  // alpha is currently updated on all processes TODO(jan) check performance
-  alpha = alphaDistributed.toLocalDataVectorBroadcast();
-
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha
@@ -175,15 +156,15 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();
 
-  // Refinement, expand alpha
-  if (newNoPoints > oldNoPoints) {
-    alpha.resizeZero(newNoPoints);
-  }
-
   // update the distributed vector
   auto& parallelConfig = this->config->getParallelConfig();
   alphaDistributed =
       DataVectorDistributed(alpha.data(), processGrid, alpha.size(), parallelConfig.rowBlockSize_);
+
+  // Refinement, expand alpha
+  if (newNoPoints > oldNoPoints) {
+    alphaDistributed.resize(newNoPoints);
+  }
 
   // every process does exactly the same steps to update the matrix decomposition
   // TODO(jan) check performance
@@ -193,6 +174,8 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
                                           newNoPoints - oldNoPoints, *deletedGridPoints,
                                           config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
+
+  online->syncDistributedDecomposition(processGrid, parallelConfig);
   return true;
 }  // namespace datadriven
 
@@ -206,19 +189,14 @@ void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) 
     // Initial fitting of dataset
     fit(newDataset);
   } else {
-    // auto& parallelConfig = this->config->getParallelConfig();
-
-    // distribute the new data TODO(jan) needed?
-    /*DataMatrixDistributed dataDistributed(newDataset.data(), processGrid, newDataset.getNrows(),
-                                          newDataset.getNcols(), parallelConfig.rowBlockSize_,
-                                          parallelConfig.columnBlockSize_);*/
-
     // Update the fit (streaming)
-    online->computeDensityFunctionParallel(
-        alphaDistributed, newDataset, *grid, this->config->getDensityEstimationConfig(),
-        this->config->getParallelConfig(), processGrid, true,  // TODO(jan) save_b true??
-        this->config->getCrossvalidationConfig().enable_);
+    online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
+                                           this->config->getDensityEstimationConfig(),
+                                           this->config->getParallelConfig(), processGrid, true,
+                                           this->config->getCrossvalidationConfig().enable_);
     // online->normalize(alpha, *grid);
+
+    alpha = alphaDistributed.toLocalDataVectorBroadcast();
   }
 }
 
@@ -233,6 +211,11 @@ void ModelFittingDensityEstimationOnOffParallel::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+std::shared_ptr<BlacsProcessGrid> ModelFittingDensityEstimationOnOffParallel::getProcessGrid()
+    const {
+  return processGrid;
 }
 
 }  // namespace datadriven

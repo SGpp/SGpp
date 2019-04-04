@@ -59,12 +59,7 @@ void DBMatOnlineDEChol::solveSLEParallel(DataVectorDistributed& alpha, DataVecto
                                          const ParallelConfiguration& parallelConfig,
                                          std::shared_ptr<BlacsProcessGrid> processGrid,
                                          bool do_cv) {
-  // TODO(jan) move creation of distributed matrices into offline object, so it is only done
-  // once
-  DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
-  DataMatrixDistributed lhsDistributed = DataMatrixDistributed(
-      lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
-      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed lhsDistributed = offlineObject.getDecomposedMatrixDistributed();
 
   auto solver = std::unique_ptr<DBMatDMSChol>{
       buildCholSolver(offlineObject, grid, densityEstimationConfig, do_cv)};

@@ -22,6 +22,9 @@ namespace datadriven {
  * for parallelization with ScaLAPACK.
  */
 struct ParallelConfiguration {
+  // disable by default, enable if config is found. Does not have to be set in the config file.
+  bool scalapackEnabled_ = false;
+
   int processRows_ = -1;
   int processCols_ = -1;
   size_t rowBlockSize_ = 128;

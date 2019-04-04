@@ -137,7 +137,7 @@ void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixD
     }
   } else {
     // add the B*b term: alpha = B * b + alpha (using beta parameter from pdgemv)
-    DataMatrixDistributed::mult(B, b, alpha, 1.0, 1.0);
+    DataMatrixDistributed::mult(B, b, alpha, false, 1.0, 1.0);
   }
 
   // DEBUG: print alpha after solving

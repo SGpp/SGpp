@@ -44,6 +44,16 @@ class DataMatrixDistributed {
   };
 
   /**
+   * Enum that specifies the lower or upper triangular part of a matrix.
+   */
+  enum class TRIANGULAR { LOWER, UPPER };
+
+  /**
+   * Creates an empty DataMatrixDistributed object. Warning: This object cannot be used.
+   */
+  DataMatrixDistributed();
+
+  /**
    * Creates an two-dimensional DataMatrixDistributed filled with a value.
    */
   DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows, int globalColumns,
@@ -58,6 +68,15 @@ class DataMatrixDistributed {
   DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
                         int globalColumns, int rowBlockSize, int columnBlockSize,
                         DTYPE dtype = DTYPE::DENSE);
+
+  /**
+   * Creates a distributed data matrix from data which is already shared (mirrored) on each process.
+   * Avoids network transfers.
+   */
+  static DataMatrixDistributed fromSharedData(const double* input,
+                                              std::shared_ptr<BlacsProcessGrid> grid,
+                                              int globalRows, int globalColumns, int rowBlockSize,
+                                              int columnBlockSize, DTYPE dtype = DTYPE::DENSE);
 
   /**
    * Returns the value of the element at position [row,col].
@@ -228,7 +247,8 @@ class DataMatrixDistributed {
    * @param[in] l lower triangular matrix L of the Cholesky decomposition
    * @param[in, out] input vector b of the linear system, is overwritten with solution x
    */
-  static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b);
+  static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,
+                            TRIANGULAR uplo = TRIANGULAR::LOWER);
 
   /**
    * Append newRows to the global rows, can currently only be done if there is only one
@@ -237,14 +257,14 @@ class DataMatrixDistributed {
    *
    * @param rows
    */
-  void appendRows(size_t rows);
+  // void appendRows(size_t rows);
 
   /**
    * Append newColumns to the global columns.
    *
    * @param cols
    */
-  void appendColumns(size_t cols);
+  // void appendColumns(size_t cols);
 
   /**
    * Resizes the matrix to rows and cols, data is discarded.

@@ -100,23 +100,13 @@ void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
     DensityEstimationConfiguration& densityEstimationConfig,
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool do_cv) {
-  // TODO(jan) parallelize offline version on creation
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
-  DataMatrix Tinv = offline->getTinv();
-  DataMatrixDistributed TinvDistributed =
-      DataMatrixDistributed(Tinv.data(), processGrid, Tinv.getNrows(), Tinv.getNcols(),
-                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed TinvDistributed = offline->getTinvDistributed();
 
-  DataMatrix Q = offline->getQ();
-  DataMatrixDistributed QDistributed =
-      DataMatrixDistributed(Q.data(), processGrid, Q.getNrows(), Q.getNcols(),
-                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed QDistributed = offline->getQDistributed();
 
-  DataMatrix B = this->getB();
-  DataMatrixDistributed BDistributed =
-      DataMatrixDistributed(B.data(), processGrid, B.getNrows(), B.getNcols(),
-                            parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed BDistributed = this->getBDistributed();
 
   // create solver
   std::unique_ptr<sgpp::datadriven::DBMatDMSOrthoAdapt> solver =
@@ -477,6 +467,17 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoint
     }
     //### end adjusted part
   }
+}
+
+void DBMatOnlineDEOrthoAdapt::syncDistributedDecomposition(
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  offlineObject.syncDistributedDecomposition(processGrid, parallelConfig);
+  b_adapt_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      b_adapt_matrix_.data(), processGrid, b_adapt_matrix_.getNrows(), b_adapt_matrix_.getNcols(),
+      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+#endif
+  // no action needed without scalapack
 }
 
 }  // namespace datadriven

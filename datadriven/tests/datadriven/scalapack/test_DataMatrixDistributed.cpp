@@ -256,6 +256,15 @@ BOOST_AUTO_TEST_CASE(testPdgemv) {
   DataVector expected(nrows);
 
   d_rand_local.mult(expectedX, expected);
+  assertVectorClose(expected, result);
+
+  std::vector<double> testData(nrows, 1.0);
+  result = DataVectorDistributed(testData.data(), processGrid, nrows, 2);
+
+  DataMatrixDistributed::mult(d_rand, x, result, false, 1.0, 1.0);
+
+  DataVector offset(testData.data(), nrows);
+  expected.add(offset);
 
   assertVectorClose(expected, result);
 
