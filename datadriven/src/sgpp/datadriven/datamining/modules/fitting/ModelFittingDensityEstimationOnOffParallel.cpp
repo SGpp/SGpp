@@ -139,9 +139,12 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().beta);
-  // online->normalize(alpha, *grid);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
+
+  if (densityEstimationConfig.normalize_) {
+    online->normalize(alpha, *grid);
+  }
 }
 
 bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
@@ -165,9 +168,6 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
   if (newNoPoints > oldNoPoints) {
     alphaDistributed.resize(newNoPoints);
   }
-
-  // every process does exactly the same steps to update the matrix decomposition
-  // TODO(jan) check performance
 
   // Update online object: lhs, rhs and recompute the density function based on the b stored
   online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
@@ -194,9 +194,12 @@ void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) 
                                            this->config->getDensityEstimationConfig(),
                                            this->config->getParallelConfig(), processGrid, true,
                                            this->config->getCrossvalidationConfig().enable_);
-    // online->normalize(alpha, *grid);
 
     alpha = alphaDistributed.toLocalDataVectorBroadcast();
+
+    if (this->config->getDensityEstimationConfig().normalize_) {
+      online->normalize(alpha, *grid);
+    }
   }
 }
 

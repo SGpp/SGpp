@@ -73,7 +73,7 @@ void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVector
   DataMatrixDistributed::solveCholesky(decompMatrix, x);
 
   // DEBUG: print alpha after solving
-  x.printVector();
+  // x.printVector();
 #else
   throw sgpp::base::algorithm_exception("build without USE_SCALAPACK");
 #endif /* USE_SCALAPACK */

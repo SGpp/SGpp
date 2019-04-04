@@ -351,6 +351,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
     config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
                                           defaults.iCholSweepsSolver_, "densityEstimationConfig");
 
+    config.normalize_ = parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
+                                  "densityEstimationConfig");
+
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
       config.type_ = DensityEstimationTypeParser::parse(

@@ -118,6 +118,7 @@ DataMatrixDistributed DataMatrixDistributed::fromSharedData(const double* input,
       }
     }
   }
+  return matrix;
 }
 
 DataMatrix DataMatrixDistributed::toLocalDataMatrix() const {
