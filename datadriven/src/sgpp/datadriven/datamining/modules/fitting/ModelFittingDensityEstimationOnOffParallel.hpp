@@ -52,6 +52,15 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
       const FitterConfigurationDensityEstimation& config);
 
   /**
+   * Constructor
+   *
+   * @param config configuration object that specifies grid, refinement, and regularization
+   * @param processGrid BLACS process grid for parallelization with ScaLAPACK
+   */
+  ModelFittingDensityEstimationOnOffParallel(const FitterConfigurationDensityEstimation& config,
+                                             std::shared_ptr<BlacsProcessGrid> processGrid);
+
+  /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
@@ -117,6 +126,11 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * @returns the BLACS process grid
+   */
+  std::shared_ptr<BlacsProcessGrid> getProcessGrid() const override;
 
  private:
   // The online object

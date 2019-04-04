@@ -52,13 +52,33 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints)
     // Coarsening -> remove all idx in deletedPoints
     if (deletedPoints != nullptr && deletedPoints->size() > 0) {
       std::vector<size_t> idxToDelete{std::begin(*deletedPoints), std::end(*deletedPoints)};
-      bSave.remove(idxToDelete);
-      bTotalPoints.remove(idxToDelete);
+      if (localVectorsInitialized) {
+        bSave.remove(idxToDelete);
+        bTotalPoints.remove(idxToDelete);
+      }
+
+      if (distributedVectorsInitialized) {
+        DataVector tmpbSave = bSaveDistributed->toLocalDataVector();
+        DataVector tmpbTotalPoints = bTotalPointsDistributed->toLocalDataVector();
+
+        auto processGrid = bSaveDistributed->getProcessGrid();
+        if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
+          tmpbSave.remove(idxToDelete);
+          tmpbTotalPoints.remove(idxToDelete);
+        }
+        bSaveDistributed->distribute(tmpbSave.data());
+        bTotalPointsDistributed->distribute(tmpbTotalPoints.data());
+      }
     }
     // Refinement -> append newPoints zeros to b
-    if (gridSize > bSave.size()) {
+    if (localVectorsInitialized && gridSize > bSave.size()) {
       bSave.resizeZero(gridSize);
       bTotalPoints.resizeZero(gridSize);
+    }
+
+    if (distributedVectorsInitialized && gridSize > bSaveDistributed->getGlobalRows()) {
+      bSaveDistributed->resize(gridSize);
+      bTotalPointsDistributed->resize(gridSize);
     }
   }
 }
@@ -118,7 +138,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     totalPoints++;
     DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
     b.setAll(0);
-    if (b.getSize() != offlineObject.getGridSize()) {
+    if (b.getSize() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
     }
@@ -201,7 +221,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     bool save_b, bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
   std::cout << "Computing density function..." << std::endl;
 
-  if (!distributedVectorsInitialized) {
+  if (save_b && !distributedVectorsInitialized) {
     // init bSaveDistributed and bTotalPointsDistributed only here, as they are not needed in the
     // local version
     bSaveDistributed = std::make_unique<DataVectorDistributed>(
@@ -233,7 +253,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     size_t bSize = use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols();
 
     DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
-    if (b.getGlobalRows() != offlineObject.getGridSize()) {
+    if (b.getGlobalRows() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunctionParallel: b doesn't match size of system "
           "matrix");
@@ -369,6 +389,11 @@ double DBMatOnlineDE::normalizeQuadrature(DataVector& alpha, Grid& grid) {
   double quadrature = sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
+}
+
+void DBMatOnlineDE::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                                 const ParallelConfiguration& parallelConfig) {
+  offlineObject.syncDistributedDecomposition(processGrid, parallelConfig);
 }
 
 }  // namespace datadriven

@@ -193,6 +193,12 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   double normalizeQuadrature(DataVector& alpha, Grid& grid);
 
+  /**
+   * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
+   */
+  virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig);
+
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
                         DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;

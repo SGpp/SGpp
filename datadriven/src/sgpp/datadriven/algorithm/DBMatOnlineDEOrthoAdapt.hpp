@@ -34,6 +34,11 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; }
 
   /**
+   * @returns distributed version of matrix B
+   */
+  DataMatrixDistributed& getBDistributed() { return this->b_adapt_matrix_distributed_; }
+
+  /**
    * Adds new DataVector to list of refined points
    * For testing purposes only
    *
@@ -72,9 +77,18 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
       size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
 
+  /**
+   * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
+   */
+  void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                    const ParallelConfiguration& parallelConfig) override;
+
  protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
+
+  // distributed version of matrix B, only initialized if scalapack is used
+  DataMatrixDistributed b_adapt_matrix_distributed_;
 
   // holds all prior refined points, to know what to coarsen later on
   std::vector<sgpp::base::DataVector> refined_points_;

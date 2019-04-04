@@ -24,6 +24,8 @@
 namespace sgpp {
 namespace datadriven {
 
+DataMatrixDistributed::DataMatrixDistributed() {}
+
 DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
                                              int globalColumns, int rowBlockSize,
                                              int columnBlockSize, double value,
@@ -73,6 +75,48 @@ DataMatrixDistributed::DataMatrixDistributed(double* input, std::shared_ptr<Blac
                             dtype) {
   if (isProcessMapped()) {
     distribute(input);
+  }
+}
+
+DataMatrixDistributed DataMatrixDistributed::fromSharedData(const double* input,
+                                                            std::shared_ptr<BlacsProcessGrid> grid,
+                                                            int globalRows, int globalColumns,
+                                                            int rowBlockSize, int columnBlockSize,
+                                                            DTYPE dtype) {
+  DataMatrixDistributed matrix(grid, globalRows, globalColumns, rowBlockSize, columnBlockSize, 0.0,
+                               dtype);
+  for (size_t row = 0; row < matrix.globalRows; row += matrix.rowBlockSize) {
+    for (size_t col = 0; col < matrix.globalColumns; col += matrix.columnBlockSize) {
+      // last block might be smaller
+      size_t rowsToSend = matrix.rowBlockSize;
+      if (row + rowsToSend > matrix.globalRows) {
+        rowsToSend = matrix.globalRows - row;
+      }
+
+      size_t colsToSend = matrix.columnBlockSize;
+      if (col + colsToSend > matrix.globalColumns) {
+        colsToSend = matrix.globalColumns - col;
+      }
+
+      int receiverRow =
+          matrix.globalToProcessIndex(row, grid->getTotalRows(), matrix.rowBlockSize, 0);
+      int receiverCol =
+          matrix.globalToProcessIndex(col, grid->getTotalColumns(), matrix.columnBlockSize, 0);
+
+      // copy the data to the local matrix of the right process
+      if (grid->getCurrentRow() == receiverRow && grid->getCurrentColumn() == receiverCol) {
+        size_t localRowIndex =
+            matrix.globalToLocalIndex(row, grid->getTotalRows(), matrix.rowBlockSize);
+        size_t localColumnIndex =
+            matrix.globalToLocalIndex(col, grid->getTotalColumns(), matrix.columnBlockSize);
+
+        const double* submatrix = &input[(col * matrix.globalRows) + row];
+        double* localBlock =
+            &matrix.getLocalPointer()[(localColumnIndex * matrix.localRows) + localRowIndex];
+
+        std::copy_n(submatrix, rowsToSend * colsToSend, localBlock);
+      }
+    }
   }
 }
 
@@ -287,11 +331,15 @@ void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataMatri
   }
 }
 
-void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l,
-                                          DataVectorDistributed& b) {
+void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,
+                                          DataMatrixDistributed::TRIANGULAR uplo) {
   if (l.isProcessMapped() || b.isProcessMapped()) {
+    // implementation detail: values of upper and lower are switched, as internally ScaLAPACK
+    // transposes all matrices. By switching upper and lower, everything works as expected.
+    const char* tri = (uplo == TRIANGULAR::LOWER ? upperTriangular : lowerTriangular);
+
     int info = 0;
-    pdpotrs_(lowerTriangular, l.getGlobalRows(), 1, l.getLocalPointer(), 1, 1, l.getDescriptor(),
+    pdpotrs_(tri, l.getGlobalRows(), 1, l.getLocalPointer(), 1, 1, l.getDescriptor(),
              b.getLocalPointer(), 1, 1, b.getDescriptor(), info);
 
     if (info < 0) {
@@ -300,7 +348,7 @@ void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l,
   }
 }
 
-void DataMatrixDistributed::appendRows(size_t rows) {
+/*void DataMatrixDistributed::appendRows(size_t rows) {
   if (rows == 0) {
     return;
   }
@@ -379,10 +427,36 @@ void DataMatrixDistributed::appendColumns(size_t cols) {
   }
 
   globalColumns = newColumns;
-}
+}*/
 
 void DataMatrixDistributed::resize(size_t rows, size_t cols) {
-  DataMatrixDistributed(grid, rows, cols, columnBlockSize, rowBlockSize);
+  if (getGlobalRows() == rows && getGlobalCols() == cols) {
+    return;
+  }
+  // transpose
+  this->globalRows = cols;
+  this->globalColumns = rows;
+
+  if (isProcessMapped()) {
+    localRows = numroc_(this->globalRows, this->rowBlockSize, grid->getCurrentRow(), 0,
+                        grid->getTotalRows());
+    localColumns = numroc_(this->globalColumns, this->columnBlockSize, grid->getCurrentColumn(), 0,
+                           grid->getTotalColumns());
+
+    if (localRows == 0 || localColumns == 0) {
+      localRows = 0;
+      localColumns = 0;
+    }
+
+    leadingDimension = std::max(1, localRows);
+
+    // resize local matrix
+    localData.resize(localRows * localColumns);
+
+    descriptor[m_] = this->globalRows;
+    descriptor[n_] = this->globalColumns;
+    descriptor[lld_] = leadingDimension;
+  }
 }
 
 DataVectorDistributed DataMatrixDistributed::toVector() const {

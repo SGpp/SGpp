@@ -77,7 +77,7 @@ void DataVectorDistributed::scale(double a) {
   }
 }
 
-void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
+// void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
 
 void DataVectorDistributed::resize(size_t rows) { data.resize(1, rows); }
 

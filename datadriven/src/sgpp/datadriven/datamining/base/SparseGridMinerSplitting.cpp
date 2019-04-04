@@ -30,10 +30,13 @@ double SparseGridMinerSplitting::learn(bool verbose) {
   RefinementMonitorFactory monitorFactory;
   RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
+
   for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
     if (verbose) {
-      std::cout << "###############"
-                << "Starting training epoch #" << epoch << std::endl;
+      std::ostringstream out;
+      out << "###############"
+          << "Starting training epoch #" << epoch;
+      print(out);
     }
     dataSource->reset();
     // Process dataset iteratively
@@ -46,9 +49,11 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         break;
       }
       if (verbose) {
-        std::cout << "###############"
-                  << "Itertation #" << (iteration++) << std::endl
-                  << "Batch size: " << numInstances << std::endl;
+        std::ostringstream out;
+        out << "###############"
+            << "Itertation #" << (iteration++) << std::endl
+            << "Batch size: " << numInstances;
+        print(out);
       }
       // Train model on new batch
       fitter->update(*dataset);
@@ -58,15 +63,12 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
       if (verbose) {
-#ifdef USE_SCALAPACK
-        if (BlacsProcessGrid::getCurrentProcess() == 0) {
-#endif
-          std::cout << "Score on batch: " << scoreTrain << std::endl
-                    << "Score on validation data: " << scoreVal << std::endl;
-#ifdef USE_SCALAPACK
-        }
-#endif
+        std::ostringstream out;
+        out << "Score on batch: " << scoreTrain << std::endl
+            << "Score on validation data: " << scoreVal;
+        print(out);
       }
+
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
@@ -74,8 +76,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         fitter->refine();
       }
       if (verbose) {
-        std::cout << "###############"
-                  << "Iteration finished." << std::endl;
+        print("###############Iteration finished.");
       }
     }
   }

@@ -821,7 +821,6 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config";
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
@@ -839,6 +838,8 @@ bool DataMiningConfigParser::getFitterParallelConfig(
 
   if (hasParallelConfig) {
     auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
+
+    config.scalapackEnabled_ = true;
 
     config.processRows_ =
         parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig");
