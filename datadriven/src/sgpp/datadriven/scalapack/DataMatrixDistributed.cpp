@@ -110,11 +110,15 @@ DataMatrixDistributed DataMatrixDistributed::fromSharedData(const double* input,
         size_t localColumnIndex =
             matrix.globalToLocalIndex(col, grid->getTotalColumns(), matrix.columnBlockSize);
 
-        const double* submatrix = &input[(col * matrix.globalRows) + row];
-        double* localBlock =
-            &matrix.getLocalPointer()[(localColumnIndex * matrix.localRows) + localRowIndex];
+        for (size_t i = 0; i < colsToSend; i++) {
+          const double* submatrix = &input[((col + i) * matrix.globalRows) + row];
 
-        std::copy_n(submatrix, rowsToSend * colsToSend, localBlock);
+          double* localBlock =
+              &matrix
+                   .getLocalPointer()[((localColumnIndex + i) * matrix.localRows) + localRowIndex];
+
+          std::copy_n(submatrix, rowsToSend, localBlock);
+        }
       }
     }
   }
@@ -628,10 +632,13 @@ void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
         Cdgebs2d(grid->getContextHandle(), "All", "T", rowsToSend, colsToSend, localBlock,
                  leadingDimension);
 
-        double* submatrix = &localMatrix.getPointer()[(col * globalRows) + row];
-
         // for the sender, directly copy the block into the local matrix
-        std::copy_n(localBlock, rowsToSend * colsToSend, submatrix);
+        for (size_t i = 0; i < colsToSend; i++) {
+          double* submatrix = &localMatrix.getPointer()[((col + i) * globalRows) + row];
+          std::copy_n(localBlock, rowsToSend * colsToSend, submatrix);
+
+          localBlock += localRows;
+        }
       } else {
         // receive on all other processes (sends and receives to the same process are strictly
         // ordered, so indexing works)
