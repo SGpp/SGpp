@@ -101,7 +101,6 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
       }
     }
   }
-  cout << "gridsizeset" << std::endl;
   size_t gridpoints = 0;
   for (size_t i = 0; i < components.size(); i++) {
     gridpoints += components.at(i)->getGrid().getSize();
@@ -125,11 +124,9 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
       }
     }
   }
-  cout << "gridsizematrix" << std::endl;
   size_t gridpoints = 0;
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
-      cout << "lel" << i << std::endl;
       gridpoints += components.at(i)->getGrid().getSize();
     } else {
       cout << i << std::endl;
