@@ -88,6 +88,13 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   std::vector<combiConfig> componentConfigs;
 
   /**
+   * Contains the status of the component grids.
+   * true: fitted
+   * false: unfitted
+   */
+  std::vector<bool> fitted;
+
+  /**
    * Delivers the initial level vectors and weighs and manages refinements
    */
   CombiConfigurator configurator;
