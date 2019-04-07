@@ -72,9 +72,9 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
-        std::cout << getTime();
+        std::cout << "TIME BEVOR REFINEMENT" << getTime();
         fitter->refine();
-        std::cout << getTime();
+        std::cout << "TIME AFTER REFINEMENT" << getTime();
       }
       std::cout << std::endl << evalu::getMSek();
       if (verbose) {

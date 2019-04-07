@@ -40,6 +40,7 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
+  fitted = vector<bool>(0);
 }
 
 void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
@@ -63,6 +64,7 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   }
 
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
+  fitted = vector<bool>(componentConfigs.size());
 
   for (size_t i = 0; i < componentConfigs.size(); i++) {
     FitterConfigurationDensityEstimation newFitterConfig{};
@@ -76,11 +78,13 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
 
     components.at(i) = createNewModel(newFitterConfig);
+    fitted.at(i) = 0;
     cout << "Model created\n";
   }
   cout << "Fitting the component grids to the Dataset: \n";
   for (size_t i = 0; i < components.size(); i++) {
     components.at(i)->fit(newDataset);
+    fitted.at(i) = 1;
   }
   cout << "Done fitting the component grids. \n";
 }
@@ -89,12 +93,21 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
   if (components.empty()) {
     fit(newDataset);
   } else {
-    if (false) {
-      for (auto& model : components) {
-        model->update(newDataset);
+    for (size_t i = 0; i < components.size(); i++) {
+      //(auto& model : components)model->update(newDataset);
+      if (fitted.at(i) != 1) {
+        components.at(i)->fit(newDataset.getData());
+        fitted.at(i) = 1;
       }
     }
   }
+  cout << "gridsizeset" << std::endl;
+  size_t gridpoints = 0;
+  for (size_t i = 0; i < components.size(); i++) {
+    gridpoints += components.at(i)->getGrid().getSize();
+  }
+  cout << "##CURRENT SET after Refinement: " << refinementsPerformed
+       << " ## Sum of Gridpoints: " << gridpoints << std::endl;
   dataset = &newDataset;
 }
 
@@ -103,13 +116,27 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
     cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
   } else {
-    if (false) {
-      cout << "updating components..\n";
-      for (auto& model : components) {
-        model->update(newDataset);
+    cout << "updating (= fitting new components)..\n";
+    for (size_t i = 0; i < components.size(); i++) {
+      //(auto& model : components)model->update(newDataset);
+      if (fitted.at(i) != 1) {
+        components.at(i)->fit(newDataset);
+        fitted.at(i) = 1;
       }
     }
   }
+  cout << "gridsizematrix" << std::endl;
+  size_t gridpoints = 0;
+  for (size_t i = 0; i < components.size(); i++) {
+    if (fitted.at(i)) {
+      cout << "lel" << i << std::endl;
+      gridpoints += components.at(i)->getGrid().getSize();
+    } else {
+      cout << i << std::endl;
+    }
+  }
+  cout << "##CURRENT SET after Refinement: " << refinementsPerformed
+       << " ## Sum of Gridpoints: " << gridpoints << std::endl;
   datamatrix = newDataset;
   cout << "done\n";
 }
@@ -117,7 +144,9 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
 double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
   double result = 0;
   for (size_t i = 0; i < components.size(); i++) {
-    result += components.at(i)->evaluate(sample) * componentConfigs.at(i).coef;
+    if (fitted.at(i)) {
+      result += components.at(i)->evaluate(sample) * componentConfigs.at(i).coef;
+    }
   }
   return result;
 }
@@ -126,10 +155,12 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVecto
   auto temp = sgpp::base::DataVector(results.size(), 0);
   results.setAll(0);
   for (size_t i = 0; i < components.size(); i++) {
-    temp.setAll(0);
-    components.at(i)->evaluate(samples, temp);
-    temp.mult(componentConfigs.at(i).coef);
-    results.add(temp);
+    if (fitted.at(i)) {
+      temp.setAll(0);
+      components.at(i)->evaluate(samples, temp);
+      temp.mult(componentConfigs.at(i).coef);
+      results.add(temp);
+    }
   }
 }
 
@@ -238,12 +269,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
       cout << "]" << std::endl;
     }
     */
-    size_t gridpoints = 0;
-    for (size_t i = 0; i < components.size(); i++) {
-      gridpoints += components.at(i)->getGrid().getSize();
-    }
-    cout << "##CURRENT SET after Refinement: " << refinementsPerformed
-         << " ## Sum of Gridpoints: " << gridpoints << std::endl;
   }
   return false;
 }
@@ -289,18 +314,15 @@ void ModelFittingDensityEstimationCombi::addNewModel(combiConfig combiconfig) {
   newFitterConfig.getGridConfig().generalType_ = this->config->getGridConfig().generalType_;
 
   components.push_back(createNewModel(newFitterConfig));
+  fitted.push_back(0);
   componentConfigs.push_back(combiconfig);
-  if (!(dataset == nullptr)) {
-    components.back()->fit(dataset->getData());
-  } else {
-    components.back()->fit(datamatrix);
-  }
 }
 
 void ModelFittingDensityEstimationCombi::removeModel(const size_t ind) {
   cout << "removing model " << ind << std::endl;
   componentConfigs.erase(componentConfigs.begin() + ind);
   components.erase(components.begin() + ind);
+  fitted.erase(fitted.begin() + ind);
 }
 
 bool ModelFittingDensityEstimationCombi::isRefinable() {

@@ -34,9 +34,9 @@ int main(int argc, char **argv) {
   myfile << "EVALUATION " << getTime() << std::endl;
 
   vector<string> paths;
-  for (size_t i = 0; i < 20; i++) {
-    paths.push_back("classRipley_component");
-    paths.push_back("classRipley_regular");
+  for (size_t i = 0; i < 25; i++) {
+    paths.push_back("e1_Circles500_component");
+    paths.push_back("e1_Circles500_regular");
   }
   for (size_t i = 0; i < 0; i++) {
     paths.push_back("classIris_component");
