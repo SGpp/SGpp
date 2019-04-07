@@ -152,12 +152,12 @@ class TrainingSpecification(object):
             attrValue = self.__getattribute__(attrName)
             
             #lists, integers, floats, dictionaries can serialized with str()
-            if type(attrValue) in [types.ListType, types.IntType, 
-                             types.FloatType] and attrName.find("__") != 0: 
+            if type(attrValue) in [list, int, 
+                             float] and attrName.find("__") != 0: 
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
                 
             # serialize strings with quotes    
-            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+            elif type(attrValue) == bytes and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
 
         serializationString = "{" + serializationString.rstrip(",\n") + "}"
@@ -172,15 +172,15 @@ class TrainingSpecification(object):
     @classmethod
     def fromJson(cls, jsonObject):
         specification = TrainingSpecification()
-        if jsonObject.has_key('_TrainingSpecification__adaptPoints'):
+        if '_TrainingSpecification__adaptPoints' in jsonObject:
             specification.__adaptPoints = jsonObject['_TrainingSpecification__adaptPoints']
-        if jsonObject.has_key('_TrainingSpecification__l'):
+        if '_TrainingSpecification__l' in jsonObject:
             specification.__l = jsonObject['_TrainingSpecification__l']
-        if jsonObject.has_key('_TrainingSpecification__adaptRate'):
+        if '_TrainingSpecification__adaptRate' in jsonObject:
             specification.__adaptRate = jsonObject['_TrainingSpecification__adaptRate']
-        if jsonObject.has_key('_TrainingSpecification__adaptThreshold'):
+        if '_TrainingSpecification__adaptThreshold' in jsonObject:
             specification.__adaptThreshold = jsonObject['_TrainingSpecification__adaptThreshold']
-        if jsonObject.has_key('_TrainingSpecification__vecType'):
+        if '_TrainingSpecification__vecType' in jsonObject:
             specification.__vecType = jsonObject['_TrainingSpecification__vecType']
         specification.__cOperator = None
         specification.__bOperator = None

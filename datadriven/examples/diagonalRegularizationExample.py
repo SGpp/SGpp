@@ -23,7 +23,7 @@ import sklearn.preprocessing as pre
 from sklearn.cross_validation import KFold
 from scipy import stats
 from zipfile import ZipFile
-from StringIO import StringIO
+import io 
 import pysgpp as sg; sg.omp_set_num_threads(4)
 
 ## This function scales all predictors so that they are suitable for sparse grids.
@@ -57,12 +57,12 @@ def transform_cox(df, lambdas):
 def get_dataset():
     ## Download and unzip the dataset.
     data_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00294/CCPP.zip"
-    print "Loading power plant dataset from the UCI repository."
+    print("Loading power plant dataset from the UCI repository.")
     resp = r.get(data_url, stream=True)
-    data = ZipFile(StringIO(resp.content))
+    data = ZipFile(io.BytesIO(resp.content))
     with data.open('CCPP/Folds5x2_pp.xlsx') as xls:
         df =  pd.read_excel(xls)
-    print "Preprocessing dataset."
+    print("Preprocessing dataset.")
     ## Then scale and transform it.
     _, df = scale(df)
     lambdas = {'AP': 0,
@@ -127,7 +127,7 @@ def grid_search(X, y, prior):
     for l in lambda_grid:
         estimator = make_estimator(l, 1.0)
         mse = evaluate(estimator, cv, X, y)
-        print "Prior={} with lambda={:2.4e} achieved a RMSE of {:2.4e}.".format(prior, l, np.sqrt(mse))
+        print("Prior={} with lambda={:2.4e} achieved a RMSE of {:2.4e}.".format(prior, l, np.sqrt(mse)))
         best_result = min(best_result, mse)
     return np.sqrt(best_result)
     
@@ -138,7 +138,7 @@ def main():
     ## A parameter of 1 corresponds to the standard ridge prior, one of 0.25 to the improved prior.
     best_identity = grid_search(X, y, 1.0)
     best_improved = grid_search(X, y, 0.25)
-    print "\nThe identity matrix achieved an RMSE of {:3.5f}, the diagonal of {:3.5f}.".format(best_identity, best_improved)
+    print("\nThe identity matrix achieved an RMSE of {:3.5f}, the diagonal of {:3.5f}.".format(best_identity, best_improved))
     
 if __name__ == '__main__':
     main()

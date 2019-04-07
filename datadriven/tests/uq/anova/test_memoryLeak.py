@@ -23,7 +23,7 @@ gridConfig.boundaryLevel_ = 0
 gridConfig.dim_ = len(bs)
 
 grids = []
-for i in xrange(10):
+for i in range(10):
     # compute a few hundred interpolations
     grid = Grid.createGrid(gridConfig)
     gridStorage = grid.getStorage()
@@ -31,7 +31,7 @@ for i in xrange(10):
     nodalValues = np.ndarray(gridStorage.getSize())
 
     p = DataVector(gridStorage.getDimension())
-    for i in xrange(gridStorage.getSize()):
+    for i in range(gridStorage.getSize()):
         gp = gridStorage.getCoordinates(gridStorage.getPoint(i), p)
         nodalValues[i] = f(p.array())
 
@@ -43,7 +43,7 @@ for i in xrange(10):
     grids.append((grid, alpha_vec))
 
 for i, sample in enumerate(np.random.random((10, gridConfig.dim_))):
-    print i
+    print(i)
     ans = 0.0
     for grid, alpha in grids:
         sample_vec = DataVector(sample)

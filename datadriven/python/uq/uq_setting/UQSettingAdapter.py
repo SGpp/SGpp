@@ -39,9 +39,9 @@ class UQSettingAdapter(DataAdapter):
         ans = {}
         ans[dtype] = {}
         numDims = self.uqSetting.getDim()
-        numberOfTimesteps = len(data.itervalues().next())
+        numberOfTimesteps = len(next(iter(data.values())))
         # load data for all time steps
-        for t, values in data.items():
+        for t, values in list(data.items()):
             mydata = DataMatrix(numberOfTimesteps, numDims)
             sol = DataVector(size)
             for i, (sample, res) in enumerate(values.items()):

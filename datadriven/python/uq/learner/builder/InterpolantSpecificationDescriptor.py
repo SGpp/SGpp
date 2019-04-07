@@ -1,3 +1,4 @@
+
 class InterpolantSpecificationDescriptor(object):
     """
     TrainingSpecification Descriptor helps to implement fluid interface pattern

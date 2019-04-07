@@ -3,6 +3,7 @@ Created on Aug 6, 2014
 
 @author: franzefn
 """
+
 from pysgpp.extensions.datadriven.uq.quadrature.HashQuadrature import HashQuadrature
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
@@ -34,7 +35,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
         gs = grid.getStorage()
 
         gps = [None] * gs.getSize()
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gps[i] = gs.getPoint(i)
 
         basis = getBasis(grid)
@@ -99,7 +100,7 @@ class BilinearQuadratureStrategy(HashQuadrature):
         ans, err = 1.0, 0.0
 
         # run over all dimensions
-        for d in xrange(gpi.getDimension()):
+        for d in range(gpi.getDimension()):
             # compute linear form for one entry
             available, keyd = self.hasValue(gpi, gpj, d)
             if not available:

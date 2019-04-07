@@ -43,7 +43,7 @@
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
-%newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
 %newobject sgpp::base::Grid::clone();
 
@@ -160,7 +160,7 @@ public:
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
-  static Grid* unserialize(std::string& istr);
+  static Grid* unserialize(const std::string& istr);
 
   static sgpp::base::GridType stringToGridType(const std::string& gridType);
 
@@ -198,7 +198,7 @@ public:
     return $self;
   }
 
-  static sgpp::base::Grid* setMemento(std::string& istr) {
+  static sgpp::base::Grid* setMemento(const std::string& istr) {
     return sgpp::base::Grid::unserialize(istr);
   }
 };

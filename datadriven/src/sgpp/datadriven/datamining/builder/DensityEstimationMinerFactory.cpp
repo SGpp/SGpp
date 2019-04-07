@@ -50,6 +50,7 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     default: { throw base::application_exception("Unknown density estimation type"); }
   }
 }
+
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {

@@ -1,5 +1,5 @@
-from MonteCarloStrategy import MonteCarloStrategy
-from Estimator import Estimator
+from pysgpp.extensions.datadriven.uq.estimators.MonteCarloStrategy import MonteCarloStrategy
+from pysgpp.extensions.datadriven.uq.estimators.Estimator import Estimator
 
 
 class SparseGridEstimator(Estimator):

@@ -56,7 +56,7 @@ grid = pysgpp.Grid.createLinearGrid(dim)
 ## points, to obtain the dimensionality (which we print) and the
 ## number of grid points.
 gridStorage = grid.getStorage()
-print "dimensionality:         {}".format(gridStorage.getDimension())
+print("dimensionality:         {}".format(gridStorage.getDimension()))
 
 ## Now, we use a sgpp::base::GridGenerator to
 ## create a regular sparse grid of level 3.
@@ -64,7 +64,7 @@ print "dimensionality:         {}".format(gridStorage.getDimension())
 ## of a two-dimensional regular sparse grid of level 3.
 level = 3
 grid.getGenerator().regular(level)
-print "number of grid points:  {}".format(gridStorage.getSize())
+print("number of grid points:  {}".format(gridStorage.getSize()))
 
 ## We create an object of type sgpp::base::DataVector
 ## which is essentially a wrapper around a \c double array.
@@ -76,23 +76,23 @@ print "number of grid points:  {}".format(gridStorage.getSize())
 ## next few lines anyway.)
 alpha = pysgpp.DataVector(gridStorage.getSize())
 alpha.setAll(0.0)
-print "length of alpha vector: {}".format(len(alpha))
+print("length of alpha vector: {}".format(len(alpha)))
 
 ## The \c for loop iterates over all grid points: For each grid
 ## point \c gp, the corresponding coefficient \f$\alpha_j\f$ is set to the
 ## function value at the grid point's coordinates which are obtained by
 ## \c getStandardCoordinate(dim).
 ## The current coefficient vector is then printed.
-for i in xrange(gridStorage.getSize()):
+for i in range(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
   alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
-print "alpha before hierarchization: {}".format(alpha)
+print("alpha before hierarchization: {}".format(alpha))
 
 ## An object of sgpp::base::OperationHierarchisation is created and used to
 ## hierarchize the coefficient vector, which we print.
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
-print "alpha after hierarchization:  {}".format(alpha)
+print("alpha after hierarchization:  {}".format(alpha))
 
 ## Finally, a second DataVector is created which is used as a point to
 ## evaluate the sparse grid function at. An object is obtained which
@@ -103,7 +103,7 @@ p = pysgpp.DataVector(dim)
 p[0] = 0.52
 p[1] = 0.73
 opEval = pysgpp.createOperationEval(grid)
-print "u(0.52, 0.73) = {}".format(opEval.eval(alpha, p))
+print("u(0.52, 0.73) = {}".format(opEval.eval(alpha, p)))
 
 ## The example results in the following output:
 ## \verbinclude tutorial.output.txt

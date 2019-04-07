@@ -56,7 +56,7 @@ class ASGCKnowledgeFormatter(GzipSerializer):
         @param filename: the name of the file with serialized ASGCKnowledge
         @return: the ASGCKnowledge memento object
         """
-        if not isinstance(filename, types.StringType):
+        if not isinstance(filename, bytes):
             raise AttributeError("Filename as destination expected")
         serializationStream = self.gzOpen(filename, "r")
         try:
