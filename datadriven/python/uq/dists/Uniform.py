@@ -15,11 +15,11 @@
 """
 
 
-from Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 from scipy.stats import uniform
 import numpy as np
 
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 
 class Uniform(Dist):

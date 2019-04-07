@@ -3,7 +3,6 @@ Created on Feb 12, 2015
 
 @author: franzefn
 '''
-
 import numpy as np
 import matplotlib.pyplot as plt
 import os
@@ -20,8 +19,7 @@ from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 
 
 mu = np.array([0.5, 0.5])
-cov = np.array([[0.1, 0.04],
-                [0.04, 0.1]]) / 5.
+cov = np.array([[0.1, 0.04], [0.04, 0.1]]) / 5.
 
 dist = MultivariateNormal(mu, cov, 0, 1)
 
@@ -68,7 +66,7 @@ gs = grid.getStorage()
 
 nodalValues = DataVector(grid.getSize())
 p = DataVector(gs.getDimension())
-for i in xrange(gs.getSize()):
+for i in range(gs.getSize()):
     gs.getCoordinates(gs.getPoint(i), p)
     nodalValues[i] = dist.pdf(p.array())
 

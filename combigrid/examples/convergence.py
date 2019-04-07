@@ -152,7 +152,7 @@ def buildLevelManager(name):
         raise AttributeError("level manager '%s' not supported" % name)
 
 
-class RefinementWrapper:
+class RefinementWrapper(object):
 
     def __init__(self,
                  gridType,
@@ -183,7 +183,7 @@ class RefinementWrapper:
                                                     degree,
                                                     growthFactor,
                                                     orthogonal_basis=self.orthogonal_basis)
-            print self.tensor_operation.getLevelManager()
+            print( self.tensor_operation.getLevelManager() )
             self.tensor_operation.getLevelManager().addRegularLevels(1)
             self.tensor_operation.setLevelManager(self.levelManager)
         else:
@@ -212,7 +212,8 @@ class RefinementWrapper:
 
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--version', action='version', version='%(prog)s 1.0')
     parser.add_argument('--model', default="arctan", type=str, help="define true model")
     parser.add_argument('--degree', default=5, type=int, help="polynomial degree of B-splines")
     parser.add_argument('--minLevel', default=0, type=int, help="minimum level of regular grids")
@@ -259,7 +260,7 @@ if __name__ == "__main__":
         if adaptive:
             n_sequence = np.unique(np.logspace(0, np.log10(args.maxNumGridPoints), dtype="int"))
         else:
-            n_sequence = range(args.minLevel, args.maxLevel + 1)
+            n_sequence = list(range(args.minLevel, args.maxLevel + 1))
 
         for i, n in enumerate(n_sequence):
             # refine the grid
@@ -269,7 +270,7 @@ if __name__ == "__main__":
             y_surrogate = refinement_wrapper.evaluate(n)
 
             if i == 0 or numGridPoints[-1] < n_grid_points:
-                print gridType, basisType, levelManagerType, n, n_grid_points
+                print(( gridType, basisType, levelManagerType, n, n_grid_points ))
 
                 l2error = np.sqrt(np.mean((y - y_surrogate) ** 2))
                 l2errors = np.append(l2errors, l2error)
@@ -277,13 +278,13 @@ if __name__ == "__main__":
 
         results[basisType, levelManagerType, gridType] = numGridPoints, l2errors
 
-    print "E(u) ~ %g" % np.mean(y)
-    print "V(u) ~ %g" % np.var(y)
+    print( "E(u) ~ %g" % np.mean(y) )
+    print( "V(u) ~ %g" % np.var(y) )
 
     fig = plt.figure()
     ax = plt.subplot(111)
 
-    for (basisType, levelManagerType, gridType), (numGridPoints, l2errors) in results.items():
+    for (basisType, levelManagerType, gridType), (numGridPoints, l2errors) in list(results.items()):
         plt.loglog(numGridPoints, l2errors, label="%s %s %s" % (gridType, levelManagerType, basisType))
 
     plt.xlabel("number of grid points")

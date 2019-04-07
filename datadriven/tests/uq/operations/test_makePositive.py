@@ -60,7 +60,7 @@ gridConfig.maxDegree_ = level + 1
 mu = np.ones(numDims) * 0.5
 cov = np.diag(np.ones(numDims) * 0.1 / 10.)
 
-dist = J([Normal(0.5, 1. / 16., 0, 1)] * numDims)
+dist = J([Normal(0.5, 1./ 16., 0, 1)] * numDims)
 # dist = MultivariateNormal(mu, cov, 0, 1)  # problems in 3d/l2
 # dist = J([Beta(5, 4, 0, 1)] * numDims)  # problems in 5d/l3
 # dist = J([Lognormal(0.2, 0.7, 0, 1)] * numDims)  # problems in 5d/l3
@@ -92,23 +92,23 @@ p = DataVector(gs.getDimension())
 alpha = DataVector(gs.getSize())
 
 # set function values in alpha
-for i in xrange(gs.getSize()):
+for i in range(gs.getSize()):
     gs.getPoint(i).getStandardCoordinates(p)
     alpha[i] = dist.pdf(p.array())
 
 # hierarchize
 createOperationHierarchisation(grid).doHierarchisation(alpha)
 
-for refnum in xrange(refnums):
+for refnum in range(refnums):
     # refine a single grid point each time
     gridGen.refine(SurplusRefinementFunctor(alpha, 1))
-    print "refinement step {}, new grid size: {}".format(refnum + 1, gs.getSize())
+    print("refinement step {}, new grid size: {}".format(refnum + 1, gs.getSize()))
 
     # extend alpha vector (new entries uninitialized)
     alpha.resize(gs.getSize())
 
     # set function values in alpha
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getPoint(i).getStandardCoordinates(p)
         alpha[i] = dist.pdf(p.array())
 
@@ -119,12 +119,12 @@ for refnum in xrange(refnums):
 alpha = alpha.array()
 sgdeDist = SGDEdist(grid, alpha,
                     trainData=trainSamples, bounds=dist.getBounds())
-print "l=%i: (gs=%i) -> %g (%g, %g)," % (level,
+print("l=%i: (gs=%i) -> %g (%g, %g)," % (level,
                                          sgdeDist.grid.getSize(),
                                          dist.klDivergence(sgdeDist, testSamples),
                                          sgdeDist.crossEntropy(testSamples),
-                                         sgdeDist.vol)
-print "-" * 80
+                                         sgdeDist.vol))
+print("-" * 80)
 
 if numDims == 2 and plot:
     # plot the result
@@ -140,11 +140,11 @@ if numDims == 2 and plot:
     fig.show()
 
 C = 0
-M = np.sum([1 for i in xrange(len(alpha)) if alpha[i] < 0])
-for d in xrange(2, numDims + 1):
+M = np.sum([1 for i in range(len(alpha)) if alpha[i] < 0])
+for d in range(2, numDims + 1):
     C += binom(M, d)
-print "predicted comparison costs = %i" % C
-print "full grid                  = %i" % ((2 ** level - 1) ** numDims,)
+print("predicted comparison costs = %i" % C)
+print("full grid                  = %i" % ((2 ** level - 1) ** numDims,))
 
 if code == "c++":
     alpha_vec = DataVector(alpha)
@@ -198,7 +198,7 @@ else:
 neg = checkPositivity(grid, alpha)
 
 if len(neg) > 0:
-    print "warning: the sparse grid function is not positive"
+    print("warning: the sparse grid function is not positive")
 #             raise AttributeError("the sparse grid function is not positive")
     # check at which grid points the function is negative
 #             for i, (yi, gp) in neg.items():
@@ -209,11 +209,11 @@ if len(neg) > 0:
 
 sgdeDist = SGDEdist(grid, alpha,
                     trainData=trainSamples, bounds=dist.getBounds())
-print "-" * 80
-print "(gs=%i) -> %g (%g, %g)" % (sgdeDist.grid.getSize(),
+print("-" * 80)
+print("(gs=%i) -> %g (%g, %g)" % (sgdeDist.grid.getSize(),
                                   dist.klDivergence(sgdeDist, testSamples),
                                   sgdeDist.crossEntropy(testSamples),
-                                  sgdeDist.vol)
+                                  sgdeDist.vol))
 
 if numDims == 2 and plot:
     # plot the result

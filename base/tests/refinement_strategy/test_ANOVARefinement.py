@@ -9,9 +9,8 @@
 import unittest
 
 
-from pysgpp import Grid, HashRefinement, HashGridPoint, \
-    SurplusRefinementFunctor, DataVector, SurplusVolumeRefinementFunctor,\
-    ANOVAHashRefinement
+from pysgpp import Grid, HashRefinement, HashGridPoint, SurplusRefinementFunctor, \
+                    DataVector, SurplusVolumeRefinementFunctor, ANOVAHashRefinement
 
 
 class TestANOVARefinement(unittest.TestCase):
@@ -35,7 +34,7 @@ class TestANOVARefinement(unittest.TestCase):
         # get point ((2,1), (2,3)) (top right) that will be refined
         point_to_refine_idx = None
         point = None
-        for i in xrange(17):
+        for i in range(17):
             point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
@@ -95,7 +94,7 @@ class TestANOVARefinement(unittest.TestCase):
         # point ((2,1), (2,3)) (top right) gets larger surplus coefficient
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
-        for i in xrange(17):
+        for i in range(17):
             point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
@@ -134,7 +133,7 @@ class TestANOVARefinement(unittest.TestCase):
         # point ((2,1), (2,3)) (top right) gets larger surplus coefficient
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
-        for i in xrange(17):
+        for i in range(17):
             point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 2 and point.getIndex(0) == 1 \
                 and point.getLevel(1) == 2 and point.getIndex(1) == 3:
@@ -174,7 +173,7 @@ class TestANOVARefinement(unittest.TestCase):
         # point ((3,7), (1,1)) (middle most right) gets larger surplus coefficient
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
-        for i in xrange(17):
+        for i in range(17):
             point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 3 and point.getIndex(0) == 7 \
                 and point.getLevel(1) == 1 and point.getIndex(1) == 1:
@@ -218,7 +217,7 @@ class TestANOVARefinement(unittest.TestCase):
         # point ((3,7), (1,1)) (middle most right) gets larger surplus coefficient
         alpha = DataVector(self.grid.getSize())
         point_to_refine = None
-        for i in xrange(17):
+        for i in range(17):
             point = self.grid_storage.getPoint(i)
             if point.getLevel(0) == 3 and point.getIndex(0) == 7 \
                 and point.getLevel(1) == 1 and point.getIndex(1) == 1:

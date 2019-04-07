@@ -1,6 +1,6 @@
 from pysgpp.extensions.datadriven.uq.dists import TNormal, Normal, Uniform, SGDEdist
-from GaussHermiteQuadrature import GaussHermiteQuadrature
-from GaussLegendreQuadrature import GaussLegendreQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.GaussHermiteQuadrature import GaussHermiteQuadrature
+from pysgpp.extensions.datadriven.uq.quadrature.strategies.GaussLegendreQuadrature import GaussLegendreQuadrature
 import warnings
 
 

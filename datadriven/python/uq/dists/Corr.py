@@ -14,7 +14,7 @@
 
 """
 
-from Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 
 import numpy as np
 
@@ -52,7 +52,7 @@ class Corr(Dist):
 
     def rvs(self, n=1):
         ans = np.array([[0, 0]] * n, dtype='float')
-        for i in xrange(n):
+        for i in range(n):
             x1 = self.__dists[0].rvs(1)[0]
             x2 = self.__dists[1].rvs(x1, 1)[0]
             ans[i, :] = [x1, x2]

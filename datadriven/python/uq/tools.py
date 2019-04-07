@@ -11,9 +11,9 @@ def addValidSequenceNumber(names=None, n=5):
     k = 0
     while names:
         s = str(k).zfill(n)
-        dumps = dict([(key, name % s) for key, name in names.items()])
+        dumps = dict([(key, name % s) for key, name in list(names.items())])
 
-        if all([not os.path.exists(dump) for dump in dumps.values()]):
+        if all([not os.path.exists(dump) for dump in list(dumps.values())]):
             return dumps
 
         k += 1
@@ -92,7 +92,7 @@ def writeDataARFF(data, merge=False):
             else:
                 dim = len(dataset["data"])
 
-            for i in xrange(dim):
+            for i in range(dim):
                 if 'names' not in dataset:
                     fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                 else:
@@ -112,18 +112,18 @@ def writeDataARFF(data, merge=False):
 
         if isinstance(dataset["data"], DataMatrix):
             num_rows = dataset["data"].getNrows()
-            for row in xrange(num_rows):
+            for row in range(num_rows):
                 lout = []
-                for column in xrange(dim):
+                for column in range(dim):
                     lout.append(dataset["data"].get(row, column))
                 if hasclass:
                     lout.append(dataset["classes"][row])
                 fout.write(fstring % tuple(lout))
         else:
             num_rows = len(dataset["data"][0])
-            for row in xrange(num_rows):
+            for row in range(num_rows):
                 lout = []
-                for column in xrange(dim):
+                for column in range(dim):
                     lout.append(dataset["data"][column][row])
                 if hasclass:
                     lout.append(dataset["classes"][row])
@@ -138,8 +138,8 @@ def writeDataARFF(data, merge=False):
 
 
 def check(n, dim, nmax=50000):
-    if dim > log(nmax) / log(n):
-        n = trunc(exp(log(nmax) / dim))
+    if dim > (log(nmax) / log(n)):
+        n = trunc(exp(log(nmax), dim))
 
     return n, n ** dim
 
@@ -156,8 +156,8 @@ def eval_linear(ppd, dim, norm_offset=0.0):
             offset = n ** (dim - j - 1)
             i = 0
             while i < nrows:
-                for k in xrange(n):
-                    for accLevel in xrange(offset):
+                for k in range(n):
+                    for accLevel in range(offset):
                         v = norm_offset + mw * k
                         out[i + k * offset + accLevel, j] = v
                 i += n * offset
@@ -176,7 +176,7 @@ def eval_fullGrid(level, dim, border=True):
     ans = np.ndarray((gs.getSize(), dim))
     p = DataVector(dim)
 
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         ans[i, :] = p.array()
 
@@ -186,7 +186,7 @@ def eval_fullGrid(level, dim, border=True):
 def writeCSV(filename, samples, delim=' '):
     fd = open(filename, 'w')
     p = DataVector(samples.getNcols())
-    for i in xrange(samples.getNrows()):
+    for i in range(samples.getNrows()):
         samples.getRow(i, p)
         fd.write(delim.join(str(p)[1:-1].split(', ')) + '\n')
     fd.close()

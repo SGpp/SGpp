@@ -23,7 +23,7 @@ from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 
 from pysgpp import DataVector
 
-from ASGCSamplerSpecification import ASGCSamplerSpecification
+from pysgpp.extensions.datadriven.uq.sampler.asgc.ASGCSamplerSpecification import ASGCSamplerSpecification
 import pysgpp.extensions.datadriven.uq.jsonLib as ju
 import pysgpp.extensions.datadriven.utils.json as json
 
@@ -64,7 +64,7 @@ class ASGCSampler(Sampler):
         gs = self.__grid.getStorage()
         ps = np.ndarray([gs.getSize(), gs.getDimension()], dtype='float')
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             ps[i, :] = p.array()
 
@@ -85,16 +85,16 @@ class ASGCSampler(Sampler):
 
         # print some information
         if self.__verbose:
-            print "-" * 70
-            print "iteration: %i" % self.__iteration
-            print "old grid size: %i" % oldGridSize
-            print "old AS size: %i" % oldAdmissibleSetSize
-            print "new collocation nodes: %i" % len(newCollocationNodes)
-            print "new grid size:", self.__grid.getSize()
-            print "new AS size: %i" % self.__refinementManager\
+            print( "-" * 70 )
+            print( "iteration: %i" % self.__iteration )
+            print( "old grid size: %i" % oldGridSize )
+            print( "old AS size: %i" % oldAdmissibleSetSize )
+            print( "new collocation nodes: %i" % len(newCollocationNodes) )
+            print(( "new grid size:", self.__grid.getSize() ))
+            print( "new AS size: %i" % self.__refinementManager\
                                           .getAdmissibleSet()\
-                                          .getSize()
-            print "-" * 70
+                                          .getSize())
+            print( "-" * 70 )
 
 #         fig = plt.figure()
 #         plotGrid(self.__grid, knowledge.getAlpha(),
@@ -250,9 +250,9 @@ class ASGCSampler(Sampler):
 
         s = serializationString.rstrip(",\n")
 
-        # print "j-------------------------------------------"
-        # print "{" + s + "}"
-        # print "j-------------------------------------------"
+        # print( "j-------------------------------------------" )
+        # print( "{" + s + "}" )
+        # print( "j-------------------------------------------" )
 
         return "{" + s + "}"
 

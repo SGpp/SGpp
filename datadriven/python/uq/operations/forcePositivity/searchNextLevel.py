@@ -1,5 +1,5 @@
 from pysgpp import Grid, DataVector, createOperationEval, HashGridPoint
-from findCandidateSet import CandidateSet
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.findCandidateSet import CandidateSet
 import numpy as np
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import parent, \
     hasAllChildren, getHierarchicalAncestors, getLevel, getIndex
@@ -18,7 +18,7 @@ class SearchLevelWiseForCandidates(CandidateSet):
         children = {}
         gs = grid.getStorage()
         
-        for idim in xrange(gp.getDimension()):
+        for idim in range(gp.getDimension()):
             if gp.getLevel(idim) < maxLevel:
                 self.costs += 1
                 gpl = HashGridPoint(gp)
@@ -50,7 +50,7 @@ class SearchLevelWiseForCandidates(CandidateSet):
         self.costs = 0
         if self.iteration == 0:
             candidates = []
-            for i in xrange(numGridPoints):
+            for i in range(numGridPoints):
                 self.costs += 1
                 gp = gs.getPoint(i)
                 if alpha[i] < 0.0:
@@ -71,23 +71,23 @@ class SearchLevelWiseForCandidates(CandidateSet):
                     refinementCandidates.append(gp)
                 else:
                     newCandidates = [gp]
-                    for i in xrange(diff):
+                    for i in range(diff):
                         while len(newCandidates) > 0:
                             candidate = newCandidates.pop()
                             children = self.getAllChildrenNodesUpToMaxLevel(candidate, maxLevel, grid)
-                            for childCandidate in children.values():
+                            for childCandidate in list(children.values()):
                                 if childCandidate.getLevelSum() == self.maxLevelSum:
                                     refinementCandidates.append(childCandidate)
                                 elif childCandidate.getLevelSum() < self.maxLevelSum:
                                     newCandidates.append(childCandidate)
         else:
-            refinementCandidates = self.newCandidates.values()
+            refinementCandidates = list(self.newCandidates.values())
 
         self.newCandidates = {}
         self.candidates = []
         for gp in refinementCandidates:
             children = self.getAllChildrenNodesUpToMaxLevel(gp, maxLevel, grid)
-            for (level, index), ngp in children.items():
+            for (level, index), ngp in list(children.items()):
                 if (level, index) not in self.newCandidates:
                     if not gs.isContaining(ngp):
                         self.candidates.append(ngp)

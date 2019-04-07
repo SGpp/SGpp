@@ -1,0 +1,43 @@
+{
+	"dataSource": {
+		"filePath": "datadriven/datasets/gmm/gmm_train.csv",
+		"hasTargets" : true,
+		"batchSize" : 50,
+		"validationPortion" : 0.2,
+		"epochs" : 3,
+		"shuffling" : "random",
+		"randomSeed" : -1
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"gridType": "linear",
+			"level": 7
+		},
+		"adaptivityConfig": {
+				"numRefinements": 10,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 0,
+				"errorBufferSize" : 5,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-1
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "CG"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
+

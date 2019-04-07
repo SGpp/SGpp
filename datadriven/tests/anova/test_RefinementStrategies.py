@@ -62,15 +62,15 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
         Z = zeros(np.shape(X))
         input = DataMatrix(np.shape(Z)[0]*np.shape(Z)[1], 2)
         r = 0
-        for i in xrange(np.shape(Z)[0]):
-            for j in xrange(np.shape(Z)[1]):
+        for i in range(np.shape(Z)[0]):
+            for j in range(np.shape(Z)[1]):
                 input.set(r, 0, X[i,j])
                 input.set(r, 1, Y[i,j])
                 r += 1
         result = learner.applyData(input)
         r = 0
-        for i in xrange(np.shape(Z)[0]):
-            for j in xrange(np.shape(Z)[1]):
+        for i in range(np.shape(Z)[0]):
+            for j in range(np.shape(Z)[1]):
                 Z[i,j] = result[r]
                 r += 1
         fig = plt.figure()
@@ -105,10 +105,10 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
         
     def process_grid_statistics(self, storage):
         grid_statistics = {}
-        for i in xrange(storage.getSize()):
+        for i in range(storage.getSize()):
             point = storage.getPoint(i)
             key = (point.getLevel(0),point.getLevel(1))
-            if grid_statistics.has_key(key):
+            if key in grid_statistics:
                 grid_statistics[key] += 1
             else:
                 grid_statistics[key] = 1
@@ -174,8 +174,8 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.updateResults(learner.alpha, learner.dataContainer)
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
-            print "ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" \
-                    % (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
+            print("ANOVA %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" \
+                    % (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val))           
             learner.iteration += 1
             if learner.iteration == 5: 
                 pass
@@ -241,8 +241,8 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
             learner.updateResults(learner.alpha, learner.dataContainer)
             learner.notifyEventControllers(LearnerEvents.LEARNING_STEP_COMPLETE)
             p_val = learner.trainAccuracy[-1] + learner.specification.getL()*np.sum(learner.alpha.array()**2)
-            print "Space %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
-            (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val)           
+            print("Space %s iteration %d: %d grid points, %1.9f MSE, p* = %1.10f" % \
+            (suffix, learner.iteration, storage.getSize(), learner.trainAccuracy[-1], p_val))           
             learner.iteration += 1
             if(learner.stopPolicy.isTrainingComplete(learner)): break
             

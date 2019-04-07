@@ -33,7 +33,7 @@ class TestARFFAdapter(unittest.TestCase):
     ##
     # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.save() ARFFAdapter.save() @endlink
     def testSave(self):
-        filename = pathlocal + '/datasets/saving.arff.gz'
+        filename = pathlocal + '/datasets/saving.arff'
         testPoints = [[0.307143,0.130137,0.050000],
                       [0.365584,0.105479,0.050000],
                       [0.178571,0.201027,0.050000],
@@ -57,8 +57,8 @@ class TestARFFAdapter(unittest.TestCase):
         point = DataVector(dim)
         points = DataMatrix(size, dim)
 
-        for row in xrange(size):
-            for col in xrange(dim):
+        for row in range(size):
+            for col in range(dim):
                 point[col] = testPoints[row][col]
             points.setRow(row, point)
 
@@ -69,9 +69,9 @@ class TestARFFAdapter(unittest.TestCase):
         size = len(testPoints)
         dim = len(testPoints[0])
         testVector = DataVector(dim)
-        for rowIdx in xrange(size):
+        for rowIdx in range(size):
             points.getRow(rowIdx, testVector)
-            for colIdx in xrange(dim):
+            for colIdx in range(dim):
                 self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
 
@@ -93,7 +93,7 @@ class TestARFFAdapter(unittest.TestCase):
                       [0.213636,0.050000,0.072500]
                      ]
         testValues = [-1.000000, 1.000000, 1.000000, 1.000000, 1.000000, 1.000000, -1.000000, -1.000000, -1.000000, -1.000000]
-        filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
+        filename = pathlocal + '/../../../datasets/liver/liver-disorders_normalized_small.arff.gz'
         adapter = ARFFAdapter(filename)
         container = adapter.loadData()
         points = container.getPoints()
@@ -101,9 +101,9 @@ class TestARFFAdapter(unittest.TestCase):
         size = len(testPoints)
         dim = len(testPoints[0])
         testVector = DataVector(dim)
-        for rowIdx in xrange(size):
+        for rowIdx in range(size):
             points.getRow(rowIdx, testVector)
-            for colIdx in xrange(dim):
+            for colIdx in range(dim):
                 self.assertEqual(testVector[colIdx], testPoints[rowIdx][colIdx])
             self.assertEqual(values[rowIdx], testValues[rowIdx])
 
@@ -112,17 +112,18 @@ class TestARFFAdapter(unittest.TestCase):
     # Tests the function @link python.data.ARFFAdapter.ARFFAdapter.loadSpecification() ARFFAdapter.loadSpecification() @endlink
     def testLoadSpecification(self):
         attributes = {
-                      "x0":"NUMERIC",
-                      "x1":"NUMERIC",
-                      "x2":"NUMERIC",
-                      "class":"NUMERIC",
+                      b"x0":b"NUMERIC",
+                      b"x1":b"NUMERIC",
+                      b"x2":b"NUMERIC",
+                      b"class":b"NUMERIC",
                       }
-        filename = pathlocal + '/datasets/liver-disorders_normalized.arff.gz'
+        filename = pathlocal + '/../../../datasets/liver/liver-disorders_normalized_small.arff.gz'
         adapter = ARFFAdapter(filename)
         spec = adapter.loadSpecification()
         testAttributes = spec.getAttributes()
         self.assertEqual(len(testAttributes), len(attributes))
-        for key in testAttributes.keys():
+        for key in list(testAttributes.keys()):
+            print()
             self.assertEqual(testAttributes[key],attributes[key])
 
 if __name__=="__main__":

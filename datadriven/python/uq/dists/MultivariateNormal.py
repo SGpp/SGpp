@@ -15,10 +15,10 @@ from pysgpp.extensions.datadriven.uq.dists.Normal import Normal
 
 """
 
-from J import J
-from Dist import Dist
+from pysgpp.extensions.datadriven.uq.dists.J import J
+from pysgpp.extensions.datadriven.uq.dists.Dist import Dist
 import numpy as np
-import pysgpp.extensions.datadriven.uq.jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 class MultivariateNormal(Dist):
     """
@@ -41,17 +41,17 @@ class MultivariateNormal(Dist):
 
         # standard multivariate normal
         dists = [None] * self.__dim
-        for idim in xrange(self.__dim):
+        for idim in range(self.__dim):
             dists[idim] = Normal.by_alpha(0, 1, 0.001)
         self.dist = J(dists)
 
         self.cov_inv = np.linalg.inv(cov)
-        self.norm = 1. / np.sqrt((2 * np.pi) ** self.__dim * np.linalg.det(cov))
+        self.norm = 1. / (np.sqrt((2 * np.pi) ** self.__dim * np.linalg.det(cov)))
 
         # do cholesky decomposition for nataf transformation
         self.corr = np.ndarray(cov.shape)
-        for i in xrange(cov.shape[0]):
-            for j in xrange(cov.shape[1]):
+        for i in range(cov.shape[0]):
+            for j in range(cov.shape[1]):
                 self.corr[i, j] = cov[i, j] / np.sqrt(cov[i, i] * cov[j, j])
         self.L = np.linalg.cholesky(self.corr)
 
@@ -68,7 +68,7 @@ class MultivariateNormal(Dist):
         ans = np.ndarray((n, self.__dim))
         while (isample < n):
             sample = np.dot(self.L, self.dist.rvs(1).reshape((self.__dim, 1))).T[0]
-            for idim in xrange(self.__dim):
+            for idim in range(self.__dim):
                 sample[idim] = self.__mu[idim] + sample[idim] * np.sqrt(self.__cov[idim, idim])
             if self.__a < sample.min() and sample.max() < self.__b:
                 ans[isample, :] = sample
