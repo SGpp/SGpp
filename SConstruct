@@ -110,7 +110,7 @@ vars.Add(BoolVariable("USE_PYTHON2_FOR_PYSGPP", "Enforce using Python 2.x for py
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
-                                "if Fsalse, the modules must be enabled explicitly, e.g., " +
+                                "if False, the modules must be enabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))

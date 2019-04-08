@@ -219,7 +219,9 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     DensityEstimationConfiguration& densityEstimationConfig,
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool save_b, bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
-  std::cout << "Computing density function..." << std::endl;
+  if (processGrid->getRowColumnIndex() == 0) {
+    std::cout << "Computing density function..." << std::endl;
+  }
 
   if (save_b && !distributedVectorsInitialized) {
     // init bSaveDistributed and bTotalPointsDistributed only here, as they are not needed in the
