@@ -20,8 +20,6 @@
 ## The number of grid points is printed in each iteration.
 ## After refinement, the surplusses have to be set for all new grid
 ## points, i.e., the alpha-Vector has to be extended.
-##
-## For instructions on how to run the example, please see \ref installation.
 
 # import pysgpp library
 import pysgpp

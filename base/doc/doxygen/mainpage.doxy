@@ -20,9 +20,8 @@ Our development focuses on providing an efficient and flexible sparse
 grid toolbox to support a broad spectrum of users and
 applications. To ensure <b>efficiency</b> at run-time, we use C++ for
 all performance critical parts. Considering <b>flexibility</b>, the
-software architecture of the SG++ toolbox ensures \ref modules
-"modularity", reusability, and encapsulation of data structures and
-algorithms.
+software architecture of the SG++ toolbox ensures modularity,
+reusability, and encapsulation of data structures and algorithms.
 
 SG++ is an open source software and delivered as source code. If you
 use any parts of the software or any resources of this webpage and/or
@@ -31,40 +30,23 @@ copyright). In this case, please give us credit by citing the SG++
 toolbox in your publications. For the appropriate citation of SG++ in
 your publications, please refer to the section \ref mainpage_literature.
 
-The current version of SG++ can be found at @subpage downloads and
-the online version of this documentation at
+The online version of this documentation can be found at
 http://sgpp.sparsegrids.org.
 
 
 @section mainpage_installation Getting Started
 
-Start by reading the <b>installation instructions</b> for your
-operating system: \ref linux, \ref mac, or \ref mingw.
+This is the Doxygen documentation of the SG++ source code.
+<a href="https://github.com/SGpp/SGpp">Development has moved to GitHub</a>,
+where you also find
+<a href="https://github.com/SGpp/SGpp/releases">source and binary releases</a>
+and the
+<a href="https://github.com/SGpp/SGpp/wiki">user manual with installation
+instructions and quick start tutorials</a>.
 
-If you are going to use SG++ in your application, please consult the
-\ref manual for an \ref modules "overview" of the toolbox structure
-and helpful \ref examples "examples".
-
-If you are going to extend and develop SG++, please consult the \ref
-development to get familiar with the coding guidelines and
-conventions.  The Development Manual contains the styleguide, the references to useful
-tools and utilities, as well as a collection of some current issues.
-
-<!--
-The documentation of the SG++ toolbox is structured in two main parts.
-The first one, @ref manual, is dedicated to users of SG++.
-For example, installation instructions are provided as well
-as short use cases as a quick start to using SG++.
-
-The second one, @ref development, addresses all those who
-want to contribute to SG++ or who are involved in its
-development. There, the styleguide can be found, references to useful
-tools and utilities are provided, and a few current issues are gathered.
--->
-
-You can find these pages and more in the <b>menu to the left</b>.  If
-you do not see a menu, please <b>activate the JavaScript support</b>
-in your web-browser.
+You can find pages of the Doxygen documentation in the <b>menu to the left</b>.
+If you do not see a menu, please <b>activate the JavaScript support</b>
+in your web browser.
 
 
 @section mainpage_features Features
@@ -94,10 +76,9 @@ underlying basis.
 
 
 See also:
-- @subpage manual
+- @subpage examples
 - @subpage development
 - @subpage copyright
-- @ref downloads
 - Online version of this documentation at http://sgpp.sparsegrids.org
 -->
 
