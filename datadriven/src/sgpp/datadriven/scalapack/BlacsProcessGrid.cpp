@@ -14,13 +14,14 @@
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <mpi.h>
+#include <unistd.h>
 #include <cmath>
 #include <iostream>
+#include <string>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 #include <sgpp/datadriven/scalapack/scalapack.hpp>
-
-#include <unistd.h>
 
 namespace sgpp {
 namespace datadriven {
@@ -38,6 +39,11 @@ BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(
   if (rows < 0 || columns < 0) {
     this->rows = static_cast<int>(std::sqrt(numberOfProcesses));
     this->columns = static_cast<int>(std::sqrt(numberOfProcesses));
+  }
+
+  if (this->rows * this->columns < availableProcesses()) {
+    throw sgpp::base::application_exception(
+        "Not enough processes available to form BLACS process grid!");
   }
 
   int ignore = -1;
@@ -91,10 +97,17 @@ size_t BlacsProcessGrid::availableProcesses() {
 
 void BlacsProcessGrid::initializeBlacs() {
   // init BLACS and the MPI environment
-  std::cout << "Init BLACS and MPI" << std::endl;
   MPI_Init(nullptr, nullptr);
   Cblacs_pinfo(mypnum, numberOfProcesses);
   blacsInitialized = true;
+
+  // get the name of the node
+  char nodeName[MPI_MAX_PROCESSOR_NAME];
+  int nameLength;
+  MPI_Get_processor_name(nodeName, &nameLength);
+  std::string node(nodeName, nameLength);
+
+  std::cout << "Init BLACS and MPI on node " << node << std::endl;
 }
 
 void BlacsProcessGrid::exitBlacs() {
