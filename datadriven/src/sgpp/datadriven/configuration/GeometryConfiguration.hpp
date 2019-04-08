@@ -1,20 +1,25 @@
 /*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
  * GeometryConfiguration.hpp
  *
  *  Created on: Jan 15, 2019
  *      Author: jamal
  */
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_GEOMETRYCONFIGURATION_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_GEOMETRYCONFIGURATION_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 #include <vector>
 #include <string>
 
-
 namespace sgpp {
 namespace datadriven {
+
+enum class StencilType { DN, None };
 
 /*
  * Struct that stores information to geometry aware sparse grids
@@ -23,7 +28,7 @@ struct GeometryConfiguration{
   /*
    * Stencil for geometric relation
    */
-  std::string stencil;
+  StencilType stencilType;
 
   /*
    * resolution of image/video e.g 28x28
@@ -34,8 +39,3 @@ struct GeometryConfiguration{
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-
-
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_GEOMETRYCONFIGURATION_HPP_ */

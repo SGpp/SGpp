@@ -62,7 +62,7 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
 
   // configure geometry configuration
-  geometryConfig.stencil = "none";
+  geometryConfig.stencilType = sgpp::datadriven::StencilType::None;
   geometryConfig.dim = std::vector<int64_t>();
 }
 
