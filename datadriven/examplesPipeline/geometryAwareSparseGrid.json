@@ -1,6 +1,6 @@
 {
   	"dataSource": {
-    		"filePath": "../../datasets/mnist/mnist_[2]_28x28.train.arff",
+    		"filePath": "/home/jamal/Documents/SGpp/datasets/mnist/mnist_[2]_28x28.train.arff",
 		"batchSize": 6000
 	},
 	"fitter": {
@@ -14,7 +14,7 @@
 				28,
 				28
 			],
-			"stencil": "DirectNeighbour"
+			"stencil": "DN"
 		},
     		"regularizationConfig":{
 			"regularizationType": "Identity",

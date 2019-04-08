@@ -46,7 +46,7 @@ class GridFactory {
    * @param stencil(geometry relation of pixels) e.g. DirectNeighbours
    * @return returns the calculated interaction that have been choosen by the stencil
    */
-  std::vector<std::vector<size_t>> getInteractions(std::string& stencil,
+  std::vector<std::vector<size_t>> getInteractions(sgpp::datadriven::StencilType stencilType,
     std::vector<int64_t>& dim) const;
 
   /*

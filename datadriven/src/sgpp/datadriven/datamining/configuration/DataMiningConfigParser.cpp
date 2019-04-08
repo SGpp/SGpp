@@ -31,6 +31,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 
 #include <map>
 #include <string>
@@ -840,9 +842,19 @@ bool DataMiningConfigParser::getGeometryConfig(
     std::cout << "Has geometry config" << std::endl;
     auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
-    config.stencil = parseString(*geometryConfig, "stencil", defaults.stencil, "geometryConfig");
     config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+
+    // parse  density estimation type
+    if (geometryConfig->contains("stencil")) {
+      config.stencilType = GeometryConfigurationParser::parse(
+          (*geometryConfig)["stencil"].get());
+    } else {
+      std::cout << "# Did not find geometryConfig[stencil]."
+                   " Setting default value ";
+      config.stencilType = defaults.stencilType;
+    }
   }
+
 
   return hasGeometryConfig;
 }

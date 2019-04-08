@@ -57,15 +57,15 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
 }
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
-    std::string& stencil, std::vector<int64_t>& dim) const {
+    sgpp::datadriven::StencilType stencilType, std::vector<int64_t>& dim) const {
   std::vector<std::vector<size_t>> interactions;
 
   std::vector<int64_t> res = dim;
 
-  if (!stencil.compare("DirectNeighbour")) {
+  if (stencilType == sgpp::datadriven::StencilType::DN) {
     interactions = getDirectNeighbours(res);
   } else {
-    std::cout << "Stencil " << stencil << " not found";
+    std::cout << "Stencil not found";
     std::cout << std::endl;
   }
 

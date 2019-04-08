@@ -50,8 +50,6 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       // Train model on new batch
       fitter->update(*dataset);
 
-      std::cout << "Done training!" << std::endl;
-
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
