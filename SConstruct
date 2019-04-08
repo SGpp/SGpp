@@ -356,9 +356,9 @@ if env["PLATFORM"] == "win32":
   # could cause trouble
   try:
     import pysgpp
-    Helper.printWarning("An existing installation of pysgpp was detected."
-                        "To get rid of this warning remove the pysgpp package"
-                        "from your local Oython installation.")
+    Helper.printWarning("An existing installation of pysgpp was detected. "
+                        "To get rid of this warning remove the pysgpp package "
+                        "from your local Python installation.")
   except:
     pass
 
@@ -371,14 +371,14 @@ if env["PLATFORM"] == "win32":
   os.makedirs(pysgppTempFolder)
 
   # add it to the build python path
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([pysgppTempFolder,
-                                              env["ENV"].get("PYTHONPATH", "")])
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      pysgppTempFolder,
+      env["ENV"].get("PYTHONPATH", "")])
 else:
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
-                                              PYSGPP_PACKAGE_PATH.abspath])
-  pysgpp_package_path = PYSGPP_PACKAGE_PATH.abspath + '/pysgpp'
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
-                                              pysgpp_package_path])
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      PYSGPP_PACKAGE_PATH.abspath,
+      PYSGPP_BUILD_PATH.abspath,
+      env["ENV"].get("PYTHONPATH", "")])
 
 # Style checker
 #########################################################################

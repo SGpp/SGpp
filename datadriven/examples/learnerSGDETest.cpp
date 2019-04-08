@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 
   /**
    * Configure the sparse grid of level 3 with linear basis functions and the same dimension as the
-   * given test data.\n
+   * given test data.
    * Alternatively load a sparse grid that has been saved to a file, see the commented line.
    */
   std::cout << "# create grid config" << std::endl;
@@ -103,12 +103,11 @@ int main(int argc, char** argv) {
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   /**
-   * Configure the learner by specifying: \n
-   * - ??enable,kfold?, \n
-   * - an initial value for the lagrangian multiplier \f$\lambda\f$ and the interval \f$
-   * [\lambda_{Start} , \lambda_{End}] \f$ in which \f$\lambda\f$ will be searched, \n
-   * - whether a logarithmic scale is used, \n
-   * - the parameters shuffle and an initial seed for the random value generation, \n
+   * Configure the learner by specifying:
+   * - an initial value for the lagrangian multiplier \f$\lambda\f$ and the interval
+   *   \f$ [\lambda_{Start} , \lambda_{End}] \f$ in which \f$\lambda\f$ will be searched,
+   * - whether a logarithmic scale is used,
+   * - the parameters shuffle and an initial seed for the random value generation,
    * - whether parts of the output shall be kept off.
    */
   std::cout << "# create learner config" << std::endl;
