@@ -18,11 +18,14 @@
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/sle/solver/Armadillo.hpp>
 #include <sgpp/optimization/sle/solver/Auto.hpp>
 #include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/tools/Printer.hpp>
 
+#include <algorithm>
 #include <iostream>
 
 namespace sgpp {
@@ -67,16 +70,29 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * creates a regular grid of the lowest level with more grid points than specified
    *
    * @param numPoints	desired number of grid points
+   * @param verbose		print extra info
    */
-  void regularByPoints(size_t numPoints);
+  void regularByPoints(size_t numPoints, bool verbose = false);
 
   /**
    * creates a surplus adaptive sparse grid inteprolant
    * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
    * @param initialLevel		first a regular grid of initialLevel is created.
    * @param refinementsNum		max number of grid points, added in each refinement step
+   * @param verbose		print extra info
    */
-  void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3);
+  void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3,
+                       bool verbose = false);
+
+  /**
+   * creates an adaptive grid based on Ritter-Novak
+   * this is favourable for optimization
+   *
+   * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
+   * @param gamma 				Ritter Novak adaptivity parameter between 0 and 1
+   * @param verbose				print extra info
+   */
+  void ritterNovak(size_t maxNumGridPoints, double gamma, bool verbose = false);
 
   /**
    * creates a surplus adaptive sparse grid regression approximation
@@ -146,6 +162,8 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    */
   double getVariance(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
 
+  sgpp::base::DataVector optimize();
+
   /**
    * @return the interpolation grid
    */
@@ -176,6 +194,10 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
   std::shared_ptr<sgpp::base::SBasis> basis;
   // the interpolation coefficients
   sgpp::base::DataVector coefficients;
+  // function vlaues in the grid points
+  sgpp::base::DataVector functionValues;
+  // whether or not the grid includes the boundary
+  bool boundary;
 
   /**
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
