@@ -64,7 +64,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
           // l = 1, i = 1
           return 1.0;
         } else if ((i > 1) && (i < hInv - 1)) {
-          // l >= 3, 1 < i < 2^l - 1
+          // l >= 2, 1 < i < 2^l - 1
           return std::max(1.0 - std::abs(t), 0.0);
         } else {
           if (i > hInv / 2) {
@@ -72,7 +72,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
             t *= -1.0;
           }
 
-          // l >= 3, i = 1
+          // l >= 2, i = 1
           return std::max(1.0 - t, 0.0);
         }
 

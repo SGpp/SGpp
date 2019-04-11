@@ -73,13 +73,16 @@ class NakBsplineBasis : public Basis<LT, IT> {
         } else if (l == 1) {
           if (i == 0) {
             // l = 1, i = 0
-            return 0.5 * x * x - 1.5 * x + 1.0;
+            // return 0.5 * x * x - 1.5 * x + 1.0;
+            return 1 - 3 * x + 2 * x * x;
           } else if (i == 1) {
             // l = 1, i = 1
-            return 1.0 - x * x;
+            // return 1.0 - x * x;
+            return 4 * x - 4 * x * x;
           } else {
             // l = 1, i = 2
-            return 0.5 * x * x + 1.5 * x + 1.0;
+            // return 0.5 * x * x + 1.5 * x + 1.0;
+            return 2 * x * x - x;
           }
         } else if ((i > 3) && (i < hInv - 3)) {
           // l >= 4, 3 < i < 2^l - 3
@@ -229,13 +232,16 @@ class NakBsplineBasis : public Basis<LT, IT> {
         } else if (l == 1) {
           if (i == 0) {
             // l = 1, i = 0
-            return 0.5 * t * t - 1.5 * t + 1.0;
+            // return 0.5 * t * t - 1.5 * t + 1.0;
+            return 1 - 3 * x + 2 * x * x;
           } else if (i == 1) {
             // l = 1, i = 1
-            return 1.0 - t * t;
+            // return 1.0 - t * t;
+            return 4 * x - 4 * x * x;
           } else {
             // l = 1, i = 2
-            return 0.5 * t * t + 1.5 * t + 1.0;
+            // return 0.5 * t * t + 1.5 * t + 1.0;
+            return 2 * x * x - x;
           }
         } else if ((i > 5) && (i < hInv - 5)) {
           // l >= 4, 5 < i < 2^l - 5
