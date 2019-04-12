@@ -83,6 +83,8 @@ def getFunction(model, dim=1, scalarModelParameter=3):
         return attenuationN(dim)
     
     # Steves tsunami Code ANUGA
+    elif model == 'anugaStorage':
+        return anugaStorage(dim)
     elif model == 'anuga':
         return anugaWrap(dim)
     elif model == 'anugaTime':
@@ -784,6 +786,17 @@ class anugaStorage():
             pickle.dump(self.precalculatedValues, f)
         print("calculated {} new ANUGA evaluations".format(self.numNew))
         print("saved them to {}".format(self.precalculatedValuesFileName))
+        
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)  
+        ub = pysgpp.DataVector(self.getDim(), 1.0) 
+        return lb, ub
+     
+    def getName(self):
+        return "anugaStorage{}D".format(self.dim)
+     
+    def getDim(self):
+        return self.dim
         
     def eval(self, x):
         gridsize = 16
