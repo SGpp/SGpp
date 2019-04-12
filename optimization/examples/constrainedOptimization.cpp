@@ -60,7 +60,7 @@ int main() {
   const size_t p = 5;
   const size_t d = problem.getObjectiveFunction().getNumberOfParameters();
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
-  const size_t l = 5;
+  const size_t l = 3;
   grid->getGenerator().regular(l);
 
   /**
