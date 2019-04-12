@@ -21,7 +21,7 @@ def anugaError(reSurf, objFunc):
     num = np.shape(parameters)[0]
     
     if "anugaTime" in objFunc.getName():
-        print("Implement this")  
+        print("Implement this error")  
         return 777      
     else:  # "anuga"
         err = 0
@@ -42,29 +42,30 @@ pyFunc = functions.getFunction('anuga', dim)
 objFunc = functions.objFuncSGppSign(pyFunc)
 
 degree = 3
-nPoints = 20
+nPoints = 200
 gridType = "nakbsplineextended"
 
 reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc,
                                                  pysgpp.Grid.stringToGridType(gridType),
                                                  degree)
-gamma = 0.95
-reSurf.ritterNovak(nPoints, gamma)
+# gamma = 0.95
+# reSurf.ritterNovak(nPoints, gamma)
+initialLevel = 1
+numRefine = 10
+reSurf.surplusAdaptive(nPoints, initialLevel, numRefine, True)
 
 grid = reSurf.getGrid()
 coeffs = reSurf.getCoefficients()
 ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
 ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
-
-xOpt = reSurf.optimize()
-# we maximized, so fix the sign again
-fXOpt = -objFunc.eval(xOpt)
-approxFXOpt = -reSurf.eval(xOpt)
-
 print("l2 error: {}".format(anugaError(reSurf, objFunc)))
 
+xOpt = reSurf.optimize()
+# # we maximized, so fix the sign again
+fXOpt = -objFunc.eval(xOpt)
+approxFXOpt = -reSurf.eval(xOpt)
 print("\nxOpt = {}".format(xOpt))
-print("f(xOpt) = {:.6g} approxF(xOpt) = {:.6g}\n".format(fXOpt, approxFXOpt))
+print("f(xOpt) = {:.8g} approxF(xOpt) = {:.8g}\n".format(fXOpt, approxFXOpt))
 
 pdfs = pysgpp.DistributionsVector(dim, pysgpp.DistributionUniform(0, 1))
 quadOrder = 10

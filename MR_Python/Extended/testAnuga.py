@@ -14,28 +14,28 @@ import pysgpp
 
 from functions import objFuncSGpp as objFuncSGpp
 
-f = functions.getFunction('anugaTime', 3)
-y = f.eval([0.8] * 3)
-print(y)
-f.cleanUp()
+# f = functions.getFunction('anugaTime', 3)
+# y = f.eval([0.8] * 3)
+# print(y)
+# f.cleanUp()
 
 ########################### create random validation data ###############################
-# dim = 2
-# num = 3
-# r = np.random.rand(num, dim)
-# path = '/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/Values'
-# np.savetxt(os.path.join(path, 'x{}D.txt'.format(dim)), r, delimiter=',') 
-# f = functions.getFunction('anuga', dim)
-# values = {}
-# for i in range(num):
-#     print("{}:".format(i))
-#     x = r[i, :]
-#     values[tuple(x)] = f.evalANUGA(x)
-#          
-# with open(os.path.join(path, 'values{}D.pkl'.format(dim)), "wb") as f:
-#             pickle.dump(values, f)
-# # don't clean up. Otherwise the precalculations file will blow up with unnecessary random values
-# # f.cleanUp()
+dim = 2
+num = 10000
+r = np.random.rand(num, dim)
+path = '/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/Values'
+np.savetxt(os.path.join(path, 'x{}D.txt'.format(dim)), r, delimiter=',') 
+f = functions.getFunction('anuga', dim)
+values = {}
+for i in range(num):
+    print("{}:".format(i))
+    x = r[i, :]
+    values[tuple(x)] = f.eval(x)
+          
+with open(os.path.join(path, 'values{}D.pkl'.format(dim)), "wb") as f:
+            pickle.dump(values, f)
+# don't clean up. Otherwise the precalculations file will blow up with unnecessary random values
+# f.cleanUp()
 
 ######################### plot exemplary timelines ########################################
 # dim = 2

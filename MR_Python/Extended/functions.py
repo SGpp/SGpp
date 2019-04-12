@@ -860,13 +860,10 @@ class anugaTime():
         # last parameter is time
         t = v[self.getDim() - 1]
         y = self.anugaStorage.eval(x)
-        
-        # linearily interpolate over time to evaluate in arbitrary points of time
-        # TODO: THIS MUST BE IMPROVED!
-        timestepsNormalized = [i * 1.0 / len(y) for i in range(len(y))]
+        # Interpolate over time to evaluate in arbitrary points of time
+        timestepsNormalized = [i * 1.0 / (len(y) - 1) for i in range(len(y))]
         # res = np.interp(t, timestepsNormalized, y)
-        timeInterpolant = interp1d(x, y, kind='cubic')  # 'linear', 'cubic', 
+        timeInterpolant = interp1d(timestepsNormalized, y, kind='cubic')  # 'linear', 'cubic', scipy also has spline interpolation
         res = timeInterpolant(t)
-        
         return res
     
