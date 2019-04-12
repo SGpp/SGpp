@@ -28,7 +28,8 @@ try:
     import numpy as np
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
 
 

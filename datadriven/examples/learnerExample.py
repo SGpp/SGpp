@@ -8,7 +8,8 @@ try:
     from pysgpp.extensions.datadriven.learner import Types
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
 
 numSamples = 20

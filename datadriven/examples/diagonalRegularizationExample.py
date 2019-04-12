@@ -17,18 +17,19 @@
 ## \f$ \mathbf{\vert \mathbf{l} \vert_1} \f$ to the level sum of the ith grid point.
 
 try:
-import requests as r
-import numpy as np
-import pandas as pd
-import sklearn.preprocessing as pre
+    import requests as r
+    import numpy as np
+    import pandas as pd
+    import sklearn.preprocessing as pre
     from sklearn.model_selection import KFold
-from scipy import stats
-from zipfile import ZipFile
-import io 
-import pysgpp as sg; sg.omp_set_num_threads(4)
+    from scipy import stats
+    from zipfile import ZipFile
+    import io 
+    import pysgpp as sg; sg.omp_set_num_threads(4)
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
 
 ## This function scales all predictors so that they are suitable for sparse grids.
@@ -82,7 +83,7 @@ def get_dataset():
 def make_estimator(lambda_reg, prior):
     grid = sg.RegularGridConfiguration()
     grid.dim_ = 4
-    grid.level_ = 5
+    grid.level_ = 3
     grid.type_ = sg.GridType_ModLinear
 
     adapt = sg.AdaptivityConfiguration()
@@ -126,7 +127,8 @@ def evaluate(estimator, cv, X, y):
 
 ## This function performs a grid search for the best regularization parameters.
 def grid_search(X, y, prior):
-    cv = KFold(X.shape[0], 10)
+    kf = KFold(10)
+    cv = kf.split(X)
     lambda_grid = np.logspace(-9, -4, num=4)
     best_result = np.finfo(np.double).max
     for l in lambda_grid:
