@@ -14,7 +14,8 @@ try:
     from operator import mul
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
 
 # in python2 reduce is a built-in method

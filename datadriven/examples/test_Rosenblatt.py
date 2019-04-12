@@ -6,7 +6,8 @@ try:
   from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
     
 pi = math.pi

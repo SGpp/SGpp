@@ -43,7 +43,8 @@ try:
                                     createOperationMultipleEvalNaive)
 
 except ImportError as e:
-    print("Couldn't import module {}. \nSkipping example...".format(e.name))
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
     exit(0)
 
 multipleEvalNaiveGridTypes = [GridType_Bspline,
