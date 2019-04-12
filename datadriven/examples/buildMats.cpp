@@ -5,6 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/exception/factory_exception.hpp>
+
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
@@ -117,103 +119,114 @@ std::vector<std::vector<size_t>> getConvs(size_t res) {
  */
 
 int main() {
-  int lvl = 3;
-  for (size_t res = 28; res <= 28; res+=2) {
-    std::string filename = "mats/" + std::to_string(res) + "x" + std::to_string(res)
-       + "_ModLin_NN_Inter_lvl"+std::to_string(lvl)+"_Chol.out";
-    std::cout << "Setting up " << filename << std::endl;
-  /**
-  * The grid configuration.
-  */
-  std::cout << "# create grid config" << std::endl;
-  sgpp::base::RegularGridConfiguration gridConfig;
-  gridConfig.dim_ = res*res;
-  gridConfig.level_ = lvl;
-  // gridConfig.type_ = sgpp::base::GridType::Linear;
-  gridConfig.type_ = sgpp::base::GridType::ModLinear;
+  try {
+    int lvl = 3;
+    for (size_t res = 28; res <= 28; res+=2) {
+      std::string filename = "mats/" + std::to_string(res) + "x" + std::to_string(res)
+        + "_ModLin_NN_Inter_lvl"+std::to_string(lvl)+"_Chol.out";
+      std::cout << "Setting up " << filename << std::endl;
+    /**
+    * The grid configuration.
+    */
+    std::cout << "# create grid config" << std::endl;
+    sgpp::base::RegularGridConfiguration gridConfig;
+    gridConfig.dim_ = res*res;
+    gridConfig.level_ = lvl;
+    // gridConfig.type_ = sgpp::base::GridType::Linear;
+    gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  /**
-  * Configure regularization.
-  */
-  std::cout << "# create regularization config" << std::endl;
-  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
-  // initial regularization parameter lambda
-  regularizationConfig.lambda_ = 0.01;
+    /**
+    * Configure regularization.
+    */
+    std::cout << "# create regularization config" << std::endl;
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+    regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+    // initial regularization parameter lambda
+    regularizationConfig.lambda_ = 0.01;
 
-  /**
-  * Select the desired decomposition type for the offline step.
-  * Note: Refinement/Coarsening only possible for Cholesky decomposition.
-  */
-  sgpp::datadriven::MatrixDecompositionType dt;
-  std::string decompType;
-  // choose "LU decomposition"
-  // dt = MatrixDecompositionType::DBMatDecompLU;
-  // decompType = "LU decomposition";
-  // choose"Eigen decomposition"
-  // dt = MatrixDecompositionType::DBMatDecompEigen;
-  // decompType = "Eigen decomposition";
-  // choose "Cholesky decomposition"
-  dt = sgpp::datadriven::MatrixDecompositionType::Chol;
-  decompType = "Cholesky decomposition";
-  //      dt = sgpp::datadriven::MatrixDecompositionType::IChol;
-  //      decompType = "Incomplete Cholesky decomposition";
-  //    dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
-  //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
-  std::cout << "Decomposition type: " << decompType << std::endl;
-  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
-  densityEstimationConfig.decomposition_ = dt;
+    /**
+    * Select the desired decomposition type for the offline step.
+    * Note: Refinement/Coarsening only possible for Cholesky decomposition.
+    */
+    sgpp::datadriven::MatrixDecompositionType dt;
+    std::string decompType;
+    // choose "LU decomposition"
+    // dt = MatrixDecompositionType::DBMatDecompLU;
+    // decompType = "LU decomposition";
+    // choose"Eigen decomposition"
+    // dt = MatrixDecompositionType::DBMatDecompEigen;
+    // decompType = "Eigen decomposition";
+    // choose "Cholesky decomposition"
+    dt = sgpp::datadriven::MatrixDecompositionType::Chol;
+    decompType = "Cholesky decomposition";
+    //      dt = sgpp::datadriven::MatrixDecompositionType::IChol;
+    //      decompType = "Incomplete Cholesky decomposition";
+    //    dt = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
+    //    decompType = "Incomplete Cholesky decomposition on Dense Matrix";
+    std::cout << "Decomposition type: " << decompType << std::endl;
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+    densityEstimationConfig.decomposition_ = dt;
 
-  /**
-  * Configure adaptive refinement (if Cholesky is chosen). As refinement
-  * monitor the periodic monitor or the convergence monitor
-  * can be chosen. Possible refinement indicators are
-  * surplus refinement, data-based refinement, zero-crossings-based
-  * refinement.
-  */
-  std::cout << "# create adaptive refinement configuration" << std::endl;
-  std::string refMonitor;
-  // select periodic monitor - perform refinements in fixed intervals
-  refMonitor = "periodic";
-  std::cout << "Refinement monitor: " << refMonitor << std::endl;
-  std::string refType;
-  // select surplus refinement
-  // refType = "surplus";
-  // select data-based refinement
-  // refType = "data";
-  // select zero-crossings-based refinement
-  refType = "zero";
-  std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  /**
-  * Specify number of refinement steps and the max number
-  * of grid points to refine each step.
-  */
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.noPoints_ = 7;
-  adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
+    /**
+    * Configure adaptive refinement (if Cholesky is chosen). As refinement
+    * monitor the periodic monitor or the convergence monitor
+    * can be chosen. Possible refinement indicators are
+    * surplus refinement, data-based refinement, zero-crossings-based
+    * refinement.
+    */
+    std::cout << "# create adaptive refinement configuration" << std::endl;
+    std::string refMonitor;
+    // select periodic monitor - perform refinements in fixed intervals
+    refMonitor = "periodic";
+    std::cout << "Refinement monitor: " << refMonitor << std::endl;
+    std::string refType;
+    // select surplus refinement
+    // refType = "surplus";
+    // select data-based refinement
+    // refType = "data";
+    // select zero-crossings-based refinement
+    refType = "zero";
+    std::cout << "Refinement type: " << refType << std::endl;
+    sgpp::base::AdaptivityConfiguration adaptConfig;
+    /**
+    * Specify number of refinement steps and the max number
+    * of grid points to refine each step.
+    */
+    adaptConfig.numRefinements_ = 0;
+    adaptConfig.noPoints_ = 7;
+    adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
 
-  std::unique_ptr<sgpp::base::Grid> grid;
-    if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
-      grid =
-          std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)};
-    } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
-      grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
-    } else {
-      return 1;
+    std::unique_ptr<sgpp::base::Grid> grid;
+      if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+        grid =
+          std::unique_ptr<sgpp::base::Grid>{
+            sgpp::base::Grid::createModLinearGrid(gridConfig.dim_)
+          };
+      } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+        grid =
+          std::unique_ptr<sgpp::base::Grid>{
+            sgpp::base::Grid::createLinearGrid(gridConfig.dim_)
+          };
+      } else {
+        return 1;
+      }
+
+    sgpp::datadriven::DBMatOffline *offline =
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
+                                                                adaptConfig,
+                                                                regularizationConfig,
+                                                                densityEstimationConfig);
+    offline->interactions = getDirectNeighbours(res);
+    std::cout << "Building Matrix..." << std::endl;
+    offline->buildMatrix(grid.get(), regularizationConfig);
+    std::cout << "Matrix build.\nBegin decomposition..." << std::endl;
+    offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    // offline->printMatrix();
+      offline->store(filename);
     }
-
-  sgpp::datadriven::DBMatOffline *offline =
-    sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
-                                                              adaptConfig,
-                                                              regularizationConfig,
-                                                              densityEstimationConfig);
-  offline->interactions = getDirectNeighbours(res);
-  std::cout << "Building Matrix..." << std::endl;
-  offline->buildMatrix(grid.get(), regularizationConfig);
-  std::cout << "Matrix build.\nBegin decomposition..." << std::endl;
-  offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
-  // offline->printMatrix();
-    offline->store(filename);
+  }
+  catch (sgpp::base::factory_exception& exc)  {
+    std::cout << "Exception: " << exc.what() << std::endl;
+    std::cout << "Skipping example..." << std::endl;
   }
 }
