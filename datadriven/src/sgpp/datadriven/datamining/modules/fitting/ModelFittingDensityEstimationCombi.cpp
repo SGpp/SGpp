@@ -49,7 +49,7 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
-  datamatrix = newDataset;
+  // datamatrix = newDataset;
   configurator = CombiConfigurator();
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
   configurator.getCombiScheme(componentConfigs);
@@ -134,7 +134,7 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
   }
   cout << "##CURRENT SET after Refinement: " << refinementsPerformed
        << " ## Sum of Gridpoints: " << gridpoints << std::endl;
-  datamatrix = newDataset;
+  // datamatrix = newDataset;
   cout << "done\n";
 }
 

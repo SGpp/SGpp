@@ -34,16 +34,18 @@ int main(int argc, char **argv) {
   myfile << "EVALUATION " << getTime() << std::endl;
 
   vector<string> paths;
-  for (size_t i = 0; i < 25; i++) {
-    paths.push_back("e1_Circles500_component");
-    paths.push_back("e1_Circles500_regular");
+  for (size_t i = 0; i < 0; i++) {
+    paths.push_back("e2_FunnyChess_component");
+    paths.push_back("e2_FunnyChess_regular");
+  }
+  for (size_t i = 0; i < 20; i++) {
+    paths.push_back("e3_Iris_component");
+    paths.push_back("e3_Iris_regular");
   }
   for (size_t i = 0; i < 0; i++) {
-    paths.push_back("classIris_component");
-    paths.push_back("classIris_regular");
-  }
-  for (size_t i = 0; i < 0; i++) {
+    paths.push_back("classDR10_component2");
     paths.push_back("classDR10_component");
+    paths.push_back("classDR10_regular2");
     paths.push_back("classDR10_regular");
   }
 
