@@ -7,7 +7,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedCoarseningFunctor.hpp>
-
+#include <sgpp/base/exception/application_exception.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -33,7 +33,7 @@ namespace sgpp {
             // Add a map for each grid
             // Check the parameters, throw exception
             if (thresh < 0){
-                throw application_exception(
+                throw sgpp::base::application_exception(
                         "GridPointBasedCoarseningFunctor: Threshold should be non-negative!");
             }
             for (size_t i = 0; i < grids.size(); i++) {
@@ -44,7 +44,7 @@ namespace sgpp {
         double
         GridPointBasedCoarseningFunctor::operator()(base::GridStorage& storage,
                                                     size_t seq) const {
-            std::cout<<"GridPointBasedCoarseningFunctor::operator"<<std::endl;
+            
             // return value
             double score = 0.0;
 
@@ -107,7 +107,9 @@ namespace sgpp {
             }
 
             gridClassDiffs = max - second_max;
-
+            //double rangex = 1.00;
+            //double rangey = 1.00;
+            //printHeatmap(rangex, rangey);
             //Compare to the neighbors
 
             base::HashGridPoint& gp = storage.getPoint(seq);
@@ -193,11 +195,18 @@ namespace sgpp {
             score = score + gridClassDiffs;
 
             // Should not coarsen a grid point that has child
-
-            if(has_child){
-                score = -1.0;
+            
+            std::cout<<";"<<score<<";";
+            for (unsigned i=0;i<gridEvals.size();i++){
+                std::cout<<gridEvals.at(i);
+                if (i!=gridEvals.size()-1){
+                    std::cout<<";";
+                }
+                else{
+                    std::cout<<std::endl;
+                }
             }
-            std::cout << "The score is: "<<score << std::endl;
+            score=-score;
             return score;
         }
 
@@ -229,7 +238,34 @@ namespace sgpp {
                 }
             }
         }
+        
+        void GridPointBasedCoarseningFunctor::printHeatmap(double rangex, double rangey) const {
 
+            std::cout<<"Printing the heat map..."<<std::endl;
+            for (size_t m=0;m<=20;m=m+1){
+                for (size_t n=0;n<=20;n=n+1){
+                    const double x = m/20.0;
+                    const double y = n/20.0;
+                    std::cout<<x<<";"<<y;
+                    for (size_t i = 0; i < grids.size(); i++) {
+                        std::cout<<";";
+                        std::unique_ptr<base::OperationEval>
+                        opEval(op_factory::createOperationEval(*grids.at(i)));
+                        //Coordinate
+                        std::vector<double> c {x,y};
+                        base::DataVector p(c);
+                        //key
+                        std::string key = "";
+                        key = p.toString();
+                        double v = opEval->eval(*alphas.at(i), p);
+                        std::cout<<v;
+                    }
+                    std::cout<<std::endl;
+                }
+            }
+            std::cout<<"################################"<<std::endl;
+        }
+        
         double GridPointBasedCoarseningFunctor::start() const {
             return 0.0;
         }
@@ -339,7 +375,22 @@ namespace sgpp {
             double distance = dist.l2Norm();
             return distance;
         }
+        
+        void GridPointBasedCoarseningFunctor::printCoordinate(base::HashGridPoint& gp)
+        const {
+            std::cout<<"(";
+            for (size_t d = 0; d < gp.getDimension(); d++){
+                std::cout<<gp.getStandardCoordinate(d);
+                if(d!=gp.getDimension()-1){
+                    std::cout<<",";
+                }
+                else{
+                    std::cout<<")";
+                }
+            }
 
+        }
+        
         bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
                                                          base::DataVector& point)
         const {

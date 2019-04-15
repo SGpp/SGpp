@@ -95,6 +95,7 @@ namespace sgpp {
                         bool left) const;
 
             bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
+            void printHeatmap(double rangex, double rangey) const;
             bool isLeftChild(const base::HashGridPoint& gp, size_t d) const;
 
             /**
@@ -120,6 +121,11 @@ namespace sgpp {
              */
             double getDistance(base::HashGridPoint& gp1,
                                base::HashGridPoint& gp2) const;
+                               
+            /**
+             * @param gp the grid point
+             */
+            void printCoordinate(base::HashGridPoint& gp) const;
             /**
              * Is point in support of basis function at gp
              */

@@ -411,7 +411,7 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
     if (densityEstimationConfig->contains("matrixDecompositionType")) {
       config.decomposition_ =
           MatrixDecompositionTypeParser::
-          parse((*densityEstimationConfig)["matrixDecompositionEstimationType"].get());
+          parse((*densityEstimationConfig)["matrixDecompositionType"].get());
     } else {
       std::cout <<
                 "# Did not find densityEstimationConfig[matrixDecompositionType]."

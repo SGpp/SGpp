@@ -120,7 +120,10 @@ class ModelFittingClassification : public ModelFittingBase {
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
-
+  /**
+   * Count the amount of coarsening operations performed on the current dataset.
+   */
+  size_t coarseningsPerformed;
   /**
    * Models for each class
    */

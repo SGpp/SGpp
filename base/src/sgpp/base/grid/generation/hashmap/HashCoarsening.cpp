@@ -56,7 +56,16 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   // also assure, that indices bigger than minIndexConsidered are not checked
   for (size_t z = minIndexConsidered; z < numFirstPoints; z++) {
     GridPoint& point = storage.getPoint(z);
-
+    std::cout<<"(";
+    for (size_t d = 0; d < point.getDimension(); d++){
+        std::cout<<point.getStandardCoordinate(d);
+        if(d!=point.getDimension()-1){
+            std::cout<<",";
+        }
+        else{
+            std::cout<<")";
+        }
+    }
     if (point.isLeaf()) {
       CoarseningFunctor::value_type current_value = functor(storage, z);
 
@@ -76,16 +85,20 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
         }
       }
     }
+    else{
+
+        std::cout<<";NaN;NaN;NaN"<<std::endl;
+    }
   }
 
   // DEBUG : print list of removable candidates
-  // std::cout << "list of removable candidates:\n";
-  // for (size_t i = 0; i < remove_num; i++) {
-  //   std::cout << "Index: " << removeCandidates[i].first << " with surplus " <<
-  //   removeCandidates[i].second
-  //             << std::endl;
-  // }
-  // std::cout << std::endl;
+  std::cout << "list of removable candidates:\n";
+  for (size_t i = 0; i < remove_num; i++) {
+    std::cout << "Index: " << removeCandidates[i].first << " with surplus " <<
+    removeCandidates[i].second
+              << std::endl;
+  }
+  std::cout << std::endl;
 
   // remove the marked grid point if their surplus
   // is below the given threshold
@@ -104,6 +117,7 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (size_t i = 0; i < remove_num; i++) {
     if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
+      std::cout<<"This candidate has score:"<<removeCandidates[i].second<<std::endl;
       if (removedPoints != 0) {
         removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
       }

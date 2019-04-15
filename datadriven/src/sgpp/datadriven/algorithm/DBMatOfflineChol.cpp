@@ -123,8 +123,8 @@ void DBMatOfflineChol::choleskyModification(Grid& grid,
         // Delete last 'coarseCount_2' rows/columns of current Cholesky factor
         lhsMatrix.resizeQuadratic(old_size - coarseCount_2);
       }
-
-      if (start1 == true) {
+      // else (start1 == true) 
+      else {
         // Is accessed if 'index_coarse' is less than 'c'
         choleskyPermutation(1 + coarseCount_1, index_coarse, 1);
         coarseCount_1++;

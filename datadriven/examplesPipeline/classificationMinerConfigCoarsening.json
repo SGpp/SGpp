@@ -5,7 +5,6 @@
 		"batchSize" : 10,
 		"validationPortion" : 0.2,
 		"epochs" : 2,
-		"shuffling" : "random",
 		"randomSeed" : -1,
 		"readinCutoff": -1,
 		"readinClasses": [-1, 1],
@@ -21,21 +20,18 @@
 			"level": 5
 		},
 		"coarseningConfig" :{
-                "numCoarsening": 10,
-                "threshold": 0.001,
+                "numCoarsening": 2,
+                "threshold": 0.01,
                 "maxLevelType": false,
-                "noPoints": 10,
-                "coarseningIndicator" : "GridPointBased",
-//                "errorBasedRefinement" : false,
-//                "errorMinInterval" : 1,
-//                "errorBufferSize" : 2,
-//                "errorConvergenceThreshold" : 0.001
+                "noPoints": 1,
+                "coarseningIndicator" : "GridPointBased"
 		},
 		"regularizationConfig": {
 			"lambda": 1e-2
 		},
 		"densityEstimationConfig" : {
-			"densityEstimationType" : "decomposition"
+			"densityEstimationType" : "decomposition",
+			"matrixDecompositionType": "OrthoAdapt"
 		},
 		"learner" : {
 			"usePrior" : true,
