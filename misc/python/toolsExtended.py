@@ -22,7 +22,7 @@ from array import array
 try:
     import psyco
     psyco.full()
-    print "Using psyco"
+    print ("Using psyco" )
 except:
     pass
 
@@ -39,8 +39,8 @@ def buildCoefficientVectorFromFile(filename):
     coeff = DataVector(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
-    for i in xrange(len(data["data"][0])):
-        for d in xrange(dim):
+    for i in range(len(data["data"][0])):
+        for d in range(dim):
             coeff[i*dim + d] = data["data"][d][i]
     
     return coeff
@@ -57,7 +57,7 @@ def openFile(filename):
         print ("An error occured while reading " + filename + "!")
         sys.exit(1)
         
-    if data.has_key("classes") == False:
+    if ("classes" in data) == False:
         print ("No classes found in the given File " + filename + "!")
         sys.exit(1)
         
@@ -74,8 +74,8 @@ def buildTrainingVector(data):
     training = DataVector(len(data["data"][0]), dim)
     
     # i iterates over the data points, d over the dimension of one data point
-    for i in xrange(len(data["data"][0])):
-        for d in xrange(dim):
+    for i in range(len(data["data"][0])):
+        for d in range(dim):
             training[i*dim + d] = data["data"][d][i]
     
     return training
@@ -109,7 +109,7 @@ def printRefPoint(points, dim, function, fout, foutvalue):
     
     p = points.split()
     pc = evalFunction(function, p)
-    for y in xrange(dim):
+    for y in range(dim):
         fout.write("%s " % p[y])
     
     fout.write("%s " % pc)    
@@ -132,7 +132,7 @@ def printRefPoint(points, dim, function, fout, foutvalue):
 def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutvalue):
     if dim_rem == 0:
         points_save = points
-        for x in xrange(resolution):
+        for x in range(resolution):
             points = str(float(x) / (resolution - 1)) + " " + points_save
             printRefPoint(points, dim, function, fout, foutvalue)
             
@@ -140,8 +140,8 @@ def recGenPrintRefVector(dim_rem, dim, points, function, resolution, fout, foutv
         #foutvalue.write("\n")
     else:
         points_save = points
-        for x in xrange(resolution):
-            points = str(float(x) / (resolution - 1)) + " "+ points_save + str(float(x) / (resolution - 1))
+        for x in range(resolution):
+            points = str(float(x) /  (resolution - 1)) + " "+ points_save + str(float(x) / (resolution - 1))
             recGenPrintRefVector(dim_rem-1, dim, points, function, resolution, fout, foutvalue)
         
     return
@@ -175,7 +175,7 @@ def printRefNDFunction(filename, filenameValue, function, resolution, dim):
 # @param foutvalue filehandle to resultfile, containing only the value
 def printPoint(p, grid, alpha, fout, foutvalue):
     pc = createOperationEval(grid).eval(alpha, p)
-    for y in xrange(grid.getDimension()):
+    for y in range(grid.getDimension()):
         fout.write("%s " % p[y])
     
     fout.write("%s " % pc)
@@ -197,14 +197,14 @@ def printPoint(p, grid, alpha, fout, foutvalue):
 # @param foutvalue filehandle to resultfile, containing only the value
 def recGenPrintVector(dim_rem, p, grid, alpha, resolution, fout, foutvalue):
     if dim_rem == 0:
-        for x in xrange(resolution):
+        for x in range(resolution):
             p[dim_rem] = float(x) / (resolution - 1)
             printPoint(p, grid, alpha, fout, foutvalue)
             
         fout.write("\n")
         #foutvalue.write("\n")
     else:
-        for x in xrange(resolution):
+        for x in range(resolution):
             p[dim_rem] = float(x) / (resolution - 1)
             recGenPrintVector(dim_rem-1, p, grid, alpha, resolution, fout, foutvalue)
         
@@ -266,7 +266,7 @@ def compareResultFiles(file1, file2):
 def doHierarchisation(node_values, grid):   
     tmp =  DataVector(grid.getSize(), 1)
     
-    for i in xrange(len(node_values)):
+    for i in range(len(node_values)):
         tmp[i] = node_values[i]
     
     # create operation: hierarchisation
@@ -285,7 +285,7 @@ def doHierarchisation(node_values, grid):
 def doDehierarchisation(alpha, grid):
     tmp =  DataVector(grid.getSize(), 1)
     
-    for i in xrange(len(alpha)):
+    for i in range(len(alpha)):
         tmp[i] = alpha[i]
          
     # create operation: hierarchisation
@@ -303,7 +303,7 @@ def doDehierarchisation(alpha, grid):
 # @param points sorted list of the coordinates (x1...xn) of evaluation point
 # @return returns the function value at points
 def evalFunction(function, points):
-    for i in xrange(len(points)):
+    for i in range(len(points)):
         function = re.sub("x" + str(i+1), points[i], function)
             
     return eval(function)    
@@ -317,7 +317,7 @@ def evalFunction(function, points):
 def testHierarchisationResults(node1, node2):
     error = 0.0
     
-    for i in xrange(len(node1)):
+    for i in range(len(node1)):
         if abs(abs(node1[i])-abs(node2[i])) > error:
             error = abs(abs(node1[i])-abs(node2[i]))
             
@@ -342,14 +342,14 @@ def generateCMatrix(factory, verbose=False):
     # create stiffness matrix
     m = np.zeros( (storage.getSize(), storage.getSize()) )
 
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
         # apply unit vectors
         alpha.setAll(0)
         alpha[i] = 1
         laplace.mult(alpha, erg)
         
         #Sets the column in m
-        for j in xrange(storage.getSize()):
+        for j in range(storage.getSize()):
             m[j,col] = erg[j]
             
         col = col + 1
@@ -377,7 +377,7 @@ def generateBBTMatrix(factory, training, verbose=False):
     # create B matrix
     m = np.zeros( (storage.getSize(), storage.getSize()) )
     
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)
@@ -387,7 +387,7 @@ def generateBBTMatrix(factory, training, verbose=False):
         b.mult(temp, training, erg)
         
         #Sets the column in m
-        for j in xrange(storage.getSize()):
+        for j in range(storage.getSize()):
             m[j,col] = erg[j]
 
         col = col + 1
@@ -413,7 +413,7 @@ def generateBTMatrix(factory, training, verbose=False):
     # create BT matrix
     m = np.zeros( (training.getSize(), storage.getSize()) )
     
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         alpha.setAll(0.0)
@@ -421,7 +421,7 @@ def generateBTMatrix(factory, training, verbose=False):
         b.multTranspose(alpha, training, temp)
         
         #Sets the column in m
-        for j in xrange(training.getSize()):
+        for j in range(training.getSize()):
             m[j,col] = temp[j]
 
         col = col + 1
@@ -445,7 +445,7 @@ def generateBTMatrixPython(factory, training, verbose=False):
     # create BT matrix
     m = DataVector(training.getSize(), storage.getSize())
     
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         alpha.setAll(0.0)
@@ -473,7 +473,7 @@ def generateBBTMatrixPython(factory, training, verbose=False):
     
     # create B matrix
     m = DataVector(storage.getSize(), storage.getSize())
-    for i in xrange(storage.getSize()):
+    for i in range(storage.getSize()):
         # apply unit vectors
         temp.setAll(0.0)
         erg.setAll(0.0)
@@ -497,7 +497,7 @@ def readReferenceMatrix(storage, filename):
     # read reference matrix
     try:
         fd = gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fd = None
         
     if not fd:
@@ -506,13 +506,13 @@ def readReferenceMatrix(storage, filename):
     dat = fd.read().strip()
     fd.close()
     dat = dat.split('\n')
-    dat = map(lambda l: l.strip().split(None), dat)
+    dat = [l.strip().split(None) for l in dat]
 
     #print len(dat)
     #print len(dat[0])
     m_ref = DataVector(len(dat), len(dat[0]))
-    for i in xrange(len(dat)):
-        for j in xrange(len(dat[0])):
+    for i in range(len(dat)):
+        for j in range(len(dat[0])):
             #print float(dat[i][j])
             m_ref[i*len(dat[0]) + j] = float(dat[i][j])
 
@@ -527,7 +527,7 @@ def readDataVector(filename):
     
     try:
         fin = tools.gzOpen(filename, 'r')
-    except IOError, e:
+    except IOError as e:
         fin = None
         
     if not fin:
@@ -563,7 +563,7 @@ def readDataVector(filename):
         if hasclass:
             classes.append(float(values[-1]))
             values = values[:-1]
-        for i in xrange(len(values)):
+        for i in range(len(values)):
             data[i].append(float(values[i]))
             
     # cleaning up and return
@@ -594,7 +594,7 @@ def compareBBTMatrices(m1, m2):
     values_ref.sort()
 
     for i in range(n):
-        print values_ref[i], values[i]
+        print((values_ref[i], values[i] ))
 
     # check row sum
     v = DataVector(n)
@@ -609,7 +609,7 @@ def compareBBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print((values_ref[i], values[i] ))
 
     # check col sum
     v = DataVector(n)
@@ -624,7 +624,7 @@ def compareBBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print((values_ref[i], values[i] ))
 
 #-------------------------------------------------------------------------------
 ##Compares, if two BT matrices are "almost" equal.
@@ -651,7 +651,7 @@ def compareBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(n):
-        print values_ref[i], values[i]
+        print((values_ref[i], values[i] ))
 
     # check col sum
     v = DataVector(n)
@@ -666,7 +666,7 @@ def compareBTMatrices(m1, m2):
         values_ref.append(v.sum())
     values_ref.sort()
     for i in range(m):
-        print values_ref[i], values[i]
+        print((values_ref[i], values[i] ))
 
 #-------------------------------------------------------------------------------
 ## Writes matrix stored in numpy format into a file

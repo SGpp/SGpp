@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_SUITE(testDensityEstimationOnOff)
 
 
 BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
-  std::string samples = "datadriven/tests/datasets/densityEstimation/2D_StroSkewB2.csv";
+  std::string samples = "datadriven/datasets/densityEstimation/2D_StroSkewB2.csv";
 
   // Create config file
   std::string config = "tmpsgdeconfig.json";
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
       << std::endl;
 
   double mse = testDistributionOnOff(
-      "datadriven/tests/datasets/densityEstimation/2D_StroSkewB2F.csv", config);
+      "datadriven/datasets/densityEstimation/2D_StroSkewB2F.csv", config);
   std::cout << "MSE on test " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(Test_2D_StroSkewB2) {
 
 
 BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
-  std::string samples = "datadriven/tests/datasets/densityEstimation/3D_KurB4B1.csv";
+  std::string samples = "datadriven/datasets/densityEstimation/3D_KurB4B1.csv";
 
   // Create config file
   std::string config = "tmpsgdeconfig.json";
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
         << std::endl;
 
   double mse = testDistributionOnOff(
-      "datadriven/tests/datasets/densityEstimation/3D_KurB4B1F.csv", config);
+      "datadriven/datasets/densityEstimation/3D_KurB4B1F.csv", config);
   std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());

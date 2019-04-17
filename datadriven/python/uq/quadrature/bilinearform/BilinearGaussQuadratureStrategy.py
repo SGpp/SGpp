@@ -5,7 +5,7 @@ Created on Aug 6, 2014
 """
 import numpy as np
 
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 

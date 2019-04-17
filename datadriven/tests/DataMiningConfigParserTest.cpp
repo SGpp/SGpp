@@ -21,7 +21,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 
-const auto datasetPath = "datadriven/tests/data/dataminingConfig.json";
+const auto datasetPath = "datadriven/tests/dataminingConfig.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 

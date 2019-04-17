@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
 
   // read arff file
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
-  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
+  arffsp.readFile("datadriven/datasets/chess/chess_5d_2000.arff", true);
   Dataset* dataset = arffsp.getAllSamples();
 
   // do transformations
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   DataSourceConfig defaults;
 
   // Config for "automatic" transformation
-  std::string path = "datadriven/tests/data/test_Rosenblatt_in_Pipeline.json";
+  std::string path = "datadriven/tests/test_Rosenblatt_in_Pipeline.json";
   DataSourceBuilder builder;
   DataMiningConfigParser parser(path);
   parser.getDataSourceConfig(config, defaults);
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
 
   // Read arff file manually
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
-  arffsp.readFile("datadriven/tests/data/chess_5d_2000.arff", true);
+  arffsp.readFile("datadriven/datasets/chess/chess_5d_2000.arff", true);
   Dataset* dataset1 = arffsp.getNextSamples(1000);
   Dataset* dataset2 = arffsp.getNextSamples(1000);
 

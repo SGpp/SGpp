@@ -248,9 +248,9 @@ class AtanPeridynamicExample(object):
         # ----------------------------------------------------------
         np.random.seed(1234567)
 
-        print "-" * 60
-        print "Latin Hypercube Sampling"
-        print "-" * 60
+        print("-" * 60)
+        print("Latin Hypercube Sampling")
+        print("-" * 60)
         mcSampler, mcUQSetting = TestEnvironmentMC().buildSetting(self.params, self.simulation, 2 ** maxExp)
         # ----------------------------------------------------------
         # Monte Carlo Estimator
@@ -263,7 +263,7 @@ class AtanPeridynamicExample(object):
         for iN in np.logspace(minExp, maxExp, maxExp - minExp + 1, base=2):
             # split the results into chunk of Ni samples
             num_samples = int(iN)
-            isamples = {0: dict(samples.items()[:num_samples])}
+            isamples = {0: dict(list(samples.items())[:num_samples])}
             analysis = MCAnalysis(self.params, isamples)
             analysis.setVerbose(False)
 
@@ -271,12 +271,12 @@ class AtanPeridynamicExample(object):
                          "mean_estimated": analysis.mean(),
                          "var_estimated": analysis.var()}
 
-            print "-" * 60
-            print "#samples = %i" % (num_samples,)
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], analysis.mean()[0],
-                                               np.abs(self.E_ana[0] - analysis.mean()[0]))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], analysis.var()[0],
-                                               np.abs(self.V_ana[0] - analysis.var()[0]))
+            print("-" * 60)
+            print("#samples = %i" % (num_samples,))
+            print("E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], analysis.mean()[0],
+                                               np.abs(self.E_ana[0] - analysis.mean()[0])))
+            print("V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], analysis.var()[0],
+                                               np.abs(self.V_ana[0] - analysis.var()[0])))
 
         if out:
             # store results
@@ -320,7 +320,7 @@ class AtanPeridynamicExample(object):
             num_samples = num_terms = pce.num_terms()
 
             if num_samples > maxNumSamples:
-                print "DONE: %i > %i" % (num_samples, maxNumSamples)
+                print("DONE: %i > %i" % (num_samples, maxNumSamples))
                 break
 
             if sampling_strategy == "gauss":
@@ -354,15 +354,15 @@ class AtanPeridynamicExample(object):
                 self.getErrors(test_values, test_values_pred,
                                pce.mean(), pce.variance())
             ###################################################################################################
-            print "-" * 60
-            print "degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples)
-            print "train: |.|_2 = %g (res=%g)" % (l2train, residual)
-            print "test:  |.|_2 = %g" % l2test
-            print "cond:  %g" % cond_preconditioned
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], pce.mean(),
-                                               np.abs(self.E_ana[0] - pce.mean()))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], pce.variance(),
-                                               np.abs(self.V_ana[0] - pce.variance()))
+            print("-" * 60)
+            print("degree = %i, #terms = %i, #samples = %i" % (degree_1d, num_terms, num_samples))
+            print("train: |.|_2 = %g (res=%g)" % (l2train, residual))
+            print("test:  |.|_2 = %g" % l2test)
+            print("cond:  %g" % cond_preconditioned)
+            print("E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], pce.mean(),
+                                               np.abs(self.E_ana[0] - pce.mean())))
+            print("V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], pce.variance(),
+                                               np.abs(self.V_ana[0] - pce.variance())))
 
             # get sobol indices
             sobol_indices = builder.getSortedSobolIndices(pce)
@@ -420,8 +420,8 @@ class AtanPeridynamicExample(object):
 
         stats = {}
         while True:
-            print "-" * 80
-            print "level = %i" % level
+            print("-" * 80)
+            print("level = %i" % level)
             uqManager = TestEnvironmentSG().buildSetting(self.params,
                                                          self.simulation,
                                                          level,
@@ -432,7 +432,7 @@ class AtanPeridynamicExample(object):
                                                          boundaryLevel=boundaryLevel)
 
             if uqManager.sampler.getSize() > maxGridSize:
-                print "DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize)
+                print("DONE: %i > %i" % (uqManager.sampler.getSize(), maxGridSize))
                 break
 
             # ----------------------------------------------
@@ -458,12 +458,12 @@ class AtanPeridynamicExample(object):
             l2test, l1test, maxErrorTest, meanError, varError = \
                 self.getErrors(test_values, test_values_pred,
                                sg_mean["value"], sg_var["value"])
-            print "-" * 60
-            print "test:  |.|_2 = %g" % l2test
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean["value"],
-                                               np.abs(self.E_ana[0] - sg_mean["value"]))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var["value"],
-                                               np.abs(self.V_ana[0] - sg_var["value"]))
+            print("-" * 60)
+            print("test:  |.|_2 = %g" % l2test)
+            print("E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean["value"],
+                                               np.abs(self.E_ana[0] - sg_mean["value"])))
+            print("V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var["value"],
+                                               np.abs(self.V_ana[0] - sg_var["value"])))
             # ----------------------------------------------------------
             # estimated anova decomposition
             if self.inputSpace != "sgde":
@@ -568,12 +568,12 @@ class AtanPeridynamicExample(object):
             sobol_indices = anova.getSobolIndices()
             total_effects = computeTotalEffects(sobol_indices)
 
-            print "-" * 60
-            print "iteration=%i, N=%i" % (iteration, grid.getSize())
-            print "E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration]["value"],
-                                               np.abs(self.E_ana[0] - sg_mean[iteration]["value"]))
-            print "V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration]["value"],
-                                               np.abs(self.V_ana[0] - sg_var[iteration]["value"]))
+            print("-" * 60)
+            print("iteration=%i, N=%i" % (iteration, grid.getSize()))
+            print("E[x] = %g ~ %g (err=%g)" % (self.E_ana[0], sg_mean[iteration]["value"],
+                                               np.abs(self.E_ana[0] - sg_mean[iteration]["value"])))
+            print("V[x] = %g ~ %g (err=%g)" % (self.V_ana[0], sg_var[iteration]["value"],
+                                               np.abs(self.V_ana[0] - sg_var[iteration]["value"])))
 
             stats[grid.getSize()] = {'num_model_evaluations': grid.getSize(),
                                      'l2test': l2test,

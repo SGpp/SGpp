@@ -9,7 +9,7 @@ from pysgpp.extensions.datadriven.uq.learner.builder.GridDescriptor import GridD
 from pysgpp.extensions.datadriven.uq.uq_setting import UQSettingAdapter
 import os
 
-from LearnerBuilder import LearnerBuilder
+from pysgpp.extensions.datadriven.uq.learner.builder.LearnerBuilder import LearnerBuilder
 
 
 class SimulationLearnerBuilder(LearnerBuilder):
@@ -51,9 +51,9 @@ class SimulationLearnerBuilder(LearnerBuilder):
         dataContainer = adapter.loadData(DataContainer.TEST_CATEGORY)
         if self._learner.dataContainer is not None:
             newDataContainer = {}
-            for dtype, value in self._learner.dataContainer.items():
+            for dtype, value in list(self._learner.dataContainer.items()):
                 newDataContainer[dtype] = {}
-                for t, data in value.items():
+                for t, data in list(value.items()):
                     newDataContainer[dtype][t] = data.combine(data)
             self._simlearner.dataContainer = newDataContainer
         else:

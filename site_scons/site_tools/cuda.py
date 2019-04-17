@@ -5,6 +5,7 @@ CUDA Tool for SCons
 
 """
 
+
 import os
 import sys
 import SCons.Tool
@@ -88,7 +89,7 @@ def generate(env):
                 for path in paths:
                         if os.path.isdir(path):
                                 pathFound = True
-                                print 'scons: CUDA Toolkit found in ' + path
+                                print('scons: CUDA Toolkit found in ' + path)
                                 cudaToolkitPath = path
                                 break
                 if not pathFound:
@@ -120,7 +121,7 @@ def generate(env):
                 for path in paths:
                         if os.path.isdir(path):
                                 pathFound = True
-                                print 'scons: CUDA SDK found in ' + path
+                                print('scons: CUDA SDK found in ' + path)
                                 cudaSDKPath = path
                                 break
                 if not pathFound:

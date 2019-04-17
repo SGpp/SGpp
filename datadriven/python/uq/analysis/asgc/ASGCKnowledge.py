@@ -38,8 +38,8 @@ class ASGCKnowledge(object):
         """
         if len(self.__alphas) == 0:
             raise Exception('No knowledge available')
-        iteration = self.__alphas.iterkeys().next()
-        return self.__alphas[iteration].keys()
+        iteration = next(iter(self.__alphas.keys()))
+        return list(self.__alphas[iteration].keys())
 
     def getAvailableTimeSteps(self):
         """
@@ -48,10 +48,10 @@ class ASGCKnowledge(object):
         """
         if len(self.__alphas) == 0:
             raise Exception('No knowledge available')
-        iteration = self.__alphas.iterkeys().next()
-        qoi = self.__alphas[iteration].iterkeys().next()
-        dtype = self.__alphas[iteration][qoi].iterkeys().next()
-        ts = self.__alphas[self.__iteration][qoi][dtype].keys()
+        iteration = next(iter(self.__alphas.keys()))
+        qoi = next(iter(self.__alphas[iteration].keys()))
+        dtype = next(iter(self.__alphas[iteration][qoi].keys()))
+        ts = list(self.__alphas[self.__iteration][qoi][dtype].keys())
         return sorted(ts)
 
     def getAvailableKnowledgeTypes(self):
@@ -60,16 +60,16 @@ class ASGCKnowledge(object):
         """
         if len(self.__alphas) == 0:
             raise Exception('No knowledge available')
-        iteration = self.__alphas.iterkeys().next()
-        qoi = self.__alphas[iteration].iterkeys().next()
-        return self.__alphas[iteration][qoi].keys()
+        iteration = next(iter(self.__alphas.keys()))
+        qoi = next(iter(self.__alphas[iteration].keys()))
+        return list(self.__alphas[iteration][qoi].keys())
 
     def getAvailableIterations(self):
         """
         get available iterations
         @return: sorted list of integes
         """
-        return self.__grids.keys()
+        return list(self.__grids.keys())
 
     def getIteration(self):
         """
@@ -271,9 +271,9 @@ class ASGCKnowledge(object):
         key = '_ASGCKnowledge__grids'
         if key in jsonObject:
             grids = {}
-            for iteration, v1 in jsonObject[key].items():
+            for iteration, v1 in list(jsonObject[key].items()):
                 d1 = {}
-                for qoi, gridString in v1.items():
+                for qoi, gridString in list(v1.items()):
                     # undo the hack that made it json compatible
                     gridString = gridString.replace('__', '\n')\
                                            .encode('utf8')
@@ -288,13 +288,13 @@ class ASGCKnowledge(object):
         key = '_ASGCKnowledge__alphas'
         if key in jsonObject:
             alphas = {}
-            for iteration, v1 in jsonObject[key].items():
+            for iteration, v1 in list(jsonObject[key].items()):
                 d1 = {}
-                for qoi, v2 in v1.items():
+                for qoi, v2 in list(v1.items()):
                     d2 = {}
-                    for dtype, v3 in v2.items():
+                    for dtype, v3 in list(v2.items()):
                         d3 = {}
-                        for t, alpha in v3.items():
+                        for t, alpha in list(v3.items()):
                             d3[float(t)] = DataVector(alpha).array()
                         d2[int(dtype)] = d3
                     d1[qoi] = d2

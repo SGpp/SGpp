@@ -30,7 +30,11 @@ SampleProvider* GzipFileSampleDecorator::clone() const {
   return dynamic_cast<SampleProvider*>(new GzipFileSampleDecorator{*this});
 }
 
-void GzipFileSampleDecorator::readFile(const std::string& fileName) {
+void GzipFileSampleDecorator::readFile(const std::string& fileName,
+                                       bool hasTargets,
+                                       size_t readinCutoff,
+                                       std::vector<size_t> readinColumns,
+                                       std::vector<double> readinClasses) {
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
   if (inFileZ == nullptr) {
@@ -48,18 +52,15 @@ void GzipFileSampleDecorator::readFile(const std::string& fileName) {
         gzread(inFileZ, unzippedData.data(), static_cast<unsigned int>(unzippedData.size() - 1));
 
     if (unzippedBytes > 0) {
-      auto& last = convert.back();
-      last = '\0';
-      convert.append(unzippedData.data());
-
+      convert.append(unzippedData.begin(), unzippedData.begin() + unzippedBytes);
     } else {
       break;
     }
   }
 
   gzclose(inFileZ);
-
-  fileSampleProvider->readString(convert, false);
+  fileSampleProvider->readString(convert, hasTargets,
+    readinCutoff, readinColumns, readinClasses);
 }
 
 void GzipFileSampleDecorator::reset() {

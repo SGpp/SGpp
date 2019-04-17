@@ -51,8 +51,8 @@ def load_results(inputspace, path="results"):
                                      currentStats["num_model_evaluations"])
                     ans["mc"][key] = currentStats
 
-                print "-" * 80
-                print "loaded '%s'" % (key,)
+                print("-" * 80)
+                print("loaded '%s'" % (key,))
 
     return ans
 

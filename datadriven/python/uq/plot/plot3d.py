@@ -8,7 +8,7 @@ import numpy as np
 from pysgpp import DataVector, createOperationEval, createOperationEvalNaive
 from pysgpp.extensions.datadriven.uq.operations import evalSGFunction
 
-from colors import load_default_color_map
+from pysgpp.extensions.datadriven.uq.plot.colors import load_default_color_map
 
 
 def plotDensity3d(U, n=36):
@@ -21,8 +21,8 @@ def plotDensity3d(U, n=36):
     Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = U.pdf(np.array([xv[j, i], yv[j, i]]))
 
     ax.plot_wireframe(xv, yv, Z, color="black")
@@ -50,7 +50,7 @@ def plotGrid3d(grid, grid_points_at=0, ax=None):
     gs = grid.getStorage()
     gps = np.zeros([gs.getSize(), 2])
     p = DataVector(2)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         gps[i, :] = p.array()
 
@@ -84,8 +84,8 @@ def plotSG3d(grid, alpha, n=36,
     Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = f(evalSGFunction(grid, alpha,
                                        np.array([xv[j, i], yv[j, i]]),
                                        isConsistent=isConsistent))
@@ -113,7 +113,7 @@ def plotSG3d(grid, alpha, n=36,
         gs = grid.getStorage()
         gps = np.zeros([gs.getSize(), 2])
         p = DataVector(2)
-        for i in xrange(gs.getSize()):
+        for i in range(gs.getSize()):
             gs.getCoordinates(gs.getPoint(i), p)
             p0, p1 = p.array()
             color = "red" if alpha[i] < 0 else "blue"
@@ -139,8 +139,8 @@ def plotFunction3d(f, xlim=[0, 1], ylim=[0, 1], n=36,
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
     Z = np.zeros((n + 1, n + 1))
 
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             Z[j, i] = f(np.array([xv[j, i], yv[j, i]]))
 
     ax.plot_wireframe(xv, yv, Z, color="black")
@@ -165,7 +165,7 @@ def plotSGNodal3d(grid, alpha):
     A = np.ndarray([gs.getSize(), 3])
 
     p = DataVector(2)
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getCoordinates(gs.getPoint(i), p)
         A[i, 0] = p[0]
         A[i, 1] = p[1]
@@ -200,8 +200,8 @@ def plotError3d(f1, f2, xlim=[0, 1], ylim=[0, 1], n=32):
     Z = np.zeros((n + 1, n + 1))
 
     xv, yv = np.meshgrid(x, y, sparse=False, indexing='xy')
-    for i in xrange(len(x)):
-        for j in xrange(len(y)):
+    for i in range(len(x)):
+        for j in range(len(y)):
             xi = np.array([xv[j, i], yv[j, i]])
             Z[j, i] = np.abs(f1(xi) - f2(xi))
 

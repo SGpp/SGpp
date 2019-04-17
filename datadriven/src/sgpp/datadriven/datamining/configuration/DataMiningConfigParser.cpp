@@ -24,6 +24,7 @@
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
@@ -33,15 +34,15 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
+using json::DictNode;
 using json::JSON;
 using json::json_exception;
-using sgpp::base::file_exception;
 using sgpp::base::data_exception;
-using json::DictNode;
+using sgpp::base::file_exception;
 using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
@@ -58,8 +59,7 @@ DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : co
   } catch (json_exception &exception) {
     std::cout<<"Cannot open configFile:"<<filepath<<std::endl;
     std::cout << exception.what() << std::endl;
-    std::string errorMsg = "can not open file: \"" + filepath + "\"";
-    throw file_exception(errorMsg.c_str());
+    throw file_exception("Cannot open JSON file.");
   }
 }
 
@@ -85,8 +85,8 @@ bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   return hasFitterCrossValidationConfig;
 }
 
-bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
-                                                 const DataSourceConfig& defaults) const {
+bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
+                                                 const DataSourceConfig &defaults) const {
   bool hasDataSource = hasDataSourceConfig();
 
   if (hasDataSource) {
@@ -101,14 +101,14 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
     config.hasTargets =
         parseBool(*dataSourceConfig, "hasTargets", defaults.hasTargets, "dataSource");
     config.validationPortion = parseDouble(*dataSourceConfig, "validationPortion",
-        defaults.validationPortion, "dataSource");
+                                           defaults.validationPortion, "dataSource");
     // if negative we want UINT_MAX here, so all should be fine
-    config.readinCutoff = static_cast<size_t>(parseInt(*dataSourceConfig, "readinCutoff",
-          defaults.readinCutoff, "dataSource"));
-    config.readinClasses = parseDoubleArray(*dataSourceConfig, "readinClasses",
-        defaults.readinClasses, "dataSource");
-    config.readinColumns = parseUIntArray(*dataSourceConfig, "readinColumns",
-        defaults.readinColumns, "dataSource");
+    config.readinCutoff = static_cast<size_t>(
+        parseInt(*dataSourceConfig, "readinCutoff", defaults.readinCutoff, "dataSource"));
+    config.readinClasses =
+        parseDoubleArray(*dataSourceConfig, "readinClasses", defaults.readinClasses, "dataSource");
+    config.readinColumns =
+        parseUIntArray(*dataSourceConfig, "readinColumns", defaults.readinColumns, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
@@ -129,10 +129,10 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
                                     defaults.dataTransformationConfig, "dataTransformation");
     } else {
       std::cout << "# Could not find specification of dataSource[dataTransformationConfig]. "
-          "Falling back to default values." << std::endl;
+                   "Falling back to default values."
+                << std::endl;
       config.dataTransformationConfig = defaults.dataTransformationConfig;
     }
-
 
     // parse theshuffling
     if (dataSourceConfig->contains("shuffling")) {
@@ -146,8 +146,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
 
     config.randomSeed =
         parseUInt(*dataSourceConfig, "randomSeed", defaults.randomSeed, "dataSource");
-      config.epochs =
-    parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
+    config.epochs = parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
@@ -156,8 +155,8 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig& config,
   return hasDataSource;
 }
 
-bool DataMiningConfigParser::getScorerConfig(
-    ScorerConfiguration& config, const ScorerConfiguration& defaults) const {
+bool DataMiningConfigParser::getScorerConfig(ScorerConfiguration &config,
+                                             const ScorerConfiguration &defaults) const {
   bool hasScorer = hasScorerConfig();
 
   if (hasScorer) {
@@ -189,7 +188,7 @@ bool DataMiningConfigParser::getFitterConfigType(FitterType &config,
       config = FitterTypeParser::parse((*fitterConfig)["type"].get());
     } else {
       std::cout << "# Could not find specification  of fitter[type]. Falling Back to default "
-          "values."
+                   "values."
                 << std::endl;
       config = defaults;
     }
@@ -227,7 +226,7 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
     }
   } else {
     std::cout << "# Could not find specification  of fitter[gridConfig]. Falling Back to default "
-        "values."
+                 "values."
               << std::endl;
     config = defaults;
   }
@@ -340,35 +339,29 @@ bool DataMiningConfigParser::getFitterCrossvalidationConfig(
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
 
   if (hasFitterCrossvalidationConfig) {
-    auto crossvalidationConfig =
-        static_cast<DictNode *>(&(*configFile)[fitter]["crossValidation"]);
+    auto crossvalidationConfig = static_cast<DictNode *>(&(*configFile)[fitter]["crossValidation"]);
     config.enable_ =
         parseBool(*crossvalidationConfig, "enable", defaults.enable_, "crossValidation");
-    config.kfold_ = parseUInt(*crossvalidationConfig, "kFold",
-                              defaults.kfold_, "crossValidation");
-    config.seed_ =
-        static_cast<int>(parseInt(*crossvalidationConfig, "randomSeed",
-                                  defaults.seed_, "crossvalidationConfig"));
+    config.kfold_ = parseUInt(*crossvalidationConfig, "kFold", defaults.kfold_, "crossValidation");
+    config.seed_ = static_cast<int>(
+        parseInt(*crossvalidationConfig, "randomSeed", defaults.seed_, "crossvalidationConfig"));
     config.shuffle_ =
         parseBool(*crossvalidationConfig, "shuffle", defaults.shuffle_, "crossValidation");
     config.silent_ =
         parseBool(*crossvalidationConfig, "silent", defaults.silent_, "crossValidation");
     config.lambda_ =
         parseDouble(*crossvalidationConfig, "lambda", defaults.lambda_, "crossValidation");
-    config.lambdaStart_ =
-        parseDouble(*crossvalidationConfig, "lambdaStart",
-                    defaults.lambdaStart_, "crossValidation");
+    config.lambdaStart_ = parseDouble(*crossvalidationConfig, "lambdaStart", defaults.lambdaStart_,
+                                      "crossValidation");
     config.lambdaEnd_ =
-        parseDouble(*crossvalidationConfig, "lambdaEnd",
-                    defaults.lambdaEnd_, "crossValidation");
+        parseDouble(*crossvalidationConfig, "lambdaEnd", defaults.lambdaEnd_, "crossValidation");
     config.lambdaSteps_ =
-        parseUInt(*crossvalidationConfig, "lambdaSteps",
-                  defaults.lambdaSteps_, "crossValidation");
+        parseUInt(*crossvalidationConfig, "lambdaSteps", defaults.lambdaSteps_, "crossValidation");
     config.logScale_ =
         parseBool(*crossvalidationConfig, "logScale", defaults.logScale_, "crossValidation");
   } else {
     std::cout << "# Could not find specification  of fitter[crossvalidationConfig]. Falling "
-        "Back to default values."
+                 "Back to default values."
               << std::endl;
     config = defaults;
   }
@@ -383,10 +376,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
   if (hasFitterDensityEstimationConfig) {
     auto densityEstimationConfig =
         static_cast<DictNode *>(&(*configFile)[fitter]["densityEstimationConfig"]);
-    config.iCholSweepsDecompose_ = parseUInt(*densityEstimationConfig,
-                                             "iCholSweepsDecompose",
-                                             defaults.iCholSweepsDecompose_,
-                                             "densityEstimationConfig");
+    config.iCholSweepsDecompose_ =
+        parseUInt(*densityEstimationConfig, "iCholSweepsDecompose", defaults.iCholSweepsDecompose_,
+                  "densityEstimationConfig");
     config.iCholSweepsRefine_ = parseUInt(*densityEstimationConfig, "iCholSweepsRefine",
                                           defaults.iCholSweepsRefine_, "densityEstimationConfig");
     config.iCholSweepsUpdateLambda_ =
@@ -397,34 +389,31 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
-      config.type_ = DensityEstimationTypeParser::parse
-          ((*densityEstimationConfig)["densityEstimationType"].get());
+      config.type_ = DensityEstimationTypeParser::parse(
+          (*densityEstimationConfig)["densityEstimationType"].get());
     } else {
-      std::cout <<
-                "# Did not find densityEstimationConfig[densityEstimationType]."
-                    " Setting default value "
+      std::cout << "# Did not find densityEstimationConfig[densityEstimationType]."
+                   " Setting default value "
                 << DensityEstimationTypeParser::toString(defaults.type_) << "." << std::endl;
       config.type_ = defaults.type_;
     }
 
     // parse matrix decomposition type
     if (densityEstimationConfig->contains("matrixDecompositionType")) {
-      config.decomposition_ =
-          MatrixDecompositionTypeParser::
-          parse((*densityEstimationConfig)["matrixDecompositionType"].get());
+      config.decomposition_ = MatrixDecompositionTypeParser::parse(
+          (*densityEstimationConfig)["matrixDecompositionType"].get());
     } else {
-      std::cout <<
-                "# Did not find densityEstimationConfig[matrixDecompositionType]."
-                    " Setting default value "
-                << MatrixDecompositionTypeParser::toString(defaults.decomposition_)
-                << "." << std::endl;
+      std::cout << "# Did not find densityEstimationConfig[matrixDecompositionType]."
+                   " Setting default value "
+                << MatrixDecompositionTypeParser::toString(defaults.decomposition_) << "."
+                << std::endl;
       config.decomposition_ = defaults.decomposition_;
     }
   } else {
-    std::cout <<
-              "# Could not find specification  of fitter[densityEstimationConfig]. Falling Back to "
-                  "default values."
-              << std::endl;
+    std::cout
+        << "# Could not find specification  of fitter[densityEstimationConfig]. Falling Back to "
+           "default values."
+        << std::endl;
     config = defaults;
   }
   return hasFitterDensityEstimationConfig;
@@ -441,7 +430,7 @@ bool DataMiningConfigParser::getFitterSolverRefineConfig(
     parseSLESolverConfig(*solverConfig, config, defaults, "solverRefineConfig");
   } else {
     std::cout << "# Could not find specification  of fitter[solverRefineConfig]. Falling Back to "
-        "default values."
+                 "default values."
               << std::endl;
     config = defaults;
   }
@@ -459,7 +448,7 @@ bool DataMiningConfigParser::getFitterSolverFinalConfig(
     parseSLESolverConfig(*solverConfig, config, defaults, "solverFinalConfig");
   } else {
     std::cout << "# Could not find specification  of fitter[solverFinalConfig]. Falling Back to "
-        "default values."
+                 "default values."
               << std::endl;
     config = defaults;
   }
@@ -509,7 +498,7 @@ std::string DataMiningConfigParser::parseString(DictNode &dict, const std::strin
         return dict[key]["value"].get();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse string " + parentDict + "[" + key +
-            "] from string";   // + dict[key].get() + ".";
+                               "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -536,7 +525,7 @@ double DataMiningConfigParser::parseDouble(DictNode &dict, const std::string &ke
         return dict[key]["value"].getDouble();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse double " + parentDict + "[" + key +
-            "] from string";  // + dict[key].get() + ".";
+                               "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -557,7 +546,7 @@ size_t DataMiningConfigParser::parseUInt(DictNode &dict, const std::string &key,
         return dict[key]["value"].getUInt();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse unsigned integer " + parentDict + "[" + key +
-            "] from string";  // + dict[key].get() + ".";
+                               "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -575,7 +564,7 @@ bool DataMiningConfigParser::parseBool(DictNode &dict, const std::string &key, b
       return dict[key].getBool();
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse bool " + parentNode + "[" + key + "] from string" +
-          dict[key].get() + ".";
+                             dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
   } else {
@@ -596,7 +585,7 @@ int64_t DataMiningConfigParser::parseInt(DictNode &dict, const std::string &key,
         return dict[key]["value"].getInt();
       } catch (json_exception &e) {
         std::string errorMsg = "# Failed to parse integer " + parentNode + "[" + key +
-            "] from string";  // + dict[key].get() + ".";
+                               "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
       }
     }
@@ -619,19 +608,18 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
-          "] from string" + dict[key].get() + ".";
+                             "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find " << parentNode << "[" << key
-              << "]. Setting to default value." << std::endl;
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
     return defaultValue;
   }
 }
 
 // (Sebastian) Adapted from parseIntArray without much thought
-std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict,
-                                                             const std::string &key,
+std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, const std::string &key,
                                                              std::vector<double> defaultValue,
                                                              const std::string &parentNode) const {
   if (dict.contains(key)) {
@@ -643,19 +631,18 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict,
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse double array" + parentNode + "[" + key +
-          "] from string" + dict[key].get() + ".";
+                             "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find " << parentNode << "[" << key
-              << "]. Setting to default value." << std::endl;
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
     return defaultValue;
   }
 }
 
 // (Sebastian) Adapted from parseIntArray without much thought
-std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict,
-                                                           const std::string &key,
+std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict, const std::string &key,
                                                            std::vector<size_t> defaultValue,
                                                            const std::string &parentNode) const {
   if (dict.contains(key)) {
@@ -667,12 +654,12 @@ std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict,
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse uint array" + parentNode + "[" + key +
-          "] from string" + dict[key].get() + ".";
+                             "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
     }
   } else {
-    std::cout << "# Did not find " << parentNode << "[" << key
-              << "]. Setting to default value." << std::endl;
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
     return defaultValue;
   }
 }
@@ -713,12 +700,11 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
       size_t nOptions = (*configFile)[fitter]["gridConfig"]["gridType"]["options"].size();
       if (nOptions > 1) {
         for (size_t i = 0; i < nOptions; ++i) {
-          basisFunctions.push_back(
-              GridTypeParser::parse((*configFile)[fitter]
-                                    ["gridConfig"]["gridType"]["options"][i].get()));
+          basisFunctions.push_back(GridTypeParser::parse(
+              (*configFile)[fitter]["gridConfig"]["gridType"]["options"][i].get()));
         }
-        catpar["basisFunction"] = DiscreteParameter("basisFunction", 0,
-                                                    static_cast<int>(nOptions - 1));
+        catpar["basisFunction"] =
+            DiscreteParameter("basisFunction", 0, static_cast<int>(nOptions - 1));
       }
     }
   } catch (json_exception &e) {
@@ -728,8 +714,8 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
       int64_t min = (*configFile)[fitter]["adaptivityConfig"]["noPoints"]["min"].getInt();
       int64_t max = (*configFile)[fitter]["adaptivityConfig"]["noPoints"]["max"].getInt();
       if (max > min) {
-        dispar["noPoints"] = DiscreteParameter("noPoints", static_cast<int>(min),
-                                               static_cast<int>(max));
+        dispar["noPoints"] =
+            DiscreteParameter("noPoints", static_cast<int>(min), static_cast<int>(max));
       }
     }
   } catch (json_exception &e) {
@@ -741,8 +727,8 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
       int64_t bits = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["bits"].getInt();
       bool logscale = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["logscale"].getBool();
       if (max > min) {
-        conpar["threshold"] = ContinuousParameter(static_cast<size_t>(bits),
-                                                  "threshold", min, max, logscale);
+        conpar["threshold"] =
+            ContinuousParameter(static_cast<size_t>(bits), "threshold", min, max, logscale);
       }
     }
   } catch (json_exception &e) {
@@ -754,8 +740,8 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
       int64_t bits = (*configFile)[fitter]["regularizationConfig"]["lambda"]["bits"].getInt();
       bool logscale = (*configFile)[fitter]["adaptivityConfig"]["threshold"]["logscale"].getBool();
       if (max > min) {
-        conpar["lambda"] = ContinuousParameter(static_cast<size_t>(bits),
-                                               "lambda", min, max, logscale);
+        conpar["lambda"] =
+            ContinuousParameter(static_cast<size_t>(bits), "lambda", min, max, logscale);
       }
     }
   } catch (json_exception &e) {
@@ -771,13 +757,12 @@ void DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
       auto harmonica = static_cast<DictNode *>(&(*node)["harmonica"]);
       config.setLambda(parseDouble(*harmonica, "lambda", config.getLambda(), "hpo"));
       config.setStages(parseIntArray(*harmonica, "stages", config.getStages(), "hpo"));
-      config.setConstraints(parseIntArray(*harmonica,
-                                          "constraints",
-                                          config.getConstraints(),
-                                          "hpo"));
+      config.setConstraints(
+          parseIntArray(*harmonica, "constraints", config.getConstraints(), "hpo"));
     } else {
       std::cout << "# Could not find specification  of hpo[harmonica]. Falling Back to "
-          "default values." << std::endl;
+                   "default values."
+                << std::endl;
     }
     if (node->contains("bayesianOptimization")) {
       auto bo = static_cast<DictNode *>(&(*node)["bayesianOptimization"]);
@@ -785,11 +770,13 @@ void DataMiningConfigParser::getHPOConfig(HPOConfig &config) {
       config.setNRuns(parseInt(*bo, "nRuns", config.getNRuns(), "hpo"));
     } else {
       std::cout << "# Could not find specification  of hpo[bayesianOptimization]. Falling Back to "
-          "default values." << std::endl;
+                   "default values."
+                << std::endl;
     }
   } else {
     std::cout << "# Could not find specification  of hpo. Falling Back to "
-        "default values." << std::endl;
+                 "default values."
+              << std::endl;
   }
 }
 
@@ -798,17 +785,16 @@ std::string DataMiningConfigParser::getHPOMethod(std::string defaultValue) const
     auto node = static_cast<DictNode *>(&(*configFile)["hpo"]);
     return parseString(*node, "method", defaultValue, "hpo");
   } else {
-    std::cout << "# Did not find hpo[method]. Setting default value "
-              << defaultValue << "." << std::endl;
+    std::cout << "# Did not find hpo[method]. Setting default value " << defaultValue << "."
+              << std::endl;
   }
   return defaultValue;
 }
 
-void DataMiningConfigParser::parseDataTransformationConfig(
-    DictNode &dict, DataTransformationConfig &config,
-    const DataTransformationConfig &defaults,
-    const std::string &parentNode) const {
-
+void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
+                                                           DataTransformationConfig &config,
+                                                           const DataTransformationConfig &defaults,
+                                                           const std::string &parentNode) const {
   // Parse transformation type
   if (dict.contains("type")) {
     config.type = DataTransformationTypeParser::parse(dict["type"].get());
@@ -820,40 +806,35 @@ void DataMiningConfigParser::parseDataTransformationConfig(
 
   // If type Rosenblatt parse RosenblattTransformationConfig
   if (config.type == DataTransformationType::ROSENBLATT) {
-    auto rosenblattTransformationConfig = static_cast<DictNode *>
-    (&(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
-    parseRosenblattTransformationConfig(*rosenblattTransformationConfig,
-                                        config.rosenblattConfig,
-                                        defaults.rosenblattConfig,
-                                        "rosenblattConfig");
+    auto rosenblattTransformationConfig = static_cast<DictNode *>(
+        &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+    parseRosenblattTransformationConfig(*rosenblattTransformationConfig, config.rosenblattConfig,
+                                        defaults.rosenblattConfig, "rosenblattConfig");
   } else {
     std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
-        "[rosenblattConfig]. Falling back to default values." << std::endl;
+                 "[rosenblattConfig]. Falling back to default values."
+              << std::endl;
     config.rosenblattConfig = defaults.rosenblattConfig;
   }
 }
 
 void DataMiningConfigParser::parseRosenblattTransformationConfig(
     DictNode &dict, RosenblattTransformationConfig &config,
-    const RosenblattTransformationConfig &defaults,
-    const std::string &parentNode) const {
-
+    const RosenblattTransformationConfig &defaults, const std::string &parentNode) const {
   config.numSamples = parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
   config.gridLevel = parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
 
-  config.solverMaxIterations = parseUInt(dict, "solverMaxIterations",
-                                         defaults.solverMaxIterations, parentNode);
-  config.solverEps = parseDouble(dict, "solverEps",
-                                 defaults.solverEps, parentNode);
-  config.solverThreshold = parseDouble(dict, "solverThreshold",
-                                       defaults.solverThreshold, parentNode);
+  config.solverMaxIterations =
+      parseUInt(dict, "solverMaxIterations", defaults.solverMaxIterations, parentNode);
+  config.solverEps = parseDouble(dict, "solverEps", defaults.solverEps, parentNode);
+  config.solverThreshold =
+      parseDouble(dict, "solverThreshold", defaults.solverThreshold, parentNode);
 }
 
 bool DataMiningConfigParser::getFitterDatabaseConfig(
-    datadriven::DatabaseConfiguration &config, const datadriven::DatabaseConfiguration &defaults)
-const {
-  bool hasDatabaseConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
+    datadriven::DatabaseConfiguration &config,
+    const datadriven::DatabaseConfiguration &defaults) const {
+  bool hasDatabaseConfig = hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
 
   if (hasDatabaseConfig) {
     auto databaseConfig = static_cast<DictNode *>(&(*configFile)[fitter]["database"]);
@@ -871,14 +852,13 @@ const {
 }
 
 bool DataMiningConfigParser::getFitterLearnerConfig(
-    datadriven::LearnerConfiguration& config, const datadriven::LearnerConfiguration& defaults)
-const {
-  bool hasLearnerConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
+    datadriven::LearnerConfiguration &config,
+    const datadriven::LearnerConfiguration &defaults) const {
+  bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
     std::cout << "Has Learner config";
-    auto learnerConfig = static_cast<DictNode*>(&(*configFile)[fitter]["learner"]);
+    auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
     config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior, "learnerConfig");

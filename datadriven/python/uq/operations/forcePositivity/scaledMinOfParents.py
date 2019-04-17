@@ -6,7 +6,7 @@ Created on Feb 6, 2015
 
 import numpy as np
 
-from interpolationAlgorithm import InterpolationAlgorithm
+from pysgpp.extensions.datadriven.uq.operations.forcePositivity.interpolationAlgorithm import InterpolationAlgorithm
 from pysgpp import createOperationEval, DataVector
 from pysgpp.extensions.datadriven.uq.operations import (dehierarchize,
                                                         getBoundsOfSupport,
@@ -30,7 +30,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
         value = float("inf")
         
         level, index = getLevelIndex(gp)
-        for idim in xrange(numDims):
+        for idim in range(numDims):
             left, right = getGridPointsOnBoundary(level[idim], index[idim])
             
             if left is not None:
@@ -72,7 +72,7 @@ class ScaledMinOfParents(InterpolationAlgorithm):
                 alpha[i] = alpha[i] - nodalValues[i] + self.computeMin(i, grid, alpha, nodalValues) - nodalValues[i]
 
 #             alpha = hierarchize(grid, nodalValues)
-#             print np.all(abs(newAlpha - alpha) < 1e-13)
+#             print( np.all(abs(newAlpha - alpha) < 1e-13) )
 
             gs = grid.getStorage()
 #             for i in xrange(len(alpha)):
@@ -91,11 +91,11 @@ class ScaledMinOfParents(InterpolationAlgorithm):
                 for gp in addedGridPoints:
                     ix = gs.getSequenceNumber(gp)
                     if ix not in neg and alpha[ix] > 1e-13:
-                        print "do not touch the non negative new grid points!!!"
+                        print( "do not touch the non negative new grid points!!!" )
                     if ix in neg and alpha[ix] < -1e-13:
-                        print "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in xrange(gs.getDimension())],
+                        print( "negative coefficient found: %s -> %g (nodal=%g)" % ([gp.getStandardCoordinate(d) for d in range(gs.getDimension())], 
                                                                                    alpha[ix],
-                                                                                   nodalValues[ix])
+                                                                                   nodalValues[ix]))
 #                     if ix in neg:
 #                         assert alpha[ix] > -1e-13
         return alpha

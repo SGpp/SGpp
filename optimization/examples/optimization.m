@@ -11,13 +11,12 @@
 %% sgpp.OptScalarFunction, but some SG++ functions then crash with
 %% "Cannot call SwigStorage".)
 %%
-%% The example interpolates a bivariate test function like the \ref example_tutorial_cpp example.
-%% However, we use B-splines here instead to obtain a smoother interpolant.
+%% The example interpolates a bivariate test function with B-splines instead
+%% of piecewise linear basis functions to obtain a smoother interpolant.
 %% The resulting sparse grid function is then minimized with the method of steepest descent.
 %% For comparison, we also minimize the objective function with Nelder-Mead's method.
 %%
-%% For instructions on how to use SG++ within MATLAB, please see \ref installation.
-%% However, for this example to work, some extra steps are necessary.
+%% For this example to work, some extra steps are necessary.
 %% In the following, we assume that we want to run the example on Linux.
 %%
 %% Please note that in order to get sgpp::optimization to work with MATLAB,

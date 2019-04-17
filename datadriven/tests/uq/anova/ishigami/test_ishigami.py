@@ -94,8 +94,8 @@ class IshigamiSudret2008(object):
 
         self.var = var()
         self.sobol_indices = {}
-        for k in xrange(self.numDims):
-            for perm in combinations(range(self.numDims), r=k + 1):
+        for k in range(self.numDims):
+            for perm in combinations(list(range(self.numDims)), r=k + 1):
                 self.sobol_indices[tuple(perm)] = sobol_index(perm)
 
         self.total_effects = computeTotalEffects(self.sobol_indices)
@@ -146,14 +146,14 @@ class IshigamiSudret2008(object):
 
         _, _, train_values_pred = eval_pce(pce, train_samples)
         l2train = np.sqrt(np.mean(train_values - train_values_pred) ** 2)
-        print "train: |.|_2 = %g" % l2train
+        print("train: |.|_2 = %g" % l2train)
         _, _, test_values_pred = eval_pce(pce, test_samples)
         l2test = np.sqrt(np.mean(test_values - test_values_pred) ** 2)
-        print "test:  |.|_2 = %g" % l2test
+        print("test:  |.|_2 = %g" % l2test)
         ###################################################################################################
-        print "-" * 60
-        print "#terms = %i" % num_terms
-        print "V[x] = %g ~ %g" % (self.var, pce.variance())
+        print("-" * 60)
+        print("#terms = %i" % num_terms)
+        print("V[x] = %g ~ %g" % (self.var, pce.variance()))
 
         # get sobol indices
         sobol_indices = builder.getSortedSobolIndices(pce)
@@ -221,8 +221,8 @@ class IshigamiSudret2008(object):
         # expectation values and variances
         sg_mean, sg_var = analysis.mean(), analysis.var()
 
-        print "-" * 60
-        print "V[x] = %g ~ %s" % (self.var, sg_var)
+        print("-" * 60)
+        print("V[x] = %g ~ %s" % (self.var, sg_var))
 
         iterations = uqManager.getKnowledge().getAvailableIterations()
         stats = [None] * len(iterations)
@@ -282,15 +282,15 @@ class IshigamiSudret2008(object):
 
 
 def checkSobolIndices(sobol_indices_analytic, sobol_indices, N, plot=False):
-    print "-------------- Sobol Indices (t = %i, N= %i) ------------------" % (1, N)
-    for perm in sortPermutations(sobol_indices.keys()):
-        print "S_%s = %s ~ %s (err = %g%%)" % (perm, sobol_indices_analytic[perm], sobol_indices[perm],
-                                               100 * np.abs(sobol_indices_analytic[perm] - sobol_indices[perm]))
-    assert np.abs(np.sum(sobol_indices.values()) - 1.0) < 1e-14
-    assert np.abs(np.sum(sobol_indices_analytic.values()) - 1.0) < 1e-14
+    print("-------------- Sobol Indices (t = %i, N= %i) ------------------" % (1, N))
+    for perm in sortPermutations(list(sobol_indices.keys())):
+        print("S_%s = %s ~ %s (err = %g%%)" % (perm, sobol_indices_analytic[perm], sobol_indices[perm],
+                                               100 * np.abs(sobol_indices_analytic[perm] - sobol_indices[perm])))
+    assert np.abs(np.sum(list(sobol_indices.values())) - 1.0) < 1e-14
+    assert np.abs(np.sum(list(sobol_indices_analytic.values())) - 1.0) < 1e-14
 
     if plot:
-        names = sortPermutations(sobol_indices.keys())
+        names = sortPermutations(list(sobol_indices.keys()))
         values = [sobol_indices[name] for name in names]
         plotSobolIndices(values, legend=True, names=names)
         plt.show()
