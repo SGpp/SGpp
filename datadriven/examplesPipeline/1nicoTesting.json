@@ -1,0 +1,12 @@
+{	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+            "generalGridType": "component",
+			"gridType": "linear",
+            "level": 5,
+            "dim": 5,
+            "levelVector": [1,2,3]
+
+        }
+    }
+}
