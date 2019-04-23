@@ -14,6 +14,7 @@
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
 // %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
@@ -44,6 +45,10 @@
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
+
+%include "datadriven/src/sgpp/datadriven/scalapack/BlacsProcessGrid.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataMatrixDistributed.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataVectorDistributed.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
