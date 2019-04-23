@@ -225,7 +225,7 @@ int main() {
       offline->store(filename);
     }
   }
-  catch (sgpp::base::factory_exception& exc)  {
+  catch (sgpp::base::not_implemented_exception& exc)  {
     std::cout << "Exception: " << exc.what() << std::endl;
     std::cout << "Skipping example..." << std::endl;
   }
