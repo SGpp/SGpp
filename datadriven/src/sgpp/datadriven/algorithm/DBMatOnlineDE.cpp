@@ -263,10 +263,13 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
     OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
 
+    if (offlineObject.interactions.size() != 0) {
+      throw sgpp::base::not_implemented_exception(
+          "Parallel evaluation operation not yet implemented for offline objects with interations");
+    }
     std::unique_ptr<OperationMultipleEvalDistributed> B(
         static_cast<OperationMultipleEvalDistributed*>(
             sgpp::op_factory::createOperationMultipleEval(grid, m, opConfig)));
-    // TODO(jan) support createOperationMultipleEvalInter for interactions?
 
     DataVector y(numberOfPoints);
     y.setAll(1.0);
@@ -356,7 +359,10 @@ void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
                                  DataVectorDistributed& results, Grid& grid, bool force) {
   if (functionComputed || force == true) {
     OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
-    // TODO(jan) support createOperationMultipleEvalInter?
+    if (offlineObject.interactions.size() != 0) {
+      throw sgpp::base::not_implemented_exception(
+          "Parallel evaluation operation not yet implemented for offline objects with interations");
+    }
     std::unique_ptr<OperationMultipleEvalDistributed> opEval(
         static_cast<OperationMultipleEvalDistributed*>(
             sgpp::op_factory::createOperationMultipleEval(grid, values, opConfig)));

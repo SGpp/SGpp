@@ -25,6 +25,15 @@ SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSour
     : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
 
 double SparseGridMinerSplitting::learn(bool verbose) {
+#ifdef USE_SCALAPACK
+  if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
+    auto processGrid = fitter->getProcessGrid();
+    if (!processGrid->isProcessInGrid()) {
+      return 0.0;
+    }
+  }
+#endif /* USE_SCALAPACK */
+
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
@@ -83,4 +92,4 @@ double SparseGridMinerSplitting::learn(bool verbose) {
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }  // namespace datadriven
 }  // namespace datadriven
-} /* namespace sgpp */
+}  // namespace sgpp

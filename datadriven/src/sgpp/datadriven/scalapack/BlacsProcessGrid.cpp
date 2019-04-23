@@ -9,11 +9,12 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
+#ifdef USE_SCALAPACK
 #include <mpi.h>
+#endif /* USE_SCALAPACK */
 #include <unistd.h>
 #include <cmath>
 #include <iostream>
@@ -32,16 +33,17 @@ int BlacsProcessGrid::numberOfProcesses = 0;
 bool BlacsProcessGrid::blacsInitialized = false;
 
 BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(columns) {
+#ifdef USE_SCALAPACK
   if (!blacsInitialized) {
     throw sgpp::base::application_exception("BLACS not initialized!");
   }
 
-  if (rows < 0 || columns < 0) {
+  if (rows <= 0 || columns <= 0) {
     this->rows = static_cast<int>(std::sqrt(numberOfProcesses));
     this->columns = static_cast<int>(std::sqrt(numberOfProcesses));
   }
 
-  if (this->rows * this->columns < availableProcesses()) {
+  if (this->rows * this->columns > availableProcesses()) {
     throw sgpp::base::application_exception(
         "Not enough processes available to form BLACS process grid!");
   }
@@ -52,7 +54,6 @@ BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(
   ictxt = systemContext;
   Cblacs_gridinit(ictxt, "R", this->rows, this->columns);
 
-  // TODO(jan) error handling
   Cblacs_gridinfo(ictxt, this->rows, this->columns, myrow, mycolumn);
 
   if (myrow >= 0 && mycolumn >= 0) {
@@ -61,13 +62,18 @@ BlacsProcessGrid::BlacsProcessGrid(int rows, int columns) : rows(rows), columns(
   } else {
     this->partOfGrid = false;
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 BlacsProcessGrid::~BlacsProcessGrid() {
+#ifdef USE_SCALAPACK
   if (partOfGrid) {
     // only exit the grid if this process is actually part of it
     Cblacs_gridexit(ictxt);
   }
+#endif /* USE_SCALAPACK */
 }
 
 int BlacsProcessGrid::getContextHandle() const { return this->ictxt; }
@@ -88,14 +94,15 @@ int BlacsProcessGrid::getCurrentProcess() { return mypnum; }
 
 bool BlacsProcessGrid::isProcessInGrid() const { return this->partOfGrid; }
 
-size_t BlacsProcessGrid::availableProcesses() {
+int BlacsProcessGrid::availableProcesses() {
   if (!blacsInitialized) {
     throw sgpp::base::application_exception("BLACS not initialized!");
   }
-  return static_cast<size_t>(numberOfProcesses);
+  return numberOfProcesses;
 }
 
 void BlacsProcessGrid::initializeBlacs() {
+#ifdef USE_SCALAPACK
   // init BLACS and the MPI environment
   MPI_Init(nullptr, nullptr);
   Cblacs_pinfo(mypnum, numberOfProcesses);
@@ -108,16 +115,21 @@ void BlacsProcessGrid::initializeBlacs() {
   std::string node(nodeName, nameLength);
 
   std::cout << "Init BLACS and MPI on node " << node << std::endl;
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void BlacsProcessGrid::exitBlacs() {
+#ifdef USE_SCALAPACK
   // Finalizes ScaLAPACK, BLACS and the MPI environment
   std::cout << "Exit BLACS and MPI" << std::endl;
   Cblacs_exit(1);
   MPI_Finalize();
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // USE_SCALAPACK

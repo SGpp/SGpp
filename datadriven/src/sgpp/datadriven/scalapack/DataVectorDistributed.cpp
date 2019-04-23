@@ -9,9 +9,10 @@
  * Created on: Feb 19, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
 
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <iostream>
 
@@ -52,10 +53,14 @@ void DataVectorDistributed::add(const DataVectorDistributed& x) {
 
 void DataVectorDistributed::add(DataVectorDistributed& y, const DataVectorDistributed& x,
                                 double a) {
+#ifdef USE_SCALAPACK
   if (y.isProcessMapped() || x.isProcessMapped()) {
     pdaxpy_(y.getGlobalRows(), a, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
             y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 double DataVectorDistributed::dot(const DataVectorDistributed& y) const {
@@ -63,18 +68,26 @@ double DataVectorDistributed::dot(const DataVectorDistributed& y) const {
 }
 
 double DataVectorDistributed::dot(const DataVectorDistributed& x, const DataVectorDistributed& y) {
+#ifdef USE_SCALAPACK
   double dot = 0.0;
   if (x.isProcessMapped() || y.isProcessMapped()) {
     pddot_(x.getGlobalRows(), dot, x.getLocalPointer(), 1, 1, x.getDescriptor(), 1,
            y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
   }
   return dot;
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataVectorDistributed::scale(double a) {
+#ifdef USE_SCALAPACK
   if (isProcessMapped()) {
     pdscal_(getGlobalRows(), a, getLocalPointer(), 1, 1, getDescriptor(), 1);
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 // void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
@@ -149,18 +162,16 @@ void DataVectorDistributed::distribute(double* input, int masterRow, int masterC
 }
 
 size_t DataVectorDistributed::globalToLocalRowIndex(size_t globalRowIndex) const {
-  return data.globalToLocalRowIndex(globalRowIndex);
+  return data.globalToLocalColumnIndex(globalRowIndex);
 }
 
 size_t DataVectorDistributed::localToGlobalRowIndex(size_t localRowIndex) const {
-  return data.localToGlobalRowIndex(localRowIndex);
+  return data.localToGlobalColumnIndex(localRowIndex);
 }
 
 size_t DataVectorDistributed::globalToRowProcessIndex(size_t globalRowIndex) const {
-  return data.globalToRowProcessIndex(globalRowIndex);
+  return data.globalToColumnProcessIndex(globalRowIndex);
 }
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif

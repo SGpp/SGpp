@@ -28,6 +28,15 @@ SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
 double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below
 
+#ifdef USE_SCALAPACK
+  if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
+    auto processGrid = fitter->getProcessGrid();
+    if (!processGrid->isProcessInGrid()) {
+      return 0.0;
+    }
+  }
+#endif /* USE_SCALAPACK */
+
   const CrossvalidationConfiguration& crossValidationConfig =
       dataSource->getCrossValidationConfig();
 
@@ -43,8 +52,10 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     // really support batch based learning with cv and not only regression.
     // What should be done is reimplementing the data source such that it provides batches
 
-    std::cout << "###############"
-              << "Fold #" << fold << std::endl;
+    std::ostringstream out;
+    out << "###############"
+        << "Fold #" << fold;
+    print(out);
 
     // Create a refinement monitor for this fold
     RefinementMonitorFactory monitorFactory;
@@ -58,7 +69,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
       if (verbose) {
         std::ostringstream out;
         out << "###############"
-            << "Starting training epoch #" << epoch << std::endl;
+            << "Starting training epoch #" << epoch;
         print(out);
       }
       dataSource->reset();

@@ -9,8 +9,6 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
-
 #pragma once
 
 #include <sgpp/datadriven/scalapack/blacs.hpp>
@@ -83,20 +81,20 @@ class BlacsProcessGrid {
   int getProcessesInGrid() const;
 
   /**
-   * @returns Number of the current process
-   */
-  static int getCurrentProcess();
-
-  /**
    * @returns True if the current process is part of this grid, else false
    */
   bool isProcessInGrid() const;
 
   /**
+   * @returns Number of the current process
+   */
+  static int getCurrentProcess();
+
+  /**
    * Can only be called after BLACS initialization.
    * @returns the number of available mpi processes
    */
-  static size_t availableProcesses();
+  static int availableProcesses();
 
   /**
    * Initialize BLACS, should only be called once.
@@ -141,5 +139,3 @@ class BlacsProcessGrid {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // USE_SCALAPACK

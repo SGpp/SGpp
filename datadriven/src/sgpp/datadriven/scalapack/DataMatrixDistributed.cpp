@@ -9,13 +9,12 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
-
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
 #include <algorithm>
 #include <iostream>
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
@@ -24,12 +23,16 @@
 namespace sgpp {
 namespace datadriven {
 
-DataMatrixDistributed::DataMatrixDistributed() {}
+DataMatrixDistributed::DataMatrixDistributed() {
+#ifndef USE_SCALAPACK
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* not USE_SCALAPACK */
+}
 
-DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
-                                             int globalColumns, int rowBlockSize,
-                                             int columnBlockSize, double value,
-                                             DataMatrixDistributed::DTYPE dtype)
+DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid,
+                                             size_t globalRows, size_t globalColumns,
+                                             size_t rowBlockSize, size_t columnBlockSize,
+                                             double value, DataMatrixDistributed::DTYPE dtype)
     : grid(grid),
       globalRows(globalColumns),  // transpose for column-major layout
       globalColumns(globalRows),  // transpose for column-major layour
@@ -38,9 +41,14 @@ DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> g
       localRows(0),
       localColumns(0),
       leadingDimension(1) {
+#ifdef USE_SCALAPACK
   descriptor[dtype_] = static_cast<int>(dtype);
 
   if (isProcessMapped()) {
+    if (this->rowBlockSize == 0 || this->columnBlockSize == 0) {
+      throw sgpp::base::algorithm_exception("DataMatrixDistributed: block size has to be > 0");
+    }
+
     localRows = numroc_(this->globalRows, this->rowBlockSize, grid->getCurrentRow(), 0,
                         grid->getTotalRows());
     localColumns = numroc_(this->globalColumns, this->columnBlockSize, grid->getCurrentColumn(), 0,
@@ -51,25 +59,28 @@ DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> g
       localColumns = 0;
     }
 
-    leadingDimension = std::max(1, localRows);
+    leadingDimension = std::max<size_t>(1, localRows);
 
     // initialize local matrix
     localData.assign(localRows * localColumns, value);
 
     descriptor[ctxt_] = grid->getContextHandle();
-    descriptor[m_] = this->globalRows;
-    descriptor[n_] = this->globalColumns;
-    descriptor[mb_] = this->rowBlockSize;
-    descriptor[nb_] = this->columnBlockSize;
+    descriptor[m_] = static_cast<int>(this->globalRows);
+    descriptor[n_] = static_cast<int>(this->globalColumns);
+    descriptor[mb_] = static_cast<int>(this->rowBlockSize);
+    descriptor[nb_] = static_cast<int>(this->columnBlockSize);
     descriptor[rsrc_] = 0;
     descriptor[csrc_] = 0;
-    descriptor[lld_] = leadingDimension;
+    descriptor[lld_] = static_cast<int>(leadingDimension);
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 DataMatrixDistributed::DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid,
-                                             int globalRows, int globalColumns, int rowBlockSize,
-                                             int columnBlockSize,
+                                             size_t globalRows, size_t globalColumns,
+                                             size_t rowBlockSize, size_t columnBlockSize,
                                              DataMatrixDistributed::DTYPE dtype)
     : DataMatrixDistributed(grid, globalRows, globalColumns, columnBlockSize, rowBlockSize, 0.0,
                             dtype) {
@@ -80,9 +91,9 @@ DataMatrixDistributed::DataMatrixDistributed(double* input, std::shared_ptr<Blac
 
 DataMatrixDistributed DataMatrixDistributed::fromSharedData(const double* input,
                                                             std::shared_ptr<BlacsProcessGrid> grid,
-                                                            int globalRows, int globalColumns,
-                                                            int rowBlockSize, int columnBlockSize,
-                                                            DTYPE dtype) {
+                                                            size_t globalRows, size_t globalColumns,
+                                                            size_t rowBlockSize,
+                                                            size_t columnBlockSize, DTYPE dtype) {
   DataMatrixDistributed matrix(grid, globalRows, globalColumns, rowBlockSize, columnBlockSize, 0.0,
                                dtype);
   for (size_t row = 0; row < matrix.globalRows; row += matrix.rowBlockSize) {
@@ -194,6 +205,7 @@ double DataMatrixDistributed::operator()(size_t row, size_t col) const {
 }
 
 double DataMatrixDistributed::get(size_t row, size_t col) const {
+#ifdef USE_SCALAPACK
   // swap row and col to account for transposed storage
   int processRow = globalToProcessIndex(col, grid->getTotalRows(), rowBlockSize, 0);
   int processColumn = globalToProcessIndex(row, grid->getTotalColumns(), columnBlockSize, 0);
@@ -216,6 +228,9 @@ double DataMatrixDistributed::get(size_t row, size_t col) const {
   }
 
   return value;
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::set(size_t row, size_t col, double value) {
@@ -250,9 +265,9 @@ void DataMatrixDistributed::copyFrom(const DataMatrixDistributed& other) {
 
   this->leadingDimension = other.leadingDimension;
 
-  descriptor[m_] = this->globalRows;
-  descriptor[n_] = this->globalColumns;
-  descriptor[lld_] = this->leadingDimension;
+  descriptor[m_] = static_cast<int>(this->globalRows);
+  descriptor[n_] = static_cast<int>(this->globalColumns);
+  descriptor[lld_] = static_cast<int>(this->leadingDimension);
 }
 
 DataMatrixDistributed DataMatrixDistributed::transpose() {
@@ -265,10 +280,14 @@ DataMatrixDistributed DataMatrixDistributed::transpose() {
 
 void DataMatrixDistributed::transpose(const DataMatrixDistributed& a, DataMatrixDistributed& c,
                                       double alpha, double beta) {
+#ifdef USE_SCALAPACK
   if (a.isProcessMapped() || c.isProcessMapped()) {
     pdtran_(c.getGlobalCols(), c.getGlobalRows(), alpha, a.getLocalPointer(), 1, 1,
             a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::add(const DataMatrixDistributed& a) {
@@ -277,12 +296,16 @@ void DataMatrixDistributed::add(const DataMatrixDistributed& a) {
 
 void DataMatrixDistributed::add(DataMatrixDistributed& c, const DataMatrixDistributed& a,
                                 bool transposeA, double beta, double alpha) {
+#ifdef USE_SCALAPACK
   if (a.isProcessMapped() || c.isProcessMapped()) {
     const char* transA = (transposeA ? pblasTranspose : pblasNoTranspose);
 
     pdgeadd_(transA, a.getGlobalCols(), a.getGlobalRows(), alpha, a.getLocalPointer(), 1, 1,
              a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::sub(const DataMatrixDistributed& a) {
@@ -302,6 +325,7 @@ void DataMatrixDistributed::mult(const DataVectorDistributed& x, DataVectorDistr
 void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataVectorDistributed& x,
                                  DataVectorDistributed& y, bool transpose, double alpha,
                                  double beta) {
+#ifdef USE_SCALAPACK
   if (a.isProcessMapped() || x.isProcessMapped() || y.isProcessMapped()) {
     // transpose matrix by default, as internal storage is transposed
     const char* trans = (transpose ? pblasNoTranspose : pblasTranspose);
@@ -311,6 +335,9 @@ void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataVecto
             a.getDescriptor(), x.getLocalPointer(), 1, 1, x.getDescriptor(), 1, beta,
             y.getLocalPointer(), 1, 1, y.getDescriptor(), 1);
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::mult(const DataMatrixDistributed& b, DataMatrixDistributed& c,
@@ -322,22 +349,23 @@ void DataMatrixDistributed::mult(const DataMatrixDistributed& b, DataMatrixDistr
 void DataMatrixDistributed::mult(const DataMatrixDistributed& a, const DataMatrixDistributed& b,
                                  DataMatrixDistributed& c, bool transposeA, bool transposeB,
                                  double alpha, double beta) {
-  // sub(C) := alpha*op(sub(A))*op(sub(B)) + beta*sub(C)
-
+#ifdef USE_SCALAPACK
   if (a.isProcessMapped() || b.isProcessMapped() || c.isProcessMapped()) {
     const char* transA = (transposeA ? pblasTranspose : pblasNoTranspose);
     const char* transB = (transposeB ? pblasTranspose : pblasNoTranspose);
 
-    // TODO(jan) assert same block size for all matrices
-    // TODO(jan) assert that (b.cols == c.cols) and (a.rows == c.rows) and (b.cols = a.rows)
     pdgemm_(transB, transA, b.getGlobalCols(), a.getGlobalRows(), b.getGlobalRows(), alpha,
             b.getLocalPointer(), 1, 1, b.getDescriptor(), a.getLocalPointer(), 1, 1,
             a.getDescriptor(), beta, c.getLocalPointer(), 1, 1, c.getDescriptor());
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,
                                           DataMatrixDistributed::TRIANGULAR uplo) {
+#ifdef USE_SCALAPACK
   if (l.isProcessMapped() || b.isProcessMapped()) {
     // implementation detail: values of upper and lower are switched, as internally ScaLAPACK
     // transposes all matrices. By switching upper and lower, everything works as expected.
@@ -351,90 +379,13 @@ void DataMatrixDistributed::solveCholesky(const DataMatrixDistributed& l, DataVe
       throw sgpp::base::algorithm_exception("DataMatrixDistributed::solveCholesky() failed");
     }
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
-
-/*void DataMatrixDistributed::appendRows(size_t rows) {
-  if (rows == 0) {
-    return;
-  }
-  if (this->localColumns > 1) {
-    throw sgpp::base::not_implemented_exception(
-        "DataMatrixDistributed::resizeRows currently only works if there is just one localColumn");
-  }
-
-  size_t newRows = globalRows + rows;
-
-  for (size_t row = globalRows; row < newRows; row += rowBlockSize) {
-    for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
-      // first and last block might be smaller
-
-      size_t rowsToInsert = rowBlockSize - (row % rowBlockSize);
-      if (row + rowsToInsert > globalRows) {
-        rowsToInsert = globalRows - row;
-      }
-
-      size_t colsToInsert = columnBlockSize;
-      if (col + colsToInsert > globalColumns) {
-        colsToInsert = globalColumns - col;
-      }
-
-      int processRow = globalToProcessIndex(row, grid->getTotalRows(), rowBlockSize, 0);
-      int processCol = globalToProcessIndex(col, grid->getTotalColumns(), columnBlockSize, 0);
-
-      if (grid->getCurrentRow() == processRow && grid->getCurrentColumn() == processCol) {
-        localData.insert(localData.end(), colsToInsert * rowsToInsert, 0.0);
-      }
-
-      if (row == globalRows) {
-        // align to block size if needed
-        row -= globalRows % rowBlockSize;
-      }
-    }
-  }
-
-  globalRows = newRows;
-}
-
-void DataMatrixDistributed::appendColumns(size_t cols) {
-  if (cols == 0) {
-    return;
-  }
-
-  size_t newColumns = globalColumns + cols;
-
-  // add new columns
-  for (size_t row = 0; row < globalRows; row += rowBlockSize) {
-    for (size_t col = globalColumns; col < newColumns; col += columnBlockSize) {
-      // first and last block might be smaller
-
-      size_t rowsToInsert = rowBlockSize;
-      if (row + rowsToInsert > globalRows) {
-        rowsToInsert = globalRows - row;
-      }
-
-      size_t colsToInsert = columnBlockSize - (col % columnBlockSize);
-      if (col + colsToInsert > newColumns) {
-        colsToInsert = globalColumns - col;
-      }
-
-      int processRow = globalToProcessIndex(row, grid->getTotalRows(), rowBlockSize, 0);
-      int processCol = globalToProcessIndex(col, grid->getTotalColumns(), columnBlockSize, 0);
-
-      if (grid->getCurrentRow() == processRow && grid->getCurrentColumn() == processCol) {
-        localData.insert(localData.end(), colsToInsert * rowsToInsert, 0.0);
-      }
-
-      if (col == globalColumns) {
-        // align to block size if needed
-        col -= globalColumns % columnBlockSize;
-      }
-    }
-  }
-
-  globalColumns = newColumns;
-}*/
 
 void DataMatrixDistributed::resize(size_t rows, size_t cols) {
+#ifdef USE_SCALAPACK
   if (getGlobalRows() == rows && getGlobalCols() == cols) {
     return;
   }
@@ -453,15 +404,18 @@ void DataMatrixDistributed::resize(size_t rows, size_t cols) {
       localColumns = 0;
     }
 
-    leadingDimension = std::max(1, localRows);
+    leadingDimension = std::max<size_t>(1, localRows);
 
     // resize local matrix
     localData.resize(localRows * localColumns);
 
-    descriptor[m_] = this->globalRows;
-    descriptor[n_] = this->globalColumns;
-    descriptor[lld_] = leadingDimension;
+    descriptor[m_] = static_cast<int>(this->globalRows);
+    descriptor[n_] = static_cast<int>(this->globalColumns);
+    descriptor[lld_] = static_cast<int>(leadingDimension);
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 DataVectorDistributed DataMatrixDistributed::toVector() const {
@@ -487,32 +441,33 @@ void DataMatrixDistributed::printMatrix() const {
 bool DataMatrixDistributed::isProcessMapped() const { return grid->isProcessInGrid(); }
 
 size_t DataMatrixDistributed::globalToLocalRowIndex(size_t globalRowIndex) const {
-  return globalToLocalIndex(globalRowIndex, grid->getTotalRows(), rowBlockSize);
+  return globalToLocalIndex(globalRowIndex, grid->getTotalColumns(), columnBlockSize);
 }
 
 size_t DataMatrixDistributed::globalToLocalColumnIndex(size_t globalColumnIndex) const {
-  return globalToLocalIndex(globalColumnIndex, grid->getTotalColumns(), columnBlockSize);
+  return globalToLocalIndex(globalColumnIndex, grid->getTotalRows(), rowBlockSize);
 }
 
 size_t DataMatrixDistributed::localToGlobalRowIndex(size_t localRowIndex) const {
-  return localToGlobalIndex(localRowIndex, grid->getCurrentRow(), grid->getTotalRows(),
-                            rowBlockSize);
-}
-
-size_t DataMatrixDistributed::localToGlobalColumnIndex(size_t localColumnIndex) const {
-  return localToGlobalIndex(localColumnIndex, grid->getCurrentColumn(), grid->getTotalColumns(),
+  return localToGlobalIndex(localRowIndex, grid->getCurrentColumn(), grid->getTotalColumns(),
                             columnBlockSize);
 }
 
+size_t DataMatrixDistributed::localToGlobalColumnIndex(size_t localColumnIndex) const {
+  return localToGlobalIndex(localColumnIndex, grid->getCurrentRow(), grid->getTotalRows(),
+                            rowBlockSize);
+}
+
 size_t DataMatrixDistributed::globalToRowProcessIndex(size_t globalRowIndex) const {
-  return globalToProcessIndex(globalRowIndex, grid->getTotalRows(), rowBlockSize);
+  return globalToProcessIndex(globalRowIndex, grid->getTotalColumns(), columnBlockSize);
 }
 
 size_t DataMatrixDistributed::globalToColumnProcessIndex(size_t globalColumnIndex) const {
-  return globalToProcessIndex(globalColumnIndex, grid->getTotalColumns(), columnBlockSize);
+  return globalToProcessIndex(globalColumnIndex, grid->getTotalRows(), rowBlockSize);
 }
 
 void DataMatrixDistributed::distribute(const double* matrix, int masterRow, int masterCol) {
+#ifdef USE_SCALAPACK
   for (size_t row = 0; row < globalRows; row += rowBlockSize) {
     for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
       // last block might be smaller
@@ -550,9 +505,13 @@ void DataMatrixDistributed::distribute(const double* matrix, int masterRow, int 
       }
     }
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 void DataMatrixDistributed::gather(DataMatrix& localMatrix, int masterRow, int masterCol) const {
+#ifdef USE_SCALAPACK
   for (size_t row = 0; row < globalRows; row += rowBlockSize) {
     for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
       // last block might be smaller
@@ -591,6 +550,9 @@ void DataMatrixDistributed::gather(DataMatrix& localMatrix, int masterRow, int m
       }
     }
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
@@ -604,6 +566,7 @@ DataMatrix DataMatrixDistributed::gather(int masterRow, int masterCol) const {
 }
 
 void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
+#ifdef USE_SCALAPACK
   for (size_t row = 0; row < globalRows; row += rowBlockSize) {
     for (size_t col = 0; col < globalColumns; col += columnBlockSize) {
       // last block might be smaller
@@ -649,6 +612,9 @@ void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
       }
     }
   }
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 DataMatrix DataMatrixDistributed::broadcast() const {
@@ -682,5 +648,3 @@ int DataMatrixDistributed::globalToProcessIndex(size_t globalIndex, size_t numbe
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // USE_SCALAPACK
