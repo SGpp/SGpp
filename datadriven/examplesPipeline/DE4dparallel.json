@@ -1,7 +1,7 @@
 {
   "dataSource": {
     "filePath": "../datasets/DR5/DR5_train.arff",
-    "validationPortion": 0.99
+    "validationPortion": 0.2
   },
   "scorer": {
     "metric": "MSE"
@@ -56,8 +56,8 @@
       "matrixDecompositionType": "orthoadapt"
     },
     "parallelConfig": {
-      "rowBlockSize": 128,
-      "columnBlockSize": 128
+      "rowBlockSize": 64,
+      "columnBlockSize": 64
     }
   },
   "hpo": {
