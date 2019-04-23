@@ -142,7 +142,7 @@ void DBMatOffline::store(const std::string& fileName) {
   std::cout << "Stored " << lhsMatrix.getNrows() << "x" << lhsMatrix.getNcols() << " matrix" <<
       std::endl;
 #else
-  throw base::not_implemented_exception("built withot GSL");
+  throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
 }
 
