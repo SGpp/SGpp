@@ -129,7 +129,7 @@ void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixD
   // calculating Q * T^{-1} * Q^t * b (result saved in part of alpha)
   DataMatrixDistributed::mult(Q, tmp, alpha, false);
 
-  // if B should not be considered (TODO(jan) why is the second part needed)
+  // if B should not be considered
   if (!prior_refined || B.getGlobalCols() == Q.getGlobalCols()) {
     if (tmp.getGlobalRows() != alpha.getGlobalRows()) {
       throw sgpp::base::algorithm_exception(

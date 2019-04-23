@@ -3,9 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -46,8 +49,9 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
   // std::cout << alpha.toString() << std::endl;
 }
 
-void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,
-                                 double lambda_old, double lambda_new) const {
+void DBMatDMSChol::solveParallel(sgpp::datadriven::DataMatrixDistributed& decompMatrix,
+                                 sgpp::datadriven::DataVectorDistributed& x, double lambda_old,
+                                 double lambda_new) const {
 #ifdef USE_SCALAPACK
 
   // Performe Update based on Cholesky - afterwards perform n (GridPoints) many

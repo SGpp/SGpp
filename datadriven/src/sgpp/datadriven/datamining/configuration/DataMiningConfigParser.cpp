@@ -844,10 +844,10 @@ bool DataMiningConfigParser::getFitterParallelConfig(
 
     config.scalapackEnabled_ = true;
 
-    config.processRows_ =
-        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig");
-    config.processCols_ =
-        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig");
+    config.processRows_ = static_cast<int>(
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig"));
+    config.processCols_ = static_cast<int>(
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig"));
 
     config.rowBlockSize_ =
         parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");

@@ -103,8 +103,6 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
 
-  // TODO(jan) only run offline phase on master node??
-  // if (BlacsProcessGrid::getCurrentProcess() == 0) {
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);

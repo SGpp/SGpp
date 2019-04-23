@@ -27,7 +27,6 @@ using sgpp::base::SLinearModifiedBase;
 
 void OperationMultipleEvalModLinearDistributed::multDistributed(DataVector& alpha,
                                                                 DataVectorDistributed& result) {
-  // TODO(jan) AlgorithmDGEMV needed?
   AlgorithmMultipleEvaluationDistributed<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> basis;
 
@@ -36,7 +35,6 @@ void OperationMultipleEvalModLinearDistributed::multDistributed(DataVector& alph
 
 void OperationMultipleEvalModLinearDistributed::multTransposeDistributed(
     DataVector& alpha, DataVectorDistributed& result) {
-  // TODO(jan) AlgorithmDGEMV needed?
   AlgorithmMultipleEvaluationDistributed<SLinearModifiedBase> op;
   LinearModifiedBasis<unsigned int, unsigned int> basis;
 

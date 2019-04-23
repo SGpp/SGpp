@@ -12,6 +12,7 @@
 
 #include "Scorer.hpp"
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
@@ -35,6 +36,7 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
 }
 
 double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
+#ifdef USE_SCALAPACK
   DataVector predictedValues{testDataset.getNumberInstances()};
   model.evaluate(testDataset.getData(), predictedValues);
 
@@ -54,6 +56,9 @@ double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
   }
 
   return score;
+#else
+  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 } /* namespace datadriven */

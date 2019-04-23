@@ -9,8 +9,6 @@
  * Created on: Jan 14, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
-
 #pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -30,6 +28,8 @@ class DataVectorDistributed;
 /**
  * Class to represent a DataMatrix which is distributed on a process grid.
  * The class provides a wrapper for ScaLAPACK methods on the matrix.
+ * See http://netlib.org/scalapack/slug/node76.html for information regarding the distribution
+ * scheme.
  */
 class DataMatrixDistributed {
  public:
@@ -55,28 +55,49 @@ class DataMatrixDistributed {
 
   /**
    * Creates an two-dimensional DataMatrixDistributed filled with a value.
+   * @param grid BLACS process grid this matrix will be distributed on
+   * @param globalRows number of global rows of the matrix
+   * @param globalColumns number of global columns of the matrix
+   * @param rowBlockSize number of rows in one block
+   * @param columnBlockSize number of columns in one block
+   * @param value initial value for all elements of the matrix, default 0
+   * @param dtype datatype of the matrix, default DENSE
    */
-  DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, int globalRows, int globalColumns,
-                        int rowBlockSize, int columnBlockSize, double value = 0.0,
-                        DTYPE dtype = DTYPE::DENSE);
+  DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid, size_t globalRows,
+                        size_t globalColumns, size_t rowBlockSize, size_t columnBlockSize,
+                        double value = 0.0, DTYPE dtype = DTYPE::DENSE);
 
   /**
-   * Creates an two-dimensional DataMatrixDistributed with the specified input.
-   * Always call this method from *all* processes, as a BLACS grid is created inside. The init
-   * method of a BLACS grid has to be called from all processes, otherwise a deadlock will occur.
+   * Creates an two-dimensional DataMatrixDistributed with the specified input. Call this matrix on
+   * all processes in the grid to ensure proper initialization.
+   * @param input pointer to data that will be distributed
+   * @param grid BLACS process grid this matrix will be distributed on
+   * @param globalRows number of global rows of the matrix
+   * @param globalColumns number of global columns of the matrix
+   * @param rowBlockSize number of rows in one block
+   * @param columnBlockSize number of columns in one block
+   * @param dtype datatype of the matrix, default DENSE
    */
-  DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid, int globalRows,
-                        int globalColumns, int rowBlockSize, int columnBlockSize,
+  DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid, size_t globalRows,
+                        size_t globalColumns, size_t rowBlockSize, size_t columnBlockSize,
                         DTYPE dtype = DTYPE::DENSE);
 
   /**
    * Creates a distributed data matrix from data which is already shared (mirrored) on each process.
    * Avoids network transfers.
+   * @param input pointer to data that will be distributed
+   * @param grid BLACS process grid this matrix will be distributed on
+   * @param globalRows number of global rows of the matrix
+   * @param globalColumns number of global columns of the matrix
+   * @param rowBlockSize number of rows in one block
+   * @param columnBlockSize number of columns in one block
+   * @param dtype datatype of the matrix, default DENSE
    */
   static DataMatrixDistributed fromSharedData(const double* input,
                                               std::shared_ptr<BlacsProcessGrid> grid,
-                                              int globalRows, int globalColumns, int rowBlockSize,
-                                              int columnBlockSize, DTYPE dtype = DTYPE::DENSE);
+                                              size_t globalRows, size_t globalColumns,
+                                              size_t rowBlockSize, size_t columnBlockSize,
+                                              DTYPE dtype = DTYPE::DENSE);
 
   /**
    * Returns the value of the element at position [row,col].
@@ -249,22 +270,6 @@ class DataMatrixDistributed {
    */
   static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,
                             TRIANGULAR uplo = TRIANGULAR::LOWER);
-
-  /**
-   * Append newRows to the global rows, can currently only be done if there is only one
-   * local column in each process. TODO(jan) implement functionality to resize with more than one
-   * column
-   *
-   * @param rows
-   */
-  // void appendRows(size_t rows);
-
-  /**
-   * Append newColumns to the global columns.
-   *
-   * @param cols
-   */
-  // void appendColumns(size_t cols);
 
   /**
    * Resizes the matrix to rows and cols, data is discarded.
@@ -482,25 +487,25 @@ class DataMatrixDistributed {
   std::shared_ptr<BlacsProcessGrid> grid;
 
   // total number of rows of the global matrix
-  int globalRows;
+  size_t globalRows;
 
   // total number of columns of the global matrix
-  int globalColumns;
+  size_t globalColumns;
 
   // size of blocks in row dimension
-  int rowBlockSize;
+  size_t rowBlockSize;
 
   // size of blocks in column dimension
-  int columnBlockSize;
+  size_t columnBlockSize;
 
   // number of rows in this process
-  int localRows;
+  size_t localRows;
 
   // number of columns in this process
-  int localColumns;
+  size_t localColumns;
 
   // leading dimension
-  int leadingDimension;
+  size_t leadingDimension;
 
   // ScaLAPACK matrix descriptor
   int descriptor[dlen_];
@@ -508,5 +513,3 @@ class DataMatrixDistributed {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif  // USE_SCALAPACK

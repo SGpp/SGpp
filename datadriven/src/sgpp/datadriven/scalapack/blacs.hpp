@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#ifdef USE_SCALAPACK
+
 #include <cstddef>
 
 namespace sgpp {
@@ -53,3 +55,5 @@ void Cdgerv2d(int icontxt, size_t m, size_t n, double *a, size_t lda, int rsrc, 
 }
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif /* USE_SCALAPACK */

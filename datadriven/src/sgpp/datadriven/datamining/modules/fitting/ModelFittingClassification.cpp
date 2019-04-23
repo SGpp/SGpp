@@ -102,6 +102,9 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 #ifdef USE_SCALAPACK
   auto& parallelConfig = this->config->getParallelConfig();
   if (parallelConfig.scalapackEnabled_) {
+    if (!processGrid->isProcessInGrid()) {
+      return;
+    }
     DataVectorDistributed resultsDistributed(processGrid, results.size(),
                                              parallelConfig.rowBlockSize_);
     DataVector tmp(samples.getNcols());

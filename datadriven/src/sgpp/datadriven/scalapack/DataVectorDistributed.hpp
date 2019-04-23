@@ -9,8 +9,6 @@
  * Created on: Feb 19, 2019
  *     Author: Jan Schopohl
  */
-#ifdef USE_SCALAPACK
-
 #pragma once
 
 #include <memory>
@@ -249,5 +247,3 @@ class DataVectorDistributed {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif

@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
     BOOST_CHECK_EQUAL(d.getMatrix().getLocalColumns(), 42);
     BOOST_CHECK_EQUAL(d.getMatrix().getLocalRows(), 1);
 
-    for (int i = 0; i < d.getLocalRows(); i++) {
+    for (size_t i = 0; i < d.getLocalRows(); i++) {
       BOOST_CHECK_CLOSE(d.getLocalPointer()[i], 0.0, 0.0001);
     }
 
@@ -203,6 +203,38 @@ BOOST_AUTO_TEST_CASE(testOps) {
     d.scale(scalar);
     for (int i = 0; i < N; i++) {
       BOOST_CHECK_CLOSE(d(i), d_rand_local[i] * scalar, tolerance);
+    }
+  }
+
+  // dot
+  d = d_rand;
+  if (d.isProcessMapped()) {
+    double dotTest = d.dot(d_rand);
+    double dot = d_rand_local.dotProduct(d_rand_local);
+    BOOST_CHECK_CLOSE(dotTest, dot, tolerance);
+  }
+
+  if (processGrid && d_rand_shared->isProcessMapped()) {
+    d = (*d_rand_shared);
+    double dotTest = d.dot(*d_rand_shared);
+    double dot = d_rand_local.dotProduct(d_rand_local);
+    BOOST_CHECK_CLOSE(dotTest, dot, tolerance);
+  }
+
+  // add
+  d = d_rand;
+  if (d.isProcessMapped()) {
+    d.add(d_rand);
+    for (int i = 0; i < N; i++) {
+      BOOST_CHECK_CLOSE(d(i), d_rand_local[i] * 2, tolerance);
+    }
+  }
+
+  if (processGrid && d_rand_shared->isProcessMapped()) {
+    d = (*d_rand_shared);
+    d.add(*d_rand_shared);
+    for (int i = 0; i < N; i++) {
+      BOOST_CHECK_CLOSE(d(i), d_rand_local[i] * 2, tolerance);
     }
   }
 }

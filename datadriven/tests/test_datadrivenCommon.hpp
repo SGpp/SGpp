@@ -9,10 +9,11 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #if USE_OCL == 1
 #include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
@@ -20,6 +21,8 @@ using sgpp::base::OCLOperationConfiguration;
 #endif
 
 #include "sgpp/globaldef.hpp"
+
+using sgpp::datadriven::BlacsProcessGrid;
 
 std::string uncompressFile(std::string fileName);
 
@@ -46,6 +49,27 @@ void compareDatasetsTranspose(const std::vector<std::tuple<std::string, double>>
 double compareToReferenceTranspose(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration);
+
+void compareDatasetsDistributed(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                                sgpp::base::GridType gridType, size_t level,
+                                sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+                                std::shared_ptr<BlacsProcessGrid> processGrid);
+
+double compareToReferenceDistributed(
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid);
+
+void compareDatasetsTransposeDistributed(
+    const std::vector<std::tuple<std::string, double>>& fileNamesError,
+    sgpp::base::GridType gridType, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid);
+
+double compareToReferenceTransposeDistributed(
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid);
 
 #if USE_OCL == 1
 
