@@ -5,6 +5,7 @@
 
 
 import distutils.sysconfig
+import errno
 import os
 import re
 import subprocess
@@ -387,7 +388,7 @@ def python3_is_installed():
     return False
   except OSError as e:
     # file not found
-    if e.errno == os.errno.ENOENT:
+    if e.errno == errno.ENOENT:
       return False
     else:
       raise
@@ -632,8 +633,6 @@ def configureIntelCompiler(config):
   else:
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
-
-  config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
 
 def detectGSL(config):
   if "GSL_INCLUDE_PATH" in config.env:

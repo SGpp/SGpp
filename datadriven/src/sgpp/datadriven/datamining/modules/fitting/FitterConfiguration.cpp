@@ -6,6 +6,7 @@
 #include "FitterConfiguration.hpp"
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -97,5 +98,76 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
   return const_cast<datadriven::OperationMultipleEvalConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
+
+void FitterConfiguration::setupDefaults() {
+  gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
+  gridConfig.dim_ = 0;
+  gridConfig.level_ = 3;
+  gridConfig.maxDegree_ = 1;  // mirrors struct default
+  gridConfig.boundaryLevel_ = 0;  // mirrors struct default
+  gridConfig.filename_ = "";
+  gridConfig.t_ = 0.0;  // mirrors struct default
+
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.threshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.percent_ = 1.0;  // mirrors struct default
+  adaptivityConfig.errorBasedRefinement = false;  // mirrors struct default
+  adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
+  adaptivityConfig.errorBufferSize = 3;  // mirrors struct default
+  adaptivityConfig.errorMinInterval = 0;  // mirrors struct default
+  adaptivityConfig.refinementPeriod = 1;  // mirrors struct default
+  adaptivityConfig.refinementFunctorType =
+    sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
+  adaptivityConfig.precomputeEvaluations = true;  // mirrors struct default
+  adaptivityConfig.levelPenalize = false;  // mirrors struct default
+  adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default;
+
+  crossvalidationConfig.enable_ = false;  // mirrors struct default
+  crossvalidationConfig.kfold_ = 5;  // mirrors struct default
+  crossvalidationConfig.seed_ = 0;
+  crossvalidationConfig.shuffle_ = false;
+  crossvalidationConfig.silent_ = false;
+  crossvalidationConfig.lambda_ = 0.001;
+  crossvalidationConfig.lambdaStart_ = 0.001;
+  crossvalidationConfig.lambdaEnd_ = 0.001;
+  crossvalidationConfig.lambdaSteps_ = 0;
+  crossvalidationConfig.logScale_ = false;
+
+  // (Sebastian) The following two values were previously set
+  // in the subclass FitterConfigurationDensityEstimation but were moved here
+  // to have all of the default value config in this file.
+  densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+
+  densityEstimationConfig.iCholSweepsDecompose_ = 4;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsRefine_ = 4;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsSolver_ = 2;  // mirrors struct default;
+
+  databaseConfig.filepath = "";
+
+  solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
+  solverRefineConfig.eps_ = 1e-12;
+  solverRefineConfig.maxIterations_ = 100;
+  solverRefineConfig.threshold_ = 1e-12;
+  solverRefineConfig.verbose_ = false;
+
+  solverFinalConfig.type_ = sgpp::solver::SLESolverType::CG;
+  solverFinalConfig.eps_ = 1e-12;
+  solverFinalConfig.maxIterations_ = 100;
+  solverFinalConfig.threshold_ = 1e-12;
+  solverFinalConfig.verbose_ = false;
+
+  regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
+  regularizationConfig.lambda_ = 0.01;
+  regularizationConfig.l1Ratio_ = 0.0;
+  regularizationConfig.exponentBase_ = 1.0;
+
+  learnerConfig.beta = 1.0;  // mirrors struct default
+  learnerConfig.usePrior = false;  // mirrors struct default
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

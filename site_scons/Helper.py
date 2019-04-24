@@ -231,9 +231,6 @@ def setWin32Spawn(env):
   import win32security
 
   def win32Spawn(sh, escape, cmd, args, spawnEnv):
-    for var in spawnEnv:
-      spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
-
     #sAttrs = win32security.SECURITY_ATTRIBUTES()
     #sAttrs.bInheritHandle = 1
     #hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)

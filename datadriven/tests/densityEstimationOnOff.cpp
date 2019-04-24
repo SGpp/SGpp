@@ -81,6 +81,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
   // Create config file
   std::string config = "tmpsgdeconfig.json";
   std::ofstream stream(config);
+<<<<<<< HEAD
   stream << "{"
          << "\"dataSource\" : { \"filePath\" : \"" << samples
          << "\", \"hasTargets\" : false},\"scorer\" : "
@@ -93,6 +94,19 @@ BOOST_AUTO_TEST_CASE(Test_3D_KurB4B1) {
 
   double mse =
       testDistributionOnOff("datadriven/datasets/densityEstimation/3D_KurB4B1F.csv", config);
+=======
+  stream << "{" << "\"dataSource\" : { \"filePath\" : \"" << samples <<
+        "\", \"hasTargets\" : false},\"scorer\" : "
+        << "{ \"metric\" : \"NLL\"},\"fitter\" : " <<
+        "{ \"type\" : \"densityEstimation\", \"gridConfig\" : { \"gridType\" : \"linear\","
+        << "\"level\" : 5},\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
+        << "\"maxLevelType\" : false, \"noPoints\" : 3},\"regularizationConfig\" : {\"lambda\" : "
+        << "1}, \"densityEstimationConfig\" : { \"densityEstimationType\" : \"decomposition\"}}}"
+        << std::endl;
+
+  double mse = testDistributionOnOff(
+      "datadriven/datasets/densityEstimation/3D_KurB4B1F.csv", config);
+>>>>>>> master
   std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());

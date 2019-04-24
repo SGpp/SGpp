@@ -55,8 +55,7 @@ DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : co
     configFile = std::make_unique<JSON>(filepath);
   } catch (json_exception &exception) {
     std::cout << exception.what() << std::endl;
-    std::string errorMsg = "can not open file: \"" + filepath + "\"";
-    throw file_exception(errorMsg.c_str());
+    throw file_exception("Cannot open JSON file.");
   }
 }
 
