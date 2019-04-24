@@ -1,5 +1,4 @@
 from argparse import ArgumentParser
-# import ipdb
 import os
 import time
 
@@ -7,6 +6,11 @@ import cPickle as pickle
 import functions
 import numpy as np
 import pysgpp
+# neon does not have ipdb
+try:
+    import ipdb
+except:
+    pass
 
 from functions import objFuncSGpp as objFuncSGpp
 # from sgAnuga import anugaError

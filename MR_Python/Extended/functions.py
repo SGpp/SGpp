@@ -1,5 +1,4 @@
 import copy
-import ipdb
 import os
 import sys
 import numpy as np
@@ -8,6 +7,11 @@ import pickle as pickle
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from matplotlib import rc
+# neon does not have ipdb
+try:
+    import ipdb
+except:
+    pass
 
 rc('animation', html='jshtml')
 import anuga
