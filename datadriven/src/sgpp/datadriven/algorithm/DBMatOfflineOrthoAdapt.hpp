@@ -100,7 +100,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
 
   DataMatrixDistributed& getQDistributed() { return this->q_ortho_matrix_distributed_; }
 
-  DataMatrixDistributed& getTinvDistributed() { return this->t_tridiag_inv_matrix_distributed_; };
+  DataMatrixDistributed& getTinvDistributed() { return this->t_tridiag_inv_matrix_distributed_; }
 
  protected:
   sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix of decomposition
