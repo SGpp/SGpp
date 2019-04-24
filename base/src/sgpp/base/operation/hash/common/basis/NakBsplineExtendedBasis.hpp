@@ -524,18 +524,23 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
                    base::DataVector quadCoordinates, base::DataVector quadWeights,
                    std::shared_ptr<sgpp::base::Distribution> pdf) {
+    double left;
+    double right;
+    pdf->getBounds(left, right);
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
       // loop over quadrature points
       for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
-        // evaluated
-        const double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
-        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(x);
+        // evaluated and the support of the pdf
+        double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
+        double scaledX = left + (right - left) * x;
+        //        std::cout << x << " " << scaledX << " " << pdf->eval(scaledX) << "\n";
+        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }
-    return temp_res;
+    return temp_res * (right - left);
   }
 
   /**

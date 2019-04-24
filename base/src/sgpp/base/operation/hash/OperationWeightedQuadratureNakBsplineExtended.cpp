@@ -12,14 +12,15 @@ double OperationWeightedQuadratureNakBsplineExtended::doWeightedQuadrature(
     DataVector& alpha, sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
   double mean = 0;
   for (size_t i = 0; i < storage.getSize(); i++) {
-    double tmpres = 1;
+    double mean1D = 1;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
-      tmpres *= base.getMean(storage.getPointLevel(i, d), storage.getPointIndex(i, d), pdfs.get(d),
+      mean1D *= base.getMean(storage.getPointLevel(i, d), storage.getPointIndex(i, d), pdfs.get(d),
                              quadOrder);
     }
-    mean += alpha[i] * tmpres;
+    mean += alpha[i] * mean1D;
   }
+
   return mean;
 }
 

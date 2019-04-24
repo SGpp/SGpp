@@ -27,7 +27,10 @@ class ResponseSurface {
   /**
    * Constructor
    */
-  ResponseSurface() {}
+  explicit ResponseSurface(size_t numDim) : numDim(numDim) {
+    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
+    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
+  }
 
   /**
    * Destructor
@@ -65,8 +68,42 @@ class ResponseSurface {
                  size_t numMCPoints = 1000);
 
  protected:
+  size_t numDim;
+  sgpp::base::DataVector unitLBounds;
+  sgpp::base::DataVector unitUBounds;
+  // lower bounds of the objective function's domain
+  sgpp::base::DataVector lb;
+  // upper bounds of the objective function's domain
+  sgpp::base::DataVector ub;
   std::shared_ptr<sgpp::optimization::ScalarFunction> interpolant;
   std::shared_ptr<sgpp::optimization::ScalarFunctionGradient> interpolantGradient;
+
+  /**
+   * transforms a point in hyper-rectangle [0,1]^D to the objective functions domain
+   *
+   * @param	v			point in [lBounds,uBounds]
+   */
+  //  void transformUnitPoint(sgpp::base::DataVector& v);
+
+  /**
+   * transforms a point in hyper-rectangle [lBounds,rBounds] to the hyper-rectangle
+   * [newlBounds,newuBounds]
+   *
+   * @param	v			point in [lBounds,uBounds]
+   * @param lBounds		lower bounds
+   * @param uBounds		upper bounds
+   * @param newlBounds  new lower bounds
+   * @param newuBounds  new upper bounds
+   */
+  void transformPoint(sgpp::base::DataVector& v, sgpp::base::DataVector lBounds,
+                      sgpp::base::DataVector uBounds, sgpp::base::DataVector newlBounds,
+                      sgpp::base::DataVector newuBounds);
+  /**
+   * calculates the volume of the tensor product domain given by lb and ub
+   *
+   * @return volume
+   */
+  double domainVolume();
 };
 
 }  // namespace optimization

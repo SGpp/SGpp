@@ -592,21 +592,25 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
                    base::DataVector quadCoordinates, base::DataVector quadWeights,
                    std::shared_ptr<sgpp::base::Distribution> pdf) {
+    double left;
+    double right;
+    pdf->getBounds(left, right);
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
       // loop over quadrature points
       for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
-        // evaluated
+        // evaluated and the support of the pdf
         const double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
-        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(x);
+        double scaledX = left + (right - left) * x;
+        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }
     return temp_res;
   }
 
-  //#ifdef SG_COMBIGRID
+  // #ifdef SG_COMBIGRID
   /**
    * @param l     				level of basis function
    * @param i     				index of basis function
@@ -691,7 +695,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   //    double integral = temp_res * scaling;
   //    return integral;
   //  }
-  //#endif
+  // #endif
 
   /**
    * @return      B-spline degree
@@ -733,7 +737,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
     return temp_res;
   }
 
-  //#ifdef SG_COMBIGRID
+  // #ifdef SG_COMBIGRID
   //  double integrateWeightedBspline(LT l, IT i, size_t start, size_t stop, double offset,
   //                                  double scaling, base::DataVector quadCoordinates,
   //                                  base::DataVector quadWeights,
@@ -751,7 +755,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   //    }
   //    return temp_res;
   //  }
-  //#endif
+  // #endif
 };  // namespace base
 
 // default type-def (unsigned int for level and index)

@@ -9,7 +9,7 @@ import numpy as np
 import pysgpp
 
 from functions import objFuncSGpp as objFuncSGpp
-from sgANUGA import anugaError
+# from sgAnuga import anugaError
         
 
 def interpolateAndError(degree,
@@ -40,13 +40,16 @@ def interpolateAndError(degree,
     gridSizes = np.zeros((len(gridTypes), len(sampleRange)))
     runTimes = np.zeros((len(gridTypes), len(sampleRange)))
     dim = objFunc.getDim()
+    lb = objFunc.getLowerBounds()
+    ub = objFunc.getUpperBounds()
     for  i, gridType in enumerate(gridTypes):
         if gridType in ['bsplineBoundary', 'nakbsplineboundary']:
             initialLevelwithOffset = initialLevel - 1
         else:
             initialLevelwithOffset = initialLevel
         for j, numPoints in enumerate(sampleRange):
-            reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc,
+            print("refine for {} points".format(numPoints)) 
+            reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc, lb, ub,
                                                             pysgpp.Grid.stringToGridType(gridType),
                                                             degree)
             start = time.time()
@@ -61,28 +64,31 @@ def interpolateAndError(degree,
                 reSurf.surplusAdaptive(numPoints, initialLevelwithOffset, numRefine, verbose)
             else:
                 print("this refineType is not supported")
-            runTimes[i, j] = time.time() - start   
+            runTimes[i, j] = time.time() - start  
+             
             if calculateError:
-                if  "anuga" in objFunc.getName():
-                    interpolErrors[i, j] = sgANUGA.anugaError(reSurf, objFunc)
-                else:
-                    interpolErrors[i, j] = reSurf.l2Error(objFunc, numErrPoints)
-            gridSizes[i, j] = reSurf.getSize()
-            
+#                 if  "anuga" in objFunc.getName():
+#                     interpolErrors[i, j] = sgAnuga.anugaError(reSurf, objFunc)
+#                 else:
+                interpolErrors[i, j] = reSurf.l2Error(objFunc, numErrPoints)
+                print("l2 err={}".format(interpolErrors[i, j]))
             if calculateMean == 1:
                 pdfs = objFunc.getDistributions()
                 means[i, j] = reSurf.getMean(pdfs, quadOrder)
                 realMean = objFunc.getMean()
                 meanErrors[i, j] = abs(means[i, j] - realMean)
+                print("mean={}  real mean={}  error={}".format(means[i, j], realMean, meanErrors[i, j]))
             if calculateVar == 1:
                 pdfs = objFunc.getDistributions()
                 vars[i, j] = reSurf.getVariance(pdfs, quadOrder)
                 realVar = objFunc.getVar()
                 varErrors[i, j] = abs(vars[i, j] - realVar)
+                print("var={}  real var={}  error={}".format(vars[i, j], realVar, varErrors[i, j]))
+            gridSizes[i, j] = reSurf.getSize()
+            print("\n")
             
-        print('{} {}, error {} (took {}s)'.format(gridType,
+        print('{} {} done (took {}s)\n\n'.format(gridType,
                                                   degree,
-                                                  interpolErrors[i, j],
                                                   np.sum(runTimes[i, :])))
     data = {'gridTypes':gridTypes,
             'interpolErrors':interpolErrors,
@@ -100,16 +106,16 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='anugaTime', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='borehole', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
+    parser.add_argument('--gridType', default='nak', type=str, help='gridType(s) to use')
+    parser.add_argument('--degree', default=135, type=int, help='spline degree')
     parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=1, type=int, help='maximum level for regualr refinement')
     parser.add_argument('--minPoints', default=1, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=10, type=int, help='maximum number of points used')
-    parser.add_argument('--numSteps', default=2, type=int, help='number of steps in the [minPoints maxPoints] range')
+    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
+    parser.add_argument('--numSteps', default=6, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
@@ -147,7 +153,7 @@ if __name__ == '__main__':
     pyFunc = functions.getFunction(args.model, args.dim, args.scalarModelParameter)
     objFunc = objFuncSGpp(pyFunc)
      
-    numErrPoints = 10000
+    numErrPoints = max(10000, 2 * args.maxPoints)
 
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
 

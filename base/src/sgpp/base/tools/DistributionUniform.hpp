@@ -20,8 +20,8 @@ class DistributionUniform : public Distribution {
   /**
    * Constructor
    */
-  explicit DistributionUniform(double l = 0, double h = 1)
-      : Distribution(), l(l), h(h), dist(l, h) {}
+  explicit DistributionUniform(double l = 0, double r = 1)
+      : Distribution(), l(l), r(r), dist(l, r) {}
 
   /**
    * Destructor
@@ -33,11 +33,16 @@ class DistributionUniform : public Distribution {
    */
   double sample() { return dist(gen); }
 
-  double eval(double x) { return 1.0 / (h - l); }
+  double eval(double x) { return 1.0 / (r - l); }
+
+  void getBounds(double& l, double& r) {
+    l = this->l;
+    r = this->r;
+  }
 
  private:
   double l;
-  double h;
+  double r;
   std::uniform_real_distribution<double> dist;
 };
 }  // namespace base

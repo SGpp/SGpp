@@ -44,9 +44,14 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param degree				degree of the interpolants basis
    */
   SparseGridResponseSurfaceBspline(
-      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
-      sgpp::base::GridType gridType, size_t degree = 3)
-      : ResponseSurface(), objectiveFunc(objectiveFunc), gridType(gridType), degree(degree) {
+      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, sgpp::base::DataVector lb,
+      sgpp::base::DataVector ub, sgpp::base::GridType gridType, size_t degree = 3)
+      : ResponseSurface(objectiveFunc->getNumberOfParameters()),
+        objectiveFunc(objectiveFunc),
+        gridType(gridType),
+        degree(degree) {
+    this->lb = lb;
+    this->ub = ub;
     initialize();
   }
 
@@ -120,29 +125,6 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
   double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
 
   /**
-   * evaluates the response surface in a point in [lBounds,uBounds] transformd to [0,1]
-   * @param v		a point in [lBounds, uBounds]
-   * @param lBounds	lower bounds
-   * @param uBounds upper bounds
-   *
-   * @return		the evaluation
-   */
-  double evalNonUniform(sgpp::base::DataVector v, sgpp::base::DataVector lBounds,
-                        sgpp::base::DataVector uBounds);
-
-  /**
-   * evaluates the response surface and its gradient in a point in [lBounds,uBounds] transformd to
-   * [0,1]
-   * @param v		a point in [lBounds, uBounds]
-   * @param lBounds	lower bounds
-   * @param uBounds upper bounds
-   *
-   * @return		the evaluation
-   */
-  double evalGradientNonUniform(sgpp::base::DataVector v, sgpp::base::DataVector& gradient,
-                                sgpp::base::DataVector lBounds, sgpp::base::DataVector uBounds);
-
-  /**
    * return the integral of the response surface
    */
   double getIntegral();
@@ -162,6 +144,11 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    */
   double getVariance(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
 
+  /**
+   * calculates the minimimum with gradient descent
+   *
+   * @return argmin of the response surface
+   */
   sgpp::base::DataVector optimize();
 
   /**
@@ -179,6 +166,16 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    */
   size_t getSize() { return grid->getSize(); }
 
+  /**
+   * @return the lower bounds of the domain
+   */
+  sgpp::base::DataVector getLowerBounds() { return lb; }
+
+  /**
+   * @return the upper bounds of the domain
+   */
+  sgpp::base::DataVector getUpperBounds() { return ub; }
+
  private:
   // objective function
   std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
@@ -186,8 +183,6 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
   sgpp::base::GridType gridType;
   // degree of the basis
   size_t degree;
-  // number of dimensions
-  size_t numDim;
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
@@ -209,20 +204,6 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * calculates the interpolation coefficients on a given grid
    */
   void calculateInterpolationCoefficients();
-
-  /**
-   * transforms a point in hyper-rectangle [lBounds,rBounds] to the hyper-rectangle
-   * [newlBounds,newuBounds]
-   *
-   * @param	v			point in [lBounds,uBounds]
-   * @param lBounds		lower bounds
-   * @param uBounds		upper bounds
-   * @param newlBounds  new lower bounds
-   * @param newuBounds  new upper bounds
-   */
-  void transformPoint(sgpp::base::DataVector& v, sgpp::base::DataVector lBounds,
-                      sgpp::base::DataVector uBounds, sgpp::base::DataVector newlBounds,
-                      sgpp::base::DataVector newuBounds);
 };
 
 }  // namespace optimization

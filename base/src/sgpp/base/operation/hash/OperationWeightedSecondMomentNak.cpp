@@ -51,6 +51,9 @@ double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
 double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
     unsigned int level1, unsigned int index1, unsigned int level2, unsigned int index2,
     std::shared_ptr<sgpp::base::Distribution> pdf) {
+  double leftPDF;
+  double rightPDF;
+  pdf->getBounds(leftPDF, rightPDF);
   std::map<hashType, double>::iterator it;
   hashType hashKey = std::make_tuple(level1, index1, level2, index2);
   // Check if this scalar products has already been caluclated and is stored
@@ -88,6 +91,14 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
       segmentCoordinates.mult(commonSupport[i + 1] - commonSupport[i]);
       base::DataVector leftVector(segmentCoordinates.getSize(), commonSupport[i]);
       segmentCoordinates.add(leftVector);
+
+      // scale again to supp(pdf)
+      sgpp::base::DataVector transformedSegmentCoordinates = segmentCoordinates;
+      base::DataVector leftVectorPDF(segmentCoordinates.getSize(), leftPDF);
+      // base::DataVector widthVectorPDF(segmentCoordinates.getSize(), rightPDF-leftPDF);
+      transformedSegmentCoordinates.mult(rightPDF - leftPDF);
+      transformedSegmentCoordinates.add(leftVector);
+      //      double scaledX = left + (right - left) * x;
 
       double segmentIntegral = 0;
       for (size_t j = 0; j < segmentCoordinates.getSize(); j++) {

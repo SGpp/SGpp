@@ -11,7 +11,6 @@ namespace sgpp {
 namespace optimization {
 
 void SparseGridResponseSurfaceBspline::initialize() {
-  numDim = objectiveFunc->getNumberOfParameters();
   if (gridType == sgpp::base::GridType::Bspline) {
     grid = std::make_shared<sgpp::base::BsplineGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
@@ -117,52 +116,21 @@ void SparseGridResponseSurfaceBspline::ritterNovak(size_t maxNumGridPoints, doub
   if (verbose) std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
 }
 
-// void SparseGridResponseSurfaceBspline::regularData(size_t level,
-//                                                   sgpp::base::DataMatrix evaluationPoints,
-//                                                   sgpp::base::DataVector functionValues,
-//                                                   double lambda) {
-//  grid->getGenerator().regular(level);
-//  double mse = 0;
-//  sgpp::base::DataVector errorPerBasis;
-//  coefficients = sgpp::datadriven::EigenRegression(
-//      grid, degree, sgpp::datadrivenDataMatrixToEigen(evaluationPoints), functionValues, mse,
-//      errorPerBasis);
-//  interpolant =
-//      std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-//  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-//      *grid, coefficients);
-//}
-
 double SparseGridResponseSurfaceBspline::eval(sgpp::base::DataVector v) {
+  transformPoint(v, lb, ub, unitLBounds, unitUBounds);
+
   return interpolant->eval(v);
 }
 double SparseGridResponseSurfaceBspline::evalGradient(sgpp::base::DataVector v,
                                                       sgpp::base::DataVector& gradient) {
-  return interpolantGradient->eval(v, gradient);
-}
-
-double SparseGridResponseSurfaceBspline::evalNonUniform(sgpp::base::DataVector v,
-                                                        sgpp::base::DataVector lBounds,
-                                                        sgpp::base::DataVector uBounds) {
-  sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
-  sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
-  transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
-  return interpolant->eval(v);
-}
-
-double SparseGridResponseSurfaceBspline::evalGradientNonUniform(sgpp::base::DataVector v,
-                                                                sgpp::base::DataVector& gradient,
-                                                                sgpp::base::DataVector lBounds,
-                                                                sgpp::base::DataVector uBounds) {
-  sgpp::base::DataVector newlBounds(lBounds.getSize(), 0.0);
-  sgpp::base::DataVector newuBounds(lBounds.getSize(), 1.0);
-  transformPoint(v, lBounds, uBounds, newlBounds, newuBounds);
+  transformPoint(v, lb, ub, unitLBounds, unitUBounds);
   return interpolantGradient->eval(v, gradient);
 }
 
 double SparseGridResponseSurfaceBspline::getIntegral() {
   sgpp::base::OperationQuadrature* opQuad = sgpp::op_factory::createOperationQuadrature(*grid);
-  return opQuad->doQuadrature(coefficients);
+  double unitIntegral = opQuad->doQuadrature(coefficients);
+  return unitIntegral * domainVolume();
 }
 
 double SparseGridResponseSurfaceBspline::getMean(sgpp::base::DistributionsVector pdfs,
@@ -198,17 +166,13 @@ sgpp::base::DataVector SparseGridResponseSurfaceBspline::optimize() {
 
   x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
 
-  double fX0 = functionValues[x0Index];
-  double ftX0 = interpolant->eval(x0);
-
-  std::cout << "x0 = " << x0.toString() << "\n";
-  std::cout << "f(x0) = " << fX0 << ", ft(x0) = " << ftX0 << "\n\n";
-
   sgpp::optimization::optimizer::GradientDescent gradientDescent(*interpolant,
                                                                  *interpolantGradient);
   gradientDescent.setStartingPoint(x0);
   gradientDescent.optimize();
-  const sgpp::base::DataVector& xOpt = gradientDescent.getOptimalPoint();
+  const sgpp::base::DataVector& unitXOpt = gradientDescent.getOptimalPoint();
+  sgpp::base::DataVector xOpt(unitXOpt);
+  transformPoint(xOpt, unitLBounds, unitUBounds, lb, ub);
   return xOpt;
 }
 
@@ -228,6 +192,7 @@ void SparseGridResponseSurfaceBspline::calculateInterpolationCoefficients() {
     for (size_t d = 0; d < gridStorage.getDimension(); d++) {
       p[d] = gridStorage.getPointCoordinate(i, d);
     }
+    transformPoint(p, unitLBounds, unitUBounds, lb, ub);
     functionValues[i] = objectiveFunc->eval(p);
   }
   sgpp::optimization::sle_solver::Armadillo sleSolver;
@@ -236,19 +201,6 @@ void SparseGridResponseSurfaceBspline::calculateInterpolationCoefficients() {
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
-}
-
-void SparseGridResponseSurfaceBspline::transformPoint(sgpp::base::DataVector& v,
-                                                      sgpp::base::DataVector lBounds,
-                                                      sgpp::base::DataVector uBounds,
-                                                      sgpp::base::DataVector newlBounds,
-                                                      sgpp::base::DataVector newuBounds) {
-  v.sub(lBounds);
-  uBounds.sub(lBounds);
-  v.componentwise_div(uBounds);
-  newuBounds.sub(newlBounds);
-  v.componentwise_mult(newuBounds);
-  v.add(newlBounds);
 }
 
 }  // namespace optimization

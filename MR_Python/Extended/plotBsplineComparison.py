@@ -74,18 +74,20 @@ def plotter(qoi, data, refineTypes):
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
             # plt.ylabel('l2 error', fontsize=ylabelsize)
             # plotConvergenceOrder(4, [1, 0], 5)
-    if qoi == 'meanErr':
+    elif qoi == 'meanErr':
         meanErrors = data['meanErrors']
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.loglog(gridSizes[i, :], meanErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
             plt.ylabel('mean error', fontsize=ylabelsize)
-    if qoi == 'varErr':
+    elif qoi == 'varErr':
         varErrors = data['varErrors']
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.loglog(gridSizes[i, :], varErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
             plt.ylabel('variance error', fontsize=ylabelsize)
+    else:
+        print("qoi not supported")
     plt.xlabel('number of grid points', fontsize=xlabelsize)
     # number of ticks
     plt.locator_params(axis='y', numticks=5)
@@ -101,14 +103,14 @@ if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--qoi', default='l2', type=str, help='what to plot')
-    parser.add_argument('--model', default='monomial', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='borehole', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--degree', default=135, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
     parser.add_argument('--maxPoints', default=1000, type=int, help='maximum number of points used')
-    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
+    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
     
     # configure according to input
     args = parser.parse_args()
@@ -119,8 +121,11 @@ if __name__ == '__main__':
         degrees = [3, 5]
     else:
         degrees = [args.degree]
-        
-    fig = plt.figure(figsize=(20, 4.5)) 
+      
+    if args.degree == 135:
+        fig = plt.figure(figsize=(20, 4.5)) 
+    else:
+        fig = plt.figure()
     
     pyFunc = functions.getFunction(args.model, args.dim, args.scalarModelParameter)
     objFunc = objFuncSGpp(pyFunc)
@@ -152,9 +157,9 @@ if __name__ == '__main__':
         # saveDirectory = '/home/rehmemk/git/sga18proc/figures/'
         # plt.tight_layout() 
         if args.refineType == 'regular':
-            saveName = objFunc.getName() + '_' + args.refineType + str(args.maxLevel)
+            saveName = objFunc.getName() + '_' + args.refineType + str(args.maxLevel) + '_' + args.qoi
         else:
-            saveName = objFunc.getName() + args.refineType + str(args.maxPoints)
+            saveName = objFunc.getName() + args.refineType + str(args.maxPoints) + '_' + args.qoi
         figname = os.path.join(saveDirectory, saveName)
         plt.savefig(figname, dpi=300, bbox_inches='tight')
         print('saved fig to {}'.format(figname))
@@ -197,4 +202,5 @@ if __name__ == '__main__':
         else:    
             plt.legend(ncol=4)
     else:
+        plt.legend()
         plt.show()

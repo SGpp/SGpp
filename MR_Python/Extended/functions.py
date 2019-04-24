@@ -69,14 +69,12 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'piston':
         return piston()
     
+    # RAVEN Diss
     # https://digitalrepository.unm.edu/cgi/viewcontent.cgi?article=1053&context=ne_etds
     elif model == 'tensorMonomialU':
-        degree = scalarModelParameter
-        return tensorMonomialU(dim, degree)
+        return tensorMonomialU(dim)
     elif model == 'tensorMonomialN':
-        degree = scalarModelParameter
-        # return tensorMonomialN(dim, degree)
-        print('todo')
+        return tensorMonomialN(dim)
     elif model == 'attenuationU':
         return attenuationU(dim)
     elif model == 'attenuationN':
@@ -102,12 +100,20 @@ class objFuncSGpp(pysgpp.OptScalarFunction):
 
     def eval(self, v):
         return  self.objFunc.eval(v)
-    
+
     def getName(self):
         return self.objFunc.getName()
     
     def getDim(self):
         return self.dim
+    
+    def getLowerBounds(self):
+        lb, ub = self.objFunc.getDomain()
+        return lb
+    
+    def getUpperBounds(self):
+        lb, ub = self.objFunc.getDomain()
+        return ub
     
     def getDistributions(self):
         return self.objFunc.getDistributions()
@@ -657,9 +663,8 @@ class piston():
 
 class tensorMonomialU():
 
-    def __init__(self, dim, degree):
+    def __init__(self, dim):
         self.dim = dim
-        self.degree = degree
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.getDim(), 0.0)
@@ -667,7 +672,7 @@ class tensorMonomialU():
         return lb, ub
     
     def getName(self):
-       return "tensorMonomialU{}_{}D".format(self.degree, self.getDim())
+       return "tensorMonomialU_{}D".format(self.getDim())
     
     def getDim(self):
         return self.dim
@@ -683,10 +688,62 @@ class tensorMonomialU():
         return pdfs
     
     def getMean(self):
-        return (3.0 / 4.0) ** self.dim
+        # in RAVEN diss it says (3/4)^D but it is (3/2)^D
+        return (3.0 / 2.0) ** self.dim
     
     def getVar(self):
-        return (7.0 / 3.0) ** self.dim - (3.0 / 4.0) ** (2 * self.dim)
+        # again 3/2 instead of 3/4
+        return (7.0 / 3.0) ** self.dim - (3.0 / 2.0) ** (2 * self.dim)
+
+
+class tensorMonomialN():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.mu = [0.0] * dim  
+        self.sigma = [np.sqrt(0.2)] * dim 
+        self.lb = pysgpp.DataVector(self.getDim())
+        self.ub = pysgpp.DataVector(self.getDim())
+        widthFactor = 10
+        for d in range(self.dim):
+            self.lb[d] = self.mu[d] - widthFactor * self.sigma[d] ** 2
+            self.ub[d] = self.mu[d] + widthFactor * self.sigma[d] ** 2
+
+    def getDomain(self):
+        return self.lb, self.ub
+    
+    def getName(self):
+       return "tensorMonomialN_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        prod = 1
+        for d in range(self.getDim()):
+            prod *= (v[d] + 1) 
+        return prod
+    
+    def getDistributions(self):
+        pdfs = pysgpp.DistributionsVector()
+        for d in range(self.getDim()):
+            pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d], self.lb[d], self.ub[d]))
+        return pdfs
+    
+    def getMean(self):
+        D = self.dim
+        prod = 1
+        for d in range(D):
+            prod *= (self.mu[d] + 1)
+        return prod
+    
+    def getVar(self):
+        D = self.dim
+        prod1 = 1; prod2 = 1
+        for d in range(D):
+            prod1 *= ((self.mu[d] + 1) ** 2 + self.sigma[d] ** 2)
+            prod2 *= (self.mu[d] + 1) ** 2
+        return prod1 - prod2
 
 
 class attenuationU():
@@ -732,7 +789,7 @@ class attenuationN():
         self.mu = [0.5] * dim  
         self.sigma = [1. / 36.] * dim  
 
-    def getDomain(self):
+    def getDomain(self):  #depends on mu and sigma!!!
         lb = pysgpp.DataVector(self.getDim(), 0.0)  
         ub = pysgpp.DataVector(self.getDim(), 1.0)  
         return lb, ub
@@ -777,8 +834,11 @@ class anugaStorage():
     def __init__(self, dim):
         self.dim = dim
         self.precalculatedValuesFileName = '/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/Values/sg_precalculations{}D.pkl'.format(dim)
-        with open(self.precalculatedValuesFileName, 'rb') as f:
-            self.precalculatedValues = pickle.load(f)
+        try:
+            with open(self.precalculatedValuesFileName, 'rb') as f:
+                self.precalculatedValues = pickle.load(f)
+        except:
+            self.precalculatedValues = {}
         self.numNew = 0
     
     def cleanUp(self):
@@ -876,7 +936,7 @@ class anugaTime():
         # Interpolate over time to evaluate in arbitrary points of time
         timestepsNormalized = [i * 1.0 / (len(y) - 1) for i in range(len(y))]
         # res = np.interp(t, timestepsNormalized, y)
-        timeInterpolant = interp1d(timestepsNormalized, y, kind='cubic')  # 'linear', 'cubic', scipy also has spline interpolation
+        timeInterpolant = interp1d(timestepsNormalized, y, kind='linear')  # 'linear', 'cubic', scipy also has spline interpolation
         res = timeInterpolant(t)
-        return res
+        return float(res)
     
