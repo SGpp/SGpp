@@ -13,22 +13,24 @@
 ## Identical versions of the example are given in all languages
 ## currently supported by SG++: C++, Python, Java, and MATLAB.
 ##
-## For instructions on how to run the example, please see \ref installation.
-##
-## In the example, we create a two-dimensional regular sparse grid with level 3
+## In the example, we create a two-dimensional regular sparse grid of level 3
 ## (with grid points \f$\vec{x}_j \in [0, 1]^2\f$)
 ## using piecewise bilinear basis functions
 ## \f$\varphi_j\colon [0, 1]^2 \to \mathbb{R}\f$.
 ## We then interpolate the function
+##
 ## \f[
 ##   f\colon [0, 1]^2 \to \mathbb{R},\quad
 ##   f(x_0, x_1) := 16 (x_0 - 1) x_0 (x_1 - 1) x_1
 ## \f]
+##
 ## with
+##
 ## \f[
 ##   u\colon [0, 1]^2 \to \mathbb{R},\quad
 ##   u(x_0, x_1) := \sum_{j=0}^{N-1} \alpha_j \varphi_j(x_0, x_1)
 ## \f]
+##
 ## by calculating the coefficients \f$\alpha_j\f$ such that
 ## \f$u(\vec{x}_j) = f(\vec{x}_j)\f$ for all \f$j\f$.
 ## This process is called <i>hierarchization</i> in sparse grid contexts;
@@ -94,7 +96,7 @@ print("alpha before hierarchization: {}".format(alpha))
 pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 print("alpha after hierarchization:  {}".format(alpha))
 
-## Finally, a second DataVector is created which is used as a point to
+## Finally, a second \c DataVector is created which is used as a point to
 ## evaluate the sparse grid function at. An object is obtained which
 ## provides an evaluation operation (of type sgpp::base::OperationEvaluation),
 ## and the sparse grid interpolant is evaluated at \f$\vec{p}\f$,
