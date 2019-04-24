@@ -164,9 +164,27 @@ class HashGenerator {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
+    std::vector<size_t> anisotropic_weights;
+    anisotropic_weights.assign(storage.getDimension(), 1);
 
-    this->createFullGridIterative(storage, level);
+    this->createFullGridIterative(storage, anisotropic_weights, level);
   }
+
+  /**
+   * Generates a full grid with anisotropic weights and level, without boundaries
+   *
+   * @param storage Hashmap that stores the grid points
+   * @param anisotropic_weights Weights \f$\vec{\xi}\f$ (non-negative values) such that
+   * \f$\langle \vec{\xi}, \vec{\i} \rangle \le n\f$
+   * @param level Grid level \f$n\f$(non-negative value)
+   */
+  void full(GridStorage& storage, std::vector<size_t>& anisotropic_weights, level_t level) {
+      if (storage.getSize() > 0) {
+        throw generation_exception("storage not empty");
+      }
+
+      this->createFullGridIterative(storage, anisotropic_weights, level);
+    }
 
   /**
    * Generates a full grid of level @p level, with boundary grid points.
@@ -178,9 +196,29 @@ class HashGenerator {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
+    std::vector<size_t> anisotropic_weights;
+    anisotropic_weights.assign(storage.getDimension(), 1);
 
-    this->createFullGridTruncatedIterative(storage, level);
+    this->createFullGridTruncatedIterative(storage, anisotropic_weights, level);
   }
+
+  /**
+   * Generates a full sparse grid of level levels with boundaries
+   *
+   * @param storage Hashmap, that stores the grid points
+   * @param anisotropic_weights Weights \f$\vec{\xi}\f$ (non-negative values) such that
+   * \f$\langle \vec{\xi}, \vec{\i} \rangle \le n\f$
+   * @param boundaryLevel level at which the boundary points should be
+   *                      inserted
+   */
+  void fullWithBoundary(GridStorage& storage,
+            std::vector<size_t>& anisotropic_weights, level_t level) {
+        if (storage.getSize() > 0) {
+            throw generation_exception("storage not empty");
+        }
+
+        this->createFullGridTruncatedIterative(storage, anisotropic_weights, level);
+    }
 
   /**
    * Generates a regular sparse grid of level levels with boundaries
@@ -854,17 +892,18 @@ class HashGenerator {
    * @param storage Pointer to the storage object into which the grid points should be stored
    * @param n Level of full grid
    */
-  void createFullGridIterative(GridStorage& storage, level_t n) {
-    if (storage.getDimension() == 0) return;
+  void createFullGridIterative(GridStorage& storage,
+                               std::vector<size_t>& anisotropic_weights, level_t n) {
+    if (storage.getDimension() == 0)
+        return;
 
     GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
     }
-
     // Generate 1D grid in first dimension
-    for (level_t l = 1; l <= n; l++) {
+    for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[0]); l++) {
       for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
         if (l == n) {
           idx_1d.push(0, l, i, true);
@@ -887,9 +926,8 @@ class HashGenerator {
       for (size_t g = 0; g < grid_size; g++) {
         bool first = true;
         GridPoint idx(storage.getPoint(g));
-
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l <= n; l++) {
+        for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[d]); l++) {
           // for leaf check, set current level to l
           idx.push(d, l, 1, false);
 
@@ -928,7 +966,8 @@ class HashGenerator {
    * @param storage Pointer to the storage object into which the grid points should be stored
    * @param n Level of full grid
    */
-  void createFullGridTruncatedIterative(GridStorage& storage, level_t n) {
+  void createFullGridTruncatedIterative(GridStorage& storage,
+                                        std::vector<size_t>& anisotropic_weights, level_t n) {
     if (storage.getDimension() == 0) return;
 
     GridPoint idx_1d(storage.getDimension());
@@ -938,7 +977,7 @@ class HashGenerator {
     }
 
     // Generate 1D grid in first dimension
-    for (level_t l = 1; l <= n; l++) {
+    for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[0]); l++) {
       // generate boundary basis functions
       if (l == 1) {
         idx_1d.push(0, 0, 0, false);
@@ -971,7 +1010,7 @@ class HashGenerator {
         GridPoint idx(storage.getPoint(g));
 
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l <= n; l++) {
+        for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[d]); l++) {
           // generate boundary basis functions
           if (l == 1) {
             idx.push(d, 0, 0, false);

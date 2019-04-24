@@ -36,6 +36,7 @@ class PeriodicGridGenerator : public GridGenerator {
   void regular(size_t level, double T) override;
   void regular(std::vector<size_t>& anisotropic_weights, size_t level) override {};
   void full(size_t level) override;
+  void full(std::vector<size_t>& anisotropic_weights, size_t level) override {};
   void refine(RefinementFunctor& func) override;
   void cliques(size_t level, size_t clique_size) override;
   void cliques(size_t level, size_t clique_size, double T) override;

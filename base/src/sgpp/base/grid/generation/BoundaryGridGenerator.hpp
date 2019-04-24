@@ -44,6 +44,7 @@ class BoundaryGridGenerator : public GridGenerator {
   void regular(std::vector<size_t>& anisotropic_weights, size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
+  void full(std::vector<size_t>& anisotropic_weights, size_t level) override;
   void refine(RefinementFunctor& func) override;
   size_t getNumberOfRefinablePoints() override;
 
