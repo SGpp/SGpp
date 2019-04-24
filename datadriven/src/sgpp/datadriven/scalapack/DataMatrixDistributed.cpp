@@ -13,10 +13,10 @@
 
 #include <algorithm>
 #include <iostream>
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
-
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
 

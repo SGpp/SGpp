@@ -12,13 +12,11 @@
 
 #pragma once
 
+#include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
+#include <sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-
-#include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
-#include <sgpp/base/algorithm/AlgorithmEvaluationTransposed.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <iostream>
@@ -29,7 +27,7 @@ namespace datadriven {
 /**
  * Abstract implementation for distributed multiple function evaluations.
  *
- * Based on AlgorithmMultipleEvaluationDistributed.hpp
+ * Based on AlgorithmMultipleEvaluation.hpp
  *
  * In Data Mining to operators are needed: mass evaluation and transposed evaluation, referenced
  * in literature as matrix vector products with matrices B^T (mass evaluation) and B

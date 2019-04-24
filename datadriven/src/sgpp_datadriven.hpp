@@ -17,6 +17,8 @@
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
+#include <sgpp/datadriven/algorithm/AlgorithmMultipleEvaluationDistributed.hpp>
+
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
@@ -88,6 +90,10 @@
 
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
@@ -171,6 +177,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>

@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
@@ -11,11 +13,9 @@
 #include <gsl/gsl_vector.h>
 #endif /* USE_GSL */
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
-
-#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <algorithm>
 #include <functional>
