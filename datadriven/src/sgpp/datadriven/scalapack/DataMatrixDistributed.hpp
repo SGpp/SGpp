@@ -58,8 +58,8 @@ class DataMatrixDistributed {
    * @param grid BLACS process grid this matrix will be distributed on
    * @param globalRows number of global rows of the matrix
    * @param globalColumns number of global columns of the matrix
-   * @param rowBlockSize number of rows in one block
-   * @param columnBlockSize number of columns in one block
+   * @param rowBlockSize block size in the row dimension
+   * @param columnBlockSize block size in the column dimension
    * @param value initial value for all elements of the matrix, default 0
    * @param dtype datatype of the matrix, default DENSE
    */
@@ -74,8 +74,8 @@ class DataMatrixDistributed {
    * @param grid BLACS process grid this matrix will be distributed on
    * @param globalRows number of global rows of the matrix
    * @param globalColumns number of global columns of the matrix
-   * @param rowBlockSize number of rows in one block
-   * @param columnBlockSize number of columns in one block
+   * @param rowBlockSize block size in the row dimension
+   * @param columnBlockSize block size in the column dimension
    * @param dtype datatype of the matrix, default DENSE
    */
   DataMatrixDistributed(double* input, std::shared_ptr<BlacsProcessGrid> grid, size_t globalRows,
@@ -89,8 +89,8 @@ class DataMatrixDistributed {
    * @param grid BLACS process grid this matrix will be distributed on
    * @param globalRows number of global rows of the matrix
    * @param globalColumns number of global columns of the matrix
-   * @param rowBlockSize number of rows in one block
-   * @param columnBlockSize number of columns in one block
+   * @param rowBlockSize block size in the row dimension
+   * @param columnBlockSize block size in the column dimension
    * @param dtype datatype of the matrix, default DENSE
    */
   static DataMatrixDistributed fromSharedData(const double* input,
