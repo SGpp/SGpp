@@ -25,6 +25,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #include <list>
 
@@ -39,7 +40,7 @@ namespace datadriven {
  * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
  * regularization.
  *
- * Based on ModelFittingDensityEstimationOnOff, but use ScaLAPACK for parallelization.
+ * Based on ModelFittingDensityEstimationOnOff, but uses ScaLAPACK for parallelization.
  */
 class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEstimation {
  public:

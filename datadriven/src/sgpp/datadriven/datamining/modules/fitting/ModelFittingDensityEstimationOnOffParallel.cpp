@@ -13,6 +13,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 
 #include <list>
+#include <string>
+#include <vector>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -21,8 +24,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
-#include <string>
-#include <vector>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
