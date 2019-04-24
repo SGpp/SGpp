@@ -35,6 +35,10 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp"
 
+%include "datadriven/src/sgpp/datadriven/scalapack/BlacsProcessGrid.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataMatrixDistributed.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataVectorDistributed.hpp"
+
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
@@ -52,10 +56,6 @@
 
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
-
-%include "datadriven/src/sgpp/datadriven/scalapack/BlacsProcessGrid.hpp"
-%include "datadriven/src/sgpp/datadriven/scalapack/DataMatrixDistributed.hpp"
-%include "datadriven/src/sgpp/datadriven/scalapack/DataVectorDistributed.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
