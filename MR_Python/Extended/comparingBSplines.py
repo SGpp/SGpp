@@ -46,6 +46,7 @@ def interpolateAndError(degree,
     dim = objFunc.getDim()
     lb = objFunc.getLowerBounds()
     ub = objFunc.getUpperBounds()
+    
     for  i, gridType in enumerate(gridTypes):
         if gridType in ['bsplineBoundary', 'nakbsplineboundary']:
             initialLevelwithOffset = initialLevel - 1
@@ -110,23 +111,23 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='borehole', type=str, help='define which test case should be executed')
+    parser.add_argument('--model', default='tensorMonomialN', type=str, help='define which test case should be executed')
     parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nak', type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=135, type=int, help='spline degree')
+    parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help='gridType(s) to use')
+    parser.add_argument('--degree', default=3, type=int, help='spline degree')
     parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=1, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--minPoints', default=1, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
-    parser.add_argument('--numSteps', default=6, type=int, help='number of steps in the [minPoints maxPoints] range')
+    parser.add_argument('--minPoints', default=2, type=int, help='minimum number of points used')
+    parser.add_argument('--maxPoints', default=100, type=int, help='maximum number of points used')
+    parser.add_argument('--numSteps', default=1, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
-    parser.add_argument('--mean', default=0, type=int, help='calculate mean')
-    parser.add_argument('--var', default=0, type=int, help='calculate variance')
-    parser.add_argument('--quadOrder', default=10, type=int, help='quadrature order for mean and variance calculations')
-    parser.add_argument('--saveData', default=1, type=int, help='saveData')
+    parser.add_argument('--mean', default=1, type=int, help='calculate mean')
+    parser.add_argument('--var', default=1, type=int, help='calculate variance')
+    parser.add_argument('--quadOrder', default=20, type=int, help='quadrature order for mean and variance calculations')
+    parser.add_argument('--saveData', default=0, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int, help='number of threads for omp parallelization')
     
     # configure according to input

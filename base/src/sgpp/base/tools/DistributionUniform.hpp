@@ -35,9 +35,11 @@ class DistributionUniform : public Distribution {
 
   double eval(double x) { return 1.0 / (r - l); }
 
-  void getBounds(double& l, double& r) {
-    l = this->l;
-    r = this->r;
+  sgpp::base::DataVector getBounds() {
+    sgpp::base::DataVector bounds(2);
+    bounds[0] = l;
+    bounds[1] = r;
+    return bounds;
   }
 
  private:

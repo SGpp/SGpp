@@ -44,6 +44,7 @@ double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
       }
       weightedSP += alpha[k] * alpha[l] * sp;
     }
+    //    std::cout << "k=" << k << " alpha=" << alpha[k] << "\n";
   }
   return weightedSP;
 }
@@ -51,9 +52,9 @@ double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
 double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
     unsigned int level1, unsigned int index1, unsigned int level2, unsigned int index2,
     std::shared_ptr<sgpp::base::Distribution> pdf) {
-  double leftPDF;
-  double rightPDF;
-  pdf->getBounds(leftPDF, rightPDF);
+  sgpp::base::DataVector bounds = pdf->getBounds();
+  double leftPDF = bounds[0];
+  double rightPDF = bounds[1];
   std::map<hashType, double>::iterator it;
   hashType hashKey = std::make_tuple(level1, index1, level2, index2);
   // Check if this scalar products has already been caluclated and is stored
@@ -95,17 +96,20 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
       // scale again to supp(pdf)
       sgpp::base::DataVector transformedSegmentCoordinates = segmentCoordinates;
       base::DataVector leftVectorPDF(segmentCoordinates.getSize(), leftPDF);
-      // base::DataVector widthVectorPDF(segmentCoordinates.getSize(), rightPDF-leftPDF);
       transformedSegmentCoordinates.mult(rightPDF - leftPDF);
-      transformedSegmentCoordinates.add(leftVector);
-      //      double scaledX = left + (right - left) * x;
+      transformedSegmentCoordinates.add(leftVectorPDF);
+      // width of the transformed segment, i.e. width of [commonSupport[i],commonSupport[i+1]]
+      // transformed to supp(pdf)
+      double transformedSegmentWidth =
+          (commonSupport[i + 1] - commonSupport[i]) * (rightPDF - leftPDF);
 
       double segmentIntegral = 0;
       for (size_t j = 0; j < segmentCoordinates.getSize(); j++) {
         segmentIntegral +=
-            weights[j] * func(segmentCoordinates[j]) * pdf->eval(segmentCoordinates[j]);
+            weights[j] * func(segmentCoordinates[j]) * pdf->eval(transformedSegmentCoordinates[j]);
       }
-      segmentIntegral *= (commonSupport[i + 1] - commonSupport[i]);
+      segmentIntegral *= transformedSegmentWidth;
+
       result += segmentIntegral;
     }
     innerProducts.insert(std::pair<hashType, double>(hashKey, result));

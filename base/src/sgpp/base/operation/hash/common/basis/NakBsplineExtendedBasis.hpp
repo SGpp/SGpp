@@ -524,9 +524,10 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
                    base::DataVector quadCoordinates, base::DataVector quadWeights,
                    std::shared_ptr<sgpp::base::Distribution> pdf) {
-    double left;
-    double right;
-    pdf->getBounds(left, right);
+    sgpp::base::DataVector bounds = pdf->getBounds();
+    double left = bounds[0];
+    double right = bounds[1];
+
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {

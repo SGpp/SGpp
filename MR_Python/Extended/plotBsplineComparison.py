@@ -107,9 +107,9 @@ if __name__ == '__main__':
     parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--degree', default=135, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=1000, type=int, help='maximum number of points used')
+    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=0, type=int, help='save figure')
     
     # configure according to input

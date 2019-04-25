@@ -706,16 +706,19 @@ class tensorMonomialN():
         self.dim = dim
         self.mu = [0.0] * dim  
         self.sigma = [np.sqrt(0.2)] * dim 
-        self.lb = pysgpp.DataVector(self.getDim())
-        self.ub = pysgpp.DataVector(self.getDim())
-        widthFactor = 10
+        self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
-            self.lb[d] = self.mu[d] - widthFactor * self.sigma[d] ** 2
-            self.ub[d] = self.mu[d] + widthFactor * self.sigma[d] ** 2
+            self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
 
     def getDomain(self):
-        return self.lb, self.ub
-    
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+        
     def getName(self):
        return "tensorMonomialN_{}D".format(self.getDim())
     
@@ -723,18 +726,25 @@ class tensorMonomialN():
         return self.dim
 
     def eval(self, v):
+        ###################
+        # 1: 1 0
+        # 2: 2 0
+        # x: 0 0.2
+        # 1+x: 1 0.2
+        return v[0] + 1  # v[0] + 1
+        ###################
         prod = 1
         for d in range(self.getDim()):
             prod *= (v[d] + 1) 
         return prod
     
     def getDistributions(self):
-        pdfs = pysgpp.DistributionsVector()
-        for d in range(self.getDim()):
-            pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d], self.lb[d], self.ub[d]))
-        return pdfs
+        return self.pdfs
     
     def getMean(self):
+        ###################
+        return  1
+        ###################
         D = self.dim
         prod = 1
         for d in range(D):
@@ -742,6 +752,9 @@ class tensorMonomialN():
         return prod
     
     def getVar(self):
+        ###################
+        return 0.2
+        ###################
         D = self.dim
         prod1 = 1; prod2 = 1
         for d in range(D):
@@ -784,7 +797,7 @@ class attenuationU():
         D = self.dim
         return (D / 2.0 * (1 - np.exp(-2.0 / D))) ** D - (D * (1 - np.exp(-1.0 / D))) ** (2 * D)
 
-    
+
 class attenuationN():
 
     def __init__(self, dim):

@@ -43,7 +43,7 @@ class Distribution {
 
   sgpp::base::DataVector samples(size_t num);
 
-  virtual void getBounds(double& l, double& r) = 0;
+  virtual sgpp::base::DataVector getBounds() = 0;
 
  protected:
   std::default_random_engine gen;
