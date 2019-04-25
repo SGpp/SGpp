@@ -55,11 +55,6 @@ void BoundaryGridGenerator::full(size_t level) {
   gen.fullWithBoundary(this->storage, static_cast<level_t>(level));
 }
 
-void BoundaryGridGenerator::full(std::vector<size_t>& anisotropic_weights, size_t level) {
-  HashGenerator gen;
-  gen.fullWithBoundary(this->storage, anisotropic_weights, static_cast<level_t>(level));
-}
-
 void BoundaryGridGenerator::refine(RefinementFunctor& func) {
   HashRefinementBoundaries refine;
   refine.free_refine(this->storage, func);

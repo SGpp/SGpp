@@ -39,7 +39,6 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
   void regular(std::vector<size_t>& anisotropic_weights, size_t level) override {};
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override {}
-  void full(std::vector<size_t>& anisotropic_weights, size_t level) override {};
   /**
    * Creates a super truncated boundary grid with given level and l_user
    * @param level the maximum level of the grid

@@ -60,11 +60,6 @@ void StandardGridGenerator::full(size_t level) {
   gen.full(this->storage, static_cast<level_t>(level));
 }
 
-void StandardGridGenerator::full(std::vector<size_t>& anisotropic_weights, size_t level) {
-  HashGenerator gen;
-  gen.full(this->storage, anisotropic_weights, static_cast<level_t>(level));
-}
-
 void StandardGridGenerator::refine(RefinementFunctor& func) {
   HashRefinement refine;
   refine.free_refine(this->storage, func);

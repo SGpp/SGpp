@@ -110,13 +110,6 @@ class GridGenerator {
   virtual void full(size_t level) = 0;
 
   /**
-   * Creates a full grid for a certain level with anisotropic weights @f$ n @f$, i.e., @f$ V_n^{(1)} = \bigoplus_{\langle \vec{\xi}, \vec{l} \rangle \leq n} W_{\vec{l}}@f$.
-   *
-   * @param level Grid level
-   */
-  virtual void full(std::vector<size_t>& anisotropic_weights, size_t level) = 0;
-
-  /**
    * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
    * */
   virtual void truncated(size_t level, size_t l_user) {}
