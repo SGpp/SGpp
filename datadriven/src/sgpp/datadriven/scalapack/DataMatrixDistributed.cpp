@@ -23,11 +23,7 @@
 namespace sgpp {
 namespace datadriven {
 
-DataMatrixDistributed::DataMatrixDistributed() {
-#ifndef USE_SCALAPACK
-  throw sgpp::base::application_exception("Build without USE_SCALAPACK");
-#endif /* not USE_SCALAPACK */
-}
+DataMatrixDistributed::DataMatrixDistributed() {}
 
 DataMatrixDistributed::DataMatrixDistributed(std::shared_ptr<BlacsProcessGrid> grid,
                                              size_t globalRows, size_t globalColumns,
