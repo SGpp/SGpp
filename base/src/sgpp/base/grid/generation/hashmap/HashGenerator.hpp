@@ -183,7 +183,9 @@ class HashGenerator {
         throw generation_exception("storage not empty");
       }
 
-      this->createFullGridIterative(storage, anisotropic_weights, level);
+      auto max = std::max_element(std::begin(anisotropic_weights), std::end(anisotropic_weights));
+
+      this->createFullGridIterative(storage, anisotropic_weights, level * static_cast<level_t>(*max));
     }
 
   /**
@@ -217,7 +219,10 @@ class HashGenerator {
             throw generation_exception("storage not empty");
         }
 
-        this->createFullGridTruncatedIterative(storage, anisotropic_weights, level);
+        auto max = std::max_element(std::begin(anisotropic_weights), std::end(anisotropic_weights));
+
+        this->createFullGridTruncatedIterative(storage, anisotropic_weights,
+                                               level * static_cast<level_t>(*max));
     }
 
   /**
@@ -897,15 +902,21 @@ class HashGenerator {
     if (storage.getDimension() == 0)
         return;
 
+    size_t weighted_level_sum;
+    size_t max_level_sum = 0;
+    for (size_t d = 0; d < storage.getDimension(); d++) {
+      max_level_sum += (n / static_cast<level_t>(anisotropic_weights[d]))
+                      * static_cast<level_t>(anisotropic_weights[d]);
+    }
     GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       idx_1d.push(d, 1, 1, false);
     }
     // Generate 1D grid in first dimension
-    for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[0]); l++) {
+    for (level_t l = 1; l * static_cast<level_t>(anisotropic_weights[0]) <= n; l++) {
       for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
-        if (l == n) {
+        if (l == (n / static_cast<level_t>(anisotropic_weights[0]))) {
           idx_1d.push(0, l, i, true);
         } else {
           idx_1d.push(0, l, i, false);
@@ -927,7 +938,7 @@ class HashGenerator {
         bool first = true;
         GridPoint idx(storage.getPoint(g));
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[d]); l++) {
+        for (level_t l = 1; l * static_cast<level_t>(anisotropic_weights[d]) <= n ; l++) {
           // for leaf check, set current level to l
           idx.push(d, l, 1, false);
 
@@ -935,14 +946,13 @@ class HashGenerator {
             // first grid point is updated, all others inserted
             if (first == false) {
               // is leaf?,
-              // needs a "+1" because of integer division truncation
-              size_t weighted_level_sum = 1;
+              weighted_level_sum = 0;
               for (size_t d = 0; d < storage.getDimension(); d++) {
                 weighted_level_sum +=
                         idx.getLevel(d)
                                 * static_cast<level_t>(anisotropic_weights[d]);
               }
-              if (weighted_level_sum >= n * storage.getDimension()) {
+              if (weighted_level_sum == max_level_sum) {
                 idx.push(d, l, i, true);
               } else {
                 idx.push(d, l, i, false);
@@ -951,14 +961,13 @@ class HashGenerator {
               storage.insert(idx);
             } else {
               // is leaf?
-              // needs a "+1" because of integer division truncation
-              size_t weighted_level_sum = 1;
+              weighted_level_sum = 0;
               for (size_t d = 0; d < storage.getDimension(); d++) {
                 weighted_level_sum +=
                         idx.getLevel(d)
                                 * static_cast<level_t>(anisotropic_weights[d]);
               }
-              if (weighted_level_sum >=  n * storage.getDimension()) {
+              if (weighted_level_sum == max_level_sum) {
                 idx.push(d, l, i, true);
               } else {
                 idx.push(d, l, i, false);
@@ -984,6 +993,12 @@ class HashGenerator {
                                         std::vector<size_t>& anisotropic_weights, level_t n) {
     if (storage.getDimension() == 0) return;
 
+    size_t weighted_level_sum;
+    size_t max_level_sum = 0;
+    for (size_t d = 0; d < storage.getDimension(); d++) {
+      max_level_sum += (n / static_cast<level_t>(anisotropic_weights[d]))
+                      * static_cast<level_t>(anisotropic_weights[d]);
+    }
     GridPoint idx_1d(storage.getDimension());
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
@@ -991,7 +1006,7 @@ class HashGenerator {
     }
 
     // Generate 1D grid in first dimension
-    for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[0]); l++) {
+    for (level_t l = 1; l * static_cast<level_t>(anisotropic_weights[0]) <= n; l++) {
       // generate boundary basis functions
       if (l == 1) {
         idx_1d.push(0, 0, 0, false);
@@ -1002,7 +1017,7 @@ class HashGenerator {
 
       // generate inner basis function
       for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
-        if (l == n) {
+        if (l == (n / static_cast<level_t>(anisotropic_weights[0]))) {
           idx_1d.push(0, l, i, true);
         } else {
           idx_1d.push(0, l, i, false);
@@ -1024,7 +1039,7 @@ class HashGenerator {
         GridPoint idx(storage.getPoint(g));
 
         // add remaining level-index pairs in current dimension d
-        for (level_t l = 1; l <= n / static_cast<level_t>(anisotropic_weights[d]); l++) {
+        for (level_t l = 1; l * static_cast<level_t>(anisotropic_weights[d]) <= n; l++) {
           // generate boundary basis functions
           if (l == 1) {
             idx.push(d, 0, 0, false);
@@ -1040,14 +1055,13 @@ class HashGenerator {
           // generate inner basis functions
           for (index_t i = 1; i < static_cast<index_t>(1 << l); i += 2) {
             // is leaf?
-            // needs a "+1" because of integer division truncation
-            size_t weighted_level_sum = 1;
+            weighted_level_sum = 0;
             for (size_t d = 0; d < storage.getDimension(); d++) {
               weighted_level_sum +=
                       idx.getLevel(d)
                               * static_cast<level_t>(anisotropic_weights[d]);
             }
-            if (weighted_level_sum >= n * storage.getDimension()) {
+            if (weighted_level_sum == max_level_sum) {
               idx.push(d, l, i, true);
             } else {
               idx.push(d, l, i, false);
