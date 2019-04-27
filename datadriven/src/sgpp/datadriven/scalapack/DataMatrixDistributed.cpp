@@ -11,14 +11,14 @@
  */
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
-#include <algorithm>
-#include <iostream>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 #include <sgpp/datadriven/scalapack/blacs.hpp>
+
+#include <algorithm>
+#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
@@ -178,9 +178,15 @@ size_t DataMatrixDistributed::getLocalColumns() const {
   return this->localRows;
 }
 
-size_t DataMatrixDistributed::getRowBlockSize() const { return this->rowBlockSize; }
+size_t DataMatrixDistributed::getRowBlockSize() const {
+  // internal storage is transposed
+  return this->columnBlockSize;
+}
 
-size_t DataMatrixDistributed::getColumnBlockSize() const { return this->columnBlockSize; }
+size_t DataMatrixDistributed::getColumnBlockSize() const {
+  // internal storage is transposed
+  return this->rowBlockSize;
+}
 
 size_t DataMatrixDistributed::getGlobalRows() const {
   // internal storage is transposed

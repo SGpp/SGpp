@@ -266,7 +266,8 @@ class DataMatrixDistributed {
    * A=LL^T
    *
    * @param[in] l lower triangular matrix L of the Cholesky decomposition
-   * @param[in, out] input vector b of the linear system, is overwritten with solution x
+   * @param[in, out] b vector b of the linear system, is overwritten with solution x
+   * @param[in] uplo storage format of the triangular matrix, either upper or lower triangular
    */
   static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,
                             TRIANGULAR uplo = TRIANGULAR::LOWER);
@@ -307,13 +308,13 @@ class DataMatrixDistributed {
   DataMatrix toLocalDataMatrixBroadcast() const;
 
   /**
-   * @param[out] the gathered DataMatrix as a normal, not distributed, DataMatrix. Result can only
-   * be used on the master process.
+   * @param[out] localMatrix the gathered DataMatrix as a normal, not distributed, DataMatrix.
+   * Result can only be used on the master process.
    */
   void toLocalDataMatrix(DataMatrix& localMatrix) const;
 
   /**
-   * @param[out] the whole DataMatrix is broadcasted to all processes in the grid
+   * @param[out] localMatrix the whole DataMatrix is broadcasted to all processes in the grid
    */
   void toLocalDataMatrixBroadcast(DataMatrix& localMatrix) const;
 
@@ -384,7 +385,7 @@ class DataMatrixDistributed {
 
   /**
    * Calculates the local column index from the globalColumnIndex.
-   * @param globalColumn
+   * @param globalColumnIndex
    */
   size_t globalToLocalColumnIndex(size_t globalColumnIndex) const;
 
@@ -508,7 +509,7 @@ class DataMatrixDistributed {
   size_t leadingDimension;
 
   // ScaLAPACK matrix descriptor
-  int descriptor[dlen_];
+  int descriptor[kDescriptor_];
 };
 
 }  // namespace datadriven

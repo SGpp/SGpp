@@ -205,8 +205,7 @@ class DBMatOnlineDE : public DBMatOnline {
 
   virtual void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
                                 DensityEstimationConfiguration& densityEstimationConfig,
-                                const ParallelConfiguration& parallelConfig,
-                                std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv = 0) = 0;
+                                bool do_cv = 0) = 0;
   double computeL2Error(DataVector& alpha, Grid& grid);
   double resDensity(DataVector& alpha, Grid& grid);
 

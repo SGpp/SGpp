@@ -11,11 +11,11 @@
  */
 #pragma once
 
-#include <memory>
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -114,12 +114,6 @@ class DataVectorDistributed {
    * @param a
    */
   void scale(double a);
-
-  /**
-   * Appends rows to the vector
-   * @param rows
-   */
-  // void append(size_t rows);
 
   /**
    * Resizes the vector to rows, discards the data.

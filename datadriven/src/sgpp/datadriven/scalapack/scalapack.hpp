@@ -16,7 +16,7 @@
 namespace sgpp {
 namespace datadriven {
 
-const int dlen_ = 9;
+const int kDescriptor_ = 9;
 const int dtype_ = 0;
 const int ctxt_ = 1;
 const int m_ = 2;

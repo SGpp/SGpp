@@ -12,6 +12,10 @@
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/datadriven/scalapack/blacs.hpp>
+#include <sgpp/datadriven/scalapack/scalapack.hpp>
+
 #ifdef USE_SCALAPACK
 #include <mpi.h>
 #endif /* USE_SCALAPACK */
@@ -19,10 +23,6 @@
 #include <cmath>
 #include <iostream>
 #include <string>
-
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/datadriven/scalapack/blacs.hpp>
-#include <sgpp/datadriven/scalapack/scalapack.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -204,7 +204,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
                                  (1. / bTotalPointsDistributed->getLocalPointer()[i]);
       }
       // Resolve the SLE
-      solveSLEParallel(alpha, b, grid, densityEstimationConfig, parallelConfig, processGrid, do_cv);
+      solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
     } else {
       throw sgpp::base::algorithm_exception(
           "Recomputation of density function with mismatching alpha size and b size");
@@ -295,7 +295,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
       b.scale(1. / static_cast<double>(numberOfPoints));
     }
 
-    solveSLEParallel(alpha, b, grid, densityEstimationConfig, parallelConfig, processGrid, do_cv);
+    solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
 
     functionComputed = true;
   }

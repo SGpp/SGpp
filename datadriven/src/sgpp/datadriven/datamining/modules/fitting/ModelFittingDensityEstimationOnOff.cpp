@@ -10,7 +10,8 @@
  *     Author: Kilian Röhner
  */
 
-#include <list>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -18,7 +19,8 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+
+#include <list>
 #include <string>
 #include <vector>
 

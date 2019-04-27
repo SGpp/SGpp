@@ -122,14 +122,11 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param b distributed right hand side
    * @param grid the underlying grid
    * @param densityEstimationConfig configuration for the density estimation
-   * @param parllelConfig configuration for ScaLAPACK
-   * @param processGrid shared pointer to the BlacsProcessGrid
    * @param do_cv cross-validation (currently not implemented)
    */
   void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
                         DensityEstimationConfiguration& densityEstimationConfig,
-                        const ParallelConfiguration& parallelConfig,
-                        std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) override;
+                        bool do_cv) override;
 
  private:
   /**

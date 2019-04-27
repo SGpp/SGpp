@@ -56,8 +56,6 @@ void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
 void DBMatOnlineDEChol::solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b,
                                          Grid& grid,
                                          DensityEstimationConfiguration& densityEstimationConfig,
-                                         const ParallelConfiguration& parallelConfig,
-                                         std::shared_ptr<BlacsProcessGrid> processGrid,
                                          bool do_cv) {
   DataMatrixDistributed lhsDistributed = offlineObject.getDecomposedMatrixDistributed();
 

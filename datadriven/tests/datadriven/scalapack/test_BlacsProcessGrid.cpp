@@ -15,11 +15,11 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+
 #include <mpi.h>
 #include <cmath>
 #include <memory>
-
-#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 using sgpp::datadriven::BlacsProcessGrid;
 
@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
 
   if (availableProcesses >= 2) {
     grid = std::make_shared<BlacsProcessGrid>(2, 1);
-    
+
     if (grid->isProcessInGrid()) {
       BOOST_CHECK_EQUAL(grid->getTotalRows(), 2);
       BOOST_CHECK_EQUAL(grid->getTotalColumns(), 1);

@@ -15,17 +15,18 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <mpi.h>
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <memory>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
+#include <mpi.h>
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

@@ -94,9 +94,7 @@ void DBMatDMSOrthoAdapt::solve(sgpp::base::DataMatrix& T_inv, sgpp::base::DataMa
 
 void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixDistributed& Q,
                                        DataMatrixDistributed& B, DataVectorDistributed& b,
-                                       DataVectorDistributed& alpha,
-                                       std::shared_ptr<BlacsProcessGrid> processGrid,
-                                       const ParallelConfiguration& parallelConfig) {
+                                       DataVectorDistributed& alpha) {
 #ifdef USE_SCALAPACK
   // assert dimensions
   bool prior_refined = (B.getGlobalCols() > 1);  // if B.getNcols <= 1, then no refining yet
@@ -112,7 +110,9 @@ void DBMatDMSOrthoAdapt::solveParallel(DataMatrixDistributed& T_inv, DataMatrixD
     }
   }
 
-  DataVectorDistributed tmp(processGrid, Q.getGlobalRows(), parallelConfig.rowBlockSize_);
+  auto processGrid = alpha.getProcessGrid();
+
+  DataVectorDistributed tmp(processGrid, Q.getGlobalRows(), alpha.getBlockSize());
 
   /**
    * calculation of alpha = Q * T_inv * Q^t * b + B * b

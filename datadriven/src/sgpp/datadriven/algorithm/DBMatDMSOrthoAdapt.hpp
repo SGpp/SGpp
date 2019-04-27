@@ -51,8 +51,7 @@ class DBMatDMSOrthoAdapt : public DBMatDecompMatrixSolver {
    */
   void solveParallel(DataMatrixDistributed& T_inv, DataMatrixDistributed& Q,
                      DataMatrixDistributed& B, DataVectorDistributed& b,
-                     DataVectorDistributed& alpha, std::shared_ptr<BlacsProcessGrid> processGrid,
-                     const ParallelConfiguration& parallelConfig);
+                     DataVectorDistributed& alpha);
 };
 
 }  // namespace datadriven
