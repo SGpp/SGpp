@@ -20,6 +20,7 @@
 #include <initializer_list>
 #include <memory>
 #include <sstream>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

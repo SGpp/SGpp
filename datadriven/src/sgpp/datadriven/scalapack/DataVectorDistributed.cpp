@@ -90,8 +90,6 @@ void DataVectorDistributed::scale(double a) {
 #endif /* USE_SCALAPACK */
 }
 
-// void DataVectorDistributed::append(size_t rows) { data.appendRows(rows); }
-
 void DataVectorDistributed::resize(size_t rows) { data.resize(1, rows); }
 
 double* DataVectorDistributed::getLocalPointer() { return data.getLocalPointer(); }
@@ -142,7 +140,7 @@ size_t DataVectorDistributed::getGlobalRows() const { return data.getGlobalCols(
 
 size_t DataVectorDistributed::getLocalRows() const { return data.getLocalColumns(); }
 
-size_t DataVectorDistributed::getBlockSize() const { return data.getColumnBlockSize(); }
+size_t DataVectorDistributed::getBlockSize() const { return data.getRowBlockSize(); }
 
 void DataVectorDistributed::printVector() const {
   DataVector localVector = toLocalDataVector();

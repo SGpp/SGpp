@@ -11,6 +11,13 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <random>
@@ -18,13 +25,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
-#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
-#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

@@ -45,7 +45,7 @@ class DBMatDMSChol : public DBMatDecompMatrixSolver {
    * @param lambda_new the new regularization paramter (e.g. if cross-validation
    * is applied)
    */
-  void solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& alpha,
+  void solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,
                      double lambda_old, double lambda_new) const;
 
   /**

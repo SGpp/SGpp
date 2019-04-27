@@ -8,13 +8,14 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
-#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include "test_datadrivenCommon.hpp"
 
 using sgpp::datadriven::BlacsProcessGrid;

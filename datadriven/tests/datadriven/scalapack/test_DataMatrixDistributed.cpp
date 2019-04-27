@@ -15,17 +15,18 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <mpi.h>
-#include <algorithm>
-#include <cmath>
-#include <iostream>
-#include <memory>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
+#include <mpi.h>
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+#include <memory>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -128,11 +129,13 @@ struct FixtureDataMatrixDistributed {
 BOOST_FIXTURE_TEST_SUITE(testDataMatrixDistributed, FixtureDataMatrixDistributed)
 
 BOOST_AUTO_TEST_CASE(testConstructor) {
-  int rowBlockSize = 10;
-  int columnBlockSize = 1;
-  DataMatrixDistributed d(localGrid, 42, 17, columnBlockSize, rowBlockSize);
+  int rowBlockSize = 1;
+  int columnBlockSize = 10;
+  DataMatrixDistributed d(localGrid, 42, 17, rowBlockSize, columnBlockSize);
   BOOST_CHECK_EQUAL(d.getGlobalRows(), 42);
   BOOST_CHECK_EQUAL(d.getGlobalCols(), 17);
+  BOOST_CHECK_EQUAL(d.getRowBlockSize(), rowBlockSize);
+  BOOST_CHECK_EQUAL(d.getColumnBlockSize(), columnBlockSize);
 
   if (d.isProcessMapped()) {
     BOOST_CHECK_GT(d.getLocalRows(), 0);

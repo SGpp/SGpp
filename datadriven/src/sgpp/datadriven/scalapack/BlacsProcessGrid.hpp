@@ -31,10 +31,10 @@ class BlacsProcessGrid {
    * processes. Always call this method from *all* processes, as the init method of a BLACS grid has
    * to be called from all processes, otherwise a deadlock will occur.
    *
-   * @param rows, default -1, which means a square grid is created
-   * @param columns, default -1, which means a square grid is created
+   * @param rows number of rows of the process grid, default -1 (square grid)
+   * @param columns number of columns of the process grid, default -1 (square grid)
    */
-  BlacsProcessGrid(int rows = -1, int columns = -1);
+  explicit BlacsProcessGrid(int rows = -1, int columns = -1);
 
   /**
    * Cannot be copied, otherwise errors with multiple calls to blacs_gridexit are possible

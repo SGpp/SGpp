@@ -10,6 +10,12 @@
 // base class is not exported from the configuration
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 
+// overloaded methods in DataMatrixDistributed and DataVectorDistributed might be shadowed
+%warnfilter(509, 516) sgpp::datadriven::DataMatrixDistributed;
+%warnfilter(509, 516) sgpp::datadriven::DataVectorDistributed;
+%ignore sgpp::datadriven::DataMatrixDistributed::operator();
+%ignore sgpp::datadriven::DataVectorDistributed::operator();
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -166,6 +172,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
 
 %ignore  sgpp::datadriven::SparseGridMiner::operator=(SparseGridMiner&&);
+%ignore sgpp::datadriven::SparseGridMiner::print;
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 

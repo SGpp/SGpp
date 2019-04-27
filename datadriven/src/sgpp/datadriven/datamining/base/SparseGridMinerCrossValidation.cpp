@@ -10,9 +10,10 @@
  *      Author: dominik
  */
 
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <iostream>

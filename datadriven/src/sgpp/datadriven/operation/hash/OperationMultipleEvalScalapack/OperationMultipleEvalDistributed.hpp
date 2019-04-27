@@ -42,7 +42,7 @@ class OperationMultipleEvalDistributed : public sgpp::base::OperationMultipleEva
   /**
    * Destructor
    */
-  virtual ~OperationMultipleEvalDistributed() override {}
+  ~OperationMultipleEvalDistributed() override {}
 
   /**
    * Distributed version of mult.

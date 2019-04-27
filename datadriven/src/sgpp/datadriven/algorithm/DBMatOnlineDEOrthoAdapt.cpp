@@ -97,9 +97,7 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& g
 
 void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
     DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig,
-    const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
-    bool do_cv) {
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   DataMatrixDistributed TinvDistributed = offline->getTinvDistributed();
@@ -113,8 +111,7 @@ void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
       std::make_unique<sgpp::datadriven::DBMatDMSOrthoAdapt>();
 
   alpha.resize(b.getGlobalRows());
-  solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha, processGrid,
-                        parallelConfig);
+  solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha);
 }
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,

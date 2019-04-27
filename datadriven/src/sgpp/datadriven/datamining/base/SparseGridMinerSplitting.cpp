@@ -9,9 +9,11 @@
  *  Created on: Jul 23, 2018
  *      Author: dominik
  */
+
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
