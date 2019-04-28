@@ -1,7 +1,7 @@
 {
   	"dataSource": {
-    		"filePath": "/home/jamal/Documents/SGpp/datasets/mnist/mnist_[2]_28x28.train.arff",
-		"batchSize": 6000
+    		"filePath": "../datasets/dataread/simple.arff",
+		"batchSize": 10
 	},
 	"fitter": {
 
@@ -11,8 +11,8 @@
     		},
 		"geometryConfig": {
 			"dim":[
-				28,
-				28
+				3,
+				2
 			],
 			"stencil": "DN"
 		},

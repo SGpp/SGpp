@@ -18,8 +18,10 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
+#include <vector>
 
 const auto datasetPath = "datadriven/tests/dataminingConfig.json";
 
@@ -223,6 +225,27 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   BOOST_CHECK_CLOSE(config.lambda_, 10e-7, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
+  DataMiningConfigParser parser{datasetPath};
+
+  sgpp::datadriven::GeometryConfiguration defaults;
+  defaults.dim = std::vector<int64_t>();
+  defaults.stencilType = sgpp::datadriven::StencilType::None;
+  sgpp::datadriven::GeometryConfiguration config;
+  bool hasConfig;
+  std::vector<int64_t> dim = std::vector<int64_t>();
+  dim.push_back(1);
+  dim.push_back(1);
+
+  hasConfig = parser.getGeometryConfig(config, defaults);
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::DN));
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(),
+      dim.begin(), dim.end());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

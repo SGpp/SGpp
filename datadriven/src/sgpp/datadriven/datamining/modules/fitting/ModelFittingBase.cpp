@@ -74,7 +74,7 @@ std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
   sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
   std::vector<int64_t> dim = geometryConfig.dim;
 
-  // no interactions get returned, if no geometryConfig is definedd
+  // no interactions get returned, if no geometryConfig is defined
   if (stencilType == sgpp::datadriven::StencilType::None) {
     // interaction with size 0
     std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();

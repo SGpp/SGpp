@@ -70,6 +70,12 @@ BOOST_AUTO_TEST_CASE(testCG) {
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
+BOOST_AUTO_TEST_CASE(testGeo) {
+  std::string configFile = "datadriven/tests/geometryAwareSparseGrid_Test.json";
+  double accuracy = testModel(configFile);
+  std::cout << "Accuracy " << accuracy << std::endl;
+  BOOST_CHECK(accuracy >= 0);
+}
 
 BOOST_AUTO_TEST_SUITE_END()
 
