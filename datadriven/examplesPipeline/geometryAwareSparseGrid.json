@@ -11,8 +11,8 @@
     		},
 		"geometryConfig": {
 			"dim":[
-				3,
-				2
+				4,
+				1
 			],
 			"stencil": "DN"
 		},
