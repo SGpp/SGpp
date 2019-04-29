@@ -323,6 +323,7 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
   size_t size = mat.getNrows();
 
   if (k > l) {
+      std::cout<<"k"<<k<<" l"<<l<<std::endl;
     throw algorithm_exception("l needs to be larger than k");
   } else if (l > size) {
     throw algorithm_exception("l needs to be smaller than the column size of the matrix");

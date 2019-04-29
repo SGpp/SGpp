@@ -12,7 +12,8 @@
 #include <utility>
 #include <vector>
 #include <algorithm>
-
+#include <chrono>
+#include <ctime> 
 namespace sgpp {
 namespace base {
 
@@ -67,8 +68,13 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
         }
     }
     if (point.isLeaf()) {
-      CoarseningFunctor::value_type current_value = functor(storage, z);
+      auto start = std::chrono::system_clock::now();
 
+      CoarseningFunctor::value_type current_value = functor(storage, z);
+          
+      auto end = std::chrono::system_clock::now();
+      std::chrono::duration<double> elapsed_seconds = end-start;
+      std::cout<< "++++++++++++++++elapsed time: " << elapsed_seconds.count() << "s\n";
       if (current_value < removeCandidates[max_idx].second) {
         // Replace the maximum point array of removable candidates,
         // find the new maximal point
@@ -128,15 +134,17 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   }
 
   // DEBUG : print list points to delete
-  // std::cout << "list of points to delete:\n";
-  // for (std::list<size_t>::iterator iter = deletePoints.begin(); iter != deletePoints.end();
-  //      iter++) {
-  //   std::cout << "Index: " << *iter << std::endl;
-  // }
+
+
 
   // For some reason HashGridStorage expects a std::list and not a vector D:
   std::list<size_t> removedPointsList(localRemovedPoints.begin(),
                                       localRemovedPoints.end());
+  std::cout << "list of points to delete:\n";
+  for (auto i:removedPointsList){
+      std::cout << i << ",";
+  }
+  std::cout<<std::endl;
   remainingIndex = storage.deletePoints(removedPointsList);
 
   // DEBUG

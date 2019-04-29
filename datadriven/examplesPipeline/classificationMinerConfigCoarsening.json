@@ -1,14 +1,14 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/ripley/ripleyGarcke.train.arff",
+		"filePath": "../../datadriven/datasets/DR10/ALL_QSO_zWarning_Allmagslimited_train.arff",
 		"hasTargets" : true,
 		"batchSize" : 10,
 		"validationPortion" : 0.2,
 		"epochs" : 2,
 		"randomSeed" : -1,
 		"readinCutoff": -1,
-		"readinClasses": [-1, 1],
-		"readinColumns": [0, 1]
+		"readinClasses": [ ],
+		"readinColumns": [ ]
 	},
 	"scorer": {
 		"metric": "Accuracy"
@@ -20,7 +20,7 @@
 			"level": 5
 		},
 		"coarseningConfig" :{
-                "numCoarsening": 2,
+                "numCoarsening": 3,
                 "threshold": 0.01,
                 "maxLevelType": false,
                 "noPoints": 1,
@@ -30,8 +30,7 @@
 			"lambda": 1e-2
 		},
 		"densityEstimationConfig" : {
-			"densityEstimationType" : "decomposition",
-			"matrixDecompositionType": "OrthoAdapt"
+			"densityEstimationType" : "decomposition"
 		},
 		"learner" : {
 			"usePrior" : true,

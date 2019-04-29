@@ -44,7 +44,6 @@ namespace sgpp {
         double
         GridPointBasedCoarseningFunctor::operator()(base::GridStorage& storage,
                                                     size_t seq) const {
-            
             // return value
             double score = 0.0;
 
@@ -64,9 +63,8 @@ namespace sgpp {
 
             // Get the evaluations of seq at all GridSave
             base::DataVector p(storage.getDimension());
-
             storage.getPoint(seq).getStandardCoordinates(p);
-
+            std::cout<<"gridsize:"<<grids.size()<<std::endl;
             if (pre_compute) {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::string key = p.toString();
@@ -80,7 +78,6 @@ namespace sgpp {
                     gridEvals.push_back(opEval->eval(*alphas.at(i), p));
                 }
             }
-
             // Find the largest and the second largest PDF of this grip point
             if(gridEvals.at(0) > gridEvals.at(1)) {
                 second_max = gridEvals.at(1);
@@ -91,7 +88,7 @@ namespace sgpp {
                 max_class = 1;
                 second_class = 0;
             }
-
+            
             for (size_t i = 2; i < gridEvals.size(); i++){
                 // use >= n not just > as max and second_max can hav same value. Ex:{1,2,3,3}
                 if(gridEvals.at(i) >= max){
@@ -105,7 +102,7 @@ namespace sgpp {
                     second_class = i;
                 }
             }
-
+            
             gridClassDiffs = max - second_max;
             //double rangex = 1.00;
             //double rangey = 1.00;
@@ -196,7 +193,7 @@ namespace sgpp {
 
             // Should not coarsen a grid point that has child
             
-            std::cout<<";"<<score<<";";
+            std::cout<<";"<<-score<<";";
             for (unsigned i=0;i<gridEvals.size();i++){
                 std::cout<<gridEvals.at(i);
                 if (i!=gridEvals.size()-1){
@@ -371,8 +368,16 @@ namespace sgpp {
                 double diff_sq = coord1-coord2;
                 dist.set(d, diff_sq);
             }
-
-            double distance = dist.l2Norm();
+            double distance =0.0;
+            if (gp1.getDimension()<=3){
+                distance = dist.l2Norm();
+            }
+            else
+            {
+                dist.abs();
+                distance = dist.sum();
+            }
+            
             return distance;
         }
         
