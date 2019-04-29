@@ -649,4 +649,4 @@ def detectScaLAPACK(config):
   elif config.env["USE_SCALAPACK"]:
     Helper.printErrorAndExit("No supported version of ScaLAPACK was found")
   else:
-    Helper.printWarning("ScaLAPACK support could not be enabled.")
+    Helper.printInfo("ScaLAPACK support could not be enabled.")
