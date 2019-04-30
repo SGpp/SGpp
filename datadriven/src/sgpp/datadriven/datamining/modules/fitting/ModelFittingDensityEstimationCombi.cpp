@@ -105,8 +105,8 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
   for (size_t i = 0; i < components.size(); i++) {
     gridpoints += components.at(i)->getGrid().getSize();
   }
-  cout << "##CURRENT SET after Refinement: " << refinementsPerformed
-       << " ## Sum of Gridpoints: " << gridpoints << std::endl;
+  cout << "Refinement: " << refinementsPerformed << " Sum of Gridpoints: " << gridpoints
+       << std::endl;
   dataset = &newDataset;
 }
 
@@ -132,10 +132,8 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
       cout << i << std::endl;
     }
   }
-  cout << "##CURRENT SET after Refinement: " << refinementsPerformed
-       << " ## Sum of Gridpoints: " << gridpoints << std::endl;
-  // datamatrix = newDataset;
-  cout << "done\n";
+  cout << "Refinement: " << refinementsPerformed << "Sum of Gridpoints: " << gridpoints
+       << std::endl;
 }
 
 double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
@@ -228,12 +226,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
     /*
      * Removing components
      */
-    cout << "DEBUGGING REMOVING: ";
-    for (bool b : toRemove) {
-      cout << b;
-    }
-    cout << toRemove.size() << std::endl;
-
     for (size_t i = toRemove.size(); i > 0; i--) {
       if (toRemove.at(i - 1)) {
         removeModel(i - 1);
@@ -243,12 +235,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
     /*
      * Adding new components
      */
-    cout << "DEBUGGING ADDING: ";
-    for (bool b : toAdd) {
-      cout << b;
-    }
-    cout << std::endl;
-
     for (size_t i = 0; i < toAdd.size(); i++) {
       if (toAdd.at(i)) {
         addNewModel(newConfigs.at(i));
