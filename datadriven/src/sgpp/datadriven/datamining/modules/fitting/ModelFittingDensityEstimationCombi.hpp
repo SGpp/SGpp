@@ -12,9 +12,6 @@
 
 #pragma once
 
-// FOR EVALUATION ONLY
-#include <sgpp/datadriven/datamining/base/evaluationtools.hpp>
-
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
