@@ -10,29 +10,39 @@
  *     Author: Michael Lettrich
  */
 
-#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <iostream>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
-  : fitter(fitter), scorer(scorer) {}
+    : fitter(fitter), scorer(scorer) {}
 
-double SparseGridMiner::test(Dataset& testDataset) {
-  return scorer->test(*fitter, testDataset);
+double SparseGridMiner::test(Dataset& testDataset) { return scorer->test(*fitter, testDataset); }
+
+ModelFittingBase* SparseGridMiner::getModel() { return &(*fitter); }
+
+void SparseGridMiner::setModel(ModelFittingBase* model) { fitter.reset(model); }
+
+void SparseGridMiner::print(std::ostringstream& messageStream) { print(messageStream.str()); }
+
+void SparseGridMiner::print(const char* message) { print(std::string(message)); }
+
+void SparseGridMiner::print(const std::string& message) {
+#ifdef USE_SCALAPACK
+  if (BlacsProcessGrid::getCurrentProcess() == 0) {
+#endif
+    std::cout << message << std::endl;
+#ifdef USE_SCALAPACK
+  }
+#endif
 }
 
-ModelFittingBase *SparseGridMiner::getModel() {
-  return &(*fitter);
-}
-
-void SparseGridMiner::setModel(ModelFittingBase *model) {
-  fitter.reset(model);
-}
 } /* namespace datadriven */
-} /* namespace sgpp */
+}  // namespace sgpp

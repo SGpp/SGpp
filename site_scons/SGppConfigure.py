@@ -34,7 +34,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag,
-                                       "CheckCompiler" : Helper.CheckCompiler})
+                                       "CheckCompiler" : Helper.CheckCompiler,
+                                       "CheckMKL" : Helper.CheckMklScalapack})
 
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
@@ -118,6 +119,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   checkOpenCL(config)
   detectGSL(config)
   detectZlib(config)
+  detectScaLAPACK(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -263,19 +265,6 @@ def checkCGAL(config):
     if config.env["USE_CGAL"]:
         if not config.CheckCXXHeader("CGAL/basic.h"):
             Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
-
-def checkGSL(config):
-  if config.env["USE_GSL"]:
-    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
-    if "GSL_LIBRARY_PATH" in config.env:
-      config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
-
-    if not config.CheckCXXHeader("gsl/gsl_version.h"):
-      Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
-    if not config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
-      Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
-
-    config.env["CPPDEFINES"]["USE_GSL"] = "1"
 
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
@@ -641,3 +630,23 @@ def detectZlib(config):
       Helper.printErrorAndExit("USE_ZLIB is set but either libz or zlib.h is missing!")
   else:
     Helper.printInfo("ZLIB support could not be enabled.")
+
+def detectScaLAPACK(config):
+  if "SCALAPACK_LIBRARY_PATH" in config.env:
+    config.env.AppendUnique(LIBPATH=[config.env["SCALAPACK_LIBRARY_PATH"]])
+
+  # first check MKL ScaLAPACK (vendor specific), then netlib version
+  if config.CheckMKL():      
+    config.env["SCALAPACK_VERSION"] = "mkl"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using mkl ScaLAPACK")
+  elif config.CheckLib("scalapack", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "netlib"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using netlib ScaLAPACK")
+  elif config.env["USE_SCALAPACK"]:
+    Helper.printErrorAndExit("No supported version of ScaLAPACK was found")
+  else:
+    Helper.printInfo("ScaLAPACK support could not be enabled.")

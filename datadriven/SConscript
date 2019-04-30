@@ -27,6 +27,18 @@ if env["USE_GSL"]:
     additionalDependencies += ["gsl", "gslcblas"]
 if env["USE_CGAL"]:
   additionalDependencies += ["CGAL"]
+if env["USE_SCALAPACK"]:
+    if env["SCALAPACK_VERSION"] == "netlib":
+        additionalDependencies += ["scalapack"]
+    elif env["SCALAPACK_VERSION"] == "mkl":
+        additionalDependencies += ["mkl_scalapack_lp64",
+                                   "mkl_blacs_intelmpi_lp64",
+                                   "mkl_gf_lp64",
+                                   "mkl_gnu_thread",
+                                   "mkl_core", "gomp",
+                                   "pthread",
+                                   "dl",
+                                   "m"]
 
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"

@@ -150,6 +150,7 @@ vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", Non
 vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
 vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
 vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
+vars.Add("SCALAPACK_LIBRARY_PATH", "Set the path to the Scalapack/mkl library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -179,6 +180,8 @@ vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Libr
 
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
+vars.Add(BoolVariable("USE_SCALAPACK", "Set if the ScaLAPACK library should be used " +
+                                          "(requires OpenMPI, only relevant for sgpp::datadriven)", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))

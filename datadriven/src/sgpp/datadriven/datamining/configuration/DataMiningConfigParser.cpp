@@ -75,6 +75,12 @@ bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contai
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasParallelConfig() const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+  return hasParallelConfig;
+}
+
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
@@ -347,6 +353,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
                   defaults.iCholSweepsUpdateLambda_, "densityEstimationConfig");
     config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
                                           defaults.iCholSweepsSolver_, "densityEstimationConfig");
+
+    config.normalize_ = parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
+                                  "densityEstimationConfig");
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
@@ -818,7 +827,6 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config";
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
@@ -826,6 +834,31 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   }
 
   return hasLearnerConfig;
+}
+
+bool DataMiningConfigParser::getFitterParallelConfig(
+    datadriven::ParallelConfiguration &config,
+    const datadriven::ParallelConfiguration &defaults) const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+
+  if (hasParallelConfig) {
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
+
+    config.scalapackEnabled_ = true;
+
+    config.processRows_ = static_cast<int>(
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig"));
+    config.processCols_ = static_cast<int>(
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig"));
+
+    config.rowBlockSize_ =
+        parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+    config.columnBlockSize_ =
+        parseUInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+  }
+
+  return hasParallelConfig;
 }
 
 } /* namespace datadriven */

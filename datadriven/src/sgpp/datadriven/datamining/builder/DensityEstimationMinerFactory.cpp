@@ -13,29 +13,46 @@
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+<<<<<<< HEAD
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
+=======
+
+>>>>>>> 70f699c4d109a8bce7e1120352967a6784c255fd
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingBase* DensityEstimationMinerFactory::createFitter(
-    const DataMiningConfigParser& parser) const {
+ModelFittingBase *DensityEstimationMinerFactory::createFitter(
+    const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
+<<<<<<< HEAD
   if (config.getCombi())
     return new PDFCombigrid(config);
   else
     return new ModelFittingDensityEstimationOnOff(config);
+=======
+#ifdef USE_SCALAPACK
+  if (parser.hasParallelConfig()) {
+    return new ModelFittingDensityEstimationOnOffParallel(config);
+  }
+#endif
+  return new ModelFittingDensityEstimationOnOff(config);
+>>>>>>> 70f699c4d109a8bce7e1120352967a6784c255fd
 }
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);

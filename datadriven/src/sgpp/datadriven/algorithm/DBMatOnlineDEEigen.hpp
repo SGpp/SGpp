@@ -13,6 +13,7 @@
 
 #pragma once
 
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 
 namespace sgpp {
@@ -46,7 +47,17 @@ class DBMatOnlineDEEigen : public DBMatOnlineDE {
    * @param do_cv whether cross validation should be performed
    */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+                DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+
+  /**
+   * Not implemented for this decomposition
+   */
+  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+                        DensityEstimationConfiguration& densityEstimationConfig,
+                        bool do_cv) override {
+    throw base::not_implemented_exception(
+        "Distributed parallel solve not implemented for this decomposition");
+  }
 };
 
 } /* namespace datadriven */

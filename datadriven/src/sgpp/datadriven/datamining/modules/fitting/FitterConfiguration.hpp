@@ -7,10 +7,11 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -135,7 +136,13 @@ class FitterConfiguration {
    * Returns the configuration for the learner's behaviour
    * @return immutable LearnerConfiguration
    */
-  const datadriven::LearnerConfiguration& getLearnerConfig() const;
+  const datadriven::LearnerConfiguration &getLearnerConfig() const;
+
+  /**
+   * Returns the configuration for parallelization with ScaLAPACK
+   * @return immutable ParallelConfiguration
+   */
+  const datadriven::ParallelConfiguration &getParallelConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
@@ -191,7 +198,7 @@ class FitterConfiguration {
   /**
    * set default values for all members based on the desired scenario.
    */
-  virtual void setupDefaults() = 0;
+  virtual void setupDefaults();
 
   /**
    * obtain parameters from a parser
@@ -258,11 +265,14 @@ class FitterConfiguration {
    * Configuration for the learner's behaviour
    */
   datadriven::LearnerConfiguration learnerConfig;
-
   /**
    * Configuration option for probability density estimation using combigrid
    */
   bool use_combigrid;
+  /**
+   *  Configuration for parallelization with ScaLAPACK
+   */
+  datadriven::ParallelConfiguration parallelConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
