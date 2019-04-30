@@ -21,6 +21,8 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -31,8 +33,6 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 
 #include <map>
 #include <string>
@@ -76,6 +76,12 @@ bool DataMiningConfigParser::hasDataTransformationConfig() const {
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
+
+bool DataMiningConfigParser::hasParallelConfig() const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+  return hasParallelConfig;
+}
 
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
@@ -350,6 +356,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
                   defaults.iCholSweepsUpdateLambda_, "densityEstimationConfig");
     config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
                                           defaults.iCholSweepsSolver_, "densityEstimationConfig");
+
+    config.normalize_ = parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
+                                  "densityEstimationConfig");
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
@@ -821,7 +830,6 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config" << std::endl;
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
@@ -856,6 +864,31 @@ bool DataMiningConfigParser::getGeometryConfig(
 
 
   return hasGeometryConfig;
+}
+
+bool DataMiningConfigParser::getFitterParallelConfig(
+    datadriven::ParallelConfiguration &config,
+    const datadriven::ParallelConfiguration &defaults) const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+
+  if (hasParallelConfig) {
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
+
+    config.scalapackEnabled_ = true;
+
+    config.processRows_ = static_cast<int>(
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig"));
+    config.processCols_ = static_cast<int>(
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig"));
+
+    config.rowBlockSize_ =
+        parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+    config.columnBlockSize_ =
+        parseUInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+  }
+
+  return hasParallelConfig;
 }
 
 } /* namespace datadriven */
