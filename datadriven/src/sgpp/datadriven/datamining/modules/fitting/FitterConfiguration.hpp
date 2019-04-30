@@ -7,11 +7,12 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
-#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
@@ -136,7 +137,13 @@ class FitterConfiguration {
    * Returns the configuration for the learner's behaviour
    * @return immutable LearnerConfiguration
    */
-  const datadriven::LearnerConfiguration& getLearnerConfig() const;
+  const datadriven::LearnerConfiguration &getLearnerConfig() const;
+
+  /**
+   * Returns the configuration for parallelization with ScaLAPACK
+   * @return immutable ParallelConfiguration
+   */
+  const datadriven::ParallelConfiguration &getParallelConfig() const;
 
   /*
    * Returns the configuration for the geometry parameters
@@ -262,6 +269,11 @@ class FitterConfiguration {
    * Configuration of the geometry parameters
    */
   datadriven::GeometryConfiguration geometryConfig;
+  
+  /**
+   *  Configuration for parallelization with ScaLAPACK
+   */
+  datadriven::ParallelConfiguration parallelConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
