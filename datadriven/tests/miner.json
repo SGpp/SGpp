@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "/home/nikogiannis/newfried2.arff",
+		"filePath": "../datasets/friedman/friedman2d.arff",
 		"validationPortion" : 0.01
 	},
 	"scorer": {

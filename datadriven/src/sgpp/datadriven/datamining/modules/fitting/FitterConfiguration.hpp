@@ -202,7 +202,7 @@ class FitterConfiguration {
    * Copies a configuration object
    * @param m
    */
-  void  create(FitterConfiguration& m);
+  void create(FitterConfiguration& m);
 
   bool getCombi() { return gridConfig.use_combigrid;}
 
