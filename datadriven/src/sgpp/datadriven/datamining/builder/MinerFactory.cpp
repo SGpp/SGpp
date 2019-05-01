@@ -13,14 +13,15 @@
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <string>
 
@@ -32,18 +33,18 @@ SparseGridMiner* MinerFactory::buildMiner(const std::string& path) const {
   if (parser.hasFitterConfigCrossValidation()) {
     // TODO(fuchsgdk): implement the cv stuff
     return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-        createFitter(parser), createScorer(parser));
+                                              createFitter(parser), createScorer(parser));
   } else {
     return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
-        createScorer(parser));
+                                        createScorer(parser));
   }
 }
 
-sgpp::datadriven::HyperparameterOptimizer *MinerFactory::buildHPO(const std::string &path) const {
+sgpp::datadriven::HyperparameterOptimizer* MinerFactory::buildHPO(const std::string& path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(
-        buildMiner(path), createFitterFactory(parser), parser);
+    return new HarmonicaHyperparameterOptimizer(buildMiner(path), createFitterFactory(parser),
+                                                parser);
   } else {
     return new BoHyperparameterOptimizer(buildMiner(path), createFitterFactory(parser), parser);
   }
@@ -80,8 +81,7 @@ DataSourceCrossValidation* MinerFactory::createDataSourceCrossValidation(
   }
 }
 
-Scorer* MinerFactory::createScorer(
-    const DataMiningConfigParser& parser) const {
+Scorer* MinerFactory::createScorer(const DataMiningConfigParser& parser) const {
   std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
   return factory->buildScorer(parser);
 }
