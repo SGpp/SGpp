@@ -14,13 +14,15 @@
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ClassificationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
 #include <string>
 
@@ -61,8 +63,8 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     fitfac = new DensityEstimationFitterFactory(parser);
   } else if (fType == FitterType::RegressionLeastSquares) {
     fitfac = new LeastSquaresRegressionFitterFactory(parser);
-  } else if (ftType == FitterType::Classification) {
-    // TODO(Sebastian): Missing FitterFactory
+  } else if (fType == FitterType::Classification) {
+    fitfac = new ClassificationFitterFactory(parser);
   }
   return fitfac;
 }
