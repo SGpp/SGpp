@@ -110,6 +110,8 @@ void PDFCombigrid::fit() {
 
     operation = std::make_shared<sgpp::combigrid::CombigridOperation>(
             grids, evaluators, levelManager, gf, exploitNesting);
+    #else
+    throw std::runtime_error("USE_SGDECOMBI flag has to be set to True");
     #endif /* USE_SGDECOMBI */
 }
 
@@ -140,6 +142,7 @@ double PDFCombigrid::evaluate(std::vector<double> test_points) {
     fitted = true;
     return result;
     #else
+    throw std::runtime_error("USE_SGDECOMBI flag has to be set to True");
     return 0.0;
     #endif /* USE_SGDECOMBI */
 }
