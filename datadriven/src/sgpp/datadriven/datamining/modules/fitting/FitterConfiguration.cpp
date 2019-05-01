@@ -171,7 +171,7 @@ void FitterConfiguration::setupDefaults() {
 
   learnerConfig.beta = 1.0;  // mirrors struct default
   learnerConfig.usePrior = false;  // mirrors struct default
-  
+
   // configure geometry configuration
   geometryConfig.stencilType = sgpp::datadriven::StencilType::None;
   geometryConfig.dim = std::vector<int64_t>();

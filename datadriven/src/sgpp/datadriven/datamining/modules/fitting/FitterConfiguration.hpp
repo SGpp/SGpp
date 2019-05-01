@@ -269,7 +269,7 @@ class FitterConfiguration {
    * Configuration of the geometry parameters
    */
   datadriven::GeometryConfiguration geometryConfig;
-  
+
   /**
    *  Configuration for parallelization with ScaLAPACK
    */
