@@ -13,13 +13,13 @@
 
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 #include <vector>
