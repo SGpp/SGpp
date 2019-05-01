@@ -162,6 +162,7 @@ class ModelFittingBase {
   /**
      * Factory member function that generates a grid from configuration.
      * @param gridConfig configuration for the grid object
+     * @param geometryConfig configuration for the geometry parameters
      * @return new grid object that is owned by the caller.
      */
   Grid *buildGrid(const RegularGridConfiguration &gridConfig,
