@@ -31,7 +31,6 @@ namespace datadriven {
 ModelFittingBase *UniversalMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   ModelFittingBase *model;
-
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
   if (fType == FitterType::DensityEstimation) {

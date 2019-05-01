@@ -37,7 +37,7 @@ void PDFCombigrid::fit() {
     model = new sgpp::datadriven::PDFFitter();
     model->setDataset(dataset);
     model->setConfiguration(*this);
-    #ifdef  USE_SGDECOMBI
+    #ifdef USE_SGDECOMBI
     sgpp::combigrid::GridFunction gf([this](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
         // We store the results for each grid point, encoded by a MultiIndex, in a TreeStorage
         auto result = std::make_shared<sgpp::combigrid::TreeStorage<double> >(dimensions);
@@ -132,16 +132,16 @@ void PDFCombigrid::update(sgpp::datadriven::Dataset &newDataset) {
 double PDFCombigrid::evaluate(std::vector<double> test_points) {
     sgpp::base::DataVector parameter(test_points);
     double result;
-    #ifdef  USE_SGDECOMBI
+    #ifdef USE_SGDECOMBI
     if (!parallel)
         result = operation->evaluate(this->level, parameter);
     else
         result = operation->evaluateParallel(this->level, parameter, numthreads);
     fitted = true;
     return result;
-    #else /* USE_SGDECOMBI */
+    #else
     return 0.0;
-    #endif
+    #endif /* USE_SGDECOMBI */
 }
 
 void PDFCombigrid::evaluate(DataMatrix &samples, DataVector &results) {

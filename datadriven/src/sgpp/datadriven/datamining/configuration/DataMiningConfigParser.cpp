@@ -203,7 +203,6 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
                                                  const RegularGridConfiguration &defaults) const {
   bool hasFitterGridConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("gridConfig") : false;
-
   bool hasCombiGridConfig =
           hasFitterConfig() ? (*configFile)[fitter].contains("threads") : false;
   if (hasFitterGridConfig) {

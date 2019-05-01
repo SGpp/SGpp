@@ -23,14 +23,11 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-<<<<<<< HEAD
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
-=======
 
->>>>>>> 70f699c4d109a8bce7e1120352967a6784c255fd
 #include <string>
 
 namespace sgpp {
@@ -40,19 +37,16 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-<<<<<<< HEAD
   if (config.getCombi())
     return new PDFCombigrid(config);
   else
     return new ModelFittingDensityEstimationOnOff(config);
-=======
-#ifdef USE_SCALAPACK
+ #ifdef USE_SCALAPACK
   if (parser.hasParallelConfig()) {
     return new ModelFittingDensityEstimationOnOffParallel(config);
   }
-#endif
+ #endif
   return new ModelFittingDensityEstimationOnOff(config);
->>>>>>> 70f699c4d109a8bce7e1120352967a6784c255fd
 }
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);

@@ -151,10 +151,6 @@ void FitterConfiguration::create(sgpp::datadriven::FitterConfiguration &m) {
     learnerConfig.usePrior = m.learnerConfig.usePrior;
 }
 
-base::RegularGridConfiguration& FitterConfiguration::getGridConfig() {
-  return const_cast<base::RegularGridConfiguration&>(
-      static_cast<const FitterConfiguration&>(*this).getGridConfig());
-
 const datadriven::ParallelConfiguration &FitterConfiguration::getParallelConfig() const {
   return parallelConfig;
 }
