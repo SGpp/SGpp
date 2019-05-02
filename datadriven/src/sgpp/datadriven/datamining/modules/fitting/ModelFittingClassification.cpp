@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
@@ -26,7 +27,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "ModelFittingDensityEstimationCombi.hpp"
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -198,7 +198,6 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
 }
 
 bool ModelFittingClassification::refine() {
-  // TODO nicoroesel change this..
   if (config->getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     for (size_t i = 0; i < models.size(); i++) {
       models.at(i)->refine();

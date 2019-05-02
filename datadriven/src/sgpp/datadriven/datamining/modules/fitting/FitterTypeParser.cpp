@@ -30,8 +30,6 @@ FitterType FitterTypeParser::parse(const std::string &input) {
     return FitterType::RegressionLeastSquares;
   } else if (inputLower == "densityestimation") {
     return FitterType::DensityEstimation;
-  } else if (inputLower == "densityestimationcombi") {
-    return FitterType::DensityEstimationCombi;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known FitterType";
     throw data_exception(errorMsg.c_str());
