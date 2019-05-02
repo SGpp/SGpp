@@ -6,10 +6,10 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -56,7 +56,7 @@ enum class GridType {
   LinearClenshawCurtis,          // 28
   ModPolyClenshawCurtis,         // 29
   ModLinearClenshawCurtis,       // 30
-  NakBsplineBoundaryCombigrid,   // 31
+  NakBsplineBoundaryCombigrid    // 31
 };
 
 /**
@@ -97,9 +97,7 @@ struct GeneralGridConfiguration {
  * structure that can be used by applications to cluster regular grid information
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
-  RegularGridConfiguration() {
-    generalType_ = GeneralGridType::RegularSparseGrid;
-  }
+  RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
 };
 
 /**
