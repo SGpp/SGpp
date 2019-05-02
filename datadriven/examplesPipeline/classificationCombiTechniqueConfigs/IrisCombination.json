@@ -1,12 +1,14 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/niglz/Circles500.arff",
+		"filePath": "../datasets/irisFlower/irisnorm.arff",
+		"fileType": "arff",
 		"hasTargets" : true,
 		"batchSize" : 0,
+		"epochs": 50,
 		"validationPortion" : 0.5,
-		"epochs" : 60,
 		"shuffling" : "random",
-		"randomSeed" : -1
+		"randomSeed": -1,
+		"readinClasses": [1,2,3]
 	},
 	"scorer": {
 		"metric": "Accuracy"
@@ -19,7 +21,7 @@
 			"level": 1
 		},
 		"adaptivityConfig": {
-				"numRefinements": 60,
+				"numRefinements": 50,
 				"threshold": 0.001,
 				"maxLevelType": false,
 				"noPoints": 10,
@@ -34,7 +36,7 @@
 		},
 		"densityEstimationConfig" : {
 			"densityEstimationType" : "decomposition",
-			"matrixDecompositionType" : "Chol"
+			"decomposition": "Chol"
 		},
 		"learner" : {
 			"usePrior" : true,
@@ -42,3 +44,5 @@
 		}
 	}
 }
+
+

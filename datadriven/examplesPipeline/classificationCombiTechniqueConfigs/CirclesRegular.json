@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/niglz/funnychess.arff",
+		"filePath": "../datasets/circles/Circles500.arff",
 		"hasTargets" : true,
 		"batchSize" : 0,
 		"validationPortion" : 0.5,

@@ -1,10 +1,10 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/niglz/irisnorm.arff",
+		"filePath": "../datasets/irisFlower/irisnorm.arff",
 		"fileType": "arff",
 		"hasTargets" : true,
 		"batchSize" : 0,
-		"epochs": 50,
+		"epochs": 40,
 		"validationPortion" : 0.5,
 		"shuffling" : "random",
 		"randomSeed": -1,
@@ -16,12 +16,12 @@
 	"fitter": {
 		"type": "classification",
 		"gridConfig": {
-			"generalGridType": "component",
+			"generalGridType": "regular",
 			"gridType": "linear",
 			"level": 1
 		},
 		"adaptivityConfig": {
-				"numRefinements": 50,
+				"numRefinements": 40,
 				"threshold": 0.001,
 				"maxLevelType": false,
 				"noPoints": 10,

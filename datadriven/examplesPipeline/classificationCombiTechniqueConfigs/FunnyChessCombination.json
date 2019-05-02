@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/niglz/funnychess.arff",
+		"filePath": "../datasets/funnyChess/funnychess.arff",
 		"hasTargets" : true,
 		"batchSize" : 0,
 		"validationPortion" : 0.5,
