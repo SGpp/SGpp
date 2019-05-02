@@ -21,6 +21,8 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -86,6 +88,11 @@ bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
   return hasFitterCrossValidationConfig;
 }
+
+bool DataMiningConfigParser::hasGeometryConfig() const {
+  return configFile->contains("geometryConfig");
+}
+
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {
@@ -830,6 +837,33 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   }
 
   return hasLearnerConfig;
+}
+
+bool DataMiningConfigParser::getGeometryConfig(
+    datadriven::GeometryConfiguration &config,
+    const datadriven::GeometryConfiguration &defaults) const {
+  bool hasGeometryConfig = hasFitterConfig() ?
+    (*configFile)[fitter].contains("geometryConfig") : false;
+
+  if (hasGeometryConfig) {
+    std::cout << "Has geometry config" << std::endl;
+    auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
+
+    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+
+    // parse  density estimation type
+    if (geometryConfig->contains("stencil")) {
+      config.stencilType = GeometryConfigurationParser::parse(
+          (*geometryConfig)["stencil"].get());
+    } else {
+      std::cout << "# Did not find geometryConfig[stencil]."
+                   " Setting default value ";
+      config.stencilType = defaults.stencilType;
+    }
+  }
+
+
+  return hasGeometryConfig;
 }
 
 bool DataMiningConfigParser::getFitterParallelConfig(
