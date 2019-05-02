@@ -54,6 +54,10 @@ const datadriven::DatabaseConfiguration &FitterConfiguration::getDatabaseConfig(
 const datadriven::LearnerConfiguration &FitterConfiguration::getLearnerConfig() const {
   return learnerConfig;
 }
+const datadriven::GeometryConfiguration &FitterConfiguration::getGeometryConfig() const {
+  return geometryConfig;
+}
+
 
 const datadriven::ParallelConfiguration &FitterConfiguration::getParallelConfig() const {
   return parallelConfig;
@@ -167,7 +171,10 @@ void FitterConfiguration::setupDefaults() {
 
   learnerConfig.beta = 1.0;  // mirrors struct default
   learnerConfig.usePrior = false;  // mirrors struct default
-}
 
+  // configure geometry configuration
+  geometryConfig.stencilType = sgpp::datadriven::StencilType::None;
+  geometryConfig.dim = std::vector<int64_t>();
+}
 }  // namespace datadriven
 }  // namespace sgpp

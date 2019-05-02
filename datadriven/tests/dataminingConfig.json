@@ -33,6 +33,13 @@
 			"boundaryLevel": 0,
 			"fileName": ""
 		},
+		"geometryConfig": {
+			"dim":[
+				1,
+				1
+			],
+			"stencil": "DN"
+		},
 		"adaptivityConfig": {
 			"numRefinements": 0,
 			"threshold": 0,
