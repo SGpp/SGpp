@@ -24,13 +24,14 @@ import okushiri
 
 
 # Functions are evaluated in a point given as DataVector.
-# This point must be in [0,1]^D. The function itself maps the point to its domain via unnormalize
 def getFunction(model, dim=1, scalarModelParameter=3):
     if model == 'test':
         return test()
     elif model == 'monomial':
         degree = scalarModelParameter
         return monomial(dim, degree)
+    elif model == 'plainE':
+        return plainE()
     
     elif model == 'sinSum':
         return sinSum(dim)
@@ -70,6 +71,8 @@ def getFunction(model, dim=1, scalarModelParameter=3):
         return wing()
     elif model == 'borehole':
         return borehole()
+    elif model == 'boreholeUQ':
+        return boreholeUQ()    
     elif model == 'piston':
         return piston()
     
@@ -83,6 +86,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
         return attenuationU(dim)
     elif model == 'attenuationN':
         return attenuationN(dim)
+    
+    elif model == 'mixed':
+        return mixed()
     
     # Steves tsunami Code ANUGA
     elif model == 'anugaStorage':
@@ -163,7 +169,7 @@ class objFuncSGppSign(pysgpp.OptScalarFunction):
 # v_new = (v-lN)/(uN-lN)*(ub-lb) + lb
 def unnormalize(v, lb, ub, lN, uN):
     # must create a copy, otherwise the value v would be changed outside of this function too
-    # todo(rehmemk) how time consuming is this?
+    print("Warning: Are you sure you want to unnormalize? ResponseSurface now does that itself.")
     w = pysgpp.DataVector(v) 
     w.sub(lN)
     uN.sub(lN)
@@ -172,6 +178,49 @@ def unnormalize(v, lb, ub, lN, uN):
     w.componentwise_mult(ub)
     w.add(lb)
     return w
+
+
+# Monte Carlo mean
+def mcMean(model, dim, numPoints, numSteps):
+    func = getFunction(model, dim)
+    pdfs = func.getDistributions()
+    mean = 0
+    v = [0] * dim
+    for k in range(numSteps):
+        for i in range(numPoints / numSteps):
+            for d in range(dim):
+                v[d] = pdfs.get(d).sample()
+            mean += func.eval(v)
+        if numSteps > 1:
+            intermediateNumPoints = (k + 1) * numPoints / numSteps
+            print("with {} points mean is {}".format(intermediateNumPoints, mean / float(intermediateNumPoints)))
+    mean /= float(numPoints)
+    return mean
+
+
+# Monte carlo mean of f^2
+def mcMean2(model, dim, numPoints, numSteps):
+    func = getFunction(model, dim)
+    pdfs = func.getDistributions()
+    mean2 = 0
+    v = [0] * dim
+    for k in range(numSteps):
+        for i in range(numPoints / numSteps):
+            for d in range(dim):
+                v[d] = pdfs.get(d).sample()
+            mean2 += func.eval(v) ** 2
+        if numSteps > 1:
+            intermediateNumPoints = (k + 1) * numPoints / numSteps
+            print("with {} points mean2 is {}".format(intermediateNumPoints, mean2 / float(intermediateNumPoints)))
+    mean2 /= float(numPoints)
+    return mean2
+
+
+# Monte carlo variance
+def mcVar(model, dim, numPoints, numSteps):
+    mean = mcMean(model, dim, numPoints, numSteps)
+    mean2 = mcMean2(model, dim, numPoints, numSteps)
+    return mean2 - mean ** 2
 
 ####################### functions #######################
 
@@ -259,6 +308,27 @@ class monomial():
     
     def eval(self, v):
         return v.sum() ** self.degree
+
+
+# sum(x_i)^p, in particular equals 1 for p=0    
+class plainE():
+
+    def __init__(self):
+        self.dummy = 7
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
+        return lb, ub
+    
+    def getName(self):
+        return "plainE"
+    
+    def getDim(self):
+        return 1
+    
+    def eval(self, v):
+        return np.exp(v[0])
 
     
 # sin(alpha pi sum x_i), this does not have natural boundary conditions!
@@ -639,6 +709,49 @@ class borehole():
         return (2 * np.pi * Tu * (Hu - Hl)) / (np .log(r / rw) * (1 + ((2 * L * Tu / np.log(r / rw) * rw * rw * Kw) + (Tu / Tl))))
 
 
+class boreholeUQ():
+    
+    def __init__(self):
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(0.1, np.sqrt(0.0161812)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(7.71, np.sqrt(1.0056)))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63070, 115600))
+        self.pdfs.push_back(pysgpp.DistributionUniform(990, 1110))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63.1, 116))
+        self.pdfs.push_back(pysgpp.DistributionUniform(700, 820))
+        self.pdfs.push_back(pysgpp.DistributionUniform(1120, 1680))
+        self.pdfs.push_back(pysgpp.DistributionUniform(855, 12045))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector([0.05, 100, 63070, 990, 63.1, 700, 1120, 9855])
+        ub = pysgpp.DataVector([0.15, 50000, 115600, 1110, 116, 820, 1680, 12045])
+        return lb, ub
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getName(self):
+        return "boreholeUQ"
+    
+    def getDim(self):
+        return 8
+
+    def eval(self, v):
+#         lb, ub = self.getDomain()
+#         lN = pysgpp.DataVector(self.getDim(), 0.0)
+#         uN = pysgpp.DataVector(self.getDim(), 1.0)
+#         v = unnormalize(v, lb, ub, lN, uN)
+        rw = v[0]; r = v[1]; Tu = v[2]; Hu = v[3]
+        Tl = v[4]; Hl = v[5]; L = v[6]; Kw = v[7]
+        return (2 * np.pi * Tu * (Hu - Hl)) / (np .log(r / rw) * (1 + ((2 * L * Tu / np.log(r / rw) * rw * rw * Kw) + (Tu / Tl))))
+    
+    def getMean(self):
+        return 777
+    
+    def getVar(self):
+        return 777
+
+
 # extended is little worse than modified.
 class piston():
 
@@ -669,6 +782,7 @@ class tensorMonomialU():
 
     def __init__(self, dim):
         self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector(self.dim, pysgpp.DistributionUniform(0, 1))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.getDim(), 0.0)
@@ -688,8 +802,7 @@ class tensorMonomialU():
         return prod
     
     def getDistributions(self):
-        pdfs = pysgpp.DistributionsVector(self.dim, pysgpp.DistributionUniform(0, 1))
-        return pdfs
+        return self.pdfs
     
     def getMean(self):
         # in RAVEN diss it says (3/4)^D but it is (3/2)^D
@@ -731,7 +844,6 @@ class tensorMonomialN():
         # 2: 2 0
         # x: 0 0.2
         # 1+x: 1 0.2
-        return v[0] + 1  # v[0] + 1
         ###################
         prod = 1
         for d in range(self.getDim()):
@@ -742,9 +854,6 @@ class tensorMonomialN():
         return self.pdfs
     
     def getMean(self):
-        ###################
-        return  1
-        ###################
         D = self.dim
         prod = 1
         for d in range(D):
@@ -752,9 +861,6 @@ class tensorMonomialN():
         return prod
     
     def getVar(self):
-        ###################
-        return 0.2
-        ###################
         D = self.dim
         prod1 = 1; prod2 = 1
         for d in range(D):
@@ -802,13 +908,23 @@ class attenuationN():
 
     def __init__(self, dim):
         self.dim = dim
-        # N(mu,sigma) = N(1/2, 1/36) has support almost identical [0,1]
-        self.mu = [0.5] * dim  
-        self.sigma = [1. / 36.] * dim  
+        
+        random1 = [0.28247595, 0.35868055, 0.43537695, 0.58287878, 0.60354376, 0.96493609, 0.51775549, 0.09685781, 0.07814835, 0.91175197]
+        random2 = [0.1699305 , 0.82531776, 0.56462979, 0.01994913, 0.61015954, 0.62511764, 0.12233995, 0.12137653, 0.88571942, 0.36876235]
+        
+        self.mu = [0.5] * dim  # random1[:dim]  
+        self.sigma = [np.sqrt(0.2)] * dim  # [np.sqrt(r) for r in random2[:dim]]  
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.dim):
+            self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
 
-    def getDomain(self):  #depends on mu and sigma!!!
-        lb = pysgpp.DataVector(self.getDim(), 0.0)  
-        ub = pysgpp.DataVector(self.getDim(), 1.0)  
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
         return lb, ub
     
     def getName(self):
@@ -824,10 +940,7 @@ class attenuationN():
         return prod
     
     def getDistributions(self):
-        pdfs = pysgpp.DistributionsVector()
-        for d in range(self.getDim()):
-            pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
-        return pdfs
+        return self.pdfs
     
     def getMean(self):
         D = self.dim
@@ -837,13 +950,58 @@ class attenuationN():
         return mean
     
     def getVar(self):
-        # this is just wrong (already in 1D)
-#         D = self.dim
-#         var = 1
-#         for d in range(D):
-#             var *= np.exp((2. * self.sigma[d] ** 2 / D ** 2) - (2. * self.mu[d] / D))
-#         return var
-        return 777
+        D = self.dim
+        meanSquare = 1
+        for d in range(D):
+            meanSquare *= np.exp((2. * self.sigma[d] ** 2 / D ** 2) - (2. * self.mu[d] / D))
+        return meanSquare - self.getMean() ** 2
+        # print("Warning: variance not known for arbitrary dimension!")
+        # return 0.042759304376631  # for mu = 0.5, sigma2 = 0.2, 2D
+        # return  0.027109663640083  # for mu = 0.5, sigma2 = 0.2, 3D
+
+
+class mixed():
+
+    def __init__(self):
+        self.dim = 2
+        self.mu = [5, 1]
+        self.sigma = [np.sqrt(0.25), np.sqrt(0.25)]
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[0], self.sigma[0]))
+        # self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[1], self.sigma[1]))
+        # self.pdfs.push_back(pysgpp.DistributionLogNormal(self.mu[0], self.sigma[0]))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(self.mu[1], self.sigma[1]))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+            
+        print("domain:")
+        print(lb)
+        print(ub)
+        return lb, ub
+    
+    def getName(self):
+       return "mixed_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        return v[0] + v[1]  # np.exp(-v[0]) + np.sin(v[1])
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        return 8.080216848916720  # 0.265339847033493
+    
+    def getVar(self):
+        return   2.944758124182513  # 0.474927743905671
 
 
 class anugaStorage():

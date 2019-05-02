@@ -33,14 +33,14 @@ def plotSeveralLevels(basis, levels):
 
 degree = 3
 
-plt.figure()
-basis = pysgpp.SNakBsplineBase(degree)
-plotSeveralLevels(basis, [1, 2, 3, 4])
- 
-plt.figure()
-basis = pysgpp.SNakBsplineModifiedBase(degree)
-plotSeveralLevels(basis, [1, 2, 3, 4])
- 
+# plt.figure()
+# basis = pysgpp.SNakBsplineBase(degree)
+# plotSeveralLevels(basis, [1, 2, 3, 4])
+#  
+# plt.figure()
+# basis = pysgpp.SNakBsplineModifiedBase(degree)
+# plotSeveralLevels(basis, [1, 2, 3, 4])
+#  
 plt.figure()
 basis = pysgpp.SNakBsplineExtendedBase(degree)
 plotSeveralLevels(basis, [1, 2, 3, 4])

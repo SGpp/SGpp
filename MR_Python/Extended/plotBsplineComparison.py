@@ -61,12 +61,24 @@ def plotConvergenceOrder(order, start, length):
 def plotter(qoi, data, refineTypes):
     gridSizes = data['gridSizes']
     refineType = data['refineType']
-    if len(refineTypes) == 2 and refineType == 'regularByPoints':
+    if len(refineTypes) == 2 and 'regular' in refineType:
         linestyle = '--'
     else:
         linestyle = '-'
     if qoi == 'l2':
         interpolErrors = data['interpolErrors']
+        
+        # hack for SGA Paper: divide by max(MC Points)-min(MC Points) to get relative error.
+        # This is necessary because the borehole function values are somewhere aroung 10^-6 
+        # and thus the error looks smaller than it is
+        # borehole:
+        # interpolErrors /= (3.2478e-06 - 7.05594e-07)
+        # exp:
+        # interpolErrors /= (9.369084388257171 - 6.670584029966912)
+        # Friedman:
+        # interpolErrors /= (29.065382369280560 - 0.627873930461282)
+        # monomials have max=1, min = 0.
+        
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
@@ -103,14 +115,14 @@ if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
     parser.add_argument('--qoi', default='l2', type=str, help='what to plot')
-    parser.add_argument('--model', default='borehole', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
-    parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
+    parser.add_argument('--model', default='attenuationN', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=6, type=int, help='the problems dimensionality')
+    parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--degree', default=135, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
-    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
+    parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
+    parser.add_argument('--maxPoints', default=2000, type=int, help='maximum number of points used')
+    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
     
     # configure according to input
     args = parser.parse_args()
@@ -132,6 +144,8 @@ if __name__ == '__main__':
     loadDirectory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data/', args.model, objFunc.getName())
     if args.refineType == 'regularAndSurplus':
         refineTypes = ['regularByPoints', 'surplus']
+    elif args.refineType == 'regularLevelAndSurplus':
+        refineTypes = ['regular', 'surplus']
     else:
         refineTypes = [args.refineType] 
     

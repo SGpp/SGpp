@@ -37,6 +37,7 @@ def interpolateAndError(degree,
         sampleRange = [int(s) for s in np.unique(np.logspace(np.log10(minPoints), np.log10(maxPoints), num=numSteps))]
         
     interpolErrors = np.zeros((len(gridTypes), len(sampleRange)))
+    nrmsErrors = np.zeros((len(gridTypes), len(sampleRange)))
     means = np.zeros((len(gridTypes), len(sampleRange)))
     meanErrors = np.zeros((len(gridTypes), len(sampleRange)))
     varErrors = np.zeros((len(gridTypes), len(sampleRange)))
@@ -71,12 +72,23 @@ def interpolateAndError(degree,
                 print("this refineType is not supported")
             runTimes[i, j] = time.time() - start  
              
+#             point = pysgpp.DataVector(8)
+#             point[0] = 0.1; point[1] = 11000; point[2] = 101000; point[3] = 991; 
+#             point[4] = 63.1; point[5] = 777; point[6] = 1376; point[7] = 10032
+#             print(objFunc.eval(point))
+#             print(reSurf.eval(point))
+#             ipdb.set_trace()
+             
             if calculateError:
 #                 if  "anuga" in objFunc.getName():
 #                     interpolErrors[i, j] = sgAnuga.anugaError(reSurf, objFunc)
 #                 else:
-                interpolErrors[i, j] = reSurf.l2Error(objFunc, numErrPoints)
+                errorVector = reSurf.nrmsError(objFunc, numErrPoints)
+                interpolErrors[i, j] = errorVector[1]
+                nrmsErrors[i, j] = errorVector[0]
                 print("l2 err={}".format(interpolErrors[i, j]))
+                print("NRMSE ={}".format(nrmsErrors[i, j]))
+                
             if calculateMean == 1:
                 pdfs = objFunc.getDistributions()
                 means[i, j] = reSurf.getMean(pdfs, quadOrder)
@@ -97,6 +109,7 @@ def interpolateAndError(degree,
                                                   np.sum(runTimes[i, :])))
     data = {'gridTypes':gridTypes,
             'interpolErrors':interpolErrors,
+            'nrmsErrors':nrmsErrors,
             'means':means,
             'meanErrors':meanErrors,
             'vars':vars,
@@ -111,22 +124,22 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='tensorMonomialN', type=str, help='define which test case should be executed')
+    parser.add_argument('--model', default='tensorMonomialU', type=str, help='define which test case should be executed')
     parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
+    parser.add_argument('--gridType', default='nakbspline', type=str, help='gridType(s) to use')
+    parser.add_argument('--degree', default=5, type=int, help='spline degree')
     parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=1, type=int, help='maximum level for regualr refinement')
+    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=2, type=int, help='minimum number of points used')
     parser.add_argument('--maxPoints', default=100, type=int, help='maximum number of points used')
-    parser.add_argument('--numSteps', default=1, type=int, help='number of steps in the [minPoints maxPoints] range')
+    parser.add_argument('--numSteps', default=2, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
     parser.add_argument('--mean', default=1, type=int, help='calculate mean')
     parser.add_argument('--var', default=1, type=int, help='calculate variance')
-    parser.add_argument('--quadOrder', default=20, type=int, help='quadrature order for mean and variance calculations')
+    parser.add_argument('--quadOrder', default=300, type=int, help='quadrature order for mean and variance calculations')
     parser.add_argument('--saveData', default=0, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int, help='number of threads for omp parallelization')
     
