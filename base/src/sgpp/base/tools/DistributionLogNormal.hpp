@@ -9,24 +9,25 @@
 
 #include <iostream>
 #include <random>
+#include <string>
 
 namespace sgpp {
 namespace base {
 
 /**
  */
-class DistributionNormal : public Distribution {
+class DistributionLogNormal : public Distribution {
  public:
   /**
    * Constructor
    */
-  DistributionNormal(double mean, double stddev)
+  DistributionLogNormal(double mean, double stddev)
       : Distribution(), mean(mean), stddev(stddev), dist(mean, stddev) {}
 
   /**
    * Destructor
    */
-  virtual ~DistributionNormal() {}
+  virtual ~DistributionLogNormal() {}
 
   /**
    *
@@ -37,31 +38,36 @@ class DistributionNormal : public Distribution {
    *
    */
   double eval(double x) {
-    return 1.0 / (sqrt(2 * M_PI) * stddev) * exp(-(x - mean) * (x - mean) / (2 * stddev * stddev));
+    if (x >= 0)
+      // y =   1.0./(sigma2*x*sqrt(2*pi)) .* exp(-((log(x)-mu).^2)./(2*sigma2^2));
+      return 1.0 / (stddev * x * sqrt(2 * M_PI)) *
+             exp(-std::pow(log(x) - mean, 2) / (2 * stddev * stddev));
+    else
+      return 0.0;
   }
 
   /**
    * Heuristical bounds.
-   * For these bounds and quadrature order 20, for the objective function f(x)=1 mean and variance
-   * are calculated with an error of machine precision => the normal distirbution is truncated s.t.
-   * the missing part is not numerically relevant
+   * For these bounds and quadrature order 400, for the objective function f(x)=x mean and variance
+   * are calculated with an error of machine precision => the LogNormal distribution is truncated
+   * s.t. the missing part is not numerically relevant
    */
   sgpp::base::DataVector getBounds() {
     sgpp::base::DataVector bounds(2);
-    bounds[0] = mean - 20 * stddev * stddev;
-    bounds[1] = mean + 20 * stddev * stddev;
+    bounds[0] = 0.0;
+    bounds[1] = 500 * stddev * stddev;
     return bounds;
   }
 
   std::string getType() {
-    return std::string("Normal_") + std::to_string(mean) + std::string("_") +
+    return std::string("LogNormal_") + std::to_string(mean) + std::string("_") +
            std::to_string(stddev);
   }
 
  private:
   double mean;
   double stddev;
-  std::normal_distribution<double> dist;
+  std::lognormal_distribution<double> dist;
 };
 
 }  // namespace base

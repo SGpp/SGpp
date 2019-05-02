@@ -17,6 +17,7 @@
 
 #include <functional>
 #include <map>
+#include <string>
 #include <tuple>
 
 namespace sgpp {
@@ -71,8 +72,14 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
   sgpp::base::DataVector coordinates;
   // quadrature weights
   sgpp::base::DataVector weights;
-  // tuple used as hash to store scalar products in innerProducts
-  typedef std::tuple<size_t, size_t, size_t, size_t> hashType;
+
+  // todo (rehmemk) the tuple hashType currently cannot differ between different instances of the
+  // same pdf (e.g. two normal distributions with different means) If such a thing is used, this
+  // must be fixed (or the hashing must be turned off, but then run times will be terribly slow...)
+
+  //  tuple used as hash to store scalar products in innerProducts, contains level1, index1, level2,
+  //  index2, pdftype
+  typedef std::tuple<size_t, size_t, size_t, size_t, std::string> hashType;
   // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to
   // calculated again if the same combination of indices and levels  is queried
   std::map<hashType, double> innerProducts;

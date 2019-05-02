@@ -10,9 +10,21 @@
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <string>
 
 namespace sgpp {
 namespace base {
+
+/**
+ * enum to address different pdfs in a standardized way
+ *
+ */
+// enum class DistributionType {
+//  Uniform,    //  0
+//  Normal,     //  1
+//  Lognormal,  //  2
+//};
+
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  */
@@ -44,6 +56,8 @@ class Distribution {
   sgpp::base::DataVector samples(size_t num);
 
   virtual sgpp::base::DataVector getBounds() = 0;
+
+  virtual std::string getType() = 0;
 
  protected:
   std::default_random_engine gen;

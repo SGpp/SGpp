@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationWeightedSecondMomentNak.hpp"
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
 
 #include <map>
 #include <utility>
@@ -30,6 +30,7 @@ std::shared_ptr<sgpp::base::SBasis> OperationWeightedSecondMomentNak::initialize
 double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
                                                               sgpp::base::DistributionsVector pdfs,
                                                               size_t quadOrder) {
+  //  std::cout << "alpha: " << alpha.toString() << "\n";
   base::GaussLegendreQuadRule1D gauss;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   double weightedSP = 0.0;
@@ -38,13 +39,21 @@ double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
     for (size_t l = 0; l < alpha.getSize(); l++) {
       double sp = 1;
       for (size_t d = 0; d < dim; d++) {
-        sp *= weightedBasisScalarProduct(storage.getPointLevel(k, d), storage.getPointIndex(k, d),
-                                         storage.getPointLevel(l, d), storage.getPointIndex(l, d),
-                                         pdfs.get(d));
+        double temp = weightedBasisScalarProduct(
+            storage.getPointLevel(k, d), storage.getPointIndex(k, d), storage.getPointLevel(l, d),
+            storage.getPointIndex(l, d), pdfs.get(d));
+        sp *= temp;
+        //        std::cout << d << ": (" << storage.getPointLevel(k, d) << " " <<
+        //        storage.getPointIndex(k, d)
+        //                  << ") x (" << storage.getPointLevel(l, d) << " " <<
+        //                  storage.getPointIndex(l, d)
+        //                  << ")  " << temp << "\n";
       }
       weightedSP += alpha[k] * alpha[l] * sp;
+      //      std::cout << "# (" << k << "," << l << ") " << std::fixed << alpha[k] << " " <<
+      //      alpha[l]
+      //                << " " << sp << " " << weightedSP << "\n\n";
     }
-    //    std::cout << "k=" << k << " alpha=" << alpha[k] << "\n";
   }
   return weightedSP;
 }
@@ -56,7 +65,7 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
   double leftPDF = bounds[0];
   double rightPDF = bounds[1];
   std::map<hashType, double>::iterator it;
-  hashType hashKey = std::make_tuple(level1, index1, level2, index2);
+  hashType hashKey = std::make_tuple(level1, index1, level2, index2, pdf->getType());
   // Check if this scalar products has already been caluclated and is stored
   it = innerProducts.find(hashKey);
   if (it != innerProducts.end()) {
@@ -98,6 +107,7 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
       base::DataVector leftVectorPDF(segmentCoordinates.getSize(), leftPDF);
       transformedSegmentCoordinates.mult(rightPDF - leftPDF);
       transformedSegmentCoordinates.add(leftVectorPDF);
+
       // width of the transformed segment, i.e. width of [commonSupport[i],commonSupport[i+1]]
       // transformed to supp(pdf)
       double transformedSegmentWidth =

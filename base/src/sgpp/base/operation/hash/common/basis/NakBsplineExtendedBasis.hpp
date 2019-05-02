@@ -537,7 +537,6 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
         // evaluated and the support of the pdf
         double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
         double scaledX = left + (right - left) * x;
-        //        std::cout << x << " " << scaledX << " " << pdf->eval(scaledX) << "\n";
         temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }

@@ -22,12 +22,47 @@ double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFuncti
     }
     double evalInterpolant = this->eval(randomVector);
     double evalObjectiveFunc = objectiveFunc->eval(randomVector);
-    //    std::cout << randomVector[0] << " " << evalInterpolant << " " << evalObjectiveFunc <<
-    //    "\n";
+
     l2Err += std::pow(evalInterpolant - evalObjectiveFunc, 2.0);
   }
   l2Err = sqrt(l2Err / static_cast<double>(numMCPoints));
+
   return l2Err;
+}
+
+sgpp::base::DataVector ResponseSurface::nrmsError(
+    std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, size_t numMCPoints) {
+  double max = 0.0;
+  double min = 100000.0;
+  double l2Err = 0.0;
+  size_t numDim = objectiveFunc->getNumberOfParameters();
+  sgpp::base::DataVector randomVector(numDim);
+  for (size_t i = 0; i < numMCPoints; i++) {
+    for (size_t d = 0; d < numDim; d++) {
+      randomVector[d] =
+          sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
+    }
+    double evalInterpolant = this->eval(randomVector);
+    double evalObjectiveFunc = objectiveFunc->eval(randomVector);
+
+    if (evalObjectiveFunc > max) {
+      max = evalObjectiveFunc;
+    }
+
+    if (evalObjectiveFunc < min) {
+      min = evalObjectiveFunc;
+    }
+
+    l2Err += std::pow(evalInterpolant - evalObjectiveFunc, 2.0);
+  }
+  l2Err = sqrt(l2Err / static_cast<double>(numMCPoints));
+
+  sgpp::base::DataVector errorVector(4);
+  errorVector[0] = l2Err / (max - min);
+  errorVector[1] = l2Err;
+  errorVector[2] = min;
+  errorVector[3] = max;
+  return errorVector;
 }
 
 // void ResponseSurface::transformUnitPoint(sgpp::base::DataVector& v) {

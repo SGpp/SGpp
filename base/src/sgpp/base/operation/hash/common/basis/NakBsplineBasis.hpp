@@ -1887,6 +1887,11 @@ class NakBsplineBasis : public Basis<LT, IT> {
     }
   }
 
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @return      integral of basis function
+   */
   inline double getIntegral(LT l, IT i) {
     size_t quadOrder = getDegree() + 1;
     auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
@@ -1903,7 +1908,7 @@ class NakBsplineBasis : public Basis<LT, IT> {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
-          "NakBsplineModified: only B spline degrees 1, 3 and 5 are "
+          "NakBsplineBasis: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
 
@@ -1942,11 +1947,10 @@ class NakBsplineBasis : public Basis<LT, IT> {
       offset = -0.125;
     }
 
-    double temp_res =
-        bSplineMean(l, i, start, stop, offset, hik, quadCoordinates, quadWeights, pdf);
-    double integral = temp_res * hik;
+    double temp_res = basisMean(l, i, start, stop, offset, hik, quadCoordinates, quadWeights, pdf);
+    double mean = temp_res * hik;
 
-    return integral;
+    return mean;
   }
 
   /**
@@ -1973,21 +1977,26 @@ class NakBsplineBasis : public Basis<LT, IT> {
    *
    * @return integral
    */
-  double bSplineMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
-                     base::DataVector quadCoordinates, base::DataVector quadWeights,
-                     std::shared_ptr<sgpp::base::Distribution> pdf) {
+  double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
+                   base::DataVector quadCoordinates, base::DataVector quadWeights,
+                   std::shared_ptr<sgpp::base::Distribution> pdf) {
+    sgpp::base::DataVector bounds = pdf->getBounds();
+    double left = bounds[0];
+    double right = bounds[1];
+
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
       // loop over quadrature points
       for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
-        // evaluated
+        // evaluated and the support of the pdf
         const double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
-        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(x);
+        double scaledX = left + (right - left) * x;
+        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }
-    return temp_res;
+    return temp_res * (right - left);
   }
 };
 

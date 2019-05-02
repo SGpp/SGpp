@@ -67,6 +67,17 @@ class ResponseSurface {
   double l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
                  size_t numMCPoints = 1000);
 
+  /**
+   * Calculates the normalized root mean square error between interpolant and objective function
+   *
+   * @param objectiveFunction	the objectiveFunction
+   * @param numMCPoints			number of Monte Carlo Points
+   *
+   * @return 					vector [NRMSE, l2 error, min, max]
+   */
+  sgpp::base::DataVector nrmsError(
+      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, size_t numMCPoints = 1000);
+
  protected:
   size_t numDim;
   sgpp::base::DataVector unitLBounds;

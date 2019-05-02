@@ -9,6 +9,7 @@
 
 #include <iostream>
 #include <random>
+#include <string>
 
 namespace sgpp {
 namespace base {
@@ -40,6 +41,10 @@ class DistributionUniform : public Distribution {
     bounds[0] = l;
     bounds[1] = r;
     return bounds;
+  }
+
+  std::string getType() {
+    return std::string("Uniform_") + std::to_string(l) + std::string("_") + std::to_string(r);
   }
 
  private:

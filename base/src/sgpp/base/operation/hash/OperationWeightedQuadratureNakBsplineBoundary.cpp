@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineExtended.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineBoundary.hpp>
 
 namespace sgpp {
 namespace base {
 
-double OperationWeightedQuadratureNakBsplineExtended::doWeightedQuadrature(
+double OperationWeightedQuadratureNakBsplineBoundary::doWeightedQuadrature(
     DataVector& alpha, sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
   double mean = 0;
   for (size_t i = 0; i < storage.getSize(); i++) {

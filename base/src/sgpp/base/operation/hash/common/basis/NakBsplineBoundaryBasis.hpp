@@ -82,7 +82,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
             return -2 * (1 - x) * (x - 0.5);
           } else if (i == 1) {
             // l = 1, i = 1
-            // return -4 * (x - 1) * x;
+            // return -4 * (x - 1) * (x-0);
             return 4 * x - 4 * x * x;
           } else {
             // l = 1, i = 2
@@ -200,13 +200,19 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
    * @return      integral of basis function
    */
   inline double getIntegral(LT l, IT i) {
+    size_t quadOrder = getDegree() + 1;
+    auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
+    return getMean(l, i, pdf_uniform, quadOrder);
+  }
+
+  inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
+                        size_t quadOrder) {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
-          "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
+          "NakBsplineBoundaryBasis: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
-    size_t quadOrder = degree + 1;
     base::DataVector quadCoordinates, quadWeights;
     base::GaussLegendreQuadRule1D gauss;
 
@@ -223,7 +229,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
     // start and stop identify the segments on which the spline is nonzero
     size_t start = 0, stop = 0;
-    double scaling = hik;
     start = ((i > pp1h) ? 0 : (pp1h - i));
     stop = std::min(degree, hInv + pp1h - i - 1);
     // nak special cases
@@ -236,18 +241,15 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
       start = 1;
       stop = 4;
       offset = -0.25;
-      scaling = 0.25;
     }
     if ((degree == 5) && (l == 3)) {
       start = 1;
       stop = 8;
       offset = -0.125;
-      scaling = 0.125;
     }
 
-    double temp_res =
-        integrateBspline(l, i, start, stop, offset, scaling, quadCoordinates, quadWeights);
-    double integral = temp_res * scaling;
+    double temp_res = basisMean(l, i, start, stop, offset, hik, quadCoordinates, quadWeights, pdf);
+    double integral = temp_res * hik;
 
     return integral;
   }
@@ -349,20 +351,26 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
   NakBsplineBasis<LT, IT> nakBsplineBasis;
 
  private:
-  double integrateBspline(LT l, IT i, size_t start, size_t stop, double offset, double scaling,
-                          base::DataVector quadCoordinates, base::DataVector quadWeights) {
+  double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
+                   base::DataVector quadCoordinates, base::DataVector quadWeights,
+                   std::shared_ptr<sgpp::base::Distribution> pdf) {
+    sgpp::base::DataVector bounds = pdf->getBounds();
+    double left = bounds[0];
+    double right = bounds[1];
+
     double temp_res = 0.0;
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
       // loop over quadrature points
       for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
-        // evaluated
-        const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
-        temp_res += quadWeights[c] * this->eval(l, i, x);
+        // evaluated and the support of the pdf
+        double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
+        double scaledX = left + (right - left) * x;
+        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }
-    return temp_res;
+    return temp_res * (right - left);
   }
 
   //#ifdef SG_COMBIGRID

@@ -131,6 +131,7 @@
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionLogNormal.hpp>
 #include <sgpp/base/tools/DistributionNormal.hpp>
 #include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/base/tools/DistributionsVector.hpp>
