@@ -141,7 +141,12 @@ class HashGenerator {
 
     this->createFullGridIterative(storage, level);
   }
-
+  /**
+   * Generates an anisotropic full grid of the level vector
+   *
+   * @param storage Hashmap that stores the grid points
+   * @param dimlevels grid level vector (vector of non-negative values)
+   */
   void anisotropicFull(GridStorage& storage, std::vector<size_t>& dimlevels) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");

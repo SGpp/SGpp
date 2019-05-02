@@ -11,8 +11,8 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
@@ -23,15 +23,15 @@
 #include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
-#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
@@ -41,8 +41,8 @@
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
