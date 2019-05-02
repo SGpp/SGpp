@@ -76,7 +76,7 @@ GridType GridTypeParser::parse(const std::string &input) {
   } else if (inputLower.compare("linearstencil") == 0) {
     return sgpp::base::GridType::LinearStencil;
   } else if (inputLower.compare("modlinearstencil") == 0) {
-      return sgpp::base::GridType::ModLinearStencil;
+    return sgpp::base::GridType::ModLinearStencil;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known GridType";
     throw data_exception(errorMsg.c_str());

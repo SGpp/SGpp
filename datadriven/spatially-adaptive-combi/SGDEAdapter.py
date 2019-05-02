@@ -10,11 +10,9 @@ def getcombischeme(scheme):
     return formatCombi(oldCombi)
 
 def isrefinable(scheme, levelvec):
-    #print("levelvec: ",levelvec)
     return scheme.is_refinable(sgdecombitolevelvec(levelvec))
 
 def refineblock(scheme, levelvec):
-    print("Space-SGDEAdapter: refineblock")
     scheme.update_adaptive_combi(sgdecombitolevelvec(levelvec))
     return scheme
 
