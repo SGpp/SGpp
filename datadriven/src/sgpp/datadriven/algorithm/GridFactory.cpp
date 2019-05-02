@@ -39,19 +39,6 @@ sgpp::base::Grid *GridFactory::createGrid(sgpp::base::GeneralGridConfiguration &
   }
 
   // Generate regular Grid with LEVELS Levels
-  /*
-  if (interactions.size() == 0) {
-    grid->getGenerator().regular(gridConfig.level_);
-  } else {
-    if (gridConfig.generalType_ != sgpp::base::GeneralGridType::GeometryAwareSparseGrid) {
-      // No geometry aware sparse grid but passed interactions nonetheless
-      std::cout << "Passed grid configuration for non geometry aware sparse grids and"
-                << "interactions vector nonetheless. Geometry aware sparse grid will be created!"
-                << std::endl;
-    }
-    grid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
-  }
-  */
 
   switch (gridConfig.generalType_) {
     case (sgpp::base::GeneralGridType::RegularSparseGrid):
