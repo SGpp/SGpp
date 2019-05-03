@@ -135,7 +135,7 @@ inline combiConfig CombiConfigurator::combiConfFromPyObj(PyObject *pValue) {
 inline PyObject *CombiConfigurator::combiConfAsPyObj(combiConfig pair) {
   PyObject *pValue = PyList_New(pair.levels.size() + 1);
   PyList_SetItem(pValue, 0, PyLong_FromLong(pair.coef));
-  for (int i = 0; i < pair.levels.size(); i++) {
+  for (size_t i = 0; i < pair.levels.size(); i++) {
     PyList_SetItem(pValue, i + 1, PyLong_FromLong(pair.levels.at(i)));
   }
   return pValue;

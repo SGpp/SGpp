@@ -28,40 +28,58 @@ class CombiConfigurator {
  public:
   CombiConfigurator();
 
+  /**
+   * Initializes an adaptive combination scheme in SpACE
+   * @param dim Dimension of the sparse grid
+   * @param level of the initial sparse grid
+   */
   void initAdaptiveScheme(size_t dim, size_t level);
 
+  /**
+   * Delivers the current set of component configs
+   * @param vec reference for storing the vector of component configs
+   */
   void getCombiScheme(vector<combiConfig> &vec);
 
+  /**
+   * Checks if a component is refineable
+   * @param levelvec config of the component
+   * @return returns true when the component is refinable
+   */
   bool isRefinable(combiConfig levelvec);
 
+  /**
+   * Refines a single component and therefore changes the set of components
+   * @param levelvec config of the component
+   */
   void refineComponent(combiConfig levelvec);
 
-  /**
-   * This returns the set of level vectors with the corresponding coefficients
-   * for the standard combination technique
-   * @param vec reference where to store the combiConfigSet
-   * @oaram d dimension of the sparse grid
-   * @param l level of the sparse grid
-   * @return vector of combiConfig
-   */
-  void getStandardCombi(vector<combiConfig> &vec, size_t d, size_t l);
-
-  /**
-   * @param vec reference where to store the combiConfigSet
-   * @param index to the block that needs to be refined
-   * @return new vector of combiConfig
-   * @return true if the block could be refined
-   */
-
-  void test(vector<combiConfig> &vec);
-
  private:
+  /**
+   * Initializes the Python Interpreter
+   */
   void initializePython();
+
+  /**
+   * Finalizes the Python Interpreter
+   */
   void finalizePython();
 
+  /**
+   * Converts a components config in SpACE to one in SG++
+   * @param *pValue PyObject that corrensponds to the config in SpACE
+   * @return returns a combiConfig
+   */
   inline combiConfig combiConfFromPyObj(PyObject *pValue);
+
+  /**
+   * Convers a components config in SG++ to one in SpACE
+   * @param pair combiConfig from SG++
+   * @return returns a components config in SpACE as PyObject
+   */
   inline PyObject *combiConfAsPyObj(combiConfig pair);
 
+  /// Instance of the SpACE CombiScheme
   PyObject *combischeme;
 
   inline static PyObject *pModule;
