@@ -66,14 +66,36 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    */
   void update(DataMatrix& samples);
 
+  /**
+   * Evaluate the fitted density at a single data point - requires a trained grid.
+   * @param sample vector with the coordinates in all dimensions of that sample.
+   * @return evaluation of the trained grid.
+   */
   double evaluate(const DataVector& sample);
 
+  /**
+   * Evaluate the fitted density on a set of data points - requires a trained grid.
+   * @param samples matrix where each row represents a sample and the columns contain the
+   * coordinates in all dimensions of that sample.
+   * @param results vector where each row will contain the evaluation of the respective sample on
+   * the current model.
+   */
   void evaluate(DataMatrix& samples, DataVector& results);
 
+  /**
+   * Refines the component with the biggest error
+   * @return if a component was refined
+   */
   bool refine();
 
+  /**
+   * Useless at the moment
+   */
   bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
+  /**
+   * Resets the state of the entire model
+   */
   void reset() override;
 
  protected:
