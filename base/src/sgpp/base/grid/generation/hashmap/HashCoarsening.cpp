@@ -68,13 +68,13 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
         }
     }
     if (point.isLeaf()) {
-      auto start = std::chrono::system_clock::now();
+      //auto start = std::chrono::system_clock::now();
 
       CoarseningFunctor::value_type current_value = functor(storage, z);
           
-      auto end = std::chrono::system_clock::now();
-      std::chrono::duration<double> elapsed_seconds = end-start;
-      std::cout<< "++++++++++++++++elapsed time: " << elapsed_seconds.count() << "s\n";
+      //auto end = std::chrono::system_clock::now();
+      //std::chrono::duration<double> elapsed_seconds = end-start;
+      //std::cout<< "++++++++++++++++elapsed time: " << elapsed_seconds.count() << "s\n";
       if (current_value < removeCandidates[max_idx].second) {
         // Replace the maximum point array of removable candidates,
         // find the new maximal point

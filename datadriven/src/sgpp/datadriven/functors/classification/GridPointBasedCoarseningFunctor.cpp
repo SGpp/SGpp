@@ -64,7 +64,7 @@ namespace sgpp {
             // Get the evaluations of seq at all GridSave
             base::DataVector p(storage.getDimension());
             storage.getPoint(seq).getStandardCoordinates(p);
-            std::cout<<"gridsize:"<<grids.size()<<std::endl;
+            //std::cout<<"gridsize:"<<grids.size()<<std::endl;
             if (pre_compute) {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::string key = p.toString();
@@ -104,9 +104,9 @@ namespace sgpp {
             }
             
             gridClassDiffs = max - second_max;
-            //double rangex = 1.00;
-            //double rangey = 1.00;
-            //printHeatmap(rangex, rangey);
+            double rangex = 1.00;
+            double rangey = 1.00;
+            printHeatmap(rangex, rangey);
             //Compare to the neighbors
 
             base::HashGridPoint& gp = storage.getPoint(seq);
