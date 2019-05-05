@@ -36,7 +36,6 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
 
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
-
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
