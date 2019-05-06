@@ -745,11 +745,15 @@ class boreholeUQ():
         Tl = v[4]; Hl = v[5]; L = v[6]; Kw = v[7]
         return (2 * np.pi * Tu * (Hu - Hl)) / (np .log(r / rw) * (1 + ((2 * L * Tu / np.log(r / rw) * rw * rw * Kw) + (Tu / Tl))))
     
+    # real mean and variance unknown. Calculated reference values with surplus adaptive 
+    # extended B-splines of degree 5, as these have the smalles l2 error.
+    # The grid had 36.043 point
+    
     def getMean(self):
-        return 777
+        return 0.00244501293667
     
     def getVar(self):
-        return 777
+        return 2.35017408798e-05
 
 
 # extended is little worse than modified.
@@ -980,9 +984,6 @@ class mixed():
             lb[d] = bounds[0]
             ub[d] = bounds[1]
             
-        print("domain:")
-        print(lb)
-        print(ub)
         return lb, ub
     
     def getName(self):

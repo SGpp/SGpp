@@ -91,16 +91,20 @@ def interpolateAndError(degree,
                 
             if calculateMean == 1:
                 pdfs = objFunc.getDistributions()
+                startMean = time.time()
                 means[i, j] = reSurf.getMean(pdfs, quadOrder)
+                meanTime = time.time() - startMean
                 realMean = objFunc.getMean()
                 meanErrors[i, j] = abs(means[i, j] - realMean)
-                print("mean={}  real mean={}  error={}".format(means[i, j], realMean, meanErrors[i, j]))
+                print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
             if calculateVar == 1:
                 pdfs = objFunc.getDistributions()
+                startVar = time.time()
                 vars[i, j] = reSurf.getVariance(pdfs, quadOrder)
+                varTime = time.time() - startVar
                 realVar = objFunc.getVar()
                 varErrors[i, j] = abs(vars[i, j] - realVar)
-                print("var={}  real var={}  error={}".format(vars[i, j], realVar, varErrors[i, j]))
+                print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
             gridSizes[i, j] = reSurf.getSize()
             print("\n")
             
@@ -124,16 +128,16 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='tensorMonomialU', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='attenuationN', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=4, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbspline', type=str, help='gridType(s) to use')
+    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use')
     parser.add_argument('--degree', default=5, type=int, help='spline degree')
     parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regular refinement')
-    parser.add_argument('--minPoints', default=2, type=int, help='minimum number of points used')
+    parser.add_argument('--minPoints', default=800, type=int, help='minimum number of points used')
     parser.add_argument('--maxPoints', default=100, type=int, help='maximum number of points used')
-    parser.add_argument('--numSteps', default=2, type=int, help='number of steps in the [minPoints maxPoints] range')
+    parser.add_argument('--numSteps', default=1, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
