@@ -18,7 +18,13 @@
 		"validationPortion" : 0.634,
 		"epochs" : 12,
 		"shuffling" : "random",
-		"randomSeed" : 37
+		"randomSeed" : 37,
+		
+		"testFilePath": "/path/to/some/testFile.arff",
+		"testFileType": "arff",
+		"testCompression": false,
+		"testNumBatches": 2,
+		"testBatchSize": 16
 	},
 	"scorer": {
 		"metric": "MSE"
