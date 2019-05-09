@@ -55,7 +55,12 @@ def plotConvergenceOrder(order, start, length):
     Y = [0] * len(X)
     for i in range(len(X)):
         Y[i] = X[i] ** (-order)
-    plt.plot(X, Y, '--k', label='$h^{}$'.format(order))
+    linestyle = '-.'
+    if order == 4:
+        linestyle = '--'
+    elif order == 6:
+        linestyle = ':'
+    plt.plot(X, Y, linestyle=linestyle, color='k', label='$h^{}$'.format(order))
 
 
 def plotter(qoi, data, refineTypes):
@@ -71,6 +76,7 @@ def plotter(qoi, data, refineTypes):
         # hack for SGA Paper: divide by max(MC Points)-min(MC Points) to get relative error.
         # This is necessary because the borehole function values are somewhere aroung 10^-6 
         # and thus the error looks smaller than it is
+        # Update: Now nrmse does exactly this!
         # borehole:
         # interpolErrors /= (3.2478e-06 - 7.05594e-07)
         # exp:
@@ -85,13 +91,40 @@ def plotter(qoi, data, refineTypes):
             plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
             # plt.ylabel('l2 error', fontsize=ylabelsize)
-            # plotConvergenceOrder(4, [1, 0], 5)
+    
+    elif qoi == 'l2WithOrder':
+        interpolErrors = data['interpolErrors']
+        for i, gridType in enumerate(data['gridTypes']):
+            [color, marker, label] = getColorAndMarker(gridType, refineType)
+            plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+            # plt.ylabel('l2 error', fontsize=ylabelsize)
+            if data['degree'] == 1:
+                orders = [2]
+            elif data['degree'] == 3:
+                orders = [2, 4]
+            elif data['degree'] == 5:
+                orders = [2, 4, 6]
+            for order in orders:
+                plotConvergenceOrder(order, [1, 0], 3)
+    
+    elif qoi == 'nrmse':
+        nrmsErrors = data['nrmsErrors']
+        for i, gridType in enumerate(data['gridTypes']):
+            [color, marker, label] = getColorAndMarker(gridType, refineType)
+            plt.plot(gridSizes[i, :], nrmsErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+            # plt.ylabel('NRMSE', fontsize=ylabelsize)
+            
     elif qoi == 'meanErr':
         meanErrors = data['meanErrors']
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.loglog(gridSizes[i, :], meanErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
             plt.ylabel('mean error', fontsize=ylabelsize)
+            
     elif qoi == 'varErr':
         varErrors = data['varErrors']
         for i, gridType in enumerate(data['gridTypes']):
@@ -114,14 +147,14 @@ def plotter(qoi, data, refineTypes):
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--qoi', default='l2', type=str, help='what to plot')
-    parser.add_argument('--model', default='attenuationN', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=6, type=int, help='the problems dimensionality')
+    parser.add_argument('--qoi', default='varErr', type=str, help='what to plot')
+    parser.add_argument('--model', default='analytical', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=5, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--degree', default=135, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularByPoints', type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=2000, type=int, help='maximum number of points used')
+    parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--maxLevel', default=6, type=int, help='maximum level for regualr refinement')
+    parser.add_argument('--maxPoints', default=5000, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=1, type=int, help='save figure')
     
     # configure according to input
@@ -162,6 +195,7 @@ if __name__ == '__main__':
             datapath = os.path.join(loadDirectory, saveName + '_data{}.pkl'.format(degree))    
             with open(datapath, 'rb') as fp:
                 data = pickle.load(fp)
+                orders = [degree + 1]
                 plotter(args.qoi, data, refineTypes)
     
     if args.saveFig == 1:

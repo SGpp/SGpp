@@ -55,6 +55,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'gaussianDirk':
         return gaussianDirk(dim)
     
+    elif model == 'monomialSumUQ':
+        return monomialSumUQ(dim)
+    
     # https://www.sfu.ca/~ssurjano/index.html
     elif model == 'friedman':
         return friedman()
@@ -73,8 +76,16 @@ def getFunction(model, dim=1, scalarModelParameter=3):
         return borehole()
     elif model == 'boreholeUQ':
         return boreholeUQ()    
+    elif model == 'sulfur':
+        return sulfur()
     elif model == 'piston':
         return piston()
+    elif model == 'shortcolumn':
+        return shortcolumn()
+    elif model == 'cantileverBeamStress':
+        return cantileverBeamStress()
+    elif model == 'cantileverBeamDisplacement':
+        return cantileverBeamDisplacement()
     
     # RAVEN Diss
     # https://digitalrepository.unm.edu/cgi/viewcontent.cgi?article=1053&context=ne_etds
@@ -89,6 +100,8 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     
     elif model == 'mixed':
         return mixed()
+    elif model == 'analytical':
+        return analytical(dim)
     
     # Steves tsunami Code ANUGA
     elif model == 'anugaStorage':
@@ -267,22 +280,18 @@ class test():
         self.dummy = 7
 
     def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 1.0)
-        ub = pysgpp.DataVector(self.getDim(), 2.0)
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
         return lb, ub
     
     def getName(self):
         return "test{}D".format(self.getDim())
     
     def getDim(self):
-        return 1
+        return 5
 
     def eval(self, X):
-        lb, ub = self.getDomain()
-        lN = pysgpp.DataVector(self.getDim(), 0.0)
-        uN = pysgpp.DataVector(self.getDim(), 1.0)
-        x = unnormalize(X, lb, ub, lN, uN)
-        return x[0]
+        return np.sin(2 * np.pi * X[0]) + X[1] * X[2] ** 3 - np.exp(-X[0] * X[4])
 
 
 # sum(x_i)^p, in particular equals 1 for p=0    
@@ -570,6 +579,75 @@ class gaussianDirk():
         return 0
 
 
+class monomialSumUQ():
+    
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        self.mus = [1] * dim
+        self.sigmas = [np.sqrt(0.2)] * dim
+        for i in range(dim):
+            self.pdfs.push_back(pysgpp.DistributionNormal(self.mus[i], self.sigmas[i]))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getName(self):
+        return "monomialSum_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    # moment E(X^k)
+    # https://de.wikipedia.org/wiki/Normalverteilung#Momente
+    def normalMoment(self, k, mu, sigma):
+        if k == 0:
+            return 1
+        elif k == 1:
+            return mu
+        elif k == 2:
+            return mu ** 2 + sigma ** 2
+        elif k == 3:
+            return mu ** 3 + 3 * mu * sigma ** 2
+        elif k == 4:
+            return mu ** 4 + 6 * mu ** 2 * sigma ** 2 + 3 * sigma ** 4
+        elif k == 5:
+            return mu ** 5 + 10 * mu ** 3 * sigma ** 2 + 15 * mu * sigma ** 4
+        elif k == 6:
+            return mu ** 6 + 15 * mu ** 4 * sigma ** 2 + 45 * mu ** 2 * sigma ** 4 + 15 * mu ** 6
+        elif k == 7:
+            return mu ** 7 + 21 * mu ** 5 * sigma ** 2 + 105 * mu ** 3 * sigma ** 4 + 105 * mu * sigma ** 6
+        elif k == 8:
+            return mu ** 8 + 28 * mu ** 6 * sigma ** 2 + 210 * mu ** 4 * sigma ** 4 + 420 * mu ** 2 * sigma ** 6 + 105 * sigma ** 8
+        else:
+            print("monomialSum: this moment is not implemented")
+
+    # mean = sum \int x_i^i N(x) dx = sum moment_i(N) = E(X^i) with X~N
+    def getMean(self):
+        mean = 0
+        for d in range(self.getDim()):
+            mean += self.normalMoment(d, self.mus[d], self.sigmas[d])
+        return mean
+    
+    def getVar(self):
+        return 777
+    
+    def eval(self, v):
+        sum = 0
+        for i in range(self.getDim()):
+            sum += v[i] ** i
+        return sum
+
+
 # https://www.sfu.ca/~ssurjano/fried.html
 # always effectively 5D but was applied with 1(->6D) and 5(->10D) inactive dimensions
 class friedman():
@@ -747,13 +825,61 @@ class boreholeUQ():
     
     # real mean and variance unknown. Calculated reference values with surplus adaptive 
     # extended B-splines of degree 5, as these have the smalles l2 error.
-    # The grid had 36.043 point
+    # The grid had 36.043 point and an l2 error of 5.71383612e-11, a NRMSE of  1.44149761e-09
     
     def getMean(self):
         return 0.00244501293667
     
     def getVar(self):
         return 2.35017408798e-05
+
+    
+# https://www.sfu.ca/~ssurjano/sulf.html
+# modified splines are a little better than extended.
+class sulfur():
+    
+    def __init__(self):
+        self.dim = 9
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.76, np.sqrt(1.2)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.39, np.sqrt(1.1)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.85, np.sqrt(1.1)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.3, np.sqrt(1.3)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(5.0, np.sqrt(1.4)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(1.7, np.sqrt(1.2)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(71.0, np.sqrt(1.15)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.5, np.sqrt(1.5)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(5.5, np.sqrt(1.5)))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getName(self):
+        return "sulfur"
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        S0 = 1366; A = 5.1 * 10 ** 14
+        Tr = v[0]; onemAc = v[1]; onemRs = v[2]; beta = v[3]
+        Psie = v[4]; fPsie = v[5]; Q = v[6]; Y = v[7]; L = v[7]
+        return -0.5 * S0 ** 2 * onemAc * Tr ** 2 * onemRs ** 2 * beta * Psie * fPsie * ((3 * Q * Y * L) / A)
+    
+    def getMean(self):
+        return 777
+    
+    def getVar(self):
+        return -1
 
 
 # extended is little worse than modified.
@@ -780,6 +906,144 @@ class piston():
         A = P0 * S + 19.62 * M - k * V0 / S
         V = S / (2 * k) * (np.sqrt(A ** 2 + 4 * k * P0 * V0 * Ta / T0) - A)
         return 2 * np.pi * np.sqrt(M / (k + S ** 2 * P0 * V0 * Ta / (T0 * V ** 2)))
+
+
+# from Eldred, "Comparison of Non-Intrusive Polynomail Chaos and Stochastic Collocation Methods for Uncertainty Quantification"
+# He also hass a correlation oefficient of 0.5 between two of the variables and performs
+# a nonlinear variable transformation. What does that mean? I currently don't do it.
+class shortcolumn():
+
+    def __init__(self):
+        self.dim = 3
+        self.mu = [500, 2000, 5] 
+        self.sigma = [np.sqrt(100), np.sqrt(400), np.sqrt(0.5)] 
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[0], self.sigma[0]))
+        self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[1], self.sigma[1]))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(self.mu[2], self.sigma[2]))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+#         print("domain:")
+#         print(lb.toString())
+#         print(ub.toString())
+        
+        return lb, ub
+        
+    def getName(self):
+       return "shortcolumn"
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+      b = 5.0;    h = 15.0
+      P = v[0]; M = v[1];   Y = v[2]
+      limitState = 1 - (4 * M / (b * h * h * Y)) - (P * P / (b * b * h * h * Y * Y))
+      # print("{} {} {} : {}".format(v[0], v[1], v[2], limitState))
+      return  limitState
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+       return 777
+    
+    def getVar(self):
+        return -1
+
+    
+# from Eldred, "Comparison of Non-Intrusive Polynomail Chaos and Stochastic Collocation Methods for Uncertainty Quantification"
+class cantileverBeamStress():
+
+    def __init__(self):
+        self.dim = 4
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(40000, 2000))
+        self.pdfs.push_back(pysgpp.DistributionNormal(2.9e+07, 1.45e+06))
+        self.pdfs.push_back(pysgpp.DistributionNormal(500, 100))
+        self.pdfs.push_back(pysgpp.DistributionNormal(1000, 100))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+        
+    def getName(self):
+       return "cantileverBeamStress"
+    
+    def getDim(self):
+        return self.dim
+
+    # has two outputs
+    def eval(self, v):
+        L = 100.0; D0 = 2.2535
+        w = 0.1;  t = 0.1  # these are width and thickness of the cross section. They are not specified in the paper!?
+        R = v[0]; E = v[1]; X = v[2]; Y = v[3]
+        stress = 600.0 / (w * t * t) * Y + 600.0 / (w * w * t) * X
+        return stress / R - 1
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+       return 777
+    
+    def getVar(self):
+        return -1
+
+    
+# from Eldred, "Comparison of Non-Intrusive Polynomail Chaos and Stochastic Collocation Methods for Uncertainty Quantification"
+class cantileverBeamDisplacement():
+
+    def __init__(self):
+        self.dim = 4
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(40000, 2000))
+        self.pdfs.push_back(pysgpp.DistributionNormal(2.9e+07, 1.45e+06))
+        self.pdfs.push_back(pysgpp.DistributionNormal(500, 100))
+        self.pdfs.push_back(pysgpp.DistributionNormal(1000, 100))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+        
+    def getName(self):
+       return "cantileverBeamDisplacement"
+    
+    def getDim(self):
+        return self.dim
+
+    # has two outputs
+    def eval(self, v):
+        L = 100.0; D0 = 2.2535
+        w = 0.1;  t = 0.1  # these are width and thickness of the cross section. They are not specified in the paper!?
+        R = v[0]; E = v[1]; X = v[2]; Y = v[3]
+        displacement = 4 * L * L * L / (E * w * t) * np.sqrt((Y / (t * t)) ** 2 + (X / (w * w)) ** 2)
+        return displacement / D0 - 1
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+       return 777
+    
+    def getVar(self):
+        return -1
 
 
 class tensorMonomialU():
@@ -1003,6 +1267,62 @@ class mixed():
     
     def getVar(self):
         return   2.944758124182513  # 0.474927743905671
+
+
+class analytical():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(5, np.sqrt(0.25)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.5, np.sqrt(1.1)))
+        self.pdfs.push_back(pysgpp.DistributionUniform(-1, 1))
+        self.pdfs.push_back(pysgpp.DistributionNormal(100, np.sqrt(5.5)))
+        self.pdfs.push_back(pysgpp.DistributionNormal(0, np.sqrt(0.01)))
+        if self.dim == 6:
+            self.pdfs.push_back(pysgpp.DistributionUniform(-5, 0))
+        
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        
+        print("domain of analytical function:")
+        print(lb.toString())
+        print(ub.toString())    
+        
+        return lb, ub
+    
+    def getName(self):
+       return "analytical_{}D".format(self.dim)
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        if self.dim == 5:
+            return np.sin(v[0]) + v[1] * v[2] ** 3 - np.exp(-v[0] * v[4])
+        elif self.dim == 6:
+            return np.sin(v[0]) + v[1] * v[2] ** 3 - np.exp(v[5] - v[0] * v[4])
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        if self.dim == 5:
+            # Calculated with surplus 15k deg 5. Had an l2 of 4.9e-10 and an NRMSE of 9.0e-14
+            return -1.98117142458
+        elif self.dim == 6:
+            return 777
+    
+    def getVar(self):
+        if self.dim == 5:
+            return 3.92771506651
+        elif self.dim == 6:
+            return -1
 
 
 class anugaStorage():
