@@ -32,10 +32,10 @@ namespace sgpp {
                 pre_comp_evals() {
             // Add a map for each grid
             // Check the parameters, throw exception
-            if (thresh < 0){
-                throw sgpp::base::application_exception(
-                        "GridPointBasedCoarseningFunctor: Threshold should be non-negative!");
-            }
+//            if (thresh < 0){
+//                throw sgpp::base::application_exception(
+//                        "GridPointBasedCoarseningFunctor: Threshold should be non-negative!");
+//            }
             for (size_t i = 0; i < grids.size(); i++) {
                 pre_comp_evals.push_back(std::map<std::string, double>());
             }
