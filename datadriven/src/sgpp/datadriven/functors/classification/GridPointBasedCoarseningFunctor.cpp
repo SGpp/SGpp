@@ -104,9 +104,9 @@ namespace sgpp {
             }
             
             gridClassDiffs = max - second_max;
-            double rangex = 1.00;
-            double rangey = 1.00;
-            printHeatmap(rangex, rangey);
+//            double rangex = 1.00;
+//            double rangey = 1.00;
+//            printHeatmap(rangex, rangey);
             //Compare to the neighbors
 
             base::HashGridPoint& gp = storage.getPoint(seq);
