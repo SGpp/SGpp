@@ -95,7 +95,7 @@ namespace sgpp {
                         bool left) const;
 
             bool hasChild(const base::HashGridPoint& gp, size_t d, bool left) const;
-            void printHeatmap(double rangex, double rangey) const;
+//            void printHeatmap(double rangex, double rangey) const;
             bool isLeftChild(const base::HashGridPoint& gp, size_t d) const;
 
             /**
@@ -116,8 +116,8 @@ namespace sgpp {
                            size_t d, base::HashGridPoint& par) const;
 
             /**
-             * @param gp1 the grid point
-             * @param gp2 the grid point
+             * @param gp1 the first grid point
+             * @param gp2 the second grid point
              */
             double getDistance(base::HashGridPoint& gp1,
                                base::HashGridPoint& gp2) const;
@@ -126,11 +126,11 @@ namespace sgpp {
              * @param gp the grid point
              */
             void printCoordinate(base::HashGridPoint& gp) const;
-            /**
-             * Is point in support of basis function at gp
-             */
-            bool isWithinSupport(base::HashGridPoint& gp,
-                                 base::DataVector& point) const;
+//            /**
+//             * Is point in support of basis function at gp
+//             */
+//            bool isWithinSupport(base::HashGridPoint& gp,
+//                                 base::DataVector& point) const;
         };
     }  // namespace datadriven
 }  // namespace sgpp

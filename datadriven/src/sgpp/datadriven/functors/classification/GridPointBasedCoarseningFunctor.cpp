@@ -396,21 +396,21 @@ namespace sgpp {
 
         }
         
-        bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
-                                                         base::DataVector& point)
-        const {
-            for (size_t d = 0; d < point.getSize(); d++) {
-                double coord = gp.getStandardCoordinate(d);
-                size_t level = gp.getLevel(d);
-                double step = 1.0 / pow(2.0, static_cast<double>(level));
-                double lower = coord - step;
-                double upper = coord + step;
-                if (point.get(d) < lower || point.get(d) > upper) {
-                    return false;
-                }
-            }
-            return true;
-        }
+//        bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
+//                                                         base::DataVector& point)
+//        const {
+//            for (size_t d = 0; d < point.getSize(); d++) {
+//                double coord = gp.getStandardCoordinate(d);
+//                size_t level = gp.getLevel(d);
+//                double step = 1.0 / pow(2.0, static_cast<double>(level));
+//                double lower = coord - step;
+//                double upper = coord + step;
+//                if (point.get(d) < lower || point.get(d) > upper) {
+//                    return false;
+//                }
+//            }
+//            return true;
+//        }
 
     }  // namespace datadriven
 }  // namespace sgpp
