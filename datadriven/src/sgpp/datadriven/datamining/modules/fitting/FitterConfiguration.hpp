@@ -9,7 +9,9 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -144,6 +146,18 @@ class FitterConfiguration {
   const datadriven::LearnerConfiguration &getLearnerConfig() const;
 
   /**
+   * Returns the configuration for parallelization with ScaLAPACK
+   * @return immutable ParallelConfiguration
+   */
+  const datadriven::ParallelConfiguration &getParallelConfig() const;
+
+  /*
+   * Returns the configuration for the geometry parameters
+   * @return immutable GeometryConfiguration
+   */
+  const datadriven::GeometryConfiguration& getGeometryConfig() const;
+
+  /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return GeneralGridConfiguration
    */
@@ -196,7 +210,7 @@ class FitterConfiguration {
   /**
    * set default values for all members based on the desired scenario.
    */
-  virtual void setupDefaults() = 0;
+  virtual void setupDefaults();
 
   /**
    * obtain parameters from a parser
@@ -257,10 +271,15 @@ class FitterConfiguration {
    */
   datadriven::LearnerConfiguration learnerConfig;
 
-  /**
-   * Defines the general type of the Fitter
+  /*
+   * Configuration of the geometry parameters
    */
-  FitterType type;
+  datadriven::GeometryConfiguration geometryConfig;
+
+  /**
+   *  Configuration for parallelization with ScaLAPACK
+   */
+  datadriven::ParallelConfiguration parallelConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

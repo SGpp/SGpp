@@ -13,6 +13,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
@@ -31,14 +32,14 @@ struct DataSourceConfig;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-using json::JSON;
 using json::DictNode;
+using json::JSON;
 
-using sgpp::solver::SLESolverConfiguration;
 using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::GeneralGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -55,6 +56,9 @@ class DataMiningConfigParser {
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
   bool hasFitterConfig() const;
+  bool hasGeometryConfig() const;
+  bool hasParallelConfig() const;
+
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
                           std::map<std::string, DiscreteParameter> &dispar,
@@ -115,6 +119,24 @@ class DataMiningConfigParser {
    */
   bool getFitterLearnerConfig(datadriven::LearnerConfiguration &config,
                               const datadriven::LearnerConfiguration &defaults) const;
+
+  /**
+   * Initializes the parallel configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the parallel config does not contain a matching entry
+   * @return whether the configuration contains a parallel configuration
+   */
+  bool getFitterParallelConfig(datadriven::ParallelConfiguration &config,
+                               const datadriven::ParallelConfiguration &defaults) const;
+
+  /*
+   * Initializes the geometry configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return whether the configuration contains a learner configuration
+   */
+  bool getGeometryConfig(datadriven::GeometryConfiguration &config,
+      const datadriven::GeometryConfiguration &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;

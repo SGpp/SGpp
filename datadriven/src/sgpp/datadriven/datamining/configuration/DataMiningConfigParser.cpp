@@ -22,6 +22,8 @@
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -56,8 +58,7 @@ DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : co
     configFile = std::make_unique<JSON>(filepath);
   } catch (json_exception &exception) {
     std::cout << exception.what() << std::endl;
-    std::string errorMsg = "can not open file: \"" + filepath + "\"";
-    throw file_exception(errorMsg.c_str());
+    throw file_exception("Cannot open JSON file.");
   }
 }
 
@@ -77,11 +78,22 @@ bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contai
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasParallelConfig() const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+  return hasParallelConfig;
+}
+
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
   return hasFitterCrossValidationConfig;
 }
+
+bool DataMiningConfigParser::hasGeometryConfig() const {
+  return configFile->contains("geometryConfig");
+}
+
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {
@@ -361,6 +373,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
                   defaults.iCholSweepsUpdateLambda_, "densityEstimationConfig");
     config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
                                           defaults.iCholSweepsSolver_, "densityEstimationConfig");
+
+    config.normalize_ = parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
+                                  "densityEstimationConfig");
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
@@ -832,7 +847,6 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config";
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
@@ -840,6 +854,58 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   }
 
   return hasLearnerConfig;
+}
+
+bool DataMiningConfigParser::getGeometryConfig(
+    datadriven::GeometryConfiguration &config,
+    const datadriven::GeometryConfiguration &defaults) const {
+  bool hasGeometryConfig = hasFitterConfig() ?
+    (*configFile)[fitter].contains("geometryConfig") : false;
+
+  if (hasGeometryConfig) {
+    std::cout << "Has geometry config" << std::endl;
+    auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
+
+    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+
+    // parse  density estimation type
+    if (geometryConfig->contains("stencil")) {
+      config.stencilType = GeometryConfigurationParser::parse(
+          (*geometryConfig)["stencil"].get());
+    } else {
+      std::cout << "# Did not find geometryConfig[stencil]."
+                   " Setting default value ";
+      config.stencilType = defaults.stencilType;
+    }
+  }
+
+
+  return hasGeometryConfig;
+}
+
+bool DataMiningConfigParser::getFitterParallelConfig(
+    datadriven::ParallelConfiguration &config,
+    const datadriven::ParallelConfiguration &defaults) const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+
+  if (hasParallelConfig) {
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
+
+    config.scalapackEnabled_ = true;
+
+    config.processRows_ = static_cast<int>(
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig"));
+    config.processCols_ = static_cast<int>(
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig"));
+
+    config.rowBlockSize_ =
+        parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+    config.columnBlockSize_ =
+        parseUInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+  }
+
+  return hasParallelConfig;
 }
 
 } /* namespace datadriven */

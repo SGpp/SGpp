@@ -39,7 +39,7 @@ using sgpp::base::DataVector;
 
 struct State {
   State()
-      : path("datadriven/datasets/liver/liver-disorders_normalized_small.arff"),
+      : path("datadriven/datasets/liver/liver-disorders_normalized_small.arff.gz"),
         testPoints({{{0.307143, 0.130137, 0.050000},
                      {0.365584, 0.105479, 0.050000},
                      {0.178571, 0.201027, 0.050000},

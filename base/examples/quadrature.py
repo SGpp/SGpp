@@ -19,12 +19,8 @@
 ## the function itself using 100000 Monte Carlo points, and we then
 ## compute the L2-error.
 ##
-## For instructions on how to run the example, please see \ref installation.
-##
 ## The function, which sgpp::base::OperationQuadratureMC takes, has one parameter,
 ## a sequence (C++ provides a tuple) with the coordinates of the grid point \f$\in [0,1]^d\f$.
-##
-## This example can be found in the file quadrature.py 
 
 # import pysgpp library
 import pysgpp
@@ -44,7 +40,7 @@ def g(x):
   return res
 
 
-## Create a two-dimensional piecewise bi-linear grid with level 3
+## Create a two-dimensional piecewise bi-linear grid of level 3
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
