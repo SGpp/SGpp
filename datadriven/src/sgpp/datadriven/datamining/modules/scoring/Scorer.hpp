@@ -74,6 +74,16 @@ class Scorer {
 
  private:
   /**
+   * evaluate the accuracy on the test set using the #sgpp::datadriven::Metric.
+   * Uses ScaLAPACK to distribute evaluation (depends on model)
+   *
+   * @param model model to be fitted based on the train dataset.
+   * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @return accuracy of the fit.
+   */
+  double testDistributed(ModelFittingBase& model, Dataset& testDataset);
+
+  /**
    * #sgpp::datadriven::Metric to be used to quantify accuracy of the fit.
    */
   std::unique_ptr<Metric> metric;

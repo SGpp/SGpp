@@ -7,21 +7,26 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
+
+#include <vector>
 #include <memory>
 
 namespace sgpp {
 
-using sgpp::base::OperationMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::OperationMatrix;
 using sgpp::base::GeneralGridConfiguration;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverConfiguration;
@@ -126,6 +131,13 @@ class ModelFittingBase {
   virtual void reset() = 0;
 
   /**
+   * @returns the BLACS process grid, useful if the fitter uses ScaLAPACK
+   */
+  virtual std::shared_ptr<BlacsProcessGrid> getProcessGrid() const {
+    throw sgpp::base::not_implemented_exception("getProcessGrid() not implemented in this fitter");
+  }
+
+  /**
    * Get the configuration of the fitter object.
    * @return configuration of the fitter object
    */
@@ -136,6 +148,9 @@ class ModelFittingBase {
    */
   bool verboseSolver;
 
+  // virtual std::string& storeFitter();
+  // void storeClassificator();
+
  protected:
   /**
    * Factory member function that generates a grid from configuration.
@@ -143,6 +158,15 @@ class ModelFittingBase {
    * @return new grid object that is owned by the caller.
    */
   Grid *buildGrid(const GeneralGridConfiguration &gridConfig) const;
+
+  /**
+     * Factory member function that generates a grid from configuration.
+     * @param gridConfig configuration for the grid object
+     * @param geometryConfig configuration for the geometry parameters
+     * @return new grid object that is owned by the caller.
+     */
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+                  const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Factory member function to build the solver for the least squares regression problem according
@@ -157,6 +181,14 @@ class ModelFittingBase {
    * @param config configuration updating the for the solver.
    */
   void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
+
+  /*
+   * This method is used to pass the interactions for a geometry aware sparse grid to the offline object
+   * @param geometryConfig from configuration file
+   * @return interactions
+   */
+  std::vector<std::vector<size_t>> getInteractions(
+    const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Configuration object for the fitter.

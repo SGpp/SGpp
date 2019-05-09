@@ -149,6 +149,7 @@ vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", Non
 vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
 vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
 vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
+vars.Add("SCALAPACK_LIBRARY_PATH", "Set the path to the Scalapack/mkl library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -178,6 +179,8 @@ vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Libr
 
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
+vars.Add(BoolVariable("USE_SCALAPACK", "Set if the ScaLAPACK library should be used " +
+                                          "(requires OpenMPI, only relevant for sgpp::datadriven)", False))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
@@ -358,9 +361,9 @@ if env["PLATFORM"] == "win32":
   # could cause trouble
   try:
     import pysgpp
-    Helper.printWarning("An existing installation of pysgpp was detected."
-                        "To get rid of this warning remove the pysgpp package"
-                        "from your local Oython installation.")
+    Helper.printWarning("An existing installation of pysgpp was detected. "
+                        "To get rid of this warning remove the pysgpp package "
+                        "from your local Python installation.")
   except:
     pass
 
@@ -373,14 +376,14 @@ if env["PLATFORM"] == "win32":
   os.makedirs(pysgppTempFolder)
 
   # add it to the build python path
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([pysgppTempFolder,
-                                              env["ENV"].get("PYTHONPATH", "")])
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      pysgppTempFolder,
+      env["ENV"].get("PYTHONPATH", "")])
 else:
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
-                                              PYSGPP_PACKAGE_PATH.abspath])
-  pysgpp_package_path = PYSGPP_PACKAGE_PATH.abspath + '/pysgpp'
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
-                                              pysgpp_package_path])
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      PYSGPP_PACKAGE_PATH.abspath,
+      PYSGPP_BUILD_PATH.abspath,
+      env["ENV"].get("PYTHONPATH", "")])
 
 # Style checker
 #########################################################################

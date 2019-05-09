@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
@@ -34,9 +35,13 @@ namespace datadriven {
 
 ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
-  std::cout << "DensityEstimationMinerFactory::createFitter()\n";
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
+#ifdef USE_SCALAPACK
+  if (parser.hasParallelConfig()) {
+    return new ModelFittingDensityEstimationOnOffParallel(config);
+  }
+#endif
   if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityEstimationCombi(config);
   }
@@ -48,7 +53,6 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
       std::cout << "\nDECOMPOSITION\n";
       return new ModelFittingDensityEstimationOnOff(config);
     default: { throw base::application_exception("Unknown density estimation type"); }
-  }
 }
 
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
