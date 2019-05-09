@@ -50,7 +50,7 @@ Grid *ModelFittingBase::buildGrid(const GeneralGridConfiguration &gridConfig) co
   return gridFactory.createGrid(gridConfig, interactions);
 }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
+Grid *ModelFittingBase::buildGrid(const GeneralGridConfiguration &gridConfig,
     const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;
 
