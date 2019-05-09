@@ -12,13 +12,15 @@ try:
     import ipdb
 except:
     pass
-
-rc('animation', html='jshtml')
-import anuga
-sys.path.append("/home/rehmemk/git/anuga-clinic-2018")
-import anuga_tools.animate as animate
-sys.path.append("/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA")
-import okushiri
+try:
+    rc('animation', html='jshtml')
+    import anuga
+    sys.path.append("/home/rehmemk/git/anuga-clinic-2018")
+    import anuga_tools.animate as animate
+    sys.path.append("/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA")
+    import okushiri
+except:
+    pass
 
 # MALTE: Er nimmt als schwierige Funktion immer sin(sin(x))
 
