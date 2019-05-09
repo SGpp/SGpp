@@ -261,14 +261,15 @@ bool ModelFittingClassification::refine() {
     refinementsPerformed++;
     hasRefined = true;
   }
-  
+
+  // Only run coarsening for one time, but could be multiple points being removed
   if (coarseningsPerformed < 1){
     // Create a refinement functor
     MultiGridCoarseningFunctor* cfunc = getCoarseningFunctor(grids, surpluses);
     
     // Apply changes to all models
     for (size_t idx = 0; idx < models.size(); idx++) {
-    // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
+    // Coarsening for classification
     std::list<size_t> coarsened;
 
     cfunc->preComputeEvaluations();

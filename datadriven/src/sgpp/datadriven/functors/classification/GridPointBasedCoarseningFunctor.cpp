@@ -30,7 +30,7 @@ namespace sgpp {
                 coarsenings_num(r_num), threshold(thresh),
                 pre_compute(pre_compute),
                 pre_comp_evals() {
-            // Add a map for each grid
+
             // Check the parameters, throw exception
 //            if (thresh < 0){
 //                throw sgpp::base::application_exception(
@@ -235,34 +235,8 @@ namespace sgpp {
                 }
             }
         }
-        
-//        void GridPointBasedCoarseningFunctor::printHeatmap(double rangex, double rangey) const {
-//
-//            std::cout<<"Printing the heat map..."<<std::endl;
-//            for (size_t m=0;m<=20;m=m+1){
-//                for (size_t n=0;n<=20;n=n+1){
-//                    const double x = m/20.0;
-//                    const double y = n/20.0;
-//                    std::cout<<x<<";"<<y;
-//                    for (size_t i = 0; i < grids.size(); i++) {
-//                        std::cout<<";";
-//                        std::unique_ptr<base::OperationEval>
-//                        opEval(op_factory::createOperationEval(*grids.at(i)));
-//                        //Coordinate
-//                        std::vector<double> c {x,y};
-//                        base::DataVector p(c);
-//                        //key
-//                        std::string key = "";
-//                        key = p.toString();
-//                        double v = opEval->eval(*alphas.at(i), p);
-//                        std::cout<<v;
-//                    }
-//                    std::cout<<std::endl;
-//                }
-//            }
-//            std::cout<<"################################"<<std::endl;
-//        }
-//
+
+
         double GridPointBasedCoarseningFunctor::start() const {
             return 0.0;
         }
@@ -395,7 +369,32 @@ namespace sgpp {
             }
 
         }
-        
+//        void GridPointBasedCoarseningFunctor::printHeatmap(double rangex, double rangey) const {
+//
+//            std::cout<<"Printing the heat map..."<<std::endl;
+//            for (size_t m=0;m<=20;m=m+1){
+//                for (size_t n=0;n<=20;n=n+1){
+//                    const double x = m/20.0;
+//                    const double y = n/20.0;
+//                    std::cout<<x<<";"<<y;
+//                    for (size_t i = 0; i < grids.size(); i++) {
+//                        std::cout<<";";
+//                        std::unique_ptr<base::OperationEval>
+//                        opEval(op_factory::createOperationEval(*grids.at(i)));
+//                        //Coordinate
+//                        std::vector<double> c {x,y};
+//                        base::DataVector p(c);
+//                        //key
+//                        std::string key = "";
+//                        key = p.toString();
+//                        double v = opEval->eval(*alphas.at(i), p);
+//                        std::cout<<v;
+//                    }
+//                    std::cout<<std::endl;
+//                }
+//            }
+//            std::cout<<"################################"<<std::endl;
+//        }
 //        bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
 //                                                         base::DataVector& point)
 //        const {
