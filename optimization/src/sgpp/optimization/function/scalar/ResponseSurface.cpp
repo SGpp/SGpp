@@ -10,6 +10,8 @@
 namespace sgpp {
 namespace optimization {
 
+double ResponseSurface::eval(sgpp::base::DataVector v) { return interpolant->eval(v); }
+
 double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
                                 size_t numMCPoints) {
   double l2Err = 0.0;
@@ -64,10 +66,6 @@ sgpp::base::DataVector ResponseSurface::nrmsError(
   errorVector[3] = max;
   return errorVector;
 }
-
-// void ResponseSurface::transformUnitPoint(sgpp::base::DataVector& v) {
-//  transformPoint(v, lb, ub, unitLBounds, unitUBounds);
-//}
 
 void ResponseSurface::transformPoint(sgpp::base::DataVector& v, sgpp::base::DataVector lBounds,
                                      sgpp::base::DataVector uBounds,

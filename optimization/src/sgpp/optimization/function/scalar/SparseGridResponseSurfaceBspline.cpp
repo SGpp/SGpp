@@ -10,53 +10,6 @@
 namespace sgpp {
 namespace optimization {
 
-void SparseGridResponseSurfaceBspline::initialize() {
-  if (gridType == sgpp::base::GridType::Bspline) {
-    grid = std::make_shared<sgpp::base::BsplineGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
-    grid = std::make_shared<sgpp::base::BsplineBoundaryGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
-    boundary = true;
-  } else if (gridType == sgpp::base::GridType::ModBspline) {
-    grid = std::make_shared<sgpp::base::ModBsplineGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
-    grid = std::make_shared<sgpp::base::BsplineClenshawCurtisGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
-    grid = std::make_shared<sgpp::base::FundamentalSplineGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
-    grid = std::make_shared<sgpp::base::ModFundamentalSplineGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::NakBspline) {
-    grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-    grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
-    boundary = true;
-  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
-    boundary = false;
-  } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
-    grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
-    basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
-    boundary = false;
-  } else {
-    throw sgpp::base::generation_exception(
-        "SparseGridResponseSurfaceBspline: gridType not supported.");
-  }
-}
-
 void SparseGridResponseSurfaceBspline::regular(size_t level) {
   grid->getGenerator().regular(level);
   calculateInterpolationCoefficients();
@@ -137,12 +90,16 @@ double SparseGridResponseSurfaceBspline::getMean(sgpp::base::DistributionsVector
                                                  size_t quadOrder) {
   sgpp::base::OperationWeightedQuadrature* opWQuad =
       sgpp::op_factory::createOperationWeightedQuadrature(*grid);
-  return opWQuad->doWeightedQuadrature(coefficients, pdfs, quadOrder);
+  mean = opWQuad->doWeightedQuadrature(coefficients, pdfs, quadOrder);
+  computedMeanFlag = true;
+  return mean;
 }
 
 double SparseGridResponseSurfaceBspline::getVariance(sgpp::base::DistributionsVector pdfs,
                                                      size_t quadOrder) {
-  double mean = getMean(pdfs, quadOrder);
+  if (!computedMeanFlag) {
+    double dummy = getMean(pdfs, quadOrder);
+  }
   sgpp::base::OperationWeightedSecondMoment* opWSM =
       sgpp::op_factory::createOperationWeightedSecondMoment(*grid);
   double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs, quadOrder);

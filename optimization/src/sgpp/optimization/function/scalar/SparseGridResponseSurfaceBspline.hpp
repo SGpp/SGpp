@@ -52,18 +52,62 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
         degree(degree) {
     this->lb = lb;
     this->ub = ub;
-    initialize();
+    // dummy values for mean and variance
+    mean = 777;
+    variance = -1;
+    computedMeanFlag = false;
+    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
+    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
+    if (gridType == sgpp::base::GridType::Bspline) {
+      grid = std::make_shared<sgpp::base::BsplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+      grid = std::make_shared<sgpp::base::BsplineBoundaryGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModBspline) {
+      grid = std::make_shared<sgpp::base::ModBsplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
+      grid = std::make_shared<sgpp::base::BsplineClenshawCurtisGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
+      grid = std::make_shared<sgpp::base::FundamentalSplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
+      grid = std::make_shared<sgpp::base::ModFundamentalSplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBspline) {
+      grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+      grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      boundary = false;
+    } else {
+      throw sgpp::base::generation_exception(
+          "SparseGridResponseSurfaceBspline: gridType not supported.");
+    }
   }
 
   /**
    * Destructor
    */
-  virtual ~SparseGridResponseSurfaceBspline() {}
-
-  /**
-   * sets numDim, grid and basis according to objectiveFunction and gridType
-   */
-  void initialize();
+  ~SparseGridResponseSurfaceBspline() {}
 
   /**
    * creates a regualar sparse grid interpolant
@@ -114,7 +158,7 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param v	point to evaluate in
    * @return	the evaluation
    */
-  double eval(sgpp::base::DataVector v);
+  double eval(sgpp::base::DataVector v) override;
 
   /**
    * evaluates the response surface and its gradient
@@ -193,6 +237,14 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
   sgpp::base::DataVector functionValues;
   // whether or not the grid includes the boundary
   bool boundary;
+  // mean value
+  double mean;
+  // variance value
+  double variance;
+  // mean computation flag for variance computation
+  bool computedMeanFlag;
+  sgpp::base::DataVector unitLBounds;
+  sgpp::base::DataVector unitUBounds;
 
   /**
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients

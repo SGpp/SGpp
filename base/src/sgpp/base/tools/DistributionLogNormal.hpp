@@ -47,15 +47,16 @@ class DistributionLogNormal : public Distribution {
   }
 
   /**
-   * Heuristical bounds.
-   * For these bounds and quadrature order 400, for the objective function f(x)=x mean and variance
-   * are calculated with an error of machine precision => the LogNormal distribution is truncated
-   * s.t. the missing part is not numerically relevant
+   * See DistributionNormal.cpp: 2*Phi(z)-1 of a normal distirbutions mass lie inside
+   * the interval [mean-z*sigma,mean+z*sigma].
+   * Therefore corresponding accuracies for logNormal distribution are achieved in an interval
+   * [exp(mean-z*sigma),exp(mean+z*sigma)]
+   * As for the normal distribution, we choose z=9 for precision of ~ 10^(-18)
    */
   sgpp::base::DataVector getBounds() {
     sgpp::base::DataVector bounds(2);
-    bounds[0] = 0.0;
-    bounds[1] = 500 * stddev * stddev;
+    bounds[0] = exp(mean - 9 * stddev);
+    bounds[1] = exp(mean + 9 * stddev);
     return bounds;
   }
 

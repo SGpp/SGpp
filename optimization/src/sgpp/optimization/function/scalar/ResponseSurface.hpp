@@ -27,10 +27,7 @@ class ResponseSurface {
   /**
    * Constructor
    */
-  explicit ResponseSurface(size_t numDim) : numDim(numDim) {
-    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
-    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
-  }
+  explicit ResponseSurface(size_t numDim) : numDim(numDim) {}
 
   /**
    * Destructor
@@ -45,7 +42,7 @@ class ResponseSurface {
    * @param v	point in which the response surface  shall be evaulated
    * @teurn 	evaluation
    */
-  virtual double eval(sgpp::base::DataVector v) = 0;
+  virtual double eval(sgpp::base::DataVector v);
 
   /**
    * evaluates the response surface and its gradient
@@ -80,21 +77,12 @@ class ResponseSurface {
 
  protected:
   size_t numDim;
-  sgpp::base::DataVector unitLBounds;
-  sgpp::base::DataVector unitUBounds;
   // lower bounds of the objective function's domain
   sgpp::base::DataVector lb;
   // upper bounds of the objective function's domain
   sgpp::base::DataVector ub;
   std::shared_ptr<sgpp::optimization::ScalarFunction> interpolant;
   std::shared_ptr<sgpp::optimization::ScalarFunctionGradient> interpolantGradient;
-
-  /**
-   * transforms a point in hyper-rectangle [0,1]^D to the objective functions domain
-   *
-   * @param	v			point in [lBounds,uBounds]
-   */
-  //  void transformUnitPoint(sgpp::base::DataVector& v);
 
   /**
    * transforms a point in hyper-rectangle [lBounds,rBounds] to the hyper-rectangle

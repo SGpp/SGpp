@@ -41,15 +41,17 @@ class DistributionNormal : public Distribution {
   }
 
   /**
-   * Heuristical bounds.
-   * For these bounds and quadrature order 20, for the objective function f(x)=1 mean and variance
-   * are calculated with an error of machine precision => the normal distirbution is truncated s.t.
-   * the missing part is not numerically relevant
+   * According to Wikipedia (https://de.wikipedia.org/wiki/Normalverteilung#Streuintervalle)
+   * inside the interval [mean-z*sigma,mean+z*sigma] lie 2*Phi(z)-1 of the mass of the normal
+   * distribution.
+   * For z = 7 less than 10^(-9) are outside [mean - 7*sigma, mean + 7*sigma]
+   * For z = 8 less than 10^(-14) are outside [mean - 8*sigma, mean + 8*sigma]
+   * For z = 9 less than 10^(-18) are outside [mean - 9*sigma, mean + 9*sigma]
    */
   sgpp::base::DataVector getBounds() {
     sgpp::base::DataVector bounds(2);
-    bounds[0] = mean - 20 * stddev * stddev;
-    bounds[1] = mean + 20 * stddev * stddev;
+    bounds[0] = mean - 9 * stddev;
+    bounds[1] = mean + 9 * stddev;
     return bounds;
   }
 
