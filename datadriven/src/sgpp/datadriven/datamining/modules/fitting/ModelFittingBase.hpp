@@ -165,7 +165,7 @@ class ModelFittingBase {
      * @param geometryConfig configuration for the geometry parameters
      * @return new grid object that is owned by the caller.
      */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+  Grid *buildGrid(const GeneralGridConfiguration &gridConfig,
                   const GeometryConfiguration &geometryConfig) const;
 
   /**
