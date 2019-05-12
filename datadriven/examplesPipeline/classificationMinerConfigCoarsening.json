@@ -22,8 +22,8 @@
 		"coarseningConfig" :{
                 "numCoarsening": 3,
                 "threshold": 0.01,
-                "maxLevelType": false,
-                "noPoints": 1,
+                //"maxLevelType": false,
+                //"noPoints": 1,
                 "coarseningIndicator" : "GridPointBased"
 		},
 		"regularizationConfig": {
