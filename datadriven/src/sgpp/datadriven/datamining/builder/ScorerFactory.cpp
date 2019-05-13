@@ -24,7 +24,12 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
   } else if (config == ScorerMetricType::accuracy) {
     return new Accuracy{};
   } else {
-    return nullptr;
+    // (Sebastian Kreisel) This case should never occur, because
+    // ScorerConfiguration sets up a default value: ScorerMetricType:accuracy
+    // Previously we returned a nullptr in this else-case but this leads
+    // to segfaults or undefined behavior down the line, so I removed it
+    // TODO(Sebastian) It would be best to throw an error or exception here
+    return new Accuracy{};
   }
 }
 

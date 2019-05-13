@@ -98,7 +98,7 @@ struct DataSourceConfig {
   * Starts at 0, order matters; Any column not contained in this vector is ignored
   * as a dimension
   * If empty, then all columns are read in (default)
-  * /
+  */
   std::vector<size_t> readinColumns = std::vector<size_t>();
   /**
   * Valid path to a file on disk. Empty for generated artificial datasets
