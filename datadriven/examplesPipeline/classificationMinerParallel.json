@@ -40,7 +40,7 @@
     },
     "densityEstimationConfig": {
       "densityEstimationType": "decomposition",
-      "matrixDecompositionType": "orthoadapt"
+      "matrixDecompositionType": "SMW_ortho"
     },
     "learner": {
       "usePrior": true,

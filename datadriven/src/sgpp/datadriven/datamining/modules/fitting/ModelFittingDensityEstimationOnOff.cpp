@@ -10,8 +10,8 @@
  *     Author: Kilian Röhner
  */
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -108,8 +108,8 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{
-      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
+  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
+      *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
 
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,
