@@ -28,12 +28,13 @@ namespace datadriven {
 
 DBMatOnlineDE_SMW::DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
-  if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::SMW_ortho &&
-      offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+  if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::OrthoAdapt &&
+      offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::Chol) {
     throw sgpp::base::algorithm_exception(
-        "In DBMatOnlineDE_SMW::DBMatOnlineDE_SMW: offline object has wrong "
-        "decomposition type: ::SMW_ortho or ::SMW_chol needed!");
+        "In DBMatOnlineDE_SMW::DBMatOnlineDE_SMW: !!offline!! object has wrong "
+        "decomposition type: DecompositionType::OrthoAdapt or ::Chol needed!");
   } else {
+    std::cout << "\n\n\nSMW created\n\n\n";
     // initial dummy space for information of refinement/coarsening
     this->b_adapt_matrix_ = sgpp::base::DataMatrix(1, 1);
     // note: if the size of b_adapt_matrix_ here is not initialized with 1, other functions

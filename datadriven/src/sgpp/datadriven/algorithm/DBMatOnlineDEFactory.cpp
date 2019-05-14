@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -24,8 +25,10 @@ namespace datadriven {
 using sgpp::base::factory_exception;
 
 DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, Grid& grid,
-                                                        double lambda, double beta) {
-  auto decompositionType = offline.getDecompositionType();
+                                                        double lambda, double beta,
+                                                        MatrixDecompositionType matDecompType) {
+  // auto decompositionType = offline.getDecompositionType();
+  auto decompositionType = matDecompType;
   switch (decompositionType) {
     case MatrixDecompositionType::Eigen:
 #ifdef USE_GSL
@@ -59,7 +62,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
     case MatrixDecompositionType::SMW_chol:
     case MatrixDecompositionType::SMW_ortho:
 #ifdef USE_GSL
-      std::cout << "\n\nYEAH\n\n" << std::endl;
       return new DBMatOnlineDE_SMW(offline, grid, lambda, beta);
 #else
       throw factory_exception("built without GSL");
