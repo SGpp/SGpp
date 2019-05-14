@@ -40,7 +40,11 @@ struct FixtureBlacsGrid {
   ~FixtureBlacsGrid() { BlacsProcessGrid::exitBlacs(); }
 };
 
+#if BOOST_VERSION >= 105900
 BOOST_GLOBAL_FIXTURE(FixtureBlacsGrid);
+#else
+BOOST_GLOBAL_FIXTURE(FixtureBlacsGrid)
+#endif /* BOOST_VERSION >= 105900 */
 
 struct FixtureDataMatrixDistributed {
   FixtureDataMatrixDistributed()

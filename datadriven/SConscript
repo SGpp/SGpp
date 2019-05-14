@@ -36,6 +36,12 @@ if env["USE_SCALAPACK"]:
                                    "pthread",
                                    "dl",
                                    "m"]
+    elif env["SCALAPACK_VERSION"] == "openmpi":
+        additionalDependencies += ["scalapack-openmpi"]
+    elif env["SCALAPACK_VERSION"] == "mpich":
+        additionalDependencies += ["scalapack-mpich"]
+    elif env["SCALAPACK_VERSION"] == "custom":
+        additionalDependencies += [env["SCALAPACK_LIBRARY_NAME"]]
 
 if env["USE_PYTHON_EMBEDDING"]:
   additionalDependencies += ["python3.6m"]
