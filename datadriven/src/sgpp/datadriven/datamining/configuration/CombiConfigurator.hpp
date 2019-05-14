@@ -9,8 +9,9 @@
  *      Author: nico
  */
 #pragma once
-
-#include <python3.7/Python.h>
+#ifdef USE_PYTHON_EMBEDDING
+#include <python3.6/Python.h>
+#endif
 #include <iostream>
 #include <vector>
 
@@ -65,6 +66,7 @@ class CombiConfigurator {
    */
   void finalizePython();
 
+#ifdef USE_PYTHON_EMBEDDING
   /**
    * Converts a components config in SpACE to one in SG++
    * @param *pValue PyObject that corrensponds to the config in SpACE
@@ -83,6 +85,7 @@ class CombiConfigurator {
   PyObject *combischeme;
 
   inline static PyObject *pModule;
+#endif
   inline static bool initialized = false;
 };
 } /* namespace datadriven */
