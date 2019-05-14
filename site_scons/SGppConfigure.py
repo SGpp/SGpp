@@ -636,8 +636,26 @@ def detectScaLAPACK(config):
   if "SCALAPACK_LIBRARY_PATH" in config.env:
     config.env.AppendUnique(LIBPATH=[config.env["SCALAPACK_LIBRARY_PATH"]])
 
-  # first check MKL ScaLAPACK (vendor specific), then netlib version
-  if config.CheckMKL():      
+  # check if USE_SCALAPACK was given as parameter and is disabled
+  if "USE_SCALAPACK" in config.env and not config.env["USE_SCALAPACK"]:
+    Helper.printInfo("ScaLAPACK disabled.")
+    return
+
+  if config.env["COMPILER"] not in ("openmpi", "mpich", "intel.mpi"):
+    if "USE_SCALAPACK" in config.env and config.env["USE_SCALAPACK"]:
+      Helper.printErrorAndExit("USE_SCALAPACK was set, but no mpi compiler was used (openmpi, mpich or intel.mpi)")
+    config.env["USE_SCALAPACK"] = False
+    Helper.printInfo("ScaLAPACK was disabled as no mpi compiler was used (openmpi, mpich or intel.mpi)")
+    return
+
+
+  # check if there is a ScaLAPACK version installed
+  if "SCALAPACK_LIBRARY_NAME" in config.env and config.CheckLib(config.env["SCALAPACK_LIBRARY_NAME"], language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "custom"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using scalapack version from SCALAPACK_LIBRARY_NAME: " + str(config.env["SCALAPACK_LIBRARY_NAME"]))
+  elif config.CheckMKL():
     config.env["SCALAPACK_VERSION"] = "mkl"
     config.env["USE_SCALAPACK"] = True
     config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
@@ -647,10 +665,22 @@ def detectScaLAPACK(config):
     config.env["USE_SCALAPACK"] = True
     config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
     Helper.printInfo("Using netlib ScaLAPACK")
-  elif config.env["USE_SCALAPACK"]:
-    Helper.printErrorAndExit("No supported version of ScaLAPACK was found")
+  elif config.env["COMPILER"] == "openmpi" and config.CheckLib("scalapack-openmpi", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "openmpi"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using openmpi ScaLAPACK")
+  elif config.env["COMPILER"] == "mpich" and config.CheckLib("scalapack-mpich", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "mpich"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using mpich ScaLAPACK")
+  elif "USE_SCALAPACK" in config.env and config.env["USE_SCALAPACK"]:
+    Helper.printErrorAndExit("No supported version of ScaLAPACK was found.")
   else:
-    Helper.printInfo("ScaLAPACK support could not be enabled.")
+    config.env["USE_SCALAPACK"] = False
+    Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
+
 
 def detectPythonAPI(config):
   if config.env["USE_PYTHON_EMBEDDING"]:
