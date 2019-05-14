@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <vector>
 using std::cout;
+using sgpp::base::tool_exception;
 
 namespace sgpp {
 namespace datadriven {
@@ -21,6 +22,7 @@ namespace datadriven {
 CombiConfigurator::CombiConfigurator() { initializePython(); }
 
 void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
+#ifdef USE_PYTHON_EMBEDDING
   PyObject *pFunc = PyObject_GetAttrString(pModule, "initadaptivescheme");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
@@ -34,9 +36,15 @@ void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
   Py_DECREF(pFunc);
   Py_DECREF(pArgs);
   Py_DECREF(pValue);
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
+  return;
 }
 
 void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
+#ifdef USE_PYTHON_EMBEDDING
   vec.clear();
   PyObject *pFunc = PyObject_GetAttrString(pModule, "getcombischeme");
   PyObject *pArgs, *pValue;
@@ -60,10 +68,16 @@ void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
   /* will this lead to problems? if i deref pArgs i destroy my combischeme*/
   // Py_DECREF(pArgs);
   Py_DECREF(pValue);
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
   return;
 }
 
 bool CombiConfigurator::isRefinable(combiConfig levelvec) {
+  bool a = false;
+#ifdef USE_PYTHON_EMBEDDING
   PyObject *pFunc = PyObject_GetAttrString(pModule, "isrefinable");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
@@ -72,14 +86,19 @@ bool CombiConfigurator::isRefinable(combiConfig levelvec) {
 
   pValue = PyObject_CallObject(pFunc, pArgs);
 
-  bool a = PyObject_IsTrue(pValue);
+  a = PyObject_IsTrue(pValue);
   Py_DECREF(pFunc);
   // Py_DECREF(pArgs);
   Py_DECREF(pValue);
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
   return a;
 }
 
 void CombiConfigurator::refineComponent(combiConfig levelvec) {
+#ifdef USE_PYTHON_EMBEDDING
   PyObject *pFunc = PyObject_GetAttrString(pModule, "refineblock");
   PyObject *pArgs;
   pArgs = PyTuple_New(2);
@@ -89,11 +108,15 @@ void CombiConfigurator::refineComponent(combiConfig levelvec) {
   combischeme = PyObject_CallObject(pFunc, pArgs);
 
   Py_DECREF(pFunc);
-  // Py_DECREF(pArgs);
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
   return;
 }
 
 void CombiConfigurator::initializePython() {
+#ifdef USE_PYTHON_EMBEDDING
   if (initialized) {
     return;
   }
@@ -106,10 +129,15 @@ void CombiConfigurator::initializePython() {
   pName = PyUnicode_DecodeFSDefault("SGDEAdapter");
   pModule = PyImport_Import(pName);
   Py_DECREF(pName);
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
   return;
 }
 
 void CombiConfigurator::finalizePython() {
+#ifdef USE_PYTHON_EMBEDDING
   if (!initialized) {
     return;
   }
@@ -118,9 +146,14 @@ void CombiConfigurator::finalizePython() {
   cout << "Calling Py_Finalize: \n";
   Py_FinalizeEx();
   cout << "Py_Finalize done \n";
+#endif
+#ifndef USE_PYTHON_EMBEDDING
+  throw tool_exception("Compiled without USE_PYTHON_EMBEDDING");
+#endif
   return;
 }
 
+#ifdef USE_PYTHON_EMBEDDING
 inline combiConfig CombiConfigurator::combiConfFromPyObj(PyObject *pValue) {
   combiConfig pair;
   pair.levels = std::vector<size_t>();
@@ -131,7 +164,9 @@ inline combiConfig CombiConfigurator::combiConfFromPyObj(PyObject *pValue) {
   }
   return pair;
 }
+#endif
 
+#ifdef USE_PYTHON_EMBEDDING
 inline PyObject *CombiConfigurator::combiConfAsPyObj(combiConfig pair) {
   PyObject *pValue = PyList_New(pair.levels.size() + 1);
   PyList_SetItem(pValue, 0, PyLong_FromLong(pair.coef));
@@ -140,6 +175,7 @@ inline PyObject *CombiConfigurator::combiConfAsPyObj(combiConfig pair) {
   }
   return pValue;
 }
+#endif
 
 } /* namespace datadriven */
 } /* namespace sgpp */
