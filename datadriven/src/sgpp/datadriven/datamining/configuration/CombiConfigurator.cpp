@@ -18,16 +18,19 @@ using sgpp::base::tool_exception;
 
 namespace sgpp {
 namespace datadriven {
+#ifdef USE_PYTHON_EMBEDDING
 namespace spaceconfig {
 // necessary to make sure the Python Interpreter is just initialized once
 static bool initialized = false;
+static PyObject *pModule;
 }
+#endif
 
 CombiConfigurator::CombiConfigurator() { initializePython(); }
 
 void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
 #ifdef USE_PYTHON_EMBEDDING
-  PyObject *pFunc = PyObject_GetAttrString(pModule, "initadaptivescheme");
+  PyObject *pFunc = PyObject_GetAttrString(spaceconfig::pModule, "initadaptivescheme");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
   pValue = PyLong_FromLong(dim);
@@ -50,7 +53,7 @@ void CombiConfigurator::initAdaptiveScheme(size_t dim, size_t level) {
 void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
 #ifdef USE_PYTHON_EMBEDDING
   vec.clear();
-  PyObject *pFunc = PyObject_GetAttrString(pModule, "getcombischeme");
+  PyObject *pFunc = PyObject_GetAttrString(spaceconfig::pModule, "getcombischeme");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(1);
   PyTuple_SetItem(pArgs, 0, combischeme);
@@ -82,7 +85,7 @@ void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
 bool CombiConfigurator::isRefinable(combiConfig levelvec) {
   bool a = false;
 #ifdef USE_PYTHON_EMBEDDING
-  PyObject *pFunc = PyObject_GetAttrString(pModule, "isrefinable");
+  PyObject *pFunc = PyObject_GetAttrString(spaceconfig::pModule, "isrefinable");
   PyObject *pArgs, *pValue;
   pArgs = PyTuple_New(2);
   PyTuple_SetItem(pArgs, 0, combischeme);
@@ -103,7 +106,7 @@ bool CombiConfigurator::isRefinable(combiConfig levelvec) {
 
 void CombiConfigurator::refineComponent(combiConfig levelvec) {
 #ifdef USE_PYTHON_EMBEDDING
-  PyObject *pFunc = PyObject_GetAttrString(pModule, "refineblock");
+  PyObject *pFunc = PyObject_GetAttrString(spaceconfig::pModule, "refineblock");
   PyObject *pArgs;
   pArgs = PyTuple_New(2);
   PyTuple_SetItem(pArgs, 0, combischeme);
@@ -131,7 +134,7 @@ void CombiConfigurator::initializePython() {
 
   PyObject *pName;
   pName = PyUnicode_DecodeFSDefault("SGDEAdapter");
-  pModule = PyImport_Import(pName);
+  spaceconfig::pModule = PyImport_Import(pName);
   Py_DECREF(pName);
 #endif
 #ifndef USE_PYTHON_EMBEDDING
@@ -146,7 +149,7 @@ void CombiConfigurator::finalizePython() {
     return;
   }
   spaceconfig::initialized = false;
-  Py_DECREF(pModule);
+  Py_DECREF(spaceconfig::pModule);
   cout << "Calling Py_Finalize: \n";
   Py_FinalizeEx();
   cout << "Py_Finalize done \n";

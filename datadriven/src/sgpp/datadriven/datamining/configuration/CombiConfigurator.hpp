@@ -83,8 +83,6 @@ class CombiConfigurator {
 
   /// Instance of the SpACE CombiScheme
   PyObject *combischeme;
-
-  inline static PyObject *pModule;
 #endif
 };
 } /* namespace datadriven */
