@@ -133,6 +133,14 @@ class DBMatOffline {
   void printMatrix();
 
   /**
+   * computes vectors of L2 products of grid points for refinement
+   * @param mat_refine matrix to store L2 vectors
+   * @param grid underlying grid
+   * @param newPoints amount of points to refine
+   */
+  void compute_L2_refine_vectors(DataMatrix& mat_refine, Grid& grid, size_t newPoints);
+
+  /**
    * Serialize the DBMatOffline Object
    * @param fileName path where to store the file.
    */

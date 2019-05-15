@@ -180,6 +180,10 @@ void DBMatOffline::printMatrix() {
   }
 }
 
+void DBMatOffline::compute_L2_refine_vectors(DataMatrix& mat_refine, Grid& grid, size_t newPoints) {
+
+}
+
 void sgpp::datadriven::DBMatOffline::parseInter(
     const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
