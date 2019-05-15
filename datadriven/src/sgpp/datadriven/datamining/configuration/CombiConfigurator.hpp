@@ -86,7 +86,6 @@ class CombiConfigurator {
 
   inline static PyObject *pModule;
 #endif
-  inline static bool initialized = false;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
