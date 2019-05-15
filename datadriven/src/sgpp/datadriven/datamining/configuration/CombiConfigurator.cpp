@@ -18,6 +18,10 @@ using sgpp::base::tool_exception;
 
 namespace sgpp {
 namespace datadriven {
+namespace spaceconfig {
+// necessary to make sure the Python Interpreter is just initialized once
+static bool initialized = false;
+}
 
 CombiConfigurator::CombiConfigurator() { initializePython(); }
 
@@ -117,10 +121,10 @@ void CombiConfigurator::refineComponent(combiConfig levelvec) {
 
 void CombiConfigurator::initializePython() {
 #ifdef USE_PYTHON_EMBEDDING
-  if (initialized) {
+  if (spaceconfig::initialized) {
     return;
   }
-  initialized = true;
+  spaceconfig::initialized = true;
   Py_Initialize();
   PyRun_SimpleString("import sys");
   PyRun_SimpleString("sys.path.append(\"../spatially-adaptive-combi\")");
@@ -138,10 +142,10 @@ void CombiConfigurator::initializePython() {
 
 void CombiConfigurator::finalizePython() {
 #ifdef USE_PYTHON_EMBEDDING
-  if (!initialized) {
+  if (!spaceconfig::initialized) {
     return;
   }
-  initialized = false;
+  spaceconfig::initialized = false;
   Py_DECREF(pModule);
   cout << "Calling Py_Finalize: \n";
   Py_FinalizeEx();
