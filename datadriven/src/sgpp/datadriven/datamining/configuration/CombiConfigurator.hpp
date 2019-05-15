@@ -21,7 +21,7 @@ namespace datadriven {
 using std::vector;
 
 struct combiConfig {
-  double coef;
+  ssize_t coef;
   vector<size_t> levels;
 };
 

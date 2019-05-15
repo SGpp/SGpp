@@ -20,8 +20,15 @@ namespace sgpp {
 namespace datadriven {
 #ifdef USE_PYTHON_EMBEDDING
 namespace spaceconfig {
-// necessary to make sure the Python Interpreter is just initialized once
+
+/**
+ * Flag that indicates if the python interpreter was initialized
+ */
 static bool initialized = false;
+
+/**
+ * Stores the path to the SGPP SpACE Adapter
+ */
 static PyObject *pModule;
 }
 #endif
@@ -63,7 +70,8 @@ void CombiConfigurator::getCombiScheme(vector<combiConfig> &vec) {
   for (int j = 0; j < PyList_Size(pValue); j++) {
     combiConfig pair;
     pair.levels = std::vector<size_t>();
-    pair.coef = PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0));
+    pair.coef =
+        static_cast<ssize_t>(PyFloat_AsDouble(PyList_GetItem((PyList_GetItem(pValue, j)), 0)));
     vec.push_back(pair);
     for (int c = 1; c < PyList_Size(PyList_GetItem(pValue, j)); c++) {
       // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
@@ -164,7 +172,7 @@ void CombiConfigurator::finalizePython() {
 inline combiConfig CombiConfigurator::combiConfFromPyObj(PyObject *pValue) {
   combiConfig pair;
   pair.levels = std::vector<size_t>();
-  pair.coef = PyFloat_AsDouble(PyList_GetItem(pValue, 0));
+  pair.coef = static_cast<ssize_t>(PyFloat_AsDouble(PyList_GetItem(pValue, 0)));
   for (int c = 1; c < PyList_Size(pValue); c++) {
     // PyLong_AsSize_t is returning garbage, thats why PyLong_AsLong is used
     pair.levels.push_back(PyLong_AsLong(PyList_GetItem(pValue, c)));
