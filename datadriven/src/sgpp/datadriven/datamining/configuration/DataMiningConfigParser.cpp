@@ -158,24 +158,26 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     config.epochs = parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
 
     // Parse info for test data
-
-    config.testFilePath = parseString(*dataSourceConfig, "testFilePath", defaults.filePath, "dataSource");
+    config.testFilePath = parseString(*dataSourceConfig, "testFilePath",
+    		defaults.filePath, "dataSource");
 
     // parse file type of test data
     if (dataSourceConfig->contains("testFileType")) {
-	   config.testFileType = DataSourceFileTypeParser::parse((*dataSourceConfig)["testFileType"].get());
+	   config.testFileType = DataSourceFileTypeParser::parse(
+			   (*dataSourceConfig)["testFileType"].get());
     } else {
-	  std::cout << "# Did not find " << dataSource << "[testFileType]. Setting default value "
-	 		   << DataSourceFileTypeParser::toString(defaults.testFileType) << "." << std::endl;
+	  std::cout << "# Did not find " << dataSource <<
+			  "[testFileType]. Setting default value "
+	 		   << DataSourceFileTypeParser::toString(defaults.testFileType)
+	  	  	  	  << "." << std::endl;
 	  config.testFileType = defaults.testFileType;
     }
-
-
 	config.testIsCompressed =
 			parseBool(*dataSourceConfig, "testCompression", defaults.testIsCompressed, "dataSource");
 	config.testNumBatches =
 			parseUInt(*dataSourceConfig, "testNumBatches", defaults.testNumBatches, "dataSource");
-	config.testBatchSize = parseUInt(*dataSourceConfig, "batchSize", defaults.testBatchSize, "dataSource");
+
+	config.testBatchSize = parseUInt(*dataSourceConfig, "testBatchSize", defaults.testBatchSize, "dataSource");
 	config.testHasTargets =
 			parseBool(*dataSourceConfig, "testHasTargets", defaults.testHasTargets, "dataSource");
 
