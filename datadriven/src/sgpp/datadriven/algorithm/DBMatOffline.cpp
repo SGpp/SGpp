@@ -180,8 +180,21 @@ void DBMatOffline::printMatrix() {
   }
 }
 
-void DBMatOffline::compute_L2_refine_vectors(DataMatrix& mat_refine, Grid& grid, size_t newPoints) {
+void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints) {
+  size_t j_start = grid->getSize() - newPoints;
 
+  // todo: switch-case when adding support for other gridTypes
+  if (grid->getType() == sgpp::base::GridType::Linear) {
+    auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
+    throw algorithm_exception("modlinear noch nicht supported, bruh!");
+    // auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    // opLTwoModLin->buildMatrixWithBounds(mat_refine, grid);
+  } else {
+    throw algorithm_exception(
+        "in DBMatOffline::compute_L2_refine_vectors, gridType is not supported.");
+  }
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(
