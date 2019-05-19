@@ -158,73 +158,18 @@ void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstim
   }
 
   // Start refinement
-  // Start refinement
   if (newPoints > 0) {
     size_t gridSize = grid.getStorage().getSize();
-    size_t gridDim = grid.getStorage().getDimension();
 
     // DataMatrix to collect vectors to append
     DataMatrix mat_refine(gridSize, newPoints);
 
-    DataMatrix level(gridSize, gridDim);
-    DataMatrix index(gridSize, gridDim);
+    this->compute_L2_refine_vectors(&mat_refine, &grid, newPoints);
 
-    grid.getStorage().getLevelIndexArraysForEval(level, index);
-    double lambda_conf = lambda;
-    // Loop to calculate all L2-products of added points based on the
-    // hat-function as basis function
-    for (size_t i = 0; i < gridSize; i++) {
-      for (size_t j = gridSize - newPoints; j < gridSize; j++) {
-        double res = 1;
-        for (size_t k = 0; k < gridDim; k++) {
-          double lik = level.get(i, k);
-          double ljk = level.get(j, k);
-          double iik = index.get(i, k);
-          double ijk = index.get(j, k);
-
-          if (lik == ljk) {
-            if (iik == ijk) {
-              // Use formula for identical ansatz functions:
-              res *= 2 / lik / 3;
-            } else {
-              // Different index, but same level => ansatz functions do not
-              // overlap:
-              res = 0.;
-              break;
-            }
-          } else {
-            if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
-                std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-              // Ansatz functions do not not overlap:
-              res = 0.;
-              break;
-            } else {
-              // Use formula for different overlapping ansatz functions:
-              if (lik > ljk) {  // Phi_i_k is the "smaller" ansatz function
-                double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
-                double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
-                temp_res *= ljk;
-                temp_res = (1 - temp_res) / lik;
-                res *= temp_res;
-              } else {  // Phi_j_k is the "smaller" ansatz function
-                double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-                double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
-                temp_res *= lik;
-                temp_res = (1 - temp_res) / ljk;
-                res *= temp_res;
-              }
-            }
-          }
-        }
-        // The new Rows/Cols are stored in mat_refine
-
-        // add current lambda to lower diagonal elements of mat_refine
-        if (i == j) {
-          mat_refine.set(i, j - gridSize + newPoints, res + lambda_conf);
-        } else {
-          mat_refine.set(i, j - gridSize + newPoints, res);
-        }
-      }
+    // add lambda to diagonal elements
+    for (size_t i = gridSize - newPoints; i < gridSize; i++) {
+      double res = mat_refine.get(i, i - gridSize + newPoints);
+      mat_refine.set(i, i - gridSize + newPoints, res + lambda);
     }
 
     // std::cout << "mat_refine:\n" << mat_refine.toString() << "\n\n";
@@ -244,7 +189,7 @@ void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstim
     }
   }
 #else
-  throw algorithm_exception("built withot GSL");
+  throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
 }
 
