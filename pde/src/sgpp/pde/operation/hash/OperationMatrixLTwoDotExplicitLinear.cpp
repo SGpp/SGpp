@@ -30,7 +30,10 @@ OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(sgpp:
   buildMatrix(grid);
 }
 
-void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
+inline void OperationMatrixLTwoDotExplicitLinear::buildMatrixWithBounds(
+    sgpp::base::DataMatrix* mat, sgpp::base::Grid* grid, size_t i_start, size_t i_end,
+    size_t j_start, size_t j_end) {
+  // todo: dima, bounds einbauen
   size_t gridSize = grid->getSize();
   size_t gridDim = grid->getDimension();
 
@@ -39,9 +42,15 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
 
   grid->getStorage().getLevelIndexArraysForEval(level, index);
 
-  for (size_t i = 0; i < gridSize; i++) {
+  // init standard values
+  i_start = i_start == 0 ? 0 : i_start;
+  i_end = i_end == 0 ? gridSize : i_end;
+
+  for (size_t i = i_start; i < i_end; i++) {
+    j_start = j_start == 0 ? i : j_start;
+    j_end = j_end == 0 ? gridSize : j_end;
 #pragma omp parallel for schedule(guided)
-    for (size_t j = i; j < gridSize; j++) {
+    for (size_t j = j_start; j < j_end; j++) {
       double res = 1;
 
       for (size_t k = 0; k < gridDim; k++) {
@@ -84,10 +93,14 @@ void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
         }
       }
 
-      m_->set(i, j, res);
-      m_->set(j, i, res);
+      mat->set(i, j, res);
+      mat->set(j, i, res);
     }
   }
+}
+
+void OperationMatrixLTwoDotExplicitLinear::buildMatrix(sgpp::base::Grid* grid) {
+  this->buildMatrixWithBounds(this->m_, grid);
 }
 
 OperationMatrixLTwoDotExplicitLinear::~OperationMatrixLTwoDotExplicitLinear() {

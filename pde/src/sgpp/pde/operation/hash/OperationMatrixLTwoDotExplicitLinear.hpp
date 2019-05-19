@@ -6,9 +6,9 @@
 #ifndef OperationMatrixLTwoDotExplicitLinear_HPP_
 #define OperationMatrixLTwoDotExplicitLinear_HPP_
 
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -48,6 +48,19 @@ class OperationMatrixLTwoDotExplicitLinear : public sgpp::base::OperationMatrix 
    * @param result DataVector into which the result of multiplication is stored
    */
   virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result);
+
+  /**
+   * generalization of "buildMatrix" function, creates L2-dot-product matrix for specified bounds
+   * @param mat matrix for storage of L2 producs
+   * @param grid the underlying grid
+   * @param i_start start index for row iteration
+   * @param i_end end index for row iteration
+   * @param j_start start index for column iteration
+   * @param j_end end index for column iteration
+   */
+  void buildMatrixWithBounds(sgpp::base::DataMatrix* mat, sgpp::base::Grid* grid,
+                             size_t i_start = 0, size_t i_end = 0, size_t j_start = 0,
+                             size_t j_end = 0);
 
  private:
   /**
