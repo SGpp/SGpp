@@ -188,9 +188,8 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
     auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
     opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
-    throw algorithm_exception("modlinear noch nicht supported, bruh!");
-    // auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
-    // opLTwoModLin->buildMatrixWithBounds(mat_refine, grid);
+    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else {
     throw algorithm_exception(
         "in DBMatOffline::compute_L2_refine_vectors, gridType is not supported.");
