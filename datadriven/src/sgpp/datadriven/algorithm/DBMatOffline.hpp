@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 
 #include <list>
 #include <memory>
@@ -138,7 +139,7 @@ class DBMatOffline {
    * @param grid underlying grid
    * @param newPoints amount of points to refine
    */
-  void compute_L2_refine_vectors(DataMatrix& mat_refine, Grid& grid, size_t newPoints);
+  void compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints);
 
   /**
    * Serialize the DBMatOffline Object

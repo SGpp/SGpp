@@ -32,9 +32,9 @@
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::algorithm_exception;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::algorithm_exception;
 
 DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
@@ -45,7 +45,7 @@ DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 bool DBMatOfflineChol::isRefineable() { return true; }
 
 void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+                                       DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {
@@ -82,9 +82,9 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
 #endif /*USE_GSL*/
 }
 
-void DBMatOfflineChol::choleskyModification(Grid& grid,
-    datadriven::DensityEstimationConfiguration&, size_t newPoints,
-    std::list<size_t> deletedPoints, double lambda) {
+void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
+                                            size_t newPoints, std::list<size_t> deletedPoints,
+                                            double lambda) {
 #ifdef USE_GSL
 
   // Start coarsening
@@ -157,6 +157,7 @@ void DBMatOfflineChol::choleskyModification(Grid& grid,
     }
   }
 
+  // Start refinement
   // Start refinement
   if (newPoints > 0) {
     size_t gridSize = grid.getStorage().getSize();
@@ -246,7 +247,6 @@ void DBMatOfflineChol::choleskyModification(Grid& grid,
   throw algorithm_exception("built withot GSL");
 #endif /*USE_GSL*/
 }
-
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
 #ifdef USE_GSL
@@ -398,5 +398,5 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineChol::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::Chol;
 }
-} /* namespace datadriven */
+}  // namespace datadriven
 } /* namespace sgpp */
