@@ -75,6 +75,9 @@ class OperationMatrixLTwoDotExplicitLinear : public sgpp::base::OperationMatrix 
 
     grid->getStorage().getLevelIndexArraysForEval(level, index);
 
+    // needed for non-quadratic matrix cases
+    bool mat_quadratic = (i_start + i_end + j_start + j_end == 0);
+
     // init standard values
     i_end = i_end == 0 ? gridSize : i_end;
 
@@ -124,9 +127,7 @@ class OperationMatrixLTwoDotExplicitLinear : public sgpp::base::OperationMatrix 
             }
           }
         }
-
-        // if quadratic, then L2 matrix is symmetric
-        if (i_end - i_start == j_end - j_start) {
+        if (mat_quadratic) {
           mat->set(i, j, res);
           mat->set(j, i, res);
         } else {
