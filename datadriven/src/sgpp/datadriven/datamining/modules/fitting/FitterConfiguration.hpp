@@ -128,12 +128,6 @@ class FitterConfiguration {
   const datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig() const;
 
   /**
-   * Get the FitterType
-   * @return FitterType
-   */
-  const FitterType &getFitterType();
-
-  /**
    * Returns the database configuration, i.e. the filepath
    * @return immutable DatabaseConfiguration
    */
@@ -155,7 +149,7 @@ class FitterConfiguration {
    * Returns the configuration for the geometry parameters
    * @return immutable GeometryConfiguration
    */
-  const datadriven::GeometryConfiguration& getGeometryConfig() const;
+  const datadriven::GeometryConfiguration &getGeometryConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.

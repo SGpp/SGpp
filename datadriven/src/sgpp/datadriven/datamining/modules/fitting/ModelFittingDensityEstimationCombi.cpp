@@ -140,7 +140,8 @@ double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
   double result = 0;
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
-      result += components.at(i)->evaluate(sample) * componentConfigs.at(i).coef;
+      result +=
+          components.at(i)->evaluate(sample) * static_cast<double>(componentConfigs.at(i).coef);
     }
   }
   return result;
@@ -153,7 +154,7 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVecto
     if (fitted.at(i)) {
       temp.setAll(0);
       components.at(i)->evaluate(samples, temp);
-      temp.mult(componentConfigs.at(i).coef);
+      temp.mult(static_cast<double>(componentConfigs.at(i).coef));
       results.add(temp);
     }
   }
@@ -190,8 +191,8 @@ bool ModelFittingDensityEstimationCombi::refine() {
     double max = 0;
     size_t ind = 0;
     for (size_t i = 0; i < components.size(); i++) {
-      double now =
-          components.at(i)->getSurpluses().l2Norm() / components.at(i)->getSurpluses().getSize();
+      double now = components.at(i)->getSurpluses().l2Norm() /
+                   static_cast<double>(components.at(i)->getSurpluses().getSize());
       if (now > max) {
         if (configurator.isRefinable(componentConfigs.at(i))) {
           // cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
