@@ -15,6 +15,7 @@
 #include <vector>
 using std::cout;
 using sgpp::base::tool_exception;
+using std::vector;
 
 namespace sgpp {
 namespace datadriven {
