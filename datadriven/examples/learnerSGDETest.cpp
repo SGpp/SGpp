@@ -56,7 +56,7 @@ void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_
  * filename.
  */
 int main(int argc, char** argv) {
-  std::string filename = "../datasets/friedman/friedman2_4d_300000.arff";
+  std::string filename = "../datasets/friedman/friedman2_4d_10000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
   sgpp::datadriven::Dataset dataset =
