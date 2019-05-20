@@ -165,7 +165,6 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, size_t Poi
 
 void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename, bool bSurplus) {
   DataVector temp(alpha);
-  double tmp = 0.0;
   size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
@@ -180,13 +179,11 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename, bool
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =
-        myGrid->getStorage().getCoordinates(myGrid->getStorage().getPoint(i)).toString();
-    std::stringstream coordsStream(coords);
+    auto coords =
+        myGrid->getStorage().getCoordinates(myGrid->getStorage().getPoint(i));
 
     for (size_t j = 0; j < dim; j++) {
-      coordsStream >> tmp;
-      fileout << tmp << " ";
+      fileout << coords.get(j) << " ";
     }
 
     fileout << temp[i] << std::endl;
@@ -198,7 +195,6 @@ void GridPrinter::printSparseGrid(DataVector& alpha, std::string tFilename, bool
 void GridPrinter::printSparseGridExpTransform(DataVector& alpha, std::string tFilename,
                                               bool bSurplus) {
   DataVector temp(alpha);
-  double tmp = 0.0;
   size_t dim = myGrid->getDimension();
   std::ofstream fileout;
 
@@ -213,13 +209,11 @@ void GridPrinter::printSparseGridExpTransform(DataVector& alpha, std::string tFi
   fileout.open(tFilename.c_str());
 
   for (size_t i = 0; i < myGrid->getSize(); i++) {
-    std::string coords =
-        myGrid->getStorage().getCoordinates(myGrid->getStorage().getPoint(i)).toString();
-    std::stringstream coordsStream(coords);
+    auto coords =
+        myGrid->getStorage().getCoordinates(myGrid->getStorage().getPoint(i));
 
     for (size_t j = 0; j < dim; j++) {
-      coordsStream >> tmp;
-      fileout << exp(tmp) << " ";
+      fileout << exp(coords.get(j)) << " ";
     }
 
     fileout << temp[i] << std::endl;

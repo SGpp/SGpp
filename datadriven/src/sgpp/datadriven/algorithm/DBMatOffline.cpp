@@ -34,16 +34,16 @@
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::Grid;
-using sgpp::base::GridType;
-using sgpp::base::RegularGridConfiguration;
 using sgpp::base::AdaptivityConfiguration;
-using sgpp::base::DataMatrix;
-using sgpp::base::DataVector;
-using sgpp::base::operation_exception;
 using sgpp::base::algorithm_exception;
 using sgpp::base::data_exception;
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
+using sgpp::base::GridType;
+using sgpp::base::operation_exception;
 using sgpp::base::OperationMatrix;
+using sgpp::base::RegularGridConfiguration;
 
 DBMatOffline::DBMatOffline() : lhsMatrix(), isConstructed(false), isDecomposed(false) {
   interactions = std::vector<std::vector<size_t>>();
@@ -53,7 +53,7 @@ DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
     : lhsMatrix(rhs.lhsMatrix),
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
-      interactions(rhs.interactions) { }
+      interactions(rhs.interactions) {}
 
 DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs) {
   if (&rhs == this) {
@@ -82,6 +82,31 @@ DataMatrix& DBMatOffline::getDecomposedMatrix() {
   }
 }
 
+DataMatrixDistributed& DBMatOffline::getDecomposedMatrixDistributed() {
+#ifdef USE_SCALAPACK
+  if (isDecomposed) {
+    return lhsDistributed;
+  } else {
+    throw data_exception("Matrix was not decomposed yet");
+  }
+#else
+  throw sgpp::base::not_implemented_exception("Build without ScaLAPACK");
+#endif
+}
+
+void DBMatOffline::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                                const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  if (isDecomposed) {
+    lhsDistributed = DataMatrixDistributed::fromSharedData(
+        lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
+        parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  } else {
+    throw data_exception("Matrix was not decomposed yet");
+  }
+#endif
+  // no action needed without scalapack
+}
 
 void DBMatOffline::buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) {
   if (isConstructed) {  // Already constructed, do nothing
@@ -139,8 +164,8 @@ void DBMatOffline::store(const std::string& fileName) {
   gsl_matrix_fwrite(outputCFile, &matrixView.matrix);
 
   fclose(outputCFile);
-  std::cout << "Stored " << lhsMatrix.getNrows() << "x" << lhsMatrix.getNcols() << " matrix" <<
-      std::endl;
+  std::cout << "Stored " << lhsMatrix.getNrows() << "x" << lhsMatrix.getNcols() << " matrix"
+            << std::endl;
 #else
   throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
@@ -155,8 +180,8 @@ void DBMatOffline::printMatrix() {
   }
 }
 
-void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
-    std::vector<std::vector<size_t>>& interactions) const {
+void sgpp::datadriven::DBMatOffline::parseInter(
+    const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
@@ -169,17 +194,16 @@ void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
   std::vector<std::string> tokens;
   StringTokenizer::tokenize(str, ",", tokens);
 
-  for (size_t i = 4; i < tokens.size(); i+= std::stoi(tokens[i])+1) {
+  for (size_t i = 4; i < tokens.size(); i += std::stoi(tokens[i]) + 1) {
     std::vector<size_t> tmp = std::vector<size_t>();
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
-      tmp.push_back(std::stoi(tokens[i+j]));
+      tmp.push_back(std::stoi(tokens[i + j]));
     }
     interactions.push_back(tmp);
   }
 
   std::cout << interactions.size() << std::endl;
 }
-
 
 size_t DBMatOffline::getGridSize() { return lhsMatrix.getNrows(); }
 

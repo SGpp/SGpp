@@ -5,9 +5,18 @@
 
 #ifdef ZLIB
 
+#include "test_datadrivenCommon.hpp"
+
 #include <zlib.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -17,13 +26,12 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "test_datadrivenCommon.hpp"
-
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::datadriven::BlacsProcessGrid;
+using sgpp::datadriven::DataVectorDistributed;
+using sgpp::datadriven::OperationMultipleEvalDistributed;
+
 #if USE_OCL == 1
 #include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
 using sgpp::base::OCLManagerMultiPlatform;
@@ -331,6 +339,177 @@ double compareToReferenceTranspose(
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 
   double mse = compareVectors(alphaResult, alphaResultCompare);
+
+  BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
+  return mse;
+}
+
+void compareDatasetsDistributed(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                                sgpp::base::GridType gridType, size_t level,
+                                sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+                                std::shared_ptr<BlacsProcessGrid> processGrid) {
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse = compareToReferenceDistributed(gridType, std::get<0>(fileNameError), level,
+                                               configuration, processGrid);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << std::endl;
+  }
+}
+
+double compareToReferenceDistributed(
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid) {
+  sgpp::base::AdaptivityConfiguration adaptConfig;
+  adaptConfig.maxLevelType_ = false;
+  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinements_ = 1;
+  adaptConfig.percent_ = 200.0;
+  adaptConfig.threshold_ = 0.0;
+
+  std::string content = uncompressFile(fileName);
+
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+
+  sgpp::base::DataMatrix& trainingData = dataset.getData();
+
+  size_t dim = dataset.getDimension();
+
+  std::shared_ptr<sgpp::base::Grid> grid;
+
+  if (gridType == sgpp::base::GridType::Linear) {
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
+  } else if (gridType == sgpp::base::GridType::ModLinear) {
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
+  }
+
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
+
+  sgpp::base::DataVector alpha(gridStorage.getSize());
+
+  for (size_t i = 0; i < alpha.getSize(); i++) {
+    alpha[i] = static_cast<double>(i);
+  }
+
+  auto eval = std::shared_ptr<OperationMultipleEvalDistributed>(
+      static_cast<OperationMultipleEvalDistributed*>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration)));
+
+  // no random refinement, as randomness causes problems with multiple processes
+
+  DataVectorDistributed dataSizeVectorResultDistributed(processGrid, dataset.getNumberInstances(),
+                                                        32);
+
+  eval->prepare();
+
+  eval->multDistributed(alpha, dataSizeVectorResultDistributed);
+
+  auto evalCompare = std::shared_ptr<sgpp::base::OperationMultipleEval>(
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
+
+  sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
+  dataSizeVectorResultCompare.setAll(0.0);
+
+  evalCompare->mult(alpha, dataSizeVectorResultCompare);
+
+  auto dataSizeVectorResult = dataSizeVectorResultDistributed.toLocalDataVectorBroadcast();
+
+  double mse = 0;
+
+  if (processGrid->isProcessInGrid()) {
+    mse = compareVectors(dataSizeVectorResult, dataSizeVectorResultCompare);
+  }
+
+  BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
+  return mse;
+}
+
+void compareDatasetsTransposeDistributed(
+    const std::vector<std::tuple<std::string, double>>& fileNamesError,
+    sgpp::base::GridType gridType, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid) {
+  for (std::tuple<std::string, double> fileNameError : fileNamesError) {
+    double mse = compareToReferenceTransposeDistributed(gridType, std::get<0>(fileNameError), level,
+                                                        configuration, processGrid);
+    BOOST_CHECK(mse < std::get<1>(fileNameError));
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << " (transposed)" << std::endl;
+  }
+}
+
+double compareToReferenceTransposeDistributed(
+    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+    std::shared_ptr<BlacsProcessGrid> processGrid) {
+  sgpp::base::AdaptivityConfiguration adaptConfig;
+  adaptConfig.maxLevelType_ = false;
+  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinements_ = 1;
+  adaptConfig.percent_ = 200.0;
+  adaptConfig.threshold_ = 0.0;
+
+  std::string content = uncompressFile(fileName);
+
+  sgpp::datadriven::ARFFTools arffTools;
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromString(content);
+
+  sgpp::base::DataMatrix& trainingData = dataset.getData();
+
+  size_t dim = dataset.getDimension();
+
+  std::shared_ptr<sgpp::base::Grid> grid;
+
+  if (gridType == sgpp::base::GridType::Linear) {
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
+  } else if (gridType == sgpp::base::GridType::ModLinear) {
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
+  }
+
+  sgpp::base::GridStorage& gridStorage = grid->getStorage();
+
+  sgpp::base::GridGenerator& gridGen = grid->getGenerator();
+  gridGen.regular(level);
+
+  sgpp::base::DataVector dataSizeVector(dataset.getNumberInstances());
+
+  // Don't use random data! Random data will change the expected MSE
+  for (size_t i = 0; i < dataSizeVector.getSize(); i++) {
+    dataSizeVector[i] = static_cast<double>(i + 1);
+  }
+
+  auto eval = std::shared_ptr<OperationMultipleEvalDistributed>(
+      static_cast<OperationMultipleEvalDistributed*>(
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration)));
+
+  // no random refinement, as randomness causes problems with multiple processes
+
+  DataVectorDistributed alphaResultDistributed(processGrid, gridStorage.getSize(), 32);
+
+  eval->prepare();
+
+  eval->multTransposeDistributed(dataSizeVector, alphaResultDistributed);
+
+  auto evalCompare = std::shared_ptr<sgpp::base::OperationMultipleEval>(
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
+
+  sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
+  alphaResultCompare.setAll(0.0);
+
+  evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
+
+  auto alphaResult = alphaResultDistributed.toLocalDataVectorBroadcast();
+
+  double mse = 0;
+
+  if (processGrid->isProcessInGrid()) {
+    mse = compareVectors(alphaResult, alphaResultCompare);
+  }
 
   BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
   return mse;
