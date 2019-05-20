@@ -27,7 +27,6 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
     : DBMatOffline(fileName) {
-
   // Read grid size from header (number of rows in lhsMatrix)
   std::ifstream filestream(fileName, std::istream::in);
   // Read configuration
@@ -49,10 +48,8 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(size, size);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(size, size);
 #ifdef USE_GSL
-  gsl_matrix_view lhs_view =
-      gsl_matrix_view_array(this->lhsMatrix.getPointer(), size, size);
-  gsl_matrix_view q_view =
-      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), size, size);
+  gsl_matrix_view lhs_view = gsl_matrix_view_array(this->lhsMatrix.getPointer(), size, size);
+  gsl_matrix_view q_view = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), size, size);
   gsl_matrix_view t_inv_view =
       gsl_matrix_view_array(this->t_tridiag_inv_matrix_.getPointer(), size, size);
 
@@ -82,13 +79,12 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
 #endif /* USE_GSL */
 }
 
-
 DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
 void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
-    RegularizationConfiguration& regularizationConfig) {
+                                         RegularizationConfiguration& regularizationConfig) {
   DBMatOffline::buildMatrix(grid, regularizationConfig);
   size_t dim_a = grid->getStorage().getSize();
 
@@ -96,7 +92,8 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
   this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
 }
 
-void DBMatOfflineOrthoAdapt::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
+void DBMatOfflineOrthoAdapt::decomposeMatrix(
+    RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
@@ -179,8 +176,7 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
 
   auto dim_a = getGridSize();
   // store q_ortho_matrix_
-  gsl_matrix_view q_view =
-      gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
+  gsl_matrix_view q_view = gsl_matrix_view_array(this->q_ortho_matrix_.getPointer(), dim_a, dim_a);
   gsl_matrix_fwrite(outCFile, &q_view.matrix);
 
   // store t_inv_tridiag_
@@ -192,6 +188,20 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
 #endif /* USE_GSL */
 }
 
+void DBMatOfflineOrthoAdapt::syncDistributedDecomposition(
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      q_ortho_matrix_.data(), processGrid, q_ortho_matrix_.getNrows(), q_ortho_matrix_.getNcols(),
+      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      t_tridiag_inv_matrix_.data(), processGrid, t_tridiag_inv_matrix_.getNrows(),
+      t_tridiag_inv_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
+#endif
+  // no action needed without scalapack
+}
 
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;

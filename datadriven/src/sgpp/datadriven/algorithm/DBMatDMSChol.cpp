@@ -3,9 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -42,6 +46,41 @@ void DBMatDMSChol::solve(sgpp::base::DataMatrix& decompMatrix, sgpp::base::DataV
 
   // Backward Substitution:
   choleskyBackwardSolve(decompMatrix, y, alpha);
+
+  // std::cout << alpha.toString() << std::endl;
+}
+
+void DBMatDMSChol::solveParallel(DataMatrixDistributed& decompMatrix, DataVectorDistributed& x,
+                                 double lambda_old, double lambda_new) const {
+#ifdef USE_SCALAPACK
+
+  // Performe Update based on Cholesky - afterwards perform n (GridPoints) many
+  // rank-One-updates
+  double lambda_up = lambda_new - lambda_old;
+
+  // If regularization paramter is changed enter
+  if (lambda_up != 0.0) {
+    // current implementation: gather and update decomposition on master process
+    DataMatrix decompMatrixLocal = decompMatrix.toLocalDataMatrix();
+
+    auto processGrid = decompMatrix.getProcessGrid();
+    if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
+      choleskyUpdateLambda(decompMatrixLocal, lambda_up);
+    }
+
+    decompMatrix.distribute(decompMatrixLocal.data(), 0, 0);
+  }
+
+  // Solve (R + lambda * I)alpha = b to obtain density declaring coefficents
+  // alpha.
+
+  DataMatrixDistributed::solveCholesky(decompMatrix, x);
+
+  // DEBUG: print alpha after solving
+  // x.printVector();
+#else
+  throw sgpp::base::algorithm_exception("build without USE_SCALAPACK");
+#endif /* USE_SCALAPACK */
 }
 
 // Implement cholesky Update for given Decomposition and update vector
