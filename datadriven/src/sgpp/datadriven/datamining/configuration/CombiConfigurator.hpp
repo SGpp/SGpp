@@ -18,11 +18,9 @@
 namespace sgpp {
 namespace datadriven {
 
-using std::vector;
-
 struct combiConfig {
   ssize_t coef;
-  vector<size_t> levels;
+  std::vector<size_t> levels;
 };
 
 class CombiConfigurator {
@@ -40,7 +38,7 @@ class CombiConfigurator {
    * Delivers the current set of component configs
    * @param vec reference for storing the vector of component configs
    */
-  void getCombiScheme(vector<combiConfig> &vec);
+  void getCombiScheme(std::vector<combiConfig> &vec);
 
   /**
    * Checks if a component is refineable
