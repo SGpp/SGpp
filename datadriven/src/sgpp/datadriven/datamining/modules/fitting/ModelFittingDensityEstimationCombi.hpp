@@ -44,7 +44,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   /**
    * Fit the grids to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
-   * @param dataset the training dataset that is used to fit the model.
+   * @param newDataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& newDataset);
 
@@ -52,9 +52,9 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * Fit the grids to the given dataset by determining the surpluses of the initial grid by the
    * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
    * density estimation whatsoever)
-   * @param dataset the training dataset that is used to fit the model.
+   * @param newDataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& NewDataset);
+  void fit(DataMatrix& newDataset);
 
   void update(Dataset& dataset);
 
@@ -134,8 +134,8 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   void addNewModel(const combiConfig combiconfig);
 
   /**
-   * @param takes the reverse index (distance from the end of the vector) of the component that must
-   * be removed
+   * @param indexRev the reverse index (distance from the end of the vector) of the component that
+   * must be removed
    */
   void removeModel(size_t indexRev);
 
