@@ -20,6 +20,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

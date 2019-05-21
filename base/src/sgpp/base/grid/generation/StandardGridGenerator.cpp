@@ -56,8 +56,8 @@ void StandardGridGenerator::full(size_t level) {
 }
 
 void StandardGridGenerator::anisotropicFull(std::vector<size_t> dimlevels) {
-	HashGenerator gen;
-	gen.anisotropicFull(this->storage, dimlevels);
+  HashGenerator gen;
+  gen.anisotropicFull(this->storage, dimlevels);
 }
 
 void StandardGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
