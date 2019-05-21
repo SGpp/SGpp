@@ -17,7 +17,10 @@
 namespace sgpp {
 namespace pde {
 
-OperationMatrixLTwoDotExplicitModifiedLinear::OperationMatrixLTwoDotExplicitModifiedLinear(){};
+OperationMatrixLTwoDotExplicitModifiedLinear::OperationMatrixLTwoDotExplicitModifiedLinear()
+    : ownsMatrix_(false) {
+  m_ = nullptr;
+}
 
 OperationMatrixLTwoDotExplicitModifiedLinear::OperationMatrixLTwoDotExplicitModifiedLinear(
     sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)

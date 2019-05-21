@@ -12,6 +12,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
+
 namespace sgpp {
 namespace pde {
 
@@ -185,7 +187,7 @@ class OperationMatrixLTwoDotExplicitModifiedLinear : public sgpp::base::Operatio
         }
       }
     }
-  };
+  }
 
  private:
   /**

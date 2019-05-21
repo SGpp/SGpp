@@ -19,7 +19,7 @@ namespace pde {
 
 OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear() : ownsMatrix_(false) {
   m_ = nullptr;
-};
+}
 
 OperationMatrixLTwoDotExplicitLinear::OperationMatrixLTwoDotExplicitLinear(
     sgpp::base::DataMatrix* m, sgpp::base::Grid* grid)
