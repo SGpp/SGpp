@@ -16,11 +16,12 @@
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <iostream>
+#include <list>
 #include <vector>
-#include "ModelFittingDensityEstimationCombi.hpp"
 
 using std::vector;
 using std::unique_ptr;
@@ -49,7 +50,6 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
-  // datamatrix = newDataset;
   configurator = CombiConfigurator();
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
   configurator.getCombiScheme(componentConfigs);
@@ -94,7 +94,6 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
     fit(newDataset);
   } else {
     for (size_t i = 0; i < components.size(); i++) {
-      //(auto& model : components)model->update(newDataset);
       if (fitted.at(i) != 1) {
         components.at(i)->fit(newDataset.getData());
         fitted.at(i) = 1;
@@ -117,7 +116,6 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
   } else {
     cout << "updating (= fitting new components)..\n";
     for (size_t i = 0; i < components.size(); i++) {
-      //(auto& model : components)model->update(newDataset);
       if (fitted.at(i) != 1) {
         components.at(i)->fit(newDataset);
         fitted.at(i) = 1;

@@ -15,8 +15,8 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
@@ -32,9 +32,6 @@
 
 #include <fstream>
 #include <iostream>
-
-#include <string>
-#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -342,7 +339,7 @@ void ModelFittingClassification::storeClassificator() {
 
   // store labels
   std::string labels;
-  for (const auto &p : classIdx) {
+  for (const auto& p : classIdx) {
     labels = labels + std::to_string(p.first) + ", " + std::to_string(p.second) + "\n";
   }
   std::ofstream labelsFile;
@@ -355,7 +352,7 @@ void ModelFittingClassification::storeClassificator() {
   // store instances
   std::string instances;
   for (size_t i = 0; i < classNumberInstances.size(); i++) {
-    instances = instances + std::to_string(classNumberInstances[i]) +"\n";
+    instances = instances + std::to_string(classNumberInstances[i]) + "\n";
   }
   std::ofstream instancesFile;
   // add the path of your instances.txt file here, in which the instances should be stored
@@ -372,11 +369,11 @@ void ModelFittingClassification::storeClassificator() {
     classificatorFile = "";
     // add the path of you Grid_AlphaX.txt file here, in which the grids and alphas should be stored
     std::string pathToGridAlphaFile = "";
-    classificator = classificator + pathToGridAlphaFile + "Grid_Alpha" + std::to_string(i) +".txt";
+    classificator = classificator + pathToGridAlphaFile + "Grid_Alpha" + std::to_string(i) + ".txt";
     classificatorFile = classificatorFile + models[i]->storeFitter();
     std::ofstream file;
     file.open(classificator);
-    file <<  classificatorFile;
+    file << classificatorFile;
     file.close();
   }
 }
@@ -386,7 +383,6 @@ std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() c
   return processGrid;
 }
 #endif
-
 
 }  // namespace datadriven
 }  // namespace sgpp

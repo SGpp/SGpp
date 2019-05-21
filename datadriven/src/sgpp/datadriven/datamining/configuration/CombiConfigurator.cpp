@@ -9,10 +9,12 @@
  *      Author: nico
  */
 
-#include <iostream>
 #include <sgpp/base/exception/tool_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
+
+#include <iostream>
 #include <vector>
+
 using std::cout;
 using sgpp::base::tool_exception;
 using std::vector;
@@ -31,7 +33,7 @@ static bool initialized = false;
  * Stores the path to the SGPP SpACE Adapter
  */
 static PyObject *pModule;
-}
+} /* namespace spaceconfig */
 #endif
 
 CombiConfigurator::CombiConfigurator() { initializePython(); }
