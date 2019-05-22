@@ -63,7 +63,7 @@ class CombiScheme:
     def init_active_index_set(lmax, lmin, dim):
         grids = CombiScheme.getGrids(dim, lmax - lmin + 1)
         grids = [tuple([l + (lmin - 1) for l in g]) for g in grids]
-        print(grids)
+        #print(grids)
         return set(grids)
 
     @staticmethod
@@ -73,13 +73,13 @@ class CombiScheme:
             grids = CombiScheme.getGrids(dim, lmax - lmin + 1 - q)
             grids = [tuple([l + (lmin - 1) for l in g]) for g in grids]
             grid_array.extend(grids)
-        print(grid_array)
+        #print(grid_array)
         return set(grid_array)
 
     def get_index_set(self):
         return self.old_index_set | self.active_index_set
 
-    def getCombiScheme(self, lmin, lmax, dim, do_print=True):
+    def getCombiScheme(self, lmin, lmax, dim, do_print=False):
         grid_array = []
         if not self.initialized_adaptive:  # use default scheme
             for q in range(min(dim, lmax - lmin + 1)):
