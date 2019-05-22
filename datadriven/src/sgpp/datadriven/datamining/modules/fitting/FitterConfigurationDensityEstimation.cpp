@@ -10,9 +10,10 @@
  *      Author: Kilian Röhner
  */
 
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -39,6 +40,8 @@ void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigPars
   parser.getFitterDensityEstimationConfig(densityEstimationConfig, densityEstimationConfig);
   parser.getFitterDatabaseConfig(databaseConfig, databaseConfig);
   parser.getFitterLearnerConfig(learnerConfig, learnerConfig);
+  parser.getGeometryConfig(geometryConfig, geometryConfig);
+  parser.getFitterParallelConfig(parallelConfig, parallelConfig);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

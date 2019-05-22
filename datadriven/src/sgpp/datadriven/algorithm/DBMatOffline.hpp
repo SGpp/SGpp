@@ -7,18 +7,24 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModifiedLinear.hpp>
 
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::Grid;
-using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 /**
  * Class that is used to decompose and store the left-hand-side
@@ -86,6 +92,22 @@ class DBMatOffline {
   DataMatrix& getDecomposedMatrix();
 
   /**
+   * Get a reference to the distributed decomposed matrix. Throws if matrix has not yet been
+   * decomposed. In order to return valid data, syncDistributedDecomposition() has to be called if
+   * the decomposition was changed (after refinements).
+   */
+  DataMatrixDistributed& getDecomposedMatrixDistributed();
+
+  /**
+   * Synchronizes the decomposed matrix.
+   * Override if more matrices have to be synched.
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig);
+
+  /**
    * Allows access to lhs matrix, which is meant ONLY FOR TESTING
    */
   DataMatrix& getLhsMatrix_ONLY_FOR_TESTING();
@@ -105,12 +127,20 @@ class DBMatOffline {
    * @param densityEstimationConfig the density estimation configuration
    */
   virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) = 0;
+                               DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
    * Prints the matrix onto standard output
    */
   void printMatrix();
+
+  /**
+   * computes vectors of L2 products of grid points for refinement
+   * @param mat_refine matrix to store L2 vectors
+   * @param grid underlying grid
+   * @param newPoints amount of points to refine
+   */
+  void compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints);
 
   /**
    * Serialize the DBMatOffline Object
@@ -132,13 +162,16 @@ class DBMatOffline {
 
  protected:
   DBMatOffline();
-  DataMatrix lhsMatrix;              // stores the (decomposed) matrix
-  bool isConstructed;                // If the matrix was built
-  bool isDecomposed;                 // If the matrix was decomposed
+  DataMatrix lhsMatrix;  // stores the (decomposed) matrix
+  bool isConstructed;    // If the matrix was built
+  bool isDecomposed;     // If the matrix was decomposed
+
+  // distributed lhs, only initialized in ScaLAPACK version
+  DataMatrixDistributed lhsDistributed;
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)
-  std::vector<std::vector <size_t>> interactions;
+  std::vector<std::vector<size_t>> interactions;
 
  protected:
   /**
@@ -147,7 +180,7 @@ class DBMatOffline {
    * @param interactions the interactions to populate
    */
   void parseInter(const std::string& fileName,
-      std::vector<std::vector<size_t>>& interactions) const;
+                  std::vector<std::vector<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

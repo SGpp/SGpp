@@ -14,6 +14,8 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #include <iomanip>
 #include <list>
@@ -26,12 +28,13 @@ DBMatOnlineDEChol::DBMatOnlineDEChol(DBMatOffline& offline, Grid& grid, double l
     : DBMatOnlineDE{offline, grid, lambda, beta} {}
 
 void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+                                 DensityEstimationConfiguration& densityEstimationConfig,
+                                 bool do_cv) {
   DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
   alpha.resizeZero(lhsMatrix.getNcols());
 
-  auto cholsolver = std::unique_ptr<DBMatDMSChol>{buildCholSolver(offlineObject, grid,
-      densityEstimationConfig, do_cv)};
+  auto cholsolver = std::unique_ptr<DBMatDMSChol>{
+      buildCholSolver(offlineObject, grid, densityEstimationConfig, do_cv)};
 
   // Solve for density declaring coefficients alpha
   // std::cout << "lambda: " << lambda << std::endl;
@@ -50,7 +53,23 @@ void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
   //            << "\n";
 }
 
-DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, Grid& grid,
+void DBMatOnlineDEChol::solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b,
+                                         Grid& grid,
+                                         DensityEstimationConfiguration& densityEstimationConfig,
+                                         bool do_cv) {
+  DataMatrixDistributed lhsDistributed = offlineObject.getDecomposedMatrixDistributed();
+
+  auto solver = std::unique_ptr<DBMatDMSChol>{
+      buildCholSolver(offlineObject, grid, densityEstimationConfig, do_cv)};
+
+  // solver overwrites input, so copy b into alpha and use alpha as input and output
+  alpha.copyFrom(b);
+
+  solver->solveParallel(lhsDistributed, alpha, lambda, lambda);
+}
+
+DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
+    DBMatOffline& offlineObject, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool doCV) const {
   // const cast is OK here, since we access the config read only.
   switch (offlineObject.getDecompositionType()) {
@@ -58,10 +77,7 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, Gr
       return new DBMatDMSChol();
       break;
     case (MatrixDecompositionType::DenseIchol):
-      return new DBMatDMSDenseIChol(densityEstimationConfig,
-                                    grid,
-                                    lambda,
-                                    doCV);
+      return new DBMatDMSDenseIChol(densityEstimationConfig, grid, lambda, doCV);
       break;
     case (MatrixDecompositionType::LU):
     case (MatrixDecompositionType::Eigen):
@@ -72,19 +88,15 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(DBMatOffline& offlineObject, Gr
 }
 
 std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(
-    DensityEstimationConfiguration& densityEstimationConfig,
-    Grid& grid,
-    size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices,
-    double lambda)  {
+    DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices, double lambda) {
   DBMatOffline* offlineObject = &getOfflineObject();
-  dynamic_cast<DBMatOfflineChol *>(offlineObject)
+  dynamic_cast<DBMatOfflineChol*>(offlineObject)
       ->choleskyModification(grid, densityEstimationConfig, numAddedGridPoints,
-          deletedGridPointIndices, lambda);
-      std::vector<size_t> return_vector = {};
-      return return_vector;
+                             deletedGridPointIndices, lambda);
+  std::vector<size_t> return_vector = {};
+  return return_vector;
 }
-
 
 } /* namespace datadriven */
 } /* namespace sgpp */

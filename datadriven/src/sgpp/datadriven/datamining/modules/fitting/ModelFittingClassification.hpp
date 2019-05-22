@@ -14,20 +14,26 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiGridCoarseningFunctor.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
-#include <vector>
+
 #include <map>
+#include <memory>
+#include <vector>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -83,6 +89,18 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   void reset() override;
 
+  /*
+   * store Fitter into text file in folder /datadriven/classificator/
+   */
+  void storeClassificator();
+
+#ifdef USE_SCALAPACK
+    /**
+   * @returns the BLACS process grid
+   */
+  std::shared_ptr<BlacsProcessGrid> getProcessGrid() const override;
+#endif
+
  private:
   /**
    * Translates a class label to an index for the models vector. If the class is not present
@@ -100,6 +118,7 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   MultiGridRefinementFunctor *getRefinementFunctor(
       std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+
     /**
      * Returns the coarsening functor suitable for the model settings.
      * @param grids vector of pointers to grids for each class
@@ -108,6 +127,7 @@ class ModelFittingClassification : public ModelFittingBase {
      */
   MultiGridCoarseningFunctor *getCoarseningFunctor(
             std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+
   /**
    * Creates a density estimation model that fits the model settings.
    * @param densityEstimationConfig configuration for the density estimation
@@ -138,7 +158,13 @@ class ModelFittingClassification : public ModelFittingBase {
    * Number of instances for each class (used for prior)
    */
   std::vector<size_t> classNumberInstances;
+
+#ifdef USE_SCALAPACK
+  /**
+   * BLACS process grid for ScaLAPACK version
+   */
+  std::shared_ptr<BlacsProcessGrid> processGrid;
+#endif
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-

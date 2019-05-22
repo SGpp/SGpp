@@ -11,19 +11,20 @@
 
 #pragma once
 
-#include <sgpp/base/tools/json/JSON.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
-#include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HPOConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -31,15 +32,15 @@ struct DataSourceConfig;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-using json::JSON;
 using json::DictNode;
+using json::JSON;
 
-using sgpp::solver::SLESolverConfiguration;
 using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::CoarseningConfiguration;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -56,14 +57,16 @@ class DataMiningConfigParser {
   bool hasDataTransformationConfig() const;
   bool hasScorerConfig() const;
   bool hasFitterConfig() const;
+  bool hasGeometryConfig() const;
+  bool hasParallelConfig() const;
+
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
                           std::map<std::string, DiscreteParameter> &dispar,
                           std::map<std::string, DiscreteParameter> &catpar,
                           std::vector<base::GridType> &basisFunctions) const;
   void getHPOConfig(HPOConfig &config);
-  std::vector<int64_t> parseIntArray(DictNode &dict,
-                                     const std::string &key,
+  std::vector<int64_t> parseIntArray(DictNode &dict, const std::string &key,
                                      std::vector<int64_t> defaultValue,
                                      const std::string &parentNode) const;
   std::string getHPOMethod(std::string defaultValue) const;
@@ -74,7 +77,7 @@ class DataMiningConfigParser {
    */
   bool hasFitterConfigCrossValidation() const;
 
-  bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
+  bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
   /**
    * Reads the configuration for the scorer
    * @param config the configuration instance to initialize
@@ -102,6 +105,7 @@ class DataMiningConfigParser {
                                      const RegularizationConfiguration& defaults) const;
   bool getFitterLambda(double& lambda, double defaultValue) const;
 
+
   /**
    * Returns the database configuration of the fitter if it exists
    * @param config the configuration object that will be initialized
@@ -117,8 +121,26 @@ class DataMiningConfigParser {
    * @param defaults default values if the fitter config does not contain a matching entry
    * @return whether the configuration contains a learner configuration
    */
-  bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
-      const datadriven::LearnerConfiguration& defaults) const;
+  bool getFitterLearnerConfig(datadriven::LearnerConfiguration &config,
+                              const datadriven::LearnerConfiguration &defaults) const;
+
+  /**
+   * Initializes the parallel configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the parallel config does not contain a matching entry
+   * @return whether the configuration contains a parallel configuration
+   */
+  bool getFitterParallelConfig(datadriven::ParallelConfiguration &config,
+                               const datadriven::ParallelConfiguration &defaults) const;
+
+  /*
+   * Initializes the geometry configuration if it exists
+   * @param config the configuration instance that will be initialized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return whether the configuration contains a learner configuration
+   */
+  bool getGeometryConfig(datadriven::GeometryConfiguration &config,
+      const datadriven::GeometryConfiguration &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
@@ -131,12 +153,10 @@ class DataMiningConfigParser {
                           const std::string &parentNode) const;
   double parseDouble(DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
-  std::vector<double> parseDoubleArray(DictNode &dict,
-                                       const std::string &key,
+  std::vector<double> parseDoubleArray(DictNode &dict, const std::string &key,
                                        std::vector<double> defaultValue,
                                        const std::string &parentNode) const;
-  std::vector<size_t> parseUIntArray(DictNode &dict,
-                                     const std::string &key,
+  std::vector<size_t> parseUIntArray(DictNode &dict, const std::string &key,
                                      std::vector<size_t> defaultValue,
                                      const std::string &parentNode) const;
   size_t parseUInt(DictNode &dict, const std::string &key, size_t defaultValue,
@@ -150,16 +170,14 @@ class DataMiningConfigParser {
                             const SLESolverConfiguration &defaults,
                             const std::string &parentNode) const;
 
-  void parseDataTransformationConfig(DictNode &dict,
-                                     DataTransformationConfig &config,
+  void parseDataTransformationConfig(DictNode &dict, DataTransformationConfig &config,
                                      const DataTransformationConfig &defaults,
                                      const std::string &parentNode) const;
-  void parseRosenblattTransformationConfig(DictNode &dict,
-                                           RosenblattTransformationConfig &config,
+  void parseRosenblattTransformationConfig(DictNode &dict, RosenblattTransformationConfig &config,
                                            const RosenblattTransformationConfig &defaults,
                                            const std::string &parentNode) const;
 
-  template<typename Enumeration>
+  template <typename Enumeration>
   int asInteger(Enumeration const value) const {
     return static_cast<int>(value);
   }

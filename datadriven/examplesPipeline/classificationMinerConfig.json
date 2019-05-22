@@ -35,7 +35,8 @@
 			"lambda": 1e-2
 		},
 		"densityEstimationConfig" : {
-			"densityEstimationType" : "decomposition"
+			"densityEstimationType" : "decomposition",
+			"matrixDecompositionType" : "chol"
 		},
 		"learner" : {
 			"usePrior" : true,

@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
@@ -11,11 +13,9 @@
 #include <gsl/gsl_vector.h>
 #endif /* USE_GSL */
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
-
-#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -26,10 +26,9 @@ namespace sgpp {
 namespace datadriven {
 
 DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
-    double beta)
+                                                 double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
-  if (offline.getDecompositionType()!=
-      sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+  if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt: offline object has wrong "
         "decomposition type: DecompositionType::OrthoAdapt needed!");
@@ -45,9 +44,8 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& gr
 }
 
 std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
-    DensityEstimationConfiguration& densityEstimationConfig,
-    Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
-    double lambda) {
+    DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices, double lambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
@@ -84,7 +82,8 @@ std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
 }
 
 void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+                                       DensityEstimationConfiguration& densityEstimationConfig,
+                                       bool do_cv) {
   sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   // create solver
@@ -94,6 +93,25 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(DataVector& alpha, DataVector& b, Grid& g
   solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
 
   free(solver);
+}
+
+void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
+    DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
+      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
+  DataMatrixDistributed TinvDistributed = offline->getTinvDistributed();
+
+  DataMatrixDistributed QDistributed = offline->getQDistributed();
+
+  DataMatrixDistributed BDistributed = this->getBDistributed();
+
+  // create solver
+  std::unique_ptr<sgpp::datadriven::DBMatDMSOrthoAdapt> solver =
+      std::make_unique<sgpp::datadriven::DBMatDMSOrthoAdapt>();
+
+  alpha.resize(b.getGlobalRows());
+  solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha);
 }
 
 void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refine,
@@ -362,77 +380,27 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
  * Dima
  */
 void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoints,
-    double newLambda) {
+                                                     double newLambda) {
   if (newPoints > 0) {
     size_t gridSize = grid.getStorage().getSize();
-    size_t gridDim = grid.getStorage().getDimension();
 
-    // allocate the new points
-    for (size_t i = 0; i < newPoints; i++) {
-      sgpp::base::DataVector vec(gridSize);
-      this->refined_points_.push_back(vec);
+    // datamatrix for temporal storage
+    DataMatrix mat_refine(gridSize, newPoints);
+
+    this->offlineObject.compute_L2_refine_vectors(&mat_refine, &grid, newPoints);
+
+    // add lambda to diagonal elements
+    for (size_t i = gridSize - newPoints; i < gridSize; i++) {
+      double res = mat_refine.get(i, i - gridSize + newPoints);
+      mat_refine.set(i, i - gridSize + newPoints, res + newLambda);
     }
 
-    DataMatrix level(gridSize, gridDim);
-    DataMatrix index(gridSize, gridDim);
-
-    grid.getStorage().getLevelIndexArraysForEval(level, index);
-    double lambda_conf = newLambda;
-
-    // loop to calculate all L2-products of added points based on the
-    // hat-function as basis function
-    for (size_t i = 0; i < gridSize; i++) {
-      for (size_t j = gridSize - newPoints; j < gridSize; j++) {
-        double res = 1;
-        for (size_t k = 0; k < gridDim; k++) {
-          double lik = level.get(i, k);
-          double ljk = level.get(j, k);
-          double iik = index.get(i, k);
-          double ijk = index.get(j, k);
-
-          if (lik == ljk) {
-            if (iik == ijk) {
-              // use formula for identical ansatz functions:
-              res *= 2 / lik / 3;
-            } else {
-              // different index, but same level => ansatz functions do not overlap
-              res = 0.;
-              break;
-            }
-          } else {
-            if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
-                std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-              // ansatz functions do not not overlap:
-              res = 0.;
-              break;
-            } else {
-              // use formula for different overlapping ansatz functions
-              if (lik > ljk) {  // phi_i_k is the "smaller" ansatz function
-                double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
-                double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
-                temp_res *= ljk;
-                temp_res = (1 - temp_res) / lik;
-                res *= temp_res;
-              } else {  // phi_j_k is the "smaller" ansatz function
-                double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-                double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
-                temp_res *= lik;
-                temp_res = (1 - temp_res) / ljk;
-                res *= temp_res;
-              }
-            }
-          }
-        }
-
-        //### begin adjusted part
-        // add current lambda to lower diagonal elements of the refine points
-        if (i == j) {
-          this->refined_points_[j - gridSize + newPoints + this->current_refine_index].set(
-              i, res + lambda_conf);
-        } else {
-          this->refined_points_[j - gridSize + newPoints + this->current_refine_index].set(i, res);
-        }
-      }
+    // put the new points inside the internal storage
+    // this is needed for coarsening points later, without recalculating
+    for (size_t i = 0; i < newPoints; i++) {
+      sgpp::base::DataVector vec(gridSize);
+      mat_refine.getColumn(i, vec);
+      this->refined_points_.push_back(vec);
     }
 
     // fill in the new L2 products in the older points, and resize them
@@ -448,6 +416,16 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoint
   }
 }
 
+void DBMatOnlineDEOrthoAdapt::syncDistributedDecomposition(
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  offlineObject.syncDistributedDecomposition(processGrid, parallelConfig);
+  b_adapt_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      b_adapt_matrix_.data(), processGrid, b_adapt_matrix_.getNrows(), b_adapt_matrix_.getNcols(),
+      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+#endif
+  // no action needed without scalapack
+}
 
 }  // namespace datadriven
 }  // namespace sgpp
