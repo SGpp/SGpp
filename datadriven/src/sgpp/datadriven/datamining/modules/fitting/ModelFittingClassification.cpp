@@ -26,6 +26,10 @@
 
 #include <list>
 #include <map>
+
+#include <fstream>
+#include <iostream>
+
 #include <string>
 #include <vector>
 
@@ -319,11 +323,56 @@ void ModelFittingClassification::reset() {
   refinementsPerformed = 0;
 }
 
+void ModelFittingClassification::storeClassificator() {
+  std::cout << "Storing Classificator..." << std::endl;
+
+  // store labels
+  std::string labels;
+  for (const auto &p : classIdx) {
+    labels = labels + std::to_string(p.first) + ", " + std::to_string(p.second) + "\n";
+  }
+  std::ofstream labelsFile;
+  // add the path of your labels.txt file here, in which the labels should be stored
+  std::string pathToLabelsFile = "";
+  labelsFile.open(pathToLabelsFile);
+  labelsFile << labels;
+  labelsFile.close();
+
+  // store instances
+  std::string instances;
+  for (size_t i = 0; i < classNumberInstances.size(); i++) {
+    instances = instances + std::to_string(classNumberInstances[i]) +"\n";
+  }
+  std::ofstream instancesFile;
+  // add the path of your instances.txt file here, in which the instances should be stored
+  std::string pathToInstancesFile = "";
+  instancesFile.open(pathToInstancesFile);
+  instancesFile << instances;
+  instancesFile.close();
+
+  // store grids and alphas
+  std::string classificatorFile;
+  std::string classificator;
+  for (size_t i = 0; i < models.size(); i++) {
+    classificator = "";
+    classificatorFile = "";
+    // add the path of you Grid_AlphaX.txt file here, in which the grids and alphas should be stored
+    std::string pathToGridAlphaFile = "";
+    classificator = classificator + pathToGridAlphaFile + "Grid_Alpha" + std::to_string(i) +".txt";
+    classificatorFile = classificatorFile + models[i]->storeFitter();
+    std::ofstream file;
+    file.open(classificator);
+    file <<  classificatorFile;
+    file.close();
+  }
+}
+
 #ifdef USE_SCALAPACK
 std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() const {
   return processGrid;
 }
 #endif
+
 
 }  // namespace datadriven
 }  // namespace sgpp

@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 #include <memory>
+#include <string>
 
 namespace sgpp {
 
@@ -84,6 +85,12 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    * @return vector of surpluses.
    */
   DataVector& getSurpluses();
+
+  /*
+   * Get the grid and alphas of the current model
+   * @return string with grid and alphas
+   */
+  std::string storeFitter();
 
  protected:
   /**

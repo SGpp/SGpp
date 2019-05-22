@@ -11,6 +11,7 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -23,6 +24,9 @@
 #include <list>
 #include <string>
 #include <vector>
+
+#include <fstream>
+#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -66,6 +70,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& refinementConfig = this->config->getRefinementConfig();
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+  auto& geometryConfig = this->config->getGeometryConfig();
 
   // clear model
   reset();
@@ -74,8 +79,8 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   gridConfig.dim_ = newDataset.getNcols();
   std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
-  // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
-  grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+  grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
+
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
@@ -101,6 +106,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    offline->interactions = getInteractions(geometryConfig);
   }
   online = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
