@@ -449,9 +449,9 @@ BOOST_AUTO_TEST_CASE(testAnisotropicFull) {
   HashGridPoint i(2);
 
   for (sgpp::base::HashGridPoint::index_type n = 0; n <= 3; n++) {
-    if (n == 0)
+    if (n == 0) {
       i.set(0, 1, 1);
-    else {
+    } else {
       i.set(0, 2, n);
       n++;
     }
