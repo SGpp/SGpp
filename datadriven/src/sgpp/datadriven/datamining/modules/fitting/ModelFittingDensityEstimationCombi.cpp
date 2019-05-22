@@ -25,7 +25,6 @@
 
 using std::vector;
 using std::unique_ptr;
-using std::cout;
 using sgpp::base::application_exception;
 
 namespace sgpp {
@@ -36,8 +35,6 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi() {}
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
     FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation{} {
-  cout << "Creating ModelFittingDensityEstimationCombiGrid with Level = :"
-       << config.getGridConfig().level_ << " \n";
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
@@ -53,16 +50,6 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   configurator = CombiConfigurator();
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
   configurator.getCombiScheme(componentConfigs);
-
-  cout << "Printing the componentConfig:\n";
-  for (auto v : componentConfigs) {
-    cout << "[";
-    for (auto b : v.levels) {
-      cout << b << " ";
-    }
-    cout << "] " << v.coef << "\n";
-  }
-
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());
 
@@ -79,14 +66,11 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
 
     components.at(i) = createNewModel(newFitterConfig);
     fitted.at(i) = 0;
-    cout << "Model created\n";
   }
-  cout << "Fitting the component grids to the Dataset: \n";
   for (size_t i = 0; i < components.size(); i++) {
     components.at(i)->fit(newDataset);
     fitted.at(i) = 1;
   }
-  cout << "Done fitting the component grids. \n";
 }
 
 void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
@@ -104,17 +88,15 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
   for (size_t i = 0; i < components.size(); i++) {
     gridpoints += components.at(i)->getGrid().getSize();
   }
-  cout << "Refinement: " << refinementsPerformed << " Sum of Gridpoints: " << gridpoints
-       << std::endl;
+  std::cout << "Refinement: " << refinementsPerformed << " Sum of Gridpoints: " << gridpoints
+            << std::endl;
   dataset = &newDataset;
 }
 
 void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
   if (components.empty()) {
-    cout << "components.size() == 0 --> fit(newDataset)\n";
     fit(newDataset);
   } else {
-    cout << "updating (= fitting new components)..\n";
     for (size_t i = 0; i < components.size(); i++) {
       if (fitted.at(i) != 1) {
         components.at(i)->fit(newDataset);
@@ -126,12 +108,10 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
       gridpoints += components.at(i)->getGrid().getSize();
-    } else {
-      cout << i << std::endl;
     }
   }
-  cout << "Refinement: " << refinementsPerformed << "Sum of Gridpoints: " << gridpoints
-       << std::endl;
+  std::cout << "Refinement: " << refinementsPerformed << "; Sum of Gridpoints: " << gridpoints
+            << std::endl;
 }
 
 double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
@@ -170,19 +150,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
     refinementsPerformed++;
 
     /*
-     * DEBUGGING: PRINTING CURRENT SET
-
-    cout << "##CURRENT SET before Refinement: " << refinementsPerformed << " ##" << std::endl;
-    for (size_t i = 0; i < componentConfigs.size(); i++) {
-      cout << i << " :" << componentConfigs.at(i).coef << " [";
-      for (size_t l : componentConfigs.at(i).levels) {
-        cout << l << " ";
-      }
-      cout << "]" << std::endl;
-    }
-        */
-
-    /*
      * Finding the sub grid with the greatest error.
      * \TODO Add different kinds of error estimation
      */
@@ -193,8 +160,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
                    static_cast<double>(components.at(i)->getSurpluses().getSize());
       if (now > max) {
         if (configurator.isRefinable(componentConfigs.at(i))) {
-          // cout << "Error: " << components.at(i)->getSurpluses().l2Norm() << " / "
-          //<< components.at(i)->getSurpluses().getSize() << " = " << now << std::endl;
           max = now;
           ind = i;
         }
@@ -239,18 +204,6 @@ bool ModelFittingDensityEstimationCombi::refine() {
         addNewModel(newConfigs.at(i));
       }
     }
-
-    /*
-     * DEBUGGING: PRINTING CURRENT SET
-
-    for (size_t i = 0; i < componentConfigs.size(); i++) {
-      cout << i << " :" << componentConfigs.at(i).coef << " [";
-      for (size_t l : componentConfigs.at(i).levels) {
-        cout << l << " ";
-      }
-      cout << "]" << std::endl;
-    }
-    */
   }
   return false;
 }
@@ -269,14 +222,11 @@ void ModelFittingDensityEstimationCombi::reset() {
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationCombi::createNewModel(
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
-  std::cout << "Creating New ";
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
     case DensityEstimationType::CG: {
-      std::cout << "ModelFittingDensityEstimationCG\n";
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
     case DensityEstimationType::Decomposition: {
-      std::cout << "ModelFittingDensityEstimationOnOff\n";
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
     default: { throw base::application_exception("Unknown density estimation type"); }
@@ -301,7 +251,6 @@ void ModelFittingDensityEstimationCombi::addNewModel(combiConfig combiconfig) {
 }
 
 void ModelFittingDensityEstimationCombi::removeModel(const size_t ind) {
-  cout << "removing model " << ind << std::endl;
   componentConfigs.erase(componentConfigs.begin() + ind);
   components.erase(components.begin() + ind);
   fitted.erase(fitted.begin() + ind);
