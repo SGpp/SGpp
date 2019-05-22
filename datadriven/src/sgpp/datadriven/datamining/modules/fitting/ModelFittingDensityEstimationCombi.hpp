@@ -40,7 +40,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * Constructor from a FitterConfig
    * @param config FitterConfig
    */
-  ModelFittingDensityEstimationCombi(FitterConfigurationDensityEstimation& config);
+  explicit ModelFittingDensityEstimationCombi(FitterConfigurationDensityEstimation& config);
 
   /**
    * Fit the grids to the given dataset by determining the weights of the initial grid by the
