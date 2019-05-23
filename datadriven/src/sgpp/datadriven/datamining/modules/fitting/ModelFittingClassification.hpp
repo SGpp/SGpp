@@ -17,10 +17,12 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+
 
 #include <map>
 #include <memory>
@@ -83,6 +85,11 @@ class ModelFittingClassification : public ModelFittingBase {
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /*
+   * store Fitter into text file in folder /datadriven/classificator/
+   */
+  void storeClassificator();
 
 #ifdef USE_SCALAPACK
     /**

@@ -180,6 +180,22 @@ void DBMatOffline::printMatrix() {
   }
 }
 
+void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints) {
+  size_t j_start = grid->getSize() - newPoints;
+
+  // todo: switch-case when adding support for other gridTypes
+  if (grid->getType() == sgpp::base::GridType::Linear) {
+    auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
+    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else {
+    throw algorithm_exception(
+        "in DBMatOffline::compute_L2_refine_vectors, gridType is not supported.");
+  }
+}
+
 void sgpp::datadriven::DBMatOffline::parseInter(
     const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
@@ -210,4 +226,4 @@ size_t DBMatOffline::getGridSize() { return lhsMatrix.getNrows(); }
 sgpp::base::DataMatrix& DBMatOffline::getLhsMatrix_ONLY_FOR_TESTING() { return this->lhsMatrix; }
 
 }  // namespace datadriven
-}  // namespace sgpp
+} // namespace sgpp

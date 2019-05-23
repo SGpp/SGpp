@@ -11,10 +11,7 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-<<<<<<< HEAD
-=======
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -28,12 +25,9 @@
 #include <string>
 #include <vector>
 
-<<<<<<< HEAD
-=======
 #include <fstream>
 #include <iostream>
 
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -92,10 +86,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
-<<<<<<< HEAD
-=======
 
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
@@ -117,10 +108,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
   }
-<<<<<<< HEAD
-
-=======
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
   online = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
 
