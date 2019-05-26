@@ -91,14 +91,6 @@ FitterConfiguration &ModelFittingBase::getFitterConfigurationVar() {
   return *config;
 }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
-  GridFactory gridFactory;
-
-  // pass interactions with size 0
-  std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
-  return gridFactory.createGrid(gridConfig, interactions);
-}
-
 Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
     const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;

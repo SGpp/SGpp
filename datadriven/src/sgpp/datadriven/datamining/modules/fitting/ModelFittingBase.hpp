@@ -15,25 +15,13 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-#include <sgpp/base/exception/generation_exception.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
-
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 
 #include <vector>
 #include <memory>
-#include <algorithm>
-#include <iomanip>
-#include <string>
 
 
 namespace sgpp {

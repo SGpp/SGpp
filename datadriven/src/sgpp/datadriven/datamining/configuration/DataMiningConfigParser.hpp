@@ -128,8 +128,6 @@ class DataMiningConfigParser {
    */
   bool getFitterParallelConfig(datadriven::ParallelConfiguration &config,
                                const datadriven::ParallelConfiguration &defaults) const;
-<<<<<<< HEAD
-=======
 
   /*
    * Initializes the geometry configuration if it exists
@@ -139,7 +137,6 @@ class DataMiningConfigParser {
    */
   bool getGeometryConfig(datadriven::GeometryConfiguration &config,
       const datadriven::GeometryConfiguration &defaults) const;
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
 
  private:
   std::unique_ptr<JSON> configFile;

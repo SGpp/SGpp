@@ -34,23 +34,15 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-<<<<<<< HEAD
   if (config.getCombi())
     return new PDFCombigrid(config);
   else
     return new ModelFittingDensityEstimationOnOff(config);
- #ifdef USE_SCALAPACK
-  if (parser.hasParallelConfig()) {
-    return new ModelFittingDensityEstimationOnOffParallel(config);
-  }
- #endif
-=======
 #ifdef USE_SCALAPACK
   if (parser.hasParallelConfig()) {
     return new ModelFittingDensityEstimationOnOffParallel(config);
   }
 #endif
->>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
   return new ModelFittingDensityEstimationOnOff(config);
 }
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {

@@ -266,6 +266,8 @@ if "LIBPATH" in ARGUMENTS:
 
 if "SWIGFLAGS" in ARGUMENTS:
     env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
+if "USE_SGDECOMBI" in ARGUMENTS:
+    env["USE_SGDECOMBI"] = ARGUMENTS["USE_SGDECOMBI"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
