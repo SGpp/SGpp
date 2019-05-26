@@ -5,7 +5,7 @@
  *
  * Created by Bountos Nikolaos on 12/14/18
  */
-#if defined USE_SGDECOMBI && defined USE_GSL
+#ifdef USE_GSL
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 #include <boost/test/unit_test_suite.hpp>
@@ -33,9 +33,9 @@ using sgpp::datadriven::DataVector;
 
 double testParallel(int dim) {
     sgpp::datadriven::UniversalMinerFactory factory;
-    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("PDFCombi.json"));
+    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("datadriven/tests/PDFCombi.json"));
     miner->learn(false);
-    auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("miner.json"));
+    auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("datadriven/tests/miner.json"));
     minertrue->learn(false);
     std::vector<double> a;
     for (auto i = 0; i < dim ; i++) {
@@ -50,9 +50,9 @@ double testParallel(int dim) {
 
 double testSequential(int dim) {
     sgpp::datadriven::UniversalMinerFactory factory;
-    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("PDFSequential.json"));
+    auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner("datadriven/tests/PDFSequential.json"));
     miner->learn(false);
-    auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("miner.json"));
+    auto minertrue = std::unique_ptr<SparseGridMiner>(factory.buildMiner("datadriven/tests/miner.json"));
     minertrue->learn(false);
     std::vector<double> a;
     for (auto i = 0; i < dim ; i++) {
@@ -80,5 +80,5 @@ BOOST_AUTO_TEST_CASE(testResultSequential) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif /* USE_SGDECOMBI */
+#endif /* USE_GSL */
 

@@ -4,7 +4,7 @@
   },
   "dataSource":{
     "numBatches":1,
-    "filePath":"../datasets/friedman/friedman2d.arff"
+    "filePath":"datadriven/datasets/friedman/friedman2d.arff"
   },
   "fitter": {
     "type": "densityestimation",

@@ -15,22 +15,13 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-#include <sgpp/base/exception/generation_exception.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+
 #include <vector>
 #include <memory>
-#include <algorithm>
-#include <iomanip>
-#include <string>
 
 
 namespace sgpp {
@@ -179,6 +170,9 @@ class ModelFittingBase {
    */
   Dataset *getDataset();
 
+  // virtual std::string& storeFitter();
+  // void storeClassificator();
+
  protected:
   /**
    * Factory member function that generates a grid from configuration.
@@ -188,8 +182,16 @@ class ModelFittingBase {
   Grid *buildGrid(const RegularGridConfiguration &gridConfig,
           std::vector<size_t> *ind = NULL) const;
 
+  /**
+     * Factory member function that generates a grid from configuration.
+     * @param gridConfig configuration for the grid object
+     * @param geometryConfig configuration for the geometry parameters
+     * @return new grid object that is owned by the caller.
+     */
+  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+                  const GeometryConfiguration &geometryConfig) const;
 
-    /**
+  /**
    * Factory member function to build the solver for the least squares regression problem according
    * to the config.
    * @param config configuratin for the solver object
@@ -202,6 +204,14 @@ class ModelFittingBase {
    * @param config configuration updating the for the solver.
    */
   void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
+
+  /*
+   * This method is used to pass the interactions for a geometry aware sparse grid to the offline object
+   * @param geometryConfig from configuration file
+   * @return interactions
+   */
+  std::vector<std::vector<size_t>> getInteractions(
+    const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Configuration object for the fitter.

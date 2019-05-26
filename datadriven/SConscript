@@ -39,6 +39,12 @@ if env["USE_SCALAPACK"]:
                                    "pthread",
                                    "dl",
                                    "m"]
+    elif env["SCALAPACK_VERSION"] == "openmpi":
+        additionalDependencies += ["scalapack-openmpi"]
+    elif env["SCALAPACK_VERSION"] == "mpich":
+        additionalDependencies += ["scalapack-mpich"]
+    elif env["SCALAPACK_VERSION"] == "custom":
+        additionalDependencies += [env["SCALAPACK_LIBRARY_NAME"]]
 
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"

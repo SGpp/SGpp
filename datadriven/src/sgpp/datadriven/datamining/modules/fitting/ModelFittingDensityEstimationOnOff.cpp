@@ -11,6 +11,10 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+<<<<<<< HEAD
+=======
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+>>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -24,6 +28,12 @@
 #include <string>
 #include <vector>
 
+<<<<<<< HEAD
+=======
+#include <fstream>
+#include <iostream>
+
+>>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
@@ -67,6 +77,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& refinementConfig = this->config->getRefinementConfig();
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+  auto& geometryConfig = this->config->getGeometryConfig();
 
   // clear model
   reset();
@@ -74,13 +85,17 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
-  // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
-  grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+  grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
+
   // build surplus vector
   alpha = DataVector{grid->getSize()};
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
@@ -100,8 +115,12 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    offline->interactions = getInteractions(geometryConfig);
   }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2e274e91fe86403e09bd5e24a44923e18bf37468
   online = std::unique_ptr<DBMatOnlineDE>{
       DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
 

@@ -23,9 +23,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/PDFCombigrid.hpp>
 
 #include <string>
@@ -41,11 +38,11 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     return new PDFCombigrid(config);
   else
     return new ModelFittingDensityEstimationOnOff(config);
- #ifdef USE_SCALAPACK
+#ifdef USE_SCALAPACK
   if (parser.hasParallelConfig()) {
     return new ModelFittingDensityEstimationOnOffParallel(config);
   }
- #endif
+#endif
   return new ModelFittingDensityEstimationOnOff(config);
 }
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {

@@ -17,6 +17,7 @@
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <string>
 #include <vector>
 
 namespace sgpp {
@@ -89,6 +90,41 @@ void ModelFittingBase::setConfiguration(sgpp::datadriven::ModelFittingBase &m) {
 FitterConfiguration &ModelFittingBase::getFitterConfigurationVar() {
   return *config;
 }
+
+Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
+    const GeometryConfiguration &geometryConfig) const {
+  GridFactory gridFactory;
+
+  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
+  std::vector<int64_t> dim = geometryConfig.dim;
+
+  // a regular sparse grid is created, if no geometryConfig is defined,
+  if (stencilType == sgpp::datadriven::StencilType::None) {
+    // interaction with size 0
+    std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
+    return gridFactory.createGrid(gridConfig, interactions);
+  }
+
+  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(stencilType, dim));
+}
+
+std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
+    const GeometryConfiguration &geometryConfig) const {
+  GridFactory gridFactory;
+
+  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
+  std::vector<int64_t> dim = geometryConfig.dim;
+
+  // no interactions get returned, if no geometryConfig is defined
+  if (stencilType == sgpp::datadriven::StencilType::None) {
+    // interaction with size 0
+    std::vector<std::vector <size_t>> interactions = std::vector<std::vector<size_t>>();
+    return interactions;
+  }
+
+  return gridFactory.getInteractions(stencilType, dim);
+}
+
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {
   if (sleConfig.type_ == SLESolverType::CG) {

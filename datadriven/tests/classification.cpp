@@ -76,6 +76,39 @@ BOOST_AUTO_TEST_CASE(testCG) {
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
+BOOST_AUTO_TEST_CASE(testGeo) {
+  std::string configFile = "datadriven/tests/geometryAwareSparseGrid_Test.json";
+  double accuracy = testModel(configFile);
+  std::cout << "Accuracy " << accuracy << std::endl;
+  BOOST_CHECK(accuracy >= 0);
+}
+
+#ifdef USE_SCALAPACK
+BOOST_AUTO_TEST_CASE(testOnOffParallelChol) {
+  std::string configFileParallel = "datadriven/tests/gmm_on_off_parallel_chol.json";
+  double accuracyParallel = testModel(configFileParallel);
+
+  std::string configFile = "datadriven/tests/gmm_on_off_chol.json";
+  double accuracy = testModel(configFile);
+  if (BlacsProcessGrid::getCurrentProcess() == 0) {
+    BOOST_CHECK(accuracyParallel > 0.7);
+    BOOST_CHECK_CLOSE(accuracyParallel, accuracy, 1e-5);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testOnOffParallelOrthoadapt) {
+  std::string configFileParallel = "datadriven/tests/gmm_on_off_parallel_orthoadapt.json";
+  double accuracyParallel = testModel(configFileParallel);
+
+  std::string configFile = "datadriven/tests/gmm_on_off_orthoadapt.json";
+  double accuracy = testModel(configFile);
+
+  if (BlacsProcessGrid::getCurrentProcess() == 0) {
+    BOOST_CHECK(accuracyParallel > 0.7);
+    BOOST_CHECK_CLOSE(accuracyParallel, accuracy, 1e-5);
+  }
+}
+#endif /* USE_SCALAPACK */
 
 #ifdef USE_SCALAPACK
 BOOST_AUTO_TEST_CASE(testOnOffParallelChol) {

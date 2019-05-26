@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
@@ -144,6 +145,12 @@ class FitterConfiguration {
    */
   const datadriven::ParallelConfiguration &getParallelConfig() const;
 
+  /*
+   * Returns the configuration for the geometry parameters
+   * @return immutable GeometryConfiguration
+   */
+  const datadriven::GeometryConfiguration& getGeometryConfig() const;
+
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
    * @return RegularGridConfiguration
@@ -269,6 +276,12 @@ class FitterConfiguration {
    * Configuration option for probability density estimation using combigrid
    */
   bool use_combigrid;
+
+  /*
+   * Configuration of the geometry parameters
+   */
+  datadriven::GeometryConfiguration geometryConfig;
+
   /**
    *  Configuration for parallelization with ScaLAPACK
    */
