@@ -16,6 +16,7 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 
 #include <algorithm>
@@ -129,6 +130,16 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
 
   // dimension of offline's lhs matrix A^{-1} = Q * T^{-1} * Q^t
   size_t offMatrixSize = offlinePtr->getGridSize();
+
+  // TODO(dima) auslagern
+  if (getOfflineObject().getDecompositionType() ==
+      sgpp::datadriven::MatrixDecompositionType::Chol) {
+    sgpp::datadriven::DBMatOfflineChol* cholPtr =
+        static_cast<sgpp::datadriven::DBMatOfflineChol*>(&this->offlineObject);
+    std::cout << "\n\n\n CHOL INVERSE TEST\n\n\n\n";
+    DataMatrix a_inv(offMatrixSize, offMatrixSize);
+    cholPtr->compute_inverse(a_inv);
+  }
 
   // check, if offline object has been decomposed yet
   if (offMatrixSize == 0) {
