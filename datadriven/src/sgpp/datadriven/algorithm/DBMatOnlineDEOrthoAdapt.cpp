@@ -367,18 +367,6 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
 #endif /* USE_GSL */
 }
 
-/**
- * todo: Kilian! this function can probably be refactored into some parent class,
- * because it calculates similar stuff as corresponding part in in
- * DBMatOfflineChol::choleskyModification.
- * But note, that this class is an online class, whereas the class containing the
- * choleskyModification function is an offline class.
- * If you want to refactor, also look at the adjusted part of this function by
- * searching for "//### begin adjusted part"
- *
- * greets,
- * Dima
- */
 void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoints,
                                                      double newLambda) {
   if (newPoints > 0) {
@@ -404,7 +392,6 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoint
     }
 
     // fill in the new L2 products in the older points, and resize them
-    // loop all the old points of this->refined_points_
     for (size_t i = 0; i < this->current_refine_index; i++) {
       this->refined_points_[i].resize(gridSize);
       for (size_t j = this->current_refine_index; j < this->current_refine_index + newPoints; j++) {
@@ -412,7 +399,6 @@ void DBMatOnlineDEOrthoAdapt::compute_L2_gridvectors(Grid& grid, size_t newPoint
         this->refined_points_[i].set(j, xxx);
       }
     }
-    //### end adjusted part
   }
 }
 
