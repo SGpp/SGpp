@@ -20,12 +20,11 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    * Constructor
    *
    * @param offline The offline object we base our evaluations on.
-   * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
-   * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
+   * @param lambda The regularization strength
+   * @param grid The underlying grid
    * @param beta The initial weighting factor
    */
-  explicit DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double lambda,
-                                   double beta = 0.);
+  explicit DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
@@ -58,12 +57,13 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    * In the current version of the function, the refinePts already are adapted
    * to the regularization parameter lambda.
    *
+   * @param X
    * @param newPoints number of refined points
    * @param refine decides: true for refine, false for coarsen
    * @param coarsen_indices the indices of points to coarsen
    */
-  void sherman_morrison_adapt(size_t newPoints, bool refine,
-                              std::vector<size_t> coarsen_indices = {});
+  void smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
+                 std::vector<size_t> coarsen_indices = {});
 
   /**
    * @param densityEstimationConfig configuration for the density estimation
@@ -131,14 +131,24 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
  private:
   /**
    * Computes the L_2 products of the refined gridpoints and pushes them into the
-   * refined_points_ container member. The computed vectors of the products correspond
-   * to rows/columns of the lhs matrix
+   * refined_points_ container member.
    *
+   * @param X the matrix for storing the computed values
    * @param grid the underlying grid
-   * @param newPoints The number of points to refine
-   * @param newLambda The regularization coefficient added to the diagonal elements
+   * @param newPoints the number of points to refine
+   * @param newLambda the regularization coefficient added to the diagonal elements
    */
-  void compute_L2_gridvectors(Grid& grid, size_t newPoints, double newLambda);
+  void compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size_t newPoints, double newLambda);
+
+  /**
+   * Computes the L_2 products of the gridpoints to coarsen.
+   * Note: member refined_points_ doesn't get changed here, but in the corresponding smw_adapt call
+   *
+   * @param X the matrix for storing the computed values
+   * @param grid the underlying grid
+   * @param coarsen_indices the indices of points to coarsen
+   */
+  void compute_L2_coarsen_matrix(DataMatrix& X, Grid& grid, std::vector<size_t> coarsen_indices);
 };
 }  // namespace datadriven
 }  // namespace sgpp

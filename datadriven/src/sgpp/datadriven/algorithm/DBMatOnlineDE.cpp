@@ -125,7 +125,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
-    std::cout << "before use_B_size" << std::endl;
     bool use_B_size = false;
     size_t B_size = 0;
     sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
@@ -159,7 +158,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
     }
-    std::cout << "after use_B_size" << std::endl;
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
         (offlineObject.interactions.size() == 0)
