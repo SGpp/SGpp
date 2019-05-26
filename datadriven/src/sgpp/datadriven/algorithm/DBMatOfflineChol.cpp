@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <list>
 #include <string>
 
@@ -57,6 +58,7 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
       size_t n = lhsMatrix.getNrows();
       gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                 n);  // Create GSL matrix view for decomposition
+
       // Perform Cholesky decomposition
       gsl_linalg_cholesky_decomp(&m.matrix);
 
@@ -78,10 +80,30 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
 #else
-  throw algorithm_exception("built withot GSL");
+  throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
 }
 
+void DBMatOfflineChol::compute_inverse(DataMatrix& inv) {
+#ifdef USE_GSL
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineChol::compute_inverse:\noffline matrix not decomposed yet.\n");
+  }
+
+  // copy, in order to not mess with internal lhsMatrix of offlineChol object
+  inv.copyFrom(this->lhsMatrix);
+
+  // create matrix view in style of decomposition, see ::decomposeMatrix
+  gsl_matrix_view m = gsl_matrix_view_array(inv.getPointer(), inv.getNrows(), inv.getNcols());
+
+  // inverts matrix, and stores inplace, i.e. in inv
+  gsl_linalg_cholesky_invert(&m.matrix);
+
+#else
+  throw algorithm_exception("build without GSL");
+#endif /*USE_GSL*/
+}
 void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
                                             size_t newPoints, std::list<size_t> deletedPoints,
                                             double lambda) {

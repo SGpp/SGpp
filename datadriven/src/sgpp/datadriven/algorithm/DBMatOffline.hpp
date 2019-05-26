@@ -142,6 +142,12 @@ class DBMatOffline {
    */
   void compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints);
 
+  /*
+   * explicitly computes the inverse of the decomposed offline matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse(DataMatrix& inv);
+
   /**
    * Serialize the DBMatOffline Object
    * @param fileName path where to store the file.
