@@ -136,7 +136,6 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
       sgpp::datadriven::MatrixDecompositionType::Chol) {
     sgpp::datadriven::DBMatOfflineChol* cholPtr =
         static_cast<sgpp::datadriven::DBMatOfflineChol*>(&this->offlineObject);
-    std::cout << "\n\n\n CHOL INVERSE TEST\n\n\n\n";
     DataMatrix a_inv(offMatrixSize, offMatrixSize);
     cholPtr->compute_inverse(a_inv);
   }
@@ -216,8 +215,8 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   gsl_matrix* A_inv = gsl_matrix_alloc(offMatrixSize, offMatrixSize);
 
   std::cout << "\nberechne A^-1 der offline matrix\n";
-  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_inv_view.matrix, 0.0, interim);
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, interim, &q_view.matrix, 0.0, A_inv);
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_inv_view.matrix, 0.0, interim);
+  gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, interim, &q_view.matrix, 0.0, A_inv);
 
   std::cout << "\nA^-1 + B\n";
   // A^-1 + B (in size of B)
