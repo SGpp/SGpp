@@ -225,6 +225,17 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
     gsl_blas_dgemv(CblasNoTrans, 1.0, &q_view.matrix, buffer, 0.0,
                    x_term);  // x_term = Q*T^{-1}*Q^t * x_cut
 
+    ///////////////TEST x_term == a_inv * x_cut ?
+    DataMatrix a_inv(dima, dima);
+    offlinePtr->compute_inverse(a_inv);
+    gsl_matrix_view a_inv_view = gsl_matrix_view_array(a_inv.getPointer(), dima, dima);
+    gsl_vector* x_term_test = gsl_vector_alloc(dima);
+    gsl_blas_dgemv(CblasNoTrans, 1.0, &a_inv_view.matrix, &x_cut_view.vector, 0.0, x_term_test);
+
+    for (int i = 0; i < dima; i++) {
+      std::cout << gsl_vector_get(x_term_test, i) - gsl_vector_get(x_term, i) << "\n";
+    }
+
     // calculating the divisor of the sherman-morrison-formula: 1 + e^t * x_term + e^t * bx_term
     // note: the term e^t * Q * T^{-1} * Q^t * x is always zero,
     // because initial gridpoints cannot be refined
