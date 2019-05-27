@@ -94,6 +94,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                     const ParallelConfiguration& parallelConfig) override;
 
+  /*
+   * explicitly computes the inverse
+   * note: the computed inverse is not the inverse of the decomposed matrix,
+   * but rather the inverse of the previous undecomposed matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse(DataMatrix& inv);
+
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 
   sgpp::base::DataMatrix& getTinv() { return this->t_tridiag_inv_matrix_; }
