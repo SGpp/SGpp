@@ -201,20 +201,18 @@ void DBMatOfflineOrthoAdapt::syncDistributedDecomposition(
   // no action needed without scalapack
 }
 
-void DBMatOfflineOrthoAdapt::compute_inverse(DataMatrix& inv) {
+void DBMatOfflineOrthoAdapt::compute_inverse() {
 #ifdef USE_GSL
   if (!isDecomposed) {
     throw sgpp::base::algorithm_exception(
         "in DBMatOfflineOrthoAdapt::compute_inverse:\noffline matrix not decomposed yet.\n");
   }
 
-  if (inv.getNrows() != this->getQ().getNrows() || inv.getNcols() != this->getQ().getNrows()) {
-    throw sgpp::base::algorithm_exception(
-        "in DBMatOfflineOrthoAdapt::compute_inverse:\nsize of inv doesn't match offMatrix\n");
-  }
+  // initialize lhsInverse
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
 
-  gsl_matrix_view inv_view =
-      gsl_matrix_view_array(inv.getPointer(), inv.getNrows(), inv.getNcols());
+  gsl_matrix_view inv_view = gsl_matrix_view_array(this->lhsInverse.getPointer(),
+                                                   lhsInverse.getNrows(), lhsInverse.getNcols());
 
   gsl_matrix_view t_inv_view = gsl_matrix_view_array(
       this->getTinv().getPointer(), this->getTinv().getNrows(), this->getTinv().getNcols());
@@ -222,7 +220,7 @@ void DBMatOfflineOrthoAdapt::compute_inverse(DataMatrix& inv) {
   gsl_matrix_view q_view = gsl_matrix_view_array(this->getQ().getPointer(), this->getQ().getNrows(),
                                                  this->getQ().getNcols());
 
-  gsl_matrix* QT = gsl_matrix_alloc(inv.getNrows(), inv.getNcols());
+  gsl_matrix* QT = gsl_matrix_alloc(lhsInverse.getNrows(), lhsInverse.getNcols());
 
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_inv_view.matrix, 0.0, QT);
   gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, QT, &q_view.matrix, 0.0, &inv_view.matrix);

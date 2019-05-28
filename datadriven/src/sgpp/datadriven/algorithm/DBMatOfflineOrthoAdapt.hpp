@@ -100,7 +100,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * but rather the inverse of the previous undecomposed matrix
    * @param inv the matrix to store the computed inverse
    */
-  void compute_inverse(DataMatrix& inv);
+  void compute_inverse() override;
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 

@@ -148,7 +148,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
         B_size = this_SMW_pointer->getB().getNcols();
       }
     }
-    std::cout << "OnlineDE handler success\n";
+
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
@@ -178,8 +178,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
       throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
     }
-
-    std::cout << "b.getSize() = " << b.getSize() << std::endl;
 
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
