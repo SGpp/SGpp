@@ -13,7 +13,7 @@
 #include <vector>
 #include <algorithm>
 #include <chrono>
-#include <ctime> 
+#include <ctime>
 namespace sgpp {
 namespace base {
 
@@ -57,24 +57,22 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   // also assure, that indices bigger than minIndexConsidered are not checked
   for (size_t z = minIndexConsidered; z < numFirstPoints; z++) {
     GridPoint& point = storage.getPoint(z);
-    std::cout<<"(";
-    for (size_t d = 0; d < point.getDimension(); d++){
-        std::cout<<point.getStandardCoordinate(d);
-        if(d!=point.getDimension()-1){
-            std::cout<<",";
-        }
-        else{
-            std::cout<<")";
+    std::cout << "(";
+    for (size_t d = 0; d < point.getDimension(); d++) {
+        std::cout << point.getStandardCoordinate(d);
+        if (d != point.getDimension()-1) {
+            std::cout << ",";
+        } else 
+        {
+            std::cout << ")";
         }
     }
     if (point.isLeaf()) {
-      //auto start = std::chrono::system_clock::now();
-
+      // auto start = std::chrono::system_clock::now();
       CoarseningFunctor::value_type current_value = functor(storage, z);
-          
-      //auto end = std::chrono::system_clock::now();
-      //std::chrono::duration<double> elapsed_seconds = end-start;
-      //std::cout<< "++++++++++++++++elapsed time: " << elapsed_seconds.count() << "s\n";
+      // auto end = std::chrono::system_clock::now();
+      // std::chrono::duration<double> elapsed_seconds = end-start;
+      // std::cout<< "++++++++++++++++elapsed time: " << elapsed_seconds.count() << "s\n";
       if (current_value < removeCandidates[max_idx].second) {
         // Replace the maximum point array of removable candidates,
         // find the new maximal point
@@ -90,9 +88,8 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
           }
         }
       }
-    }
-    else{
-
+    } else
+    {
         std::cout<<";NaN;NaN;NaN"<<std::endl;
     }
   }
@@ -123,7 +120,7 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (size_t i = 0; i < remove_num; i++) {
     if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
-      std::cout<<"This candidate has score:"<<removeCandidates[i].second<<std::endl;
+      std::cout << "This candidate has score:" << removeCandidates[i].second << std::endl;
       if (removedPoints != 0) {
         removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
       }
@@ -144,7 +141,7 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (auto i:removedPointsList){
       std::cout << i << ",";
   }
-  std::cout<<std::endl;
+  std::cout << std::endl;
   remainingIndex = storage.deletePoints(removedPointsList);
 
   // DEBUG

@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
   BOOST_CHECK_EQUAL(std::strcmp(config.filename_.c_str(), ""), 0);
 }
 
-//BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
+// BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
 //  DataMiningConfigParser parser{datasetPath};
 //
 //  AdaptivityConfiguration defaults;

@@ -26,7 +26,6 @@
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
@@ -57,9 +56,9 @@ const std::string DataMiningConfigParser::fitter = "fitter";
 DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : configFile(nullptr) {
   try {
     configFile = std::make_unique<JSON>(filepath);
-    std::cout<<"File Path:"<<filepath<<std::endl;
+    std::cout << "File Path:" << filepath << std::endl;
   } catch (json_exception &exception) {
-    std::cout<<"Cannot open configFile:"<<filepath<<std::endl;
+    std::cout << "Cannot open configFile:" << filepath << std::endl;
     std::cout << exception.what() << std::endl;
     throw file_exception("Cannot open JSON file.");
   }
@@ -317,29 +316,18 @@ bool DataMiningConfigParser::getFitterCoarseningConfig(
       auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
       config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
                                         defaults.numCoarsening_, "coarseningConfig");
-//      config.errorBasedCoarsening = parseBool(*coarseningConfig, "errorBasedCoarsening",
-//                                              defaults.errorBasedCoarsening, "coarseningConfig");
-//
       config.threshold_ =
               parseDouble(*coarseningConfig, "threshold", defaults.threshold_, "coarseningConfig");
       config.maxLevelType_ =
               parseBool(*coarseningConfig, "maxLevelType", defaults.maxLevelType_, "coarseningConfig");
       config.noPoints_ =
               parseUInt(*coarseningConfig, "noPoints", defaults.noPoints_, "coarseningConfig");
-//      config.errorConvergenceThreshold = parseDouble(*coarseningConfig, "errorConvergenceThreshold",
-//                                                     defaults.errorConvergenceThreshold, "coarseningConfig");
-//      config.errorBufferSize = parseUInt(*coarseningConfig, "errorBufferSize",
-//                                         defaults.errorBufferSize, "coarseningConfig");
-//      config.errorMinInterval = parseUInt(*coarseningConfig, "errorMinInterval",
-//                                          defaults.errorMinInterval, "coarseningConfig");
-
       // Parse coarsening indicator
       if (coarseningConfig->contains("coarseningIndicator")) {
         config.coarseningFunctorType =
                 CoarseningFunctorTypeParser::parse((*coarseningConfig)["coarseningIndicator"].get());
-      }
-      else {
-        std::cout << "# Did not find coarseningConfig[coarseningIndicator]."<<std::endl;
+      } else {
+        std::cout << "# Did not find coarseningConfig[coarseningIndicator]." << std::endl;
       }
   }
     return hasCoarseningConfig;

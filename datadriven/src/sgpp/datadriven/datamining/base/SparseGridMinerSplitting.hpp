@@ -83,6 +83,7 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * training data.
    */
   double learn_coarsening(bool verbose);
+  
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to

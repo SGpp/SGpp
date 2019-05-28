@@ -29,17 +29,17 @@ int main(int argc, char **argv) {
     /**
    * use immediately invoked lambda expression to get the path to a configuration file.
    */
-  const std::string path = [argc, &argv]() {
-   if (argc != 2) {
-     std::cout << "No or bad path given, aborting\n";
-     exit(1);
-     return std::string{};
-   } else {
-     return std::string{argv[1]};
-   }
- }();
+    const std::string path = [argc, &argv]() {
+        if (argc != 2) {
+            std::cout << "No or bad path given, aborting\n";
+            exit(1);
+            return std::string{};
+        } else {
+            return std::string{argv[1]};
+        }
+    }();
 
-//int main(int argc) {
+// int main(int argc) {
 //  const std::string path = "classificationMinerConfigCoarsening.json";
 
   /**

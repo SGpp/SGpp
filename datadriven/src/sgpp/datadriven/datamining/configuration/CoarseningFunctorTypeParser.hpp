@@ -1,3 +1,15 @@
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * CoarseningFunctorTypeParser.hpp
+ *
+ *  Created on: May 28, 2019
+ *      Author: jieyiz
+ */
+
 #pragma once
 
 #include <sgpp/base/grid/Grid.hpp>

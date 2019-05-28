@@ -22,8 +22,6 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 

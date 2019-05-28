@@ -18,7 +18,7 @@
 #include <numeric>
 
 namespace sgpp {
-    namespace datadriven {
+namespace datadriven {
 
         GridPointBasedCoarseningFunctor::
         GridPointBasedCoarseningFunctor(std::vector<base::Grid*> grids,
@@ -30,7 +30,6 @@ namespace sgpp {
                 coarsenings_num(r_num), threshold(thresh),
                 pre_compute(pre_compute),
                 pre_comp_evals() {
-
             // Check the parameters, throw exception
 //            if (thresh < 0){
 //                throw sgpp::base::application_exception(
@@ -64,14 +63,13 @@ namespace sgpp {
             // Get the evaluations of seq at all GridSave
             base::DataVector p(storage.getDimension());
             storage.getPoint(seq).getStandardCoordinates(p);
-            //std::cout<<"gridsize:"<<grids.size()<<std::endl;
+            // std::cout<<"gridsize:"<<grids.size()<<std::endl;
             if (pre_compute) {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::string key = p.toString();
                     gridEvals.push_back(pre_comp_evals.at(i).at(key));
                 }
-            }
-            else {
+            } else {
                 for (size_t i = 0; i < grids.size(); i++) {
                     std::unique_ptr<base::OperationEval>
                     opEval(op_factory::createOperationEval(*grids.at(i)));
@@ -79,7 +77,7 @@ namespace sgpp {
                 }
             }
             // Find the largest and the second largest PDF of this grip point
-            if(gridEvals.at(0) > gridEvals.at(1)) {
+            if (gridEvals.at(0) > gridEvals.at(1)) {
                 second_max = gridEvals.at(1);
                 max = gridEvals.at(0);
             } else {
@@ -88,7 +86,7 @@ namespace sgpp {
                 max_class = 1;
                 second_class = 0;
             }
-            
+
             for (size_t i = 2; i < gridEvals.size(); i++){
                 // use >= n not just > as max and second_max can hav same value. Ex:{1,2,3,3}
                 if(gridEvals.at(i) >= max){
@@ -96,18 +94,17 @@ namespace sgpp {
                     second_class = max_class;
                     max = gridEvals.at(i);
                     max_class = i;
-                }
-                else if(gridEvals.at(i) > second_max){
+                } else if (gridEvals.at(i) > second_max) {
                     second_max = gridEvals.at(i);
                     second_class = i;
                 }
             }
-            
+
             gridClassDiffs = max - second_max;
 //            double rangex = 1.00;
 //            double rangey = 1.00;
 //            printHeatmap(rangex, rangey);
-            //Compare to the neighbors
+            // Compare to the neighbors
 
             base::HashGridPoint& gp = storage.getPoint(seq);
 
@@ -175,35 +172,33 @@ namespace sgpp {
                 double neighbor_sec = opEval2->eval(*alphas.at(second_class), q);
 
                 neighborDiffs.push_back(neighbor_max-neighbor_sec);
-                neighborDists.push_back(getDistance(gp,neighbor));
-
+                neighborDists.push_back(getDistance(gp, neighbor));
             }
 
             double total = 0.0;
             // Calculate the score
-            for (unsigned i=0; i<neighborDists.size(); i++) {
+            for (unsigned i=0; i < neighborDists.size(); i++) {
                 total = total + 1/neighborDists.at(i);
             }
 
-            for (unsigned i=0; i<neighborDiffs.size(); i++) {
+            for (unsigned i=0; i < neighborDiffs.size(); i++) {
                 score = score + neighborDiffs.at(i)/(neighborDists.at(i)*total);
             }
 
             score = score + gridClassDiffs;
 
             // Should not coarsen a grid point that has child
-            
-            std::cout<<";"<<-score<<";";
-            for (unsigned i=0;i<gridEvals.size();i++){
-                std::cout<<gridEvals.at(i);
-                if (i!=gridEvals.size()-1){
-                    std::cout<<";";
+            std::cout << ";" << -score << ";";
+            for (unsigned i=0; i < gridEvals.size(); i++) {
+                std::cout << gridEvals.at(i);
+                if (i != gridEvals.size()-1) {
+                    std::cout << ";";
                 }
                 else{
-                    std::cout<<std::endl;
+                    std::cout << std::endl;
                 }
             }
-            score=-score;
+            score = -score;
             return score;
         }
 
@@ -342,58 +337,53 @@ namespace sgpp {
                 double diff_sq = coord1-coord2;
                 dist.set(d, diff_sq);
             }
-            double distance =0.0;
-            if (gp1.getDimension()<=3){
+            double distance = 0.0;
+            if (gp1.getDimension() <= 3) {
                 distance = dist.l2Norm();
-            }
-            else
-            {
+            } else {
                 dist.abs();
                 distance = dist.sum();
             }
-            
             return distance;
         }
-        
+
         void GridPointBasedCoarseningFunctor::printCoordinate(base::HashGridPoint& gp)
         const {
-            std::cout<<"(";
-            for (size_t d = 0; d < gp.getDimension(); d++){
-                std::cout<<gp.getStandardCoordinate(d);
-                if(d!=gp.getDimension()-1){
-                    std::cout<<",";
-                }
-                else{
-                    std::cout<<")";
+            std::cout << "(";
+            for (size_t d = 0; d < gp.getDimension(); d++) {
+                std::cout << gp.getStandardCoordinate(d);
+                if (d != gp.getDimension()-1) {
+                    std::cout << ",";
+                } else {
+                    std::cout << ")";
                 }
             }
-
         }
 //        void GridPointBasedCoarseningFunctor::printHeatmap(double rangex, double rangey) const {
 //
-//            std::cout<<"Printing the heat map..."<<std::endl;
-//            for (size_t m=0;m<=20;m=m+1){
-//                for (size_t n=0;n<=20;n=n+1){
+//            std::cout << "Printing the heat map..." << std::endl;
+//            for (size_t m = 0; m <= 20; m = m+1) {
+//                for (size_t n=0; n<=20; n=n+1) {
 //                    const double x = m/20.0;
 //                    const double y = n/20.0;
-//                    std::cout<<x<<";"<<y;
+//                    std::cout << x << ";" <<y;
 //                    for (size_t i = 0; i < grids.size(); i++) {
-//                        std::cout<<";";
+//                        std::cout << ";";
 //                        std::unique_ptr<base::OperationEval>
 //                        opEval(op_factory::createOperationEval(*grids.at(i)));
-//                        //Coordinate
+//                        // Coordinate
 //                        std::vector<double> c {x,y};
 //                        base::DataVector p(c);
-//                        //key
+//                        // key
 //                        std::string key = "";
 //                        key = p.toString();
 //                        double v = opEval->eval(*alphas.at(i), p);
-//                        std::cout<<v;
+//                        std::cout << v;
 //                    }
-//                    std::cout<<std::endl;
+//                    std::cout << std::endl;
 //                }
 //            }
-//            std::cout<<"################################"<<std::endl;
+//            std::cout << "################################" << std::endl;
 //        }
 //        bool GridPointBasedCoarseningFunctor::isWithinSupport(base::HashGridPoint& gp,
 //                                                         base::DataVector& point)

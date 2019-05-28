@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_SUITE(GridPointBasedCoarseningFunctor)
         BOOST_CHECK_EQUAL(grid2->getStorage().getSize(), sizeGrids);
 
         sgpp::datadriven::GridPointBasedCoarseningFunctor gpbc(grids, alphas, 4, 0.1, 0);
-        
+
         HashCoarsening coarsen;
 
         for (size_t i = 0; i < grids.size() ; i++) {
@@ -164,16 +164,14 @@ BOOST_AUTO_TEST_SUITE(GridPointBasedCoarseningFunctor)
             std::vector<HashGridPoint> removedPoints;
             gpbc.preComputeEvaluations();
             coarsen.free_coarsen(grids.at(i)->getStorage(), gpbc, *(alphas.at(i)), &removedPoints, &removedSeq);
-            //std::list<size_t> coarsened;
-            //std::copy(removedSeq.begin(),removedSeq.end(),std::back_inserter(coarsened));
-            for (auto j=0;j<removedSeq.size();j++){
-                std::cout<<removedSeq[j]<<std::endl;
+            // std::list<size_t> coarsened;
+            // std::copy(removedSeq.begin(),removedSeq.end(),std::back_inserter(coarsened));
+            for (auto j = 0; j < removedSeq.size(); j++) {
+                std::cout << removedSeq[j] << std::endl;
             }
-            size_t s=5;
+            size_t s = 5;
             BOOST_CHECK_SMALL(removedSeq.size(), s);
         }
-        
     }
-
 BOOST_AUTO_TEST_SUITE_END()
 

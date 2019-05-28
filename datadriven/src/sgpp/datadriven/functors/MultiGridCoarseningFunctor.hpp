@@ -11,36 +11,36 @@
 
 
 namespace sgpp {
-    namespace datadriven {
+namespace datadriven {
 
 /**
  * Abstract super-class for coarsening functors operating on multiple
  * grids.
  */
-        class MultiGridCoarseningFunctor : public base::CoarseningFunctor {
-        public:
-            /**
-             * Sets the index (into the vector of grids) of the grid to be coarsened
-             *
-             * @param grid_index The index of the grid to be coarsened
-             */
-            virtual void setGridIndex(size_t grid_index) = 0;
+class MultiGridCoarseningFunctor : public base::CoarseningFunctor {
+ public:
+    /**
+    * Sets the index (into the vector of grids) of the grid to be coarsened
+    *
+    * @param grid_index The index of the grid to be coarsened
+    */
+    virtual void setGridIndex(size_t grid_index) = 0;
 
 
-            /**
-             * Returns the number of grids the functor can / does coarsen
-             */
-            virtual size_t getNumGrids() = 0;
+    /**
+        * Returns the number of grids the functor can / does coarsen
+        */
+    virtual size_t getNumGrids() = 0;
 
-            /**
-             * Used if expensive computations (eg. grid evaluations)
-             * are cached, usually for one coarsen step.
-             */
-            virtual void preComputeEvaluations() { }
+    /**
+        * Used if expensive computations (eg. grid evaluations)
+        * are cached, usually for one coarsen step.
+        */
+    virtual void preComputeEvaluations() { }
 
-            virtual ~MultiGridCoarseningFunctor() { }
-        };
-    }  // namespace datadriven
+    virtual ~MultiGridCoarseningFunctor() { }
+};
+}  // namespace datadriven
 }  // namespace sgpp
 
 #endif

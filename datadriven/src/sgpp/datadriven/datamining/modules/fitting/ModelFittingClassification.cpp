@@ -28,14 +28,15 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <string>
+#include <algorithm>
 #include <vector>
 #include <list>
 #include <map>
-#include "../../../../../../../base/src/sgpp/base/grid/Grid.hpp"
 
 #include <fstream>
 #include <iostream>
 
+#include "../../../../../../../base/src/sgpp/base/grid/Grid.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -53,7 +54,7 @@ namespace datadriven {
 
 ModelFittingClassification::ModelFittingClassification(
     const FitterConfigurationClassification& config)
-    : refinementsPerformed{0},coarseningsPerformed{0} {
+    : refinementsPerformed{0}, coarseningsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 
@@ -191,12 +192,14 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 
 MultiGridCoarseningFunctor *ModelFittingClassification::getCoarseningFunctor(
      std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
-    std::cout<<"ModelFittingClassification::getCoarseningFunctor"<<std::endl;
+    std::cout << "ModelFittingClassification::getCoarseningFunctor" << std::endl;
     sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
     switch (coarseningConfig.coarseningFunctorType) {
         case CoarseningFunctorType::GridPointBased : {
-            return new GridPointBasedCoarseningFunctor(grids, surpluses, coarseningConfig.numCoarsening_,
-                                                     coarseningConfig.precomputeEvaluations, coarseningConfig.threshold_);
+            return new GridPointBasedCoarseningFunctor(grids, surpluses, 
+                                                       coarseningConfig.numCoarsening_,
+                                                     coarseningConfig.precomputeEvaluations, 
+                                                     coarseningConfig.threshold_);
         }
         default:
             return nullptr;
@@ -256,24 +259,24 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
 }
 
 bool ModelFittingClassification::refine() {
-  
+
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
-  
+
   // Assemble grids and alphas
   std::vector<Grid*> grids;
   std::vector<DataVector*> surpluses;
   grids.reserve(models.size());
   surpluses.reserve(models.size());
-  
+
   for (size_t idx = 0; idx < models.size(); idx++) {
       grids.push_back(&(models[idx]->getGrid()));
       surpluses.push_back(&(models[idx]->getSurpluses()));
   }
-  
-  bool hasRefined=false;
-  bool hasCoarsened=false;
-  
+
+  bool hasRefined = false;
+  bool hasCoarsened = false;
+
   if (refinementsPerformed < refinementConfig.numRefinements_) {
 
     // Create a refinement functor
@@ -320,10 +323,10 @@ bool ModelFittingClassification::refine() {
   }
 
   // Only run coarsening for one time, but could be multiple points being removed
-  if (coarseningsPerformed < 1){
+  if (coarseningsPerformed < 1) {
     // Create a refinement functor
     MultiGridCoarseningFunctor* cfunc = getCoarseningFunctor(grids, surpluses);
-    
+
     // Apply changes to all models
     for (size_t idx = 0; idx < models.size(); idx++) {
     // Coarsening for classification
@@ -339,7 +342,7 @@ bool ModelFittingClassification::refine() {
 
     coarsen.free_coarsen(grids[idx]->getStorage(), *cfunc, *(surpluses.at(idx)), &removedPoints, &removedSeq);
 
-    std::copy(removedSeq.begin(),removedSeq.end(),std::back_inserter(coarsened));
+    std::copy(removedSeq.begin(), removedSeq.end(), std::back_inserter(coarsened));
     // Coarsen the grid points in the list
     models[idx]->refine(grids[idx]->getSize(), &coarsened);
     std::cout << "Refined model for class index " << idx << " (new size : "
@@ -349,11 +352,10 @@ bool ModelFittingClassification::refine() {
   }
   coarseningsPerformed++;
   hasCoarsened = true;
-  
-  if(hasCoarsened|hasRefined){
+
+  if (hasCoarsened|hasRefined) {
       return true;
-  }
-  else{
+  } else {
       return false;
   }
 }

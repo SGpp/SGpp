@@ -1,3 +1,14 @@
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * CoarseningFunctorTypeParser.cpp
+ *
+ *  Created on: May 28, 2019
+ *
+ */
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 
