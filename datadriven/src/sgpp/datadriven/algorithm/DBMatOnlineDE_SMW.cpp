@@ -51,12 +51,9 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
-  // refine/coarsen matrix X for smw formula
-  DataMatrix X(grid.getSize(), numAddedGridPoints);
   // coarsening:
   // split the valid coarsen indices and the non valid ones and do sherman-morrison coarsening
   if (!deletedGridPointIndices.empty()) {
-    std::cout << "\n\nCOARSEN CASE\n\n\n";
     // indices of coarsened points and their corresponding slot
     std::vector<size_t> coarsen_points = {};
     size_t offMatrixSize = offlineObject.getGridSize();
@@ -72,6 +69,8 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     }
 
     if (!coarsen_points.empty()) {
+      std::sort(coarsen_points.begin(), coarsen_points.end());
+      DataMatrix X(grid.getSize(), coarsen_points.back() - coarsen_points.front(), 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
       this->smw_adapt(X, 0, false, coarsen_points);
     }
@@ -79,6 +78,8 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
 
   // refinement:
   if (numAddedGridPoints > 0) {
+    // refine/coarsen matrix X for smw formula
+    DataMatrix X(grid.getSize(), numAddedGridPoints);
     compute_L2_refine_matrix(X, grid, numAddedGridPoints, lambda);
     this->smw_adapt(X, numAddedGridPoints, true);
   }
@@ -120,20 +121,15 @@ void DBMatOnlineDE_SMW::solveSLEParallel(DataVectorDistributed& alpha, DataVecto
 
 void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
                                   std::vector<size_t> coarsenIndices) {
-  std::cout << "\nentered smw_adapt\n";
 #ifdef USE_GSL
-
-  sgpp::datadriven::DBMatOfflineOrthoAdapt* offlinePtr =
-      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
-
-  // dimension of offline's lhs matrix A^{-1} = Q * T^{-1} * Q^t
-  size_t offMatrixSize = offlinePtr->getGridSize();
+  // dimension of offline's lhs matrix and its inverse
+  size_t offMatrixSize = this->offlineObject.getGridSize();
 
   // check, if offline object has been decomposed yet
   if (offMatrixSize == 0) {
     throw sgpp::base::algorithm_exception(
         "In DBMatOnlineDE_SMW::smw_adapt:\noffline object wasn't decomposed "
-        "yet, so can't perform adapting");
+        "yet, so can't perform refinement/coarsening.");
   }
 
   // determine the final size of the B matrix (additive component in smw formula)
@@ -141,7 +137,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   size_t newSize = refine ? (oldSize + newPoints) : (oldSize - coarsenIndices.size());
   size_t adaptSteps = (newSize > oldSize) ? (newSize - oldSize) : (oldSize - newSize);
 
-  // allocate space for b_adapt_matrix_ and fill new diagonal entries with ones
+  // allocate additional space for b_adapt_matrix_ and fill new diagonal entries with ones
   // note: only done in refining! Coarsening will resize at the end of function
   if (refine) {
     this->b_adapt_matrix_.resizeQuadratic(newSize);
@@ -150,49 +146,40 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
     }
   }
 
-  // create view of the whole matrix b_adapt, needed to later create submatrix_view
+  /************************************************************
+   * BEGIN OF SHERMAN-MORRISON-WOODBURRY
+   *
+   * Phase 1: B~ = B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
+   *
+   ************************************************************/
+
+  // create view of B, will store values of B~
   gsl_matrix_view b_adapt_full_view =
       gsl_matrix_view_array(this->b_adapt_matrix_.getPointer(), this->b_adapt_matrix_.getNrows(),
                             this->b_adapt_matrix_.getNcols());
 
-  // apply sherman-morrison-woodburry formula, which computes k refinements at once
-  // TODO
-  //
-
-  // compute A^-1 explicitly
-  // TODO(dima) make function in offline objects for supported types (ortho + chol)
-
-  // create X (already done)
-  // adapt X's diagonal, differ between refine/coarsen
+  // adapt X's diagonal, lambda already added before
   for (size_t k = X.getNrows() - X.getNcols(); k < X.getNrows(); k++) {
-    double val = (X.get(k, k - X.getNrows() + X.getNcols()) - 1) * 0.5;
+    // <x, x> = 0 => x=0, therefore:
+    // diag_k = 0 -> ignoring k-th row/column while coarsening
+    double val = (X.get(k, k - X.getNrows() + X.getNcols()) != 0)
+                     ? (X.get(k, k - X.getNrows() + X.getNcols()) - 1) * 0.5
+                     : 0;
     X.set(k, k - X.getNrows() + X.getNcols(), val);
   }
 
-  // create E, (*+1 if refine, *-1 if coarsen)
+  // create E
+  // todo(dima): replace operations done with E/E^t by matrix_subviews
   DataMatrix E(X.getNrows(), X.getNcols(), 0.0);
   for (size_t k = E.getNrows() - E.getNcols(); k < E.getNrows(); k++) {
-    double val = refine ? 1 : -1;
-    E.set(k, k - E.getNrows() + E.getNcols(), val);
+    E.set(k, k - E.getNrows() + E.getNcols(), 1.0);
   }
 
-  std::cout << "\nstarting gsl calculations\n";
-  if (X.getNrows() != this->b_adapt_matrix_.getNcols()) {
-    throw sgpp::base::algorithm_exception("in adapt:\nX.getNrows != B.size\n");
-  }
-
-  ////////////////////////////////////
-  //
-  // smw phase 1, calculate B_tilde
-  std::cout << "\nSMW PHASE 1\n\n";
-  //
-  ////////////////////////////////////
-  // calculate A^-1 explicitly
+  // create view of A^-1
   gsl_matrix_view A_inv_view = gsl_matrix_view_array(
       this->offlineObject.getInverseMatrix().getPointer(), offMatrixSize, offMatrixSize);
 
-  std::cout << "\nA^-1 + B\n";
-  // A^-1 + B (in size of B)
+  // A^-1 + B (calculate in size of A^-1, store in size of B)
   DataMatrix AB(this->b_adapt_matrix_);
   gsl_matrix_view AB_view = gsl_matrix_view_array(AB.getPointer(), this->b_adapt_matrix_.getNrows(),
                                                   this->b_adapt_matrix_.getNcols());
@@ -200,46 +187,47 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
       gsl_matrix_submatrix(&AB_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
   gsl_matrix_add(&AB_sub_view.matrix, &A_inv_view.matrix);
 
-  std::cout << "\n.*X und E^t*.\n";
-  // (A+B)*X    und    E^t*(A+B)
+  // (A^-1 + B) * X
   gsl_matrix* AX = gsl_matrix_alloc(X.getNrows(), X.getNcols());
-  gsl_matrix* EA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
   gsl_matrix_view X_view = gsl_matrix_view_array(X.getPointer(), X.getNrows(), X.getNcols());
-  gsl_matrix_view E_view = gsl_matrix_view_array(E.getPointer(), X.getNrows(), X.getNcols());
-
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &AB_view.matrix, &X_view.matrix, 0.0, AX);
+
+  // E^t * (A^-1 + B)
+  gsl_matrix* EA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
+  gsl_matrix_view E_view = gsl_matrix_view_array(E.getPointer(), X.getNrows(), X.getNcols());
   gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &E_view.matrix, &AB_view.matrix, 0.0, EA);
 
-  std::cout << "\n (I + E^t*.)\n";
-  // I + E^t * (A+B) * X
+  // I + E^t * (A^-1 + B) * X
   gsl_matrix* TO_INV = gsl_matrix_alloc(X.getNcols(), X.getNcols());
   gsl_matrix_set_identity(TO_INV);
   gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &E_view.matrix, AX, 1.0, TO_INV);
 
-  std::cout << "\ninvertieren mit gsl_LU\n";
-  // invert (I + E^t * (A + B) * X)
+  // (I + E^t * (A^-1 + B) * X)^-1
   gsl_permutation* P = gsl_permutation_alloc(X.getNcols());
   int* signum = new int[X.getNcols()];
   gsl_linalg_LU_decomp(TO_INV, P, signum);
   gsl_matrix* INV = gsl_matrix_alloc(X.getNcols(), X.getNcols());
   gsl_linalg_LU_invert(TO_INV, P, INV);
 
-  std::cout << "\n AX*INV\n";
+  // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1
   gsl_matrix* AXINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AX, INV, 0.0, AXINV);
 
-  std::cout << "\n AX*INV*EA\n";
+  // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
   gsl_matrix* AXINVEA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AXINV, EA, 0.0, AXINVEA);
+
+  // B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
+  // effectively stores final values of Phase 1 in b_adapt_matrix_
   gsl_matrix_sub(&b_adapt_full_view.matrix, AXINVEA);
-  ////////////////////////////////////
-  //
-  // smw phase 2, calculate B
-  std::cout << "\nSMW PHASE 2\n\n";
-  //
-  ////////////////////////////////////
-  std::cout << "\nA^-1 + B_tilde\n";
-  // A^-1 + B (in size of B)
+
+  /************************************************************
+   *
+   * Phase 2: B = B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
+   *
+   ************************************************************/
+
+  // A^-1 + B~ (calculate in size of A^-1, store in size of B~)
   DataMatrix ABtilde(this->b_adapt_matrix_);
   gsl_matrix_view ABtilde_view = gsl_matrix_view_array(
       ABtilde.getPointer(), this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols());
@@ -247,44 +235,48 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
       gsl_matrix_submatrix(&ABtilde_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
   gsl_matrix_add(&ABtilde_sub_view.matrix, &A_inv_view.matrix);
 
-  std::cout << "\n.*E und X^t*.\n";
-  // (A+B)*E    und    X^t*(A+B)
+  // (A^-1 + B~) * E    und    X^t*(A+B)
   gsl_matrix* AE = gsl_matrix_alloc(X.getNrows(), X.getNcols());
-  gsl_matrix* XA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
-
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &ABtilde_view.matrix, &E_view.matrix, 0.0, AE);
+
+  // X^t * (A^-1 + B~)
+  gsl_matrix* XA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
   gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, &ABtilde_view.matrix, 0.0, XA);
 
-  std::cout << "\n (I + X^t*.)\n";
-  // I + X^t * (A+B) * E
+  // I + X^t * (A^-1 + B) * E
   gsl_matrix_set_identity(TO_INV);
   gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, AE, 1.0, TO_INV);
 
-  std::cout << "\ninvertieren mit gsl_LU\n";
-  // invert (I + X^t * (A + B) * E)
+  // (I + X^t * (A^-1 + B) * E)^-1
   gsl_permutation* Ptilde = gsl_permutation_alloc(X.getNcols());
   int* signumtilde = new int[X.getNcols()];
   gsl_linalg_LU_decomp(TO_INV, Ptilde, signumtilde);
   gsl_linalg_LU_invert(TO_INV, Ptilde, INV);
 
-  std::cout << "\n AE*INV\n";
+  // (A^-1 + B) E (I + X^t * (A^-1 + B) * E)^-1
   gsl_matrix* AEINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AE, INV, 0.0, AEINV);
 
-  std::cout << "\n AE*INV*XA\n";
+  // (A^-1 + B) E (I + X^t (A^-1 + B) E)^-1 X^t (A^-1 + B)
   gsl_matrix* AEINVXA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
   gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AEINV, XA, 0.0, AEINVXA);
-  gsl_matrix_sub(&b_adapt_full_view.matrix, AEINVXA);
-  // TODO END
 
-  std::cout << "\nending gsl calculations\n";
+  // B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
+  // effectively stores final values of Phase 2 in b_adapt_matrix_
+  gsl_matrix_sub(&b_adapt_full_view.matrix, AEINVXA);
+
+  /*****
+   *
+   * END OF SHERMAN-MORRISON-WOODBURRY
+   *
+   *****/
 
   // If points were coarsened the b_adapt_matrix will now have empty rows and columns
   // on the indices of the coarsened points. In the following algorithm, the symmetry
-  // of b_adapt_matrix is used to fit the blocks together again.
+  // of b_adapt_matrix_ is used to glue the blocks together again.
   if (!refine) {
     std::sort(coarsenIndices.begin(), coarsenIndices.end());
-    size_t vi = 1;  // skipps points
+    size_t vi = 1;  // skips points
     sgpp::base::DataVector copied_row(oldSize);
 
     for (size_t i = coarsenIndices[0]; i < oldSize - coarsenIndices.size(); i++) {
@@ -324,9 +316,6 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   // determine, if any refined information now is contained in matrix b_adapt
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
 
-  // std::cout << "\n\n\n B = \n\n" << this->b_adapt_matrix_.toString() << "\n\n";
-
-  std::cout << "\nexited smw_adapt\n";
   return;
 #endif /* USE_GSL */
 }
@@ -369,11 +358,12 @@ void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size
 
 void DBMatOnlineDE_SMW::compute_L2_coarsen_matrix(DataMatrix& X, Grid& grid,
                                                   std::vector<size_t> coarsen_indices) {
-  // TODO(dima):
-  // baue matrix X für den coarsen fall. Matrix hat full size, und an nicht angegebenen indices
-  // gleicht sie der einheitsmatrix.
-  // note: kein vorzeichenhandling! einfach nur die matrix X für ausgewählte indices (siehe
-  // refine_matrix)
+  for (size_t i : coarsen_indices) {
+    X.setRow(i - this->offlineObject.getGridSize(),
+             this->refined_points_[i - this->offlineObject.getGridSize()]);
+    X.setColumn(i - this->offlineObject.getGridSize(),
+                this->refined_points_[i - this->offlineObject.getGridSize()]);
+  }
 }
 
 void DBMatOnlineDE_SMW::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
