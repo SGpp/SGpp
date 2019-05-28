@@ -45,7 +45,6 @@ if env["USE_SCALAPACK"]:
 
 if env["USE_PYTHON_EMBEDDING"]:
   additionalDependencies += ["python3.6m"]
-additionalBoostTestDependencies = ["z"]
 
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
