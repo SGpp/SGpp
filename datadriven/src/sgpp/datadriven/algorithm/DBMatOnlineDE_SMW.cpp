@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
-
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_linalg.h>
@@ -16,8 +13,11 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -89,13 +89,11 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
 void DBMatOnlineDE_SMW::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
                                  DensityEstimationConfiguration& densityEstimationConfig,
                                  bool do_cv) {
-  sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
-      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
   // create solver
-  sgpp::datadriven::DBMatDMSOrthoAdapt* solver = new sgpp::datadriven::DBMatDMSOrthoAdapt();
+  sgpp::datadriven::DBMatDMS_SMW* solver = new sgpp::datadriven::DBMatDMS_SMW();
   // solve the created system
   alpha.resizeZero(b.getSize());
-  solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
+  solver->solve(this->offlineObject.getInverseMatrix(), this->getB(), b, alpha);
 
   free(solver);
 }
@@ -130,15 +128,6 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
 
   // dimension of offline's lhs matrix A^{-1} = Q * T^{-1} * Q^t
   size_t offMatrixSize = offlinePtr->getGridSize();
-
-  // TODO(dima) auslagern
-  if (getOfflineObject().getDecompositionType() ==
-      sgpp::datadriven::MatrixDecompositionType::Chol) {
-    sgpp::datadriven::DBMatOfflineChol* cholPtr =
-        static_cast<sgpp::datadriven::DBMatOfflineChol*>(&this->offlineObject);
-    DataMatrix a_inv(offMatrixSize, offMatrixSize);
-    cholPtr->compute_inverse(a_inv);
-  }
 
   // check, if offline object has been decomposed yet
   if (offMatrixSize == 0) {
@@ -192,18 +181,6 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
     throw sgpp::base::algorithm_exception("in adapt:\nX.getNrows != B.size\n");
   }
 
-  std::cout << "\ncreate views for Q and T_inv\n";
-  if (offMatrixSize != offlinePtr->getTinv().getNcols()) {
-    throw sgpp::base::algorithm_exception("in adapt:\noffMatrixSize != T und Q\n");
-  }
-  // create matrix views and buffers for interim values
-  // view of T^{-1} of the offline object
-  gsl_matrix_view t_inv_view =
-      gsl_matrix_view_array(offlinePtr->getTinv().getPointer(), offMatrixSize, offMatrixSize);
-
-  // view of Q of the offline object
-  gsl_matrix_view q_view =
-      gsl_matrix_view_array(offlinePtr->getQ().getPointer(), offMatrixSize, offMatrixSize);
   ////////////////////////////////////
   //
   // smw phase 1, calculate B_tilde
@@ -211,12 +188,8 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   //
   ////////////////////////////////////
   // calculate A^-1 explicitly
-  gsl_matrix* interim = gsl_matrix_alloc(offMatrixSize, offMatrixSize);
-  gsl_matrix* A_inv = gsl_matrix_alloc(offMatrixSize, offMatrixSize);
-
-  std::cout << "\nberechne A^-1 der offline matrix\n";
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_inv_view.matrix, 0.0, interim);
-  gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, interim, &q_view.matrix, 0.0, A_inv);
+  gsl_matrix_view A_inv_view = gsl_matrix_view_array(
+      this->offlineObject.getInverseMatrix().getPointer(), offMatrixSize, offMatrixSize);
 
   std::cout << "\nA^-1 + B\n";
   // A^-1 + B (in size of B)
@@ -225,7 +198,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
                                                   this->b_adapt_matrix_.getNcols());
   gsl_matrix_view AB_sub_view =
       gsl_matrix_submatrix(&AB_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
-  gsl_matrix_add(&AB_sub_view.matrix, A_inv);
+  gsl_matrix_add(&AB_sub_view.matrix, &A_inv_view.matrix);
 
   std::cout << "\n.*X und E^t*.\n";
   // (A+B)*X    und    E^t*(A+B)
@@ -272,7 +245,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
       ABtilde.getPointer(), this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols());
   gsl_matrix_view ABtilde_sub_view =
       gsl_matrix_submatrix(&ABtilde_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
-  gsl_matrix_add(&ABtilde_sub_view.matrix, A_inv);
+  gsl_matrix_add(&ABtilde_sub_view.matrix, &A_inv_view.matrix);
 
   std::cout << "\n.*E und X^t*.\n";
   // (A+B)*E    und    X^t*(A+B)
