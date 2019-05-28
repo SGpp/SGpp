@@ -84,20 +84,23 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
 #endif /*USE_GSL*/
 }
 
-void DBMatOfflineChol::compute_inverse(DataMatrix& inv) {
+void DBMatOfflineChol::compute_inverse() {
 #ifdef USE_GSL
   if (!isDecomposed) {
     throw sgpp::base::algorithm_exception(
         "in DBMatOfflineChol::compute_inverse:\noffline matrix not decomposed yet.\n");
   }
+  // initialize lhsInverse
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
 
   // copy, in order to not mess with internal lhsMatrix of offlineChol object
-  inv.copyFrom(this->lhsMatrix);
+  this->lhsInverse.copyFrom(this->lhsMatrix);
 
   // create matrix view in style of decomposition, see ::decomposeMatrix
-  gsl_matrix_view m = gsl_matrix_view_array(inv.getPointer(), inv.getNrows(), inv.getNcols());
+  gsl_matrix_view m =
+      gsl_matrix_view_array(lhsInverse.getPointer(), lhsInverse.getNrows(), lhsInverse.getNcols());
 
-  // inverts matrix, and stores inplace, i.e. in inv
+  // inverts matrix, and stores it inplace, therefore in lhsInverse
   gsl_linalg_cholesky_invert(&m.matrix);
 
 #else
