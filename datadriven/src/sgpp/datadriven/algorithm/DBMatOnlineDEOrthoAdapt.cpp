@@ -153,7 +153,7 @@ void DBMatOnlineDEOrthoAdapt::sherman_morrison_adapt(size_t newPoints, bool refi
   for (size_t k = 0; k < adaptSteps; k++) {
     // fetch point with according size
     // refine -> size gets bigger by 1
-    // coarse -> size stays the same
+    // coarsen -> size stays the same
     size_t current_size = oldSize + (refine ? k + 1 : 0);
 
     // copies grid point vector from container
