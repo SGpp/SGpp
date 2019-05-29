@@ -50,6 +50,13 @@ class GridFactory {
     std::vector<int64_t>& dim) const;
 
   /*
+   * calculates hierachical parent interactions
+   * @param vector of resolution
+   * @return all hierachical parent  interactions of all pixels in a vector
+   */
+  std::vector<std::vector<size_t>> getHierachicalParents(std::vector<int64_t>& res) const;
+
+  /*
    * calculates direct neighbour interactions
    * @param vector of resolution
    * @return all direct neighbour interactions of all pixels in a vector

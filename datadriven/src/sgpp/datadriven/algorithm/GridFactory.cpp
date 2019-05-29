@@ -61,15 +61,78 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   std::vector<std::vector<size_t>> interactions;
 
   std::vector<int64_t> res = dim;
-
-  if (stencilType == sgpp::datadriven::StencilType::DN) {
+  
+  switch (stencilType)
+  {
+  case sgpp::datadriven::StencilType::DN:
     interactions = getDirectNeighbours(res);
-  } else {
+    break;
+  case sgpp::datadriven::StencilType::HP:
+    interactions = getHierachicalParents(res);
+  default:
     std::cout << "Stencil not found";
     std::cout << std::endl;
+    break;
   }
 
   return interactions;
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierachicalParents(
+  std::vector<int64_t>& res) const {
+  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
+  size_t offset = 0;
+  size_t dimX = res.at(0);
+  size_t dimY = res.at(1);
+
+  for (size_t i = 2; i < res.size(); i += 2) {
+    size_t parentDimX = res.at(i);
+    size_t parentDimY = res.at(i + 1);
+    size_t parentOffset = dimX * dimY + offset;
+    double cellsPerParentX = dimX / static_cast<double>(parentDimX);
+    double cellsPerParentY = dimY / static_cast<double>(parentDimY);
+
+    size_t parentY = 0;
+    size_t toY = 0;
+    double copyCellY = cellsPerParentY;
+    for (size_t y = 0; y < dimY; y = toY) {
+      toY = ceil(copyCellY) - 1;
+      if (toY > dimY) {
+        toY = dimY;
+      }
+
+      for (size_t j = y; j <= toY; j++) {
+        size_t parentX = 0;
+        size_t toX = 0;
+        double copyCellX = cellsPerParentX;
+        for (size_t x = 0; x < dimX; x = toX) {
+          toX = ceil(copyCellX) - 1;
+          if (toX > dimX) {
+            toX = dimX;
+          }
+
+          for (size_t i = x; i <= toX; i++) {
+            std::vector<size_t> tmp = std::vector<size_t>();
+            tmp.push_back(offset + i + dimX * j);
+            tmp.push_back(parentOffset + parentX + parentDimX * parentY);
+            vec.push_back(tmp);
+          }
+
+          if (toX == copyCellX - 1) toX++;
+          parentX++;
+          copyCellX += cellsPerParentX;
+        }
+      }
+      if (toY == copyCellY - 1) toY++;
+      parentY++;
+      copyCellY += cellsPerParentY;
+    }
+
+    dimX = parentDimX;
+    dimY = parentDimY;
+    offset = parentOffset;
+  }
+  return vec;
 }
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(

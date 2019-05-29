@@ -27,6 +27,8 @@ StencilType GeometryConfigurationParser::parse(const std::string &input) {
 
   if (inputLower.compare("dn") == 0) {
     return sgpp::datadriven::StencilType::DN;
+  } else if(inputLower.compare("hp") == 0){
+    return sgpp::datadriven::StencilType::HP;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
         "StencilType";
