@@ -92,8 +92,10 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType), static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(),
+                    "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
+                    static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.testNumBatches, 2);
   BOOST_CHECK_EQUAL(config.testBatchSize, 16);
   BOOST_CHECK_EQUAL(config.testIsCompressed, false);
