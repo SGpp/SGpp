@@ -175,11 +175,11 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     }
 
     config.testIsCompressed = parseBool(*dataSourceConfig, "testCompression",
-    		defaults.testIsCompressed, "dataSource");
+            defaults.testIsCompressed, "dataSource");
     config.testNumBatches = parseUInt(*dataSourceConfig, "testNumBatches",
-    		defaults.testNumBatches, "dataSource");
+            defaults.testNumBatches, "dataSource");
     config.testBatchSize = parseUInt(*dataSourceConfig, "testBatchSize",
-    		defaults.testBatchSize, "dataSource");
+            defaults.testBatchSize, "dataSource");
     config.testHasTargets = parseBool(*dataSourceConfig, "testHasTargets",
             defaults.testHasTargets, "dataSource");
 
