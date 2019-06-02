@@ -69,8 +69,9 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     }
 
     if (!coarsen_points.empty()) {
-      std::sort(coarsen_points.begin(), coarsen_points.end());
-      DataMatrix X(grid.getSize(), coarsen_points.back() - coarsen_points.front(), 0.0);
+      // todo(dima): optimize size of matrix X when coarsening
+      // break-even point, k times single point VS. k points at once
+      DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
       this->smw_adapt(X, 0, false, coarsen_points);
     }
@@ -358,9 +359,11 @@ void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size
 
 void DBMatOnlineDE_SMW::compute_L2_coarsen_matrix(DataMatrix& X, Grid& grid,
                                                   std::vector<size_t> coarsen_indices) {
+  if (X.getNrows() != this->b_adapt_matrix_.getNrows()) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOnlineDE_SMW::compute_L2_coarsen_matrix:\n matrix X doesn't match B");
+  }
   for (size_t i : coarsen_indices) {
-    X.setRow(i - this->offlineObject.getGridSize(),
-             this->refined_points_[i - this->offlineObject.getGridSize()]);
     X.setColumn(i - this->offlineObject.getGridSize(),
                 this->refined_points_[i - this->offlineObject.getGridSize()]);
   }
