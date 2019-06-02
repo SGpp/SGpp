@@ -5,14 +5,10 @@
 		"batchSize" : 10,
 		"validationPortion" : 0.2,
 		"epochs" : 2,
-		"shuffling" : "random",
-		"randomSeed" : -1,
-		"readinCutoff": -1,
-		"readinClasses": [-1, 1],
-		"readinColumns": [0, 1]
+		"shuffling" : "random"
 	},
 	"scorer": {
-		"metric": "Accuracy"
+		"metric": "accuracy"
 	},
 	"fitter": {
 		"type": "classification",
@@ -23,9 +19,8 @@
 		"adaptivityConfig": {
 				"numRefinements": 10,
 				"threshold": 0.001,
-				"maxLevelType": false,
 				"noPoints": 10,
-				"refinementIndicator" : "DataBased",
+				"refinementIndicator" : "dataBased",
 				"errorBasedRefinement" : true,
 				"errorMinInterval" : 1,
 				"errorBufferSize" : 2,
