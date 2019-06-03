@@ -21,7 +21,7 @@ SurplusVolumeCoarseningFunctor::SurplusVolumeCoarseningFunctor(DataVector& alpha
 SurplusVolumeCoarseningFunctor::~SurplusVolumeCoarseningFunctor() {}
 
 
-double SurplusVolumeCoarseningFunctor::operator()(GridStorage& storage, size_t seq) {
+double SurplusVolumeCoarseningFunctor::operator()(GridStorage& storage, size_t seq) const {
   return pow(2, static_cast<double>(
                -(static_cast<int>(storage.getPoint(seq).getLevelSum())))) * fabs(alpha[seq]);
 }

@@ -152,30 +152,30 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
   BOOST_CHECK_EQUAL(std::strcmp(config.filename_.c_str(), ""), 0);
 }
 
-BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
-  DataMiningConfigParser parser{datasetPath};
-
-  AdaptivityConfiguration defaults;
-  defaults.numRefinements_ = 42;
-  defaults.threshold_ = 42;
-  defaults.maxLevelType_ = true;
-  defaults.noPoints_ = 42;
-  defaults.percent_ = 0.42;
-  defaults.errorBasedRefinement = true;
-  AdaptivityConfiguration config;
-  bool hasConfig;
-  double tolerance = 1E-5;
-
-  hasConfig = parser.getFitterAdaptivityConfig(config, defaults);
-
-  BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(config.numRefinements_, 0);
-  BOOST_CHECK_EQUAL(config.threshold_, 0);
-  BOOST_CHECK_EQUAL(config.maxLevelType_, false);
-  BOOST_CHECK_EQUAL(config.noPoints_, 0);
-  BOOST_CHECK_CLOSE(config.percent_, 0, tolerance);
-  BOOST_CHECK_EQUAL(config.errorBasedRefinement, false);
-}
+// BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
+//  DataMiningConfigParser parser{datasetPath};
+//
+//  AdaptivityConfiguration defaults;
+//  defaults.numRefinements_ = 42;
+//  defaults.threshold_ = 42;
+//  defaults.maxLevelType_ = true;
+//  defaults.noPoints_ = 42;
+//  defaults.percent_ = 0.42;
+//  defaults.errorBasedRefinement = true;
+//  AdaptivityConfiguration config;
+//  bool hasConfig;
+//  double tolerance = 1E-5;
+//
+//  hasConfig = parser.getFitterAdaptivityConfig(config, defaults);
+//
+//  BOOST_CHECK_EQUAL(hasConfig, true);
+//  BOOST_CHECK_EQUAL(config.numRefinements_, 0);
+//  BOOST_CHECK_EQUAL(config.threshold_, 0);
+//  BOOST_CHECK_EQUAL(config.maxLevelType_, false);
+//  BOOST_CHECK_EQUAL(config.noPoints_, 0);
+//  BOOST_CHECK_CLOSE(config.percent_, 0, tolerance);
+//  BOOST_CHECK_EQUAL(config.errorBasedRefinement, false);
+//}
 
 BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
   DataMiningConfigParser parser{datasetPath};

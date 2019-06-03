@@ -21,32 +21,40 @@
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/GridPointBasedCoarseningFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
-
+#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
+#include <string>
+#include <algorithm>
+#include <vector>
 #include <list>
 #include <map>
 
 #include <fstream>
 #include <iostream>
 
-#include <string>
-#include <vector>
+#include "../../../../../../../base/src/sgpp/base/grid/Grid.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::HashCoarsening;
+using sgpp::base::HashGridPoint;
 using sgpp::base::Grid;
 
 using sgpp::base::application_exception;
 
 using sgpp::datadriven::RefinementFunctorType;
+using sgpp::datadriven::CoarseningFunctorType;
 
 namespace sgpp {
 namespace datadriven {
 
 ModelFittingClassification::ModelFittingClassification(
     const FitterConfigurationClassification& config)
-    : refinementsPerformed{0} {
+    : refinementsPerformed{0}, coarseningsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 
@@ -182,6 +190,22 @@ size_t ModelFittingClassification::labelToIdx(double label) {
   }
 }
 
+MultiGridCoarseningFunctor *ModelFittingClassification::getCoarseningFunctor(
+     std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
+    std::cout << "ModelFittingClassification::getCoarseningFunctor" << std::endl;
+    sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
+    switch (coarseningConfig.coarseningFunctorType) {
+        case CoarseningFunctorType::GridPointBased : {
+            return new GridPointBasedCoarseningFunctor(grids, surpluses, 
+                                                       coarseningConfig.numCoarsening_,
+                                                     coarseningConfig.precomputeEvaluations, 
+                                                     coarseningConfig.threshold_);
+        }
+        default:
+            return nullptr;
+    }
+}
+
 MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
@@ -235,17 +259,25 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
 }
 
 bool ModelFittingClassification::refine() {
+
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
-  if (refinementsPerformed < refinementConfig.numRefinements_) {
-    // Assemble grids and alphas
-    std::vector<Grid*> grids;
-    std::vector<DataVector*> surpluses;
-    grids.reserve(models.size());
-    surpluses.reserve(models.size());
-    for (size_t idx = 0; idx < models.size(); idx++) {
+  sgpp::base::CoarseningConfiguration& coarseningConfig = this->config->getCoarseningConfig();
+
+  // Assemble grids and alphas
+  std::vector<Grid*> grids;
+  std::vector<DataVector*> surpluses;
+  grids.reserve(models.size());
+  surpluses.reserve(models.size());
+
+  for (size_t idx = 0; idx < models.size(); idx++) {
       grids.push_back(&(models[idx]->getGrid()));
       surpluses.push_back(&(models[idx]->getSurpluses()));
-    }
+  }
+
+  bool hasRefined = false;
+  bool hasCoarsened = false;
+
+  if (refinementsPerformed < refinementConfig.numRefinements_) {
 
     // Create a refinement functor
     MultiGridRefinementFunctor* func = getRefinementFunctor(grids, surpluses);
@@ -275,20 +307,57 @@ bool ModelFittingClassification::refine() {
         }
       }
 
-      // Apply changes to all models
-      for (size_t idx = 0; idx < models.size(); idx++) {
-        // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
-        std::list<size_t> coarsened;
-        models[idx]->refine(grids[idx]->getSize(), &coarsened);
-        std::cout << "Refined model for class index " << idx
-                  << " (new size : " << (grids[idx]->getSize()) << ")" << std::endl;
-      }
+
+//      // Apply changes to all models
+//      for (size_t idx = 0; idx < models.size(); idx++) {
+//        // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
+//        std::list<size_t> coarsened;
+//        models[idx]->refine(grids[idx]->getSize(), &coarsened);
+//        std::cout << "Refined model for class index " << idx
+//                  << " (new size : " << (grids[idx]->getSize()) << ")" << std::endl;
+//      }
       delete func;
     }
     refinementsPerformed++;
-    return true;
+    hasRefined = true;
   }
-  return false;
+
+  // Only run coarsening for one time, but could be multiple points being removed
+  if (coarseningsPerformed < 1) {
+    // Create a refinement functor
+    MultiGridCoarseningFunctor* cfunc = getCoarseningFunctor(grids, surpluses);
+
+    // Apply changes to all models
+    for (size_t idx = 0; idx < models.size(); idx++) {
+    // Coarsening for classification
+    std::list<size_t> coarsened;
+
+    cfunc->preComputeEvaluations();
+    cfunc->setGridIndex(idx);
+
+    std::vector<size_t> removedSeq;
+    std::vector<HashGridPoint> removedPoints;
+
+    HashCoarsening coarsen;
+
+    coarsen.free_coarsen(grids[idx]->getStorage(), *cfunc, *(surpluses.at(idx)), &removedPoints, &removedSeq);
+
+    std::copy(removedSeq.begin(), removedSeq.end(), std::back_inserter(coarsened));
+    // Coarsen the grid points in the list
+    models[idx]->refine(grids[idx]->getSize(), &coarsened);
+    std::cout << "Refined model for class index " << idx << " (new size : "
+        << (grids[idx]->getSize()) << ")" << std::endl;
+    }
+    delete cfunc;
+  }
+  coarseningsPerformed++;
+  hasCoarsened = true;
+
+  if (hasCoarsened|hasRefined) {
+      return true;
+  } else {
+      return false;
+  }
 }
 
 void ModelFittingClassification::update(Dataset& newDataset) {
@@ -321,6 +390,7 @@ void ModelFittingClassification::reset() {
   classNumberInstances.clear();
   classIdx.clear();
   refinementsPerformed = 0;
+  coarseningsPerformed = 0;
 }
 
 void ModelFittingClassification::storeClassificator() {

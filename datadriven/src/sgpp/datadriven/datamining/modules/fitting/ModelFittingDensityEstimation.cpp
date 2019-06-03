@@ -19,7 +19,7 @@
 #include <string>
 #include <vector>
 #include <list>
-
+#include <algorithm>
 using sgpp::base::RefinementFunctor;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::SurplusVolumeRefinementFunctor;
@@ -45,22 +45,22 @@ RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
     }
     case RefinementFunctorType::DataBased : {
       std::string errorMessage = "Unsupported refinement functor type DataBased "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::ZeroCrossing : {
       std::string errorMessage = "Unsupported refinement functor type ZeroCrossing "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::MultipleClass : {
       std::string errorMessage = "Unsupported refinement functor type MultipleClass "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased : {
       std::string errorMessage = "Unsupported refinement functor type GridPointBased "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     default: break;
@@ -82,6 +82,13 @@ bool ModelFittingDensityEstimation::refine() {
         std::cout << "New number points " << newNoPoints << std::endl;
         if (newNoPoints != oldNoPoints) {
           // TODO(roehner) enable coarsening
+//          size_t numDiff = newNoPoints - oldNoPoints;
+//          size_t numConfig = config->getCoarseningConfig().numCoarsening_;
+//          size_t numCoarsen = std::min(numDiff,numConfig);
+//          CoarseningFunctor *cfunc = getCoarseningFunctor();
+//          for (size_t i = 0; i < numCoarsen; ++i) {
+//            //grid->getGenerator().coarsen(*cfunc);
+//          }
           std::list<size_t> deletedGridPoints {};
           this->refine(newNoPoints, &deletedGridPoints);
           refinementsPerformed++;

@@ -19,6 +19,10 @@ const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() 
   return adaptivityConfig;
 }
 
+const base::CoarseningConfiguration &FitterConfiguration::getCoarseningConfig() const {
+  return coarseningConfig;
+}
+
 const datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig()
     const {
   return crossvalidationConfig;
@@ -71,6 +75,11 @@ base::RegularGridConfiguration &FitterConfiguration::getGridConfig() {
 base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() {
   return const_cast<base::AdaptivityConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getRefinementConfig());
+}
+
+base::CoarseningConfiguration &FitterConfiguration::getCoarseningConfig() {
+  return const_cast<base::CoarseningConfiguration &>(
+          static_cast<const FitterConfiguration &>(*this).getCoarseningConfig());
 }
 
 datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig() {

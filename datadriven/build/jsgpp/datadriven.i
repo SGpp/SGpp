@@ -98,6 +98,7 @@
 %include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedCoarseningFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"
 
 #ifdef USE_MPI

@@ -16,11 +16,12 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/MultiGridCoarseningFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-#include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
-#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 
@@ -113,8 +114,17 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param surpluses vector of pointers to the suprluses for each class
    * @return pointer to a refinement functor that suits the model settings
    */
-  MultiGridRefinementFunctor* getRefinementFunctor(std::vector<Grid*> grids,
-                                                   std::vector<DataVector*> surpluses);
+  MultiGridRefinementFunctor *getRefinementFunctor(
+      std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+
+    /**
+     * Returns the coarsening functor suitable for the model settings.
+     * @param grids vector of pointers to grids for each class
+     * @param surpluses vector of pointers to the suprluses for each class
+     * @return pointer to a coarsening functor that suits the model settings
+     */
+  MultiGridCoarseningFunctor *getCoarseningFunctor(
+            std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
 
   /**
    * Creates a density estimation model that fits the model settings.
@@ -128,7 +138,10 @@ class ModelFittingClassification : public ModelFittingBase {
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
-
+  /**
+   * Count the amount of coarsening operations performed on the current dataset.
+   */
+  size_t coarseningsPerformed;
   /**
    * Models for each class
    */

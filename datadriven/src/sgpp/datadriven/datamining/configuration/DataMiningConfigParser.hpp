@@ -36,6 +36,7 @@ using json::DictNode;
 using json::JSON;
 
 using sgpp::base::AdaptivityConfiguration;
+using sgpp::base::CoarseningConfiguration;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
@@ -83,24 +84,27 @@ class DataMiningConfigParser {
    * @param defaults a set of configurations initialized with default values
    * @return if the configuration file contained a scorer configuration
    */
-  bool getScorerConfig(ScorerConfiguration &config, const ScorerConfiguration &defaults) const;
+  bool getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const;
 
-  bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
-  bool getFitterGridConfig(RegularGridConfiguration &config,
-                           const RegularGridConfiguration &defaults) const;
-  bool getFitterAdaptivityConfig(AdaptivityConfiguration &config,
-                                 const AdaptivityConfiguration &defaults) const;
-  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
-                                      const CrossvalidationConfiguration &defaults) const;
-  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
-                                        const DensityEstimationConfiguration &defaults) const;
-  bool getFitterSolverRefineConfig(SLESolverConfiguration &config,
-                                   const SLESolverConfiguration &defaults) const;
-  bool getFitterSolverFinalConfig(SLESolverConfiguration &config,
-                                  const SLESolverConfiguration &defaults) const;
-  bool getFitterRegularizationConfig(RegularizationConfiguration &config,
-                                     const RegularizationConfiguration &defaults) const;
-  bool getFitterLambda(double &lambda, double defaultValue) const;
+  bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
+  bool getFitterGridConfig(RegularGridConfiguration& config,
+                           const RegularGridConfiguration& defaults) const;
+  bool getFitterCoarseningConfig(CoarseningConfiguration& config,
+                                 const CoarseningConfiguration& defaults) const;
+  bool getFitterAdaptivityConfig(AdaptivityConfiguration& config,
+                                 const AdaptivityConfiguration& defaults) const;
+  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
+                                 const CrossvalidationConfiguration& defaults) const;
+  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,
+                                 const DensityEstimationConfiguration& defaults) const;
+  bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
+                                   const SLESolverConfiguration& defaults) const;
+  bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
+                                  const SLESolverConfiguration& defaults) const;
+  bool getFitterRegularizationConfig(RegularizationConfiguration& config,
+                                     const RegularizationConfiguration& defaults) const;
+  bool getFitterLambda(double& lambda, double defaultValue) const;
+
 
   /**
    * Returns the database configuration of the fitter if it exists

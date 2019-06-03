@@ -10,7 +10,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
-
+#include <sgpp/base/grid/CoarseningConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <map>
@@ -110,6 +110,28 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
     generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;
   }
+};
+
+/**
+ * structure that can be used by application to define coarsening strategies
+ */
+struct CoarseningConfiguration {
+  /// number of refinements
+  size_t numCoarsening_;
+  /// refinement threshold for surpluses
+  double threshold_;
+  /// refinement type: false: classic, true: maxLevel
+  bool maxLevelType_;
+  /// max. number of points to be refined
+  size_t noPoints_;
+  /// max. percent of points to be refined
+  double percent_ = 1.0;
+  /// other refinement strategy, that is more expensive, but yields better results
+  bool errorBasedCoarsening = false;
+  /// refinement indicator
+  CoarseningFunctorType coarseningFunctorType = CoarseningFunctorType::GridPointBased;
+  /// determines if evaluations should be precomupted
+  bool precomputeEvaluations = true;
 };
 
 /**

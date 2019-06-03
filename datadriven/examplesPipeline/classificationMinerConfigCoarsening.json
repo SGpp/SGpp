@@ -1,0 +1,40 @@
+{
+	"dataSource": {
+		"filePath": "../../datadriven/datasets/DR10/ALL_QSO_zWarning_Allmagslimited_train.arff",
+		"hasTargets" : true,
+		"batchSize" : 10,
+		"validationPortion" : 0.2,
+		"epochs" : 2,
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [ ],
+		"readinColumns": [ ]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"gridType": "linear",
+			"level": 5
+		},
+		"coarseningConfig" :{
+                "numCoarsening": 3,
+                "threshold": 0.01,
+                "coarseningIndicator" : "GridPointBased"
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
+
+

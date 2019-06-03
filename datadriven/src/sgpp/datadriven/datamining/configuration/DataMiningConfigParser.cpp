@@ -21,10 +21,11 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
@@ -55,7 +56,9 @@ const std::string DataMiningConfigParser::fitter = "fitter";
 DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : configFile(nullptr) {
   try {
     configFile = std::make_unique<JSON>(filepath);
+    std::cout << "File Path:" << filepath << std::endl;
   } catch (json_exception &exception) {
+    std::cout << "Cannot open configFile:" << filepath << std::endl;
     std::cout << exception.what() << std::endl;
     throw file_exception("Cannot open JSON file.");
   }
@@ -280,7 +283,6 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
-
   if (hasFitterAdaptivityConfig) {
     auto adaptivityConfig = static_cast<DictNode *>(&(*configFile)[fitter]["adaptivityConfig"]);
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
@@ -336,6 +338,35 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
   }
   return hasFitterAdaptivityConfig;
 }
+
+bool DataMiningConfigParser::getFitterCoarseningConfig(
+            CoarseningConfiguration &config, const CoarseningConfiguration &defaults) const {
+
+  bool hasCoarseningConfig =
+          hasFitterConfig() ? (*configFile)[fitter].contains("coarseningConfig") : false;
+
+  if (hasCoarseningConfig) {
+
+      auto coarseningConfig = static_cast<DictNode *>(&(*configFile)[fitter]["coarseningConfig"]);
+      config.numCoarsening_ = parseUInt(*coarseningConfig, "numCoarsening",
+                                        defaults.numCoarsening_, "coarseningConfig");
+      config.threshold_ =
+              parseDouble(*coarseningConfig, "threshold", defaults.threshold_, "coarseningConfig");
+      config.maxLevelType_ =
+              parseBool(*coarseningConfig, "maxLevelType", defaults.maxLevelType_, "coarseningConfig");
+      config.noPoints_ =
+              parseUInt(*coarseningConfig, "noPoints", defaults.noPoints_, "coarseningConfig");
+      // Parse coarsening indicator
+      if (coarseningConfig->contains("coarseningIndicator")) {
+        config.coarseningFunctorType =
+                CoarseningFunctorTypeParser::parse((*coarseningConfig)["coarseningIndicator"].get());
+      } else {
+        std::cout << "# Did not find coarseningConfig[coarseningIndicator]." << std::endl;
+      }
+  }
+    return hasCoarseningConfig;
+}
+
 
 bool DataMiningConfigParser::getFitterCrossvalidationConfig(
     CrossvalidationConfiguration &config, const CrossvalidationConfiguration &defaults) const {

@@ -122,9 +122,7 @@ void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstim
         start1 = true;
         // Delete last 'coarseCount_2' rows/columns of current Cholesky factor
         lhsMatrix.resizeQuadratic(old_size - coarseCount_2);
-      }
-
-      if (start1 == true) {
+      } else {
         // Is accessed if 'index_coarse' is less than 'c'
         choleskyPermutation(1 + coarseCount_1, index_coarse, 1);
         coarseCount_1++;
@@ -268,6 +266,7 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
   size_t size = mat.getNrows();
 
   if (k > l) {
+      std::cout << "k" << k << " l" << l << std::endl;
     throw algorithm_exception("l needs to be larger than k");
   } else if (l > size) {
     throw algorithm_exception("l needs to be smaller than the column size of the matrix");
