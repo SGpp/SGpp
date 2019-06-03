@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <omp.h>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedSecondMoment.hpp>
@@ -78,8 +80,10 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
   // must be fixed (or the hashing must be turned off, but then run times will be terribly slow...)
 
   //  tuple used as hash to store scalar products in innerProducts, contains level1, index1, level2,
-  //  index2, pdftype
-  typedef std::tuple<size_t, size_t, size_t, size_t, std::string> hashType;
+  //  index2, pdftype, pdf characteristics
+  typedef std::tuple<size_t, size_t, size_t, size_t, sgpp::base::DistributionType, double, double>
+      hashType;
+
   // hash storage for scalar products. Holds all calculated scalar products s.t. they do not have to
   // calculated again if the same combination of indices and levels  is queried
   std::map<hashType, double> innerProducts;

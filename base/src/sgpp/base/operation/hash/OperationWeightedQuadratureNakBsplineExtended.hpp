@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <omp.h>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedQuadrature.hpp>

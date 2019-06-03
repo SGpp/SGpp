@@ -35,24 +35,18 @@ double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   double weightedSP = 0.0;
   size_t dim = storage.getDimension();
-  for (size_t k = 0; k < alpha.getSize(); k++) {
-    for (size_t l = 0; l < alpha.getSize(); l++) {
+  size_t numPoints = alpha.getSize();
+
+  for (size_t k = 0; k < numPoints; k++) {
+    for (size_t l = 0; l < numPoints; l++) {
       double sp = 1;
       for (size_t d = 0; d < dim; d++) {
         double temp = weightedBasisScalarProduct(
             storage.getPointLevel(k, d), storage.getPointIndex(k, d), storage.getPointLevel(l, d),
             storage.getPointIndex(l, d), pdfs.get(d));
         sp *= temp;
-        //        std::cout << d << ": (" << storage.getPointLevel(k, d) << " " <<
-        //        storage.getPointIndex(k, d)
-        //                  << ") x (" << storage.getPointLevel(l, d) << " " <<
-        //                  storage.getPointIndex(l, d)
-        //                  << ")  " << temp << "\n";
       }
       weightedSP += alpha[k] * alpha[l] * sp;
-      //      std::cout << "# (" << k << "," << l << ") " << std::fixed << alpha[k] << " " <<
-      //      alpha[l]
-      //                << " " << sp << " " << weightedSP << "\n\n";
     }
   }
   return weightedSP;
@@ -64,8 +58,10 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
   sgpp::base::DataVector bounds = pdf->getBounds();
   double leftPDF = bounds[0];
   double rightPDF = bounds[1];
+  sgpp::base::DataVector pdfCharacteristics = pdf->getCharacteristics();
   std::map<hashType, double>::iterator it;
-  hashType hashKey = std::make_tuple(level1, index1, level2, index2, pdf->getType());
+  hashType hashKey = std::make_tuple(level1, index1, level2, index2, pdf->getType(),
+                                     pdfCharacteristics[0], pdfCharacteristics[1]);
   // Check if this scalar products has already been caluclated and is stored
   it = innerProducts.find(hashKey);
   if (it != innerProducts.end()) {
@@ -119,13 +115,12 @@ double OperationWeightedSecondMomentNak::weightedBasisScalarProduct(
             weights[j] * func(segmentCoordinates[j]) * pdf->eval(transformedSegmentCoordinates[j]);
       }
       segmentIntegral *= transformedSegmentWidth;
-
       result += segmentIntegral;
     }
     innerProducts.insert(std::pair<hashType, double>(hashKey, result));
     return result;
   }
-}
+}  // namespace base
 
 sgpp::base::DataVector OperationWeightedSecondMomentNak::nakBSplineSupport(size_t level,
                                                                            size_t index,

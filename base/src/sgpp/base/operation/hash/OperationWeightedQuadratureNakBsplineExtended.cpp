@@ -11,12 +11,17 @@ namespace base {
 double OperationWeightedQuadratureNakBsplineExtended::doWeightedQuadrature(
     DataVector& alpha, sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
   double mean = 0;
+  base::DataVector quadCoordinates, quadWeights;
+  base::GaussLegendreQuadRule1D gauss;
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
+#pragma omp parallel for firstprivate(storage, base, alpha, pdfs, quadCoordinates, quadWeights) reduction(+ : mean)
   for (size_t i = 0; i < storage.getSize(); i++) {
+    //    std::cout << "#omp threads: " << omp_get_num_threads() << "\n";
     double mean1D = 1;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       mean1D *= base.getMean(storage.getPointLevel(i, d), storage.getPointIndex(i, d), pdfs.get(d),
-                             quadOrder);
+                             quadCoordinates, quadWeights);
     }
     mean += alpha[i] * mean1D;
   }
