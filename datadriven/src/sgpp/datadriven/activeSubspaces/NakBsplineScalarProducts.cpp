@@ -110,6 +110,7 @@ double NakBsplineScalarProducts::calculateWeightedScalarProduct(
   sgpp::base::GridStorage& gridStorage2 = grid2->getStorage();
   double weightedSP = 0.0;
   size_t dim = grid1->getDimension();
+
   for (size_t k = 0; k < coeff1.getSize(); k++) {
     for (size_t l = 0; l < coeff2.getSize(); l++) {
       double sp = 1;

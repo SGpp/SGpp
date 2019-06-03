@@ -473,16 +473,13 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @return      		mean of basis function
    */
   inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
-                        size_t quadOrder) {
+                        base::DataVector quadCoordinates, base::DataVector quadWeights) {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
           "NakBsplineExtended: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
-
-    base::DataVector quadCoordinates, quadWeights;
-    base::GaussLegendreQuadRule1D gauss;
 
     const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
     const size_t hInv = 1 << l;             // = 2^lid
@@ -493,7 +490,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
     } else if (degree == 5) {
       if (i == 5) offset -= 2 * hik;
     }
-    gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
+
     // start and stop identify the segments on which the spline is nonzero
     size_t start = 0, stop = 0;
     start = ((i > pp1h) ? 0 : (pp1h - i));

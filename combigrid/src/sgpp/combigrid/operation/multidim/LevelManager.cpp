@@ -444,8 +444,7 @@ void LevelManager::addLevelsAdaptiveParallel(size_t maxNumPoints, size_t numThre
          * avoid accessing a handle to a popped element. Invalidating the handle is done by
          * beforeComputation().
          */
-        queue.pop();  // TODO(rehmemk)
-
+        queue.pop();
         beforeComputation(entry.level);
         CGLOG("before getLevelTasks()");
         auto tasks = combiEval->getLevelTasks(entry.level, ThreadPool::Task([this, entry]() {
