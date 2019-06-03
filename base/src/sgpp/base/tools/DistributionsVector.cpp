@@ -30,6 +30,14 @@ std::vector<std::shared_ptr<sgpp::base::Distribution>> DistributionsVector::getD
   return distributions;
 }
 
+sgpp::base::DataVector DistributionsVector::sample() {
+  sgpp::base::DataVector sampleVector(distributions.size(), 0.0);
+  for (size_t d = 0; d < distributions.size(); d++) {
+    sampleVector[d] = distributions[d]->sample();
+  }
+  return sampleVector;
+}
+
 void DistributionsVector::push_back(std::shared_ptr<sgpp::base::Distribution> pdf) {
   distributions.push_back(pdf);
 }

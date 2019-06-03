@@ -43,9 +43,9 @@ class DistributionUniform : public Distribution {
     return bounds;
   }
 
-  std::string getType() {
-    return std::string("Uniform_") + std::to_string(l) + std::string("_") + std::to_string(r);
-  }
+  sgpp::base::DistributionType getType() { return sgpp::base::DistributionType::Uniform; }
+
+  sgpp::base::DataVector getCharacteristics() { return getBounds(); }
 
  private:
   double l;

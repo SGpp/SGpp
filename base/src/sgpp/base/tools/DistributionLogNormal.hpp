@@ -60,9 +60,13 @@ class DistributionLogNormal : public Distribution {
     return bounds;
   }
 
-  std::string getType() {
-    return std::string("LogNormal_") + std::to_string(mean) + std::string("_") +
-           std::to_string(stddev);
+  sgpp::base::DistributionType getType() { return sgpp::base::DistributionType::Lognormal; }
+
+  sgpp::base::DataVector getCharacteristics() {
+    sgpp::base::DataVector characteristics(2);
+    characteristics[0] = mean;
+    characteristics[1] = stddev;
+    return characteristics;
   }
 
  private:

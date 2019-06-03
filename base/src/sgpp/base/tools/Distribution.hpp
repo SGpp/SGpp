@@ -19,11 +19,11 @@ namespace base {
  * enum to address different pdfs in a standardized way
  *
  */
-// enum class DistributionType {
-//  Uniform,    //  0
-//  Normal,     //  1
-//  Lognormal,  //  2
-//};
+enum class DistributionType {
+  Uniform,    //  0
+  Normal,     //  1
+  Lognormal,  //  2
+};
 
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
@@ -57,7 +57,13 @@ class Distribution {
 
   virtual sgpp::base::DataVector getBounds() = 0;
 
-  virtual std::string getType() = 0;
+  virtual sgpp::base::DistributionType getType() = 0;
+
+  /**
+   * return all relevant characteristic values (e.g. mean and standarddeviation for normal
+   * distribution)
+   */
+  virtual sgpp::base::DataVector getCharacteristics() = 0;
 
  protected:
   std::default_random_engine gen;

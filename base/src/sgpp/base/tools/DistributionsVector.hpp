@@ -23,6 +23,8 @@ class DistributionsVector {
 
   std::vector<std::shared_ptr<sgpp::base::Distribution>> getDistributions();
 
+  sgpp::base::DataVector sample();
+
   void push_back(std::shared_ptr<sgpp::base::Distribution> pdf);
   std::shared_ptr<sgpp::base::Distribution> get(size_t i);
   size_t getSize();
