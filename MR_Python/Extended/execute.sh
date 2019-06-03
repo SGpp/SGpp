@@ -4,12 +4,12 @@
 # time python2.7 comparingBSplines.py --model=monomial --scalarModelParameter=3 --dim=1 --gridType=nak --degree=135 --refineType=surplus --initialLevel=1 --maxPoints=1000 --numSteps=7
 
 ## plot all monomials
-python2.7 plotBsplineComparison.py --scalarModelParameter=0
-python2.7 plotBsplineComparison.py --scalarModelParameter=1
-python2.7 plotBsplineComparison.py --scalarModelParameter=2
-python2.7 plotBsplineComparison.py --scalarModelParameter=3
-python2.7 plotBsplineComparison.py --scalarModelParameter=4
-python2.7 plotBsplineComparison.py --scalarModelParameter=5
+#python2.7 plotBsplineComparison.py --scalarModelParameter=0
+#python2.7 plotBsplineComparison.py --scalarModelParameter=1
+#python2.7 plotBsplineComparison.py --scalarModelParameter=2
+#python2.7 plotBsplineComparison.py --scalarModelParameter=3
+#python2.7 plotBsplineComparison.py --scalarModelParameter=4
+#python2.7 plotBsplineComparison.py --scalarModelParameter=5
 
 ## Exp
 # time python2.7 comparingBSplines.py --model=sumExp --dim=10 --gridType=naknobound --degree=35 --refineType=regularByPoints --initialLevel=2 --maxPoints=10000
@@ -48,6 +48,7 @@ python2.7 plotBsplineComparison.py --scalarModelParameter=5
 # time python2.7 comparingBSplines.py --model='monomial' --dim=1 --scalarModelParameter=5 --gridType=nak --degree=135 --refineType=regular --maxLevel=10
 
 
-
+time python2.7 comparingBSplines.py --refineType=surplus
+time python2.7 comparingBSplines.py --refineType=regularByPoints
 
 

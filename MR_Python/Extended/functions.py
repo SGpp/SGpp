@@ -100,6 +100,8 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'attenuationN':
         return attenuationN(dim)
     
+    elif model == 'compDakota':
+        return compDakota()
     elif model == 'mixed':
         return mixed()
     elif model == 'analytical':
@@ -793,8 +795,8 @@ class boreholeUQ():
     
     def __init__(self):
         self.pdfs = pysgpp.DistributionsVector()
-        self.pdfs.push_back(pysgpp.DistributionNormal(0.1, np.sqrt(0.0161812)))
-        self.pdfs.push_back(pysgpp.DistributionLogNormal(7.71, np.sqrt(1.0056)))
+        self.pdfs.push_back(pysgpp.DistributionNormal(0.1, 0.0161812))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(7.71, 1.0056))
         self.pdfs.push_back(pysgpp.DistributionUniform(63070, 115600))
         self.pdfs.push_back(pysgpp.DistributionUniform(990, 1110))
         self.pdfs.push_back(pysgpp.DistributionUniform(63.1, 116))
@@ -833,7 +835,7 @@ class boreholeUQ():
         return 0.00244501293667
     
     def getVar(self):
-        return 2.35017408798e-05
+        return 2.35017408798e-05  # StDv =  0.00484785941 = 4.84785941e-0.3
 
     
 # https://www.sfu.ca/~ssurjano/sulf.html
@@ -1230,6 +1232,43 @@ class attenuationN():
         # return  0.027109663640083  # for mu = 0.5, sigma2 = 0.2, 3D
 
 
+class compDakota():
+
+    def __init__(self):
+        self.dim = 1
+        self.pdfs = pysgpp.DistributionsVector()
+#         self.pdfs.push_back(pysgpp.DistributionNormal(0.5, np.sqrt(2)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(1.0, 0.2))
+#         self.pdfs.push_back(pysgpp.DistributionUniform(-10.0, 10.0))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+    
+    def getName(self):
+       return "compDakota"
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        return np.sin(v[0])
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        return 0.322602188435
+    
+    def getVar(self):
+        return -1  # => StDv =   0.465105184464
+
+
 class mixed():
 
     def __init__(self):
@@ -1277,10 +1316,10 @@ class analytical():
         self.dim = dim
         self.pdfs = pysgpp.DistributionsVector()
         self.pdfs.push_back(pysgpp.DistributionNormal(5, np.sqrt(0.25)))
-        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.5, np.sqrt(1.1)))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(0.25, np.sqrt(0.1)))
         self.pdfs.push_back(pysgpp.DistributionUniform(-1, 1))
         self.pdfs.push_back(pysgpp.DistributionNormal(100, np.sqrt(5.5)))
-        self.pdfs.push_back(pysgpp.DistributionNormal(0, np.sqrt(0.01)))
+        self.pdfs.push_back(pysgpp.DistributionNormal(10, np.sqrt(1)))
         if self.dim == 6:
             self.pdfs.push_back(pysgpp.DistributionUniform(-5, 0))
         
@@ -1306,7 +1345,7 @@ class analytical():
 
     def eval(self, v):
         if self.dim == 5:
-            return np.sin(v[0]) + v[1] * v[2] ** 3 - np.exp(-v[0] * v[4])
+            return np.sin(np.pi * v[0]) + v[1] * v[2] ** 3 - np.exp(-v[1] * v[4])
         elif self.dim == 6:
             return np.sin(v[0]) + v[1] * v[2] ** 3 - np.exp(v[5] - v[0] * v[4])
     

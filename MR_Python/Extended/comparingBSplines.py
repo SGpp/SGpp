@@ -15,6 +15,15 @@ except:
 from functions import objFuncSGpp as objFuncSGpp
 # from sgAnuga import anugaError
         
+        
+def mcMean(objFunc, pdfs, numPoints):
+    dim = pdfs.getSize()
+    mean = 0
+    for i in range(numPoints):
+        samplePoint = pdfs.sample()
+        mean += objFunc.eval(samplePoint)
+    return mean / numPoints
+
 
 def interpolateAndError(degree,
                         maxLevel,
@@ -55,57 +64,73 @@ def interpolateAndError(degree,
             initialLevelwithOffset = initialLevel
         for j, numPoints in enumerate(sampleRange):
             print("refine for {} points".format(numPoints)) 
-            reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc, lb, ub,
-                                                            pysgpp.Grid.stringToGridType(gridType),
-                                                            degree)
-            start = time.time()
-            verbose = True
-            if refineType == 'regular':
-                level = numPoints  # numPoints is an ugly wrapper for level. Improve this
-                reSurf.regular(numPoints)
-                print("{} {} ".format(numPoints, reSurf.getSize()))
-            elif refineType == 'regularByPoints':
-                reSurf.regularByPoints(numPoints, verbose)
-            elif refineType == 'surplus':
-                reSurf.surplusAdaptive(numPoints, initialLevelwithOffset, numRefine, verbose)
+            
+            if gridType == 'mc':
+                gridSizes[i, j] = numPoints
+                pdfs = objFunc.getDistributions()
+                start = time.time()
+                if calculateMean == 1:
+                    startMean = time.time()
+                    means[i, j] = 1  # TODO MC mean routine!
+                    meanTime = time.time() - startMean
+                    realMean = objFunc.getMean()
+                    meanErrors[i, j] = abs(means[i, j] - realMean)
+                    print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
+                if calculateVar == 1:
+                    startVar = time.time()
+                    vars[i, j] = -1  # TODO MC var
+                    varTime = time.time() - startVar
+                    realVar = objFunc.getVar()
+                    varErrors[i, j] = abs(vars[i, j] - realVar)
+                    print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
+                    print("stdv = {}".format(np.sqrt(vars[i, j])))
+                runTimes[i, j] = time.time() - start
             else:
-                print("this refineType is not supported")
-             
-#             point = pysgpp.DataVector(8)
-#             point[0] = 0.1; point[1] = 11000; point[2] = 101000; point[3] = 991; 
-#             point[4] = 63.1; point[5] = 777; point[6] = 1376; point[7] = 10032
-#             print(objFunc.eval(point))
-#             print(reSurf.eval(point))
-#             ipdb.set_trace()
-             
-            if calculateError:
-#                 if  "anuga" in objFunc.getName():
-#                     interpolErrors[i, j] = sgAnuga.anugaError(reSurf, objFunc)
-#                 else:
-                errorVector = reSurf.nrmsError(objFunc, numErrPoints)
-                interpolErrors[i, j] = errorVector[1]
-                nrmsErrors[i, j] = errorVector[0]
-                print("min {}  max {}".format(errorVector[2], errorVector[3]))
-                print("l2 err={}".format(interpolErrors[i, j]))
-                print("NRMSE ={}".format(nrmsErrors[i, j]))
-                
-            if calculateMean == 1:
-                pdfs = objFunc.getDistributions()
-                startMean = time.time()
-                means[i, j] = reSurf.getMean(pdfs, quadOrder)
-                meanTime = time.time() - startMean
-                realMean = objFunc.getMean()
-                meanErrors[i, j] = abs(means[i, j] - realMean)
-                print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
-            if calculateVar == 1:
-                pdfs = objFunc.getDistributions()
-                startVar = time.time()
-                vars[i, j] = reSurf.getVariance(pdfs, quadOrder)
-                varTime = time.time() - startVar
-                realVar = objFunc.getVar()
-                varErrors[i, j] = abs(vars[i, j] - realVar)
-                print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
-            gridSizes[i, j] = reSurf.getSize()
+                reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc, lb, ub,
+                                                                pysgpp.Grid.stringToGridType(gridType),
+                                                                degree)
+                start = time.time()
+                verbose = True
+                if refineType == 'regular':
+                    level = numPoints  # numPoints is an ugly wrapper for level. Improve this
+                    reSurf.regular(numPoints)
+                    print("{} {} ".format(numPoints, reSurf.getSize()))
+                elif refineType == 'regularByPoints':
+                    reSurf.regularByPoints(numPoints, verbose)
+                elif refineType == 'surplus':
+                    reSurf.surplusAdaptive(numPoints, initialLevelwithOffset, numRefine, verbose)
+                else:
+                    print("this refineType is not supported")
+                 
+                if calculateError:
+    #                 if  "anuga" in objFunc.getName():
+    #                     interpolErrors[i, j] = sgAnuga.anugaError(reSurf, objFunc)
+    #                 else:
+                    errorVector = reSurf.nrmsError(objFunc, numErrPoints)
+                    interpolErrors[i, j] = errorVector[1]
+                    nrmsErrors[i, j] = errorVector[0]
+                    print("min {}  max {}".format(errorVector[2], errorVector[3]))
+                    print("l2 err={}".format(interpolErrors[i, j]))
+                    print("NRMSE ={}".format(nrmsErrors[i, j]))
+                    
+                if calculateMean == 1:
+                    pdfs = objFunc.getDistributions()
+                    startMean = time.time()
+                    means[i, j] = reSurf.getMean(pdfs, quadOrder)
+                    meanTime = time.time() - startMean
+                    realMean = objFunc.getMean()
+                    meanErrors[i, j] = abs(means[i, j] - realMean)
+                    print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
+                if calculateVar == 1:
+                    pdfs = objFunc.getDistributions()
+                    startVar = time.time()
+                    vars[i, j] = reSurf.getVariance(pdfs, quadOrder)
+                    varTime = time.time() - startVar
+                    realVar = objFunc.getVar()
+                    varErrors[i, j] = abs(vars[i, j] - realVar)
+                    print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
+                    print("stdv = {}".format(np.sqrt(vars[i, j])))
+                gridSizes[i, j] = reSurf.getSize()
             print("\n")
         runTimes[i, j] = time.time() - start  
         print('{} {} done (took {}s)\n\n'.format(gridType,
@@ -129,15 +154,15 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='analytical', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=6, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=5, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use')
+    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use or mc for Monte Carlo')
     parser.add_argument('--degree', default=5, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='surplus', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--refineType', default='surplus', type=str, help='surplus or regular')
     parser.add_argument('--maxLevel', default=6, type=int, help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=2, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
+    parser.add_argument('--maxPoints', default=35000, type=int, help='maximum number of points used')
     parser.add_argument('--numSteps', default=5, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
@@ -194,6 +219,8 @@ if __name__ == '__main__':
                 
         if args.refineType == 'regular':
             saveName = objFunc.getName() + '_' + args.refineType + str(args.maxLevel)
+        elif args.gridType == 'mc':
+            saveName = objFunc.getName() + '_mc' + str(args.maxPoints)
         else:
             saveName = objFunc.getName() + args.refineType + str(args.maxPoints)
         
