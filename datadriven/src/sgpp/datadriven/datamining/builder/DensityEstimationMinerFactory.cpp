@@ -12,12 +12,14 @@
 
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
@@ -25,6 +27,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 
 #include <string>
+
+#include "../modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -38,8 +42,20 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     return new ModelFittingDensityEstimationOnOffParallel(config);
   }
 #endif
-  return new ModelFittingDensityEstimationOnOff(config);
+  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
+    return new ModelFittingDensityEstimationCombi(config);
+  }
+  switch (config.getDensityEstimationConfig().type_) {
+    case (DensityEstimationType::CG):
+      std::cout << "\nCG\n";
+      return new ModelFittingDensityEstimationCG(config);
+    case (DensityEstimationType::Decomposition):
+      std::cout << "\nDECOMPOSITION\n";
+      return new ModelFittingDensityEstimationOnOff(config);
+    default: { throw base::application_exception("Unknown density estimation type"); }
+  }
 }
+
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
