@@ -17,8 +17,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
@@ -46,14 +46,13 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
   off_object.buildMatrix(grid.get(), regularizationConfig);
 
   size_t n = off_object.getGridSize();
-  std::cout << "Grid size is " << (*grid).getStorage().getSize() << std::endl;
+  std::cout << "Grid size is " << grid->getStorage().getSize() << std::endl;
   std::cout << "Matrix size " << n << std::endl;
 
   std::cout << "Testing hessenberg_decomposition...\n";
@@ -176,8 +175,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
@@ -188,16 +186,15 @@ BOOST_AUTO_TEST_CASE(online_object) {
   // calculating Q and T^{-1}
 
   auto online_parent = std::unique_ptr<sgpp::datadriven::DBMatOnlineDE>{
-      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base,
-          *grid, regularizationConfig.lambda_)};
+      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(offline_base, *grid,
+                                                                 regularizationConfig.lambda_)};
   sgpp::datadriven::DBMatOnlineDEOrthoAdapt* online =
       static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*online_parent);
 
   // creating offline object of one bigger lvl as source for points to refine
   gridConfig.level_++;
   std::unique_ptr<sgpp::base::Grid> grid_source = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source;
   offline_source.buildMatrix(&(*grid_source), regularizationConfig);
 
@@ -214,8 +211,12 @@ BOOST_AUTO_TEST_CASE(online_object) {
   std::cout << "Testing refinement ..." << std::endl;
 
   // build expected already refined lhs matrix
+  std::cout << "old size: " << lhs_copy_small.getNrows() << "x" << lhs_copy_small.getNcols()
+            << std::endl;
   sgpp::base::DataMatrix lhs_copy_big(lhs_copy_small);
   lhs_copy_big.resizeQuadratic(oldSize + numberOfNewPoints / 2);
+  std::cout << "new size: " << lhs_copy_big.getNrows() << "x" << lhs_copy_big.getNcols()
+            << std::endl;
 
   // write first half of points to container and the expected refined lhs matrix
   for (size_t i = oldSize; i < oldSize + numberOfNewPoints / 2; i++) {
