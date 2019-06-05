@@ -794,20 +794,30 @@ class borehole():
 class boreholeUQ():
     
     def __init__(self):
+        self.dim = 8
         self.pdfs = pysgpp.DistributionsVector()
         self.pdfs.push_back(pysgpp.DistributionNormal(0.1, 0.0161812))
         self.pdfs.push_back(pysgpp.DistributionLogNormal(7.71, 1.0056))
-        self.pdfs.push_back(pysgpp.DistributionUniform(63070, 115600))
-        self.pdfs.push_back(pysgpp.DistributionUniform(990, 1110))
-        self.pdfs.push_back(pysgpp.DistributionUniform(63.1, 116))
-        self.pdfs.push_back(pysgpp.DistributionUniform(700, 820))
-        self.pdfs.push_back(pysgpp.DistributionUniform(1120, 1680))
-        self.pdfs.push_back(pysgpp.DistributionUniform(855, 12045))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63070., 115600.))
+        self.pdfs.push_back(pysgpp.DistributionUniform(990., 1110.))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63.1, 116.))
+        self.pdfs.push_back(pysgpp.DistributionUniform(700., 820.))
+        self.pdfs.push_back(pysgpp.DistributionUniform(1120., 1680.))
+        self.pdfs.push_back(pysgpp.DistributionUniform(9855., 12045.))
 
     def getDomain(self):
-        lb = pysgpp.DataVector([0.05, 100, 63070, 990, 63.1, 700, 1120, 9855])
-        ub = pysgpp.DataVector([0.15, 50000, 115600, 1110, 116, 820, 1680, 12045])
+        lb = pysgpp.DataVector([0.05, 100., 63070., 990., 63.1, 700., 1120., 9855.])
+        ub = pysgpp.DataVector([0.15, 50000., 115600., 1110., 116., 820., 1680., 12045.])
         return lb, ub
+
+#     def getDomain(self):
+#         lb = pysgpp.DataVector(self.dim)
+#         ub = pysgpp.DataVector(self.dim)
+#         for d in range(self.dim):
+#             bounds = self.pdfs.get(d).getBounds()
+#             lb[d] = bounds[0]
+#             ub[d] = bounds[1]
+#         return lb, ub
     
     def getDistributions(self):
         return self.pdfs
@@ -819,10 +829,6 @@ class boreholeUQ():
         return 8
 
     def eval(self, v):
-#         lb, ub = self.getDomain()
-#         lN = pysgpp.DataVector(self.getDim(), 0.0)
-#         uN = pysgpp.DataVector(self.getDim(), 1.0)
-#         v = unnormalize(v, lb, ub, lN, uN)
         rw = v[0]; r = v[1]; Tu = v[2]; Hu = v[3]
         Tl = v[4]; Hl = v[5]; L = v[6]; Kw = v[7]
         return (2 * np.pi * Tu * (Hu - Hl)) / (np .log(r / rw) * (1 + ((2 * L * Tu / np.log(r / rw) * rw * rw * Kw) + (Tu / Tl))))
@@ -832,10 +838,10 @@ class boreholeUQ():
     # The grid had 36.043 point and an l2 error of 5.71383612e-11, a NRMSE of  1.44149761e-09
     
     def getMean(self):
-        return 0.00244501293667
+        return 0.00655072585279  # old with sigma = sqrt(): 0.00244501293667
     
     def getVar(self):
-        return 2.35017408798e-05  # StDv =  0.00484785941 = 4.84785941e-0.3
+        return 0.00289178537162  # old with sigma = sqrt(): 2.35017408798e-05
 
     
 # https://www.sfu.ca/~ssurjano/sulf.html
@@ -1089,8 +1095,8 @@ class tensorMonomialN():
 
     def __init__(self, dim):
         self.dim = dim
-        self.mu = [0.0] * dim  
-        self.sigma = [np.sqrt(0.2)] * dim 
+        self.mu = [0.1] * dim  
+        self.sigma = [0.01] * dim 
         self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
             self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
@@ -1234,20 +1240,30 @@ class attenuationN():
 
 class compDakota():
 
-    def __init__(self):
-        self.dim = 1
-        self.pdfs = pysgpp.DistributionsVector()
-#         self.pdfs.push_back(pysgpp.DistributionNormal(0.5, np.sqrt(2)))
-        self.pdfs.push_back(pysgpp.DistributionLogNormal(1.0, 0.2))
-#         self.pdfs.push_back(pysgpp.DistributionUniform(-10.0, 10.0))
+#     def getDomain(self):  
+#         lb = pysgpp.DataVector(self.dim)
+#         ub = pysgpp.DataVector(self.dim)
+#         for d in range(self.dim):
+#             bounds = self.pdfs.get(d).getBounds()
+#             lb[d] = bounds[0]
+#             ub[d] = bounds[1]
+#         return lb, ub
 
-    def getDomain(self):  
-        lb = pysgpp.DataVector(self.dim)
-        ub = pysgpp.DataVector(self.dim)
-        for d in range(self.dim):
-            bounds = self.pdfs.get(d).getBounds()
-            lb[d] = bounds[0]
-            ub[d] = bounds[1]
+    def __init__(self):
+        self.dim = 8
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionNormal(0.1, 0.0161812))
+        self.pdfs.push_back(pysgpp.DistributionLogNormal(7.71, 1.0056))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63070, 115600))
+        self.pdfs.push_back(pysgpp.DistributionUniform(990, 1110))
+        self.pdfs.push_back(pysgpp.DistributionUniform(63.1, 116))
+        self.pdfs.push_back(pysgpp.DistributionUniform(700, 820))
+        self.pdfs.push_back(pysgpp.DistributionUniform(1120, 1680))
+        self.pdfs.push_back(pysgpp.DistributionUniform(9855, 12045))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector([0.05, 100, 63070 , 990, 63.1, 700 , 1120, 9855])
+        ub = pysgpp.DataVector([0.15, 50000, 115600 , 1110 , 116 , 820 , 1680 , 12045])
         return lb, ub
     
     def getName(self):
@@ -1257,16 +1273,25 @@ class compDakota():
         return self.dim
 
     def eval(self, v):
-        return np.sin(v[0])
+        # return np.sin(v[0]) + np.cos(v[1]) * v[2]
+
+        rw = v[0]; r = v[1]; Tu = v[2]; 
+        Hu = v[3]  # 1005
+        Tl = v[4]
+        Hl = v[5]
+        L = v[6]
+        Kw = v[7]
+        res = (2 * np.pi * Tu * (Hu - Hl)) / (np .log(r / rw) * (1 + ((2 * L * Tu / np.log(r / rw) * rw * rw * Kw) + (Tu / Tl))))
+        return res
     
     def getDistributions(self):
         return self.pdfs
     
     def getMean(self):
-        return 0.322602188435
+        return 0.00655072585279
     
     def getVar(self):
-        return -1  # => StDv =   0.465105184464
+        return  8.36242263552e-06  # => StDv =   0.465105184464
 
 
 class mixed():

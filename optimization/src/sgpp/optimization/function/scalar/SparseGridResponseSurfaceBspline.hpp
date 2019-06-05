@@ -26,6 +26,7 @@
 #include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 
 namespace sgpp {
@@ -185,8 +186,11 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    *
    * @param 	pdf			the probability density function
    * @param     quadOrder	order of the Gauss Legendre quadrature
+   *
+   * @return	vector [v,mS,m] containing the variance v and the meanSquare mS and mean m used to
+   * compute it
    */
-  double getVariance(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
+  sgpp::base::DataVector getVariance(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
 
   /**
    * calculates the minimimum with gradient descent

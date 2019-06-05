@@ -51,6 +51,7 @@ def interpolateAndError(degree,
     meanErrors = np.zeros((len(gridTypes), len(sampleRange)))
     varErrors = np.zeros((len(gridTypes), len(sampleRange)))
     vars = np.zeros((len(gridTypes), len(sampleRange)))
+    meanSquares = np.zeros((len(gridTypes), len(sampleRange)))
     gridSizes = np.zeros((len(gridTypes), len(sampleRange)))
     runTimes = np.zeros((len(gridTypes), len(sampleRange)))
     dim = objFunc.getDim()
@@ -71,19 +72,20 @@ def interpolateAndError(degree,
                 start = time.time()
                 if calculateMean == 1:
                     startMean = time.time()
+                    print("Warning in comparingBsplines.py: MC mean calculation not implemented!")
                     means[i, j] = 1  # TODO MC mean routine!
                     meanTime = time.time() - startMean
                     realMean = objFunc.getMean()
                     meanErrors[i, j] = abs(means[i, j] - realMean)
-                    print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
+                    print("mean={:.16f}  real mean={:.16f}  error={:.16f}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
                 if calculateVar == 1:
                     startVar = time.time()
                     vars[i, j] = -1  # TODO MC var
                     varTime = time.time() - startVar
                     realVar = objFunc.getVar()
                     varErrors[i, j] = abs(vars[i, j] - realVar)
-                    print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
-                    print("stdv = {}".format(np.sqrt(vars[i, j])))
+                    print("var={:.16f}  real var={:.16f}  error={:.16f}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
+                    print("stdv = {:.16f}".format(np.sqrt(vars[i, j])))
                 runTimes[i, j] = time.time() - start
             else:
                 reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc, lb, ub,
@@ -120,17 +122,38 @@ def interpolateAndError(degree,
                     meanTime = time.time() - startMean
                     realMean = objFunc.getMean()
                     meanErrors[i, j] = abs(means[i, j] - realMean)
-                    print("mean={}  real mean={}  error={}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
+                    print("mean={:.16f}  real mean={:.16f}  error={:.16f}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
                 if calculateVar == 1:
                     pdfs = objFunc.getDistributions()
                     startVar = time.time()
-                    vars[i, j] = reSurf.getVariance(pdfs, quadOrder)
+                    varVec = reSurf.getVariance(pdfs, quadOrder)
+                    vars[i, j] = varVec[0]
+                    meanSquares[i, j] = varVec[1]
                     varTime = time.time() - startVar
                     realVar = objFunc.getVar()
                     varErrors[i, j] = abs(vars[i, j] - realVar)
-                    print("var={}  real var={}  error={}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
-                    print("stdv = {}".format(np.sqrt(vars[i, j])))
+                    print("var={:.16f}  real var={:.16f}  error={:.16f}    (t={})".format(vars[i, j], realVar, varErrors[i, j], varTime))
+                    print("stdv = {:.16f}".format(np.sqrt(vars[i, j])))
+                    
+                    print("points {}    mean {:.16f}      meanSquare {:.16f}      stddv {:.16f}".format(reSurf.getSize(), means[i, j], meanSquares[i, j], np.sqrt(vars[i, j])))
+                    
                 gridSizes[i, j] = reSurf.getSize()
+                
+                # plot 2D grid
+#                 grid = reSurf.getGrid()
+#                 gridStorage = grid.getStorage()
+#                 import matplotlib.pyplot as plt
+#                 for i in xrange(gridStorage.getSize()):
+#                     gp = gridStorage.getPoint(i)
+#                     x = gp.getStandardCoordinate(0)
+#                     y = gp.getStandardCoordinate(1)
+#                     plt.plot(x, y, '*')
+#                 plt.plot(0, 0, 'ok')
+#                 plt.plot(0, 1, 'ok')
+#                 plt.plot(1, 0, 'ok')
+#                 plt.plot(1, 1, 'ok')
+#                 plt.show()
+                
             print("\n")
         runTimes[i, j] = time.time() - start  
         print('{} {} done (took {}s)\n\n'.format(gridType,
@@ -143,6 +166,7 @@ def interpolateAndError(degree,
             'meanErrors':meanErrors,
             'vars':vars,
             'varErrors':varErrors,
+            'meanSquares': meanSquares,
             'gridSizes':gridSizes,
             'runTimes':runTimes,
             'refineType':refineType,
@@ -154,23 +178,23 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=5, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='tensorMonomialN', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=9, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use or mc for Monte Carlo')
     parser.add_argument('--degree', default=5, type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus', type=str, help='surplus or regular')
     parser.add_argument('--maxLevel', default=6, type=int, help='maximum level for regular refinement')
-    parser.add_argument('--minPoints', default=2, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=35000, type=int, help='maximum number of points used')
-    parser.add_argument('--numSteps', default=5, type=int, help='number of steps in the [minPoints maxPoints] range')
+    parser.add_argument('--minPoints', default=10, type=int, help='minimum number of points used')
+    parser.add_argument('--maxPoints', default=5000, type=int, help='maximum number of points used')
+    parser.add_argument('--numSteps', default=7, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
-    parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
+    parser.add_argument('--numRefine', default=200, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
     parser.add_argument('--mean', default=1, type=int, help='calculate mean')
-    parser.add_argument('--var', default=1, type=int, help='calculate variance')
+    parser.add_argument('--var', default=0, type=int, help='calculate variance')
     parser.add_argument('--quadOrder', default=300, type=int, help='quadrature order for mean and variance calculations')
-    parser.add_argument('--saveData', default=1, type=int, help='saveData')
+    parser.add_argument('--saveData', default=0, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int, help='number of threads for omp parallelization')
     
     # configure according to input
