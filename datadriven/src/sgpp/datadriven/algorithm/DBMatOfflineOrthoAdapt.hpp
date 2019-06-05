@@ -5,6 +5,13 @@
 
 #pragma once
 
+#ifdef USE_GSL
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
