@@ -227,7 +227,7 @@ void DBMatOfflineOrthoAdapt::compute_inverse() {
 
   gsl_matrix_free(QT);
 #else
-  throw algorithm_exception("build without GSL");
+  throw sgpp::base::algorithm_exception("build without GSL");
 #endif /*USE_GSL*/
 }
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
