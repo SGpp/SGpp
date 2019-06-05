@@ -3,13 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#endif /* USE_GSL */
-
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
