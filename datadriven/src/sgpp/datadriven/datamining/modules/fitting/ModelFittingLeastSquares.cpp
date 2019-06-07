@@ -71,7 +71,14 @@ bool ModelFittingLeastSquares::refine() {
                                                  config->getRefinementConfig().threshold_);
       // refine grid
       auto noPoints = grid->getSize();
-      grid->getGenerator().refine(refinementFunctor);
+      if(config->getGeometryConfig().stencilType != StencilType::None){
+        GridFactory gridFactory;
+        GeometryConfiguration geoConf = config->getGeometryConfig();
+        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf.stencilType, geoConf.dim));
+      }
+      else{
+        grid->getGenerator().refine(refinementFunctor);
+      }
       if (grid->getSize() > noPoints) {
         // Tell the SLE manager that the grid changed (for interal data structures)
         alpha.resizeZero(grid->getSize());

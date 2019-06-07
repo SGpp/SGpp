@@ -230,21 +230,35 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   sgpp::datadriven::GeometryConfiguration defaults;
-  defaults.dim = std::vector<int64_t>();
+  defaults.dim = std::vector<std::vector<int64_t>>();
   defaults.stencilType = sgpp::datadriven::StencilType::None;
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
-  std::vector<int64_t> dim = std::vector<int64_t>();
-  dim.push_back(1);
-  dim.push_back(1);
+  std::vector<std::vector<int64_t>> dim = std::vector<std::vector<int64_t>>();
+
+  std::vector<int64_t> tmp1 = std::vector<int64_t>();
+  tmp1.push_back(1);
+  tmp1.push_back(2);
+
+  std::vector<int64_t> tmp2 = std::vector<int64_t>();
+  tmp2.push_back(3);
+  tmp2.push_back(4);
+
+  dim.push_back(tmp1);
+  dim.push_back(tmp2);
 
   hasConfig = parser.getGeometryConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::DN));
-  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(),
-      dim.begin(), dim.end());
+  
+  BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
+  for (size_t i = 0; i < config.dim.size(); i++)
+  {
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.at(i).begin(), config.dim.at(i).end(),
+                                  dim.at(i).begin(), dim.at(i).end());  
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testParallelConfig) {

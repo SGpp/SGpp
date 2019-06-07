@@ -55,7 +55,7 @@ Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig,
   GridFactory gridFactory;
 
   sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
-  std::vector<int64_t> dim = geometryConfig.dim;
+  std::vector<std::vector<int64_t>> dim = geometryConfig.dim;
 
   // a regular sparse grid is created, if no geometryConfig is defined,
   if (stencilType == sgpp::datadriven::StencilType::None) {
@@ -72,7 +72,7 @@ std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
   GridFactory gridFactory;
 
   sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
-  std::vector<int64_t> dim = geometryConfig.dim;
+  std::vector<std::vector<int64_t>> dim = geometryConfig.dim;
 
   // no interactions get returned, if no geometryConfig is defined
   if (stencilType == sgpp::datadriven::StencilType::None) {

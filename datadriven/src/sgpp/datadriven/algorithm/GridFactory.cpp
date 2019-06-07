@@ -10,27 +10,27 @@
  *      Author: dominik
  */
 
-#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/base/grid/GridDataBase.hpp>
+#include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
-#include <vector>
 #include <string>
+#include <vector>
 
-using sgpp::base::GridType;
-using sgpp::base::Grid;
-using sgpp::base::GridType;
-using sgpp::base::GridGenerator;
 using sgpp::base::algorithm_exception;
+using sgpp::base::Grid;
+using sgpp::base::GridGenerator;
+using sgpp::base::GridType;
 
 namespace sgpp {
 namespace datadriven {
 
-sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const std::vector<std::vector <size_t>> interactions) const {
-  Grid *tmpGrid;
+sgpp::base::Grid* GridFactory::createGrid(
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const std::vector<std::vector<size_t>> interactions) const {
+  Grid* tmpGrid;
   if (gridConfig.type_ == GridType::Linear) {
     tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
@@ -41,8 +41,7 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
   } else if (gridConfig.type_ == GridType::ModLinear) {
     tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
   } else {
-    throw algorithm_exception(
-        "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
+    throw algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
@@ -57,126 +56,187 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
 }
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
-    sgpp::datadriven::StencilType stencilType, std::vector<int64_t>& dim) const {
+    sgpp::datadriven::StencilType stencilType, std::vector<std::vector<int64_t>>& dim) const {
   std::vector<std::vector<size_t>> interactions;
 
-  std::vector<int64_t> res = dim;
-  
-  switch (stencilType)
-  {
-  case sgpp::datadriven::StencilType::DN:
-    interactions = getDirectNeighbours(res);
-    break;
-  case sgpp::datadriven::StencilType::HP:
-    interactions = getHierachicalParents(res);
-  default:
-    std::cout << "Stencil not found";
-    std::cout << std::endl;
-    break;
+  std::vector<std::vector<int64_t>> res = dim;
+
+  switch (stencilType) {
+    case sgpp::datadriven::StencilType::DN:
+      interactions = getDirectNeighbours(res);
+      break;
+    case sgpp::datadriven::StencilType::HP:
+      interactions = getHierachicalParents(res);
+      break;
+    case sgpp::datadriven::StencilType::None:
+      interactions = std::vector<std::vector<size_t>>();
+      break;
+    default:
+      std::cout << "Stencil not found";
+      std::cout << std::endl;
+      break;
   }
 
   return interactions;
 }
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierachicalParents(
-  std::vector<int64_t>& res) const {
+    std::vector<std::vector<int64_t>>& res) const {
   std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
-  size_t offset = 0;
-  size_t dimX = res.at(0);
-  size_t dimY = res.at(1);
+  size_t childOffset = 0;
+  std::vector<size_t> childMultiplicators = std::vector<size_t>();
+  std::vector<int64_t> childDim;
 
-  for (size_t i = 2; i < res.size(); i += 2) {
-    size_t parentDimX = res.at(i);
-    size_t parentDimY = res.at(i + 1);
-    size_t parentOffset = dimX * dimY + offset;
-    double cellsPerParentX = dimX / static_cast<double>(parentDimX);
-    double cellsPerParentY = dimY / static_cast<double>(parentDimY);
+  for (auto dimension : res) {
+    std::vector<size_t> multiplicators = std::vector<size_t>();
+    multiplicators.push_back(1);
+    for (size_t i = 1; i < dimension.size(); i++) {
+      multiplicators.push_back(multiplicators.at(i - 1) * dimension.at(i - 1));
+    }
 
-    size_t parentY = 0;
-    size_t toY = 0;
-    double copyCellY = cellsPerParentY;
-    for (size_t y = 0; y < dimY; y = toY) {
-      toY = ceil(copyCellY) - 1;
-      if (toY > dimY) {
-        toY = dimY;
+    size_t offset = 0;
+
+    // skip first image
+    if (childMultiplicators.size() != 0) {
+      // Prepare some values
+      offset = childOffset + childMultiplicators.at(childMultiplicators.size() - 1) *
+                                 childDim.at(childDim.size() - 1);
+      std::vector<double> rescaled = std::vector<double>();
+      for (size_t i = 0; i < dimension.size(); i++) {
+        rescaled.push_back(static_cast<double>(dimension.at(i)) /
+                           static_cast<double>(childDim.at(i)));
       }
 
-      for (size_t j = y; j <= toY; j++) {
-        size_t parentX = 0;
-        size_t toX = 0;
-        double copyCellX = cellsPerParentX;
-        for (size_t x = 0; x < dimX; x = toX) {
-          toX = ceil(copyCellX) - 1;
-          if (toX > dimX) {
-            toX = dimX;
-          }
-
-          for (size_t i = x; i <= toX; i++) {
-            std::vector<size_t> tmp = std::vector<size_t>();
-            tmp.push_back(offset + i + dimX * j);
-            tmp.push_back(parentOffset + parentX + parentDimX * parentY);
-            vec.push_back(tmp);
-          }
-
-          if (toX == copyCellX - 1) toX++;
-          parentX++;
-          copyCellX += cellsPerParentX;
-        }
+      std::vector<int64_t> position = std::vector<int64_t>(dimension.size(), 0);
+      size_t dataDimension = 1;
+      for (size_t i = 0; i < dimension.size(); i++) {
+        dataDimension *= dimension.at(i);
       }
-      if (toY == copyCellY - 1) toY++;
-      parentY++;
-      copyCellY += cellsPerParentY;
+
+      // Iterate over all cells and add its possible parents
+      do {
+        std::vector<int64_t> parentPosition = std::vector<int64_t>(dimension.size(), 0);
+        addChildParentInteractionRecursive(&rescaled, &childDim, 0, &position, &parentPosition,
+                                           &multiplicators, &childMultiplicators, offset,
+                                           childOffset, &vec);
+
+        getNextPosition(&childDim, &position);
+      } while (position.size() != 0);
     }
 
-    dimX = parentDimX;
-    dimY = parentDimY;
-    offset = parentOffset;
-  }
-  return vec;
-}
-
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(
-    std::vector<int64_t>& res) const {
-  std::vector<int64_t> geodim1 = res;
-  size_t geodimX = res.at(0);
-  size_t geodimY = res.at(1);
-  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
-
-  for (size_t i = 0; i < geodimY; i++) {
-    for (size_t j = 0; j < geodimX-1; j++) {
-      std::vector<size_t> xdir = std::vector<size_t>();
-
-      xdir.push_back(i*geodimX+j);
-
-      xdir.push_back(i*geodimX+j+1);
-
-      vec.push_back(xdir);
+    // 1d vector for all dimensions
+    for (size_t i = 0;
+         i < multiplicators.at(dimension.size() - 1) * dimension.at(dimension.size() - 1); i++) {
+      std::vector<size_t> tmp = std::vector<size_t>();
+      tmp.push_back(offset + i);
+      vec.push_back(tmp);
     }
-  }
 
-  for (size_t i = 0; i < geodimX; i++) {
-    for (size_t j = 0; j < geodimY-1; j++) {
-      std::vector<size_t> ydir = std::vector<size_t>();
-
-      ydir.push_back(i+j*geodimX);
-
-      ydir.push_back(i+(j+1)*geodimX);
-
-      vec.push_back(ydir);
-    }
-  }
-
-  // 1d vector for all dimensions
-  for (size_t i = 0; i < geodimX*geodimY; i++) {
-    std::vector<size_t> tmp = std::vector<size_t>();
-    tmp.push_back(i);
-    vec.push_back(tmp);
+    childMultiplicators = multiplicators;
+    childDim = dimension;
+    childOffset = offset;
   }
 
   // add empty vector
   std::vector<size_t> empty = std::vector<size_t>();
   vec.push_back(empty);
 
+  return vec;
+}
+
+void sgpp::datadriven::GridFactory::addChildParentInteractionRecursive(
+    std::vector<double>* rescale, std::vector<int64_t>* childDim, size_t currentDimension,
+    std::vector<int64_t>* childPosition, std::vector<int64_t>* parentPosition,
+    std::vector<size_t>* parentMultiplicators, std::vector<size_t>* childMultiplicators,
+    size_t parentOffset, size_t childOffset, std::vector<std::vector<size_t>>* res) const {
+  if (currentDimension < childDim->size()) {
+    size_t position = static_cast<size_t>(rescale->at(currentDimension) *
+                                          static_cast<double>(childPosition->at(currentDimension)));
+    double nextPosition = rescale->at(currentDimension) *
+                          static_cast<double>(childPosition->at(currentDimension) + 1);
+    // iterate over all positions inbetween (neccesarry for increasing dimensions)
+    for (size_t i = position; static_cast<double>(i) < nextPosition; i++) {
+      parentPosition->at(currentDimension) = i;
+      addChildParentInteractionRecursive(rescale, childDim, currentDimension + 1, childPosition,
+                                         parentPosition, parentMultiplicators, childMultiplicators,
+                                         parentOffset, childOffset, res);
+    }
+  } else {
+    auto tmp = std::vector<size_t>();
+    tmp.push_back(getDataIndex(childDim->size(), childMultiplicators, childPosition) + childOffset);
+    tmp.push_back(getDataIndex(childDim->size(), parentMultiplicators, parentPosition) +
+                  parentOffset);
+    res->push_back(tmp);
+  }
+}
+
+size_t sgpp::datadriven::GridFactory::getDataIndex(size_t numberOfDimensions,
+                                                   std::vector<size_t>* multiplicators,
+                                                   std::vector<int64_t>* position) const {
+  size_t index = 0;
+  for (size_t i = 0; i < numberOfDimensions; i++) {
+    index += multiplicators->at(i) * position->at(i);
+  }
+  return index;
+}
+
+void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>* dimension,
+                                                    std::vector<int64_t>* position) const {
+  for (size_t i = 0; i < position->size(); i++) {
+    if (position->at(i) + 1 < dimension->at(i)) {
+      position->at(i)++;
+      break;
+    } else {
+      if (i == position->size() - 1)  // last element reached
+        position->clear();
+      else
+        position->at(i) = 0;
+    }
+  }
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(
+    std::vector<std::vector<int64_t>>& imageResolutions) const {
+  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
+  size_t imageOffset = 0;
+  for (std::vector<int64_t> res : imageResolutions) {
+    std::vector<size_t> multiplicators = std::vector<size_t>();
+    multiplicators.push_back(1);
+    for (size_t i = 1; i < res.size(); i++) {
+      multiplicators.push_back(multiplicators.at(i - 1) * res.at(i - 1));
+    }
+    std::vector<int64_t> position = std::vector<int64_t>(res.size(), 0);
+
+    do {
+      for (size_t i = 0; i < res.size(); i++) {
+        if (position.at(i) + 1 < res.at(i)) {
+          std::vector<size_t> tmp = std::vector<size_t>();
+          tmp.push_back(imageOffset + getDataIndex(res.size(), &multiplicators, &position));
+          position.at(i)++;
+          tmp.push_back(imageOffset + getDataIndex(res.size(), &multiplicators, &position));
+          position.at(i)--;
+          vec.push_back(tmp);
+        }
+      }
+
+      getNextPosition(&res, &position);
+    } while (position.size() != 0);
+
+    // 1d vector for all dimensions
+    for (size_t i = 0; i < multiplicators.at(res.size() - 1) * res.at(res.size() - 1); i++) {
+      std::vector<size_t> tmp = std::vector<size_t>();
+      tmp.push_back(imageOffset + i);
+      vec.push_back(tmp);
+    }
+
+    for (int64_t size : res) {
+      imageOffset += size;
+    }
+  }
+
+  // add empty vector
+  std::vector<size_t> empty = std::vector<size_t>();
+  vec.push_back(empty);
   return vec;
 }
 }  // namespace datadriven

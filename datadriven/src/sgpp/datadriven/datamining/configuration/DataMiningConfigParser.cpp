@@ -591,6 +591,34 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
   }
 }
 
+std::vector<std::vector<int64_t>> DataMiningConfigParser::parseArrayOfIntArrays(DictNode &dict, const std::string &key,
+                                                           std::vector<std::vector<int64_t>> defaultValue,
+                                                           const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<std::vector<int64_t>> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        std::vector<int64_t> entry;
+        for (size_t j = 0; j < dict[key][i].size(); j++)
+        {
+          entry.push_back(dict[key][i][j].getInt());
+        }
+        
+        array.push_back(entry);
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse array of integer arrays" + parentNode + "[" + key +
+                             "] from string" + dict[key].get() + ".";
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
+    return defaultValue;
+  }
+}
+
 // (Sebastian) Adapted from parseIntArray without much thought
 std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, const std::string &key,
                                                              std::vector<double> defaultValue,
@@ -849,7 +877,7 @@ bool DataMiningConfigParser::getGeometryConfig(
     std::cout << "Has geometry config" << std::endl;
     auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
-    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+    config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim, "geometryConfig");
 
     // parse  density estimation type
     if (geometryConfig->contains("stencil")) {

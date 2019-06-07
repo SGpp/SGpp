@@ -1,15 +1,9 @@
 {
 	"dataSource": {
-		"filePath": "../datasets/ripley/ripleyGarcke.train.arff",
-		"hasTargets" : true,
-		"batchSize" : 10,
-		"validationPortion" : 0.2,
-		"epochs" : 2,
-		"shuffling" : "random",
-		"randomSeed" : -1,
-		"readinCutoff": -1,
-		"readinClasses": [-1, 1],
-		"readinColumns": [0, 1]
+		"filePath": "/mnt/d/Databases/mnist_[2, 7]_7x7.train.arff",
+		"hasTargets": true,
+		"validationPortion": 0.2,
+		"epochs": 50
 	},
 	"scorer": {
 		"metric": "Accuracy"
@@ -17,32 +11,31 @@
 	"fitter": {
 		"type": "classification",
 		"gridConfig": {
-			"gridType": "linear",
-			"level": 5
+			"gridType": "modlinear",
+			"level": 4
+		},
+		"geometryConfig": {
+			"dim": [
+				[7, 7]
+			],
+			"stencil": "DN"
 		},
 		"adaptivityConfig": {
-				"numRefinements": 10,
-				"threshold": 0.001,
-				"maxLevelType": false,
-				"noPoints": 10,
-				"refinementIndicator" : "DataBased",
-				"errorBasedRefinement" : true,
-				"errorMinInterval" : 1,
-				"errorBufferSize" : 2,
-				"errorConvergenceThreshold" : 0.001
+			"numRefinements": 6,
+			"noPoints": 20,
+			"refinementIndicator": "zeroCrossing",
+			"errorBasedRefinement" : true,
+			"errorMinInterval" : 0,
+			"errorBufferSize" : 10,
+			"errorConvergenceThreshold" : 1e-3
 		},
 		"regularizationConfig": {
-			"lambda": 1e-2
+			"regularizationType": "Identity",
+			"lambda": 1
 		},
 		"densityEstimationConfig" : {
 			"densityEstimationType" : "decomposition",
-			"matrixDecompositionType" : "chol"
-		},
-		"learner" : {
-			"usePrior" : true,
-			"beta" : 1.0
+			"matrixDecompositionType" : "orthoadapt"
 		}
 	}
 }
-
-

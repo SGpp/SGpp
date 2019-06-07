@@ -33,7 +33,7 @@ struct GeometryConfiguration{
   /*
    * resolution of image/video e.g 28x28
    */
-  std::vector<int64_t> dim;
+  std::vector<std::vector<int64_t>> dim;
 };
 
 

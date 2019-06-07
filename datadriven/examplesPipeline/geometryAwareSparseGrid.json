@@ -1,18 +1,18 @@
 {
   	"dataSource": {
-    		"filePath": "../datasets/dataread/simple.arff",
+    		"filePath": "/mnt/d/Databases/mnist_[2, 7]_7x7.train.arff",
 		"batchSize": 10
 	},
 	"fitter": {
 
     		"gridConfig": {
       			"gridType": "modlinear",
-      			"level": "3"
+      			"level": "2"
     		},
 		"geometryConfig": {
 			"dim":[
-				4,
-				1
+				7,
+				7
 			],
 			"stencil": "DN"
 		},
@@ -25,7 +25,7 @@
 			"matrixDecompositionType": "Chol"
     		},
     		"adaptivityConfig":{
-      			"numRefinements": "10",
+      			"numRefinements": "2",
       			"noPoints": "5",
       			"threshold": "0.0"
     		},

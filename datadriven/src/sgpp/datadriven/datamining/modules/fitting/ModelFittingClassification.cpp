@@ -271,7 +271,14 @@ bool ModelFittingClassification::refine() {
           func->setGridIndex(idx);
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by the functor
-          grids[idx]->getGenerator().refine(*func);
+          GeometryConfiguration geoConf = config->getGeometryConfig();
+          if(geoConf.stencilType != StencilType::None){
+            GridFactory gridFactory;
+            grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf.stencilType, geoConf.dim));
+          }
+          else{
+            grids[idx]->getGenerator().refine(*func);
+          }
         }
       }
 
