@@ -93,6 +93,9 @@ bool DataMiningConfigParser::hasGeometryConfig() const {
   return configFile->contains("geometryConfig");
 }
 
+bool DataMiningConfigParser::hasVisualizationConfig() const{
+ return configFile->contains("visualizationConfig");
+}
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {

@@ -20,6 +20,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <map>
@@ -39,6 +40,7 @@ using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::datadriven::VisualizationConfig;
 using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
@@ -58,6 +60,7 @@ class DataMiningConfigParser {
   bool hasFitterConfig() const;
   bool hasGeometryConfig() const;
   bool hasParallelConfig() const;
+  bool hasVisualizationConfig() const;
 
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
@@ -137,6 +140,15 @@ class DataMiningConfigParser {
    */
   bool getGeometryConfig(datadriven::GeometryConfiguration &config,
       const datadriven::GeometryConfiguration &defaults) const;
+
+  /*
+   * Initializes the visualization configuration if it exists
+   * @param config the configuration instance that will be initiazlized
+   * @param defaults default balues if the fitter config does not contain a matching entry
+   * @return wether the configuration contains a visualization configuration
+   */
+  bool getVisualizationConfig(VisualizationConfig &config,
+    const VisualizationConfig &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
