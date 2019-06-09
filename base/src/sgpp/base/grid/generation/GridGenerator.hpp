@@ -104,8 +104,16 @@ class GridGenerator {
   virtual void full(size_t level) = 0;
 
   /**
+   * Creates an anisotropicFull Grid for certain level vector, for example [2,3,1] results
+   * in a 3x7x1 grid
+   */
+
+  virtual void anisotropicFull(std::vector<size_t> dimlevels) {}
+
+  /**
    * Creates a grid which doesn't contain the fullgrids with li<l_user, for any li level_t
    * */
+
   virtual void truncated(size_t level, size_t l_user) {}
 
   /**
@@ -114,9 +122,7 @@ class GridGenerator {
    * @param func reference to refinement functor
    * @param addedPoints pointer to vector to add newly created grid points to
    */
-  virtual void refine(RefinementFunctor& func,
-                      std::vector<size_t>* addedPoints = 0) = 0;
-
+  virtual void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) = 0;
 
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.

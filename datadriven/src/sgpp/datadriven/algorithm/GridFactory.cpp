@@ -45,6 +45,12 @@ sgpp::base::Grid *GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
+  // Generate component grid
+  if (gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid) {
+    tmpGrid->getGenerator().anisotropicFull(gridConfig.levelVector_);
+    return tmpGrid;
+  }
+
   // Generate regular Grid with LEVELS Levels
   if (interactions.size() == 0) {
     tmpGrid->getGenerator().regular(gridConfig.level_);
