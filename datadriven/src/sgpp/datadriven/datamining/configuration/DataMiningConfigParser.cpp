@@ -20,6 +20,7 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
@@ -156,6 +157,40 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     config.randomSeed =
         parseUInt(*dataSourceConfig, "randomSeed", defaults.randomSeed, "dataSource");
     config.epochs = parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
+
+    // Parse info for test data
+    config.testFilePath = parseString(*dataSourceConfig, "testFilePath",
+           defaults.filePath, "dataSource");
+
+    // parse file type of test data
+    if (dataSourceConfig->contains("testFileType")) {
+      config.testFileType = DataSourceFileTypeParser::parse(
+      (*dataSourceConfig)["testFileType"].get());
+    } else {
+      std::cout << "# Did not find " << dataSource <<
+        "[testFileType]. Setting default value "
+        << DataSourceFileTypeParser::toString(defaults.testFileType)
+        << "." << std::endl;
+
+        config.testFileType = defaults.testFileType;
+    }
+
+    config.testIsCompressed = parseBool(*dataSourceConfig, "testCompression",
+            defaults.testIsCompressed, "dataSource");
+    config.testNumBatches = parseUInt(*dataSourceConfig, "testNumBatches",
+            defaults.testNumBatches, "dataSource");
+    config.testBatchSize = parseUInt(*dataSourceConfig, "testBatchSize",
+            defaults.testBatchSize, "dataSource");
+    config.testHasTargets = parseBool(*dataSourceConfig, "testHasTargets",
+            defaults.testHasTargets, "dataSource");
+
+    config.testReadinCutoff = static_cast<size_t>(parseInt(*dataSourceConfig,
+            "testReadinCutoff", defaults.testReadinCutoff, "dataSource"));
+    config.testReadinClasses = parseDoubleArray(*dataSourceConfig,
+            "testReadinClasses", defaults.testReadinClasses, "dataSource");
+    config.testReadinColumns = parseUIntArray(*dataSourceConfig,
+            "testReadinColumns", defaults.testReadinColumns, "dataSource");
+
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
@@ -206,8 +241,8 @@ bool DataMiningConfigParser::getFitterConfigType(FitterType &config,
   return hasFitterConfig;
 }
 
-bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &config,
-                                                 const RegularGridConfiguration &defaults) const {
+bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &config,
+                                                 const GeneralGridConfiguration &defaults) const {
   bool hasFitterGridConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("gridConfig") : false;
 
@@ -216,10 +251,26 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
     config.dim_ = parseUInt(*fitterConfig, "dim", defaults.dim_, "gridConfig");
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
+    config.levelVector_ = static_cast<std::vector<size_t>>(
+        parseUIntArray(*fitterConfig, "levelVector", defaults.levelVector_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");
     config.boundaryLevel_ = static_cast<unsigned int>(
         parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig"));
     config.filename_ = parseString(*fitterConfig, "fileName", defaults.filename_, "gridConfig");
+
+    // parse general grid type
+    if (fitterConfig->contains("generalGridType")) {
+      if ((*fitterConfig)["generalGridType"].size() == 1) {
+        config.generalType_ =
+            GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"].get());
+      } else {
+        config.generalType_ =
+            GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"]["value"].get());
+      }
+    } else {
+      std::cout << "# Did not find gridConfig[generalGridType]. Setting default value."
+                << std::endl;
+    }
 
     // parse  grid type
     if (fitterConfig->contains("gridType")) {

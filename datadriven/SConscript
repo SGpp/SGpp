@@ -43,6 +43,9 @@ if env["USE_SCALAPACK"]:
     elif env["SCALAPACK_VERSION"] == "custom":
         additionalDependencies += [env["SCALAPACK_LIBRARY_NAME"]]
 
+if env["USE_PYTHON_EMBEDDING"]:
+  additionalDependencies += ["python3.6m"]
+
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 

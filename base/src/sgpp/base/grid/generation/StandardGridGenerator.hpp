@@ -40,6 +40,7 @@ class StandardGridGenerator : public GridGenerator {
   void cliques(size_t level, size_t clique_size) override;
   void cliques(size_t level, size_t clique_size, double T) override;
   void full(size_t level) override;
+  void anisotropicFull(std::vector<size_t> dimlevels) override;
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override;
   void refineInter(RefinementFunctor& func,
                    const std::unordered_set<std::vector<bool>>& interactions);
