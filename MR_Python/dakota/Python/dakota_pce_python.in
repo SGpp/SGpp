@@ -1,0 +1,80 @@
+#perform pce on python-given function
+environment
+	output_precision = 16
+	
+method
+  polynomial_chaos
+  #stoch_collocation
+    quadrature_order = 100		# full Gauss quadrature
+    #sparse_grid_level = 4
+    #dimension_preference = 5 3 # optional spatial refinement in integration . Indicates the importance of each dimension. Can e.g. be set as Sobol indices (which are printed by this script)
+    
+    #samples_on_emulator = 10000
+    #seed = 12347
+    #response_levels = .1 1. 50. 100. 500. 1000.	#show CDF information table
+    #variance_based_decomp   # calculate Sobol indices
+   output silent			#do not print the individual function evaluations
+   convergence_tolerance = 1.e-16
+
+#variables
+#uniform_uncertain = 1
+#  lower_bounds      = 0. 	# 0.	0.
+#  upper_bounds      =  1.	#   1.	1.	
+#  descriptors       = 'x1'# 'x2'	'x3'
+    
+variables
+	normal_uncertain = 1
+		means 			= 0.5	#1.	1.		0.	0.	0.	0.	0.	0.
+		std_deviations	= 0.05	#0.1	0.1		1.	1.	1.	1.	1.	1.
+		descriptors		= 'x1'	#'x2' 'x3' 	'x4' 'x5' 'x6' 'x7' 'x8' 'x9'
+
+###	  compDakota ###
+#variables
+#	normal_uncertain = 1
+#		means 			= 0.1	
+#		std_deviations	= 0.0161812
+#		lower_bounds 	= 0.05
+#		upper_bounds 	= 0.15
+#		descriptors		= 'x1'
+#	lognormal_uncertain = 1
+#		lambdas 		= 7.71
+#		zetas 			= 1.0056
+#		lower_bounds	= 100.0
+#		upper_bounds 	= 50000.0
+#		descriptors	 	= 'x2'
+#	uniform_uncertain = 1
+#		lower_bounds	= 63070.	
+#		upper_bounds	= 115600.	
+#		descriptors		= 'x3'		
+
+###   borehole   ###
+#variables
+#	normal_uncertain = 1
+#		means 			= 0.1	
+#		std_deviations	= 0.0161812
+#		lower_bounds 	= 0.05
+#		upper_bounds 	= 0.15
+#		descriptors		= 'x1'
+#	lognormal_uncertain = 1
+#		lambdas			= 7.71
+#		zetas		 	=  1.0056 
+#		lower_bounds	= 100.0
+#		upper_bounds 	= 50000.0
+#		descriptors	 	= 'x2'
+#	uniform_uncertain = 6
+#		lower_bounds	= 63070.	990.	63.1	700.	1120.	9855.
+#		upper_bounds	= 115600.	1110.	116.	820.	1680.	12045.
+#		descriptors		= 'x3'		'x4'	'x5'	'x6'	'x7'	'x8'
+
+interface
+	fork
+		analysis_drivers = 'response_function_bb_di.py'
+	parameters_file = 'params.in'
+	results_file = 'results.out'
+
+responses
+  response_functions = 1
+  no_gradients
+  no_hessians
+
+
