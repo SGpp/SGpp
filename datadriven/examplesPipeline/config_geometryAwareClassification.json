@@ -1,37 +1,33 @@
 {
-	"dataSource": {
-		"filePath": "../datasets/dataread/simple.arff",
-		"batchSize": 10
-	},
-	"fitter": {
-		"type": "classification",
-		"gridConfig": {
-			"gridType": "modlinear",
-			"level": "3"
-		},
-		"geometryConfig": {
-			"dim":[
-				4,
-				1
-			],
-			"stencil": "DN"
-		},
-		"regularizationConfig":{
-			"regularizationType": "Identity",
-			"lambda": "0.01"
-		},
-		"densityEstimationConfig":{
-			"densityEstimationType": "decomposition",
-			"matrixDecompositionType": "Chol"
-		},
-		"adaptivityConfig":{
-			"numRefinements": "10",
-			"noPoints": "5",
-			"threshold": "0.0"
-		},
-		"learner" : {
-			"usePrior" : false,
-			"beta" : 0.0
-		}
-	}
+    "dataSource": {
+        "filePath": "../datasets/dataread/simple.arff",
+        "batchSize": 10
+    },
+    "fitter": {
+        "type": "classification",
+        "gridConfig": {
+            "gridType": "modlinear",
+            "level": "3"
+        },
+        "adaptivityConfig":{
+            "numRefinements": "10",
+            "noPoints": "5",
+            "threshold": "0.001"
+        },
+        "regularizationConfig":{
+            "lambda": "10e-2"
+        },
+        "densityEstimationConfig":{
+            "densityEstimationType": "decomposition",
+            "matrixDecompositionType": "chol"
+        },
+        "learner" : {
+            "usePrior" : true,
+            "beta" : 1.0
+        },
+        "geometryConfig": {
+            "dim":[4, 1],
+            "stencil": "DN"
+        }
+    }
 }

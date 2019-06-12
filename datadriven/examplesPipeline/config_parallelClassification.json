@@ -28,7 +28,7 @@
             "errorConvergenceThreshold": 0.001
         },
         "regularizationConfig": {
-            "lambda": 10e-2
+            "lambda": 1e-2
         },
         "densityEstimationConfig": {
             "densityEstimationType": "decomposition",
@@ -37,6 +37,10 @@
         "learner": {
             "usePrior": true,
             "beta": 1.0
+        },
+        "parallelConfig": {
+            "rowBlockSize": 64,
+            "columnBlockSize": 64
         }
     }
 }
