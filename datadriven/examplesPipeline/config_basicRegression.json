@@ -1,42 +1,48 @@
 {
-	"dataSource": {
-		"filePath": "../datasets/DR5/DR5_train.arff",
-		"validationPortion": 0.5,
-		"hasTargets": false,
-		"readinCutoff": 4000,
-		"readinColumns": [0, 1, 2]
-	},
-	"scorer": {
-		"metric": "mse"
-	},
-	"fitter": {
-		"type": "regressionLeastSquares",
-		"gridConfig": {
-			"gridType": "linear",
-			"level": 3
-		},
-		"adaptivityConfig": {
-			"numRefinements": 5,
-			"threshold": 0.001,
-			"noPoints": 10,
-			"refinementIndicator": "surplus",
-			"errorBasedRefinement": false,
-			"refinementPeriod": 500
-		},
-		"solverRefineConfig": {
-			"solverType": "cg",
-			"eps": 10e-15,
-			"maxIterations": 100,
-			"threshold": 1
-		},
-		"solverFinalConfig": {
-			"solverType": "cg",
-			"eps": 10e-15,
-			"maxIterations": 100,
-			"threshold": 1
-		},
-		"regularizationConfig": {
-			"lambda": 10e-7
-		}
-	}
+        "dataSource": {
+                "filePath": "../datasets/DR5/DR5_train.arff",
+                "hasTargets": true,
+                "validationPortion": 0.5,
+                "readinCutoff": 4000,
+                "readinColumns": [2, 0, 1]
+        },
+        "scorer": {
+                "metric": "mse"
+        },
+        "fitter": {
+                "type": "regressionLeastSquares",
+                "gridConfig": {
+                        "gridType": "linear",
+                        "level": 3
+                },
+                "adaptivityConfig": {
+                        "numRefinements": 5,
+                        "threshold": 0.001,
+                        "noPoints": 10,
+                        "refinementIndicator": "surplus",
+                        "errorBasedRefinement": false,
+                        "refinementPeriod": 500
+                },
+                "crossValidation": {
+                        "enable": true,
+                        "kFold": 2,
+                        "lambda": 10e-4,
+                        "lambdaStart": 10e-5,
+                        "lambdaEnd": 10e-3,
+                        "lambdaSteps": 10e-4
+                },
+                "solverRefineConfig": {
+                        "eps": 10e-15,
+                        "maxIterations": 100,
+                        "threshold": 1
+                },
+                "solverFinalConfig": {
+                        "eps": 10e-15,
+                        "maxIterations": 100,
+                        "threshold": 1
+                },
+                "regularizationConfig": {
+                        "lambda": 10e-7
+                }
+        }
 }
