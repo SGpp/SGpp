@@ -18,8 +18,8 @@
 
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
-#include <vector>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 
@@ -27,7 +27,6 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::OperationMatrix;
-using sgpp::base::RegularGridConfiguration;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverConfiguration;
 
@@ -157,7 +156,7 @@ class ModelFittingBase {
    * @param gridConfig configuration for the grid object
    * @return new grid object that is owned by the caller.
    */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig) const;
+  Grid *buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig) const;
 
   /**
      * Factory member function that generates a grid from configuration.
@@ -165,7 +164,7 @@ class ModelFittingBase {
      * @param geometryConfig configuration for the geometry parameters
      * @return new grid object that is owned by the caller.
      */
-  Grid *buildGrid(const RegularGridConfiguration &gridConfig,
+  Grid *buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig,
                   const GeometryConfiguration &geometryConfig) const;
 
   /**
@@ -183,12 +182,13 @@ class ModelFittingBase {
   void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
 
   /*
-   * This method is used to pass the interactions for a geometry aware sparse grid to the offline object
+   * This method is used to pass the interactions for a geometry aware sparse grid to the offline
+   * object
    * @param geometryConfig from configuration file
    * @return interactions
    */
   std::vector<std::vector<size_t>> getInteractions(
-    const GeometryConfiguration &geometryConfig) const;
+      const GeometryConfiguration &geometryConfig) const;
 
   /**
    * Configuration object for the fitter.
