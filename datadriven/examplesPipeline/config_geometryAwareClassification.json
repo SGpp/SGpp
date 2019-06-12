@@ -1,7 +1,7 @@
 {
     "dataSource": {
-        "filePath": "../datasets/dataread/simple.arff",
-        "batchSize": 10
+        "filePath": "../datasets/mnist/mnist_2_5_7x7_200.train.arff",
+        "batchSize": 50
     },
     "fitter": {
         "type": "classification",
@@ -10,7 +10,7 @@
             "level": "3"
         },
         "adaptivityConfig":{
-            "numRefinements": "10",
+            "numRefinements": "2",
             "noPoints": "5",
             "threshold": "0.001"
         },
@@ -26,7 +26,7 @@
             "beta" : 1.0
         },
         "geometryConfig": {
-            "dim":[4, 1],
+            "dim":[7, 7],
             "stencil": "DN"
         }
     }
