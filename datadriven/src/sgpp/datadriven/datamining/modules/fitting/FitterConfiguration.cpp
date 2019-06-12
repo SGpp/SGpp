@@ -11,7 +11,7 @@
 namespace sgpp {
 namespace datadriven {
 
-const base::RegularGridConfiguration &FitterConfiguration::getGridConfig() const {
+const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
 
@@ -58,13 +58,12 @@ const datadriven::GeometryConfiguration &FitterConfiguration::getGeometryConfig(
   return geometryConfig;
 }
 
-
 const datadriven::ParallelConfiguration &FitterConfiguration::getParallelConfig() const {
   return parallelConfig;
 }
 
-base::RegularGridConfiguration &FitterConfiguration::getGridConfig() {
-  return const_cast<base::RegularGridConfiguration &>(
+base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() {
+  return const_cast<base::GeneralGridConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getGridConfig());
 }
 
@@ -107,6 +106,7 @@ void FitterConfiguration::setupDefaults() {
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
+  gridConfig.levelVector_ = std::vector<size_t>();
   gridConfig.maxDegree_ = 1;  // mirrors struct default
   gridConfig.boundaryLevel_ = 0;  // mirrors struct default
   gridConfig.filename_ = "";
