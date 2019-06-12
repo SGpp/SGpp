@@ -23,6 +23,7 @@ namespace DBMatOnlineDEFactory {
  * @param grid the underlying grid
  * @param lambda regularization strength (todo(fuchsgruber): maybe remove this)
  * @param beta plasticity weighting factor. If set to 0, no plasticity takes place.
+ * @param matDecompType the matrix decomposition type of the online matrix
  */
 DBMatOnlineDE* buildDBMatOnlineDE(
     DBMatOffline& offline, Grid& grid, double lambda, double beta = 0,
