@@ -6,8 +6,7 @@
         "readinCutoff": 10000,
         "readinColumns": [2, 4],
         "epochs": 2,
-        "batchSize": 1000,
-        "shuffeling": "random"
+        "batchSize": 1000
     },
     "scorer": {
         "metric": "mse"
