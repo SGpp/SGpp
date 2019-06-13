@@ -1,7 +1,10 @@
 {
     "dataSource": {
         "filePath": "../datasets/DR5/DR5_train.arff",
-        "validationPortion" : 0.8
+        "hasTargets": true,
+        "validationPortion" : 0.8,
+        "readinColumns": [0, 1],
+        "readinCutoff": 2000
     },
     "scorer": {
         "metric": "mse"
@@ -58,10 +61,6 @@
             "stages": [10, 5, 3],
             "constraints": [1, 1],
             "lambda": 0.1
-        },
-        "bayesianOptimization": {
-            "nRandom": 2,
-            "nRuns": 5
         }
     }
 }
