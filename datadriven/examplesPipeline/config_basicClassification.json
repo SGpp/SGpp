@@ -5,7 +5,8 @@
         "batchSize": 10,
         "validationPortion": 0.2,
         "epochs": 2,
-        "shuffling": "random"
+        "shuffling": "random",
+        "randomSeed": 41
     },
     "scorer": {
         "metric": "accuracy"
