@@ -50,13 +50,9 @@ int main(int argc, char** argv) {
    * use all samples it provides, we only pass in the path. Everything else is managed by default
    * values and auto detection of extensions.
    */
-  auto dataSource = std::unique_ptr<DataSourceCrossValidation>(
-      DataSourceBuilder().withPath(path).crossValidationAssemble());
+  DataSourceCrossValidation *dataSource =
+      DataSourceBuilder().withPath(path).crossValidationAssemble();
   std::cout << "reading input file: " << path << std::endl;
-  /**
-   * Once we have a data source, we can read the contents of the stored dataset.
-   */
-  auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
 
   /**
    * We want to perform least squares regression now. First we need to set up our Fitter using a
@@ -74,33 +70,31 @@ int main(int argc, char** argv) {
   auto& gridConfig = config.getGridConfig();
   gridConfig.level_ = 2;
   gridConfig.type_ = GridType::ModLinear;
-  gridConfig.dim_ = dataset->getDimension();
+  gridConfig.dim_ = dataSource->getNextSamples()->getDimension();
   auto& regularizationConfig = config.getRegularizationConfig();
   regularizationConfig.lambda_ = 10e-1;
 
   /**
    * Based on our configuration, we then can create a fitter object.
    */
-  auto model = ModelFittingLeastSquares{config};
+  ModelFittingLeastSquares *model = new ModelFittingLeastSquares(config);
   /**
    * We want to perform 5 Fold cross validation on our model. To assess the quality of the
    * regression algorithm, we use the mean squared error (MSE) as an error metric. To ensure testing
    * and training data are not taken from an ordered distribution, we will permute the values that
    * go into testing and training dataset.
    */
-  Scorer scorer{new MSE{}};
+  Scorer *scorer = new Scorer(new MSE{});
 
   /**
    * Create a sparse grid miner that performs cross validation. The number of folds is 5 per
    * default.
    */
-  SparseGridMinerCrossValidation miner(dataSource.get(), &model, &scorer);
-
+  SparseGridMinerCrossValidation miner(dataSource, model, scorer);
   /**
    * Here the actual learning process is launched. The miner will perform k-fold cross validation
    * and print the mean score as well as the standard deviation.
    */
   miner.learn(true);
-
   return 0;
 }
