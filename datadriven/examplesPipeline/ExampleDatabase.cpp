@@ -4,10 +4,8 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DataMatrixDatabaseFromConfigFile.cpp
- *
  * Created on: Mar 28, 2019
- *     Author: Jan Schopohl
+ *     Author: Jan Schopohl, Sebastian Kreisel
  */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -29,6 +27,11 @@ using sgpp::datadriven::DBMatDatabase;
  * A database is always initialized upon a json file which contains paths to different matrix
  * decompositions identified by the configuration of the grid, adaptivity and the density
  * estimation itself.
+ *
+ * NOTE (Sebastian):
+ * Use this example with a config that includes a database attribute in the
+ * fitter config as well as an explicit dim in the gridConfig. Currently
+ * config_basicClassification.json works out of the box.
  */
 
 int main(int argc, char** argv) {
