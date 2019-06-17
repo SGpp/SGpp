@@ -24,9 +24,6 @@
 using sgpp::datadriven::DBMatDatabase;
 
 /**
- * Based on dataMatrixDatabase.cpp, but with a configuration file parser, so the same config file as
- * for the online phase can be used.
- *
  * This example shows how to initialize a data matrix of offline decompositions (needed for
  * online objects) which enhances the performance since the decomposition usually takes some time.
  * A database is always initialized upon a json file which contains paths to different matrix
@@ -67,7 +64,6 @@ int main(int argc, char** argv) {
   auto& regularizationConfig = config.getRegularizationConfig();
   auto& densityEstimationConfig = config.getDensityEstimationConfig();
   auto& databaseConfig = config.getDatabaseConfig();
-
   /**
    * The database has to be initialized. This is done by passing the file to the json
    * database file to the constructor of the DBMatDatabase class.
