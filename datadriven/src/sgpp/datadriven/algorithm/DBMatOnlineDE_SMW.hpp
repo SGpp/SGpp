@@ -57,13 +57,24 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    * In the current version of the function, the refinePts already are adapted
    * to the regularization parameter lambda.
    *
-   * @param X
+   * @param X Refine/Coarsen Matrix of L2-Products
    * @param newPoints number of refined points
-   * @param refine decides: true for refine, false for coarsen
+   * @param refine decides: true for refining, false for coarsening
    * @param coarsen_indices the indices of points to coarsen
    */
   void smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
                  std::vector<size_t> coarsen_indices = {});
+
+  /**
+   * Parallel/Distributed version of smw_adapt, uses Scalapack
+   *
+   * @param X Refine/Coarsen Matrix of L2-Products
+   * @param newPoints number of refined points
+   * @param refine decides: true for refining, false for coarsening
+   * @param coarsen_indices the indices of points to coarsen
+   */
+  void smw_adapt_parallel(DataMatrixDistributed& X, size_t newPoints, bool refine,
+                          std::vector<size_t> coarsen_indices = {});
 
   /**
    * @param densityEstimationConfig configuration for the density estimation

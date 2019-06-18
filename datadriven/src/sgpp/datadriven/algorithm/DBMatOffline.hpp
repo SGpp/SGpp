@@ -106,6 +106,12 @@ class DBMatOffline {
   DataMatrixDistributed& getDecomposedMatrixDistributed();
 
   /**
+   * Get a reference to the distributed decomposed matrix, analogously to
+   * getDecomposedMatrixDistributed()
+   */
+  DataMatrixDistributed& getDecomposedInverseDistributed();
+
+  /**
    * Synchronizes the decomposed matrix.
    * Override if more matrices have to be synched.
    * @param processGrid process grid to distribute the matrix on
@@ -113,6 +119,14 @@ class DBMatOffline {
    */
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
+
+  /**
+   * Synchronizes the inverse matrix
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void syncDistributedInverse(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                      const ParallelConfiguration& parallelConfig);
 
   /**
    * Allows access to lhs matrix, which is meant ONLY FOR TESTING
@@ -182,6 +196,7 @@ class DBMatOffline {
 
   // distributed lhs, only initialized in ScaLAPACK version
   DataMatrixDistributed lhsDistributed;
+  DataMatrixDistributed lhsDistributedInverse;
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)

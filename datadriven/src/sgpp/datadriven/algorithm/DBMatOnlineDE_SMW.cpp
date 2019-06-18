@@ -12,7 +12,6 @@
 #endif /* USE_GSL */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
@@ -104,20 +103,12 @@ void DBMatOnlineDE_SMW::solveSLEParallel(DataVectorDistributed& alpha, DataVecto
                                          Grid& grid,
                                          DensityEstimationConfiguration& densityEstimationConfig,
                                          bool do_cv) {
-  sgpp::datadriven::DBMatOfflineOrthoAdapt* offline =
-      static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(&this->offlineObject);
-  DataMatrixDistributed TinvDistributed = offline->getTinvDistributed();
-
-  DataMatrixDistributed QDistributed = offline->getQDistributed();
-
-  DataMatrixDistributed BDistributed = this->getBDistributed();
-
   // create solver
-  std::unique_ptr<sgpp::datadriven::DBMatDMSOrthoAdapt> solver =
-      std::make_unique<sgpp::datadriven::DBMatDMSOrthoAdapt>();
-
+  sgpp::datadriven::DBMatDMS_SMW* solver = new sgpp::datadriven::DBMatDMS_SMW();
+  // solve the created system
   alpha.resize(b.getGlobalRows());
-  solver->solveParallel(TinvDistributed, QDistributed, BDistributed, b, alpha);
+  solver->solveParallel(this->offlineObject.getDecomposedInverseDistributed(),
+                        this->getBDistributed(), b, alpha);
 }
 
 void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
@@ -319,6 +310,11 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
 
   return;
 #endif /* USE_GSL */
+}
+
+void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newPoints, bool refine,
+                                           std::vector<size_t> coarsenIndices) {
+  std::cout << "DBMatOnlineDE_SMW::smw_adapt_parallel not implemented yet" << std::endl;
 }
 
 void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size_t newPoints,

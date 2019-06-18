@@ -40,17 +40,15 @@ class DBMatDMS_SMW : public DBMatDecompMatrixSolver {
              sgpp::base::DataVector& alpha);
 
   /**
-   * Parallel (distributed) version of solve.
+   * Parallel/Distributed version of solve.
    *
-   * @param T_inv Inverse of a tridiagonal matrix
-   * @param Q     Orthogonal matrix, part of hessenberg_decomp of the lhs matrix
+   * @param A_inv Inverse of a tridiagonal matrix
    * @param B     Storage of the online objects refined/coarsened points
    * @param b     The right side of the system
    * @param alpha The solution vector of the system, computed values go there
    */
-  void solveParallel(DataMatrixDistributed& T_inv, DataMatrixDistributed& Q,
-                     DataMatrixDistributed& B, DataVectorDistributed& b,
-                     DataVectorDistributed& alpha);
+  void solveParallel(DataMatrixDistributed& A_inv, DataMatrixDistributed& B,
+                     DataVectorDistributed& b, DataVectorDistributed& alpha);
 };
 
 }  // namespace datadriven
