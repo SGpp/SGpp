@@ -124,6 +124,12 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+
+    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      offline->compute_inverse();
+    }
   }
 
   alphaDistributed =
@@ -133,6 +139,13 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
   online->syncDistributedDecomposition(processGrid, parallelConfig);
+
+  // in SMW decomposition type case, the inverse of the matrix needs to be synced also
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+    online->getOfflineObject().syncDistributedInverse(processGrid, parallelConfig);
+    std::cout << "synced distri inverse\n";
+  }
 
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
                                          this->config->getDensityEstimationConfig(),
