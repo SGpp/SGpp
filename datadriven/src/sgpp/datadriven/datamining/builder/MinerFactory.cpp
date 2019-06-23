@@ -24,20 +24,23 @@
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <string>
+#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
 
 SparseGridMiner* MinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
-  if (parser.hasFitterConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser));
-  } else {
-    return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
-                                        createScorer(parser));
-  }
+
+   if (parser.hasFitterConfigCrossValidation()) {
+     return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
+                                               createFitter(parser), createScorer(parser),
+                                               createVisualizer(parser));
+   } else {
+     return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
+                                         createScorer(parser),
+                                         createVisualizer(parser));
+   }
 }
 
 sgpp::datadriven::HyperparameterOptimizer* MinerFactory::buildHPO(const std::string& path) const {
@@ -85,5 +88,7 @@ Scorer* MinerFactory::createScorer(const DataMiningConfigParser& parser) const {
   std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
   return factory->buildScorer(parser);
 }
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */

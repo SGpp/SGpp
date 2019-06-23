@@ -23,6 +23,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+
 #include <string>
 
 namespace sgpp {
@@ -39,5 +41,16 @@ FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
   return new LeastSquaresRegressionFitterFactory(parser);
 }
+
+Visualizer* LeastSquaresRegressionMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const{
+
+ VisualizerConfiguration config;
+
+ config.readParams(parser);
+
+ return new VisualizerDummy();
+
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

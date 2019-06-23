@@ -22,9 +22,11 @@
 namespace sgpp {
 namespace datadriven {
 
+
 SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
-    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer)
-    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
+    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer,
+    Visualizer* visualizer)
+    : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below

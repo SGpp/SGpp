@@ -18,6 +18,9 @@
 #include <string>
 #include <vector>
 
+using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
+
 namespace sgpp {
 namespace datadriven {
 
@@ -106,6 +109,11 @@ class CSVTools {
                                   bool skipFirstLine = false,
                                   bool hasTargets = true,
                                   std::vector<double> selectedTargets = std::vector<double>());
+
+  /**
+   * Method to write the content of a matrix to a CSV File
+   */
+  static void writeMatrixToCSVFile(const std::string& path, DataMatrix matrix);
 
  private:
   /**
