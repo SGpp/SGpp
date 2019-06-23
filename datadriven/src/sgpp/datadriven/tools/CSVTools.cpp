@@ -185,5 +185,28 @@ std::vector<double> CSVTools::tokenizeLine(const std::string& line) {
   return vals;
 }
 
+void CSVTools::writeMatrixToCSVFile(const std::string& path, DataMatrix matrix){
+
+ std::cout << "Writing to file "+path << std::endl;
+ std::ofstream output;
+
+
+ output.open(path+".csv");
+
+ DataVector row(matrix.getNcols());
+
+ for (size_t index=0; index<matrix.getNrows(); index++)
+ {
+   matrix.getRow(index, row);
+
+   std::string line = row.toString();
+   line.erase(line.begin());
+   line.erase(line.end()-1);
+   output << line+"\n";
+ }
+
+ output.close();
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

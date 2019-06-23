@@ -20,12 +20,13 @@
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizationConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
 #include <map>
 #include <string>
 #include <vector>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -40,7 +41,8 @@ using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::GeneralGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
-using sgpp::datadriven::VisualizationConfig;
+using sgpp::datadriven::VisualizationGeneralConfig;
+using sgpp::datadriven::VisualizationParameters;
 using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
@@ -61,6 +63,8 @@ class DataMiningConfigParser {
   bool hasGeometryConfig() const;
   bool hasParallelConfig() const;
   bool hasVisualizationConfig() const;
+  bool hasVisualizationGeneralConfig() const;
+  bool hasVisualizationParametersConfig() const;
 
 
   void getHyperparameters(std::map<std::string, ContinuousParameter> &conpar,
@@ -147,8 +151,11 @@ class DataMiningConfigParser {
    * @param defaults default balues if the fitter config does not contain a matching entry
    * @return wether the configuration contains a visualization configuration
    */
-  bool getVisualizationConfig(VisualizationConfig &config,
-    const VisualizationConfig &defaults) const;
+  bool getVisualizationGeneralConfig(VisualizationGeneralConfig &config,
+    const VisualizationGeneralConfig &defaults) const;
+
+  bool getVisualizationParameters(VisualizationParameters &config,
+                                  const VisualizationParameters &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
@@ -156,6 +163,7 @@ class DataMiningConfigParser {
   static const std::string dataSource;
   static const std::string scorer;
   static const std::string fitter;
+  static const std::string visualization;
 
   std::string parseString(DictNode &dict, const std::string &key, const std::string &defaultValue,
                           const std::string &parentNode) const;

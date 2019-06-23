@@ -49,6 +49,13 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
   FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+
+  /* Factory method to build a visualizer instance base on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  Visualizer* createVisualizer(const DataMiningConfigParser& parser) const override;
+
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

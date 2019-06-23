@@ -14,17 +14,17 @@
 #pragma once
 
 #include <string>
-#include <sgpp/datadriven/datamining/modules/visualization/Parameters.hpp>
+
+#include "VisualizationParameters.hpp"
 
 
 namespace sgpp {
 namespace datadriven {
 
-enum class Filetypes{csv,json};
+enum class VisualizationFileType{CSV,json};
 
-enum class Libraries{plotly, mathplotlib, R, Matlab};
 
- struct VisualizationConfig{
+ struct VisualizationGeneralConfig{
 
   /**
    * The name of the algorithm to use in the visualization Module
@@ -32,26 +32,17 @@ enum class Libraries{plotly, mathplotlib, R, Matlab};
   std::string algorithm = "";
 
   /**
-   * Parameters in which to run the algorithm
-   */
-  datadriven::Parameters;
-
-  /**
    * The path to the file which will store the output of the visualization
    * module
    */
-  std::string targetFile = "";
+  std::string targetFile ="";
 
 
   /**
    * The filetype in which to store the output of the visualization module
    */
-  std::string targetFileType = "";
+  VisualizationFileType targetFileType =  VisualizationFileType::json;
 
-  /**
-   * The library to which the output will be forwarded
-   */
-  std::string targetLib = "";
 
 };
 

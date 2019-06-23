@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
 #include <sgpp/globaldef.hpp>
@@ -33,6 +34,7 @@ using sgpp::datadriven::MSE;
 using sgpp::datadriven::Scorer;
 using sgpp::datadriven::SparseGridMinerCrossValidation;
 using sgpp::base::GridType;
+using sgpp::datadriven::VisualizerDummy;
 
 int main(int argc, char** argv) {
   /**
@@ -94,10 +96,18 @@ int main(int argc, char** argv) {
   Scorer scorer{new MSE{}};
 
   /**
+   * Adding a dummy Visualizer
+   * This module was added after this example was created. Therefore this dummy visualizer is added
+   * in order to avoid execution issues
+   */
+
+  VisualizerDummy visualizer;
+
+  /**
    * Create a sparse grid miner that performs cross validation. The number of folds is 5 per
    * default.
    */
-  SparseGridMinerCrossValidation miner(dataSource.get(), &model, &scorer);
+  SparseGridMinerCrossValidation miner(dataSource.get(), &model, &scorer, &visualizer);
 
   /**
    * Here the actual learning process is launched. The miner will perform k-fold cross validation

@@ -39,7 +39,7 @@ class SparseGridMinerCrossValidation : public SparseGridMiner {
    * of the passed object.
    */
   SparseGridMinerCrossValidation(DataSourceCrossValidation* dataSource, ModelFittingBase* fitter,
-      Scorer* scorer);
+      Scorer* scorer, Visualizer* visualizer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .

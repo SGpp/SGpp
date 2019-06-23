@@ -22,9 +22,11 @@
 namespace sgpp {
 namespace datadriven {
 
+
 SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
-                                                   ModelFittingBase* fitter, Scorer* scorer)
-    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
+                                                   ModelFittingBase* fitter, Scorer* scorer,
+                                                   Visualizer* visualizer)
+    : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerSplitting::learn(bool verbose) {
 #ifdef USE_SCALAPACK
@@ -69,9 +71,11 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       // Train model on new batch
       fitter->update(*dataset);
 
+
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
+
 
       if (verbose) {
         std::ostringstream out;
@@ -79,6 +83,8 @@ double SparseGridMinerSplitting::learn(bool verbose) {
             << "Score on validation data: " << scoreVal;
         print(out);
       }
+
+      visualizer->visualize(*fitter);
 
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
