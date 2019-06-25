@@ -5,7 +5,7 @@
  * sgpp.sparsegrids.org
  *
  * Created on: Mar 28, 2019
- *     Author: Jan Schopohl, Sebastian Kreisel
+ *     Author: Jan Schopohl
  */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -28,10 +28,10 @@ using sgpp::datadriven::DBMatDatabase;
  * decompositions identified by the configuration of the grid, adaptivity and the density
  * estimation itself.
  *
- * NOTE (Sebastian):
+ * NOTE (Sebastian Kreisel):
  * Use this example with a config that includes a database attribute in the
- * fitter config as well as an explicit dim in the gridConfig. Currently
- * config_basicClassification.json works out of the box.
+ * fitter config as well as an explicit dim in the gridConfig.
+ * You may for example use config_databaseExample.json.
  */
 
 int main(int argc, char** argv) {
