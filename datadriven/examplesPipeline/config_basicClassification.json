@@ -14,10 +14,8 @@
     "fitter": {
         "type": "classification",
         "gridConfig": {
-            "generalGridType": "regular",
             "gridType": "linear",
-            "level": 5,
-            "dim": 2
+            "level": 5
         },
         "adaptivityConfig": {
             "numRefinements": 10,
@@ -40,9 +38,6 @@
         "learner": {
             "usePrior": true,
             "beta": 1.0
-        },
-        "database": {
-            "filepath": "./database.json"
         }
     }
 }
