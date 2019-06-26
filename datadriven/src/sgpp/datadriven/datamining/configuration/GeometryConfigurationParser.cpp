@@ -25,10 +25,16 @@ StencilType GeometryConfigurationParser::parse(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-  if (inputLower.compare("dn") == 0) {
-    return sgpp::datadriven::StencilType::DN;
-  } else if(inputLower.compare("hp") == 0){
-    return sgpp::datadriven::StencilType::HP;
+  if (inputLower.compare("directneighbour") == 0) {
+    return sgpp::datadriven::StencilType::DirectNeighbour;
+  } else if(inputLower.compare("hierarchicalparent") == 0){
+    return sgpp::datadriven::StencilType::HierarchicalParent;
+  } else if(inputLower.compare("recursivehierarchicalparent") == 0){
+    return sgpp::datadriven::StencilType::RecursiveHierarchicalParent;
+  } else if(inputLower.compare("fullyrecursivehierarchicalparent") == 0){
+    return sgpp::datadriven::StencilType::FullyRecursiveHierarchicalParent;
+  } else if(inputLower.compare("none") == 0){
+    return sgpp::datadriven::StencilType::None;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
         "StencilType";

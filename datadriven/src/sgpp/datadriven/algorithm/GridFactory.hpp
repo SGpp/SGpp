@@ -52,10 +52,13 @@ class GridFactory {
   /*
    * calculates hierachical parent interactions
    * @param vector of resolution
-   * @return all hierachical parent  interactions of all pixels in a vector
+   * @param defines if only for the first level the hierarchical interactions are created
+   * @param defines if only for the first parent each the hierarchical interactions are created
+   * @return all hierachical interactions of all pixels in a vector
    */
-  std::vector<std::vector<size_t>> getHierachicalParents(
-      std::vector<std::vector<int64_t>>& imageDimensions) const;
+  std::vector<std::vector<size_t>> getHierarchicalParents(
+      std::vector<std::vector<int64_t>>& imageDimensions, bool onlyFirstLevel,
+      bool onlyFirstParent) const;
 
   /*
    * calculates direct neighbour interactions
@@ -72,7 +75,6 @@ class GridFactory {
       std::vector<size_t>* parentMultiplicators, std::vector<size_t>* childMultiplicators,
       size_t parentOffset, size_t childOffset, std::vector<std::vector<size_t>>* res) const;
 
-  
   /*
    * calculates the index of a given position. This method exspect a row wise data layout
    * with each additional dimension beeing stored between the data of the pixels
@@ -84,7 +86,8 @@ class GridFactory {
                       std::vector<int64_t>* position) const;
   size_t getMultiplicator(std::vector<int64_t> imageDimensions, size_t dimension) const;
   void getNextPosition(std::vector<int64_t>* dimension, std::vector<int64_t>* position) const;
-  
+  void addOneDimensionalInteractions(std::vector<std::vector<int64_t>>* imageDimensions,
+                                     std::vector<std::vector<size_t>>* vec) const;
 };
 }  // namespace datadriven
 }  // namespace sgpp

@@ -62,11 +62,17 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   std::vector<std::vector<int64_t>> res = dim;
 
   switch (stencilType) {
-    case sgpp::datadriven::StencilType::DN:
+    case sgpp::datadriven::StencilType::DirectNeighbour:
       interactions = getDirectNeighbours(res);
       break;
-    case sgpp::datadriven::StencilType::HP:
-      interactions = getHierachicalParents(res);
+    case sgpp::datadriven::StencilType::HierarchicalParent:
+      interactions = getHierarchicalParents(res, false, true);
+      break;
+    case sgpp::datadriven::StencilType::RecursiveHierarchicalParent:
+      interactions = getHierarchicalParents(res, true, false);
+      break;
+    case sgpp::datadriven::StencilType::FullyRecursiveHierarchicalParent:
+      interactions = getHierarchicalParents(res, false, false);
       break;
     case sgpp::datadriven::StencilType::None:
       interactions = std::vector<std::vector<size_t>>();
@@ -80,68 +86,80 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   return interactions;
 }
 
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierachicalParents(
-    std::vector<std::vector<int64_t>>& res) const {
-  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
-  size_t childOffset = 0;
-  std::vector<size_t> childMultiplicators = std::vector<size_t>();
-  std::vector<int64_t> childDim;
-
-  for (auto dimension : res) {
-    std::vector<size_t> multiplicators = std::vector<size_t>();
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierarchicalParents(
+    std::vector<std::vector<int64_t>>& imageDimensions, bool onlyFirstLevel,
+    bool onlyFirstParent) const {
+  auto vec = std::vector<std::vector<size_t>>();
+  auto multiplicatorsPerLevel = std::vector<std::vector<size_t>>();
+  for (auto dimension : imageDimensions) {
+    auto multiplicators = std::vector<size_t>();
     multiplicators.push_back(1);
     for (size_t i = 1; i < dimension.size(); i++) {
       multiplicators.push_back(multiplicators.at(i - 1) * dimension.at(i - 1));
     }
+    multiplicatorsPerLevel.push_back(multiplicators);
+  }
 
-    size_t offset = 0;
+  auto offsetsPerLevel = std::vector<size_t>();
+  offsetsPerLevel.push_back(0);
+  for (size_t i = 1; i < imageDimensions.size(); i++) {
+    auto childDimensions = imageDimensions.at(i - 1);
+    auto childMultiplicator = multiplicatorsPerLevel.at(i - 1);
+    auto numberOfDataColumnsInChild = childMultiplicator.at(childMultiplicator.size() - 1) *
+                                      childDimensions.at(childDimensions.size() - 1);
+    auto childOffset = offsetsPerLevel.at(i - 1);
+    offsetsPerLevel.push_back(childOffset + numberOfDataColumnsInChild);
+  }
 
-    // skip first image
-    if (childMultiplicators.size() != 0) {
-      // Prepare some values
-      offset = childOffset + childMultiplicators.at(childMultiplicators.size() - 1) *
-                                 childDim.at(childDim.size() - 1);
-      std::vector<double> rescaled = std::vector<double>();
-      for (size_t i = 0; i < dimension.size(); i++) {
-        rescaled.push_back(static_cast<double>(dimension.at(i)) /
-                           static_cast<double>(childDim.at(i)));
+  for (size_t i = 0; i < imageDimensions.size() - 1; i++) {
+    for (size_t j = i + 1; j < imageDimensions.size(); j++) {
+      auto scale = std::vector<double>();
+      for (size_t k = 0; k < imageDimensions.at(i).size(); k++) {
+        scale.push_back(static_cast<double>(imageDimensions.at(j).at(k)) /
+                        static_cast<double>(imageDimensions.at(i).at(k)));
       }
 
-      std::vector<int64_t> position = std::vector<int64_t>(dimension.size(), 0);
-      size_t dataDimension = 1;
-      for (size_t i = 0; i < dimension.size(); i++) {
-        dataDimension *= dimension.at(i);
-      }
+      auto position = std::vector<int64_t>(imageDimensions.at(j).size(), 0);
 
       // Iterate over all cells and add its possible parents
       do {
-        std::vector<int64_t> parentPosition = std::vector<int64_t>(dimension.size(), 0);
-        addChildParentInteractionRecursive(&rescaled, &childDim, 0, &position, &parentPosition,
-                                           &multiplicators, &childMultiplicators, offset,
-                                           childOffset, &vec);
+        std::vector<int64_t> parentPosition = std::vector<int64_t>(position.size(), 0);
+        addChildParentInteractionRecursive(&scale, &imageDimensions.at(i), 0, &position,
+                                           &parentPosition, &multiplicatorsPerLevel.at(j),
+                                           &multiplicatorsPerLevel.at(i), offsetsPerLevel.at(j),
+                                           offsetsPerLevel.at(i), &vec);
 
-        getNextPosition(&childDim, &position);
+        getNextPosition(&imageDimensions.at(i), &position);
       } while (position.size() != 0);
+      if (onlyFirstParent) {
+        break;
+      }
     }
-
-    // 1d vector for all dimensions
-    for (size_t i = 0;
-         i < multiplicators.at(dimension.size() - 1) * dimension.at(dimension.size() - 1); i++) {
-      std::vector<size_t> tmp = std::vector<size_t>();
-      tmp.push_back(offset + i);
-      vec.push_back(tmp);
+    if (onlyFirstLevel) {
+      break;
     }
-
-    childMultiplicators = multiplicators;
-    childDim = dimension;
-    childOffset = offset;
   }
 
-  // add empty vector
-  std::vector<size_t> empty = std::vector<size_t>();
-  vec.push_back(empty);
-
+  addOneDimensionalInteractions(&imageDimensions, &vec);
+  vec.push_back(std::vector<size_t>());
   return vec;
+}
+
+void sgpp::datadriven::GridFactory::addOneDimensionalInteractions(
+    std::vector<std::vector<int64_t>>* imageDimensions,
+    std::vector<std::vector<size_t>>* vec) const {
+  size_t accumulation = 0;
+  for (auto resolution : *imageDimensions) {
+    size_t factor = 1;
+    for (auto dimension : resolution) {
+      factor *= dimension;
+    }
+    accumulation += factor;
+  }
+
+  for (size_t i = 0; i < accumulation; i++) {
+    vec->push_back(std::vector<size_t>{i});
+  }
 }
 
 void sgpp::datadriven::GridFactory::addChildParentInteractionRecursive(
@@ -222,21 +240,17 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbo
       getNextPosition(&res, &position);
     } while (position.size() != 0);
 
-    // 1d vector for all dimensions
-    for (size_t i = 0; i < multiplicators.at(res.size() - 1) * res.at(res.size() - 1); i++) {
-      std::vector<size_t> tmp = std::vector<size_t>();
-      tmp.push_back(imageOffset + i);
-      vec.push_back(tmp);
-    }
-
+    size_t factor = 1;
     for (int64_t size : res) {
-      imageOffset += size;
+      factor *= size;
     }
+    imageOffset += factor;
   }
 
+  addOneDimensionalInteractions(&imageResolutions, &vec);
+
   // add empty vector
-  std::vector<size_t> empty = std::vector<size_t>();
-  vec.push_back(empty);
+  vec.push_back(std::vector<size_t>());
   return vec;
 }
 }  // namespace datadriven

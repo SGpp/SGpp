@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
-                    static_cast<int>(sgpp::datadriven::StencilType::DN));
+                    static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
   
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
   for (size_t i = 0; i < config.dim.size(); i++)

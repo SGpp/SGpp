@@ -14,7 +14,7 @@
 				7,
 				7
 			],
-			"stencil": "DN"
+			"stencil": "DirectNeighbour"
 		},
     		"regularizationConfig":{
 			"regularizationType": "Identity",

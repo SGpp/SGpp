@@ -19,7 +19,7 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class StencilType { DN, HP, None };
+enum class StencilType { DirectNeighbour, HierarchicalParent, RecursiveHierarchicalParent, FullyRecursiveHierarchicalParent, None };
 
 /*
  * Struct that stores information to geometry aware sparse grids

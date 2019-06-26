@@ -38,7 +38,7 @@
 				[1,2],
 				[3,4]
 			],
-			"stencil": "DN"
+			"stencil": "DirectNeighbour"
 		},
 		"adaptivityConfig": {
 			"numRefinements": 0,
