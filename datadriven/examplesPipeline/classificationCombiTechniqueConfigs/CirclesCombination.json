@@ -1,0 +1,44 @@
+{
+	"dataSource": {
+		"filePath": "../datasets/circles/Circles500.arff",
+		"hasTargets" : true,
+		"batchSize" : 0,
+		"validationPortion" : 0.5,
+		"epochs" : 60,
+		"shuffling" : "random",
+		"randomSeed" : -1
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"generalGridType": "component",
+			"gridType": "linear",
+			"level": 1
+		},
+		"adaptivityConfig": {
+				"numRefinements": 60,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition",
+			"matrixDecompositionType" : "Chol"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	}
+}
