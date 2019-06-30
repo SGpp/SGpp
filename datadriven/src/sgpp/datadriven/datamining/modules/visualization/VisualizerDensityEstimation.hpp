@@ -43,11 +43,13 @@ public:
 
 protected:
 
- void run_tsne(ModelFittingBase &model) override;
+ void runTsne(ModelFittingBase &model) override;
 
  void getHeatmap(ModelFittingBase &model);
 
  void getLinearCuts(ModelFittingBase &model);
+
+ void storeGrid(ModelFittingBase &model);
 
 
 private:

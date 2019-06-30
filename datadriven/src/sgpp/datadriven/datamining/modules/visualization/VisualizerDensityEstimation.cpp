@@ -35,12 +35,29 @@ namespace datadriven{
   createOutputDirectory();
   getLinearCuts(model);
   getHeatmap(model);
-  run_tsne(model);
+  runTsne(model);
+
+  if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+  {
+   storeGrid(model);
+  }
  }
 
- void VisualizerDensityEstimation::run_tsne(ModelFittingBase &model){
+ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model)
+ {
+
+  ModelFittingBaseSingleGrid* gridModel = dynamic_cast<ModelFittingBaseSingleGrid*>(&model);
+
+  auto grid = gridModel->getGrid().clone();
+
+  DataMatrix gridMatrix;
+
+  grid->getStorage().getCoordinateArrays(gridMatrix);
 
 
+  CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().targetFile+"/grid", gridMatrix);
+ }
+ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model){
 
   DataMatrix data = model.getDataset()->getData();
 
