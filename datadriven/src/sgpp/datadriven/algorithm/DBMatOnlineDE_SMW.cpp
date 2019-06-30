@@ -69,7 +69,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     }
 
     if (!coarsen_points.empty()) {
-      // todo(dima): optimize size of matrix X when coarsening
+      // todo(): optimize size of matrix X when coarsening
       // break-even point, k times single point VS. k points at once
       DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
@@ -170,7 +170,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   }
 
   // create E
-  // todo(dima): replace operations done with E/E^t by matrix_subviews
+  // todo(): replace operations done with E/E^t by matrix_subviews
   DataMatrix E(X.getNrows(), X.getNcols(), 0.0);
   for (size_t k = E.getNrows() - E.getNcols(); k < E.getNrows(); k++) {
     E.set(k, k - E.getNrows() + E.getNcols(), 1.0);
