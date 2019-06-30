@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#pragma once
-
 #include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
@@ -73,11 +71,13 @@ void DBMatDMS_SMW::solveParallel(DataMatrixDistributed& A_inv, DataMatrixDistrib
   if (prior_refined) {
     if (B.getGlobalRows() != b.getGlobalRows()) {
       throw sgpp::base::algorithm_exception(
-          "In DBMatDMS_SWM::solve: Matrix B and Vector b don't match for mult.");
+          "In DBMatDMS_SWM::solveParallel: global size of matrix B and Vector b don't match for "
+          "mult.");
     }
     if (B.getGlobalCols() != alpha.getGlobalRows()) {
       throw sgpp::base::algorithm_exception(
-          "In DBMatDMS_SWM::solve: Matrix B and vector alpha don't match for mult.");
+          "In DBMatDMS_SWM::solveParallel: global size of matrix B and vector alpha don't match "
+          "for mult.");
     }
   }
 

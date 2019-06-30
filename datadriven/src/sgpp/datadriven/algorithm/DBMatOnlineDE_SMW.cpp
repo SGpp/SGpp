@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -82,6 +83,56 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     DataMatrix X(grid.getSize(), numAddedGridPoints);
     compute_L2_refine_matrix(X, grid, numAddedGridPoints, lambda);
     this->smw_adapt(X, numAddedGridPoints, true);
+  }
+
+  return return_vector;
+}
+
+std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
+    DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
+    std::list<size_t> deletedGridPointIndices, double lambda,
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+  // points not possible to coarsen
+  std::vector<size_t> return_vector = {};
+
+  // coarsening:
+  // split the valid coarsen indices and the non valid ones and do sherman-morrison coarsening
+  if (!deletedGridPointIndices.empty()) {
+    // indices of coarsened points and their corresponding slot
+    std::vector<size_t> coarsen_points = {};
+    size_t offMatrixSize = offlineObject.getGridSize();
+    while (!deletedGridPointIndices.empty()) {
+      size_t cur = deletedGridPointIndices.back();
+      // check, which points can/cannot be coarsened
+      if (cur < offMatrixSize) {  // cannot be coarsened, because in offline's initial lhs matrix
+        return_vector.push_back(cur);
+      } else {
+        coarsen_points.push_back(cur);
+      }
+      deletedGridPointIndices.pop_back();  // throw away already considered indices
+    }
+
+    if (!coarsen_points.empty()) {
+      // todo(dima): optimize size of matrix X when coarsening
+      // break-even point, k times single point VS. k points at once
+      DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
+      compute_L2_coarsen_matrix(X, grid, coarsen_points);
+      DataMatrixDistributed XDistributed = DataMatrixDistributed::fromSharedData(
+          X.data(), processGrid, X.getNrows(), X.getNcols(), parallelConfig.rowBlockSize_,
+          parallelConfig.columnBlockSize_);
+      this->smw_adapt_parallel(XDistributed, 0, false, processGrid, parallelConfig, coarsen_points);
+    }
+  }
+
+  // refinement:
+  if (numAddedGridPoints > 0) {
+    // refine/coarsen matrix X for smw formula
+    DataMatrix X(grid.getSize(), numAddedGridPoints);
+    compute_L2_refine_matrix(X, grid, numAddedGridPoints, lambda);
+    DataMatrixDistributed XDistributed = DataMatrixDistributed::fromSharedData(
+        X.data(), processGrid, X.getNrows(), X.getNcols(), parallelConfig.rowBlockSize_,
+        parallelConfig.columnBlockSize_);
+    this->smw_adapt_parallel(XDistributed, numAddedGridPoints, true, processGrid, parallelConfig);
   }
 
   return return_vector;
@@ -313,8 +364,219 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
 }
 
 void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newPoints, bool refine,
+                                           std::shared_ptr<BlacsProcessGrid> processGrid,
+                                           const ParallelConfiguration& parallelConfig,
                                            std::vector<size_t> coarsenIndices) {
   std::cout << "DBMatOnlineDE_SMW::smw_adapt_parallel not implemented yet" << std::endl;
+#ifdef USE_GSL
+  // dimension of offline's lhs matrix and its inverse
+  size_t offMatrixSize = this->offlineObject.getGridSize();
+
+  // check, if offline object has been decomposed yet
+  if (offMatrixSize == 0) {
+    throw sgpp::base::algorithm_exception(
+        "In DBMatOnlineDE_SMW::smw_adapt_parallel:\noffline object wasn't decomposed "
+        "yet, so can't perform refinement/coarsening.");
+  }
+
+  // determine the final size of the B matrix (additive component in smw formula)
+  size_t oldSize =
+      this->b_is_refined ? this->b_adapt_matrix_distributed_.getGlobalCols() : offMatrixSize;
+  size_t newSize = refine ? (oldSize + newPoints) : (oldSize - coarsenIndices.size());
+  size_t adaptSteps = (newSize > oldSize) ? (newSize - oldSize) : (oldSize - newSize);
+
+  // allocate additional space for b_adapt_matrix_ and fill new diagonal entries with ones
+  // note: only done in refining! Coarsening will resize at the end of function
+  if (refine) {
+    this->b_adapt_matrix_distributed_.resize(newSize, newSize);
+    this->syncDistributedDecomposition(processGrid, parallelConfig);
+    for (size_t i = oldSize; i < newSize; i++) {
+      this->b_adapt_matrix_distributed_.set(i, i, 1.0);
+    }
+  }
+
+  /************************************************************
+   * BEGIN OF SHERMAN-MORRISON-WOODBURRY
+   *
+   * Phase 1: B~ = B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
+   *
+   ************************************************************/
+
+  // create view of B, will store values of B~
+  gsl_matrix_view b_adapt_full_view =
+      gsl_matrix_view_array(this->b_adapt_matrix_.getPointer(), this->b_adapt_matrix_.getNrows(),
+                            this->b_adapt_matrix_.getNcols());
+
+  // adapt X's diagonal, lambda already added before
+  for (size_t k = X.getGlobalRows() - X.getGlobalCols(); k < X.getGlobalRows(); k++) {
+    // <x, x> = 0 => x=0, therefore:
+    // diag_k = 0 -> ignoring k-th row/column while coarsening
+    double val = (X.get(k, k - X.getGlobalRows() + X.getGlobalCols()) != 0)
+                     ? (X.get(k, k - X.getGlobalRows() + X.getGlobalCols()) - 1) * 0.5
+                     : 0;
+    X.set(k, k - X.getGlobalRows() + X.getGlobalCols(), val);
+  }
+
+  // create E
+  DataMatrixDistributed* E =
+      new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
+  for (size_t k = E->getGlobalRows() - E->getGlobalCols(); k < E->getGlobalRows(); k++) {
+    E->set(k, k - E->getGlobalRows() + E->getGlobalCols(), 1.0);
+  }
+
+  // A^-1 + B (calculate in size of A^-1, store in size of B)
+  DataMatrixDistributed* AB =
+      new DataMatrixDistributed(this->b_adapt_matrix_distributed_.getLocalPointer(), processGrid,
+                                this->b_adapt_matrix_distributed_.getGlobalRows(),
+                                this->b_adapt_matrix_distributed_.getGlobalCols(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
+  sgpp::datadriven::pdgeadd_(
+      "N", offMatrixSize, offMatrixSize, 1.0,
+      this->offlineObject.getDecomposedInverseDistributed().getLocalPointer(), 0, 0,
+      this->offlineObject.getDecomposedInverseDistributed().getDescriptor(), 1.0,
+      AB->getLocalPointer(), 0, 0, AB->getDescriptor());
+
+  // (A^-1 + B) * X
+  DataMatrixDistributed* AX =
+      new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed::mult(*AB, X, *AX);
+
+  // E^t * (A^-1 + B)
+  DataMatrixDistributed* EA =
+      new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalRows(),
+                                parallelConfig.columnBlockSize_, parallelConfig.rowBlockSize_);
+  DataMatrixDistributed::mult(*E, *AB, *EA, true);
+
+  // I + E^t * (A^-1 + B) * X
+  DataMatrixDistributed* TO_INV =
+      new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalCols(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
+  for (size_t i = 0; i < TO_INV->getGlobalCols(); i++) {
+    TO_INV->set(i, i, 1.0);
+  }
+  DataMatrixDistributed::mult(*E, *AX, *TO_INV, true, false, 1.0, 1.0);
+
+  // (I + E^t * (A^-1 + B) * X)^-1
+
+
+  gsl_permutation* P = gsl_permutation_alloc(X.getNcols());
+  int* signum = new int[X.getNcols()];
+  gsl_linalg_LU_decomp(TO_INV, P, signum);
+  gsl_matrix* INV = gsl_matrix_alloc(X.getNcols(), X.getNcols());
+  gsl_linalg_LU_invert(TO_INV, P, INV);
+
+  // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1
+  gsl_matrix* AXINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AX, INV, 0.0, AXINV);
+
+  // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
+  gsl_matrix* AXINVEA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AXINV, EA, 0.0, AXINVEA);
+
+  // B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
+  // effectively stores final values of Phase 1 in b_adapt_matrix_
+  gsl_matrix_sub(&b_adapt_full_view.matrix, AXINVEA);
+
+  /************************************************************
+   *
+   * Phase 2: B = B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
+   *
+   ************************************************************/
+
+  // A^-1 + B~ (calculate in size of A^-1, store in size of B~)
+  DataMatrix ABtilde(this->b_adapt_matrix_);
+  gsl_matrix_view ABtilde_view = gsl_matrix_view_array(
+      ABtilde.getPointer(), this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols());
+  gsl_matrix_view ABtilde_sub_view =
+      gsl_matrix_submatrix(&ABtilde_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
+  gsl_matrix_add(&ABtilde_sub_view.matrix, &A_inv_view.matrix);
+
+  // (A^-1 + B~) * E    und    X^t*(A+B)
+  gsl_matrix* AE = gsl_matrix_alloc(X.getNrows(), X.getNcols());
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &ABtilde_view.matrix, &E_view.matrix, 0.0, AE);
+
+  // X^t * (A^-1 + B~)
+  gsl_matrix* XA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
+  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, &ABtilde_view.matrix, 0.0, XA);
+
+  // I + X^t * (A^-1 + B) * E
+  gsl_matrix_set_identity(TO_INV);
+  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, AE, 1.0, TO_INV);
+
+  // (I + X^t * (A^-1 + B) * E)^-1
+  gsl_permutation* Ptilde = gsl_permutation_alloc(X.getNcols());
+  int* signumtilde = new int[X.getNcols()];
+  gsl_linalg_LU_decomp(TO_INV, Ptilde, signumtilde);
+  gsl_linalg_LU_invert(TO_INV, Ptilde, INV);
+
+  // (A^-1 + B) E (I + X^t * (A^-1 + B) * E)^-1
+  gsl_matrix* AEINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AE, INV, 0.0, AEINV);
+
+  // (A^-1 + B) E (I + X^t (A^-1 + B) E)^-1 X^t (A^-1 + B)
+  gsl_matrix* AEINVXA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AEINV, XA, 0.0, AEINVXA);
+
+  // B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
+  // effectively stores final values of Phase 2 in b_adapt_matrix_
+  gsl_matrix_sub(&b_adapt_full_view.matrix, AEINVXA);
+
+  /*****
+   *
+   * END OF SHERMAN-MORRISON-WOODBURRY
+   *
+   *****/
+
+  // If points were coarsened the b_adapt_matrix will now have empty rows and columns
+  // on the indices of the coarsened points. In the following algorithm, the symmetry
+  // of b_adapt_matrix_ is used to glue the blocks together again.
+  if (!refine) {
+    std::sort(coarsenIndices.begin(), coarsenIndices.end());
+    size_t vi = 1;  // skips points
+    sgpp::base::DataVector copied_row(oldSize);
+
+    for (size_t i = coarsenIndices[0]; i < oldSize - coarsenIndices.size(); i++) {
+      // find amount of successive indices, to skip a block of zeroes
+      while (i + vi == coarsenIndices[vi]) {
+        vi++;
+      }
+
+      // set current row and column to copied one
+      this->b_adapt_matrix_.getRow(i + vi, copied_row);
+      this->b_adapt_matrix_.setRow(i, copied_row);
+      this->b_adapt_matrix_.setColumn(i, copied_row);  // symmetry
+
+      // copy diagonal elements too
+      double value = this->b_adapt_matrix_.get(i + vi, i + vi);
+      this->b_adapt_matrix_.set(i, i, value);
+    }
+
+    this->b_adapt_matrix_.resizeQuadratic(newSize);
+    // size fitting ends here
+
+    // remove coarsened points from online's internal storage of refined_vectors_
+    for (size_t k = adaptSteps; k > 0; k--) {
+      this->refined_points_.erase(this->refined_points_.begin() + coarsenIndices[k - 1] -
+                                  offMatrixSize);
+
+      // adjust current_refine_index of online object
+      this->current_refine_index--;
+    }
+  }
+
+  // move the index of the container to the end of it
+  if (refine) {
+    this->current_refine_index += adaptSteps;
+  }
+
+  // determine, if any refined information now is contained in matrix b_adapt
+  this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
+
+  return;
+#endif /* USE_GSL */
 }
 
 void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size_t newPoints,
@@ -368,7 +630,7 @@ void DBMatOnlineDE_SMW::compute_L2_coarsen_matrix(DataMatrix& X, Grid& grid,
 void DBMatOnlineDE_SMW::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                                      const ParallelConfiguration& parallelConfig) {
 #ifdef USE_SCALAPACK
-  offlineObject.syncDistributedDecomposition(processGrid, parallelConfig);
+  offlineObject.syncDistributedInverse(processGrid, parallelConfig);
   b_adapt_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
       b_adapt_matrix_.data(), processGrid, b_adapt_matrix_.getNrows(), b_adapt_matrix_.getNcols(),
       parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
