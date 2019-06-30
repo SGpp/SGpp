@@ -28,7 +28,7 @@ namespace datadriven {
 
   std::cout <<"Setting up defaults parameters for Visualizer"<<std::endl;
   generalConfig.algorithm= "tsne";
-  generalConfig.targetFile=".";
+  generalConfig.targetFile="./output";
   generalConfig.targetFileType = VisualizationFileType::CSV;
 
   visualizationParameters.perplexity=30;
