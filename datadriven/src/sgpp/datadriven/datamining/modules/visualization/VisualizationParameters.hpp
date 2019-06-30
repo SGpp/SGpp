@@ -21,7 +21,7 @@ struct VisualizationParameters{
  /**
   * The perplexity to use in case tsne is the selected algorithm
   */
- size_t perplexity = 30;
+ double perplexity = 30;
 
  /**
   * The theta parameter to use in case tsne is the selected algorithm

@@ -43,16 +43,29 @@ public:
 
 protected:
 
- void run_tsne() override;
+ void run_tsne(ModelFittingBase &model) override;
 
  void getHeatmap(ModelFittingBase &model);
 
  void getLinearCuts(ModelFittingBase &model);
 
+
 private:
+ void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
+ void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
+ void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
+
+ void getHeatmapMore4D(DataMatrix &matrix, ModelFittingBase &model);
+ void getHeatmap3D(DataMatrix &matrix, ModelFittingBase &model);
+ void getHeatmap2D(DataMatrix &matrix, ModelFittingBase &model);
+
+
  void translateColumns(DataMatrix &matrix, size_t maxColumns);
- void translateColumns(DataMatrix &matrix, std::vector<size_t> indexes);
- void updateIndexes(std::vector<size_t> &columnIndexes);
+ void translateColumnsRight(DataMatrix &matrix, std::vector<size_t> indexes);
+ void translateColumnsLeft(DataMatrix &matrix, std::vector<size_t> indexes);
+ void updateIndexesCuts(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
+ void updateIndexesHeatmap(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
+ void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
 
 
 };

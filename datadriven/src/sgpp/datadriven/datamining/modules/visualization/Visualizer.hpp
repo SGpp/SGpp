@@ -47,7 +47,9 @@ class Visualizer{
 
  protected:
 
-  virtual void run_tsne()=0;
+  virtual void run_tsne(ModelFittingBase &model)=0;
+
+  void createOutputDirectory();
 
 
   /**

@@ -27,8 +27,9 @@ namespace datadriven{
 
  }
 
- void VisualizerDummy::run_tsne(){
+ void VisualizerDummy::run_tsne(ModelFittingBase &model){
 
  }
+
 }
 }
