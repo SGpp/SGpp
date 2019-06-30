@@ -150,6 +150,7 @@ class ModelFittingBase {
   // virtual std::string& storeFitter();
   // void storeClassificator();
 
+  Dataset* getDataset();
  protected:
   /**
    * Factory member function that generates a grid from configuration.

@@ -36,8 +36,7 @@ public:
 
 protected:
 
- void run_tsne() override;
-
+ void run_tsne(ModelFittingBase &model) override;
 
 };
 

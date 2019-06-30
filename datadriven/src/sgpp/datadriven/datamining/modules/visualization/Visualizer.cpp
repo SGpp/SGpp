@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
+#include <cstring>
 
 namespace sgpp {
 
@@ -24,5 +25,19 @@ namespace datadriven {
     return config;
    }
 
+
+   void Visualizer::createOutputDirectory(){
+       if(config.getGeneralConfig().targetFile!="."){
+         std::cout << "Creating output directory " << config.getGeneralConfig().targetFile
+           <<std::endl;
+         std::string mkdir("mkdir ");
+
+         mkdir.append(config.getGeneralConfig().targetFile);
+         system(mkdir.data());
+
+
+
+       }
+     }
 }//namespace datadrivem
 }//namespace sgpp

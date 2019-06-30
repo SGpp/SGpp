@@ -576,7 +576,7 @@ bool DataMiningConfigParser::getVisualizationParameters(
    auto visualizationParameters =
      static_cast<DictNode *>(&(*configFile)[visualization]["parameters"]);
 
-   config.perplexity = parseUInt(*visualizationParameters, "perplexity",
+   config.perplexity = parseDouble(*visualizationParameters, "perplexity",
      defaults.perplexity,"visualization");
 
    config.theta = parseDouble(*visualizationParameters, "theta",
