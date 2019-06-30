@@ -19,6 +19,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
@@ -125,7 +126,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
 
-    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+    // in case of SMW decomposition type, the inverse of the matrix needs to be computed explicitly
     if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       offline->compute_inverse();
@@ -140,11 +141,10 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
   online->syncDistributedDecomposition(processGrid, parallelConfig);
 
-  // in SMW decomposition type case, the inverse of the matrix needs to be synced also
+  // in case of SMW decomposition type, the inverse of the matrix needs to be synced also
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
     online->getOfflineObject().syncDistributedInverse(processGrid, parallelConfig);
-    std::cout << "synced distri inverse\n";
   }
 
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
@@ -183,10 +183,22 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
     alpha.resizeZero(newNoPoints);
   }
 
-  // Update online object: lhs, rhs and recompute the density function based on the b stored
-  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
-                                          newNoPoints - oldNoPoints, *deletedGridPoints,
-                                          config->getRegularizationConfig().lambda_);
+  // in case of SMW decomposition type, refinement is distributed/parallelized also with special
+  // handling, therefore has to be passed additional parameters of parallelcondig
+  sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
+  auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+    online_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
+    online_SMW_pointer->updateSystemMatrixDecompositionParallel(
+        config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, *deletedGridPoints,
+        config->getRegularizationConfig().lambda_, processGrid, parallelConfig);
+  } else {  // every other decomposition type than SMW
+    // Update online object: lhs, rhs and recompute the density function based on the b stored
+    online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
+                                            newNoPoints - oldNoPoints, *deletedGridPoints,
+                                            config->getRegularizationConfig().lambda_);
+  }
   online->updateRhs(newNoPoints, deletedGridPoints);
 
   online->syncDistributedDecomposition(processGrid, parallelConfig);

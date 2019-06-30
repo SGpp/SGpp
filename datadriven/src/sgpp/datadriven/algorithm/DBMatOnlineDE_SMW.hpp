@@ -7,6 +7,7 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
 #include <list>
 #include <vector>
@@ -72,8 +73,12 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    * @param newPoints number of refined points
    * @param refine decides: true for refining, false for coarsening
    * @param coarsen_indices the indices of points to coarsen
+   * @param processGrid
+   * @param parallelConfig
    */
   void smw_adapt_parallel(DataMatrixDistributed& X, size_t newPoints, bool refine,
+                          std::shared_ptr<BlacsProcessGrid> processGrid,
+                          const ParallelConfiguration& parallelConfig,
                           std::vector<size_t> coarsen_indices = {});
 
   /**
@@ -87,6 +92,23 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
   std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
       size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
+
+  /**
+   * Parallel/Distributed version of updateSystemMatrixDecomposition, uses scalapack and
+   * needs to be called with additional parameters for distributed matrices
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param grid the underlying grid
+   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param deletedGridPointIndices Indices of grid points that were deleted
+   * @param lambda The last best lambda value
+   * @param processGrid
+   * @param parallelConfig
+   * @return list of grid points, that cannot be coarsened
+   */
+  std::vector<size_t> updateSystemMatrixDecompositionParallel(
+      DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda,
+      std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig);
 
   /**
    * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
