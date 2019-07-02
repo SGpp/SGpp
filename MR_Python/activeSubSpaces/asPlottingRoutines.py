@@ -100,9 +100,10 @@ def detectionL2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=
     plt.loglog(numDetectionInterpolantGridPointsArray[:, dataIndex], abs(detectionL2Errors[:, dataIndex]), label=label, color=color, marker=marker)
     plt.xlabel('number of grid points', size=xlabelsize)
     if summary["model"] == 'dampedSin8D':
-        plt.ylabel(r'$\Vert f_1 - \hat{f}_1\Vert_2$', size=ylabelsize)
+#        plt.ylabel(r'$\Vert f_2 - \hat{f}_2\Vert_2$', size=ylabelsize)
+        plt.ylabel(r'$\Vert f - \hat{f}\Vert_2$', size=ylabelsize)
     elif summary["model"] == 'sinCos8D':
-        plt.ylabel(r'$\Vert f_2 - \hat{f}_2\Vert_2$', size=ylabelsize)
+        plt.ylabel(r'$\Vert f_1 - \hat{f}_1\Vert_2$', size=ylabelsize)
     else:
         plt.ylabel(r'$\Vert f - \hat{f}\Vert_2$', size=ylabelsize)
     plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
@@ -123,7 +124,7 @@ def l2errorGridWise(summary, label, color, marker, dataIndex=-1, paper=0):
         
     plt.xlabel('number of grid points', size=xlabelsize)
     if summary["model"] == 'dampedSin8D':
-        plt.ylabel(r'$\Vert g_1 - \hat{g}_1\Vert_2$', size=ylabelsize)
+        plt.ylabel(r'$\Vert g_2 - \hat{g}_2\Vert_2$', size=ylabelsize)
     else:
         plt.ylabel(r'$\Vert g - \hat{g}\Vert_2$', size=ylabelsize)
     plt.tick_params(axis='both', which='major', labelsize=majortickfontsize)
@@ -309,8 +310,11 @@ def plot_error_first_eigenvec(summary, label, color, marker, dataIndex=-1):
     for i in range(len(err)):
         err[i] = np.linalg.norm(abs(eivec[:, :, i, dataIndex][:, 0]) - abs(eivecReference[:, 0]))
     plt.loglog(sampleRange, err, label=label, color=color, marker=marker)
-    plt.xlabel('number of grid points')
-    plt.ylabel('error in first eigenvector')
+    plt.xlabel('number of grid points', size=xlabelsize)
+    plt.gcf().text(-0.02, 0.5, '$\Vert W_1 - \hat{W}_1\Vert_2$', va='center', rotation='vertical', fontsize=ylabelsize)
+    ax = plt.gca()
+    ax.tick_params(axis='both', which='major', labelsize=majortickfontsize)
+    ax.tick_params(axis='both', which='minor', labelsize=minortickfontsize)
 
 
 # error in the first four eigenvectors w_1,w_2,w_3,w_4. (Special Case for sinCos8D example in UNCECOMP paper)
@@ -387,17 +391,17 @@ def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dat
 # colors = [[32.0 / 256.0, 86.0 / 256.0, 174.0 / 256.0], 'orange', 'g', 'c', 'r', 'y', 'm', 'fuchsia', 'aqua', 'k']
 def getColorAndMarker(method):
     if method == 'AS':
-        color = 'y'; marker = '>'
+         marker = '>'; color = '#bcbd22'  # 'y'
     elif method == 'OLS':
-        color = 'g'; marker = '+'
+        marker = '+'; color = '#2ca02c'  # 'g'
     elif method == 'QPHD':
-        color = 'r'; marker = 's'
+        marker = 's'; color = '#d62728'  # 'r'
     elif method == 'asSGpp':
-        color = 'b'; marker = 'o'
+        marker = 'o'; color = '#1f77b4'  # b'
     elif method == 'SGpp':
-        color = 'orange'; marker = '*'
+        marker = '*'; color = '#ff7f0e'  # orange' 
     elif method == 'Halton':
-        color = 'm'; marker = 'd'
+        marker = 'd'; color = '#9467bd'  # 'm'
     else:
         print(method)
     return[color, marker]
@@ -460,24 +464,32 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
     # add lines to one specific plots for the paper.
     if paper == 1 and qoi == 'integralerrorG':
         # hard coded errors of Cuba interpolating dampedSin8D calculated with demo-c
-        plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='fuchsia', marker='x', label='Cuhre')
+        plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='#e377c2', marker='x', label='Cuhre')  # color was fuchsia
         # hard coded errors of performing normal asSGppintegration , but give correct W1 for dampedsin8D (data is saved as /home/rehmemk/git/SGpp/activeSubSpaces/results/dampedSin8D/asSGpp_nakbsplinemodified_3_20001_adaptive_adaptive_Spline)
-        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='cyan', marker='h', label='$\epsilon_{W_1}$')
+        eW1label = 'sparse grid B-splines, true $W_1$'
+        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='#17becf', marker='h', label=eW1label)  # color was cyan
         # hard coded errors of integrating g on [l,r] in 1D for dampedSin8D. Calculated with  MR_dampedSin1DIntegration.cpp
-        plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=('$\epsilon_g$'))
+        eglabel = '$|  \int_l^r g(y)dy - \int_l^r \hat{g}(y)dy |$'  # '$\epsilon_g$'
+        plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=eglabel)
         
     # rearrange legend order and save legends in individual files.
     if paper == 1:
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
+        ncol = 4
         if qoi == 'integralerrorG':
             originalHandles = handles[:]
             originalLabels = labels[:]
-            handles[1] = originalHandles[4]; handles[2] = originalHandles[1]; handles[3] = originalHandles[5]; handles[4] = originalHandles[2]; handles[5] = originalHandles[6];handles[6] = originalHandles[3]
-            labels[1] = originalLabels[4]; labels[2] = originalLabels[1]; labels[3] = originalLabels[5]; labels[4] = originalLabels[2]; labels[5] = originalLabels[6];  labels[6] = originalLabels[3]
+            # with AS (analytical gradients)
+#             handles[1] = originalHandles[4]; handles[2] = originalHandles[1]; handles[3] = originalHandles[5]; handles[4] = originalHandles[2]; handles[5] = originalHandles[6];handles[6] = originalHandles[3]
+#             labels[1] = originalLabels[4]; labels[2] = originalLabels[1]; labels[3] = originalLabels[5]; labels[4] = originalLabels[2]; labels[5] = originalLabels[6];  labels[6] = originalLabels[3]
+            # without AS
+            ncol = 3
+            handles[0] = originalHandles[1]; handles[1] = originalHandles[0]; handles[3] = originalHandles[4];handles[4] = originalHandles[5];handles[5] = originalHandles[3];
+            labels[0] = originalLabels[1]; labels[1] = originalLabels[0];labels[3] = originalLabels[4];labels[4] = originalLabels[5];labels[5] = originalLabels[3];
         plt.figure()
         axe = plt.gca()
-        axe.legend(handles, labels , loc='center', prop={'size': 12}, ncol=4)
+        axe.legend(handles, labels , loc='center', prop={'size': 12}, ncol=ncol)
         axe.xaxis.set_visible(False)
         axe.yaxis.set_visible(False)
         for v in axe.spines.values():
@@ -499,14 +511,14 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='sinCos8D', type=str, help="define which test case should be executed")
+    parser.add_argument('--model', default='dampedSin8D', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=10000, type=int, help="maximum number of points used")
     # used in paper
-    parser.add_argument('--plotDetectionL2G', default=1, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
+    parser.add_argument('--plotDetectionL2G', default=0, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
     parser.add_argument('--plotL2G', default=0, type=bool, help="do (not) plot l2 error of reduced resposne surface grid-wise")
     parser.add_argument('--plotIntegralG', default=0, type=bool, help="do (not) plot integral error grid-wise")
-    parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
+    parser.add_argument('--plotEivec1', default=1, type=bool, help="do (not) plot error in first eigenvector")
     parser.add_argument('--plotEivec4', default=0, type=bool, help="do (not) plot error in first four eigenvectors")
     # additional options
     parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")
@@ -524,28 +536,34 @@ if __name__ == "__main__":
     rc('text', usetex=True)
     plt.rc('font', family='serif')
     
-    resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
+    # resultsPath = "/home/rehmemk/git/SGpp/activeSubSpaces/results"
+    resultsPath = "/home/rehmemk/git/uncecomp19/Paper/data/results"
     resultsPath = os.path.join(resultsPath, args.model)
 
 # Choose which hresults to plot
 
 # dampedSin8D for paper
-#     names = [
-#             'AS_5_25000_regular',  # doenst matter which one, the repsonse surface is not used
-#             'QPHD_8_20000_regular',
-#             # 'Halton_25000',
-#             'OLS_8_20000_regular',
-#             # 'SGpp_nakbsplinemodified_3_25000_adaptive',
-#             'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
-#              ]
-
+    if args.model == "dampedSin8D":
+        names = [
+                # 'AS_5_25000_regular',  # doenst matter which one, the repsonse surface is not used
+                'QPHD_8_20000_regular',
+                # 'Halton_25000',
+                'OLS_8_20000_regular',
+                # 'SGpp_nakbsplinemodified_3_25000_adaptive',
+                'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
+                 ]
 # sinCos8D for paper
-    names = [
-            'AS_5_20000_regular',  # doenst matter which one, the repsonse surface is not used
-            'QPHD_7_20000_regular',
-            'OLS_8_20000_regular',
-            'asSGpp_nakbsplinemodified_3_19000_adaptive_adaptive_Spline'
-             ]
+    elif args.model == "sinCos8D":
+        names = [
+                'AS_5_20000_regular',  # doenst matter which one, the repsonse surface is not used
+                'QPHD_7_20000_regular',
+                'OLS_8_20000_regular',
+                'asSGpp_nakbsplinemodified_3_19000_adaptive_adaptive_Spline'
+                 ]
+    else:
+        names = [
+                'asSGpp_nakbsplinemodified_3_10000_adaptive_adaptive_Spline'
+                ]
     
     names = [n.format(args.degree, args.maxPoints) for n in names]
     folders = [os.path.join(resultsPath, name) for name in names]

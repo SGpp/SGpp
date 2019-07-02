@@ -10,8 +10,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedQuadrature.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/globaldef.hpp>
-#include "common/basis/NakBsplineExtendedBasis.hpp"
 
 namespace sgpp {
 namespace base {

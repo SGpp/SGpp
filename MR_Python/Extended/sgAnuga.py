@@ -2,7 +2,7 @@ import pysgpp
 import math
 import sys
 import os
-import pickle
+import cPickle as pickle
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -42,41 +42,64 @@ pyFunc = functions.getFunction('anuga', dim)
 objFunc = functions.objFuncSGppSign(pyFunc)
 
 degree = 3
-nPoints = 200
-gridType = "nakbsplineextended"
+nPoints = [100, 200, 300, 400]
+gridTypes = ["nakbsplineextended", "nakbsplineboundary", "nakbsplinemodified"]
 
-reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc,
-                                                 pysgpp.Grid.stringToGridType(gridType),
-                                                 degree)
-# gamma = 0.95
-# reSurf.ritterNovak(nPoints, gamma)
-initialLevel = 1
-numRefine = 10
-reSurf.surplusAdaptive(nPoints, initialLevel, numRefine, True)
-
-grid = reSurf.getGrid()
-coeffs = reSurf.getCoefficients()
-ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
-ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
-print("l2 error: {}".format(anugaError(reSurf, objFunc)))
-
-xOpt = reSurf.optimize()
-# # we maximized, so fix the sign again
-fXOpt = -objFunc.eval(xOpt)
-approxFXOpt = -reSurf.eval(xOpt)
-print("\nxOpt = {}".format(xOpt))
-print("f(xOpt) = {:.8g} approxF(xOpt) = {:.8g}\n".format(fXOpt, approxFXOpt))
-
-pdfs = pysgpp.DistributionsVector(dim, pysgpp.DistributionUniform(0, 1))
-quadOrder = 10
-# we maximized, so fix the sign again
-mean = -reSurf.getMean(pdfs, quadOrder)
-var = reSurf.getVariance(pdfs, quadOrder)
-
-print("mean: {}".format(mean))
-print("var: {}\n".format(var))
-
+gridSizes = np.zeros((len(nPoints), len(gridTypes)))
+l2Errors = np.zeros((len(nPoints), len(gridTypes)))
+fOpts = np.zeros((len(nPoints), len(gridTypes)))
+for i, p in enumerate(nPoints):
+    for j, gridType in enumerate(gridTypes):
+        print("{} : {}".format(gridType, p))
+        
+        reSurf = pysgpp.SparseGridResponseSurfaceBspline(objFunc,
+                                                         pysgpp.Grid.stringToGridType(gridType),
+                                                         degree)
+#         gamma = 0.95
+#         reSurf.ritterNovak(p, gamma)
+        initialLevel = 1
+        numRefine = 25
+        reSurf.surplusAdaptive(p, initialLevel, numRefine, True)
+        
+        grid = reSurf.getGrid()
+        coeffs = reSurf.getCoefficients()
+        ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
+        ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
+        print("grid size: {}".format(reSurf.getSize()))
+        print("l2 error: {}".format(anugaError(reSurf, objFunc)))
+        gridSizes[i, j] = reSurf.getSize()
+        l2Errors[i, j] = anugaError(reSurf, objFunc)
+        
+        xOpt = reSurf.optimize()
+        # # we maximized, so fix the sign 
+        fXOpt = -objFunc.eval(xOpt)
+        approxFXOpt = -reSurf.eval(xOpt)
+        print("\nxOpt = {}".format(xOpt))
+        print("f(xOpt) = {:.8g} approxF(xOpt) = {:.8g}\n".format(fXOpt, approxFXOpt))
+        fOpts[i, j] = fXOpt
+        
+        # pdfs = pysgpp.DistributionsVector(dim, pysgpp.DistributionUniform(0, 1))
+        # quadOrder = 10
+        # # we maximized, so fix the sign again
+        # mean = -reSurf.getMean(pdfs, quadOrder)
+        # var = reSurf.getVariance(pdfs, quadOrder)
+        # 
+        # print("mean: {}".format(mean))
+        # print("var: {}\n".format(var))
+        
 pyFunc.cleanUp()
+
+plt.figure()
+for j in range(len(gridTypes)):
+    plt.plot(gridSizes[:, j], fOpts[:, j], label=gridTypes[j])
+plt.legend()
+plt.title("maximum value")
+plt.figure()
+for j in range(len(gridTypes)):
+    plt.plot(gridSizes[:, j], l2Errors[:, j], label=gridTypes[j])
+plt.legend()
+plt.title("l2 error")
+plt.show()
 
 # plot 2D grid
 # gridStorage = grid.getStorage()

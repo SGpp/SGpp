@@ -14,7 +14,8 @@ double OperationWeightedQuadratureNakBsplineExtended::doWeightedQuadrature(
   base::DataVector quadCoordinates, quadWeights;
   base::GaussLegendreQuadRule1D gauss;
   gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
-#pragma omp parallel for firstprivate(storage, base, alpha, pdfs, quadCoordinates, quadWeights) reduction(+ : mean)
+  //#pragma omp parallel for firstprivate(storage, base, alpha, pdfs, quadCoordinates, quadWeights)
+  // reduction(+ : mean)
   for (size_t i = 0; i < storage.getSize(); i++) {
     //    std::cout << "#omp threads: " << omp_get_num_threads() << "\n";
     double mean1D = 1;

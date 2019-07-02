@@ -156,9 +156,13 @@ def run(par, n):
     y = domain.centroid_coordinates[:, 1]
     v = np.sqrt((x - x1) ** 2 + (y - y1) ** 2) + np.sqrt((x - x2) ** 2 + (y - y2) ** 2) < 0.5
     
-    meanstage = np.nan * np.ones((1, 451))
     k = 0
-    for t in domain.evolve(yieldstep=0.05, finaltime=22.5):
+    # # ORIGNIAL CODE:
+#     meanstage = np.nan * np.ones((1, 451))
+#     for t in domain.evolve(yieldstep=0.05, finaltime=22.5):
+    # #CODE BY MR, SO THAT IT FITS THE NUMBER OF GRID POINTS IN A BOUNARY SPARSE GRID:
+    meanstage = np.nan * np.ones((1, 513))
+    for t in domain.evolve(yieldstep=0.05, finaltime=25.6):
         # stage [=height of water]
     	stage = domain.quantities['stage'].centroid_values[v]
         # averaging for smoothness

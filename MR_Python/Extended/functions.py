@@ -281,21 +281,51 @@ class demo():
 class test():
 
     def __init__(self):
-        self.dummy = 7
+        self.dim = 1
+        self.pdfs = pysgpp.DistributionsVector()
+        self.pdfs.push_back(pysgpp.DistributionUniform(0, 1))
 
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        print("functions, domain: {} {}".format(lb.toString(), ub.toString()))
         return lb, ub
-    
+
     def getName(self):
-        return "test{}D".format(self.getDim())
+       return "test"
     
     def getDim(self):
-        return 5
+        return self.dim
 
-    def eval(self, X):
-        return np.sin(2 * np.pi * X[0]) + X[1] * X[2] ** 3 - np.exp(-X[0] * X[4])
+    def eval(self, v):
+        return np.exp((abs(v[0] - 0.5)) ** 5)
+        
+        # a = 5
+        # u = 0.5
+        # Genz continuous
+        # return np.exp( -a * abs(np.sin(v[0]) - u))
+        
+        # Genz discontinuous
+#         if v[0] > u:
+#             return 0
+#         else:
+#             return np.exp(a * v[0])
+        
+        # Genz corner peak
+#         return (1 + a * v[0]) ** (-(1 + 1))
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        return 2.4250950434509486E-01
+    
+    def getVar(self):
+        return -1
 
 
 # sum(x_i)^p, in particular equals 1 for p=0    
@@ -841,7 +871,7 @@ class boreholeUQ():
         return 0.00655072585279  # old with sigma = sqrt(): 0.00244501293667
     
     def getVar(self):
-        return 0.00289178537162  # old with sigma = sqrt(): 2.35017408798e-05
+        return 8.36242263552e-06  # old with sigma = sqrt(): 2.35017408798e-05
 
     
 # https://www.sfu.ca/~ssurjano/sulf.html
@@ -1095,8 +1125,8 @@ class tensorMonomialN():
 
     def __init__(self, dim):
         self.dim = dim
-        self.mu = [0.1] * dim  
-        self.sigma = [0.01] * dim 
+        self.mu = [0] * dim  
+        self.sigma = [1] * dim 
         self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
             self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
@@ -1187,11 +1217,11 @@ class attenuationN():
     def __init__(self, dim):
         self.dim = dim
         
-        random1 = [0.28247595, 0.35868055, 0.43537695, 0.58287878, 0.60354376, 0.96493609, 0.51775549, 0.09685781, 0.07814835, 0.91175197]
-        random2 = [0.1699305 , 0.82531776, 0.56462979, 0.01994913, 0.61015954, 0.62511764, 0.12233995, 0.12137653, 0.88571942, 0.36876235]
+#         random1 = [0.28247595, 0.35868055, 0.43537695, 0.58287878, 0.60354376, 0.96493609, 0.51775549, 0.09685781, 0.07814835, 0.91175197]
+#         random2 = [0.1699305 , 0.82531776, 0.56462979, 0.01994913, 0.61015954, 0.62511764, 0.12233995, 0.12137653, 0.88571942, 0.36876235]
         
-        self.mu = [0.5] * dim  # random1[:dim]  
-        self.sigma = [np.sqrt(0.2)] * dim  # [np.sqrt(r) for r in random2[:dim]]  
+        self.mu = [1.] * dim  # random1[:dim]  
+        self.sigma = [0.1] * dim  # [np.sqrt(r) for r in random2[:dim]]  
         self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
             self.pdfs.push_back(pysgpp.DistributionNormal(self.mu[d], self.sigma[d]))
@@ -1225,6 +1255,7 @@ class attenuationN():
         mean = 1
         for d in range(D):
             mean *= np.exp((self.sigma[d] ** 2 / (2. * D ** 2)) - self.mu[d] / D)
+            
         return mean
     
     def getVar(self):
@@ -1233,9 +1264,6 @@ class attenuationN():
         for d in range(D):
             meanSquare *= np.exp((2. * self.sigma[d] ** 2 / D ** 2) - (2. * self.mu[d] / D))
         return meanSquare - self.getMean() ** 2
-        # print("Warning: variance not known for arbitrary dimension!")
-        # return 0.042759304376631  # for mu = 0.5, sigma2 = 0.2, 2D
-        # return  0.027109663640083  # for mu = 0.5, sigma2 = 0.2, 3D
 
 
 class compDakota():

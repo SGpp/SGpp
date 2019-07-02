@@ -57,6 +57,10 @@ class DistributionLogNormal : public Distribution {
     sgpp::base::DataVector bounds(2);
     bounds[0] = exp(mean - 9 * stddev);
     bounds[1] = exp(mean + 9 * stddev);
+
+    // used these for the borehole example
+    //    bounds[0] = 100;
+    //    bounds[1] = 50000;
     return bounds;
   }
 

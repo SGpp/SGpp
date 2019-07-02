@@ -74,7 +74,7 @@ def plotConvergenceOrder(order, start, length):
     plt.plot(X, Y, linestyle=linestyle, color='k' , label=label)
 
 
-def plotter(qoi, data, refineTypes):
+def plotter(qoi, data, refineTypes, objFunc, model):
     gridSizes = data['gridSizes']
     refineType = data['refineType']
     if len(refineTypes) == 2 and 'regular' in refineType:
@@ -130,38 +130,88 @@ def plotter(qoi, data, refineTypes):
             plt.plot(gridSizes[i, :], nrmsErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
             plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-        if degree == 1:
-            plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
+#         if degree == 1:
+#             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
+            plt.ylabel("NRMSE", fontsize=ylabelsize)
             
     elif qoi == 'meanErr':
-        meanErrors = data['meanErrors']
+        # meanErrors = data['meanErrors']
+        means = data['means']
+        realMean = objFunc.getMean()
+        meanErrors = np.zeros(np.shape(means))
+        for i in range(len(means)):
+            for j in range(len(means[0])):
+                meanErrors[i, j] = abs((means[i, j] - realMean) / realMean)
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.loglog(gridSizes[i, :], meanErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-        if degree == 1:    
-            plt.ylabel(r'$\vert E(u) - E(\tilde{u}) \vert$', fontsize=ylabelsize)
+#         if degree == 1:    
+#             plt.ylabel(r'$\ (vert E(u) - E(\tilde{u})) / E(u) \vert$', fontsize=ylabelsize)
+            plt.ylabel("mean error", fontsize=ylabelsize)
+        
+        if model == "boreholeUQ" and refineType == "surplus":
+            dakotaPCEgridSizes = [18, 177, 1260 , 7169]  # , 34290]
+            dakotaPCEmeans = [ 6.5632828919103816e-03, 6.5768859155912159e-03, 6.5770271305317547e-03, 6.5770283342825135e-03]  # , 6.5770283458260678e-03]
+            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
+            # To compare the two, we rescale dakota's mean with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
+            dakotaPCEmeanErrs = [abs((realMean - mean * 0.9960008520179663) / realMean) for mean in dakotaPCEmeans] 
+            plt.loglog(dakotaPCEgridSizes, dakotaPCEmeanErrs, color='#7f7f7f', marker='h', label='PCE')
             
     elif qoi == 'varErr':
-        varErrors = data['varErrors']
+        if model == "boreholeUQ" and refineType == "surplus":
+            meanSGpp = 0.00655072585279
+            meanSquareSGpp = 5.127443183386146e-05
+            scalingFactor = 0.9960008520179663
+            realVar = meanSquareSGpp / scalingFactor - (meanSGpp / scalingFactor) ** 2
+            
+            dakotaPCEgridSizes = [18, 177, 1260 , 7169]  # , 34290]
+            dakotaPCEstdvs = [2.6322104837547540e-03, 2.8567031011856765e-03 , 2.8672908560281080e-03, 2.8675734257209411e-03]  # , 2.8675785527979727e-03]
+            dakotaPCEvars = [stdv ** 2 for stdv in dakotaPCEstdvs]
+            dakotaPCEvarErrs = [abs((realVar - var) / realVar) for var in dakotaPCEvars] 
+            plt.loglog(dakotaPCEgridSizes, dakotaPCEvarErrs, color='#7f7f7f', marker='h', label='PCE')
+            
+            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
+            # To compare the two, we rescale SG++'s var with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
+            means = data['means']
+            meanSquares = data['meanSquares']
+            varErrors = np.zeros(np.shape(means))
+            for i in range(len(means)):
+                for j in range(len(means[0])):
+                    var = meanSquares[i, j] / scalingFactor - means[i, j] ** 2 / scalingFactor ** 2
+                    varErrors[i, j] = abs((var - realVar) / realVar)
+        else:
+            realVar = objFunc.getVar()
+            # varErrors = data['varErrors']
+            vars = data['vars']
+            varErrors = np.zeros(np.shape(vars))
+            for i in range(len(vars)):
+                for j in range(len(vars[0])):
+                    varErrors[i, j] = abs((vars[i, j] - realVar) / realVar)
+                    
         for i, gridType in enumerate(data['gridTypes']):
             [color, marker, label] = getColorAndMarker(gridType, refineType)
             plt.loglog(gridSizes[i, :], varErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-        if degree == 1:
-            plt.ylabel(r'$\vert V(u) - V(\tilde{u}) \vert$', fontsize=ylabelsize)
+#         if degree == 1:
+#             plt.ylabel(r'$\vert (V(u) - V(\tilde{u})) / V(u) \vert$', fontsize=ylabelsize)
+            plt.ylabel("variance error", fontsize=ylabelsize)
+        
     else:
-        print("qoi not supported")
+        print("qoi '{}' not supported".format(qoi))
     
     # plainE nrmseWithOrder
     # plt.ylim([1e-16, 3 * 1e-0])
     
     # boreholeUQ nrmse
-    plt.ylim([1e-7, 1e-0])
+    # plt.ylim([1e-7, 1e-0])
     # boreholeUQ mean
     # plt.ylim([1e-10, 1e-2])
     # boreholeUQ var
     # plt.ylim([1e-12, 1e-4])
     
-    plt.xlim([1e+0, 1e+4])
+    # plt.xlim([1e+0, 1e+4])
+    
+    # boreholeUQ for milestone report
+    plt.ylim([ 10 ** (-9), 3])
     
     plt.xlabel('number of grid points', fontsize=xlabelsize)
     # number of ticks
@@ -178,17 +228,15 @@ def plotter(qoi, data, refineTypes):
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--qoi', default='nrmse', type=str, help='what to plot')
+    parser.add_argument('--qoi', default='varErr', type=str, help='what to plot')
     parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
+    parser.add_argument('--dim', default=8, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--degree', default=135, type=int, help='spline degree')
+    parser.add_argument('--degree', default=5, type=int, help='spline degree')
     parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=5000, type=int, help='maximum number of points used')
+    parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
+    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=1, type=int, help='save figure')
-    
-    # configure according to input
     args = parser.parse_args()
     
     if args.degree == 135:
@@ -222,12 +270,12 @@ if __name__ == '__main__':
                 saveName = objFunc.getName() + '_' + refineType + str(args.maxLevel)
             else:
                 saveName = objFunc.getName() + refineType + str(args.maxPoints)
-            plt.gca().set_title('n={}'.format(degree), fontsize=titlefontsize)
+            # plt.gca().set_title('n={}'.format(degree), fontsize=titlefontsize)
             datapath = os.path.join(loadDirectory, saveName + '_data{}.pkl'.format(degree))    
             with open(datapath, 'rb') as fp:
                 data = pickle.load(fp)
                 orders = [degree + 1]
-                plotter(args.qoi, data, refineTypes)
+                plotter(args.qoi, data, refineTypes, objFunc, args.model)
     
     if args.saveFig == 1:
         # save in original folder
@@ -252,26 +300,35 @@ if __name__ == '__main__':
             originalHandles = handles[:]
             originalLabels = labels[:]
             boundaryInLegend = 1
-            if boundaryInLegend == 1:
-                handles[1] = originalHandles[4]; labels[1] = originalLabels[4];
-                handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
-                handles[3] = originalHandles[5]; labels[3] = originalLabels[5];
-                handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
-                handles[5] = originalHandles[6]; labels[5] = originalLabels[6];
-                handles[6] = originalHandles[3]; labels[6] = originalLabels[3];
-                ncol = 4
-            else:
-                handles[1] = originalHandles[3]; labels[1] = originalLabels[3];
-                handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
-                handles[3] = originalHandles[4]; labels[3] = originalLabels[4];
-                handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
-                ncol = 3
+#             if boundaryInLegend == 1:
+#                 handles[1] = originalHandles[4]; labels[1] = originalLabels[4];
+#                 handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
+#                 handles[3] = originalHandles[5]; labels[3] = originalLabels[5];
+#                 handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
+#                 handles[5] = originalHandles[6]; labels[5] = originalLabels[6];
+#                 handles[6] = originalHandles[3]; labels[6] = originalLabels[3];
+#                 ncol = 4
+#             else:
+#                 handles[1] = originalHandles[3]; labels[1] = originalLabels[3];
+#                 handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
+#                 handles[3] = originalHandles[4]; labels[3] = originalLabels[4];
+#                 handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
+#                 ncol = 3
 
 # for plainE
 #             handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
 #             handles[3] = originalHandles[2]; labels[3] = originalLabels[2];
 #             handles[4] = originalHandles[5]; labels[4] = originalLabels[5];
 #             handles[5] = originalHandles[3]; labels[5] = originalLabels[3];
+
+# for boreholeUQ for milestone report
+            handles[1] = originalHandles[5]; labels[1] = originalLabels[5];
+            handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
+            handles[3] = originalHandles[1]; labels[3] = originalLabels[1];
+            handles[4] = originalHandles[6]; labels[4] = originalLabels[6];
+            handles[5] = originalHandles[2]; labels[5] = originalLabels[2];
+            handles[6] = originalHandles[7]; labels[6] = originalLabels[7];
+            handles[7] = originalHandles[3]; labels[7] = originalLabels[3];
                  
             plt.figure()
             axe = plt.gca()
