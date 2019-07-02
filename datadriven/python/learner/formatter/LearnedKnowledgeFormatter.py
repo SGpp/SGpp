@@ -32,7 +32,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     #@param filename The name of file with serialized Grid.
     #@return The LearnedKnowledgeMemento object.
     def deserializeFromFile(self, filename):
-        if type(filename) != type(''): raise AttributeError, "Filename as destination expected"
+        if type(filename) != type(''): raise AttributeError( "Filename as destination expected" )
         serializationStream = self.gzOpen(filename, "r")
         try:
             knowledge = self.deserialize(serializationStream)
@@ -85,7 +85,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
     def __readAlphaARFF(self, serializationStream):
         data = self.__readDataARFF(serializationStream)
         alpha = DataVector(len(data["data"][0]))
-        for i in xrange(len(data["data"][0])):
+        for i in range(len(data["data"][0])):
             alpha[i] = data["data"][0][i]
         return alpha
 
@@ -101,7 +101,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
 
         fout.write("\n@DATA\n")
 
-        for i in xrange(len(alpha)):
+        for i in range(len(alpha)):
             fout.write("%1.20f\n" % alpha[i])
 
 
@@ -142,7 +142,7 @@ class LearnedKnowledgeFormatter(GzipSerializer):
             if hasclass:
                 classes.append(float(values[-1]))
                 values = values[:-1]
-            for i in xrange(len(values)):
+            for i in range(len(values)):
                 data[i].append(float(values[i]))
 
         # return

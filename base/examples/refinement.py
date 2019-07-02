@@ -20,8 +20,6 @@
 ## The number of grid points is printed in each iteration.
 ## After refinement, the surplusses have to be set for all new grid
 ## points, i.e., the alpha-Vector has to be extended.
-##
-## For instructions on how to run the example, please see \ref installation.
 
 # import pysgpp library
 import pysgpp
@@ -30,26 +28,26 @@ import pysgpp
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
-print "dimensionality:                   {}".format(dim)
+print("dimensionality:                   {}".format(dim))
 
 ## create regular sparse grid, level 3
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of initial grid points:    {}".format(gridStorage.getSize())
+print("number of initial grid points:    {}".format(gridStorage.getSize()))
 
 ## function to interpolate. This is a two-dimensional parabola. - nonsymmetric(!)
 f = lambda x0, x1: 16.0 * (x0-1)*x0 * (x1-1)*x1*x1
 ## create coefficient vector with size corresponding to the grid size.
 ## Initially, all the values are set to zero.
 alpha = pysgpp.DataVector(gridStorage.getSize())
-print "length of alpha vector:           {}".format(alpha.getSize())
+print("length of alpha vector:           {}".format(alpha.getSize()))
 
 
 # Obtain function values and refine adaptively 5 times
 for refnum in range(5):
     # set function values in alpha
-    for i in xrange(gridStorage.getSize()):
+    for i in range(gridStorage.getSize()):
         gp = gridStorage.getPoint(i)
         alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
@@ -62,7 +60,7 @@ for refnum in range(5):
     ## Refining the point means, that all children of this point (if not already present) are
     ## added to the grid. Also all missing parents are added (recursively).
     gridGen.refine(pysgpp.SurplusRefinementFunctor(alpha, 1))
-    print "refinement step {}, new grid size: {}".format(refnum+1, gridStorage.getSize())
+    print("refinement step {}, new grid size: {}".format(refnum+1, gridStorage.getSize()))
 
     ## Extend alpha vector (new entries uninitialized). Note that right now, the surplus vector
     ## has the correct size again, but the values of the new points are set to zero. The correct

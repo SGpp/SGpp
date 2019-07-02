@@ -13,6 +13,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
@@ -20,23 +22,25 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
+#include <vector>
 
 const auto datasetPath = "datadriven/tests/dataminingConfig.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
+using sgpp::base::GridType;
+using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::datadriven::DataSourceConfig;
-using sgpp::datadriven::DataTransformationType;
 using sgpp::datadriven::DataSourceFileType;
-using sgpp::datadriven::ScorerConfiguration;
+using sgpp::datadriven::DataSourceShufflingType;
+using sgpp::datadriven::DataTransformationType;
+using sgpp::datadriven::FitterType;
+using sgpp::datadriven::ParallelConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::RegularizationType;
+using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::ScorerMetricType;
-using sgpp::datadriven::DataSourceShufflingType;
-using sgpp::datadriven::FitterType;
-using sgpp::base::RegularGridConfiguration;
-using sgpp::base::GridType;
 using sgpp::solver::SLESolverConfiguration;
 using sgpp::solver::SLESolverType;
 
@@ -61,6 +65,13 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.validationPortion = 0.1;
   defaults.randomSeed = 1337;
 
+
+  defaults.testFilePath = "something/testFalse";
+  defaults.testFileType = DataSourceFileType::NONE;
+  defaults.testNumBatches = 1;
+  defaults.testBatchSize = 4;
+  defaults.testIsCompressed = true;
+
   DataSourceConfig config;
   bool hasConfig;
   bool hasDataTransformationConfig;
@@ -75,12 +86,19 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.numBatches, 1);
   BOOST_CHECK_EQUAL(config.batchSize, 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig.type),
-      static_cast<int>(DataTransformationType::ROSENBLATT));
+                    static_cast<int>(DataTransformationType::ROSENBLATT));
   BOOST_CHECK_EQUAL(config.dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
   BOOST_CHECK_EQUAL(config.validationPortion, 0.634);
   BOOST_CHECK_EQUAL(config.epochs, 12);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling), static_cast<int>(
-      DataSourceShufflingType::random));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
+                    static_cast<int>(DataSourceShufflingType::random));
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(),
+                    "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
+                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config.testNumBatches, 2);
+  BOOST_CHECK_EQUAL(config.testBatchSize, 16);
+  BOOST_CHECK_EQUAL(config.testIsCompressed, false);
 }
 
 BOOST_AUTO_TEST_CASE(testScorerConfig) {
@@ -96,8 +114,6 @@ BOOST_AUTO_TEST_CASE(testScorerConfig) {
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
 }
-
-
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
   DataMiningConfigParser parser{datasetPath};
@@ -218,11 +234,54 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   hasConfig = parser.getFitterRegularizationConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
-                    static_cast<int>(RegularizationType::Identity));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(RegularizationType::Identity));
   BOOST_CHECK_CLOSE(config.lambda_, 10e-7, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
+}
+
+BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
+  DataMiningConfigParser parser{datasetPath};
+
+  sgpp::datadriven::GeometryConfiguration defaults;
+  defaults.dim = std::vector<int64_t>();
+  defaults.stencilType = sgpp::datadriven::StencilType::None;
+  sgpp::datadriven::GeometryConfiguration config;
+  bool hasConfig;
+  std::vector<int64_t> dim = std::vector<int64_t>();
+  dim.push_back(1);
+  dim.push_back(1);
+
+  hasConfig = parser.getGeometryConfig(config, defaults);
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::DN));
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(),
+      dim.begin(), dim.end());
+}
+
+BOOST_AUTO_TEST_CASE(testParallelConfig) {
+  DataMiningConfigParser parser{datasetPath};
+
+  ParallelConfiguration defaults;
+
+  defaults.scalapackEnabled_ = false;
+  defaults.processRows_ = 0;
+  defaults.processCols_ = 0;
+  defaults.rowBlockSize_ = 0;
+  defaults.columnBlockSize_ = 0;
+  ParallelConfiguration config;
+  bool hasConfig;
+
+  hasConfig = parser.getFitterParallelConfig(config, defaults);
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_ASSERT(config.scalapackEnabled_);
+  BOOST_CHECK_EQUAL(config.processRows_, 4);
+  BOOST_CHECK_EQUAL(config.processCols_, 1);
+  BOOST_CHECK_EQUAL(config.rowBlockSize_, 64);
+  BOOST_CHECK_EQUAL(config.columnBlockSize_, 128);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

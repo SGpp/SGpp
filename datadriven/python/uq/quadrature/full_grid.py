@@ -7,7 +7,7 @@ def __trapezoidal(k, accLevel):
 
 
 def trapezoidal(n):
-    ks = range(2**n + 1)
+    ks = list(range(2**n + 1))
     return sorted([__trapezoidal(k, n) for k in ks])  # in [0, 1]
 
 
@@ -16,7 +16,7 @@ def __clenshaw_curtis(k, accLevel):
 
 
 def clenshaw_curtis(n):
-    ks = range(2**n + 1)
+    ks = list(range(2**n + 1))
     return sorted([__clenshaw_curtis(k, n) for k in ks])  # in [0, 1]
 
 

@@ -20,8 +20,6 @@
 ## arguments as well as how to omit the recomputation of the last iteration resuming
 ## the learning.
 ##
-## For instructions how to run the example, please see \ref installation.
-##
 ## In order to create a Learner object one should use the
 ## @link python.learner.LearnerBuilder.LearnerBuilder LearnerBuilder @endlink.
 ## You can let the
@@ -110,7 +108,7 @@ builder.withCheckpointController(checkpointController)"""
 
 ## Now you can execute the code and obtain the Learner object with
 # create the Learner object
-exec code
+exec(code)
 learner = builder.andGetResult()
 
 ## Usually if you want to restart your classifier from the checkpoint and to perform

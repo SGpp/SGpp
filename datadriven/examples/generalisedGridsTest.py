@@ -60,7 +60,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     ## for the testing set.
     estimator = sg.RegressionLearner(grid, adapt, solv, final_solv,regular)
     estimator.train(X_tr,y_tr)
-    print estimator.getGridSize()
+    print(estimator.getGridSize())
     return estimator.getMSE(X_te,y_te)
 
 def main():
@@ -72,7 +72,7 @@ def main():
     Ts = [-0.5, 0, 0.5, 1.0]
     for T in Ts:
         mse = evaluate(X_tr, y_tr, X_te, y_te, T)
-        print "The sparse grid with T={:2.1f} achieved a testing RMSE of {:2.4f}.".format(T, np.sqrt(mse))
+        print("The sparse grid with T={:2.1f} achieved a testing RMSE of {:2.4f}.".format(T, np.sqrt(mse)))
 
 if __name__ == '__main__':
     main()

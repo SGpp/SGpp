@@ -7,7 +7,7 @@
 import time
 import math
 
-from FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 from pysgpp.extensions.datadriven.data.ARFFAdapter import ARFFAdapter
 
 ## Provides functionality for accomplishment of learning with cross-validation
@@ -22,7 +22,7 @@ class SequentialFoldingPolicy(FoldingPolicy):
     #@param level: Integer folding level, default value: 1
     def __init__(self, dataContainer, level):
         FoldingPolicy.__init__(self,  dataContainer, level)
-        self.seq = range(self.size)
-        for step in xrange(self.level):
+        self.seq = list(range(self.size))
+        for step in range(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
             self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))

@@ -36,7 +36,7 @@ ylower, yupper = -0.9, 1.5
 def hierarchizeFun(fun):
     nodalValues = np.ndarray(grid.getSize())
     p = DataVector(gs.getDimension())
-    for i in xrange(gs.getSize()):
+    for i in range(gs.getSize()):
         gs.getPoint(i).getStandardCoordinates(p)
         nodalValues[i] = fun(p.array())
 
@@ -91,8 +91,8 @@ grid.getGenerator().regular(level)
 gs = grid.getStorage()
 
 alpha = hierarchizeFun(fun)
-print "l=%i: (gs=%i)" % (level, grid.getSize())
-print "-" * 80
+print("l=%i: (gs=%i)" % (level, grid.getSize()))
+print("-" * 80)
 
 # plot the result
 if plot and numDims < 3:
@@ -164,8 +164,8 @@ else:
         elif side == "upper":
             alpha = addConst(grid, alpha, -1.0, yupper)
 
-        print "-" * 80
-        print "l=%i: (gs=%i)" % (level, grid.getSize())
+        print("-" * 80)
+        print("l=%i: (gs=%i)" % (level, grid.getSize()))
 
         # plot the result
         if plot and numDims < 3:
@@ -178,8 +178,8 @@ else:
             plt.title("%i) after %s: #gp = %i" % (i, side, grid.getStorage().getSize()))
             fig.show()
 
-print "l=%i: (gs=%i)" % (level, grid.getSize())
-print "-" * 80
+print("l=%i: (gs=%i)" % (level, grid.getSize()))
+print("-" * 80)
 
 # plot the final result
 if plot and numDims < 3:

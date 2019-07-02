@@ -35,7 +35,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         v = np.ndarray(gs.size())
         err = 0.
         # run over all rows
-        for i in xrange(gs.size()):
+        for i in range(gs.size()):
             gpi = gs.getPoint(i)
             # compute bilinear form for one entry
             v[i], erri = self.getLinearFormEntry(gs, gpi, basis)
@@ -73,7 +73,7 @@ class LinearQuadratureStrategy(HashQuadrature):
         ans, err = 1.0, 0.0
 
         # run over all dimensions
-        for d in xrange(gp.getDimension()):
+        for d in range(gp.getDimension()):
             # compute linear form for one entry
             available, keyd = self.hasValue(gp, d)
             if not available:

@@ -13,6 +13,12 @@
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
+#include <sgpp/datadriven/algorithm/AlgorithmMultipleEvaluationDistributed.hpp>
+
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
@@ -42,9 +48,9 @@
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
-#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
@@ -85,6 +91,10 @@
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
+
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
@@ -97,9 +107,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
 
-#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveCandidateSetAlgorithm.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
 
 #include <sgpp/datadriven/tools/TypesDatadriven.hpp>
 
@@ -107,9 +117,10 @@
 
 #include <sgpp/datadriven/configuration/BatchConfiguration.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
@@ -127,10 +138,10 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 
-#include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
-#include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
@@ -141,6 +152,7 @@
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
@@ -153,6 +165,8 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorSequential.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
@@ -172,14 +186,18 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
-#include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
-#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>

@@ -1,4 +1,4 @@
-from SparseGridEstimationStrategy import SparseGridEstimationStrategy 
+from pysgpp.extensions.datadriven.uq.estimators.SparseGridEstimationStrategy import SparseGridEstimationStrategy 
 from pysgpp.extensions.datadriven.uq.operations import dehierarchize
 from pysgpp import DataVector
 import numpy as np
@@ -23,7 +23,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         # multiply the result with the corresponding pdf value
         gs = grid.getStorage()
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.size()):
+        for i in range(gs.size()):
             gs.getCoordinates(gs.getPoint(i), p)
             res[i] *= W.pdf(D.unitToProbabilistic(p))
 
@@ -47,7 +47,7 @@ class CollocationPointsStrategy(SparseGridEstimationStrategy):
         # multiply the result with the corresponding pdf value
         gs = grid.getStorage()
         p = DataVector(gs.getDimension())
-        for i in xrange(gs.size()):
+        for i in range(gs.size()):
             gs.getCoordinates(gs.getPoint(i), p)
             res[i] *= (res[i] - mean) * D.pdf(T.unitToProbabilistic(p))
 

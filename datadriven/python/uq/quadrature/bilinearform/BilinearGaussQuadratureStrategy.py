@@ -6,7 +6,7 @@ Created on Aug 6, 2014
 import numpy as np
 from math import floor
 
-from BilinearQuadratureStrategy import BilinearQuadratureStrategy
+from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
 from pysgpp import GridType_NakBsplineBoundary, GridType_NakBsplineModified

@@ -48,7 +48,7 @@ class OperationMakePositiveFast(object):
         gs = newGrid.getStorage()
         for n, ((i, j), (gpi, gpj)) in enumerate(overlappingGridPoints.items()):
             fig = plt.figure()
-            for k in xrange(gs.getSize()):
+            for k in range(gs.getSize()):
                 gp = gs.getPoint(k)
                 x, y = gp.getStandardCoordinate(0), gp.getStandardCoordinate(1)
                 if alpha[k] < 0.0:
@@ -190,10 +190,10 @@ class OperationMakePositiveFast(object):
 
             currentCandidates = finalCandidates[minLevelSum]
             if self.verbose:
-                print "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
+                print(( "# check candidates    : %i/%i (at |l|_1 = %i <= %i)" % (len(currentCandidates),
                                                                                len(candidates),
                                                                                minLevelSum,
-                                                                               np.max(levelSums)),
+                                                                               np.max(levelSums)),))
 
             # evaluate the remaining candidates
             samples = np.ndarray((len(currentCandidates), self.numDims))
@@ -206,7 +206,7 @@ class OperationMakePositiveFast(object):
             negativeNonExistingCandidates = [gp for j, gp in enumerate(currentCandidates) if eval[j] < tol]
 
             if self.verbose:
-                print "-> %i : considered candidates" % len(negativeNonExistingCandidates)
+                print( "-> %i : considered candidates" % len(negativeNonExistingCandidates) )
 
             for gp in negativeNonExistingCandidates:
                 addedGridPoints += insertPoint(grid, gp)
@@ -262,7 +262,7 @@ class OperationMakePositiveFast(object):
                 newGs.recalcLeafProperty()
                 # copy the remaining alpha values
                 newAlpha = np.ndarray(newGs.getSize())
-                for i in xrange(newGs.getSize()):
+                for i in range(newGs.getSize()):
                     newAlpha[i] = alpha[gs.getSequenceNumber(newGs.getPoint(i))]
 
                 grid, alpha = newGrid, newAlpha
@@ -285,7 +285,7 @@ class OperationMakePositiveFast(object):
         newAlpha = alpha
 
         if self.verbose:
-            print
+            print( )
 
         iteration = 0
         newAlpha = self.makeCurrentNodalValuesPositive(newGrid, newAlpha)
@@ -307,19 +307,19 @@ class OperationMakePositiveFast(object):
             oldGridSize = newGs.getSize()
 
             if self.verbose:
-                print "iteration             : %i" % self.candidateSearchAlgorithm.iteration
-                print "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints, costs)
+                print( "iteration             : %i" % self.candidateSearchAlgorithm.iteration )
+                print( "# found candidates    : %i/%i (costs = %i)" % (len(candidates), numFullGridPoints, costs) )
 
             if len(candidates) > 0:
                 addedGridPoints, minLevelSum, nextLevelCosts = self.addFullGridPoints(newGrid, newAlpha, candidates)
                 currentCosts += nextLevelCosts
                 assert oldGridSize + len(addedGridPoints) == newGs.getSize()
                 if self.verbose:
-                    print "# new grid points     : %i -> %i -> %i" % (oldGridSize,
+                    print( "# new grid points     : %i -> %i -> %i" % (oldGridSize, 
                                                                       len(addedGridPoints),
-                                                                      newGrid.getSize())
-                    print "  current total costs : %i <= %i <= %i" % (currentCosts, totalCosts, numFullGridPoints)
-                    print "-" * 80
+                                                                      newGrid.getSize()))
+                    print( "  current total costs : %i <= %i <= %i" % (currentCosts, totalCosts, numFullGridPoints) )
+                    print( "-" * 80 )
 
                 newAlpha = np.append(newAlpha, np.zeros(len(addedGridPoints)))
 
@@ -342,8 +342,8 @@ class OperationMakePositiveFast(object):
 #         # coarsening: remove all new grid points with zero surplus
 #         coarsedGrid, coarsedAlpha = self.coarsening(newGrid, newAlpha, newGridPoints)
 #         if self.verbose:
-#             print "                        old | coarsed | new | max (cand) | full"
-#             print "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(),
+#             print( "                        old | coarsed | new | max (cand) | full" )
+#             print( "# final grid          : %i <= %i <= %i <= %i (%i) <= %i" % (self.grid.getSize(), )
 #                                                                                coarsedGrid.getSize(),
 #                                                                                newGrid.getSize(),
 #                                                                                self.grid.getSize() + len(candidates),

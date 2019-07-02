@@ -1,3 +1,4 @@
+
 import numpy as np
 
 from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
@@ -184,7 +185,7 @@ class ProbabilisticSpaceSGpp(object):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        for idim in xrange(self.numDims):
+        for idim in range(self.numDims):
             up.new().isCalled("x%i" % idim).withUniformDistribution(a, b)
         return up.andGetResult()
 
@@ -192,7 +193,7 @@ class ProbabilisticSpaceSGpp(object):
         # set distributions of the input parameters
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        for idim in xrange(self.numDims):
+        for idim in range(self.numDims):
             up.new().isCalled("x%i" % idim).withNormalDistribution(mu, sigma, 0.001)
         return builder.andGetResult()
 
@@ -207,6 +208,6 @@ class ProbabilisticSpaceSGpp(object):
         # estimate the density
         builder = ParameterBuilder()
         up = builder.defineUncertainParameters()
-        names = ", ".join(["x%i" for i in xrange(numDims)])
+        names = ", ".join(["x%i" for i in range(numDims)])
         up.new().isCalled(names).withMultivariateNormalDistribution(mu, cov, 0, 1)
         return builder.andGetResult()

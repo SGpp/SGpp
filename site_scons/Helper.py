@@ -4,7 +4,6 @@
 # sgpp.sparsegrids.org
 
 from __future__ import print_function
-
 import glob
 import os
 import platform
@@ -232,9 +231,6 @@ def setWin32Spawn(env):
   import win32security
 
   def win32Spawn(sh, escape, cmd, args, spawnEnv):
-    for var in spawnEnv:
-      spawnEnv[var] = spawnEnv[var].encode("ascii", "replace")
-
     #sAttrs = win32security.SECURITY_ATTRIBUTES()
     #sAttrs.bInheritHandle = 1
     #hStdinR, hStdinW = win32pipe.CreatePipe(sAttrs, 0)
@@ -380,3 +376,20 @@ def CheckJNI(context):
 
   context.Result("... nothing found!")
   return 0
+
+# check for the mkl scalapack version
+# (Conftest CheckLib version with extra_libs argument is needed)
+def CheckMklScalapack(context):
+  mkl_libs = ["mkl_blacs_intelmpi_lp64",
+                "mkl_gf_lp64",
+                "mkl_gnu_thread",
+                "mkl_core",
+                "gomp",
+                "pthread",
+                "dl",
+                "m"]
+  res = not SCons.Conftest.CheckLib(
+    context, ["mkl_scalapack_lp64"], extra_libs=mkl_libs, language="c++", autoadd=0)
+  context.did_show_result = 1
+  context.Result(res)
+  return res

@@ -3,23 +3,39 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+
 import distutils.sysconfig
+import errno
 import os
-import subprocess
 import re
+import subprocess
+import sys
 
 import SCons.Script
 
 import Helper
 
+def getOutput(command):
+  # redirect stderr to stdout
+  try:
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    output = e.output  
+  # in Python 3.x, check_output returns bytes
+  if sys.version_info >= (3, 0): output = output.decode()
+  # strip trailing newlines
+  output = output.rstrip("\r\n")
+  return output
+
 def doConfigure(env, moduleFolders, languageWrapperFolders):
-  print
-  print "Checking programs and libraries:"
+  print("")
+  print("Checking programs and libraries:")
 
   config = env.Configure(custom_tests={"CheckExec" : Helper.CheckExec,
                                        "CheckJNI" : Helper.CheckJNI,
                                        "CheckFlag" : Helper.CheckFlag,
-                                       "CheckCompiler" : Helper.CheckCompiler})
+                                       "CheckCompiler" : Helper.CheckCompiler,
+                                       "CheckMKL" : Helper.CheckMklScalapack})
 
   # now set up all further environment settings that should never fail
   # compiler setup should be always after checking headers and flags,
@@ -101,8 +117,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     checkDoxygen(config)
     checkDot(config)
   checkOpenCL(config)
+  detectGSL(config)
   detectZlib(config)
-  checkGSL(config)
+  detectScaLAPACK(config)
+  detectPythonAPI(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -158,8 +176,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
 
   env = config.Finish()
 
-  print "Configuration done."
-  print
+  print("Configuration done.")
+  print("")
 
 def checkCpp11(config):
   # check C++11 support
@@ -184,7 +202,7 @@ def checkDoxygen(config):
                         "Check the PATH environment variable!")
   else:
     Helper.printInfo("Using Doxygen " + re.findall(
-       r"[0-9.]*[0-9]+", subprocess.check_output(["doxygen", "--version"]))[0] + ".")
+       r"[0-9.]*[0-9]+", getOutput(["doxygen", "--version"]))[0] + ".")
 
 def checkDot(config):
   # check whether dot installed
@@ -193,8 +211,7 @@ def checkDot(config):
                         "The documentation might lack diagrams.",
                         "Check the PATH environment variable!")
   else:
-    Helper.printInfo("Using " +
-        subprocess.check_output(["dot", "-V"], stderr=subprocess.STDOUT).strip() + ".")
+    Helper.printInfo("Using " + getOutput(["dot", "-V"]) + ".")
 
 def checkOpenCL(config):
 
@@ -250,19 +267,6 @@ def checkCGAL(config):
         if not config.CheckCXXHeader("CGAL/basic.h"):
             Helper.printErrorAndExit("CGAL/basic.h not found, but required for CGAL. Consider setting the flag 'CPPPATH'.")
 
-def checkGSL(config):
-  if config.env["USE_GSL"]:
-    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
-    if "GSL_LIBRARY_PATH" in config.env:
-	  config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
-
-    if not config.CheckCXXHeader("gsl/gsl_version.h"):
-      Helper.printErrorAndExit("gsl/gsl_version.h not found, but required for GSL")
-    if not config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
-      Helper.printErrorAndExit("libsgl/libgslcblas not found, but required for GSL")
-
-    config.env["CPPDEFINES"]["USE_GSL"] = "1"
-
 def checkBoostTests(config):
   # Check the availability of the boost unit test dependencies
   if config.env["COMPILE_BOOST_TESTS"]:
@@ -294,7 +298,7 @@ def checkSWIG(config):
 
     # make sure swig version is new enough
     swigVersion = re.findall(
-        r"[0-9.]*[0-9]+", subprocess.check_output(["swig", "-version"]))[0]
+        r"[0-9.]*[0-9]+", getOutput(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
     if swigVersionTuple < (3, 0, 3):
@@ -304,42 +308,61 @@ def checkSWIG(config):
 
 def checkPython(config):
   if config.env["SG_PYTHON"]:
-    config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
-    Helper.printInfo("pythonpath = " + distutils.sysconfig.get_python_inc())
+    if not python3_is_installed():
+        raise Exception("Python 3 is required for SGpp python support!")
+      
+    pythonpath = getOutput(["python3", "-c",
+          "import distutils.sysconfig; "
+          "print(distutils.sysconfig.get_python_inc())"])
+    package = "python3-dev"
+
+    config.env.AppendUnique(CPPPATH=[pythonpath])
+    Helper.printInfo("pythonpath = " + pythonpath)
 
     if not config.CheckCXXHeader("Python.h"):
       Helper.printErrorAndExit("Python.h not found, but required for SG_PYTHON.",
                                "Check path to Python include files:",
-                               distutils.sysconfig.get_python_inc(),
-                               "Hint: You might have to install the package python-dev.")
+                               pythonpath,
+                               "Hint: You might have to install the package " + package + ".")
 
     if not config.CheckCXXHeader("pyconfig.h"):
       Helper.printErrorAndExit("pyconfig.h not found, but required for SG_PYTHON.",
                                "Check path to Python include files:",
-                               distutils.sysconfig.get_python_inc(),
-                               "Hint: You might have to install the package python-dev.")
+                               pythonpath,
+                               "Hint: You might have to install the package " + package + ".")
 
-    try:
-      import numpy
-      numpy_path = os.path.join(os.path.split(numpy.__file__)[0], "core", "include")
+    numpy_path=getOutput(["python3", "-c", "import numpy, os;"
+    "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
+    if numpy_path.startswith("Traceback"):
+      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
+      if config.env["RUN_PYTHON_TESTS"]:
+        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_TESTS"] = False
+    else:
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
         Helper.printWarning("Cannot find NumPy header files in " + str(numpy_path) + ".")
         if config.env["RUN_PYTHON_TESTS"]:
           config.env["RUN_PYTHON_TESTS"] = False
           Helper.printWarning("Python unit tests were disabled due to missing numpy development headers.")
-    except:
-      Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
-      if config.env["RUN_PYTHON_TESTS"]:
-        Helper.printWarning("Python unit tests were disabled because numpy is not available.")
-        config.env["RUN_PYTHON_TESTS"] = False
 
-    try:
-        import scipy
-    except:
-        Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
+    if getOutput(["python3", "-c", "import scipy; "]).startswith('Traceback'):
+      Helper.printWarning("Warning: Scipy doesn't seem to be installed.")
   else:
     Helper.printInfo("Python extension (SG_PYTHON) not enabled.")
+
+def python3_is_installed():
+  try:
+    subprocess.check_output(["python3", "--version"])
+    return True
+  except subprocess.CalledProcessError:
+    return False
+  except OSError as e:
+    # file not found
+    if e.errno == errno.ENOENT:
+      return False
+    else:
+      raise
 
 def checkJava(config):
   if config.env["SG_JAVA"]:
@@ -395,9 +418,9 @@ def configureGNUCompiler(config):
     config.env["CXX"] = ("mpicxx.mpich")
     Helper.printInfo("Using mpich.")
 
-  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  versionString = getOutput([config.env["CXX"], "-dumpversion"])
   if "." not in versionString:
-    versionString = subprocess.check_output([config.env["CXX"], "-dumpfullversion"]).strip()
+    versionString = getOutput([config.env["CXX"], "-dumpfullversion"])
   version = config.env._get_major_minor_revision(versionString)
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
@@ -482,7 +505,7 @@ def configureClangCompiler(config):
   config.env["LINK"] = ("clang++")
   config.env["CXX"] = ("clang++")
 
-  versionString = subprocess.check_output([config.env["CXX"], "--version"])
+  versionString = getOutput([config.env["CXX"], "--version"])
   try:
     versionString = re.match(r"^.*version ([^ ]+)", versionString).group(1)
   except AttributeError:
@@ -545,7 +568,7 @@ def configureIntelCompiler(config):
     config.env["LINK"] = ("icpc")
     config.env["CXX"] = ("icpc")
 
-  versionString = subprocess.check_output([config.env["CXX"], "-dumpversion"]).strip()
+  versionString = getOutput([config.env["CXX"], "-dumpversion"])
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
 
   if not config.CheckExec(config.env["CXX"]) or not config.CheckExec(config.env["CC"]) or \
@@ -582,7 +605,19 @@ def configureIntelCompiler(config):
     Helper.printErrorAndExit("You must specify a valid ARCH value for intel.",
                              "Available configurations are: sse3, sse4.2, avx, avx2, avx512, mic")
 
-  config.env.AppendUnique(CPPPATH=[distutils.sysconfig.get_python_inc()])
+def detectGSL(config):
+  if "GSL_INCLUDE_PATH" in config.env:
+    config.env.AppendUnique(CPPPATH=[config.env["GSL_INCLUDE_PATH"]])
+  if "GSL_LIBRARY_PATH" in config.env:
+    config.env.AppendUnique(LIBPATH=[config.env["GSL_LIBRARY_PATH"]])
+  if config.CheckCXXHeader("gsl/gsl_version.h") and config.CheckLib(["gsl", "gslcblas"], language="c++", autoadd=0):
+    Helper.printInfo("GSL is installed, enabling GSL support.")
+    config.env["USE_GSL"] = True
+    config.env["CPPDEFINES"]["USE_GSL"] = "1"
+  elif config.env["USE_GSL"]:
+    Helper.printErrorAndExit("gsl/gsl_version.h or libsgl/libgslcblas were not found, but required for GSL")
+  else:
+    Helper.printInfo("GSL support could not be enabled.")
 
 def detectZlib(config):
   if config.CheckLib("z", language="c++", autoadd=0) and config.CheckCXXHeader("zlib.h"):
@@ -596,3 +631,57 @@ def detectZlib(config):
       Helper.printErrorAndExit("USE_ZLIB is set but either libz or zlib.h is missing!")
   else:
     Helper.printInfo("ZLIB support could not be enabled.")
+
+def detectScaLAPACK(config):
+  if "SCALAPACK_LIBRARY_PATH" in config.env:
+    config.env.AppendUnique(LIBPATH=[config.env["SCALAPACK_LIBRARY_PATH"]])
+
+  # check if USE_SCALAPACK was given as parameter and is disabled
+  if "USE_SCALAPACK" in config.env and not config.env["USE_SCALAPACK"]:
+    Helper.printInfo("ScaLAPACK disabled.")
+    return
+
+  if config.env["COMPILER"] not in ("openmpi", "mpich", "intel.mpi"):
+    if "USE_SCALAPACK" in config.env and config.env["USE_SCALAPACK"]:
+      Helper.printErrorAndExit("USE_SCALAPACK was set, but no mpi compiler was used (openmpi, mpich or intel.mpi)")
+    config.env["USE_SCALAPACK"] = False
+    Helper.printInfo("ScaLAPACK was disabled as no mpi compiler was used (openmpi, mpich or intel.mpi)")
+    return
+
+
+  # check if there is a ScaLAPACK version installed
+  if "SCALAPACK_LIBRARY_NAME" in config.env and config.CheckLib(config.env["SCALAPACK_LIBRARY_NAME"], language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "custom"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using scalapack version from SCALAPACK_LIBRARY_NAME: " + str(config.env["SCALAPACK_LIBRARY_NAME"]))
+  elif config.CheckMKL():
+    config.env["SCALAPACK_VERSION"] = "mkl"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using mkl ScaLAPACK")
+  elif config.CheckLib("scalapack", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "netlib"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using netlib ScaLAPACK")
+  elif config.env["COMPILER"] == "openmpi" and config.CheckLib("scalapack-openmpi", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "openmpi"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using openmpi ScaLAPACK")
+  elif config.env["COMPILER"] == "mpich" and config.CheckLib("scalapack-mpich", language="c++", autoadd=0):
+    config.env["SCALAPACK_VERSION"] = "mpich"
+    config.env["USE_SCALAPACK"] = True
+    config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
+    Helper.printInfo("Using mpich ScaLAPACK")
+  elif "USE_SCALAPACK" in config.env and config.env["USE_SCALAPACK"]:
+    Helper.printErrorAndExit("No supported version of ScaLAPACK was found.")
+  else:
+    config.env["USE_SCALAPACK"] = False
+    Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
+
+
+def detectPythonAPI(config):
+  if config.env["USE_PYTHON_EMBEDDING"]:
+    config.env["CPPDEFINES"]["USE_PYTHON_EMBEDDING"] = "1"

@@ -15,12 +15,13 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 #include <memory>
+#include <string>
 
 namespace sgpp {
 
@@ -72,7 +73,6 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    */
   virtual ~ModelFittingBaseSingleGrid() = default;
 
-
   /**
    * Get the underlying grid object for the current model.
    * @return the grid object.
@@ -84,6 +84,12 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
    * @return vector of surpluses.
    */
   DataVector& getSurpluses();
+
+  /*
+   * Get the grid and alphas of the current model
+   * @return string with grid and alphas
+   */
+  std::string storeFitter();
 
  protected:
   /**

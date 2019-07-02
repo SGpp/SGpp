@@ -33,7 +33,8 @@ from pysgpp.extensions.datadriven.learner.solver.CGSolver import CGSolver
 from pysgpp.extensions.datadriven.uq.learner.Interpolant import Interpolant
 from pysgpp import createOperationMultipleEval
 
-from GridDescriptor import GridDescriptor
+from pysgpp.extensions.datadriven.uq.learner.builder.GridDescriptor import GridDescriptor
+from pysgpp.extensions.datadriven.uq.learner.builder.RegressorSpecificationDescriptor import RegressorSpecificationDescriptor
 import pysgpp.extensions.datadriven.utils.json as json
 from pysgpp.extensions.datadriven.uq.learner.builder import InterpolantSpecificationDescriptor
 

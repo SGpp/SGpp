@@ -91,7 +91,7 @@ class TestClassifier(unittest.TestCase):
         points = [[0.5, 0.1], [0.3, 0.4], [0.9, 0.7]]
         self.classifier.learnData()
         data = DataMatrix(3,2)
-        for i in xrange(3):
+        for i in range(3):
             temp = DataVector(2)
             temp[0] = points[i][0]
             temp[1] = points[i][1]
@@ -101,7 +101,7 @@ class TestClassifier(unittest.TestCase):
         places = 7
 
         self.assertEqual(len(val), len(correct))
-        for i in xrange(len(correct)):
+        for i in range(len(correct)):
             self.assertAlmostEqual(val[i], correct[i], places=places)
 
     ##
@@ -115,7 +115,7 @@ class TestClassifier(unittest.TestCase):
 
         alpha = self.classifier.learnData()
         places = 7
-        for i in xrange(len(alpha)):
+        for i in range(len(alpha)):
             self.assertAlmostEqual(correct[i], alpha[i], places=places)
 
     ##
@@ -135,7 +135,7 @@ class TestClassifier(unittest.TestCase):
         dim = 6
         l = 0.00001
         self.classifier = Classifier()
-        dataContainer = ARFFAdapter(pathlocal + "/../../../datasets/liver-disorders_normalized.arff").loadData()
+        dataContainer = ARFFAdapter(pathlocal + "/../../../datasets/liver/liver-disorders_normalized.arff").loadData()
         self.classifier.setDataContainer(dataContainer)
         foldingPolicy = SequentialFoldingPolicy(dataContainer, 10)
         self.classifier.setFoldingPolicy(foldingPolicy)
@@ -155,7 +155,7 @@ class TestClassifier(unittest.TestCase):
         self.classifier.setSolver(CGSolver())
 
         self.classifier.learnDataWithFolding()
-        for i in xrange(10):
+        for i in range(10):
             self.assertAlmostEqual(correct[2*i], self.classifier.trainAccuracy[i])
             self.assertAlmostEqual(correct[2*i+1], self.classifier.testAccuracy[i])
 

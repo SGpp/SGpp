@@ -86,7 +86,7 @@ class TestCheckpointController(unittest.TestCase):
                        0.649230972775,
                       -0.618841896127]
         alpha = DataVector(len(testValues))
-        for i in xrange(len(testValues)):
+        for i in range(len(testValues)):
             alpha[i] = testValues[i]
 
         learnedKnowledge = LearnedKnowledge()
@@ -122,7 +122,7 @@ class TestCheckpointController(unittest.TestCase):
 
         self.assertEqual(len(testValues), len(learnedKnowledge.getAlphas()))
 
-        for i in xrange(len(testValues)):
+        for i in range(len(testValues)):
             self.assertAlmostEqual(testValues[i], learnedKnowledge.getAlphas()[i])
 
 

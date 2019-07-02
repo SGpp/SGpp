@@ -6,7 +6,7 @@
 
 from pysgpp.extensions.datadriven.utils.GzipSerializer import GzipSerializer
 from pysgpp.extensions.datadriven.learner import Classifier, Regressor
-import pysgpp.extensions.datadriven.utils.json as json
+from pysgpp.extensions.datadriven.utils import json
 
 
 # # Provides functionality for the runtime serialization of the @link pysgpp.extensions.datadriven.learner.Learner.Learner Learner@endlink subclasses.

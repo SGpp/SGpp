@@ -15,8 +15,8 @@ samples = B.rvs(20000)
 plt.hist(samples, normed=True)
 plt.plot(X, Y)
 
-print B.mean(), "~", np.mean(samples)
-print B.var(), "~", np.var(samples)
-print quad(B.pdf, 0, c)[0], "~", 1
+print(B.mean(), "~", np.mean(samples))
+print(B.var(), "~", np.var(samples))
+print(quad(B.pdf, 0, c)[0], "~", 1)
 
 plt.show()

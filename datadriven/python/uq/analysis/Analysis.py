@@ -70,7 +70,7 @@ class Analysis(object):
     def computeMean(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def mean(self, iterations=None,totalNumIterations=1, ts=None, reduce=True):
+    def mean(self, iterations=None, ts=None, reduce=True):
         """
         compute means
         @return: dictionary, {<iteration>: {<time>: (mean, err)}}
@@ -88,9 +88,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute mean
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, totalNumIterations),
+                    print( "-" * 80 )
+                    print(( "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations)),))
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -101,8 +101,8 @@ class Analysis(object):
                                                      t, 'mean')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                    print( "value = %g (err=%g)" % (moment["value"], 
+                                                   moment["err"]))
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
@@ -120,7 +120,7 @@ class Analysis(object):
     def computeVar(self, iteration, qoi, t):
         raise NotImplementedError()
 
-    def var(self, iterations=None,totalNumIterations=1, ts=None, reduce=True):
+    def var(self, iterations=None, ts=None, reduce=True):
         """
         Compute the variance
         @return: dictionary, {<iteration>: {<time>: variance}}
@@ -138,9 +138,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute variance
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, totalNumIterations),
+                    print( "-" * 80 )
+                    print(( "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations))), end=' ')
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)
@@ -151,8 +151,8 @@ class Analysis(object):
                                                      t, 'var')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                    print( "value = %g (err=%g)" % (moment["value"], 
+                                                   moment["err"]))
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
@@ -170,8 +170,8 @@ class Analysis(object):
     def computeMoments(self, iterations=None, ts=None):
         raise NotImplementedError()
 
-    def writeMoments(self, filename,iterations=None, *args, **kws):
-        stats = self.computeMoments(iterations,*args, **kws)
+    def writeMoments(self, filename, *args, **kws):
+        stats = self.computeMoments(*args, **kws)
         stats['filename'] = filename + ".moments.arff"
         writeDataARFF(stats)
 
