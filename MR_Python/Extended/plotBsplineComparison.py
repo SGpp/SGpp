@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 import os
 
-import cPickle as pickle
+import _pickle as pickle
 import functions
 import matplotlib.pyplot as plt
 import numpy as np
@@ -227,7 +227,7 @@ def plotter(qoi, data, refineTypes, objFunc, model):
 ############################ Main ############################     
 if __name__ == '__main__':
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
     parser.add_argument('--qoi', default='varErr', type=str, help='what to plot')
     parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
     parser.add_argument('--dim', default=8, type=int, help='the problems dimensionality')
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
     parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
-    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
+    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
     args = parser.parse_args()
     
     if args.degree == 135:
@@ -273,7 +273,7 @@ if __name__ == '__main__':
             # plt.gca().set_title('n={}'.format(degree), fontsize=titlefontsize)
             datapath = os.path.join(loadDirectory, saveName + '_data{}.pkl'.format(degree))    
             with open(datapath, 'rb') as fp:
-                data = pickle.load(fp)
+                data = pickle.load(fp, encoding='latin1')  # encoding necessary because the data was stored with cPickle from python2.7
                 orders = [degree + 1]
                 plotter(args.qoi, data, refineTypes, objFunc, args.model)
     
