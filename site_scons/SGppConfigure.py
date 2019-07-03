@@ -120,6 +120,7 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   detectGSL(config)
   detectZlib(config)
   detectScaLAPACK(config)
+  detectPythonAPI(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -634,7 +635,7 @@ def detectZlib(config):
 def detectScaLAPACK(config):
   if "SCALAPACK_LIBRARY_PATH" in config.env:
     config.env.AppendUnique(LIBPATH=[config.env["SCALAPACK_LIBRARY_PATH"]])
-  
+
   # check if USE_SCALAPACK was given as parameter and is disabled
   if "USE_SCALAPACK" in config.env and not config.env["USE_SCALAPACK"]:
     Helper.printInfo("ScaLAPACK disabled.")
@@ -654,7 +655,7 @@ def detectScaLAPACK(config):
     config.env["USE_SCALAPACK"] = True
     config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
     Helper.printInfo("Using scalapack version from SCALAPACK_LIBRARY_NAME: " + str(config.env["SCALAPACK_LIBRARY_NAME"]))
-  elif config.CheckMKL():      
+  elif config.CheckMKL():
     config.env["SCALAPACK_VERSION"] = "mkl"
     config.env["USE_SCALAPACK"] = True
     config.env["CPPDEFINES"]["USE_SCALAPACK"] = "1"
@@ -679,3 +680,8 @@ def detectScaLAPACK(config):
   else:
     config.env["USE_SCALAPACK"] = False
     Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
+
+
+def detectPythonAPI(config):
+  if config.env["USE_PYTHON_EMBEDDING"]:
+    config.env["CPPDEFINES"]["USE_PYTHON_EMBEDDING"] = "1"
