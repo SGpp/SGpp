@@ -77,7 +77,13 @@ double SparseGridResponseSurfaceBspline::eval(sgpp::base::DataVector v) {
 double SparseGridResponseSurfaceBspline::evalGradient(sgpp::base::DataVector v,
                                                       sgpp::base::DataVector& gradient) {
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
-  return interpolantGradient->eval(v, gradient);
+  double evalValue = interpolantGradient->eval(v, gradient);
+  // scale gradient components according to the inner derivative of the chain rule when transforming
+  // the interpolation point from the original coordinates to unit cube
+  for (size_t i = 0; i < gradient.getSize(); i++) {
+    gradient[i] /= (ub[i] - lb[i]);
+  }
+  return evalValue;
 }
 
 double SparseGridResponseSurfaceBspline::getIntegral() {
