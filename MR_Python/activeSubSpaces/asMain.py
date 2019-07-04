@@ -5,9 +5,11 @@ import time
 
 from mpl_toolkits.mplot3d import Axes3D
 
-import active_subspaces as ac
+ # installed active subspace utility library for python 2.7, does not work with python3
+ # ToDo exclude the ac parts to own script
+# import active_subspaces as ac 
 import asFunctions
-import cPickle as pickle
+import _pickle as pickle
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pn
@@ -52,6 +54,14 @@ class objFuncSGpp(pysgpp.OptScalarFunction):
             x[0, i] = v[i]
         return  self.objFunc.eval(x)[0][0]
     
+    def getLowerBounds(self):
+        lb, ub = self.objFunc.getDomain()
+        return pysgpp.DataVector(lb)
+    
+    def getUpperBounds(self):
+        lb, ub = self.objFunc.getDomain()
+        return pysgpp.DataVector(ub)
+    
     def getDim(self):
         return self.numDim
 
@@ -94,7 +104,8 @@ def getData(savePath, numDataPoints, f, method, model='SingleDiode'):
         if method in ['asSGpp']:
             XX = asFunctions.unnormalize(Y, 0, 1, xl, xu)
         elif method in ["QPHD"]:
-            XX = ac.utils.misc.BoundedNormalizer(xl, xu).normalize(Y)
+            print("Constantine active_subspaces code not python3 compatible. Rewrite!")
+            # XX = ac.utils.misc.BoundedNormalizer(xl, xu).normalize(Y)
         evaluationPoints = pysgpp.DataMatrix(XX[0:numDataPoints, :])
         functionValues = pysgpp.DataVector(f[0:numDataPoints])
         
@@ -150,7 +161,8 @@ def boreholeX(numSamples):
     xl = np.array([63070, 990, 63.1, 700, 1120, 9855])
     xu = np.array([115600, 1110, 116, 820, 1680, 12045])
     # XX = normalized input matrix
-    XX = ac.utils.misc.BoundedNormalizer(xl, xu).normalize(x_t[:, 2:])
+    print("Constantine active_subspaces code not python3 compatible. Rewrite!")
+    # XX = ac.utils.misc.BoundedNormalizer(xl, xu).normalize(x_t[:, 2:])
     # normalize non-uniform inputs
     rw_norm = ((rw - .1) / .0161812).reshape(numSamples, 1)
     r_norm = np.log(r); r_norm = ((r_norm - 7.71) / 1.0056).reshape(numSamples, 1)
@@ -345,8 +357,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         n = 1  # active subspace identifier
         responseDegree = degree  
         responseGridType = pysgpp.GridType_NakBsplineBoundary  
-        # responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
-        responseSurf = ASM.getResponseSurfacedampedsin8D()
+        responseSurf = ASM.getResponseSurfaceInstance(n, responseGridType, responseDegree)
+        # responseSurf = ASM.getResponseSurfacedampedsin8D()
         if responseType == 'adaptive':
             responseSurf.createAdaptiveReducedSurfaceWithPseudoInverse(numResponse, f, initialLevel, numRefine)
         elif responseType == 'regular':
@@ -434,160 +446,159 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
            [bounds[0], bounds[1]], numGridPoints, responseGridStr, responseCoefficients, \
            numDetectionInterpolantPoints, detectionInterpolantError
 
-
-#---------------------Constantines AS framework----------------------------
-# X        the evaluation points
-# f        the objective function evaluated at X
-# df       the objective functions gradient evaluated at X
-# sstype   gradient based ('AS'), linear fit ('OLS') or quadratic fit ('QPHD')
-# nboot    number of bootstrappings
-#-------------------------------------------------------------------------- 
-def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular', responseDegree=2, sstype='AS',
-                  nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
-                  validationValues=[], savePath=None):
-    print(len(f))
-    detectionInterpolantError = 0
-    ss = ac.subspaces.Subspaces()
-     #----------- linear fit ----------
-    if sstype == 'OLS':
-        ss.compute(X=X, f=f, nboot=nboot, sstype='OLS')
-        eival = ss.eigenvals
-        eivec = ss.eigenvecs
-        
-        # --- begin HACK! ---
-        # the linear model is actually quite simple. Reproduce it here and calculate the error from this:
-        oX, of, oM, om = ac.utils.misc.process_inputs_outputs(X, f)
-        oweights = np.ones((oM, 1)) / oM
-        oA = np.hstack((np.ones((oM, 1)), oX))  # *np.sqrt(oweights)
-        ob = of  # * np.sqrt(oweights)
-        # \hat{f}(x) = om*x + oc
-        te = np.linalg.lstsq(oA, ob, rcond=None)[0]
-        numErrorPoints = 10000
-        validationPoints = uniformX(numErrorPoints, objFunc.getDim())
-        validationValues = objFunc.eval(validationPoints, -1, 1)
-        detectionInterpolantEval = te[0] + np.dot(validationPoints, te[1:])
-        detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
-        print("detection interpolation error: {}".format(detectionInterpolantError))
-        
-    #----------- quadratic fit -----------
-    elif sstype == 'QPHD':
-        ss.compute(X=X, f=f, nboot=nboot, sstype='QPHD')
-        eival = ss.eigenvals
-        eivec = ss.eigenvecs
-
-        # --- begin HACK!---
-        # the quadratic model is actually quite simple. Reproduce it here and calculate the error from this:
-        qX, qM, qm = ac.utils.misc.process_inputs(X)
-        qweights = np.ones((qM, 1)) / qM
-        qpr = ac.utils.response_surfaces.PolynomialApproximation(2)
-        qpr.train(X, f, qweights)
-        # With this I can verify that indead the hacked quadratic interpolant is the same that is
-        # used inside Constantines code (the eigenvalues and eigenvectors are the same)
-#         qb, qA = qpr.g, qpr.H
-#         gamma = 1.0 / 3.0
-#         qC = np.outer(qb, qb.transpose()) + gamma * np.dot(qA, qA.transpose())
-#         qe, qW = ac.subspaces.sorted_eigh(qC)
-#         print(qe)
-#         print(qW)
-        
-        validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
-        validationValues = objFunc.eval(validationPoints, -1, 1)
-        detectionInterpolantEval = qpr.predict(validationPoints)[0]
-        detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
-        print("detection interpolation error: {}".format(detectionInterpolantError))
-        # --- end HACK! ---
-        
-    # ---------- exact gradient ----------
-    elif sstype == 'AS':
-        ss.compute(df=df, nboot=nboot, sstype='AS')
-        eival = ss.eigenvals
-        eivec = ss.eigenvecs
-        
-    print(eival)
-    print("first eigenvector: {}".format(ss.eigenvecs[:, 0]))
-#     print("real first eigenvector {}".format(objFunc.getEigenvec()[:, 0]))
-    # quadratic polynomial approximation of maximum degree responseDegree
-    print("response degree: {}".format(responseDegree))
-    RS = ac.utils.response_surfaces.PolynomialApproximation(responseDegree)
-    # RS = ac.utils.response_surfaces.RadialBasisApproximation(responseDegree)
-    n = 1  # active subspace identifier
-    ss.partition(n)
-    y = X.dot(ss.W1)
-    RS.train(y, f)
-    
-    if responseType == 'regular':
-        # calculate l2 error in W1T * [-1,1]. 
-        validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
-        validationValues = objFunc.eval(validationPoints, -1, 1)
-    validationEval = RS.predict(np.dot(validationPoints, ss.W1))[0]
-    l2Error = np.linalg.norm((validationEval - validationValues) / len(validationValues))
-    print("interpol error {}".format(l2Error))
-            
-#     plt.scatter(np.dot(validationPoints, ss.W1), validationValues, label='f')
-#     plt.scatter(np.dot(validationPoints, ss.W1), validationEval, label='approx')
-#     plt.legend()
-#     plt.show()
-    
-    # integral
-    lb, ub = objFunc.getDomain()
-    vol = np.prod(ub - lb)
-    avdom = ac.domains.BoundedActiveVariableDomain(ss)
-    avmap = ac.domains.BoundedActiveVariableMap(avdom)  
-    integral = ac.integrals.av_integrate(lambda x: RS.predict(x)[0], avmap, 1000) * vol  
-#     print 'Constantine Integral: {:.2f}'.format(int_I)
-    integralError = abs(integral - objFunc.getIntegral())
-    print("integral error {}".format(integralError))
-    
-    bounds = avdom.vertY[ :, 0]
-    shadow1DEvaluations = []
-    if numShadow1DPoints > 0:
-        X1 = np.ndarray((numShadow1DPoints, 1))
-        X1[:, 0] = np.linspace(bounds[0], bounds[1], numShadow1DPoints)
-        shadow1DEvaluations = RS.predict(X1)[0]
-    
-    # plot interpolant of 2D function
-#     X, Y = np.meshgrid(np.linspace(-1, 1, 50), np.linspace(-1, 1, 50))
-#     Xunit, Yunit = np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))
-#     I = np.zeros(np.shape(X))
-#     F = np.ndarray(np.shape(X))
-#     wrapf = objFuncSGpp(objFunc)
-#     for i in range(len(X)):
-#         for j in range(len(X[0])):
-#             p = np.ndarray((1, 2))
-#             p[0, 0] = X[i, j]
-#             p[0, 1] = Y[i, j]
-#             I[i, j] = RS.predict(p.dot(ss.W1))[0]
-#             F[i, j] = wrapf.eval([Xunit[i, j], Yunit[i, j]])
-#     fig = plt.figure(); ax = fig.gca(projection='3d')
-#     ax.plot_surface(Xunit, Yunit, I, cmap=cm.viridis, linewidth=0, antialiased=False)
-#     ax.plot_wireframe(Xunit, Yunit, F, rstride=10, cstride=10, color='r')
-#     # ax.scatter((errorPoints[:, 0] + 1) / 2.0, (errorPoints[:, 1] + 1) / 2.0, errorEval, c='b')
-#     plt.show()
-        
-    # 1 and 2 dim shadow plots
-#     ss.partition(1)
-#     y = np.dot(X, ss.W1)
-#     ac.utils.plotters.sufficient_summary(y, f[:, 0])
-      
-#     plt.figure()
-#     plt.semilogy(range(len(eival)), eival, '-o')
-#           
-#     plt.show()
-        
-    print("Control:")
-    print("num data points = {}".format(len(f)))
-    
-#     print("\neigenvec:")
-#     print(ss.eigenvecs)
-#     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
-#     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
-
-    print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
-    print("\n")
-#     print("eivec:")
-#     print(ss.eigenvecs)
-        
-    return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds, detectionInterpolantError
+# #---------------------Constantines AS framework----------------------------
+# # X        the evaluation points
+# # f        the objective function evaluated at X
+# # df       the objective functions gradient evaluated at X
+# # sstype   gradient based ('AS'), linear fit ('OLS') or quadratic fit ('QPHD')
+# # nboot    number of bootstrappings
+# #-------------------------------------------------------------------------- 
+# def ConstantineAS(X=None, f=None, df=None, objFunc=None, responseType='regular', responseDegree=2, sstype='AS',
+#                   nboot=0, numErrorPoints=10000, numShadow1DPoints=0, validationPoints=[],
+#                   validationValues=[], savePath=None):
+#     print(len(f))
+#     detectionInterpolantError = 0
+#     ss = ac.subspaces.Subspaces()
+#      #----------- linear fit ----------
+#     if sstype == 'OLS':
+#         ss.compute(X=X, f=f, nboot=nboot, sstype='OLS')
+#         eival = ss.eigenvals
+#         eivec = ss.eigenvecs
+#         
+#         # --- begin HACK! ---
+#         # the linear model is actually quite simple. Reproduce it here and calculate the error from this:
+#         oX, of, oM, om = ac.utils.misc.process_inputs_outputs(X, f)
+#         oweights = np.ones((oM, 1)) / oM
+#         oA = np.hstack((np.ones((oM, 1)), oX))  # *np.sqrt(oweights)
+#         ob = of  # * np.sqrt(oweights)
+#         # \hat{f}(x) = om*x + oc
+#         te = np.linalg.lstsq(oA, ob, rcond=None)[0]
+#         numErrorPoints = 10000
+#         validationPoints = uniformX(numErrorPoints, objFunc.getDim())
+#         validationValues = objFunc.eval(validationPoints, -1, 1)
+#         detectionInterpolantEval = te[0] + np.dot(validationPoints, te[1:])
+#         detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
+#         print("detection interpolation error: {}".format(detectionInterpolantError))
+#         
+#     #----------- quadratic fit -----------
+#     elif sstype == 'QPHD':
+#         ss.compute(X=X, f=f, nboot=nboot, sstype='QPHD')
+#         eival = ss.eigenvals
+#         eivec = ss.eigenvecs
+# 
+#         # --- begin HACK!---
+#         # the quadratic model is actually quite simple. Reproduce it here and calculate the error from this:
+#         qX, qM, qm = ac.utils.misc.process_inputs(X)
+#         qweights = np.ones((qM, 1)) / qM
+#         qpr = ac.utils.response_surfaces.PolynomialApproximation(2)
+#         qpr.train(X, f, qweights)
+#         # With this I can verify that indead the hacked quadratic interpolant is the same that is
+#         # used inside Constantines code (the eigenvalues and eigenvectors are the same)
+# #         qb, qA = qpr.g, qpr.H
+# #         gamma = 1.0 / 3.0
+# #         qC = np.outer(qb, qb.transpose()) + gamma * np.dot(qA, qA.transpose())
+# #         qe, qW = ac.subspaces.sorted_eigh(qC)
+# #         print(qe)
+# #         print(qW)
+#         
+#         validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
+#         validationValues = objFunc.eval(validationPoints, -1, 1)
+#         detectionInterpolantEval = qpr.predict(validationPoints)[0]
+#         detectionInterpolantError = np.linalg.norm(detectionInterpolantEval - validationValues)
+#         print("detection interpolation error: {}".format(detectionInterpolantError))
+#         # --- end HACK! ---
+#         
+#     # ---------- exact gradient ----------
+#     elif sstype == 'AS':
+#         ss.compute(df=df, nboot=nboot, sstype='AS')
+#         eival = ss.eigenvals
+#         eivec = ss.eigenvecs
+#         
+#     print(eival)
+#     print("first eigenvector: {}".format(ss.eigenvecs[:, 0]))
+# #     print("real first eigenvector {}".format(objFunc.getEigenvec()[:, 0]))
+#     # quadratic polynomial approximation of maximum degree responseDegree
+#     print("response degree: {}".format(responseDegree))
+#     RS = ac.utils.response_surfaces.PolynomialApproximation(responseDegree)
+#     # RS = ac.utils.response_surfaces.RadialBasisApproximation(responseDegree)
+#     n = 1  # active subspace identifier
+#     ss.partition(n)
+#     y = X.dot(ss.W1)
+#     RS.train(y, f)
+#     
+#     if responseType == 'regular':
+#         # calculate l2 error in W1T * [-1,1]. 
+#         validationPoints = uniformX(numErrorPoints, objFunc.getDim())  
+#         validationValues = objFunc.eval(validationPoints, -1, 1)
+#     validationEval = RS.predict(np.dot(validationPoints, ss.W1))[0]
+#     l2Error = np.linalg.norm((validationEval - validationValues) / len(validationValues))
+#     print("interpol error {}".format(l2Error))
+#             
+# #     plt.scatter(np.dot(validationPoints, ss.W1), validationValues, label='f')
+# #     plt.scatter(np.dot(validationPoints, ss.W1), validationEval, label='approx')
+# #     plt.legend()
+# #     plt.show()
+#     
+#     # integral
+#     lb, ub = objFunc.getDomain()
+#     vol = np.prod(ub - lb)
+#     avdom = ac.domains.BoundedActiveVariableDomain(ss)
+#     avmap = ac.domains.BoundedActiveVariableMap(avdom)  
+#     integral = ac.integrals.av_integrate(lambda x: RS.predict(x)[0], avmap, 1000) * vol  
+# #     print 'Constantine Integral: {:.2f}'.format(int_I)
+#     integralError = abs(integral - objFunc.getIntegral())
+#     print("integral error {}".format(integralError))
+#     
+#     bounds = avdom.vertY[ :, 0]
+#     shadow1DEvaluations = []
+#     if numShadow1DPoints > 0:
+#         X1 = np.ndarray((numShadow1DPoints, 1))
+#         X1[:, 0] = np.linspace(bounds[0], bounds[1], numShadow1DPoints)
+#         shadow1DEvaluations = RS.predict(X1)[0]
+#     
+#     # plot interpolant of 2D function
+# #     X, Y = np.meshgrid(np.linspace(-1, 1, 50), np.linspace(-1, 1, 50))
+# #     Xunit, Yunit = np.meshgrid(np.linspace(0, 1, 50), np.linspace(0, 1, 50))
+# #     I = np.zeros(np.shape(X))
+# #     F = np.ndarray(np.shape(X))
+# #     wrapf = objFuncSGpp(objFunc)
+# #     for i in range(len(X)):
+# #         for j in range(len(X[0])):
+# #             p = np.ndarray((1, 2))
+# #             p[0, 0] = X[i, j]
+# #             p[0, 1] = Y[i, j]
+# #             I[i, j] = RS.predict(p.dot(ss.W1))[0]
+# #             F[i, j] = wrapf.eval([Xunit[i, j], Yunit[i, j]])
+# #     fig = plt.figure(); ax = fig.gca(projection='3d')
+# #     ax.plot_surface(Xunit, Yunit, I, cmap=cm.viridis, linewidth=0, antialiased=False)
+# #     ax.plot_wireframe(Xunit, Yunit, F, rstride=10, cstride=10, color='r')
+# #     # ax.scatter((errorPoints[:, 0] + 1) / 2.0, (errorPoints[:, 1] + 1) / 2.0, errorEval, c='b')
+# #     plt.show()
+#         
+#     # 1 and 2 dim shadow plots
+# #     ss.partition(1)
+# #     y = np.dot(X, ss.W1)
+# #     ac.utils.plotters.sufficient_summary(y, f[:, 0])
+#       
+# #     plt.figure()
+# #     plt.semilogy(range(len(eival)), eival, '-o')
+# #           
+# #     plt.show()
+#         
+#     print("Control:")
+#     print("num data points = {}".format(len(f)))
+#     
+# #     print("\neigenvec:")
+# #     print(ss.eigenvecs)
+# #     np.savetxt(os.path.join(savePath, 'ASeivec.txt'), ss.eigenvecs)
+# #     np.savetxt(os.path.join(savePath, 'ASeival.txt'), ss.eigenvals)
+# 
+#     print("eivec0 error: {}".format(np.linalg.norm(ss.eigenvecs[:, 0] - objFunc.getEigenvec()[:, 0])))
+#     print("\n")
+# #     print("eivec:")
+# #     print(ss.eigenvecs)
+#         
+#     return eival, eivec, l2Error, integral, integralError, shadow1DEvaluations, bounds, detectionInterpolantError
 
 
 def Halton(objFunc, numSamples):
@@ -746,6 +757,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
                 start = time.time()
                 numResponse = numSamples
                 numASM = numSamples
+                numHistogramMCPoints = 1000000
                 
                 e, v, l2Error, integral, integralError, shadow1DEvaluations, \
                 bounds, numGridPoints, responseGridStr, responseCoefficients, \
@@ -813,13 +825,13 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
 #------------------------------------ main ---------------------------------------
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
-    parser.add_argument('--model', default='sin5Dexp0.1', type=str, help="define which test case should be executed")
-    parser.add_argument('--method', default='QPHD', type=str, help="asSGpp, SGpp or one of the three Constantine (AS,OLS,QPHD)")
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--model', default='dampedSin8D', type=str, help="define which test case should be executed")
+    parser.add_argument('--method', default='asSGpp', type=str, help="asSGpp, SGpp or one of the three Constantine (AS,OLS,QPHD)")
     parser.add_argument('--numThreads', default=4, type=int, help="number of threads for omp parallelization")
     parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
-    parser.add_argument('--maxPoints', default=100, type=int, help="maximum number of points used")
-    parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
+    parser.add_argument('--maxPoints', default=1000, type=int, help="maximum number of points used")
+    parser.add_argument('--numSteps', default=3, type=int, help="number of steps in the [minPoints maxPoints] range")
     parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
     parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
     parser.add_argument('--numRefine', default=10, type=int, help="max number of grid points added in refinement steps for sparse grids")

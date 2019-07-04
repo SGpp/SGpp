@@ -21,36 +21,38 @@
 double f(sgpp::base::DataVector v) { return sin(v[0]) * cos(v[1]); }
 
 int main() {
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  size_t degree = 3;
-  size_t numDim = 2;
-  size_t level = 8;
-
-  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
-  sgpp::optimization::SparseGridResponseSurfaceBspline reSurf(objectiveFunc, gridType, degree);
-  reSurf.regular(level);
-  //  auto pdf = std::make_shared<sgpp::datadriven::Uniform>(0, 1);
-  auto pdf = std::make_shared<sgpp::base::DistributionNormal>(0.5, 0.1);
-  size_t quadOrder = 20;
-  double realMean = 0.416548687489679;
-  double reSurfMean = reSurf.getMean(pdf, quadOrder);
-
-  //  sgpp::datadriven::Normal pdf_normal(0.5, 0.1);
-  //  std::cout << pdf_normal.sample() << "\n";
-
-  std::cout << "#######################\n";
-  sgpp::base::SNakBsplineExtendedBase base(degree);
-  double basisMean = base.getMean(1, 1, pdf, quadOrder);
-  double realBasisMean = 1.0;
-
-  std::cout << "\n\n";
-  std::cout << "interpol error " << reSurf.l2Error(objectiveFunc, 10000) << "\n";
-  std::cout << "mean " << reSurfMean << "\n";
-  std::cout << "mean error " << reSurfMean - realMean << "\n";
-
-  //  std::cout << "basis mean " << basisMean << "\n";
-  //  std::cout << "basis mean error " << realBasisMean - basisMean << "\n";
+  //  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  //  size_t degree = 3;
+  //  size_t numDim = 2;
+  //  size_t level = 8;
+  //
+  //  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
+  //  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
+  //  sgpp::base::DataVector lb = objectiveFunc->getLowerBounds();
+  //  sgpp::base::DataVector ub = objectiveFunc->getUpperBounds();
+  //  sgpp::optimization::SparseGridResponseSurfaceBspline reSurf(objectiveFunc, gridType, degree);
+  //  reSurf.regular(level);
+  //  //  auto pdf = std::make_shared<sgpp::datadriven::Uniform>(0, 1);
+  //  auto pdf = std::make_shared<sgpp::base::DistributionNormal>(0.5, 0.1);
+  //  size_t quadOrder = 20;
+  //  double realMean = 0.416548687489679;
+  //  double reSurfMean = reSurf.getMean(pdf, quadOrder);
+  //
+  //  //  sgpp::datadriven::Normal pdf_normal(0.5, 0.1);
+  //  //  std::cout << pdf_normal.sample() << "\n";
+  //
+  //  std::cout << "#######################\n";
+  //  sgpp::base::SNakBsplineExtendedBase base(degree);
+  //  double basisMean = base.getMean(1, 1, pdf, quadOrder);
+  //  double realBasisMean = 1.0;
+  //
+  //  std::cout << "\n\n";
+  //  std::cout << "interpol error " << reSurf.l2Error(objectiveFunc, 10000) << "\n";
+  //  std::cout << "mean " << reSurfMean << "\n";
+  //  std::cout << "mean error " << reSurfMean - realMean << "\n";
+  //
+  //  //  std::cout << "basis mean " << basisMean << "\n";
+  //  //  std::cout << "basis mean error " << realBasisMean - basisMean << "\n";
 
   return 0;
 }

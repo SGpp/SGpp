@@ -7,9 +7,7 @@ import scipy
 import sys
 from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import gca
-import active_subspaces as ac
 import asFunctions
-import cPickle as pickle
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 import numpy as np

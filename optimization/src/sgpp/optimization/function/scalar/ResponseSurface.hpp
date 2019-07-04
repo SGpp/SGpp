@@ -5,6 +5,8 @@
 
 #pragma once
 // #ifdef USE_EIGEN
+#include <eigen3/Eigen/Dense>
+// #endif /* USE_EIGEN */
 
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>

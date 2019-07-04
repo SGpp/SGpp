@@ -1,7 +1,7 @@
 from mpl_toolkits.mplot3d import Axes3D
 import os
 
-import active_subspaces as ac
+# import active_subspaces as ac
 import as1DIntegral
 import matplotlib.pyplot as plt
 import numpy as np
@@ -188,20 +188,19 @@ def getFunction(model, genzIndex=-1):
     elif model == 'piston':
         return piston()
 
-
-def calculateMCReference(numSamples, objFunc):
-    numDim = objFunc.getDim()
-    xRef = np.ndarray(shape=(numSamples, numDim))
-    for d in range(numDim):
-        r = np.random.uniform(-1, 1, (numSamples, 1))
-        xRef[:, d] = r[:, 0]
-    dfRef = objFunc.eval_grad(xRef)
-    ssRef = ac.subspaces.Subspaces()
-    ssRef.compute(df=dfRef, nboot=100)
-    eivecRef = ssRef.eigenvecs
-    for i in range(numDim):
-        print("eivec[{}] = {}".format(i, eivecRef[i]))
-    return  eivecRef
+# def calculateMCReference(numSamples, objFunc):
+#     numDim = objFunc.getDim()
+#     xRef = np.ndarray(shape=(numSamples, numDim))
+#     for d in range(numDim):
+#         r = np.random.uniform(-1, 1, (numSamples, 1))
+#         xRef[:, d] = r[:, 0]
+#     dfRef = objFunc.eval_grad(xRef)
+#     ssRef = ac.subspaces.Subspaces()
+#     ssRef.compute(df=dfRef, nboot=100)
+#     eivecRef = ssRef.eigenvecs
+#     for i in range(numDim):
+#         print("eivec[{}] = {}".format(i, eivecRef[i]))
+#     return  eivecRef
 
 
 # unnormalizes the value x in [lN,uN]^d to [lb,ub] where lb and rb are vectors
@@ -2049,67 +2048,66 @@ class wing():
         return np.hstack((dfdSw * (200 - 150) / 2., dfdWfw * (300 - 220) / 2., dfdA * (10 - 6) / 2., dfdL * (10 + 10) * np.pi / (2.*180), dfdq * (45 - 16) / 2., \
             dfdl * (1 - .5) / 2., dfdtc * (.18 - .08) / 2., dfdNz * (6 - 2.5) / 2., dfdWdg * (2500 - 1700) / 2., dfdWp * (.08 - .025) / 2.))
 
-
-class borehole():
-
-    def getName(self):
-        return "borehole"
-
-    def getDim(self):
-        return 8
-    
-    def getIntegral(self):
-        print("activeSubspaceFunctions borehole, Integral not implemented")
-        return 0.0
-
-    def getEigenvec(self):
-        eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
-        print("reference eigenvectors have not yet been calculated")
-        return eivec
-
-    def eval(self, xx):
-        print("This has a special normalizing routine because of the pdfs. Not yet adapted to teh new unnormalizing system")
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        M = x.shape[0]
-        # unnormalize inpus
-        xl = np.array([63070, 990, 63.1, 700, 1120, 9855])
-        xu = np.array([115600, 1110, 116, 820, 1680, 12045])
-        x[:, 2:] = ac.utils.misc.BoundedNormalizer(xl, xu).unnormalize(x[:, 2:])
-        x[:, 0] = .0161812 * x[:, 0] + .1
-        x[:, 1] = np.exp(1.0056 * x[:, 1] + 7.71)   
-        rw = x[:, 0]; r = x[:, 1]; Tu = x[:, 2]; Hu = x[:, 3]
-        Tl = x[:, 4]; Hl = x[:, 5]; L = x[:, 6]; Kw = x[:, 7]    
-        pi = np.pi
-        return (2 * pi * Tu * (Hu - Hl) / (np.log(r / rw) * (1 + 2 * L * Tu / (np.log(r / rw) * rw ** 2 * Kw) + Tu / Tl))).reshape(M, 1)
-
-    def eval_grad(self, xx):
-        x = xx.copy()
-        x = np.atleast_2d(x)
-        M = x.shape[0]
-        # unnormalize inpus
-        xl = np.array([63070, 990, 63.1, 700, 1120, 9855])
-        xu = np.array([115600, 1110, 116, 820, 1680, 12045])
-        x[:, 2:] = ac.utils.misc.BoundedNormalizer(xl, xu).unnormalize(x[:, 2:])
-        x[:, 0] = .0161812 * x[:, 0] + .1
-        x[:, 1] = np.exp(1.0056 * x[:, 1] + 7.71)   
-        rw = x[:, 0]; r = x[:, 1]; Tu = x[:, 2]; Hu = x[:, 3]
-        Tl = x[:, 4]; Hl = x[:, 5]; L = x[:, 6]; Kw = x[:, 7]
-        pi = np.pi
-        Q = 1 + 2 * L * Tu / (np.log(r / rw) * rw ** 2 * Kw) + Tu / Tl  # Convenience variable
-        l = np.log(r / rw)  # Convenience variable
-        dfdrw = (-2 * pi * Tu * (Hu - Hl) * (Q * l) ** -2 * (-Q / rw - l * 2 * L * Tu / Kw * (l * rw ** 2) ** -2 * (-rw + 2 * rw * l)))[:, None]
-        dfdr = (-2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * (Q / r - 2 * L * Tu / (r * rw ** 2 * Kw * l)))[:, None]
-        dfdTu = (2 * pi * (Hu - Hl) / (l * Q) - 2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * (l * (2 * L / (l * rw ** 2 * Kw) + 1. / Tl)))[:, None]
-        dfdHu = (2 * pi * Tu / (l * Q))[:, None]
-        dfdTl = (2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * l * Tu / Tl ** 2)[:, None]
-        dfdHl = (-2 * pi * Tu / (l * Q))[:, None]
-        dfdL = (-2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * 2 * Tu / (rw ** 2 * Kw))[:, None]
-        dfdKw = (2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * 2 * L * Tu / (rw ** 2 * Kw ** 2))[:, None]
-        # The gradient components must be scaled in accordance with the chain rule: df/dx = df/dy*dy/dx
-        r = np.log(r); r = ((r - 7.71) / 1.0056).reshape(M, 1)
-        return np.hstack((dfdrw * .0161812, dfdr * 1.0056 * np.exp(1.0056 * r + 7.71), dfdTu * (115600 - 63070) / 2., dfdHu * (1110 - 990) / 2., \
-            dfdTl * (116 - 63.1) / 2., dfdHl * (820 - 700) / 2., dfdL * (1680 - 1120) / 2., dfdKw * (12045 - 9855) / 2.))
+# class borehole():
+# 
+#     def getName(self):
+#         return "borehole"
+# 
+#     def getDim(self):
+#         return 8
+#     
+#     def getIntegral(self):
+#         print("activeSubspaceFunctions borehole, Integral not implemented")
+#         return 0.0
+# 
+#     def getEigenvec(self):
+#         eivec = np.ndarray(shape=(self.getDim(), self.getDim()))
+#         print("reference eigenvectors have not yet been calculated")
+#         return eivec
+# 
+#     def eval(self, xx):
+#         print("This has a special normalizing routine because of the pdfs. Not yet adapted to teh new unnormalizing system")
+#         x = xx.copy()
+#         x = np.atleast_2d(x)
+#         M = x.shape[0]
+#         # unnormalize inpus
+#         xl = np.array([63070, 990, 63.1, 700, 1120, 9855])
+#         xu = np.array([115600, 1110, 116, 820, 1680, 12045])
+#         x[:, 2:] = ac.utils.misc.BoundedNormalizer(xl, xu).unnormalize(x[:, 2:])
+#         x[:, 0] = .0161812 * x[:, 0] + .1
+#         x[:, 1] = np.exp(1.0056 * x[:, 1] + 7.71)   
+#         rw = x[:, 0]; r = x[:, 1]; Tu = x[:, 2]; Hu = x[:, 3]
+#         Tl = x[:, 4]; Hl = x[:, 5]; L = x[:, 6]; Kw = x[:, 7]    
+#         pi = np.pi
+#         return (2 * pi * Tu * (Hu - Hl) / (np.log(r / rw) * (1 + 2 * L * Tu / (np.log(r / rw) * rw ** 2 * Kw) + Tu / Tl))).reshape(M, 1)
+# 
+#     def eval_grad(self, xx):
+#         x = xx.copy()
+#         x = np.atleast_2d(x)
+#         M = x.shape[0]
+#         # unnormalize inpus
+#         xl = np.array([63070, 990, 63.1, 700, 1120, 9855])
+#         xu = np.array([115600, 1110, 116, 820, 1680, 12045])
+#         x[:, 2:] = ac.utils.misc.BoundedNormalizer(xl, xu).unnormalize(x[:, 2:])
+#         x[:, 0] = .0161812 * x[:, 0] + .1
+#         x[:, 1] = np.exp(1.0056 * x[:, 1] + 7.71)   
+#         rw = x[:, 0]; r = x[:, 1]; Tu = x[:, 2]; Hu = x[:, 3]
+#         Tl = x[:, 4]; Hl = x[:, 5]; L = x[:, 6]; Kw = x[:, 7]
+#         pi = np.pi
+#         Q = 1 + 2 * L * Tu / (np.log(r / rw) * rw ** 2 * Kw) + Tu / Tl  # Convenience variable
+#         l = np.log(r / rw)  # Convenience variable
+#         dfdrw = (-2 * pi * Tu * (Hu - Hl) * (Q * l) ** -2 * (-Q / rw - l * 2 * L * Tu / Kw * (l * rw ** 2) ** -2 * (-rw + 2 * rw * l)))[:, None]
+#         dfdr = (-2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * (Q / r - 2 * L * Tu / (r * rw ** 2 * Kw * l)))[:, None]
+#         dfdTu = (2 * pi * (Hu - Hl) / (l * Q) - 2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * (l * (2 * L / (l * rw ** 2 * Kw) + 1. / Tl)))[:, None]
+#         dfdHu = (2 * pi * Tu / (l * Q))[:, None]
+#         dfdTl = (2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * l * Tu / Tl ** 2)[:, None]
+#         dfdHl = (-2 * pi * Tu / (l * Q))[:, None]
+#         dfdL = (-2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * 2 * Tu / (rw ** 2 * Kw))[:, None]
+#         dfdKw = (2 * pi * Tu * (Hu - Hl) * (l * Q) ** -2 * 2 * L * Tu / (rw ** 2 * Kw ** 2))[:, None]
+#         # The gradient components must be scaled in accordance with the chain rule: df/dx = df/dy*dy/dx
+#         r = np.log(r); r = ((r - 7.71) / 1.0056).reshape(M, 1)
+#         return np.hstack((dfdrw * .0161812, dfdr * 1.0056 * np.exp(1.0056 * r + 7.71), dfdTu * (115600 - 63070) / 2., dfdHu * (1110 - 990) / 2., \
+#             dfdTl * (116 - 63.1) / 2., dfdHl * (820 - 700) / 2., dfdL * (1680 - 1120) / 2., dfdKw * (12045 - 9855) / 2.))
 
     
 class otlcircuit():

@@ -8,9 +8,9 @@ import os
 from matplotlib.font_manager import FontProperties
 from matplotlib.pyplot import gca
 
-import active_subspaces as ac
+# import active_subspaces as ac  # installed for python 2.7, does not work with python3
 import asFunctions
-import cPickle as pickle
+import _pickle as pickle
 import matplotlib.colors as mc
 import matplotlib.pyplot as plt
 import numpy as np
@@ -344,7 +344,7 @@ def plot_error_four_eigenvec(summary, label, color, marker, dataIndex=-1):
 
 # plot error in the first eigenvector using an interrupted y axis
 # Special case for dampedSin8D in the uncecomp paer, where the active subspace is one dimensional and therefore detected exactly with AS 
-def plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker, dataIndex=-1):
+def plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker, dataIndex=-1):
     # calculate error of first eigenvector
     model = summary["model"]
     objFunc = asFunctions.getFunction(model)
@@ -421,7 +421,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
         try:      
             path = os.path.join(resultsPath, folder)
             with open(os.path.join(path, 'summary.pkl'), 'rb') as fp:
-                summary = pickle.load(fp)
+                summary = pickle.load(fp, encoding='latin1')
                 method = summary["method"]
                 model = summary["model"]
                 [color, marker] = getColorAndMarker(method)
@@ -435,7 +435,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
                     plot_eigenvalues(summary, label, color, marker)
                 elif qoi == 'eivec1'and method not in  ['SGpp', 'Halton']:
                     if paper == 1:
-                        plot_error_first_eigenvecPaper(summary, (ax, ax2), label, color, marker)
+                        plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker)
                     else:
                         plot_error_first_eigenvec(summary, label, color, marker)
                 elif qoi == 'eivec4'and method not in  ['SGpp', 'Halton']:
@@ -467,7 +467,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
         plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='#e377c2', marker='x', label='Cuhre')  # color was fuchsia
         # hard coded errors of performing normal asSGppintegration , but give correct W1 for dampedsin8D (data is saved as /home/rehmemk/git/SGpp/activeSubSpaces/results/dampedSin8D/asSGpp_nakbsplinemodified_3_20001_adaptive_adaptive_Spline)
         eW1label = 'sparse grid B-splines, true $W_1$'
-        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='#17becf', marker='h', label=eW1label)  # color was cyan
+        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='#ff7f0e', marker='h', label=eW1label)  # color was cyan
         # hard coded errors of integrating g on [l,r] in 1D for dampedSin8D. Calculated with  MR_dampedSin1DIntegration.cpp
         eglabel = '$|  \int_l^r g(y)dy - \int_l^r \hat{g}(y)dy |$'  # '$\epsilon_g$'
         plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=eglabel)
@@ -510,15 +510,15 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
 
 if __name__ == "__main__":
     # parse the input arguments
-    parser = ArgumentParser(description='Get a program and run it with input', version='%(prog)s 1.0')
+    parser = ArgumentParser(description='Get a program and run it with input')
     parser.add_argument('--model', default='dampedSin8D', type=str, help="define which test case should be executed")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--maxPoints', default=10000, type=int, help="maximum number of points used")
     # used in paper
     parser.add_argument('--plotDetectionL2G', default=0, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
     parser.add_argument('--plotL2G', default=0, type=bool, help="do (not) plot l2 error of reduced resposne surface grid-wise")
-    parser.add_argument('--plotIntegralG', default=0, type=bool, help="do (not) plot integral error grid-wise")
-    parser.add_argument('--plotEivec1', default=1, type=bool, help="do (not) plot error in first eigenvector")
+    parser.add_argument('--plotIntegralG', default=1, type=bool, help="do (not) plot integral error grid-wise")
+    parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
     parser.add_argument('--plotEivec4', default=0, type=bool, help="do (not) plot error in first four eigenvectors")
     # additional options
     parser.add_argument('--plotEival', default=0, type=bool, help="do (not) plot  eigenvalues")

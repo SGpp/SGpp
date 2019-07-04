@@ -1,9 +1,12 @@
 from argparse import ArgumentParser
 import os
 
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
+
 import _pickle as pickle
 import functions
-import matplotlib.pyplot as plt
 import numpy as np
 import pysgpp
 
@@ -228,14 +231,14 @@ def plotter(qoi, data, refineTypes, objFunc, model):
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--qoi', default='varErr', type=str, help='what to plot')
+    parser.add_argument('--qoi', default='meanErr', type=str, help='what to plot')
     parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
     parser.add_argument('--dim', default=8, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--degree', default=5, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularAndSurplus', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--refineType', default='surplus', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
+    parser.add_argument('--maxPoints', default=10500, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=0, type=int, help='save figure')
     args = parser.parse_args()
     
