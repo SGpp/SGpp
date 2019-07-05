@@ -38,7 +38,7 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
   const size_t curGridSize = gridStorage.getSize();
   base::DataVector& fX = functionValues;
 
-#pragma omp parallel shared(fX, oldGridSize, gridStorage) default(none)
+#pragma omp parallel shared(fX, oldGridSize, gridStorage)
   {
     base::DataVector x(d);
     ScalarFunction* curFPtr = &f;
