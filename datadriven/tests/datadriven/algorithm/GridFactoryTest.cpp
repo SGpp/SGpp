@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(FullyRecursiveHierarchicalParentStencil) {
     BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
 }
 
-BOOST_AUTO_TEST_CASE(DirectNeigbourStencil) {
+BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   GridFactory grid;
 
   std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
@@ -83,6 +83,31 @@ BOOST_AUTO_TEST_CASE(DirectNeigbourStencil) {
 
   for (auto interaction : expected)
     BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
+
+  for (auto interaction : result)
+    BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
+}
+
+BOOST_AUTO_TEST_CASE(DiagonalNeighbourStencil) {
+  GridFactory grid;
+
+  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
+  std::vector<std::vector<size_t>> expected = {
+      {0, 4},   {1, 5}, {3, 2}, {3, 7}, {4, 2}, {4, 8}, {6, 4}, {7, 5}, {9, 12},
+      {11, 10}, {0},    {1},    {2},    {3},    {4},    {5},    {6},    {7},
+      {8},      {9},    {10},   {11},   {12},   {13},   {}};
+
+  auto result = grid.getInteractions(sgpp::datadriven::StencilType::DiagonalNeighbour, dimensions);
+
+
+  for (auto interaction : expected)
+    BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
+  for(auto interaction : result){
+    for(auto d : interaction)
+      std::cout << d << "\t";
+    std::cout << "\n";
+
+  }
 
   for (auto interaction : result)
     BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());

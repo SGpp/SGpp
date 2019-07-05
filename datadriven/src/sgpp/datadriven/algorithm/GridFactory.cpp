@@ -58,6 +58,7 @@ sgpp::base::Grid* GridFactory::createGrid(
     tmpGrid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
     std::cout << "Interactions set!" << std::endl;
   }
+  std::cout << "Grid Size: " << tmpGrid->getSize() << std::endl;
   return tmpGrid;
 }
 
@@ -70,6 +71,9 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   switch (stencilType) {
     case sgpp::datadriven::StencilType::DirectNeighbour:
       interactions = getDirectNeighbours(res);
+      break;
+    case sgpp::datadriven::StencilType::DiagonalNeighbour:
+      interactions = getDiagonalNeighbours(res);
       break;
     case sgpp::datadriven::StencilType::HierarchicalParent:
       interactions = getHierarchicalParents(res, false, true);
@@ -92,12 +96,10 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   return interactions;
 }
 
-std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierarchicalParents(
-    std::vector<std::vector<int64_t>>& imageDimensions, bool onlyFirstLevel,
-    bool onlyFirstParent) const {
-  auto vec = std::vector<std::vector<size_t>>();
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getMultiplicatorsPerLevel(
+    std::vector<std::vector<int64_t>>* imageDimensions) const {
   auto multiplicatorsPerLevel = std::vector<std::vector<size_t>>();
-  for (auto dimension : imageDimensions) {
+  for (auto dimension : *imageDimensions) {
     auto multiplicators = std::vector<size_t>();
     multiplicators.push_back(1);
     for (size_t i = 1; i < dimension.size(); i++) {
@@ -105,17 +107,31 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierarchicalP
     }
     multiplicatorsPerLevel.push_back(multiplicators);
   }
+  return multiplicatorsPerLevel;
+}
 
+std::vector<size_t> sgpp::datadriven::GridFactory::getOffsetPerLevel(
+    std::vector<std::vector<int64_t>>* imageDimensions,
+    std::vector<std::vector<size_t>>* multiplicatorsPerLevel) const {
   auto offsetsPerLevel = std::vector<size_t>();
   offsetsPerLevel.push_back(0);
-  for (size_t i = 1; i < imageDimensions.size(); i++) {
-    auto childDimensions = imageDimensions.at(i - 1);
-    auto childMultiplicator = multiplicatorsPerLevel.at(i - 1);
+  for (size_t i = 1; i < imageDimensions->size(); i++) {
+    auto childDimensions = imageDimensions->at(i - 1);
+    auto childMultiplicator = multiplicatorsPerLevel->at(i - 1);
     auto numberOfDataColumnsInChild = childMultiplicator.at(childMultiplicator.size() - 1) *
                                       childDimensions.at(childDimensions.size() - 1);
     auto childOffset = offsetsPerLevel.at(i - 1);
     offsetsPerLevel.push_back(childOffset + numberOfDataColumnsInChild);
   }
+  return offsetsPerLevel;
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getHierarchicalParents(
+    std::vector<std::vector<int64_t>>& imageDimensions, bool onlyFirstLevel,
+    bool onlyFirstParent) const {
+  auto vec = std::vector<std::vector<size_t>>();
+  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(&imageDimensions);
+  auto offsetsPerLevel = getOffsetPerLevel(&imageDimensions, &multiplicatorsPerLevel);
 
   for (size_t i = 0; i < imageDimensions.size() - 1; i++) {
     for (size_t j = i + 1; j < imageDimensions.size(); j++) {
@@ -222,35 +238,67 @@ void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>* dimens
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbours(
     std::vector<std::vector<int64_t>>& imageResolutions) const {
   std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
-  size_t imageOffset = 0;
-  for (std::vector<int64_t> res : imageResolutions) {
-    std::vector<size_t> multiplicators = std::vector<size_t>();
-    multiplicators.push_back(1);
-    for (size_t i = 1; i < res.size(); i++) {
-      multiplicators.push_back(multiplicators.at(i - 1) * res.at(i - 1));
-    }
-    std::vector<int64_t> position = std::vector<int64_t>(res.size(), 0);
+  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(&imageResolutions);
+  auto offsetsPerLevel = getOffsetPerLevel(&imageResolutions, &multiplicatorsPerLevel);
+
+  for (size_t i = 0; i < imageResolutions.size(); i++) {
+    std::vector<int64_t> position = std::vector<int64_t>(imageResolutions.at(i).size(), 0);
 
     do {
-      for (size_t i = 0; i < res.size(); i++) {
-        if (position.at(i) + 1 < res.at(i)) {
+      for (size_t j = 0; j < imageResolutions.at(i).size(); j++) {
+        if (position.at(j) + 1 < imageResolutions.at(i).at(j)) {
           std::vector<size_t> tmp = std::vector<size_t>();
-          tmp.push_back(imageOffset + getDataIndex(res.size(), &multiplicators, &position));
-          position.at(i)++;
-          tmp.push_back(imageOffset + getDataIndex(res.size(), &multiplicators, &position));
-          position.at(i)--;
+          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position));
+          position.at(j)++;
+          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position));
+          position.at(j)--;
           vec.push_back(tmp);
         }
       }
 
-      getNextPosition(&res, &position);
+      getNextPosition(&imageResolutions.at(i), &position);
     } while (position.size() != 0);
+  }
 
-    size_t factor = 1;
-    for (int64_t size : res) {
-      factor *= size;
-    }
-    imageOffset += factor;
+  addOneDimensionalInteractions(&imageResolutions, &vec);
+
+  // add empty vector
+  vec.push_back(std::vector<size_t>());
+  return vec;
+}
+
+std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDiagonalNeighbours(
+    std::vector<std::vector<int64_t>>& imageResolutions) const {
+  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
+  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(&imageResolutions);
+  auto offsetsPerLevel = getOffsetPerLevel(&imageResolutions, &multiplicatorsPerLevel);
+
+  for (size_t i = 0; i < imageResolutions.size(); i++) {
+    std::vector<int64_t> position = std::vector<int64_t>(imageResolutions.at(i).size(), 0);
+
+    do {
+      for (size_t j = 0; j < imageResolutions.at(i).size(); j++) {
+        size_t powersetBits = 1 << imageResolutions.at(i).size();
+        for(size_t k = 1; k < powersetBits; k++){
+          auto diagonalPosition = position;
+          size_t bitSetCount = 0;
+          for(size_t l = 0; l < imageResolutions.at(i).size(); l++){
+            // is l-dimension in current set
+            if(k&(1<<l)){
+              bitSetCount++;
+              diagonalPosition.at(l)++;
+            }
+          }
+          // add only interactions which are not direct neighbours
+          if(bitSetCount>1){
+            size_t positionIndex = offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position);
+            size_t diagonalIndex = offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &diagonalPosition);
+            vec.push_back({positionIndex, diagonalIndex});
+          }
+        }
+      }
+      getNextPosition(&imageResolutions.at(i), &position);
+    } while (position.size() != 0);
   }
 
   addOneDimensionalInteractions(&imageResolutions, &vec);

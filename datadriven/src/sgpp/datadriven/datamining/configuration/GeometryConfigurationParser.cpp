@@ -27,6 +27,8 @@ StencilType GeometryConfigurationParser::parse(const std::string &input) {
 
   if (inputLower.compare("directneighbour") == 0) {
     return sgpp::datadriven::StencilType::DirectNeighbour;
+  } else if(inputLower.compare("diagonalneighbour") == 0){
+    return sgpp::datadriven::StencilType::DiagonalNeighbour;
   } else if(inputLower.compare("hierarchicalparent") == 0){
     return sgpp::datadriven::StencilType::HierarchicalParent;
   } else if(inputLower.compare("recursivehierarchicalparent") == 0){

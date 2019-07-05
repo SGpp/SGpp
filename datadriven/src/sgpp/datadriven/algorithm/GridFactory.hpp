@@ -68,6 +68,14 @@ class GridFactory {
   std::vector<std::vector<size_t>> getDirectNeighbours(
       std::vector<std::vector<int64_t>>& imageDimensions) const;
 
+  /*
+   * calculates diagonal neighbour interactions
+   * @param vector of resolution
+   * @return all diagonal neighbour interactions of all pixels in a vector
+   */
+  std::vector<std::vector<size_t>> getDiagonalNeighbours(
+      std::vector<std::vector<int64_t>>& imageDimensions) const;
+
  private:
   void addChildParentInteractionRecursive(
       std::vector<double>* rescale, std::vector<int64_t>* childDim, size_t currentDimension,
@@ -84,8 +92,39 @@ class GridFactory {
    */
   size_t getDataIndex(size_t numberOfDimensions, std::vector<size_t>* multiplicators,
                       std::vector<int64_t>* position) const;
-  size_t getMultiplicator(std::vector<int64_t> imageDimensions, size_t dimension) const;
+
+  /*
+   * Increases a given position like a counter. Therefore if a overflow happens the position will be
+   * set to 0 in all dimensions
+   * @param vector of resolution
+   * @param current position
+   */
   void getNextPosition(std::vector<int64_t>* dimension, std::vector<int64_t>* position) const;
+
+  /*
+   * Calculates the multiplicators for each level. The multiplicator is the change in the data index
+   * for one step further into each dimension
+   * @param vector of resolutions
+   * @return vector of vectors containing the multiplicator for each dimension
+   */
+  std::vector<std::vector<size_t>> getMultiplicatorsPerLevel(
+      std::vector<std::vector<int64_t>>* imageDimensions) const;
+
+  /*
+   * Calculates the offset for each level. The offset is the starting index of each image level
+   * @param vector of resolutions
+   * @param multiplicators per level
+   * @return vector containing the offset for each image level
+   */
+  std::vector<size_t> getOffsetPerLevel(
+      std::vector<std::vector<int64_t>>* imageDimensions,
+      std::vector<std::vector<size_t>>* multiplicatorsPerLevel) const;
+
+  /*
+   * Adds all one dimensional interactions to the resulting vector
+   * @param vector of resolutions
+   * @param the vector in which the interactions are stored
+   */
   void addOneDimensionalInteractions(std::vector<std::vector<int64_t>>* imageDimensions,
                                      std::vector<std::vector<size_t>>* vec) const;
 };

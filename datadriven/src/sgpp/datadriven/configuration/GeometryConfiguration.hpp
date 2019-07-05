@@ -13,18 +13,25 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-enum class StencilType { DirectNeighbour, HierarchicalParent, RecursiveHierarchicalParent, FullyRecursiveHierarchicalParent, None };
+enum class StencilType {
+  DirectNeighbour,
+  DiagonalNeighbour,
+  HierarchicalParent,
+  RecursiveHierarchicalParent,
+  FullyRecursiveHierarchicalParent,
+  None
+};
 
 /*
  * Struct that stores information to geometry aware sparse grids
  */
-struct GeometryConfiguration{
+struct GeometryConfiguration {
   /*
    * Stencil for geometric relation
    */
@@ -35,7 +42,6 @@ struct GeometryConfiguration{
    */
   std::vector<std::vector<int64_t>> dim;
 };
-
 
 }  // namespace datadriven
 }  // namespace sgpp
