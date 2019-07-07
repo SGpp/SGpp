@@ -189,7 +189,7 @@ std::vector<double> CSVTools::tokenizeLine(const std::string& line) {
 
 void CSVTools::writeMatrixToCSVFile(const std::string& path, DataMatrix matrix){
 
- std::cout << "Writing to file "+path << std::endl;
+ std::cout << "Writing to file "+path +".csv"<< std::endl;
  std::ofstream output;
 
 

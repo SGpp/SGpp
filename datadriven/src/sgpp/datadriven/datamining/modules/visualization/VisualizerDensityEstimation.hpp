@@ -75,8 +75,10 @@ private:
  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
  void storeCutJson(DataMatrix &matrix,
    std::vector<size_t> indexes,size_t &varDim, std::string filepath);
+ void storeCutJson(DataMatrix &matrix, std::string filepath);
  void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
    std::vector<size_t> indexes,size_t &varDim1,size_t &varDim2, std::string filepath);
+ void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model, std::string filepath);
 
 
 
