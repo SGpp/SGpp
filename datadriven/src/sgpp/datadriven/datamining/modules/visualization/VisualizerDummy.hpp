@@ -32,7 +32,7 @@ public:
  ~VisualizerDummy()=default;
 
 
- void visualize(ModelFittingBase &model) override;
+ void visualize(ModelFittingBase &model, unsigned int iteration) override;
 
 protected:
 

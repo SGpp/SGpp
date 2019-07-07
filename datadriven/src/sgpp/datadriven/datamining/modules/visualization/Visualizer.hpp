@@ -36,7 +36,7 @@ class Visualizer{
  /**
   * Method to execute the visualization step
   */
-  virtual void visualize(ModelFittingBase &model)=0;
+  virtual void visualize(ModelFittingBase &model, unsigned int iteration)=0;
 
  /**
    * Get the configuration of the visualizer object.
@@ -49,7 +49,7 @@ class Visualizer{
 
   virtual void runTsne(ModelFittingBase &model)=0;
 
-  void createOutputDirectory();
+  void createOutputDirectory(unsigned int iteration);
 
 
   /**

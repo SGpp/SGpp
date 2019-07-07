@@ -14,10 +14,18 @@
 #include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.h>
 #include <iostream>
 #include <vector>
-
+#include <omp.h>
+#include <algorithm>
+#include <string>
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/ListNode.hpp>
+#include <sgpp/base/tools/json/DictNode.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using json::JSON;
+using json::DictNode;
+using json::ListNode;
 using sgpp::datadriven::TSNE;
 
 
@@ -30,16 +38,38 @@ namespace datadriven{
   this->config = config;
  }
 
- void VisualizerDensityEstimation::visualize(ModelFittingBase &model)
+ void VisualizerDensityEstimation::visualize(ModelFittingBase &model,
+   unsigned int iteration)
  {
-  createOutputDirectory();
-  getLinearCuts(model);
-  getHeatmap(model);
-  runTsne(model);
 
-  if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+  createOutputDirectory(iteration);
+
+  omp_set_num_threads(config.getVisualizationParameters().numberCores);
+
+  #pragma omp parallel sections
   {
-   storeGrid(model);
+  #pragma omp section
+   {
+    getLinearCuts(model);
+   }
+
+   #pragma omp section
+   {
+    getHeatmap(model);
+   }
+
+   #pragma omp section
+   {
+    runTsne(model);
+   }
+
+   #pragma omp section
+   {
+   if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+   {
+    storeGrid(model);
+   }
+   }
   }
  }
 
@@ -56,6 +86,7 @@ namespace datadriven{
 
 
   CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().targetFile+"/grid", gridMatrix);
+
  }
  void VisualizerDensityEstimation::runTsne(ModelFittingBase &model){
 
@@ -71,15 +102,16 @@ namespace datadriven{
   int N = model.getDataset()->getNumberInstances();
   int D = model.getDataset()->getDimension();
 
-  double* output;
+  double* output = (double*) malloc(N * config.getVisualizationParameters().targetDimension * sizeof(double));
 
   if(D>=config.getVisualizationParameters().targetDimension)
   {
-   std::cout << "Compresiing with tsne to "<<std::to_string(config.getVisualizationParameters().targetDimension)
+   std::cout << "Compressing with tsne to "<<std::to_string(config.getVisualizationParameters().targetDimension)
     <<" dimensions"<<std::endl;
+
   TSNE::run(input, N, D , output, config.getVisualizationParameters().targetDimension,
     config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
-    config.getVisualizationParameters().seed, false, config.getVisualizationParameters().maxNunmberIterations);
+    config.getVisualizationParameters().seed, false, config.getVisualizationParameters().maxNumberIterations);
    D = config.getVisualizationParameters().targetDimension;
   }
   else
@@ -91,7 +123,15 @@ namespace datadriven{
 
   compressedModel.appendCol(evaluation);
 
-  CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().targetFile+"/tsne_compression", compressedModel);
+  if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+  {
+  CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().targetFile+"/tsneCompression", compressedModel);
+  }
+ else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+  {
+   storeTsneJson(compressedModel, model);
+
+  }
 
 
  }
@@ -210,11 +250,13 @@ namespace datadriven{
 
    for (size_t dimension=indexes.size()-1; dimension>0;dimension--)
    {
+    DataVector column(matrix.getNrows());
 
      matrix.getColumn(indexes.at(dimension),column);
 
      temp.setColumn(indexes.at(dimension-1),column);
    }
+
 
    matrix.getColumn(indexes.front(),column);
 
@@ -328,7 +370,7 @@ namespace datadriven{
    {
      for(double dim2=0; dim2<=1; dim2+=0.25)
      {
-      for(double dim3=0; dim3<=1 ;dim3+=0.01)
+      for(double dim3=0; dim3<=1 ;dim3 = roundf((dim3+0.01) * 100) / 100)
           {
                DataVector row(cutMatrix.getNcols(),0.5);
                row.set(2,dim2);
@@ -365,10 +407,18 @@ namespace datadriven{
           cutResults.appendCol(evaluation);
 
           translateColumnsRight(cutMatrix, variableColumnIndexes);
-
+          if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+          {
           CSVTools::writeMatrixToCSVFile(subfolder+"/Cut_var_dimension_"+
             std::to_string(variableColumnIndexes.at(combination)+1),
                 cutResults);
+          }
+          else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+            {
+             storeCutJson(cutResults, variableColumnIndexes, variableColumnIndexes.at(combination),
+               subfolder+"/Cut_var_dimension_"+
+               std::to_string(variableColumnIndexes.at(combination)+1));
+            }
 
       }
 
@@ -406,9 +456,16 @@ namespace datadriven{
 
       translateColumns(cutMatrix, cutMatrix.getNcols());
 
+      if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+      {
       CSVTools::writeMatrixToCSVFile(outputDir+"Cut_dimensions_1_2_variable_dimension"+
         std::to_string(combination+1),
             cutResults);
+      }
+      else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+        {
+         std::cout<<"Json implementation still under constructtion"<<std::endl;
+        }
   }
 
  }
@@ -429,8 +486,14 @@ namespace datadriven{
     model.evaluate(cutMatrix,evaluation);
 
     cutResults.appendCol(evaluation);
-
+    if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+    {
     CSVTools::writeMatrixToCSVFile(outputDir+"Cut_dimension 1",cutResults);
+    }
+    else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+      {
+       std::cout<<"Json implementation still under constructtion"<<std::endl;
+      }
  }
 
  void VisualizerDensityEstimation::getHeatmapMore4D(DataMatrix &heatMapMatrix, ModelFittingBase &model)
@@ -440,9 +503,9 @@ namespace datadriven{
    {
      for(double dim2=0; dim2<=1; dim2+=0.25)
      {
-      for(double dim3=0; dim3<=1 ;dim3+=0.05)
+      for(double dim3=0; dim3<=1 ;dim3 = roundf((dim3+0.05) * 100) / 100)
           {
-       for(double dim4=0; dim4<=1 ;dim4+=0.05)
+       for(double dim4=0; dim4<=1 ;dim4 = roundf((dim4+0.05) * 100) / 100)
            {
                DataVector row(heatMapMatrix.getNcols(),0.5);
                row.set(0,dim3);
@@ -491,20 +554,47 @@ namespace datadriven{
 
            if(iteration==0)
            {
-           CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
-                      +std::to_string(variableColumnIndexes.at(0)+1)+"_"+
-                      std::to_string(variableColumnIndexes.at(combination+1)+1), heatMapResults);
-           translateColumnsRight(heatMapMatrix, workingIndexes);
+            if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+            {
+             CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
+                        +std::to_string(variableColumnIndexes.at(0)+1)+"_"+
+                        std::to_string(variableColumnIndexes.at(combination+1)+1), heatMapResults);
+
+            }
+            else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+              {
+
+               storeHeatmapJson(heatMapResults, model,
+                 variableColumnIndexes,variableColumnIndexes.at(0), variableColumnIndexes.at(combination+1),
+                 subfolder+"/Heatmap_var_dimensions_"
+                                         +std::to_string(variableColumnIndexes.at(0)+1)+"_"+
+                                         std::to_string(variableColumnIndexes.at(combination+1)+1));
+
+              }
+
+            translateColumnsRight(heatMapMatrix, workingIndexes);
 
            }
            else
            {
-
+            if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+            {
             CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
                               +std::to_string(variableColumnIndexes.at((combination<2)?1:2)+1)+"_"+
                               std::to_string(variableColumnIndexes.at((combination<1)?2:3)+1), heatMapResults);
+            }
+            else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+            {
+               storeHeatmapJson(heatMapResults, model,
+                  variableColumnIndexes, variableColumnIndexes.at((combination<2)?1:2),
+                  variableColumnIndexes.at((combination<1)?2:3),
+                  subfolder+"/Heatmap_var_dimensions_"
+                  +std::to_string(variableColumnIndexes.at((combination<2)?1:2)+1)+"_"+
+                  std::to_string(variableColumnIndexes.at((combination<1)?2:3)+1));
+            }
             translateColumnsLeft(heatMapMatrix, workingIndexes);
            }
+
 
        }
 
@@ -523,13 +613,18 @@ namespace datadriven{
 
  void VisualizerDensityEstimation::getHeatmap3D(DataMatrix &heatMapMatrix, ModelFittingBase &model)
   {
+
   std::string outputDir(config.getGeneralConfig().targetFile+"/Heatmaps/");
+
+  //Dummy to reutilize the storejson method
+
+  std::vector <size_t> variableColumnIndexes = {0,1,2};
    for(double dim1=0; dim1<=1; dim1+=0.25)
     {
-     for(double dim2=0; dim2<=1 ;dim2+=0.05)
-         {
-      for(double dim3=0; dim3<=1 ;dim3+=0.05)
-          {
+    for(double dim2=0; dim2<=1 ;dim2 = roundf((dim2+0.05) * 100) / 100)
+            {
+         for(double dim3=0; dim3<=1 ;dim3 = roundf((dim3+0.05) * 100) / 100)
+             {
               DataVector row(3,0.5);
               row.set(0,dim3);
               row.set(1,dim2);
@@ -540,7 +635,7 @@ namespace datadriven{
 
     }
 
-    for(size_t combination=1;combination<=3;combination++)
+    for(size_t combination=0;combination<3;combination++)
     {
         DataMatrix heatMapResults(heatMapMatrix);
         DataVector evaluation(heatMapMatrix.getNrows());
@@ -550,19 +645,31 @@ namespace datadriven{
         heatMapResults.appendCol(evaluation);
 
         translateColumns(heatMapMatrix, heatMapMatrix.getNcols());
-
-        CSVTools::writeMatrixToCSVFile(outputDir+"dimensions_1_2_3_plotNumber_"+
-          std::to_string(combination),heatMapResults);
+        if(config.getGeneralConfig().targetFileType == VisualizationFileType::CSV)
+        {
+        CSVTools::writeMatrixToCSVFile(outputDir+"var_dimensions_"+std::to_string(combination+1)
+        +"_"+((combination < 2)?std::to_string(combination+2):std::to_string(1)),heatMapResults);
+        }
+        else if(config.getGeneralConfig().targetFileType == VisualizationFileType::json)
+        {
+         storeHeatmapJson(heatMapResults,
+           model,
+           variableColumnIndexes,
+           variableColumnIndexes.at(combination),
+           variableColumnIndexes.at((combination < 2)?combination+1:0),
+           outputDir+"var_dimensions_"+std::to_string(combination+1)+"_"+
+           ((combination < 2)?std::to_string(combination+2):std::to_string(1)));
+        }
     }
   }
 
  void VisualizerDensityEstimation::getHeatmap2D(DataMatrix &heatMapMatrix, ModelFittingBase &model)
  {
   std::string outputDir(config.getGeneralConfig().targetFile+"/Heatmaps/");
-    for(double dim1=0; dim1<=1 ;dim1+=0.05)
-    {
-     for(double dim2=0; dim2<=1 ;dim2+=0.05)
-         {
+  for(double dim1=0; dim1<=1 ;dim1 = roundf((dim1+0.05) * 100) / 100)
+          {
+       for(double dim2=0; dim2<=1 ;dim2 = roundf((dim2+0.05) * 100) / 100)
+           {
              DataVector row(2,0.5);
              row.set(0,dim1);
              row.set(1,dim2);
@@ -577,10 +684,569 @@ namespace datadriven{
 
     heatMapResults.appendCol(evaluation);
 
+    if( config.getGeneralConfig().targetFileType==VisualizationFileType::CSV)
+    {
     CSVTools::writeMatrixToCSVFile(outputDir+"dimensions_1_2",heatMapResults);
+    }
+    else if(config.getGeneralConfig().targetFileType==VisualizationFileType::json)
+      {
+       std::cout<<"Json implementation still under constructtion"<<std::endl;
+      }
 
  }
 
 
+
+ void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model)
+ {
+
+  JSON jsonOutput;
+
+
+  jsonOutput.addListAttr("data");
+
+  jsonOutput["data"].addDictValue();
+
+
+  jsonOutput["data"][0].addIDAttr("type","\"scatter\"");
+  jsonOutput["data"][0].addIDAttr("mode","\"markers\"");
+
+
+  DataVector xCol(matrix.getNrows());
+
+  matrix.getColumn(0,xCol);
+
+  jsonOutput["data"][0].addIDAttr("x",xCol.toString());
+
+  DataVector yCol(matrix.getNrows());
+
+  matrix.getColumn(1,yCol);
+  jsonOutput["data"][0].addIDAttr("y",yCol.toString());
+
+
+  jsonOutput["data"][0].addDictAttr("marker");
+
+  DataVector zCol(matrix.getNrows());
+
+  matrix.getColumn(2,zCol);
+
+  jsonOutput["data"][0]["marker"].addIDAttr("color",zCol.toString());
+
+  jsonOutput["data"][0]["marker"].addIDAttr("colorscale","\"Viridis\"");
+
+  jsonOutput["data"][0]["marker"].addIDAttr("opacity",0.8);
+
+  jsonOutput["data"][0]["marker"].addIDAttr("showscale", true);
+
+  jsonOutput["data"][0]["marker"].addDictAttr("colorbar");
+
+  jsonOutput["data"][0]["marker"]["colorbar"].addDictAttr("title");
+  jsonOutput["data"][0]["marker"]["colorbar"]["title"].addIDAttr("text","\"Density value\"");
+
+  jsonOutput.addDictAttr("layout");
+
+  jsonOutput["layout"].addDictAttr("title");
+
+
+  jsonOutput["layout"]["title"].addIDAttr("text", "\"TSNE Compression\"");
+
+  jsonOutput.serialize(config.getGeneralConfig().targetFile+"/tsneCompression.json");
+
+ }
+
+ void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::vector<size_t> indexes,
+   size_t &varDim, std::string filepath)
+ {
+
+  indexes.erase(std::find(indexes.begin(),indexes.end(),varDim));
+
+  JSON jsonOutput;
+  jsonOutput.addListAttr("data");
+
+  jsonOutput.addDictAttr("layout");
+
+  jsonOutput["layout"].addDictAttr("title");
+
+  jsonOutput["layout"].addListAttr("annotations");
+
+
+
+  jsonOutput["layout"]["title"].addIDAttr("text", "\"Linear Cuts: Variable dimension " +
+    std::to_string(varDim+1)+"\"");
+
+  for(unsigned int graphNumber=0; graphNumber<matrix.getNrows()/101; graphNumber++)
+  {
+   DataMatrix temp(matrix.getNrows(),matrix.getNcols());
+
+   temp.copyFrom(matrix);
+
+   unsigned int beginIndex = graphNumber*101+1;
+
+   temp.resizeToSubMatrix(beginIndex, 1, beginIndex+100,matrix.getNcols());
+
+   //Adding data trace
+   jsonOutput["data"].addDictValue();
+
+   jsonOutput["data"][graphNumber].addIDAttr("type","\"scatter\"");
+   jsonOutput["data"][graphNumber].addIDAttr("mode","\"lines\"");
+
+   std::string xAxis("x"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["data"][graphNumber].addIDAttr("xaxis","\"x"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   std::string yAxis("y"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["data"][graphNumber].addIDAttr("yaxis","\"y"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   DataVector xCol(temp.getNrows());
+
+   temp.getColumn(varDim,xCol);
+
+   jsonOutput["data"][graphNumber].addIDAttr("x",xCol.toString());
+
+   DataVector yCol(temp.getNrows());
+
+   temp.getColumn(temp.getNcols()-1,yCol);
+   jsonOutput["data"][graphNumber].addIDAttr("y",yCol.toString());
+   jsonOutput["data"][graphNumber].addIDAttr("showlegend",false);
+   jsonOutput["data"][graphNumber].addIDAttr("hoverinfo","\"x+y\"");
+
+
+   // Layout part of the graph
+   std::string xAxisName("xaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   std::string yAxisName("yaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["layout"].addDictAttr(xAxisName);
+   jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\""+yAxis+"\"");
+   jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
+   jsonOutput["layout"][xAxisName].addListAttr("domain");
+   jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
+   jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+
+    jsonOutput["layout"].addDictAttr(yAxisName);
+    jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
+    jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
+    jsonOutput["layout"][yAxisName].addListAttr("domain");
+
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+
+    //Adding titles to subplots
+    DataVector firstRow(temp.getNcols());
+    temp.getRow(0,firstRow);
+
+    std::string dim1Text(std::to_string(indexes.at(0)+1));
+
+    std::string dim1ValueText(std::to_string(firstRow.get(indexes.at(0))));
+    dim1ValueText.erase ( dim1ValueText.find_last_not_of('0') + 2, std::string::npos );
+
+    std::string dim2Text(std::to_string(indexes.at(1)+1));
+
+
+    std::string dim2ValueText(std::to_string(firstRow.get(indexes.at(1))));
+    dim2ValueText.erase ( dim2ValueText.find_last_not_of('0') + 2, std::string::npos );
+
+    jsonOutput["layout"]["annotations"].addDictValue();
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("x",
+     (std::stod(jsonOutput["layout"][xAxisName]["domain"][0].get()) +
+       std::stod(jsonOutput["layout"][xAxisName]["domain"][1].get()))/2);
+
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("y",
+         (0.9-std::stod(jsonOutput["layout"][yAxisName]["domain"][0].get())));
+
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("showarrow",false);
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xanchor","\"center\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yanchor","\"bottom\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xref","\"paper\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yref","\"paper\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("text","\"Dim "+
+     dim1Text+"="+dim1ValueText
+    +", Dim "+ dim2Text+"= "+dim2ValueText+"\"");
+
+  }
+
+  std::cout<<"Writing file "<<filepath+".json"<<std::endl;
+  jsonOutput.serialize(filepath+".json");
+
+
+ }
+
+ void VisualizerDensityEstimation::storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
+   std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath)
+ {
+  indexes.erase(std::find(indexes.begin(),indexes.end(),varDim1));
+
+  indexes.erase(std::find(indexes.begin(),indexes.end(),varDim2));
+
+  ModelFittingBaseSingleGrid* gridModel = dynamic_cast<ModelFittingBaseSingleGrid*>(&model);
+
+  auto grid = gridModel->getGrid().clone();
+
+  DataMatrix gridMatrix;
+
+  grid->getStorage().getCoordinateArrays(gridMatrix);
+
+  double maxValue = matrix.max();
+  double minValue = matrix.min();
+
+  JSON jsonOutput;
+  jsonOutput.addListAttr("data");
+
+  jsonOutput.addDictAttr("layout");
+
+  jsonOutput["layout"].addDictAttr("title");
+
+  if(gridMatrix.getNcols()>=4)
+  {
+   jsonOutput["layout"].addIDAttr("height", "1500");
+  }
+
+  jsonOutput["layout"].addListAttr("annotations");
+
+  jsonOutput["layout"]["title"].addIDAttr("text", "\"Heatmaps: Variable dimensions: " +
+    std::to_string(varDim1+1)+" and "+ std::to_string(varDim2+1)+"\"");
+
+  for(unsigned int graphNumber=0; graphNumber<matrix.getNrows()/441; graphNumber++)
+  {
+   DataMatrix temp(matrix.getNrows(),matrix.getNcols());
+
+   temp.copyFrom(matrix);
+
+   unsigned int beginIndex = graphNumber*441+1;
+
+   temp.resizeToSubMatrix(beginIndex, 1, beginIndex+440,matrix.getNcols());
+
+
+   // Adding data trace
+   jsonOutput["data"].addDictValue();
+
+   jsonOutput["data"][2*graphNumber].addIDAttr("type","\"contour\"");
+
+   std::string xAxis("x"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["data"][2*graphNumber].addIDAttr("xaxis","\"x"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   std::string yAxis("y"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["data"][2*graphNumber].addIDAttr("yaxis","\"y"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   DataVector xCol(temp.getNrows());
+
+   temp.getColumn(varDim1,xCol);
+
+   jsonOutput["data"][2*graphNumber].addIDAttr("x",xCol.toString());
+
+   DataVector yCol(temp.getNrows());
+
+   temp.getColumn(varDim2,yCol);
+
+   jsonOutput["data"][2*graphNumber].addIDAttr("y",yCol.toString());
+
+   DataVector zCol(temp.getNrows());
+
+   temp.getColumn(temp.getNcols()-1,zCol);
+
+   jsonOutput["data"][2*graphNumber].addIDAttr("z",zCol.toString());
+   jsonOutput["data"][2*graphNumber].addIDAttr("showlegend", false);
+   jsonOutput["data"][2*graphNumber].addIDAttr("hoverinfo","\"x+y+z\"");
+
+   jsonOutput["data"][2*graphNumber].addIDAttr("zmin",minValue);
+   jsonOutput["data"][2*graphNumber].addIDAttr("zmax",maxValue);
+   jsonOutput["data"][2*graphNumber].addIDAttr("colorscale","\"Viridis\"");
+
+   // Adding the grid
+   DataVector firstRow(temp.getNcols());
+   temp.getRow(0,firstRow);
+   DataMatrix tempGrid(0,gridMatrix.getNcols());
+   for(size_t index=0; index<gridMatrix.getNrows();index++)
+   {
+     DataVector row(gridMatrix.getNcols());
+     gridMatrix.getRow(index,row);
+     if(gridMatrix.getNcols() >= 4)
+     {
+      if(row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) & row.get(indexes.at(1))==firstRow.get(indexes.at(1)))
+      {
+       tempGrid.appendRow(row);
+      }
+     }
+     else
+     {
+      if(row.get(indexes.at(0)) == firstRow.get(indexes.at(0)))
+       {
+        tempGrid.appendRow(row);
+       }
+     }
+   }
+
+   jsonOutput["data"].addDictValue();
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("type","\"scatter\"");
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("mode","\"markers\"");
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("xaxis","\"x"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("yaxis","\"y"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+   jsonOutput["data"][2*graphNumber+1].addDictAttr("marker");
+
+   jsonOutput["data"][2*graphNumber+1]["marker"].addIDAttr("color","\"red\"");
+
+   DataVector xColGrid(tempGrid.getNrows());
+
+   tempGrid.getColumn(varDim1,xColGrid);
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("x",xColGrid.toString());
+
+   DataVector yColGrid(tempGrid.getNrows());
+
+   tempGrid.getColumn(varDim2,yColGrid);
+
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("y",yColGrid.toString());
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("showlegend", false);
+   jsonOutput["data"][2*graphNumber+1].addIDAttr("hoverinfo","\"none\"");
+
+   // Layout part of the graph
+   std::string xAxisName("xaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   std::string yAxisName("yaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+   jsonOutput["layout"].addDictAttr(xAxisName);
+   jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\""+yAxis+"\"");
+   jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
+   jsonOutput["layout"][xAxisName].addListAttr("domain");
+   jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
+   jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+
+
+   jsonOutput["layout"].addDictAttr(yAxisName);
+   jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
+   jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
+
+   if(gridMatrix.getNcols()>=4)
+   {
+    jsonOutput["layout"][yAxisName].addListAttr("domain");
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+   }
+
+    //Adding titles to subplots
+    std::string dim1Text(std::to_string(indexes.at(0)+1));
+
+    std::string dim1ValueText(std::to_string(firstRow.get(indexes.at(0))));
+    dim1ValueText.erase ( dim1ValueText.find_last_not_of('0') + 2, std::string::npos );
+
+    dim1Text = "\"Dim "+
+      dim1Text+"="+dim1ValueText;
+
+    std::string dim2Text="";
+    std::string dim2ValueText="\"";
+    if(gridMatrix.getNcols() >= 4)
+    {
+     dim2Text = std::to_string(indexes.at(1)+1);
+     dim2ValueText = std::to_string(firstRow.get(indexes.at(1)));
+     dim2ValueText.erase ( dim2ValueText.find_last_not_of('0') + 2, std::string::npos );
+     dim2Text = ", Dim " + dim2Text+"= "+dim2ValueText+"\"";
+    }
+    else
+    {
+     dim2Text = dim2Text + dim2ValueText;
+    }
+
+    std::string subplot_title (dim1Text+dim2Text);
+
+    jsonOutput["layout"]["annotations"].addDictValue();
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("x",
+     (std::stod(jsonOutput["layout"][xAxisName]["domain"][0].get()) +
+       std::stod(jsonOutput["layout"][xAxisName]["domain"][1].get()))/2);
+
+    if(gridMatrix.getNcols()>=4)
+    {
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("y",
+          (0.9-std::stod(jsonOutput["layout"][yAxisName]["domain"][0].get())));
+    }
+    else
+    {
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("y", 1.0);
+    }
+
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("showarrow",false);
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xanchor","\"center\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yanchor","\"bottom\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xref","\"paper\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yref","\"paper\"");
+    jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("text", subplot_title);
+
+  }
+  std::cout<<"Writing file "<<filepath+".json"<<std::endl;
+  jsonOutput.serialize(filepath+".json");
+ }
+
+
+ /*void VisualizerDensityEstimation::storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
+     size_t &varDim1, std::string filepath)
+ {
+   ModelFittingBaseSingleGrid* gridModel = dynamic_cast<ModelFittingBaseSingleGrid*>(&model);
+
+   auto grid = gridModel->getGrid().clone();
+
+   DataMatrix gridMatrix;
+
+   grid->getStorage().getCoordinateArrays(gridMatrix);
+
+   double maxValue = matrix.max();
+   double minValue = matrix.min();
+
+   JSON jsonOutput;
+   jsonOutput.addListAttr("data");
+
+   jsonOutput.addDictAttr("layout");
+
+   jsonOutput["layout"].addDictAttr("title");
+
+   jsonOutput["layout"].addIDAttr("height", "1500");
+
+   jsonOutput["layout"].addListAttr("annotations");
+
+   jsonOutput["layout"]["title"].addIDAttr("text", "\"Heatmaps: Variable dimensions: " +
+     std::to_string(varDim1+1)+" and "+ std::to_string(varDim2+1)+"\"");
+
+   for(unsigned int graphNumber=0; graphNumber<matrix.getNrows()/400; graphNumber++)
+   {
+    DataMatrix temp(matrix.getNrows(),matrix.getNcols());
+
+    temp.copyFrom(matrix);
+
+    unsigned int beginIndex = graphNumber*400+1;
+
+    temp.resizeToSubMatrix(beginIndex, 1, beginIndex+399,matrix.getNcols());
+
+
+    //Adding data trace
+    jsonOutput["data"].addDictValue();
+
+    jsonOutput["data"][2*graphNumber].addIDAttr("type","\"contour\"");
+
+    std::string xAxis("x"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+    jsonOutput["data"][2*graphNumber].addIDAttr("xaxis","\"x"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+    std::string yAxis("y"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+    jsonOutput["data"][2*graphNumber].addIDAttr("yaxis","\"y"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+    DataVector xCol(temp.getNrows());
+
+    temp.getColumn(varDim1,xCol);
+
+    jsonOutput["data"][2*graphNumber].addIDAttr("x",xCol.toString());
+
+    DataVector yCol(temp.getNrows());
+
+    temp.getColumn(varDim2,yCol);
+
+    jsonOutput["data"][2*graphNumber].addIDAttr("y",yCol.toString());
+
+    DataVector zCol(temp.getNrows());
+
+    temp.getColumn(temp.getNcols()-1,zCol);
+
+    jsonOutput["data"][2*graphNumber].addIDAttr("z",zCol.toString());
+    jsonOutput["data"][2*graphNumber].addIDAttr("showlegend", false);
+    jsonOutput["data"][2*graphNumber].addIDAttr("hoverinfo","\"x+y+z\"");
+
+    jsonOutput["data"][2*graphNumber].addIDAttr("zmin",minValue);
+    jsonOutput["data"][2*graphNumber].addIDAttr("zmax",maxValue);
+    jsonOutput["data"][2*graphNumber].addIDAttr("colorscale","\"Viridis\"");
+
+    // Adding the grid
+
+    DataVector firstRow(temp.getNcols());
+    temp.getRow(0,firstRow);
+    DataMatrix tempGrid(0,gridMatrix.getNcols());
+    for(size_t index=0; index<gridMatrix.getNrows();index++)
+    {
+      DataVector row(gridMatrix.getNcols());
+      gridMatrix.getRow(index,row);
+      if(row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) & row.get(indexes.at(1))==firstRow.get(indexes.at(1)))
+      {
+
+
+       tempGrid.appendRow(row);
+      }
+    }
+
+    jsonOutput["data"].addDictValue();
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("type","\"scatter\"");
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("mode","\"markers\"");
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("xaxis","\"x"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("yaxis","\"y"+((graphNumber==0)?"":std::to_string(graphNumber+1))+"\"");
+
+    jsonOutput["data"][2*graphNumber+1].addDictAttr("marker");
+
+    jsonOutput["data"][2*graphNumber+1]["marker"].addIDAttr("color","\"red\"");
+
+    DataVector xColGrid(tempGrid.getNrows());
+
+    tempGrid.getColumn(varDim1,xColGrid);
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("x",xColGrid.toString());
+
+    DataVector yColGrid(tempGrid.getNrows());
+
+    tempGrid.getColumn(varDim2,yColGrid);
+
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("y",yColGrid.toString());
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("showlegend", false);
+    jsonOutput["data"][2*graphNumber+1].addIDAttr("hoverinfo","\"x+y\"");
+
+    // Layout part of the graph
+    std::string xAxisName("xaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+    std::string yAxisName("yaxis"+((graphNumber==0)?"":std::to_string(graphNumber+1)));
+    jsonOutput["layout"].addDictAttr(xAxisName);
+    jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\""+yAxis+"\"");
+    jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
+    jsonOutput["layout"][xAxisName].addListAttr("domain");
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+
+    jsonOutput["layout"].addDictAttr(yAxisName);
+    jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
+    jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
+    jsonOutput["layout"][yAxisName].addListAttr("domain");
+
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
+    jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+
+     //Adding titles to subplots
+
+
+     std::string dim1Text(std::to_string(indexes.at(0)+1));
+
+     std::string dim1ValueText(std::to_string(firstRow.get(indexes.at(0))));
+     dim1ValueText.erase ( dim1ValueText.find_last_not_of('0') + 2, std::string::npos );
+
+     std::string dim2Text(std::to_string(indexes.at(1)+1));
+
+
+     std::string dim2ValueText(std::to_string(firstRow.get(indexes.at(1))));
+     dim2ValueText.erase ( dim2ValueText.find_last_not_of('0') + 2, std::string::npos );
+
+     jsonOutput["layout"]["annotations"].addDictValue();
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("x",
+      (std::stod(jsonOutput["layout"][xAxisName]["domain"][0].get()) +
+        std::stod(jsonOutput["layout"][xAxisName]["domain"][1].get()))/2);
+
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("y",
+          (0.9-std::stod(jsonOutput["layout"][yAxisName]["domain"][0].get())));
+
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("showarrow",false);
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xanchor","\"center\"");
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yanchor","\"bottom\"");
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xref","\"paper\"");
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yref","\"paper\"");
+     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("text","\"Dim "+
+      dim1Text+"="+dim1ValueText
+     +", Dim "+ dim2Text+"= "+dim2ValueText+"\"");
+
+   }
+   std::cout<<"Writing file "<<filepath+".json"<<std::endl;
+   jsonOutput.serialize(filepath+".json");
+ }*/
 } //namespace datadriven
 }//namespace sgpp

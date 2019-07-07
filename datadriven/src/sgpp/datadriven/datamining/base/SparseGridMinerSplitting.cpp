@@ -84,7 +84,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         print(out);
       }
 
-      visualizer->visualize(*fitter);
+      visualizer->visualize(*fitter, iteration);
 
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);

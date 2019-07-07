@@ -40,7 +40,7 @@
 #include "vptree.h"
 #include "sptree.h"
 #include "tsne.h"
-
+#include <omp.h>
 
 using namespace std;
 
@@ -75,7 +75,6 @@ void TSNE::run(double* X, int N, int D, double* Y, int no_dims, double perplexit
 	double eta = 200.0;
 
     // Allocate some memory
-	    Y  = (double*) malloc(N * D * sizeof(double));
     double* dY    = (double*) malloc(N * no_dims * sizeof(double));
     double* uY    = (double*) malloc(N * no_dims * sizeof(double));
     double* gains = (double*) malloc(N * no_dims * sizeof(double));
@@ -88,6 +87,8 @@ void TSNE::run(double* X, int N, int D, double* Y, int no_dims, double perplexit
     start = clock();
     zeroMean(X, N, D);
     double max_X = .0;
+
+    #pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < N * D; i++) {
         if(fabs(X[i]) > max_X) max_X = fabs(X[i]);
     }
@@ -117,6 +118,8 @@ void TSNE::run(double* X, int N, int D, double* Y, int no_dims, double perplexit
         }
         double sum_P = .0;
         for(int i = 0; i < N * N; i++) sum_P += P[i];
+
+        #pragma omp parallel for schedule(dynamic)
         for(int i = 0; i < N * N; i++) P[i] /= sum_P;
     }
 
@@ -130,16 +133,19 @@ void TSNE::run(double* X, int N, int D, double* Y, int no_dims, double perplexit
         symmetrizeMatrix(&row_P, &col_P, &val_P, N);
         double sum_P = .0;
         for(int i = 0; i < row_P[N]; i++) sum_P += val_P[i];
+
+        #pragma omp parallel for schedule(dynamic)
         for(int i = 0; i < row_P[N]; i++) val_P[i] /= sum_P;
     }
     end = clock();
 
-    // Lie about the P-values
+    /*// Lie about the P-values
     if(exact) { for(int i = 0; i < N * N; i++)        P[i] *= 12.0; }
-    else {      for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0; }
+    else {      for(int i = 0; i < row_P[N]; i++) val_P[i] *= 12.0; }*/
 
 	// Initialize solution (randomly)
   if (skip_random_init != true) {
+   #pragma omp parallel for schedule(dynamic)
   	for(int i = 0; i < N * no_dims; i++) Y[i] = randn() * .0001;
   }
 
@@ -155,21 +161,25 @@ void TSNE::run(double* X, int N, int D, double* Y, int no_dims, double perplexit
         else computeGradient(P, row_P, col_P, val_P, Y, N, no_dims, dY, theta);
 
         // Update gains
-        for(int i = 0; i < N * no_dims; i++) gains[i] = (sign(dY[i]) != sign(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
-        for(int i = 0; i < N * no_dims; i++) if(gains[i] < .01) gains[i] = .01;
+        #pragma omp parallel for schedule(dynamic)
+        for(int i = 0; i < N * no_dims; i++)
+        {
+         gains[i] = (sign(dY[i]) != sign(uY[i])) ? (gains[i] + .2) : (gains[i] * .8);
+         if(gains[i] < .01) gains[i] = .01;
+         // Perform gradient update (with momentum and gains)
+         uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
+         Y[i] = Y[i] + uY[i];
+        }
 
-        // Perform gradient update (with momentum and gains)
-        for(int i = 0; i < N * no_dims; i++) uY[i] = momentum * uY[i] - eta * gains[i] * dY[i];
-		for(int i = 0; i < N * no_dims; i++)  Y[i] = Y[i] + uY[i];
 
         // Make solution zero-mean
-		zeroMean(Y, N, no_dims);
+		     zeroMean(Y, N, no_dims);
 
         // Stop lying about the P-values after a while, and switch momentum
-        if(iter == stop_lying_iter) {
+       /* if(iter == stop_lying_iter) {
             if(exact) { for(int i = 0; i < N * N; i++)        P[i] /= 12.0; }
             else      { for(int i = 0; i < row_P[N]; i++) val_P[i] /= 12.0; }
-        }
+        }*/
         if(iter == mom_switch_iter) momentum = final_momentum;
 
         // Print out progress
@@ -215,10 +225,30 @@ void TSNE::computeGradient(double* P, unsigned int* inp_row_P, unsigned int* inp
     double* pos_f = (double*) calloc(N * D, sizeof(double));
     double* neg_f = (double*) calloc(N * D, sizeof(double));
     if(pos_f == NULL || neg_f == NULL) { printf("Memory allocation failed!\n"); exit(1); }
+
+    #pragma omp parallel sections
+    {
+
+
+    #pragma omp section
+     {
     tree->computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
-    for(int n = 0; n < N; n++) tree->computeNonEdgeForces(n, theta, neg_f + n * D, &sum_Q);
+     }
+
+    #pragma omp section
+    {
+     #pragma omp parallel for schedule(dynamic)
+     for(int n = 0; n < N; n++)
+     {
+      tree->computeNonEdgeForces(n, theta, neg_f + n * D, &sum_Q);
+
+     }
+    }
+
+    }
 
     // Compute final t-SNE gradient
+    #pragma omp parallel for schedule(dynamic)
     for(int i = 0; i < N * D; i++) {
         dC[i] = pos_f[i] - (neg_f[i] / sum_Q);
     }
@@ -256,6 +286,7 @@ void TSNE::computeExactGradient(double* P, double* Y, int N, int D, double* dC) 
 	// Perform the computation of the gradient
     nN = 0;
     int nD = 0;
+ #pragma omp parallel for schedule(dynamic)
 	for(int n = 0; n < N; n++) {
         int mD = 0;
     	for(int m = 0; m < N; m++) {
@@ -289,6 +320,7 @@ double TSNE::evaluateError(double* P, double* Y, int N, int D) {
     // Compute Q-matrix and normalization sum
     int nN = 0;
     double sum_Q = DBL_MIN;
+    #pragma omp parallel for schedule(dynamic)
     for(int n = 0; n < N; n++) {
     	for(int m = 0; m < N; m++) {
             if(n != m) {
@@ -326,6 +358,7 @@ double TSNE::evaluateError(unsigned int* row_P, unsigned int* col_P, double* val
     // Loop over all edges to compute t-SNE error
     int ind1, ind2;
     double C = .0, Q;
+    #pragma omp parallel for schedule(dynamic)
     for(int n = 0; n < N; n++) {
         ind1 = n * D;
         for(int i = row_P[n]; i < row_P[n + 1]; i++) {
@@ -408,8 +441,12 @@ void TSNE::computeGaussianPerplexity(double* X, int N, int D, double* P, double 
 		}
 
 		// Row normalize P
-		for(int m = 0; m < N; m++) P[nN + m] /= sum_P;
-        nN += N;
+		for(int m = 0; m < N; m++)
+		{
+		  P[nN + m] /= sum_P;
+
+		}
+  nN += N;
 	}
 
 	// Clean up memory
@@ -438,6 +475,8 @@ void TSNE::computeGaussianPerplexity(double* X, int N, int D, unsigned int** _ro
     // Build ball tree on data set
     VpTree<DataPoint, euclidean_distance>* tree = new VpTree<DataPoint, euclidean_distance>();
     vector<DataPoint> obj_X(N, DataPoint(D, -1, X));
+
+    #pragma omp parallel for schedule(dynamic)
     for(int n = 0; n < N; n++) obj_X[n] = DataPoint(D, n, X + n * D);
     tree->create(obj_X);
 
@@ -445,6 +484,8 @@ void TSNE::computeGaussianPerplexity(double* X, int N, int D, unsigned int** _ro
     printf("Building tree...\n");
     vector<DataPoint> indices;
     vector<double> distances;
+
+    #pragma omp parallel for schedule(dynamic) private(indices, distances)
     for(int n = 0; n < N; n++) {
 
         if(n % 10000 == 0) printf(" - point %d of %d\n", n, N);
@@ -502,8 +543,9 @@ void TSNE::computeGaussianPerplexity(double* X, int N, int D, unsigned int** _ro
         }
 
         // Row-normalize current row of P and store in matrix
-        for(unsigned int m = 0; m < K; m++) cur_P[m] /= sum_P;
+        #pragma omp parallel for schedule(dynamic)
         for(unsigned int m = 0; m < K; m++) {
+            cur_P[m] /= sum_P;
             col_P[row_P[n] + m] = (unsigned int) indices[m + 1].index();
             val_P[row_P[n] + m] = cur_P[m];
         }
@@ -527,6 +569,7 @@ void TSNE::symmetrizeMatrix(unsigned int** _row_P, unsigned int** _col_P, double
     // Count number of elements and row counts of symmetric matrix
     int* row_counts = (int*) calloc(N, sizeof(int));
     if(row_counts == NULL) { printf("Memory allocation failed!\n"); exit(1); }
+    #pragma omp parallel for schedule(dynamic)
     for(int n = 0; n < N; n++) {
         for(int i = row_P[n]; i < row_P[n + 1]; i++) {
 
@@ -630,12 +673,15 @@ void TSNE::zeroMean(double* X, int N, int D) {
 	double* mean = (double*) calloc(D, sizeof(double));
     if(mean == NULL) { printf("Memory allocation failed!\n"); exit(1); }
     int nD = 0;
+ #pragma omp parallel for schedule(dynamic)
 	for(int n = 0; n < N; n++) {
 		for(int d = 0; d < D; d++) {
 			mean[d] += X[nD + d];
 		}
         nD += D;
 	}
+
+ #pragma omp parallel for schedule(dynamic)
 	for(int d = 0; d < D; d++) {
 		mean[d] /= (double) N;
 	}

@@ -26,18 +26,18 @@ namespace datadriven {
    }
 
 
-   void Visualizer::createOutputDirectory(){
-       if(config.getGeneralConfig().targetFile!="."){
+   void Visualizer::createOutputDirectory(unsigned int iteration){
+
+        config.getGeneralConfig().targetFile = config.getGeneralConfig().targetFile+"/Iteration_"
+          +std::to_string(iteration);
+
          std::cout << "Creating output directory " << config.getGeneralConfig().targetFile
            <<std::endl;
-         std::string mkdir("mkdir ");
+         std::string mkdir("mkdir --parents ");
 
          mkdir.append(config.getGeneralConfig().targetFile);
          system(mkdir.data());
 
-
-
-       }
      }
 }//namespace datadrivem
 }//namespace sgpp
