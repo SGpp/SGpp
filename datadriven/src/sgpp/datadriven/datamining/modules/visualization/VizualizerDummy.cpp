@@ -22,7 +22,7 @@ namespace sgpp{
 namespace datadriven{
 
 
- void VisualizerDummy::visualize(ModelFittingBase &model)
+ void VisualizerDummy::visualize(ModelFittingBase &model, unsigned int iteration)
  {
 
  }

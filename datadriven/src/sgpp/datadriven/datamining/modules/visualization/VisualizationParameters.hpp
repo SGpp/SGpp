@@ -37,7 +37,7 @@ struct VisualizationParameters{
   * The maximum number of iteration to run on the gradient descent of a selected
   * algorithm
   */
- size_t maxNunmberIterations = 1000;
+ size_t maxNumberIterations = 1000;
 
  /*
   * The dimentionality to which we want to reduce the data for visualization

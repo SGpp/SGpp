@@ -33,7 +33,7 @@ namespace datadriven {
 
   visualizationParameters.perplexity=30;
   visualizationParameters.theta=0.5;
-  visualizationParameters.maxNunmberIterations=1000;
+  visualizationParameters.maxNumberIterations=1000;
   visualizationParameters.seed=30;
   visualizationParameters.targetDimension=2;
   visualizationParameters.numberCores=1;

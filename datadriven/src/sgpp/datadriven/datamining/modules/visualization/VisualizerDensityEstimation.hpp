@@ -17,6 +17,8 @@
 #include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <vector>
+#include <string>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -39,7 +41,7 @@ public:
  ~VisualizerDensityEstimation()=default;
 
 
- void visualize(ModelFittingBase &model) override;
+ void visualize(ModelFittingBase &model, unsigned int iteration) override;
 
 protected:
 
@@ -53,6 +55,7 @@ protected:
 
 
 private:
+
  void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
  void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
  void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
@@ -68,6 +71,14 @@ private:
  void updateIndexesCuts(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
  void updateIndexesHeatmap(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
  void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
+
+ void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
+ void storeCutJson(DataMatrix &matrix,
+   std::vector<size_t> indexes,size_t &varDim, std::string filepath);
+ void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
+   std::vector<size_t> indexes,size_t &varDim1,size_t &varDim2, std::string filepath);
+
+
 
 
 };

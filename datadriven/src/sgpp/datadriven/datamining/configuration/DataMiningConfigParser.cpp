@@ -585,8 +585,8 @@ bool DataMiningConfigParser::getVisualizationParameters(
    config.seed = parseUInt(*visualizationParameters, "seed",
      defaults.seed, "visualization");
 
-   config.maxNunmberIterations = parseUInt(*visualizationParameters,
-     "maxNunmberIterations", defaults.maxNunmberIterations, "visualization");
+   config.maxNumberIterations = parseUInt(*visualizationParameters,
+     "maxNumberIterations", defaults.maxNumberIterations, "visualization");
 
    config.targetDimension = parseUInt(*visualizationParameters, "targetDimension",
      defaults.targetDimension, "visualization");
