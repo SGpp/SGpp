@@ -36,7 +36,6 @@
 
 using namespace std;
 
-
 class Cell {
 
     unsigned int dimension;

@@ -64,7 +64,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       if (verbose) {
         std::ostringstream out;
         out << "###############"
-            << "Itertation #" << (iteration++) << std::endl
+            << "Itertation #" << (iteration) << std::endl
             << "Batch size: " << numInstances;
         print(out);
       }
@@ -84,7 +84,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         print(out);
       }
 
-      visualizer->visualize(*fitter, iteration);
+      visualizer->visualize(*fitter, 1, iteration);
 
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
@@ -95,6 +95,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       if (verbose) {
         print("###############Iteration finished.");
       }
+      iteration++;
     }
   }
   return scorer->test(*fitter, *(dataSource->getValidationData()));

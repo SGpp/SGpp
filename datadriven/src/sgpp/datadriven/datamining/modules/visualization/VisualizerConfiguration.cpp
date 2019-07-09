@@ -12,51 +12,50 @@
 
 
 
-#include <string>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
 
+#include <ctime>
+#include <cstdlib>
 #include <iostream>
+
 
 namespace sgpp {
 namespace datadriven {
 
+void VisualizerConfiguration::setupDefaults() {
+  srand((unsigned int)time(NULL));
 
- void VisualizerConfiguration::setupDefaults(){
-
-  std::cout <<"Setting up defaults parameters for Visualizer"<<std::endl;
-  generalConfig.algorithm= "tsne";
-  generalConfig.targetFile="./output";
+  std::cout << "Setting up defaults parameters for Visualizer" << std::endl;
+  generalConfig.algorithm = "tsne";
+  generalConfig.targetDirectory = "./output";
   generalConfig.targetFileType = VisualizationFileType::CSV;
+  generalConfig.numBatches = 1;
 
-  visualizationParameters.perplexity=30;
-  visualizationParameters.theta=0.5;
-  visualizationParameters.maxNumberIterations=1000;
-  visualizationParameters.seed=30;
-  visualizationParameters.targetDimension=2;
-  visualizationParameters.numberCores=1;
-  std::cout <<"Setting up defaults done"<<std::endl;
- }
-
- void VisualizerConfiguration::readParams(const DataMiningConfigParser &parser) {
-   setupDefaults();
-
-   parser.getVisualizationGeneralConfig(generalConfig, generalConfig);
-
-   parser.getVisualizationParameters(visualizationParameters,visualizationParameters);
- }
-
- VisualizationGeneralConfig &VisualizerConfiguration::getGeneralConfig()
- {
-   return generalConfig;
- }
-
- VisualizationParameters &VisualizerConfiguration::getVisualizationParameters()
- {
-   return visualizationParameters;
- }
-
+  visualizationParameters.perplexity = 30;
+  visualizationParameters.theta = 0.5;
+  visualizationParameters.maxNumberIterations = 1000;
+  visualizationParameters.seed = rand();
+  visualizationParameters.targetDimension = 2;
+  visualizationParameters.numberCores = 1;
+  std::cout << "Setting up defaults done" << std::endl;
 }
+
+void VisualizerConfiguration::readParams(const DataMiningConfigParser &parser) {
+  setupDefaults();
+  parser.getVisualizationGeneralConfig(generalConfig, generalConfig);
+  parser.getVisualizationParameters(visualizationParameters, visualizationParameters);
 }
+
+VisualizationGeneralConfig &VisualizerConfiguration::getGeneralConfig() {
+  return generalConfig;
+}
+
+VisualizationParameters &VisualizerConfiguration::getVisualizationParameters() {
+  return visualizationParameters;
+}
+
+}  // namespace datadriven
+}  // namespace sgpp

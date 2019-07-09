@@ -10,41 +10,51 @@
  *      Author: Vincent Bautista
  */
 
-
 #pragma once
 
-#include <string>
-
 #include "VisualizationParameters.hpp"
-
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
+enum class VisualizationFileType {CSV,json};
 
-enum class VisualizationFileType{CSV,json};
-
-
- struct VisualizationGeneralConfig{
+struct VisualizationGeneralConfig {
 
   /**
-   * The name of the algorithm to use in the visualization Module
-   */
+  * The name of the algorithm to use in the visualization Module
+  */
   std::string algorithm = "";
 
   /**
-   * The path to the file which will store the output of the visualization
-   * module
-   */
-  std::string targetFile ="";
-
+  * The path to the file which will store the output of the visualization
+  * module
+  */
+  std::string currentDirectory = "";
 
   /**
-   * The filetype in which to store the output of the visualization module
-   */
+  * The filetype in which to store the output of the visualization module
+  */
   VisualizationFileType targetFileType =  VisualizationFileType::json;
 
+  /**
+  * Number of batches after which to execute the visualization Module
+  * a 1 means every batch
+  */
+  size_t numBatches =  1;
 
+  /**
+  *  Flag that tells if cross validation is enabled. Depends on
+  *  fitter[crossValidation][enabled]
+  */
+  bool crossValidation = false;
+
+  /**
+  * The path to the file which will store the output of the visualization
+  * module
+  */
+  std::string targetDirectory = "";
 };
 
-}
-}
+}// namespace datadriven
+}// namespace sgpp

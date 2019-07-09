@@ -24,46 +24,50 @@ namespace datadriven {
 
 class VisualizerConfiguration{
 
-public:
+ public:
+  /**
+   * Default Constructor
+   */
+  VisualizerConfiguration() = default;
 
- VisualizerConfiguration()=default;
+  /**
+   * Default Constructor
+   */
+ ~VisualizerConfiguration() = default;
 
- ~VisualizerConfiguration()=default;
-
- /**
-  * set default values for all members based on the desired scenario.
-  */
+  /**
+   * set default values for all members based on the desired scenario.
+   */
   void setupDefaults();
 
- /**
-  * obtain parameters from a parser
-  * @param parser: the parser object to read from
-  */
+  /**
+   * obtain parameters from a parser
+   * @param parser: the parser object to read from
+   */
   void readParams(const DataMiningConfigParser &parser);
 
- /**
-  * read general configuration parameters
-  */
+  /**
+   * read general configuration parameters
+   */
   VisualizationGeneralConfig &getGeneralConfig();
 
   /**
    * read general configuration parameters
    */
   VisualizationParameters &getVisualizationParameters();
-protected:
 
- /**
+ protected:
+  /**
    * Contains general configuration for the Visualizer
    */
   VisualizationGeneralConfig generalConfig;
 
- /**
+  /**
    *  Contains the numerical parameters used to run the visualization
    *  algorithm
    */
   VisualizationParameters visualizationParameters;
-
-
 };
+
 }//namespace datadriven
 }//namespace readParams

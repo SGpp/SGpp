@@ -103,8 +103,7 @@ void ModelFittingBase::reconfigureSolver(SLESolver &solver,
   solver.setEpsilon(sleConfig.eps_);
 }
 
-Dataset *ModelFittingBase::getDataset()
-{
+Dataset *ModelFittingBase::getDataset() {
   return dataset;
 }
 } /* namespace datadriven */

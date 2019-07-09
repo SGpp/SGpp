@@ -15,29 +15,41 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
-#include <cstring>
+#include <string>
 
 namespace sgpp {
-
 namespace datadriven {
 
-   const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const{
-    return config;
-   }
+const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const {
+  return config;
+}
 
+void Visualizer::createOutputDirectory(size_t fold, size_t batch) {
 
-   void Visualizer::createOutputDirectory(unsigned int iteration){
+  std::cout << "Batch Number " << std::to_string(batch) << std::endl;
+  if (config.getGeneralConfig().crossValidation) {
+  config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+  } else {
+  config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Batch_" + std::to_string(batch);
+  }
 
-        config.getGeneralConfig().targetFile = config.getGeneralConfig().targetFile+"/Iteration_"
-          +std::to_string(iteration);
+  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
+     << std::endl;
 
-         std::cout << "Creating output directory " << config.getGeneralConfig().targetFile
-           <<std::endl;
-         std::string mkdir("mkdir --parents ");
+  std::string mkdir("mkdir --parents ");
 
-         mkdir.append(config.getGeneralConfig().targetFile);
-         system(mkdir.data());
+  mkdir.append(config.getGeneralConfig().currentDirectory);
 
-     }
-}//namespace datadrivem
-}//namespace sgpp
+  int status = system(mkdir.data());
+
+  if (status == 0) {
+    std::cout << "Directory created succesfully" << std::endl;
+  } else {
+    std::cout << "Directory already exists" << std::endl;
+  }
+}
+
+}  // namespace datadriven
+}  // namespace sgpp

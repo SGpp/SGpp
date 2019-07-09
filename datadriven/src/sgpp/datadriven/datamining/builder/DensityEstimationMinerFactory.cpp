@@ -71,17 +71,14 @@ HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::stri
 FitterFactory *DensityEstimationMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
   return new DensityEstimationFitterFactory(parser);
-
 }
 
-Visualizer* DensityEstimationMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const{
+Visualizer* DensityEstimationMinerFactory::createVisualizer(const DataMiningConfigParser& parser)
+const {
+  VisualizerConfiguration config;
+  config.readParams(parser);
 
- VisualizerConfiguration config;
-
- config.readParams(parser);
-
- return new VisualizerDensityEstimation(config);
-
+  return new VisualizerDensityEstimation(config);
 }
 
 

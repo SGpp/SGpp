@@ -42,15 +42,12 @@ FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
   return new LeastSquaresRegressionFitterFactory(parser);
 }
 
-Visualizer* LeastSquaresRegressionMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const{
+Visualizer* LeastSquaresRegressionMinerFactory::createVisualizer(
+  const DataMiningConfigParser& parser) const {
+  VisualizerConfiguration config;
+  config.readParams(parser);
 
- VisualizerConfiguration config;
-
- config.readParams(parser);
-
- return new VisualizerDummy();
-
+  return new VisualizerDummy();
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */
