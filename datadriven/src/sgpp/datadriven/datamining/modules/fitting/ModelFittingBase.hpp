@@ -83,13 +83,13 @@ class ModelFittingBase {
    * @return deep copy of this object. New object is owned by caller.
    */
   // virtual ModelFittingBase* clone() const = 0;
-
   // TODO(lettrich): dataset should be const.
   /**
-   * Fit the grid to the dataset by determinig the weights of an initial grid
+   * Fit the grid to the dataset by determining the weights of an initial grid
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void fit(Dataset &dataset) = 0;
+  virtual void fit(Dataset &datasetP, Dataset &datasetQ) = 0;
 
   /**
    * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
@@ -103,6 +103,7 @@ class ModelFittingBase {
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void update(Dataset &dataset) = 0;
+  virtual void update(Dataset &datasetP, Dataset &datasetQ) = 0;
 
   /**
    * Evaluate the fitted model at a single data point.
@@ -128,6 +129,14 @@ class ModelFittingBase {
    */
   virtual Grid &getGrid() {
     throw base::application_exception("This model does not support grid retrieval");
+  }
+
+  /**
+   * Return the learned hierarchical surpluses
+   */
+  virtual DataVector &getSurpluses() {
+    throw base::application_exception(
+        "This model does not support hierarchical surpluses retrieval");
   }
 
   /**
@@ -179,6 +188,7 @@ class ModelFittingBase {
    * overwritten once either fit() or update() introduce a new dataset.
    */
   Dataset *dataset;
+  Dataset *extraDataset;  // used for models that require a second dataset input
 
   /**
    * Solver for the learning problem

@@ -57,6 +57,9 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset&, Dataset&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
@@ -64,7 +67,10 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
+  void fit(DataMatrix&, DataMatrix&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
@@ -72,9 +78,12 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
   void update(Dataset& dataset) override;
+  void update(Dataset&, Dataset&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
@@ -83,6 +92,9 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param samples the new data samples
    */
   void update(DataMatrix& samples);
+  void update(DataMatrix&, DataMatrix&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.

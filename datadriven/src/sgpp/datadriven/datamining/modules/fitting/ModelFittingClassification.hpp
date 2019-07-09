@@ -49,6 +49,9 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param dataset the training dataset that is used to fit the models
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset&, Dataset&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Improve the accuracy of the classification by refining the grids of each class
@@ -62,6 +65,9 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param dataset the new data
    */
   void update(Dataset& dataset) override;
+  void update(Dataset&, Dataset&) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Predict the class of a data sample based on the density of the sample for each model
@@ -97,8 +103,8 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param surpluses vector of pointers to the suprluses for each class
    * @return pointer to a refinement functor that suits the model settings
    */
-  MultiGridRefinementFunctor *getRefinementFunctor(
-      std::vector<Grid*> grids, std::vector<DataVector*> surpluses);
+  MultiGridRefinementFunctor* getRefinementFunctor(std::vector<Grid*> grids,
+                                                   std::vector<DataVector*> surpluses);
 
   /**
    * Creates a density estimation model that fits the model settings.
@@ -130,4 +136,3 @@ class ModelFittingClassification : public ModelFittingBase {
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-

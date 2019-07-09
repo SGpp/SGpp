@@ -23,7 +23,6 @@
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 
-
 #include <string>
 #include <vector>
 
@@ -33,7 +32,7 @@ using sgpp::base::DataMatrix;
 using sgpp::datadriven::BOConfig;
 using sgpp::datadriven::ConfigurationBit;
 
-BOOST_AUTO_TEST_SUITE(HPOTest)
+BOOST_AUTO_TEST_SUITE (HPOTest)
 
 class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
  public:
@@ -49,15 +48,28 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
     config.reset(new sgpp::datadriven::FitterConfigurationLeastSquares());
   }
 
-  void fit(Dataset &dataset) override {}
+  void fit(Dataset &dataset) override {
+  }
 
-  bool refine() override { return false; }
+  void fit(Dataset &, Dataset &) override {
+  }
 
-  void update(Dataset &dataset) override {}
+  bool refine() override {
+    return false;
+  }
 
-  void reset() override {}
+  void update(Dataset &dataset) override {
+  }
 
-  double evaluate(const DataVector &sample) override { return -420; }
+  void update(Dataset &, Dataset &) override {
+  }
+
+  void reset() override {
+  }
+
+  double evaluate(const DataVector &sample) override {
+    return -420;
+  }
 
   void evaluate(DataMatrix &samples, DataVector &results) override {
     results[0] = sqrt(value);
@@ -77,8 +89,7 @@ class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
     // making model from parameter values directly
-    return new ModelFittingTester(conpar["x"].getValue(),
-                                  dispar["y"].getValue(),
+    return new ModelFittingTester(conpar["x"].getValue(), dispar["y"].getValue(),
                                   catpar["c"].getValue());
   }
 };
@@ -106,16 +117,21 @@ class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
 
 class HarmonicaTester : public sgpp::datadriven::Harmonica {
  public:
-  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft) : Harmonica(fft) {}
-  std::vector<std::vector<ConfigurationBit *>> &getParityrow() { return parityrow; }
-  std::vector<ConfigurationBit *> getFreeBits() { return freeBits; }
+  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft)
+      : Harmonica(fft) {
+  }
+  std::vector<std::vector<ConfigurationBit *>> &getParityrow() {
+    return parityrow;
+  }
+  std::vector<ConfigurationBit *> getFreeBits() {
+    return freeBits;
+  }
 };
 
 /*
  * To fix: Verbose miner
  * dummy set account for validation
  */
-
 
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // using actual files for (dummy) data and config
@@ -124,11 +140,11 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // sgpp::datadriven::DataSourceBuilder builder;
   // sgpp::datadriven::DataSourceConfig config;
   // parser.getDataSourceConfig(config, config);
-  sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac{};
-  sgpp::datadriven::BoHyperparameterOptimizer
-      bohpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
-  sgpp::datadriven::HarmonicaHyperparameterOptimizer
-      harmhpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
+  sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac { };
+  sgpp::datadriven::BoHyperparameterOptimizer bohpo(minfac.buildMiner(path),
+                                                    new FitterFactoryTester(), parser);
+  sgpp::datadriven::HarmonicaHyperparameterOptimizer harmhpo(minfac.buildMiner(path),
+                                                             new FitterFactoryTester(), parser);
   double res1 = bohpo.run(false);
   double res2 = harmhpo.run(false);
   // testing arbitrary performance lower bound
@@ -141,20 +157,19 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
   // tests the bit management, especially setParameters and addConstraint by comparing
   // to a vector of all possible bit configurations
   std::mt19937 generator(34);
-  FitterFactoryTesterHarm fft{};
+  FitterFactoryTesterHarm fft { };
   HarmonicaTester harmonica(&fft);
   bool testar[4096];
   int oldidar[4096];
   int nIDs = 4096;
-  std::vector<sgpp::datadriven::ModelFittingBase*> fitters(1);
+  std::vector<sgpp::datadriven::ModelFittingBase *> fitters(1);
   std::vector<std::string> configStrings(1);
-  std::vector<sgpp::datadriven::ConfigurationRestriction> constraints{};
+  std::vector<sgpp::datadriven::ConfigurationRestriction> constraints { };
 
   for (int i = 0; i < 3; ++i) {
     harmonica.prepareConfigs(fitters, 33, configStrings);
-    std::uniform_int_distribution<int> distcons(0,
-                                                static_cast<int>(harmonica.getParityrow().size()
-                                                    - 1));
+    std::uniform_int_distribution<int> distcons(
+        0, static_cast<int>(harmonica.getParityrow().size() - 1));
     std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  // not completely safe but okay
     std::uniform_int_distribution<int> distbias(0, 1);
     for (int k = 0; k < 4096; ++k) {
@@ -182,12 +197,12 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
 
       constraints.emplace_back(harmonica.getParityrow()[consid], bias);
       /*
-      std::cout << "New Bit: ";
-      for(auto &bit : harmonica.getParityrow()[consid]){
-        std::cout << bit->getName() << ",";
-      }
-      std::cout << "Bias: " << bias << std::endl;
-      */
+       std::cout << "New Bit: ";
+       for(auto &bit : harmonica.getParityrow()[consid]){
+       std::cout << bit->getName() << ",";
+       }
+       std::cout << "Bias: " << bias << std::endl;
+       */
       int cnttrue = 0;
 
       for (int k = 0; k < 4096; ++k) {
@@ -216,12 +231,12 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
       }
       bool added = harmonica.addConstraint(consid, bias);  // if not added, freebits broken
       /*
-      std::cout << "Counter true: " << cnttrue << " | Added: "<< added <<std::endl;
-      for (auto &bit : fft.exconfBits) {
-        std::cout << bit.getName() << ": " << bit.getValue() << ", ";
-      }
-      std::cout << std::endl;
-      */
+       std::cout << "Counter true: " << cnttrue << " | Added: "<< added <<std::endl;
+       for (auto &bit : fft.exconfBits) {
+       std::cout << bit.getName() << ": " << bit.getValue() << ", ";
+       }
+       std::cout << std::endl;
+       */
       // either all, none or half are viable
       BOOST_CHECK(((!added) == (cnttrue == 0)));
       BOOST_CHECK((added == (cnttrue == nIDs || 2 * cnttrue == nIDs)));
@@ -240,10 +255,10 @@ BOOST_AUTO_TEST_CASE(DistanceCalculation) {
   // comparing the two methods of calculating distance in bayesian optimization, should be equal
   std::mt19937 generator(123);
   std::uniform_real_distribution<double> rand(0.0, 1.0);
-  std::vector<int> discOptions = {2, 3};
-  std::vector<int> catOptions = {2, 3};
+  std::vector<int> discOptions = { 2, 3 };
+  std::vector<int> catOptions = { 2, 3 };
   size_t nCont = 7;
-  BOConfig prototype{&discOptions, &catOptions, nCont};
+  BOConfig prototype { &discOptions, &catOptions, nCont };
   DataVector scales(prototype.getNPar() + 1, 1);
 
   BOConfig oldconf(prototype);
@@ -268,15 +283,15 @@ BOOST_AUTO_TEST_CASE(DistanceCalculation) {
 
 BOOST_AUTO_TEST_CASE(addSamplesGP) {
   // Adding samples to Gaussian Process and correctly reading out their value
-  std::vector<BOConfig> initialConfigs{};
+  std::vector<BOConfig> initialConfigs {};
   std::mt19937 generator(123);
 
-  std::vector<int> discOptions = {2, 3};
-  std::vector<int> catOptions = {2, 3};
+  std::vector<int> discOptions = { 2, 3 };
+  std::vector<int> catOptions = { 2, 3 };
   size_t nCont = 2;
-  BOConfig prototype{&discOptions, &catOptions, nCont};
+  BOConfig prototype { &discOptions, &catOptions, nCont };
 
-  std::vector<double> scores = {0, 42, 21, 30, 5};
+  std::vector<double> scores = { 0, 42, 21, 30, 5 };
   initialConfigs.reserve(scores.size());
 
   for (size_t i = 0; i < scores.size(); i++) {
@@ -284,7 +299,6 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
     initialConfigs[i].randomize(generator);
     initialConfigs[i].setScore(scores[i]);
   }
-
 
   // single point not possible because of normalize
   sgpp::datadriven::BayesianOptimization bo(initialConfigs);
@@ -307,8 +321,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   DataVector dscores(scores);
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
@@ -318,7 +331,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
 
-  scores = {0, 42, 21, 30, 5, 33, 11, 15, 4.6};
+  scores = { 0, 42, 21, 30, 5, 33, 11, 15, 4.6 };
 
   for (size_t i = 5; i < scores.size(); ++i) {
     initialConfigs.emplace_back(prototype);
@@ -341,8 +354,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
   }
 
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
@@ -355,15 +367,15 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
 BOOST_AUTO_TEST_CASE(fitScalesGP) {
   // test gaussian process fitting by fitting to a second GP
-  std::vector<BOConfig> initialConfigs{};
+  std::vector<BOConfig> initialConfigs {};
   std::mt19937 generator(100);
 
-  std::vector<int> discOptions = {2, 3};
-  std::vector<int> catOptions = {2, 3};
+  std::vector<int> discOptions = { 2, 3 };
+  std::vector<int> catOptions = { 2, 3 };
   size_t nCont = 6;
-  BOConfig prototype{&discOptions, &catOptions, nCont};
+  BOConfig prototype { &discOptions, &catOptions, nCont };
 
-  DataVector scores{std::vector<double>({-0.1, 0.1})};
+  DataVector scores { std::vector<double>( { -0.1, 0.1 }) };
 
   initialConfigs.reserve(scores.size());
 
@@ -377,7 +389,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
   sgpp::datadriven::BayesianOptimization genprocess(initialConfigs);
   sgpp::datadriven::BayesianOptimization fitprocess(initialConfigs);
 
-  DataVector scales{std::vector<double>({1, 0.1, 0.3, 0.4, 0.01, 0.9, 0.2, 0.8, 1, 0.5, 0.3})};
+  DataVector scales { std::vector<double>( { 1, 0.1, 0.3, 0.4, 0.01, 0.9, 0.2, 0.8, 1, 0.5, 0.3 }) };
   scales.resize(prototype.getNPar() + 1);
   genprocess.setScales(scales, 1);
   DataVector avscales(scales.size(), 1);
@@ -413,7 +425,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     // << " | Max Norm: " << avscales.maxNorm() << " | size ratio: " << sizeratio << std::endl;
     if (j > 90) {
       // difference is allowed to rise with the squareroot of the dimensionality
-      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar()+1)) * 0.25);
+      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar() + 1)) * 0.25);
     }
     avscales.add(scales);
   }

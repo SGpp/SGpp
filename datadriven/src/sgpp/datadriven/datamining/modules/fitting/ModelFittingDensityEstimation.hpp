@@ -41,6 +41,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void fit(DataMatrix& dataset) = 0;
+  virtual void fit(DataMatrix& datasetP, DataMatrix& datasetQ) = 0;
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
@@ -49,6 +50,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @param samples the new data samples
    */
   virtual void update(DataMatrix& samples) = 0;
+  virtual void update(DataMatrix& samplesP, DataMatrix& samplesQ) = 0;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
@@ -56,7 +58,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  virtual bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) = 0;
+  virtual bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) = 0;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -70,7 +72,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * Returns the refinement functor suitable for the model settings.
    * @return pointer to a refinement functor that suits the model settings
    */
-  sgpp::base::RefinementFunctor *getRefinementFunctor();
+  sgpp::base::RefinementFunctor* getRefinementFunctor();
 
  protected:
   /**

@@ -1,19 +1,25 @@
-// Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyright notice provided with SG++ or at
-// sgpp.sparsegrids.org
+/*
+ * Copyright (C) 2008-today The SG++ project
+ * This file is part of the SG++ project. For conditions of distribution and
+ * use, please see the copyright notice provided with SG++ or at
+ * sgpp.sparsegrids.org
+ *
+ * ModelFittingDensityRatioEstimation.hpp
+ *
+ * Author: Paul Sarbu
+ */
 
 #pragma once
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/SLESolver.hpp>
+#include "ModelFittingBase.hpp"
+#include "ModelFittingBaseSingleGrid.hpp"
 
 using sgpp::solver::SLESolver;
 using sgpp::base::DataMatrix;
@@ -31,23 +37,24 @@ namespace datadriven {
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  */
-class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
+class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
  public:
   /**
    * Constructor
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config);
+  explicit ModelFittingDensityRatioEstimation(const FitterConfigurationLeastSquares &config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by a least
    * squares approach.
-   * @param dataset the training dataset that is used to fit the model.
+   * @param newDatasetP the training dataset of first density that is used to fit the model
+   * @param newDatasetQ the training dataset of first density that is used to fit the model
    */
-  void fit(Dataset &dataset) override;
-  void fit(Dataset &, Dataset &) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void fit(Dataset &newDatasetP, Dataset &newDatasetQ) override;
+  void fit(Dataset &) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
@@ -58,9 +65,9 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    */
   bool refine() override;
 
-  void update(Dataset &dataset) override;
-  void update(Dataset &, Dataset &) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void update(Dataset &datasetP, Dataset &datasetQ) override;
+  void update(Dataset &) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
@@ -96,8 +103,9 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * Factory function to build the System matrix for least squares regression with identity as
    * regularization.
    */
-  DMSystemMatrixBase *buildSystemMatrix(Grid &grid, DataMatrix &trainDataset, double lambda,
-                                        OperationMultipleEvalConfiguration &config) const;
+  DMSystemMatrixDRE *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
+                                       DataMatrix &trainDatasetQ, double lambda,
+                                       OperationMultipleEvalConfiguration &config) const;
 
   /**
    * based on the current dataset and grid, assemble a system of linear equations and solve for the

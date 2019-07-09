@@ -44,7 +44,7 @@ class MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
-  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const;
+  virtual sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const;
 
  protected:
   /**
@@ -55,6 +55,11 @@ class MinerFactory {
    */
   virtual DataSourceSplitting* createDataSourceSplitting(
       const DataMiningConfigParser& parser) const;
+
+  virtual std::vector<DataSourceSplitting*> createDataSourceSplitting_TwoDatasets(
+      const DataMiningConfigParser& parser) const {
+    throw base::application_exception("This miner only allows a single dataSource instance");
+  }
 
   /**
    * Factory method to build a cross validation data source, i.e. a data source that can seperate

@@ -44,7 +44,8 @@ namespace sgpp {
 namespace datadriven {
 
 // forward declaration to break dependency cycle
-enum class FitterType;
+enum class FitterType
+;
 
 class DataMiningConfigParser {
  public:
@@ -61,8 +62,7 @@ class DataMiningConfigParser {
                           std::map<std::string, DiscreteParameter> &catpar,
                           std::vector<base::GridType> &basisFunctions) const;
   void getHPOConfig(HPOConfig &config);
-  std::vector<int64_t> parseIntArray(DictNode &dict,
-                                     const std::string &key,
+  std::vector<int64_t> parseIntArray(DictNode &dict, const std::string &key,
                                      std::vector<int64_t> defaultValue,
                                      const std::string &parentNode) const;
   std::string getHPOMethod(std::string defaultValue) const;
@@ -73,31 +73,38 @@ class DataMiningConfigParser {
    */
   bool hasFitterConfigCrossValidation() const;
 
-  bool getDataSourceConfig(DataSourceConfig& config, const DataSourceConfig& defaults) const;
+  bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
+
+  /**
+   * Expands on getDataSourceConfig by allowing multiple dataSource instances. The first instance is
+   * used as a template for filling in the parameters for all dataSource instances.
+   */
+  bool getMultiDataSourceConfig(std::vector<DataSourceConfig> &config,
+                                const std::vector<DataSourceConfig> &defaults) const;
   /**
    * Reads the configuration for the scorer
    * @param config the configuration instance to initialize
    * @param defaults a set of configurations initialized with default values
    * @return if the configuration file contained a scorer configuration
    */
-  bool getScorerConfig(ScorerConfiguration& config, const ScorerConfiguration& defaults) const;
+  bool getScorerConfig(ScorerConfiguration &config, const ScorerConfiguration &defaults) const;
 
-  bool getFitterConfigType(FitterType& fitter, const FitterType& defaults) const;
-  bool getFitterGridConfig(RegularGridConfiguration& config,
-                           const RegularGridConfiguration& defaults) const;
-  bool getFitterAdaptivityConfig(AdaptivityConfiguration& config,
-                                 const AdaptivityConfiguration& defaults) const;
-  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration& config,
-                                 const CrossvalidationConfiguration& defaults) const;
-  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration& config,
-                                 const DensityEstimationConfiguration& defaults) const;
-  bool getFitterSolverRefineConfig(SLESolverConfiguration& config,
-                                   const SLESolverConfiguration& defaults) const;
-  bool getFitterSolverFinalConfig(SLESolverConfiguration& config,
-                                  const SLESolverConfiguration& defaults) const;
-  bool getFitterRegularizationConfig(RegularizationConfiguration& config,
-                                     const RegularizationConfiguration& defaults) const;
-  bool getFitterLambda(double& lambda, double defaultValue) const;
+  bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
+  bool getFitterGridConfig(RegularGridConfiguration &config,
+                           const RegularGridConfiguration &defaults) const;
+  bool getFitterAdaptivityConfig(AdaptivityConfiguration &config,
+                                 const AdaptivityConfiguration &defaults) const;
+  bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
+                                      const CrossvalidationConfiguration &defaults) const;
+  bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
+                                        const DensityEstimationConfiguration &defaults) const;
+  bool getFitterSolverRefineConfig(SLESolverConfiguration &config,
+                                   const SLESolverConfiguration &defaults) const;
+  bool getFitterSolverFinalConfig(SLESolverConfiguration &config,
+                                  const SLESolverConfiguration &defaults) const;
+  bool getFitterRegularizationConfig(RegularizationConfiguration &config,
+                                     const RegularizationConfiguration &defaults) const;
+  bool getFitterLambda(double &lambda, double defaultValue) const;
 
   /**
    * Returns the database configuration of the fitter if it exists
@@ -114,8 +121,8 @@ class DataMiningConfigParser {
    * @param defaults default values if the fitter config does not contain a matching entry
    * @return whether the configuration contains a learner configuration
    */
-  bool getFitterLearnerConfig(datadriven::LearnerConfiguration& config,
-      const datadriven::LearnerConfiguration& defaults) const;
+  bool getFitterLearnerConfig(datadriven::LearnerConfiguration &config,
+                              const datadriven::LearnerConfiguration &defaults) const;
 
  private:
   std::unique_ptr<JSON> configFile;
@@ -128,12 +135,10 @@ class DataMiningConfigParser {
                           const std::string &parentNode) const;
   double parseDouble(DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
-  std::vector<double> parseDoubleArray(DictNode &dict,
-                                       const std::string &key,
+  std::vector<double> parseDoubleArray(DictNode &dict, const std::string &key,
                                        std::vector<double> defaultValue,
                                        const std::string &parentNode) const;
-  std::vector<size_t> parseUIntArray(DictNode &dict,
-                                     const std::string &key,
+  std::vector<size_t> parseUIntArray(DictNode &dict, const std::string &key,
                                      std::vector<size_t> defaultValue,
                                      const std::string &parentNode) const;
   size_t parseUInt(DictNode &dict, const std::string &key, size_t defaultValue,
@@ -147,12 +152,10 @@ class DataMiningConfigParser {
                             const SLESolverConfiguration &defaults,
                             const std::string &parentNode) const;
 
-  void parseDataTransformationConfig(DictNode &dict,
-                                     DataTransformationConfig &config,
+  void parseDataTransformationConfig(DictNode &dict, DataTransformationConfig &config,
                                      const DataTransformationConfig &defaults,
                                      const std::string &parentNode) const;
-  void parseRosenblattTransformationConfig(DictNode &dict,
-                                           RosenblattTransformationConfig &config,
+  void parseRosenblattTransformationConfig(DictNode &dict, RosenblattTransformationConfig &config,
                                            const RosenblattTransformationConfig &defaults,
                                            const std::string &parentNode) const;
 

@@ -36,9 +36,16 @@ using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
 ModelFittingBase::ModelFittingBase()
-    : verboseSolver{true}, config{nullptr}, dataset{nullptr}, solver{nullptr} {}
+    : verboseSolver { true },
+      config { nullptr },
+      dataset { nullptr },
+      extraDataset { nullptr },
+      solver { nullptr } {
+}
 
-const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
+const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const {
+  return *config;
+}
 
 Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
   // load grid
@@ -67,9 +74,8 @@ SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig
   } else if (sleConfig.type_ == SLESolverType::BiCGSTAB) {
     return new BiCGStab(sleConfig.maxIterations_, sleConfig.eps_);
   } else {
-    throw factory_exception(
-        "ModelFittingBase: An unsupported SLE solver type was "
-            "chosen");
+    throw factory_exception("ModelFittingBase: An unsupported SLE solver type was "
+                            "chosen");
   }
 }
 

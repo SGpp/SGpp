@@ -9,6 +9,7 @@
  *  Created on: Jul 23, 2018
  *      Author: dominik
  */
+
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -20,16 +21,18 @@ namespace sgpp {
 namespace datadriven {
 
 SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
-    ModelFittingBase* fitter, Scorer* scorer) : SparseGridMiner(fitter, scorer),
-        dataSource{dataSource} {}
+                                                   ModelFittingBase* fitter, Scorer* scorer)
+    : SparseGridMiner(fitter, scorer),
+      dataSource { dataSource } {
+}
 
 double SparseGridMinerSplitting::learn(bool verbose) {
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
-  RefinementMonitor *monitor = monitorFactory.createRefinementMonitor(
+  RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
-  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++)  {
+  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
     if (verbose) {
       std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
     }
@@ -37,15 +40,15 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     // Process dataset iteratively
     size_t iteration = 0;
     while (true) {
-      std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+      std::unique_ptr < Dataset > dataset(dataSource->getNextSamples());
       size_t numInstances = dataset->getNumberInstances();
       if (numInstances == 0) {
         // The source does not provide any more samples
         break;
       }
       if (verbose) {
-        std::cout << "###############" << "Itertation #" << (iteration++) << std::endl <<
-                  "Batch size: " << numInstances << std::endl;
+        std::cout << "###############" << "Itertation #" << (iteration++) << std::endl
+            << "Batch size: " << numInstances << std::endl;
       }
       // Train model on new batch
       fitter->update(*dataset);
@@ -56,7 +59,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
 
       if (verbose) {
         std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: "
-                  << scoreVal << std::endl;
+            << scoreVal << std::endl;
       }
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
@@ -69,12 +72,8 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       }
     }
   }
-  delete monitor;   // release memory
+  delete monitor;  // release memory
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-
-
-
