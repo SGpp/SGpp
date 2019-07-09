@@ -64,7 +64,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       if (verbose) {
         std::ostringstream out;
         out << "###############"
-            << "Itertation #" << (iteration) << std::endl
+            << "Iteration #" << (iteration) << std::endl
             << "Batch size: " << numInstances;
         print(out);
       }
