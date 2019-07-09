@@ -22,68 +22,58 @@
 namespace sgpp {
 namespace datadriven {
 
-class VisualizerDensityEstimation:public Visualizer{
+class VisualizerDensityEstimation:public Visualizer {
+ public:
+  /**
+   * Default constructor
+   */
+  VisualizerDensityEstimation() = default;
 
-public:
+  /**
+   * Constructor given a configuration
+   * @param config. The VisualizerConfiguration object which contains
+   * the configuration to run the visualization module
+   */
+  explicit VisualizerDensityEstimation(VisualizerConfiguration config);
 
- /**
-  * Default constructor
-  */
- VisualizerDensityEstimation()=default;
+  ~VisualizerDensityEstimation() = default;
 
- /**
-  * Constructor given a configuration
-  * @param config. The VisualizerConfiguration object which contains
-  * the configuration to run the visualization module
-  */
- VisualizerDensityEstimation(VisualizerConfiguration config);
+  void visualize(ModelFittingBase &model, size_t fold, size_t batch) override;
 
- ~VisualizerDensityEstimation()=default;
+ protected:
+  void runTsne(ModelFittingBase &model) override;
 
+  void getHeatmap(ModelFittingBase &model);
 
- void visualize(ModelFittingBase &model, unsigned int iteration) override;
+  void getLinearCuts(ModelFittingBase &model);
 
-protected:
+  void storeGrid(ModelFittingBase &model);
 
- void runTsne(ModelFittingBase &model) override;
+ private:
+  void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
+  void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
+  void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
 
- void getHeatmap(ModelFittingBase &model);
-
- void getLinearCuts(ModelFittingBase &model);
-
- void storeGrid(ModelFittingBase &model);
-
-
-private:
-
- void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
- void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
- void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
-
- void getHeatmapMore4D(DataMatrix &matrix, ModelFittingBase &model);
- void getHeatmap3D(DataMatrix &matrix, ModelFittingBase &model);
- void getHeatmap2D(DataMatrix &matrix, ModelFittingBase &model);
+  void getHeatmapMore4D(DataMatrix &matrix, ModelFittingBase &model);
+  void getHeatmap3D(DataMatrix &matrix, ModelFittingBase &model);
+  void getHeatmap2D(DataMatrix &matrix, ModelFittingBase &model);
 
 
- void translateColumns(DataMatrix &matrix, size_t maxColumns);
- void translateColumnsRight(DataMatrix &matrix, std::vector<size_t> indexes);
- void translateColumnsLeft(DataMatrix &matrix, std::vector<size_t> indexes);
- void updateIndexesCuts(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
- void updateIndexesHeatmap(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
- void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
+  void translateColumns(DataMatrix &matrix, size_t maxColumns);
+  void translateColumnsRight(DataMatrix &matrix, std::vector<size_t> indexes);
+  void translateColumnsLeft(DataMatrix &matrix, std::vector<size_t> indexes);
+  void updateIndexesCuts(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
+  void updateIndexesHeatmap(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
+  void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
 
- void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
- void storeCutJson(DataMatrix &matrix,
-   std::vector<size_t> indexes,size_t &varDim, std::string filepath);
- void storeCutJson(DataMatrix &matrix, std::string filepath);
- void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
-   std::vector<size_t> indexes,size_t &varDim1,size_t &varDim2, std::string filepath);
- void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model, std::string filepath);
-
-
-
-
+  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
+  void storeCutJson(DataMatrix &matrix,
+    std::vector<size_t> indexes, size_t &varDim, std::string filepath);
+  void storeCutJson(DataMatrix &matrix, std::string filepath);
+  void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
+    std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath);
+  void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model, std::string filepath);
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

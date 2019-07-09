@@ -97,7 +97,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
         if (verbose) {
           std::ostringstream out;
           out << "###############"
-              << "Itertation #" << (iteration++) << std::endl
+              << "Itertation #" << (iteration) << std::endl
               << "Batch size: " << numInstances;
           print(out);
         }
@@ -116,6 +116,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
           print(out);
         }
 
+        visualizer->visualize(*fitter, fold, iteration);
         // Refine the model if neccessary
         monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
         size_t refinements = monitor->refinementsNecessary();
@@ -129,14 +130,13 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
               << "Iteration finished.";
           print(out);
         }
+        iteration++;
       }
     }
     // Evaluate the final score on the validation data
     dataSource->reset();
     Dataset* validationData = dataSource->getValidationData();
     scores.push_back(scorer->test(*fitter, *validationData));
-    visualizer->visualize(*fitter, fold);
-
   }
 
   // Calculate mean score and std deviation

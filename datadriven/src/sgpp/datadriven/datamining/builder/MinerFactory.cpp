@@ -32,15 +32,15 @@ namespace datadriven {
 SparseGridMiner* MinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
 
-   if (parser.hasFitterConfigCrossValidation()) {
+  if (parser.hasFitterConfigCrossValidation()) {
      return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
                                                createFitter(parser), createScorer(parser),
                                                createVisualizer(parser));
-   } else {
+  } else {
      return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
                                          createScorer(parser),
                                          createVisualizer(parser));
-   }
+  }
 }
 
 sgpp::datadriven::HyperparameterOptimizer* MinerFactory::buildHPO(const std::string& path) const {

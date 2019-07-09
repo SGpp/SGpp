@@ -62,15 +62,12 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
   return fitfac;
 }
 
-Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const{
+Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const {
+  VisualizerConfiguration config;
 
- VisualizerConfiguration config;
+  config.readParams(parser);
 
- config.readParams(parser);
-
- return new VisualizerDummy();
-
+  return new VisualizerDummy();
 }
-
 } /* namespace datadriven */
 } /* namespace sgpp */

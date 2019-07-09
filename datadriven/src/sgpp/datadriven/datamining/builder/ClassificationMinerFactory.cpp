@@ -39,14 +39,13 @@ FitterFactory *ClassificationMinerFactory::createFitterFactory(
   return nullptr;
 }
 
-Visualizer* ClassificationMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const{
+Visualizer* ClassificationMinerFactory::createVisualizer(const DataMiningConfigParser& parser)
+const {
+  VisualizerConfiguration config;
 
- VisualizerConfiguration config;
+  config.readParams(parser);
 
- config.readParams(parser);
-
- return new VisualizerDummy();
-
+  return new VisualizerDummy();
 }
 
 } /* namespace datadriven */

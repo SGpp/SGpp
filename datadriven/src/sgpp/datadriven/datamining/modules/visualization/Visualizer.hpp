@@ -22,45 +22,44 @@ namespace datadriven {
 class Visualizer{
 
  public:
-
- /*
+ /**
   * Default Constructor
   */
-  Visualizer()=default;
+  Visualizer() = default;
 
- /*
+ /**
   * Virtual destructor
   */
-  virtual ~Visualizer()=default;
+  virtual ~Visualizer() = default;
 
  /**
   * Method to execute the visualization step
   */
-  virtual void visualize(ModelFittingBase &model, unsigned int iteration)=0;
+  virtual void visualize(ModelFittingBase &model, size_t fold, size_t batch)=0;
 
- /**
+  /**
    * Get the configuration of the visualizer object.
    * @return configuration of the visualizer object
    */
-   const VisualizerConfiguration &getVisualizerConfiguration() const;
+  const VisualizerConfiguration &getVisualizerConfiguration() const;
 
 
  protected:
-
+  /**
+   * Method which runs the tsne compression algorithm
+   */
   virtual void runTsne(ModelFittingBase &model)=0;
 
-  void createOutputDirectory(unsigned int iteration);
-
+  /**
+   *
+   */
+  void createOutputDirectory(size_t fold, size_t batch);
 
   /**
-    * Configuration object for the fitter.
-    */
+   * Configuration object for the fitter.
+   */
   VisualizerConfiguration config;
-
-
 };
-}
 
-
-
-}
+} // namespace datadriven
+} // namespace sgpp

@@ -21,30 +21,32 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-  VisualizationFileType VisualizationTypesParser::parseFileType(const std::string &input) {
-    auto inputLower = input;
-    std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+VisualizationFileType VisualizationTypesParser::parseFileType(const std::string &input) {
+  auto inputLower = input;
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-    if (inputLower == "json") {
-      return VisualizationFileType::json;
-    } else if (inputLower == "csv") {
-      return VisualizationFileType::CSV;
-    } else {
-      const std::string errorMsg =
-          "Failed to convert string \"" + input + "\" to any known VisualizationFileType";
-      throw data_exception(errorMsg.c_str());
-    }
-  }
+  if (inputLower == "json") {
+    return VisualizationFileType::json;
+  } else if (inputLower == "csv") {
+    return VisualizationFileType::CSV;
+  } else {
+    const std::string errorMsg =
+      "Failed to convert string \"" + input + "\" to any known VisualizationFileType";
+    throw data_exception(errorMsg.c_str());
+}
+}
 
-  const std::string &sgpp::datadriven::VisualizationTypesParser::toString(VisualizationFileType type) {
-    return fileTypeMap.at(type);
-  }
+const std::string &sgpp::datadriven::VisualizationTypesParser::toString
+(VisualizationFileType type) {
+  return fileTypeMap.at(type);
+}
 
 
-  const VisualizationTypesParser::FileTypeMap_t VisualizationTypesParser::fileTypeMap = []() {
-    return VisualizationTypesParser::FileTypeMap_t{std::make_pair(VisualizationFileType::json, "ARFF"),
-                                                   std::make_pair(VisualizationFileType::CSV, "CSV")};
-  }();
+const VisualizationTypesParser::FileTypeMap_t VisualizationTypesParser::fileTypeMap = []() {
+  return VisualizationTypesParser::FileTypeMap_t {
+    std::make_pair(VisualizationFileType::json, "ARFF"),
+    std::make_pair(VisualizationFileType::CSV, "CSV") };
+}();
 
 
 } /* namespace datadriven */

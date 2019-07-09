@@ -30,36 +30,29 @@
  *
  */
 
+#include <iostream>
 
-namespace sgpp
-{
-
-namespace datadriven{
+namespace sgpp {
+namespace datadriven {
 
 static inline double sign(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
-
-
-class TSNE
-{
+class TSNE {
 public:
-
-    void static run(double* X, int N, int D, double* Y, int no_dims, double perplexity, double theta, int rand_seed,
-             bool skip_random_init, int max_iter=1000, int stop_lying_iter=250, int mom_switch_iter=250);
-    bool static load_data(double** data, int* n, int* d, int* no_dims, double* theta, double* perplexity, int* rand_seed, int* max_iter);
-    void static save_data(double* data, int* landmarks, double* costs, int n, int d);
-    void static symmetrizeMatrix(unsigned int** row_P, unsigned int** col_P, double** val_P, int N); // should be static!
-
+  void static run(double* X, size_t N, size_t D, double* Y, int no_dims, double perplexity, double theta, size_t rand_seed,
+           bool skip_random_init, size_t max_iter=1000,  size_t mom_switch_iter=250);
+  void static symmetrizeMatrix(unsigned int** row_P, unsigned int** col_P, double** val_P, int N);
 
 private:
-    void static computeGradient(double* P, unsigned int* inp_row_P, unsigned int* inp_col_P, double* inp_val_P, double* Y, int N, int D, double* dC, double theta);
-    void static computeExactGradient(double* P, double* Y, int N, int D, double* dC);
-    double static evaluateError(double* P, double* Y, int N, int D);
-    double static evaluateError(unsigned int* row_P, unsigned int* col_P, double* val_P, double* Y, int N, int D, double theta);
-    void static  zeroMean(double* X, int N, int D);
-    void static computeGaussianPerplexity(double* X, int N, int D, double* P, double perplexity);
-    void static computeGaussianPerplexity(double* X, int N, int D, unsigned int** _row_P, unsigned int** _col_P, double** _val_P, double perplexity, int K);
-    void static computeSquaredEuclideanDistance(double* X, int N, int D, double* DD);
-    double static randn();
+  void static computeGradient(double* P, unsigned int* inp_row_P, unsigned int* inp_col_P, double* inp_val_P, double* Y, int N, int D, double* dC, double theta);
+  void static computeExactGradient(double* P, double* Y, int N, int D, double* dC);
+  double static evaluateError(double* P, double* Y, int N, int D);
+  double static evaluateError(unsigned int* row_P, unsigned int* col_P, double* val_P, double* Y, int N, int D, double theta);
+  void static  zeroMean(double* X, int N, int D);
+  void static computeGaussianPerplexity(double* X, int N, int D, double* P, double perplexity);
+  void static computeGaussianPerplexity(double* X, int N, int D, unsigned int** _row_P, unsigned int** _col_P, double** _val_P, double perplexity, int K);
+  void static computeSquaredEuclideanDistance(double* X, int N, int D, double* DD);
+  double static randn();
 };
-}
-}
+
+} //namespace datadriven
+} //namespace sgpp

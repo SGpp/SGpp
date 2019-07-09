@@ -18,26 +18,20 @@
 
 namespace sgpp {
 namespace datadriven {
-
 class VisualizerDummy:public Visualizer{
 
 public:
+  /**
+   * Default constructor
+   */
+  VisualizerDummy()=default;
 
- /**
-  * Default constructor
-  */
- VisualizerDummy()=default;
+  ~VisualizerDummy()=default;
 
-
- ~VisualizerDummy()=default;
-
-
- void visualize(ModelFittingBase &model, unsigned int iteration) override;
+  void visualize(ModelFittingBase &model, size_t fold, size_t batch) override;
 
 protected:
-
  void runTsne(ModelFittingBase &model) override;
-
 };
 
 }

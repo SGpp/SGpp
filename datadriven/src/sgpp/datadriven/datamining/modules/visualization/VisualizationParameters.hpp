@@ -12,12 +12,12 @@
 
 #pragma once
 
+#include <iostream>
+
 namespace sgpp {
 namespace datadriven {
 
-
-struct VisualizationParameters{
-
+struct VisualizationParameters {
  /**
   * The perplexity to use in case tsne is the selected algorithm
   */
@@ -26,7 +26,7 @@ struct VisualizationParameters{
  /**
   * The theta parameter to use in case tsne is the selected algorithm
   */
- double theta=0.5;
+ double theta = 0.5;
 
  /*
   * The random seed to initialize the selected algorithm
@@ -43,14 +43,13 @@ struct VisualizationParameters{
   * The dimentionality to which we want to reduce the data for visualization
   * purposes
   */
- size_t targetDimension=2;
+ size_t targetDimension = 2;
 
  /*
   * Number of cores to run the algorithm in parallel
   */
- size_t numberCores=1;
-
+ size_t numberCores = 1;
 };
-}
 
-}
+}// namspace datadriven
+}// namespace sgpp

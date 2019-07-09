@@ -17,19 +17,16 @@
 
 using sgpp::datadriven::ModelFittingBase;
 
+namespace sgpp {
+namespace datadriven {
 
-namespace sgpp{
-namespace datadriven{
-
-
- void VisualizerDummy::visualize(ModelFittingBase &model, unsigned int iteration)
- {
-
- }
-
- void VisualizerDummy::runTsne(ModelFittingBase &model){
-
- }
-
+void VisualizerDummy::visualize(ModelFittingBase &model, size_t fold, size_t batch) {
+  return;
 }
+
+void VisualizerDummy::runTsne(ModelFittingBase &model) {
+  return;
 }
+
+}// namespace datadriven
+}// namespace sgpp

@@ -53,7 +53,7 @@ namespace datadriven {
 const std::string DataMiningConfigParser::dataSource = "dataSource";
 const std::string DataMiningConfigParser::scorer = "scorer";
 const std::string DataMiningConfigParser::fitter = "fitter";
-const std::string DataMiningConfigParser::visualization="visualization";
+const std::string DataMiningConfigParser::visualization = "visualization";
 
 DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : configFile(nullptr) {
   try {
@@ -96,20 +96,22 @@ bool DataMiningConfigParser::hasGeometryConfig() const {
   return configFile->contains("geometryConfig");
 }
 
-bool DataMiningConfigParser::hasVisualizationConfig() const{
- return configFile->contains(visualization);
+bool DataMiningConfigParser::hasVisualizationConfig() const {
+  return configFile->contains(visualization);
 }
 
-bool DataMiningConfigParser::hasVisualizationGeneralConfig() const{
- bool hasVisualizationParameters =
-      hasVisualizationConfig() ? (*configFile)[visualization].contains("generalConfig") : false;
- return hasVisualizationParameters;
+bool DataMiningConfigParser::hasVisualizationGeneralConfig() const {
+  bool hasVisualizationParameters =
+       hasVisualizationConfig() ? (*configFile)[visualization]
+           .contains("generalConfig") : false;
+  return hasVisualizationParameters;
 }
 
-bool DataMiningConfigParser::hasVisualizationParametersConfig() const{
- bool hasVisualizationParameters =
-      hasVisualizationConfig() ? (*configFile)[visualization].contains("parameters") : false;
- return hasVisualizationParameters;
+bool DataMiningConfigParser::hasVisualizationParametersConfig() const {
+  bool hasVisualizationParameters =
+       hasVisualizationConfig() ? (*configFile)[visualization]
+           .contains("parameters") : false;
+  return hasVisualizationParameters;
 }
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
@@ -528,80 +530,95 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
   return hasRegularizationConfig;
 }
 
-
 bool DataMiningConfigParser::getVisualizationGeneralConfig(
-  VisualizationGeneralConfig &config, const VisualizationGeneralConfig &defaults) const{
+  VisualizationGeneralConfig &config, const VisualizationGeneralConfig &defaults) const {
+  bool hasGeneralConfig = hasVisualizationGeneralConfig();
 
+  if (hasGeneralConfig) {
+    auto visualizationGeneralConfig =
+     static_cast<DictNode *>(&(*configFile)[visualization]["generalConfig"]);
 
- bool hasGeneralConfig = hasVisualizationGeneralConfig();
- std::cout <<hasGeneralConfig<<std::endl;
+    std::cout << "Starting reading visualization " << std::endl;
+    config.algorithm = parseString(*visualizationGeneralConfig, "algorithm",
+     defaults.algorithm, "visualization");
 
- if(hasGeneralConfig){
-  auto visualizationGeneralConfig =
-    static_cast<DictNode *>(&(*configFile)[visualization]["generalConfig"]);
+    config.targetDirectory = parseString(*visualizationGeneralConfig, "targetDirectory",
+     defaults.targetDirectory, "visualization");
 
-  std::cout <<"Starting reading visualization "<<std::endl;
-  config.algorithm = parseString(*visualizationGeneralConfig, "algorithm",
-    defaults.algorithm, "visualization");
+    // parse file type
+    if (visualizationGeneralConfig->contains("targetFileType")) {
+      config.targetFileType = VisualizationTypesParser::
+        parseFileType((*visualizationGeneralConfig)["targetFileType"].get());
+    } else {
+      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
+                << VisualizationTypesParser::toString(defaults.targetFileType) << "." << std::endl;
+      config.targetFileType = defaults.targetFileType;
+    }
 
-  config.targetFile = parseString(*visualizationGeneralConfig, "targetFile",
-    defaults.targetFile, "visualization");
+    // Checks if the specified number of batches for visualization exceeds the one
+    // of the data source. If that's the case set the visualization number of batches
+    // to the one of the data source.
+    auto dataSourceConfig = static_cast<DictNode *>(&(*configFile)[dataSource]);
+    auto dataNumBatches = parseUInt(*dataSourceConfig, "numBatches",
+      defaults.numBatches, "dataSource");
 
-  // parse file type
-  if (visualizationGeneralConfig->contains("targetFileType")) {
-    config.targetFileType = VisualizationTypesParser::parseFileType((*visualizationGeneralConfig)["targetFileType"].get());
+    config.numBatches = parseUInt(*visualizationGeneralConfig, "numBatches",
+      defaults.numBatches, "visualization");
+
+    if (config.numBatches > dataNumBatches) {
+      config.numBatches = dataNumBatches;
+    }
   } else {
-    std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
-              << VisualizationTypesParser::toString(defaults.targetFileType) << "." << std::endl;
-    config.targetFileType = defaults.targetFileType;
+    std::cout << "# Could not find specification of "
+     "visualization general config. Falling Back to default values." << std::endl;
+    config = defaults;
   }
 
- }
- else
- {
-  std::cout << "# Could not find specification of visualization general config. Falling Back to default values."
-               << std::endl;
-     config = defaults;
- }
-
- return hasGeneralConfig;
+  // This is out of the if, since the default value is not directly given by the user
+  bool hasFitterCrossvalidationConfig =
+     hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
+  if (hasFitterCrossvalidationConfig) {
+     auto crossvalidationConfig = static_cast<DictNode *>(&(*configFile)[fitter]
+                                                                         ["crossValidation"]);
+     config.crossValidation = parseBool(*crossvalidationConfig, "enable",
+       defaults.crossValidation, "crossValidation");
+   }
+   else {
+     config.crossValidation = false;
+  }
+  return hasGeneralConfig;
 }
 
 bool DataMiningConfigParser::getVisualizationParameters(
-  VisualizationParameters &config, const VisualizationParameters &defaults) const{
+  VisualizationParameters &config, const VisualizationParameters &defaults) const {
+  bool hasVisualizationParameters = hasVisualizationParametersConfig();
 
- bool hasVisualizationParameters = hasVisualizationParametersConfig();
+  if (hasVisualizationParameters) {
+    auto visualizationParameters =
+      static_cast<DictNode *>(&(*configFile)[visualization]["parameters"]);
 
-  if(hasVisualizationParameters){
-   auto visualizationParameters =
-     static_cast<DictNode *>(&(*configFile)[visualization]["parameters"]);
+    config.perplexity = parseDouble(*visualizationParameters, "perplexity",
+      defaults.perplexity, "visualization");
 
-   config.perplexity = parseDouble(*visualizationParameters, "perplexity",
-     defaults.perplexity,"visualization");
+    config.theta = parseDouble(*visualizationParameters, "theta",
+      defaults.theta, "visualization");
 
-   config.theta = parseDouble(*visualizationParameters, "theta",
-     defaults.theta, "visualization");
+    config.seed = parseUInt(*visualizationParameters, "seed",
+      defaults.seed, "visualization");
 
-   config.seed = parseUInt(*visualizationParameters, "seed",
-     defaults.seed, "visualization");
+    config.maxNumberIterations = parseUInt(*visualizationParameters,
+      "maxNumberIterations", defaults.maxNumberIterations, "visualization");
 
-   config.maxNumberIterations = parseUInt(*visualizationParameters,
-     "maxNumberIterations", defaults.maxNumberIterations, "visualization");
+    config.targetDimension = parseUInt(*visualizationParameters, "targetDimension",
+      defaults.targetDimension, "visualization");
 
-   config.targetDimension = parseUInt(*visualizationParameters, "targetDimension",
-     defaults.targetDimension, "visualization");
-
-   config.numberCores = parseUInt(*visualizationParameters,
-     "numberCores", defaults.numberCores, "visualization");
+    config.numberCores = parseUInt(*visualizationParameters,
+      "numberCores", defaults.numberCores, "visualization");
+  } else {
+    std::cout << "# Could not find specification of visualization parameters. "
+      "Falling Back to default values." << std::endl;
+    config = defaults;
   }
-  else
-  {
-   std::cout << "# Could not find specification of visualization parameters. Falling Back to default values."
-                  << std::endl;
-        config = defaults;
-  }
-
-
   return hasVisualizationParameters;
 }
 
