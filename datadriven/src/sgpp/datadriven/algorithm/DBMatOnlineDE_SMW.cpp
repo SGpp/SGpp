@@ -171,6 +171,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
 
   // create E
   // todo(): replace operations done with E/E^t by matrix_subviews
+  //         could give performance boost
   DataMatrix E(X.getNrows(), X.getNcols(), 0.0);
   for (size_t k = E.getNrows() - E.getNcols(); k < E.getNrows(); k++) {
     E.set(k, k - E.getNrows() + E.getNcols(), 1.0);
