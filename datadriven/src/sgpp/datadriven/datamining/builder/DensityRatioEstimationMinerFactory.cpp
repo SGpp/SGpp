@@ -32,8 +32,8 @@ SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::strin
     return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
                                               createFitter(parser), createScorer(parser));
   } else {
-    return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
-                                        createScorer(parser));
+    return new SparseGridMinerSplitting_TwoDatasets(createDataSourceSplitting(parser),
+                                                    createFitter(parser), createScorer(parser));
   }
 }
 
