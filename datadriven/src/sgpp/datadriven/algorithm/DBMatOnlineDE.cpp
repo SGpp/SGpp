@@ -147,18 +147,41 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
-      // Old rhs is weighted by beta
-      bSave.mult(beta);
-      b.add(bSave);
+
+      // Online procedure: beta is the forgettingRate
+      //    1 = forget all past batches
+      //    0 = equal weighting
+      // Old rhs is weighted by min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
+      // New contribution is weighted by max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
+      DataVector minCoeffs(b.getSize());
+      DataVector maxCoeffs(b.getSize());
+
+      for (size_t i = 0; i < b.getSize(); i++) {
+        minCoeffs.set(
+            i,
+            std::min(
+                1.,
+                (1. - beta) / bTotalPoints.get(i)
+                    * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
+        maxCoeffs.set(
+            i,
+            std::max(
+                1.,
+                beta / static_cast<double>(numberOfPoints)
+                    * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
+        bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
+      }
+
+      bSave.componentwise_mult(minCoeffs);
+      b.componentwise_mult(maxCoeffs);
+      bSave.add(b);
 
       // Update weighting based on processed data points
       for (size_t i = 0; i < b.getSize(); i++) {
-        bSave.set(i, b.get(i));
-        bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
         b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
       }
     } else {
-      // 1 / M * Bt * 1
+      // (1. / M) * Bt * 1
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
 
