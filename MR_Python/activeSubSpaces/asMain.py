@@ -184,7 +184,9 @@ def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPo
     pysgpp.OptPrinter.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
-    
+
+    # This does not anymore exist.
+    # ToDo (rehmemk) Update it?    
     sparseResponseSurf = pysgpp.SparseGridResponseSurfaceNakBspline(f,
                                                                     pysgpp.Grid.stringToGridType(gridType),
                                                                     degree)
@@ -328,7 +330,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     responseCoefficients = pysgpp.DataVector(objFunc.getDim())
     responseGridStr = ' '
     
-    print("\nnumGridPoints = {}".format(numResponse))
+    print("\nnumGridPoints = {}".format(numASM))
     if responseType in ['regular', 'dataR', 'datadrivenR']:
         responseLevel = int(np.math.log(numResponse + 1, 2)) 
         asmLevel = responseLevel  #this makes no sense in higher dimensions!!!
@@ -377,7 +379,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
 
         responseCreationTime = time.time() - start
         if printFlag == 1:
-            print("response surface creation time: {}".format(responseCreationTime))
+            print("response surface with {} points creation time: {}".format(numResponse, responseCreationTime))
     
         bounds = responseSurf.getBounds() 
         print("leftBound: {} rightBound: {}".format(bounds[0], bounds[1]))
@@ -397,12 +399,41 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
         print("interpol error: {}".format(l2Error))
         # print("Comparison: l2 error {}".format(responseSurf.l2Error(f, numErrorPoints)))
         
+        #####DEBUG
+#         print("asMain Debugging plot!")
+#         dim = objFunc.getDim()
+#         W1true = [1. / np.sqrt(dim)] * dim
+#         W1 = eivec[:, 0]
+#         print("W1true")
+#         print(W1true)
+#         print("W1")
+#         print(W1)
+#         print("W1 - W1true:")
+#         print(W1 - W1true)
+#         
+#         print("C")
+#         C = ASM.getMatrixDataMatrix()
+#         for i in range(C.getNcols()):
+#             for j in range(C.getNrows()):
+#                 print(C.get(i, j), end=' ')
+#             print("\n")
+#         
+#         transformedErrorPoints = np.zeros(numErrorPoints)
+#         realG = np.zeros(numErrorPoints)
+#         for i in range(numErrorPoints):
+#             transformedErrorPoints[i] = np.dot(W1true, errorPoints[i, :])
+#             realG[i] = np.sin(0.75 * np.sqrt(dim) * transformedErrorPoints[i] + 1) / (0.75 * np.sqrt(dim) * transformedErrorPoints[i] + 1)
+# #         plt.scatter(transformedErrorPoints, validationValues, marker='*', color='b')
+# #         # plt.scatter(transformedErrorPoints, realG, s=80, facecolors='none', edgecolors='r')
+# #         plt.scatter(transformedErrorPoints, responseEval, s=80, facecolors='none', edgecolors='g')
+# #         plt.show()
+        ##########
+        
         responseGrid = responseSurf.getGrid()
         responseCoefficients = responseSurf.getCoefficients()
         responseGridStr = responseGrid.serialize()
     
 #     W1 = eivec[:, 0]
-#     W1 = [1 / np.sqrt(5)] * 5
 #     plt.scatter(errorPoints.dot(W1), responseEval, label='approx')
 #     plt.scatter(errorPoints.dot(W1), validationValues, label='f')
 #     plt.legend()
@@ -755,7 +786,7 @@ def executeMain(model, method, numThreads, minPoints, maxPoints, numSteps,
         for i, numSamples in enumerate(sampleRange):
             for j, numData in enumerate(dataRange):
                 start = time.time()
-                numResponse = numSamples
+                numResponse = min([1000, numSamples])
                 numASM = numSamples
                 numHistogramMCPoints = 1000000
                 
@@ -831,15 +862,15 @@ if __name__ == "__main__":
     parser.add_argument('--numThreads', default=4, type=int, help="number of threads for omp parallelization")
     parser.add_argument('--minPoints', default=10, type=int, help="minimum number of points used")
     parser.add_argument('--maxPoints', default=1000, type=int, help="maximum number of points used")
-    parser.add_argument('--numSteps', default=3, type=int, help="number of steps in the [minPoints maxPoints] range")
+    parser.add_argument('--numSteps', default=5, type=int, help="number of steps in the [minPoints maxPoints] range")
     parser.add_argument('--saveFlag', default=1, type=bool, help="save results")
     parser.add_argument("--numShadow1DPoints", default=100, type=int, help="number of evaluations of the underlying 1D interpolant which can later be used for shadow plots")
-    parser.add_argument('--numRefine', default=10, type=int, help="max number of grid points added in refinement steps for sparse grids")
-    parser.add_argument('--initialLevel', default=2, type=int, help="initial regular level for adaptive sparse grids")
+    parser.add_argument('--numRefine', default=50, type=int, help="max number of grid points added in refinement steps for sparse grids")
+    parser.add_argument('--initialLevel', default=0, type=int, help="initial regular level for adaptive sparse grids")
     parser.add_argument('--doResponse', default=1, type=int, help="do (not) create response surface")
     parser.add_argument('--doIntegral', default=1, type=int, help="do (not) calcualte integral")
     # only relevant for asSGpp and SGpp
-    parser.add_argument('--gridType', default='nakbsplinemodified', type=str, help="SGpp grid type")
+    parser.add_argument('--gridType', default='nakbsplineboundary', type=str, help="SGpp grid type")
     parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
     parser.add_argument('--responseType', default='adaptive', type=str, help="method for response surface creation (regular,adaptive (and detection for asSGpp) ")
     # only relevant for asSGpp
