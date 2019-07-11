@@ -17,8 +17,8 @@
 	"fitter": {
 		"type": "classification",
 		"gridConfig": {
-			"gridType": "linear",
-			"level": 5
+			"gridType": "modlinear",
+			"level": 3
 		},
 		"adaptivityConfig": {
 				"numRefinements": 10,
@@ -36,7 +36,7 @@
 		},
 		"densityEstimationConfig" : {
 			"densityEstimationType" : "decomposition",
-			"matrixDecompositionType" : "chol"
+			"matrixDecompositionType" : "smw_ortho"
 		},
 		"learner" : {
 			"usePrior" : true,
