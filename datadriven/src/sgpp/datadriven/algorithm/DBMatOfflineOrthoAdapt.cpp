@@ -3,13 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
-#include <gsl/gsl_linalg.h>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_vector.h>
-#endif /* USE_GSL */
-
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
@@ -201,6 +195,35 @@ void DBMatOfflineOrthoAdapt::syncDistributedDecomposition(
   // no action needed without scalapack
 }
 
+void DBMatOfflineOrthoAdapt::compute_inverse() {
+#ifdef USE_GSL
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineOrthoAdapt::compute_inverse:\noffline matrix not decomposed yet.\n");
+  }
+
+  // initialize lhsInverse
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+
+  gsl_matrix_view inv_view = gsl_matrix_view_array(this->lhsInverse.getPointer(),
+                                                   lhsInverse.getNrows(), lhsInverse.getNcols());
+
+  gsl_matrix_view t_inv_view = gsl_matrix_view_array(
+      this->getTinv().getPointer(), this->getTinv().getNrows(), this->getTinv().getNcols());
+
+  gsl_matrix_view q_view = gsl_matrix_view_array(this->getQ().getPointer(), this->getQ().getNrows(),
+                                                 this->getQ().getNcols());
+
+  gsl_matrix* QT = gsl_matrix_alloc(lhsInverse.getNrows(), lhsInverse.getNcols());
+
+  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &q_view.matrix, &t_inv_view.matrix, 0.0, QT);
+  gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, QT, &q_view.matrix, 0.0, &inv_view.matrix);
+
+  gsl_matrix_free(QT);
+#else
+  throw sgpp::base::algorithm_exception("build without GSL");
+#endif /*USE_GSL*/
+}
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 }
