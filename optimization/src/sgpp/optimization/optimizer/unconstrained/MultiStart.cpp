@@ -79,7 +79,7 @@ void MultiStart::optimize() {
   /*Printer::getInstance().disableStatusPrinting();
 
   #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt, printer) \
-  default(none)
+ 
   {
     Optimizer* curOptimizerPtr = &optimizer;
   #ifdef _OPENMP
@@ -145,7 +145,7 @@ void MultiStart::optimize() {
     Printer::getInstance().disableStatusPrinting();
   }
 
-#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) default(none)
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt)
   {
     UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
