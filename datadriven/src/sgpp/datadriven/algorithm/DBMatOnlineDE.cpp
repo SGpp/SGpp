@@ -44,6 +44,8 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
   functionComputed = false;
   bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+  bSaveExtra = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+  bTotalPointsExtra = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
   oDim = grid.getDimension();
 }
 
@@ -54,11 +56,15 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints)
       std::vector < size_t > idxToDelete { std::begin(*deletedPoints), std::end(*deletedPoints) };
       bSave.remove(idxToDelete);
       bTotalPoints.remove(idxToDelete);
+      bSaveExtra.remove(idxToDelete);
+      bTotalPointsExtra.remove(idxToDelete);
     }
     // Refinement -> append newPoints zeros to b
     if (gridSize > bSave.size()) {
       bSave.resizeZero(gridSize);
       bTotalPoints.resizeZero(gridSize);
+      bSaveExtra.resizeZero(gridSize);
+      bTotalPointsExtra.resizeZero(gridSize);
     }
   }
 }
@@ -87,6 +93,34 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
   }
 }
 
+void DBMatOnlineDE::computeDensityDifferenceFunction(
+    DataVector& alpha, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
+    bool do_cv) {
+  // ---
+  if (functionComputed) {
+    if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
+      // Assemble the rhs
+      DataVector b(alpha.size());
+      for (size_t i = 0; i < b.size(); i++) {
+        b.set(
+            i,
+            bSave.get(i) * (1. / bTotalPoints.get(i))
+                - bSaveExtra.get(i) * (1. / bTotalPointsExtra.get(i)));
+      }
+      // Resolve the SLE
+      solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
+    } else {
+      throw sgpp::base::algorithm_exception(
+          "Recomputation of density difference function with mismatching alpha size and b "
+          "size");
+    }
+  } else {
+    throw sgpp::base::algorithm_exception(
+        "Density difference function cannot be recomputed without any b stored in "
+        "DBMatOnlineDE");
+  }
+}
+
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
                                            DensityEstimationConfiguration& densityEstimationConfig,
                                            bool save_b, bool do_cv,
@@ -108,7 +142,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
-    totalPoints++;
+
     DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
     b.setAll(0);
     if (b.getSize() != offlineObject.getGridSize()) {
@@ -143,46 +177,166 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 #endif /*USE_GSL*/
     }
 
-    // std::cout << b.getSize() << std::endl;
-
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
 
-      // Online procedure: beta is the forgettingRate
+      // Online procedure: beta is a forgetRate
       //    1 = forget all past batches
       //    0 = equal weighting
       // Old rhs is weighted by min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
       // New contribution is weighted by max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
-      DataVector minCoeffs(b.getSize());
-      DataVector maxCoeffs(b.getSize());
-
       for (size_t i = 0; i < b.getSize(); i++) {
-        minCoeffs.set(
+        bSave.set(
             i,
-            std::min(
-                1.,
-                (1. - beta) / bTotalPoints.get(i)
-                    * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
-        maxCoeffs.set(
-            i,
-            std::max(
-                1.,
-                beta / static_cast<double>(numberOfPoints)
-                    * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
+            bSave.get(i)
+                * std::min(
+                    1.,
+                    (1. - beta) / bTotalPoints.get(i)
+                        * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i)))
+                + b.get(i)
+                    * std::max(
+                        1.,
+                        beta / static_cast<double>(numberOfPoints)
+                            * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
+
         bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
-      }
 
-      bSave.componentwise_mult(minCoeffs);
-      b.componentwise_mult(maxCoeffs);
-      bSave.add(b);
-
-      // Update weighting based on processed data points
-      for (size_t i = 0; i < b.getSize(); i++) {
+        // Update weighting based on processed data points
         b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
       }
     } else {
       // (1. / M) * Bt * 1
       b.mult(1. / static_cast<double>(numberOfPoints));
+    }
+
+    solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
+
+    functionComputed = true;
+  }
+}
+
+void DBMatOnlineDE::computeDensityDifferenceFunction(
+    DataVector& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool save_b = false,
+    bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0) {
+  // ---
+  std::cout << "Computing density difference function..." << std::endl;
+  // Normally, both datasets should still have data to process, otherwise we can't compute anything
+  if (mp.getNrows() > 0 && mq.getNrows()) {
+    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
+
+    // in case OrthoAdapt, the current size is not lhs size, but B size
+    bool use_B_size = false;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
+    if (densityEstimationConfig.decomposition_
+        == sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+      thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
+        use_B_size = true;
+      }
+    }
+
+    // Compute right hand side of the equation:
+    size_t numberOfPointsP = mp.getNrows();
+    size_t numberOfPointsQ = mq.getNrows();
+
+    DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
+    b.setAll(0.);
+    if (b.getSize() != offlineObject.getGridSize()) {
+      throw sgpp::base::algorithm_exception(
+          "In DBMatOnlineDE::computeDensityDifferenceFunction: b doesn't match size of "
+          "system matrix");
+    }
+
+    std::unique_ptr < sgpp::base::OperationMultipleEval
+        > B_p(
+            (offlineObject.interactions.size() == 0) ?
+                sgpp::op_factory::createOperationMultipleEval(grid, mp) :
+                sgpp::op_factory::createOperationMultipleEvalInter(grid, mp,
+                                                                   offlineObject.interactions));
+    std::unique_ptr < sgpp::base::OperationMultipleEval
+        > B_q(
+            (offlineObject.interactions.size() == 0) ?
+                sgpp::op_factory::createOperationMultipleEval(grid, mq) :
+                sgpp::op_factory::createOperationMultipleEvalInter(grid, mq,
+                                                                   offlineObject.interactions));
+
+    DataVector bp(b.getSize());
+    DataVector bq(b.getSize());
+
+    DataVector yp(numberOfPointsP);
+    DataVector yq(numberOfPointsQ);
+
+    // Bt_p * 1
+    yp.setAll(1.0);
+    B_p->multTranspose(yp, bp);
+
+    // Bt_q * 1
+    yq.setAll(1.0);
+    B_q->multTranspose(yq, bq);
+
+    // Perform permutation because of decomposition (LU)
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::LU) {
+#ifdef USE_GSL
+      static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
+#else
+      throw algorithm_exception("built withot GSL");
+#endif /*USE_GSL*/
+    }
+
+    if (save_b) {
+      updateRhs(grid.getSize(), deletedPoints);
+
+      // Online procedure: beta is a forgetRate
+      //    1 = forget all past batches
+      //    0 = equal weighting
+      // Old rhs is weighted by min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
+      // New contribution is weighted by max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
+      for (size_t i = 0; i < b.getSize(); i++) {
+        bSave.set(
+            i,
+            bSave.get(i)
+                * std::min(
+                    1.,
+                    (1. - beta) * (static_cast<double>(numberOfPointsP) + bTotalPoints.get(i))
+                        / bTotalPoints.get(i))
+                + bp.get(i)
+                    * std::max(
+                        1.,
+                        beta * (static_cast<double>(numberOfPointsP) + bTotalPoints.get(i))
+                            / static_cast<double>(numberOfPointsP)));
+
+        bTotalPoints.set(i, static_cast<double>(numberOfPointsP) + bTotalPoints.get(i));
+
+        bSaveExtra.set(
+            i,
+            bSaveExtra.get(i)
+                * std::min(
+                    1.,
+                    (1. - beta) / bTotalPointsExtra.get(i)
+                        * (static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i)))
+                + bq.get(i)
+                    * std::max(
+                        1.,
+                        beta / static_cast<double>(numberOfPointsQ)
+                            * (static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i))));
+
+        bTotalPointsExtra.set(i, static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i));
+
+        // Update weighting based on processed data points
+        b.set(
+            i,
+            bSave.get(i) * (1. / bTotalPoints.get(i))
+                - bSaveExtra.get(i) * (1. / bTotalPointsExtra.get(i)));
+      }
+    } else {
+      // (1. / M_p) * Bt_p * 1 - (1. / M_q) * Bt_q * 1
+      for (size_t i = 0; i < b.getSize(); i++) {
+        b.set(
+            i,
+            bp.get(i) * (1. / static_cast<double>(numberOfPointsP))
+                - bq.get(i) * (1. / static_cast<double>(numberOfPointsQ)));
+      }
     }
 
     solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);

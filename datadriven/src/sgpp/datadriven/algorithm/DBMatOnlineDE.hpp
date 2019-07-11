@@ -41,19 +41,34 @@ class DBMatOnlineDE : public DBMatOnline {
    * points added during refinement after coarsening)
    * @param deletedPoints pointer to list of indexes that will be removed from b
    */
-  void updateRhs(size_t gridSize, std::list<size_t> *deletedPoints);
+  void updateRhs(size_t gridSize, std::list<size_t>* deletedPoints);
 
   /**
-  * Computes the density function again based on the saved b's (only applicable for streaming)
-  *
-  * @param alpha the vector where surplusses for the density function will be stored
-  * @param grid The underlying grid
-  * @param densityEstimationConfig Configuration for the density estimation
-  *        combined with the new right hand side (aka streaming)
-  * @param do_cv Indicates whether crossvalidation should take place
-  */
+   * Computes the density function again based on the saved b's (only applicable for streaming)
+   *
+   * @param alpha the vector where surplusses for the density function will be stored
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   *        combined with the new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   */
   void computeDensityFunction(DataVector& alpha, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv = false);
+                              DensityEstimationConfiguration& densityEstimationConfig, bool do_cv =
+                                  false);
+
+  /**
+   * Computes the density difference function again based on the saved b's (only applicable for
+   * streaming)
+   *
+   * @param alpha the vector where surplusses for the density function will be stored
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   *        combined with the new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   */
+  void computeDensityDifferenceFunction(DataVector& alpha, Grid& grid,
+                                        DensityEstimationConfiguration& densityEstimationConfig,
+                                        bool do_cv = false);
 
   /**
    * Computes the density function for a certain data matrix
@@ -70,8 +85,32 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param newPoints indicates the amount of added points due to refinement
    */
   void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool save_b = false,
-      bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+                              DensityEstimationConfiguration& densityEstimationConfig, bool save_b =
+                                  false,
+                              bool do_cv = false, std::list<size_t>* deletedPoints = nullptr,
+                              size_t newPoints = 0);
+
+  /**
+   * Computes the density difference function for two data matrix instances
+   *
+   * @param alpha the vector where surplusses for the density function will be stored
+   * @param mp the matrix that contains the data points for the first input dataset
+   * @param mp the matrix that contains the data points for the second input dataset
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   * @param save_b Indicates whether the old right hand side should be saved and
+   *        combined with the new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   * @param deletedPoints indicates the indices of removed grid points due to
+   * coarsening
+   * @param newPoints indicates the amount of added points due to refinement
+   */
+  void computeDensityDifferenceFunction(DataVector& alpha, DataMatrix& mp, DataMatrix& mq,
+                                        Grid& grid,
+                                        DensityEstimationConfiguration& densityEstimationConfig,
+                                        bool save_b = false, bool do_cv = false,
+                                        std::list<size_t>* deletedPoints = nullptr,
+                                        size_t newPoints = 0);
 
   /**
    * Evaluates the density function at a certain point
@@ -93,8 +132,8 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param grid the underlying grid
    * @param force if set, it will even try to evaluate if the internal state recommends otherwise
    */
-  void eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
-      bool force = false);
+  void eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid, bool force =
+                false);
 
   /**
    * Returns if the surplus has already been computed
@@ -133,15 +172,20 @@ class DBMatOnlineDE : public DBMatOnline {
 
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
+                        DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
   double computeL2Error(DataVector& alpha, Grid& grid);
   double resDensity(DataVector& alpha, Grid& grid);
 
   bool functionComputed;
+
   DataVector bSave;
   DataVector bTotalPoints;
+
+  // extra data structures for a (possible) second input dataset for the OnOff learner
+  DataVector bSaveExtra;
+  DataVector bTotalPointsExtra;
+
   double beta;
-  size_t totalPoints;
   DataMatrix *testMat, *testMatRes;
   double normFactor;
   double lambda;
