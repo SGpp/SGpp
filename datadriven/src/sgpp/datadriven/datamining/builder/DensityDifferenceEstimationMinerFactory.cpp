@@ -4,28 +4,31 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DensityRatioEstimationMinerFactory.cpp
+ * DensityDifferenceEstimationMinerFactory.cpp
  *
  * Author: Paul Sarbu
  */
 
-#include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+// #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
+// #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+// #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
 #include <string>
-#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner *DensityDifferenceEstimationMinerFactory::buildMiner(
+    const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
     // TODO(fuchsgdk): implement the cv stuff
@@ -37,8 +40,8 @@ SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::strin
   }
 }
 
-std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
-    const DataMiningConfigParser& parser) const {
+std::vector<DataSourceSplitting *> DensityDifferenceEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
+    const DataMiningConfigParser &parser) const {
   std::vector < DataSourceConfig > configs(2);
 
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
@@ -47,7 +50,7 @@ std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createData
   configs[0].batchSize = configs[1].batchSize = 0;
   configs[0].numBatches = configs[1].numBatches = 1;
 
-  std::vector<DataSourceSplitting*> dataSources(2);
+  std::vector<DataSourceSplitting *> dataSources(2);
 
   for (size_t i = 0; i < dataSources.size(); ++i)
     if (hasSource && configs[i].filePath.compare("") != 0) {
@@ -60,39 +63,29 @@ std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createData
   return dataSources;
 }
 
-/*
- std::vector<DataSourceCrossValidation*>
- DensityRatioEstimationMinerFactory::createDataSourceCrossValidation_TwoDatasets(
- const DataMiningConfigParser& parser) const {
- DataSourceConfig config { };
-
- CrossvalidationConfiguration crossValidationconfig { };
- parser.getFitterCrossvalidationConfig(crossValidationconfig, crossValidationconfig);
-
- bool hasSource = parser.getDataSourceConfig(config, config);
-
- if (hasSource && config.filePath.compare("") != 0) {
- DataSourceBuilder builder;
- return builder.crossValidationFromConfig(config, crossValidationconfig);
- } else {
- throw base::data_exception("No file name provided for datasource.");
- }
- }
- */
-
-ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
-    const DataMiningConfigParser& parser) const {
-  FitterConfigurationLeastSquares config { };
+ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
+    const DataMiningConfigParser &parser) const {
+  FitterConfigurationDensityEstimation config { };
   config.readParams(parser);
-  return new ModelFittingDensityRatioEstimation(config);
+  return new ModelFittingDensityDifferenceEstimationOnOff(config);
 }
-
 /*
- FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser& parser) const {
- return new DensityRatioEstimationMinerFactory(parser);
+ HyperparameterOptimizer *DensityDifferenceEstimationMinerFactory::buildHPO(const std::string &path)
+ const {
+ DataMiningConfigParser parser(path);
+ if (parser.getHPOMethod("bayesian") == "harmonica") {
+ return new HarmonicaHyperparameterOptimizer(buildMiner(path),
+ new DensityEstimationFitterFactory(parser), parser);
+ } else {
+ return new BoHyperparameterOptimizer(buildMiner(path),
+ new DensityEstimationFitterFactory(parser), parser);
+ }
  }
  */
+FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new DensityEstimationFitterFactory(parser);
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */
