@@ -25,6 +25,7 @@ enum class StencilType {
   HierarchicalParent,
   RecursiveHierarchicalParent,
   FullyRecursiveHierarchicalParent,
+  HierarchicalDirectNeighbour,
   None
 };
 

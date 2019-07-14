@@ -35,6 +35,8 @@ StencilType GeometryConfigurationParser::parse(const std::string &input) {
     return sgpp::datadriven::StencilType::RecursiveHierarchicalParent;
   } else if(inputLower.compare("fullyrecursivehierarchicalparent") == 0){
     return sgpp::datadriven::StencilType::FullyRecursiveHierarchicalParent;
+  } else if(inputLower.compare("hierarchicaldirectneighbour") == 0){
+    return sgpp::datadriven::StencilType::HierarchicalDirectNeighbour;
   } else if(inputLower.compare("none") == 0){
     return sgpp::datadriven::StencilType::None;
   } else {

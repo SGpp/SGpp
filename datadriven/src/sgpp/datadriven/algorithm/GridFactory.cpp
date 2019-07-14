@@ -65,6 +65,7 @@ sgpp::base::Grid* GridFactory::createGrid(
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
     sgpp::datadriven::StencilType stencilType, std::vector<std::vector<int64_t>>& dim) const {
   std::vector<std::vector<size_t>> interactions;
+  std::vector<std::vector<size_t>> tmp;
 
   std::vector<std::vector<int64_t>> res = dim;
 
@@ -86,6 +87,13 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getInteractions(
       break;
     case sgpp::datadriven::StencilType::None:
       interactions = std::vector<std::vector<size_t>>();
+      break;
+    case sgpp::datadriven::StencilType::HierarchicalDirectNeighbour:
+      tmp = getHierarchicalParents(res, false, true);
+      interactions = getDirectNeighbours(res);
+      // This will add certain interactions twice, but it is ok since it will not have an effect on
+      // the resulting grid
+      interactions.insert(interactions.end(), tmp.begin(), tmp.end());
       break;
     default:
       std::cout << "Stencil not found";
@@ -248,9 +256,13 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDirectNeighbo
       for (size_t j = 0; j < imageResolutions.at(i).size(); j++) {
         if (position.at(j) + 1 < imageResolutions.at(i).at(j)) {
           std::vector<size_t> tmp = std::vector<size_t>();
-          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position));
+          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(),
+                                                             &multiplicatorsPerLevel.at(i),
+                                                             &position));
           position.at(j)++;
-          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position));
+          tmp.push_back(offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(),
+                                                             &multiplicatorsPerLevel.at(i),
+                                                             &position));
           position.at(j)--;
           vec.push_back(tmp);
         }
@@ -279,20 +291,24 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getDiagonalNeigh
     do {
       for (size_t j = 0; j < imageResolutions.at(i).size(); j++) {
         size_t powersetBits = 1 << imageResolutions.at(i).size();
-        for(size_t k = 1; k < powersetBits; k++){
+        for (size_t k = 1; k < powersetBits; k++) {
           auto diagonalPosition = position;
           size_t bitSetCount = 0;
-          for(size_t l = 0; l < imageResolutions.at(i).size(); l++){
+          for (size_t l = 0; l < imageResolutions.at(i).size(); l++) {
             // is l-dimension in current set
-            if(k&(1<<l)){
+            if (k & (1 << l)) {
               bitSetCount++;
               diagonalPosition.at(l)++;
             }
           }
           // add only interactions which are not direct neighbours
-          if(bitSetCount>1){
-            size_t positionIndex = offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &position);
-            size_t diagonalIndex = offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(), &multiplicatorsPerLevel.at(i), &diagonalPosition);
+          if (bitSetCount > 1) {
+            size_t positionIndex =
+                offsetsPerLevel.at(i) + getDataIndex(imageResolutions.at(i).size(),
+                                                     &multiplicatorsPerLevel.at(i), &position);
+            size_t diagonalIndex = offsetsPerLevel.at(i) +
+                                   getDataIndex(imageResolutions.at(i).size(),
+                                                &multiplicatorsPerLevel.at(i), &diagonalPosition);
             vec.push_back({positionIndex, diagonalIndex});
           }
         }
