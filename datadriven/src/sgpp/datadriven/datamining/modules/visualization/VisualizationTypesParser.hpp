@@ -10,10 +10,10 @@
  */
 
 #pragma once
-
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <map>
 #include <string>
-#include "VisualizationGeneralConfig.hpp"
+
 
 namespace sgpp {
 namespace datadriven {

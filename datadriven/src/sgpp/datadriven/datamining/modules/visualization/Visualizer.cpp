@@ -20,6 +20,9 @@
 namespace sgpp {
 namespace datadriven {
 
+Visualizer::Visualizer() {
+}
+
 const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const {
   return config;
 }

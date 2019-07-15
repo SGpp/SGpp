@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include "VisualizationParameters.hpp"
 #include <string>
 
 namespace sgpp {

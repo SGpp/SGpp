@@ -39,6 +39,8 @@
 #include <cmath>
 
 
+namespace sgpp {
+namespace datadriven {
 
 // Constructs cell
 Cell::Cell(unsigned int inp_dimension) {
@@ -427,3 +429,5 @@ void SPTree::print()
     }
 }
 
+} //namespace datadriven
+} //namespace sgpp

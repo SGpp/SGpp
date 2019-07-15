@@ -21,19 +21,8 @@
 #include <algorithm>
 #include <string>
 
-
-using sgpp::base::DataMatrix;
-using sgpp::base::DataVector;
-using json::JSON;
-using json::DictNode;
-using json::ListNode;
-using sgpp::datadriven::TSNE;
-
-
 namespace sgpp {
 namespace datadriven {
-
-
 VisualizerDensityEstimation::VisualizerDensityEstimation(VisualizerConfiguration config) {
   this->config = config;
 }
@@ -114,7 +103,8 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
       std::to_string(config.getVisualizationParameters().targetDimension)
       << " dimensions" << std::endl;
 
-      TSNE::run(input, N, D , output, config.getVisualizationParameters().targetDimension,
+      TSNE tsne;
+      tsne.run(input, N, D , output, config.getVisualizationParameters().targetDimension,
       config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
       config.getVisualizationParameters().seed, false,
       config.getVisualizationParameters().maxNumberIterations);

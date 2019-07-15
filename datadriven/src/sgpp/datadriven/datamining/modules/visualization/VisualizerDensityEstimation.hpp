@@ -25,11 +25,8 @@ namespace datadriven {
 
 class VisualizerDensityEstimation:public Visualizer {
  public:
-  /**
-   * Default constructor
-   */
-  VisualizerDensityEstimation() = default;
 
+  VisualizerDensityEstimation()= default;
   /**
    * Constructor given a configuration
    * @param config. The VisualizerConfiguration object which contains

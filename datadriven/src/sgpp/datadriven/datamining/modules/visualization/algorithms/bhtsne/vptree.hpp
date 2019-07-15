@@ -31,7 +31,8 @@
  */
 
 
-/* This code was adopted with minor modifications from Steve Hanov's great tutorial at http://stevehanov.ca/blog/index.php?id=130 */
+/* This code was adopted with minor modifications from Steve Hanov's great tutorial
+ * at http://stevehanov.ca/blog/index.php?id=130 */
 
 #include <stdlib.h>
 #include <algorithm>
@@ -40,10 +41,11 @@
 #include <queue>
 #include <limits>
 #include <cmath>
+#include <cfloat>
 
 
-#ifndef VPTREE_H
-#define VPTREE_H
+namespace sgpp {
+namespace datadriven {
 
 class DataPoint
 {
@@ -268,5 +270,6 @@ private:
         }
     }
 };
-            
-#endif
+
+} //namespace datadriven
+} //namespace sgpp
