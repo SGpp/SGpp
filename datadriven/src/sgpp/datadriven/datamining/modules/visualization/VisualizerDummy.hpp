@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
@@ -28,10 +29,12 @@ public:
 
   ~VisualizerDummy()=default;
 
-  void visualize(ModelFittingBase &model, size_t fold, size_t batch) override;
+  void visualize(ModelFittingBase &model,  DataSource &dataSource,
+    size_t fold, size_t batch) override;
 
 protected:
- void runTsne(ModelFittingBase &model) override;
+ void runTsne(ModelFittingBase &model, DataSource &dataSource,
+   size_t fold, size_t batch) override;
 };
 
 }

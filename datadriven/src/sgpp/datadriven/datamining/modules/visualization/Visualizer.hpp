@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 
@@ -35,7 +36,8 @@ class Visualizer{
  /**
   * Method to execute the visualization step
   */
-  virtual void visualize(ModelFittingBase &model, size_t fold, size_t batch)=0;
+  virtual void visualize(ModelFittingBase &model, DataSource &dataSource,
+    size_t fold, size_t batch) = 0;
 
   /**
    * Get the configuration of the visualizer object.
@@ -48,7 +50,8 @@ class Visualizer{
   /**
    * Method which runs the tsne compression algorithm
    */
-  virtual void runTsne(ModelFittingBase &model)=0;
+  virtual void runTsne(ModelFittingBase &model, DataSource &dataSource,
+      size_t fold, size_t batch) = 0;
 
   /**
    *
@@ -59,6 +62,15 @@ class Visualizer{
    * Configuration object for the fitter.
    */
   VisualizerConfiguration config;
+
+  /**
+   * Matrix to store the data from the datasource
+   */
+  DataMatrix originalData;
+  /**
+   * Matrix to store the data provided by the tsne algorithm
+   */
+  DataMatrix tsneCompressedData;
 };
 
 } // namespace datadriven
