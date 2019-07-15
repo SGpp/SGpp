@@ -30,26 +30,31 @@
  *
  */
 
-#include "tsne.hpp"
-
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/vptree.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/sptree.hpp>
 #include <cfloat>
-#include <iostream>>
+#include <iostream>
+#include <vector>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
 #include <ctime>
 #include <omp.h>
-#include "sptree.hpp"
-#include "vptree.hpp"
 
 using namespace std;
+using namespace sgpp::datadriven;
 
 namespace sgpp {
 namespace datadriven {
 
+TSNE::TSNE(){
+
+};
+
 // Perform t-SNE
-void TSNE::run(double* X, size_t N, size_t D, double* Y, int no_dims, double perplexity, double theta, size_t rand_seed,
+void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double perplexity, double theta, size_t rand_seed,
                bool skip_random_init, size_t max_iter, size_t mom_switch_iter) {
 
     // Set random seed
@@ -712,5 +717,5 @@ double TSNE::randn() {
 	return x;
 }
 
-}
-}
+} //namespace datadriven
+} //namespace sgpp

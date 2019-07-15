@@ -17,17 +17,13 @@
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 
 namespace sgpp {
-
 namespace datadriven {
 
 class Visualizer{
 
  public:
- /**
-  * Default Constructor
-  */
-  Visualizer() = default;
 
+ Visualizer();
  /**
   * Virtual destructor
   */

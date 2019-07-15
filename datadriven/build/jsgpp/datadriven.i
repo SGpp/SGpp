@@ -148,6 +148,9 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp"
+
+
+
 %ignore  sgpp::datadriven::FitterConfiguration::operator=(FitterConfiguration&&);
 %rename(__assign__) sgpp::datadriven::FitterConfiguration::operator =;
 %rename (getConstGridConfig) sgpp::datadriven::FitterConfiguration::getGridConfig() const;
@@ -171,14 +174,13 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp"
+
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/algorithms/tsne.hpp
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
+
+
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
 %rename(__assign__) sgpp::datadriven::Metric::operator =;

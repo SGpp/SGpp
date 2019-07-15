@@ -158,11 +158,12 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerFactory.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerTypesParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
+
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);
 %rename(assign) sgpp::datadriven::Metric::operator =;

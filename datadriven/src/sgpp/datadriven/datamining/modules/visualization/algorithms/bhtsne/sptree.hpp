@@ -30,11 +30,12 @@
  *
  */
 
-
-#ifndef SPTREE_H
-#define SPTREE_H
+#include <iostream>
 
 using namespace std;
+
+namespace sgpp {
+namespace datadriven {
 
 class Cell {
 
@@ -111,4 +112,5 @@ private:
     bool isChild(unsigned int test_index, unsigned int start, unsigned int end);
 };
 
-#endif
+} //namespace datadriven
+} //namespace sgpp
