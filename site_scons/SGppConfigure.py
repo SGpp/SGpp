@@ -174,6 +174,10 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     if not config.CheckCXXHeader("hpx/include/actions.hpp"):
       Helper.printErrorAndExit("hpx/include/actions.hpp not found, but required for HPX")
 
+  # pickup flags from env
+  config.env.Append(LINKFLAGS=os.environ.get("LDFLAGS", "").split(" "))
+  config.env.Append(CPPFLAGS=os.environ.get("CXXFLAGS", "").split(" "))
+
   env = config.Finish()
 
   print("Configuration done.")
