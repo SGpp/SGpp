@@ -38,7 +38,7 @@ VisualizerDensityEstimation::VisualizerDensityEstimation(VisualizerConfiguration
   this->config = config;
 }
 
-void VisualizerDensityEstimation::visualize(ModelFittingBase &model,
+void VisualizerDensityEstimation::visualize(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
   if (batch % config.getGeneralConfig().numBatches != 0) {
     return;
@@ -63,7 +63,7 @@ void VisualizerDensityEstimation::visualize(ModelFittingBase &model,
     #pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
-        runTsne(model);
+        runTsne(model, dataSource, fold, batch);
       }
     }
     #pragma omp section
@@ -87,55 +87,72 @@ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model) {
   CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory + "/grid", gridMatrix);
 }
 
-void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
-  DataMatrix data = model.getDataset()->getData();
+void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
+  DataSource &dataSource, size_t fold, size_t batch) {
+  if (fold == 0 && batch == 0) {
+    originalData = dataSource.getAllSamples()->getData();
 
-  double* input = model.getDataset()->getData().data();
+    if ( originalData.getNcols() == 1 ) {
+     std::cout << "The tsne algorithm can only be applied if "
+     "the dimension is greater than 1" << std::endl;
+     return;
+    }
 
-  DataVector evaluation(data.getNrows());
+    size_t N = originalData.getNrows();
+    size_t D = originalData.getNcols();
 
-  model.evaluate(data, evaluation);
+    double* input =  reinterpret_cast<double*>(malloc(N * D * sizeof(double)));
 
-  size_t N = model.getDataset()->getNumberInstances();
-  size_t D = model.getDataset()->getDimension();
+    std::copy(originalData.data(), originalData.data()+N*D,
+      input);
 
-  if ( D == 1 ) {
-  std::cout << "The tsne algorithm can only be applied if "
-  "the dimension is greater than 1" << std::endl;
-  return;
-  }
-  double* output = reinterpret_cast<double*>(malloc(N * config.getVisualizationParameters().
-    targetDimension * sizeof(double)));
+    double* output =  reinterpret_cast<double*>(malloc(N * config.getVisualizationParameters().
+      targetDimension * sizeof(double)));
 
-  if ( D > config.getVisualizationParameters().targetDimension ) {
-    std::cout << "Compressing with tsne to " <<
-    std::to_string(config.getVisualizationParameters().targetDimension)
-    << " dimensions" << std::endl;
+    if ( D > config.getVisualizationParameters().targetDimension ) {
+      std::cout << "Compressing with tsne to " <<
+      std::to_string(config.getVisualizationParameters().targetDimension)
+      << " dimensions" << std::endl;
 
-    TSNE::run(input, N, D , output, config.getVisualizationParameters().targetDimension,
-    config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
-    config.getVisualizationParameters().seed, false,
-    config.getVisualizationParameters().maxNumberIterations);
-    D = config.getVisualizationParameters().targetDimension;
+      TSNE::run(input, N, D , output, config.getVisualizationParameters().targetDimension,
+      config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
+      config.getVisualizationParameters().seed, false,
+      config.getVisualizationParameters().maxNumberIterations);
+      D = config.getVisualizationParameters().targetDimension;
+    } else {
+      output = input;
+    }
+
+    DataVector evaluation(originalData.getNrows());
+    model.evaluate(originalData, evaluation);
+    originalData.appendCol(evaluation);
+    tsneCompressedData = DataMatrix(output, N, D);
+    free(output);
+    tsneCompressedData.appendCol(evaluation);
   } else {
-    output = input;
+
+    if (originalData.getNcols() == 1 ) {
+         std::cout << "The tsne algorithm can only be applied if "
+         "the dimension is greater than 1" << std::endl;
+         return;
+        }
+
+    DataVector evaluation(originalData.getNrows());
+    model.evaluate(originalData, evaluation);
+    tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
   }
-
-  DataMatrix compressedModel(output, N, D);
-
-  compressedModel.appendCol(evaluation);
 
   if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
     CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
-      "/tsneCompression", compressedModel);
+      "/tsneCompression", tsneCompressedData);
   } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
     if (config.getVisualizationParameters().targetDimension != 2) {
     std::cout << "A json output is only available for compressions in 2 dimensions"
     "Storing the CSV instead" << std::endl;
     CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
-      "/tsneCompression", compressedModel);
+      "/tsneCompression", tsneCompressedData);
     }
-    storeTsneJson(compressedModel, model);
+    storeTsneJson(tsneCompressedData, model);
   }
 }
 
@@ -871,7 +888,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
       if (gridMatrix.getNcols() >= 4 ) {
         if (row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) &
-          row.get(indexes.at(1)) == firstRow.get(indexes.at(1))) {
+        row.get(indexes.at(1)) == firstRow.get(indexes.at(1))) {
           tempGrid.appendRow(row);
         }
       } else {

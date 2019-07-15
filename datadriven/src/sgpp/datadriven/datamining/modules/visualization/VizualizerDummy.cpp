@@ -20,11 +20,13 @@ using sgpp::datadriven::ModelFittingBase;
 namespace sgpp {
 namespace datadriven {
 
-void VisualizerDummy::visualize(ModelFittingBase &model, size_t fold, size_t batch) {
+void VisualizerDummy::visualize(ModelFittingBase &model, DataSource &dataSource,
+  size_t fold, size_t batch) {
   return;
 }
 
-void VisualizerDummy::runTsne(ModelFittingBase &model) {
+void VisualizerDummy::runTsne(ModelFittingBase &model, DataSource &dataSource,
+  size_t fold, size_t batch) {
   return;
 }
 
