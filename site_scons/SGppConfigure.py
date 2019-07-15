@@ -76,10 +76,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # beware: if symbols are missing that are actually required
     # (because the symbols don't reside in a shared library),
     # there will be no error during compilation
-    # the python binding (pysgpp) requires lpython and a flat namespace
     # also for the python binding, the library must be suffixed with '*.so' even
     # though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
-    config.env.AppendUnique(LINKFLAGS=["-flat_namespace", "-undefined", "dynamic_lookup", "-lpython"])
+    config.env.AppendUnique(LINKFLAGS=["-undefined", "dynamic_lookup"])
     # The GNU assembler (GAS) is not supported in Mac OS X.
     # A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
     # From the man pages for as (version 1.38):
