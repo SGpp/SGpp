@@ -13,20 +13,20 @@ import pysgpp
 from functions import objFuncSGpp as objFuncSGpp
 
 # Paper
-# xticklabelsize = 16
-# yticklabelsize = 16
-# legendfontsize = 16
-# titlefontsize = 18
-# ylabelsize = 16
-# xlabelsize = 18
+xticklabelsize = 16
+yticklabelsize = 16
+legendfontsize = 16
+titlefontsize = 18
+ylabelsize = 16
+xlabelsize = 18
 
 # Presentation
-xticklabelsize = 18
-yticklabelsize = 18
-legendfontsize = 24
-titlefontsize = 22
-ylabelsize = 20
-xlabelsize = 22
+# xticklabelsize = 18
+# yticklabelsize = 18
+# legendfontsize = 24
+# titlefontsize = 22
+# ylabelsize = 20
+# xlabelsize = 22
 
 
 def getColorAndMarker(gridType, refineType):
@@ -50,13 +50,15 @@ def getColorAndMarker(gridType, refineType):
         color = '#2ca02c'; marker = 'D';label = '$b^{n,mod}_{l,i}$'
     elif gridType == 'nakbsplineextended':
         color = '#d62728'; marker = 'o';label = '$b^{n,e}_{l,i}$'
+    elif gridType == 'mc':
+        color = '#9467bd'; marker = '<';label = 'Monte Carlo'
         
     else:
         print("gridType {} not supported".format(gridType))
     
     if refineType in ['regular', 'regularByPoints']:
         label = label + ', regular'
-    elif refineType == 'surplus':
+    elif refineType == 'surplus' and gridType != 'mc':
         label = label + ', adaptive'
     
     return[color, marker, label]
@@ -100,42 +102,46 @@ def plotter(qoi, data, refineTypes, objFunc, model):
         # monomials have max=1, min = 0.
         
         for i, gridType in enumerate(data['gridTypes']):
-            [color, marker, label] = getColorAndMarker(gridType, refineType)
-            plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
-            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-            # plt.ylabel('l2 error', fontsize=ylabelsize)
+            if gridType != 'mc':
+                [color, marker, label] = getColorAndMarker(gridType, refineType)
+                plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+                plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+                plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+                # plt.ylabel('l2 error', fontsize=ylabelsize)
     
     elif qoi == 'nrmseWithOrder':
         interpolErrors = data['nrmsErrors']
         for i, gridType in enumerate(data['gridTypes']):
-            [color, marker, label] = getColorAndMarker(gridType, refineType)
-            plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-            plt.gca().set_yscale('log') 
-            plt.gca().set_xscale('log')
-            # plt.ylabel('l2 error', fontsize=ylabelsize)
-            if data['degree'] == 1:
-                orders = [2]
-            elif data['degree'] == 3:
-                orders = [2, 4]
-            elif data['degree'] == 5:
-                orders = [2, 4, 6]
-            for order in orders:
-                plotConvergenceOrder(order, [1, 0], 2.5)
+            if gridType != 'mc':
+                [color, marker, label] = getColorAndMarker(gridType, refineType)
+                plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+                plt.gca().set_yscale('log') 
+                plt.gca().set_xscale('log')
+                # plt.ylabel('l2 error', fontsize=ylabelsize)
+                if data['degree'] == 1:
+                    orders = [2]
+                elif data['degree'] == 3:
+                    orders = [2, 4]
+                elif data['degree'] == 5:
+                    orders = [2, 4, 6]
+                for order in orders:
+                    plotConvergenceOrder(order, [1, 0], 2.5)
         
-        if degree == 1:
-            plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
+        # if degree == 1:
+        plt.ylabel("NRMSE", fontsize=ylabelsize)
+        plt.title("n={}".format(degree), fontsize=titlefontsize)
                 
     elif qoi == 'nrmse':
         nrmsErrors = data['nrmsErrors']
         for i, gridType in enumerate(data['gridTypes']):
-            [color, marker, label] = getColorAndMarker(gridType, refineType)
-            plt.plot(gridSizes[i, :], nrmsErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
-            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-#         if degree == 1:
-#             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
-            plt.ylabel("NRMSE", fontsize=ylabelsize)
+            if gridType != 'mc':
+                [color, marker, label] = getColorAndMarker(gridType, refineType)
+                plt.plot(gridSizes[i, :], nrmsErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+                plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+                plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+    #         if degree == 1:
+    #             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
+                plt.ylabel("NRMSE", fontsize=ylabelsize)
             
     elif qoi == 'meanErr':
         # meanErrors = data['meanErrors']
@@ -201,6 +207,8 @@ def plotter(qoi, data, refineTypes, objFunc, model):
     else:
         print("qoi '{}' not supported".format(qoi))
     
+    plt.tight_layout()
+    
     # plainE nrmseWithOrder
     # plt.ylim([1e-16, 3 * 1e-0])
     
@@ -214,7 +222,7 @@ def plotter(qoi, data, refineTypes, objFunc, model):
     # plt.xlim([1e+0, 1e+4])
     
     # boreholeUQ for milestone report
-    plt.ylim([ 10 ** (-9), 3])
+    # plt.ylim([ 10 ** (-9), 3])
     
     plt.xlabel('number of grid points', fontsize=xlabelsize)
     # number of ticks
@@ -232,13 +240,13 @@ if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
     parser.add_argument('--qoi', default='meanErr', type=str, help='what to plot')
-    parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=8, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='ishigami', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--degree', default=5, type=int, help='spline degree')
+    parser.add_argument('--degree', default=3, type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus', type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=10500, type=int, help='maximum number of points used')
+    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
+    parser.add_argument('--maxPoints', default=1000, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=0, type=int, help='save figure')
     args = parser.parse_args()
     
@@ -250,7 +258,7 @@ if __name__ == '__main__':
         degrees = [args.degree]
       
     if args.degree == 135:
-        fig = plt.figure(figsize=(20, 4.5)) 
+        fig = plt.figure(figsize=(20, 4.5))
     else:
         fig = plt.figure()
     
@@ -325,13 +333,13 @@ if __name__ == '__main__':
 #             handles[5] = originalHandles[3]; labels[5] = originalLabels[3];
 
 # for boreholeUQ for milestone report
-            handles[1] = originalHandles[5]; labels[1] = originalLabels[5];
-            handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
-            handles[3] = originalHandles[1]; labels[3] = originalLabels[1];
-            handles[4] = originalHandles[6]; labels[4] = originalLabels[6];
-            handles[5] = originalHandles[2]; labels[5] = originalLabels[2];
-            handles[6] = originalHandles[7]; labels[6] = originalLabels[7];
-            handles[7] = originalHandles[3]; labels[7] = originalLabels[3];
+#             handles[1] = originalHandles[5]; labels[1] = originalLabels[5];
+#             handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
+#             handles[3] = originalHandles[1]; labels[3] = originalLabels[1];
+#             handles[4] = originalHandles[6]; labels[4] = originalLabels[6];
+#             handles[5] = originalHandles[2]; labels[5] = originalLabels[2];
+#             handles[6] = originalHandles[7]; labels[6] = originalLabels[7];
+#             handles[7] = originalHandles[3]; labels[7] = originalLabels[3];
                  
             plt.figure()
             axe = plt.gca()

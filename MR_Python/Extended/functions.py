@@ -24,6 +24,8 @@ except:
 
 # MALTE: Er nimmt als schwierige Funktion immer sin(sin(x))
 
+# Extrem schwierig: sin(1/x), oszilliert enorm am linken Rand
+
 
 # Functions are evaluated in a point given as DataVector.
 def getFunction(model, dim=1, scalarModelParameter=3):
@@ -51,6 +53,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     
     elif model == 'prodSin':
         return prodSin(dim)
+    
+    elif model == 'dampedSin':
+        return dampedSin(dim)
 
     elif model == 'gaussian':
         return gaussian(dim)
@@ -71,6 +76,12 @@ def getFunction(model, dim=1, scalarModelParameter=3):
         return dette()
     elif model == 'rastrigin':
         return rastrigin(dim)
+    elif model == 'continuousGenz':
+        return continuousGenz(dim)
+    elif model == 'ishigami':
+        return ishigami()
+    elif model == 'sobolG':
+        return sobolG(dim)
 
     elif model == 'wing':
         return wing()
@@ -281,9 +292,10 @@ class demo():
 class test():
 
     def __init__(self):
-        self.dim = 1
+        self.dim = 5
         self.pdfs = pysgpp.DistributionsVector()
-        self.pdfs.push_back(pysgpp.DistributionUniform(0, 1))
+        for d in range(self.dim):
+            self.pdfs.push_back(pysgpp.DistributionUniform(0, 1))
 
     def getDomain(self):  
         lb = pysgpp.DataVector(self.dim)
@@ -292,7 +304,6 @@ class test():
             bounds = self.pdfs.get(d).getBounds()
             lb[d] = bounds[0]
             ub[d] = bounds[1]
-        print("functions, domain: {} {}".format(lb.toString(), ub.toString()))
         return lb, ub
 
     def getName(self):
@@ -302,27 +313,17 @@ class test():
         return self.dim
 
     def eval(self, v):
-        return np.exp((abs(v[0] - 0.5)) ** 5)
-        
-        # a = 5
-        # u = 0.5
-        # Genz continuous
-        # return np.exp( -a * abs(np.sin(v[0]) - u))
-        
-        # Genz discontinuous
-#         if v[0] > u:
-#             return 0
-#         else:
-#             return np.exp(a * v[0])
-        
-        # Genz corner peak
-#         return (1 + a * v[0]) ** (-(1 + 1))
+#         sum = 0.0
+#         for d in range(self.dim):
+#             sum += np.exp(-self.dim * v[d])
+#         return np.sin(sum / self.dim)
+        return 10 * np.sin(np.pi * v[0] * v[1]) + 20 * (v[2] - 0.5) ** 2 + 10 * v[3] + 5 * v[4]
     
     def getDistributions(self):
         return self.pdfs
     
     def getMean(self):
-        return 2.4250950434509486E-01
+        return 0
     
     def getVar(self):
         return -1
@@ -547,6 +548,30 @@ class prodSin():
             prod *= np.sin(2 * np.pi * v[d])
         return prod
 
+ 
+class dampedSin():
+
+    def __init__(self, dim):
+        self.dim = dim
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.getDim(), 0.0)
+        ub = pysgpp.DataVector(self.getDim(), 1.0)
+        return lb, ub
+    
+    def getName(self):
+        return "dampedSin{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        gamma = 0.75
+        sum = 0
+        for d in range(self.dim):
+            sum += v[d]
+        return np.sin(gamma * sum + 1) / (gamma * sum + 1)
+
     
 # general gaussian function: a exp(- sum (x-b^2) / c^2)
 class gaussian():
@@ -688,34 +713,58 @@ class friedman():
  
     def __init__(self, dim=5):
         self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.getDim()):
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
      
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.getDim())
+        ub = pysgpp.DataVector(self.getDim())
+        for d in range(self.getDim()):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
         return lb, ub
      
     def getName(self):
         if self.dim == 5:
             return "friedman"
         else:
-            return "friedman{}".format(self.dim)
+            return "friedman_{}D".format(self.dim)
      
     def getDim(self):
         return self.dim
  
     def eval(self, v):
         return 10 * np.sin(np.pi * v[0] * v[1]) + 20 * (v[2] - 0.5) ** 2 + 10 * v[3] + 5 * v[4]
+        
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        return 14.413297342419857063
+    
+    def getVar(self):
+        print("Var not yet calculated. DO!")
+        return -1
 
 
 # https://www.sfu.ca/~ssurjano/detpep108d.html
 class dette():
  
-    def __init__(self):
+    def __init__(self, dim=5):
         self.dim = 8
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.getDim()):
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
      
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.getDim())
+        ub = pysgpp.DataVector(self.getDim())
+        for d in range(self.getDim()):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
         return lb, ub
      
     def getName(self):
@@ -732,6 +781,17 @@ class dette():
                 sum += v[j]
             rest += i * np.log(1 + sum)
         return 4 * (v[0] - 2 + 8 * v[1] - 8 * v[1] ** 2) ** 2 + (3 - 4 * v[1]) ** 2 + 16 * np.sqrt(v[2] + 1) * (2 * v[2] - 1) ** 2 + rest
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        print("Var not yet calculated. DO!")
+        return 0
+    
+    def getVar(self):
+        print("Var not yet calculated. DO!")
+        return -1
 
 
 # https://www.sfu.ca/~ssurjano/detpep108d.html
@@ -761,6 +821,143 @@ class rastrigin():
         for i in range(self.getDim()):
             sum += v[i] ** 2 - 10 * np.cos(2 * np.pi * v[i])
         return 10 * self.getDim() + sum
+
+
+class continuousGenz():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        self.mu = 0.5
+        self.sigma = 1.0 / 18.0 
+        for d in range(self.dim):
+            self.pdfs.push_back(pysgpp.DistributionNormal(self.mu, self.sigma))
+#             self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+#         print("domain:")
+#         print(lb.toString())
+#         print(ub.toString())
+#         print("-----------")
+        return lb, ub
+
+    def getName(self):
+       return "continuousGenz_{}D".format(self.dim)
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        a = [5] * self.dim
+        u = [0.5] * self.dim
+        sum = 0
+        for d in range(self.dim):
+            sum += a[d] * abs(v[d] - u[d]) 
+        return np.exp(-sum)
+        
+        # prod = 1
+        # for d in range(self.dim):
+        #    prod *= v[d] * abs(v[d])
+        # return prod
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        print("Mean not yet calculated. DO!")
+        return 0
+    
+    def getVar(self):
+        print("Var not yet calculated. DO!")
+        return -1
+
+
+class ishigami():
+
+    def __init__(self):
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.getDim()):
+            self.pdfs.push_back(pysgpp.DistributionUniform(-np.pi, np.pi))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.getDim())
+        ub = pysgpp.DataVector(self.getDim())
+        for d in range(self.getDim()):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+
+    def getName(self):
+       return "ishigami"
+    
+    def getDim(self):
+        return 3
+
+    def eval(self, v):
+        a = 7
+        b = 0.1
+        return np.sin(v[0]) + a * np.sin(v[1]) ** 2 + b * v[2] ** 4 * np.sin(v[0])
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        return 3.5
+    
+    # meanSquare = (33975+36*np.pi**4+np.pi**8)/(225*8)
+    def getVar(self):
+        return 13.84458794071925
+
+    
+class sobolG():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.getDim()):
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
+
+    def getDomain(self):  
+        lb = pysgpp.DataVector(self.getDim())
+        ub = pysgpp.DataVector(self.getDim())
+        for d in range(self.getDim()):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+
+    def getName(self):
+       return "sobolG_{}D".format(self.getDim())
+    
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        # c = [1, 2, 5, 10, 20, 50, 100, 500, 500, 500, 500, 500, 500, 500, 500]
+        prod = 1
+        for d in range(self.getDim()):
+            a = (d + 1 - 2.0) / 2.0
+            # a = c[d]
+            prod *= (abs(4 * v[d] - 2) + a) / (1 + a)
+        return prod
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        print("Var not yet calculated. DO!")
+        return 0
+    
+    def getVar(self):
+        print("Var not yet calculated. DO!")
+        return -1
 
 
 # https://www.sfu.ca/~ssurjano/wingweight.html

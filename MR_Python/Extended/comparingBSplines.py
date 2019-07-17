@@ -25,6 +25,18 @@ def mcMean(objFunc, pdfs, numPoints):
     return mean / numPoints
 
 
+def mcVar(objFunc, pdfs, numPoints):
+    dim = pdfs.getSize()
+    meanSquare = 0
+    for i in range(numPoints):
+        samplePoint = pdfs.sample()
+        meanSquare += objFunc.eval(samplePoint) ** 2
+    meanSquare /= numPoints
+    mean = mcMean(objFunc, pdfs, numPoints)
+    var = meanSquare - mean ** 2
+    return var
+
+
 def interpolateAndError(degree,
                         maxLevel,
                         minPoints,
@@ -72,15 +84,14 @@ def interpolateAndError(degree,
                 start = time.time()
                 if calculateMean == 1:
                     startMean = time.time()
-                    print("Warning in comparingBsplines.py: MC mean calculation not implemented!")
-                    means[i, j] = 1  # TODO MC mean routine!
+                    means[i, j] = mcMean(objFunc, pdfs, numPoints)
                     meanTime = time.time() - startMean
                     realMean = objFunc.getMean()
                     meanErrors[i, j] = abs(means[i, j] - realMean)
                     print("mean={:.16E}  real mean={:.16E}  error={:.16E}    (t={})".format(means[i, j], realMean, meanErrors[i, j], meanTime))
                 if calculateVar == 1:
                     startVar = time.time()
-                    vars[i, j] = -1  # TODO MC var
+                    vars[i, j] = mcVar(objFunc, pdfs, numPoints)
                     varTime = time.time() - startVar
                     realVar = objFunc.getVar()
                     varErrors[i, j] = abs(vars[i, j] - realVar)
@@ -178,23 +189,23 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
+    parser.add_argument('--model', default='ishigami', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use or mc for Monte Carlo')
-    parser.add_argument('--degree', default=5, type=int, help='spline degree')
+    parser.add_argument('--gridType', default='paper', type=str, help='gridType(s) to use or mc for Monte Carlo')
+    parser.add_argument('--degree', default=3, type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus', type=str, help='surplus or regular')
-    parser.add_argument('--maxLevel', default=10, type=int, help='maximum level for regular refinement')
+    parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=10, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=200, type=int, help='maximum number of points used')
+    parser.add_argument('--maxPoints', default=1000, type=int, help='maximum number of points used')
     parser.add_argument('--numSteps', default=5, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
-    parser.add_argument('--numRefine', default=20, type=int, help='max number of grid points added in refinement steps for sparse grids')
+    parser.add_argument('--numRefine', default=50, type=int, help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int, help='calculate l2 error')
     parser.add_argument('--mean', default=1, type=int, help='calculate mean')
     parser.add_argument('--var', default=1, type=int, help='calculate variance')
     parser.add_argument('--quadOrder', default=100, type=int, help='quadrature order for mean and variance calculations')
-    parser.add_argument('--saveData', default=0, type=int, help='saveData')
+    parser.add_argument('--saveData', default=1, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int, help='number of threads for omp parallelization')
     
     # configure according to input
@@ -211,6 +222,11 @@ if __name__ == '__main__':
         gridTypes = [ 'nakbspline', 'nakbsplinemodified', 'nakbsplineextended']
     elif args.gridType == 'nakmodex':
         gridTypes = [  'nakbsplinemodified', 'nakbsplineextended']
+    elif args.gridType == 'paper':
+        if args.refineType == 'surplus':
+            gridTypes = [ 'nakbspline', 'nakbsplineboundary', 'nakbsplinemodified', 'nakbsplineextended', 'mc']
+        else:
+            gridTypes = [ 'nakbspline', 'nakbsplineboundary', 'nakbsplinemodified', 'nakbsplineextended']
     else:
         gridTypes = [args.gridType]
         
