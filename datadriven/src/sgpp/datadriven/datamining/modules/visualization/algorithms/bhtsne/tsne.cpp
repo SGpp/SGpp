@@ -28,6 +28,9 @@
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
  * OF SUCH DAMAGE.
  *
+ *
+ *Modifications to this piece of software were done in order to adapt it to the structure
+ *of the SGPP Datamining Pipeline and to add parallelization
  */
 
 #include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
