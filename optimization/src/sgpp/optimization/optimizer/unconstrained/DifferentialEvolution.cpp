@@ -130,7 +130,7 @@ void DifferentialEvolution::optimize() {
     const std::vector<base::DataVector>& prob_k = prob[k];
 
 #pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, \
-                            xNew) default(none)
+                            xNew)
     {  // NOLINT(whitespace/braces)
       base::DataVector y(d);
       ScalarFunction* curFPtr = f.get();
