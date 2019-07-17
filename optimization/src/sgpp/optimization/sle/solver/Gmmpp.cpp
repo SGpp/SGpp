@@ -121,7 +121,7 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
     gmm::row_matrix<gmm::rsvector<double>> A(n, n);
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz) default(none)
+#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz)
     {
       SLE* system2 = &system;
 #ifdef _OPENMP

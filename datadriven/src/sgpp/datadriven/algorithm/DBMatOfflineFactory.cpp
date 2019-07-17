@@ -25,8 +25,8 @@
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::GridType;
 using sgpp::base::factory_exception;
+using sgpp::base::GridType;
 
 DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
@@ -53,6 +53,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
       break;
 
     case (MatrixDecompositionType::Chol):
+    case (MatrixDecompositionType::SMW_chol):
 #ifdef USE_GSL
       return new DBMatOfflineChol();
 #else
@@ -65,6 +66,7 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
       break;
 
     case (MatrixDecompositionType::OrthoAdapt):
+    case (MatrixDecompositionType::SMW_ortho):
 #ifdef USE_GSL
       return new DBMatOfflineOrthoAdapt();
       break;
@@ -111,12 +113,14 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineLU(fileName);
       break;
     case (MatrixDecompositionType::Chol):
+    case (MatrixDecompositionType::SMW_chol):
       return new DBMatOfflineChol(fileName);
       break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
       break;
     case (MatrixDecompositionType::OrthoAdapt):
+    case (MatrixDecompositionType::SMW_ortho):
       return new DBMatOfflineOrthoAdapt(fileName);
       break;
     default:
