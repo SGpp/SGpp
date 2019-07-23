@@ -36,7 +36,7 @@ class VisualizerDensityEstimation:public Visualizer {
 
   ~VisualizerDensityEstimation() = default;
 
-  void visualize(ModelFittingBase &model, DataSource &dataSource,
+  void runVisualization(ModelFittingBase &model, DataSource &dataSource,
     size_t fold, size_t batch) override;
 
  protected:
@@ -49,7 +49,6 @@ class VisualizerDensityEstimation:public Visualizer {
 
   void storeGrid(ModelFittingBase &model);
 
- private:
   void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
   void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
   void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
