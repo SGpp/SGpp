@@ -29,7 +29,7 @@ public:
 
   ~VisualizerDummy()=default;
 
-  void visualize(ModelFittingBase &model,  DataSource &dataSource,
+  void runVisualization(ModelFittingBase &model,  DataSource &dataSource,
     size_t fold, size_t batch) override;
 
 protected:
