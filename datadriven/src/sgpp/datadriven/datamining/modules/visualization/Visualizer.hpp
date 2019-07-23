@@ -32,7 +32,7 @@ class Visualizer{
  /**
   * Method to execute the visualization step
   */
-  virtual void visualize(ModelFittingBase &model, DataSource &dataSource,
+  virtual void runVisualization(ModelFittingBase &model, DataSource &dataSource,
     size_t fold, size_t batch) = 0;
 
   /**
