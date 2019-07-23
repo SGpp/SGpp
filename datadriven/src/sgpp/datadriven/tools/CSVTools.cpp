@@ -197,16 +197,12 @@ void CSVTools::writeMatrixToCSVFile(const std::string& path, DataMatrix matrix){
 
  DataVector row(matrix.getNcols());
 
- std::regex doubleSpace("  ");
  for (size_t index=0; index<matrix.getNrows(); index++)
  {
-
    matrix.getRow(index, row);
-
    std::string line = row.toString();
    line.erase(line.begin());
    line.erase(line.end()-1);
-   std::regex_replace(line,doubleSpace,",");
    output << line+"\n";
  }
 

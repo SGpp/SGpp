@@ -19,7 +19,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
 
 #include <string>
 
@@ -45,7 +45,7 @@ const {
 
   config.readParams(parser);
 
-  return new VisualizerDummy();
+  return new VisualizerClassification(config);
 }
 
 } /* namespace datadriven */
