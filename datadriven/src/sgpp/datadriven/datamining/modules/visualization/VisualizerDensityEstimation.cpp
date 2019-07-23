@@ -27,7 +27,7 @@ VisualizerDensityEstimation::VisualizerDensityEstimation(VisualizerConfiguration
   this->config = config;
 }
 
-void VisualizerDensityEstimation::visualize(ModelFittingBase &model, DataSource &dataSource,
+void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
   if (batch % config.getGeneralConfig().numBatches != 0) {
     return;
@@ -112,15 +112,12 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
     } else {
       output = input;
     }
-
     DataVector evaluation(originalData.getNrows());
     model.evaluate(originalData, evaluation);
-    originalData.appendCol(evaluation);
     tsneCompressedData = DataMatrix(output, N, D);
-    free(output);
     tsneCompressedData.appendCol(evaluation);
+    free(output);
   } else {
-
     if (originalData.getNcols() == 1 ) {
          std::cout << "The tsne algorithm can only be applied if "
          "the dimension is greater than 1" << std::endl;
@@ -131,7 +128,6 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
     model.evaluate(originalData, evaluation);
     tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
   }
-
   if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
     CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
       "/tsneCompression", tsneCompressedData);

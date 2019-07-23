@@ -20,7 +20,7 @@ using sgpp::datadriven::ModelFittingBase;
 namespace sgpp {
 namespace datadriven {
 
-void VisualizerDummy::visualize(ModelFittingBase &model, DataSource &dataSource,
+void VisualizerDummy::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
   return;
 }
