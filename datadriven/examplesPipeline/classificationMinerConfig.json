@@ -36,7 +36,7 @@
 		},
 		"densityEstimationConfig" : {
 			"densityEstimationType" : "decomposition",
-			"matrixDecompositionType" : "chol"
+			"matrixDecompositionType" : "orthoadapt"
 		},
 		"learner" : {
 			"usePrior" : true,
