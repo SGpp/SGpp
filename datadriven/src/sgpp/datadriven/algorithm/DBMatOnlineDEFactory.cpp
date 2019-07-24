@@ -24,7 +24,7 @@ namespace datadriven {
 using sgpp::base::factory_exception;
 
 DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, Grid& grid,
-    double lambda,  double beta) {
+                                                        double lambda, double beta) {
   auto decompositionType = offline.getDecompositionType();
   switch (decompositionType) {
     case MatrixDecompositionType::Eigen:
@@ -34,6 +34,7 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
+
     case MatrixDecompositionType::LU:
 #ifdef USE_GSL
       return new DBMatOnlineDELU(offline, grid, lambda, beta);
@@ -41,17 +42,29 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
       break;
+
     case MatrixDecompositionType::Chol:
     case MatrixDecompositionType::DenseIchol:
       return new DBMatOnlineDEChol(offline, grid, lambda, beta);
       break;
+
     case MatrixDecompositionType::OrthoAdapt:
 #ifdef USE_GSL
       return new DBMatOnlineDEOrthoAdapt(offline, grid, lambda, beta);
-      break;
 #else
       throw factory_exception("built without GSL");
 #endif
+      break;
+
+    case MatrixDecompositionType::SMW_chol:
+    case MatrixDecompositionType::SMW_ortho:
+#ifdef USE_GSL
+      std::cout << "\n\nYEAH\n\n" << std::endl;
+      return new DBMatOnlineDE_SMW(offline, grid, lambda, beta);
+#else
+      throw factory_exception("built without GSL");
+#endif
+
     default:
       throw factory_exception{"Unknown decomposition type."};
   }
