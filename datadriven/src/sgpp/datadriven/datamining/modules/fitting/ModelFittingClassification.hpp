@@ -91,6 +91,11 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   void storeClassificator();
 
+  /*
+   * obtain the density estimation models per each calss
+   */
+  std::unique_ptr<ModelFittingDensityEstimation>* getModel(size_t index);
+
 #ifdef USE_SCALAPACK
     /**
    * @returns the BLACS process grid
