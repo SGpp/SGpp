@@ -10,23 +10,61 @@ import functions
 import numpy as np
 import pysgpp
 
+from dataHandling import loadData as loadData
 from functions import objFuncSGpp as objFuncSGpp
 
-# Paper
-xticklabelsize = 16
-yticklabelsize = 16
-legendfontsize = 16
-titlefontsize = 18
-ylabelsize = 16
-xlabelsize = 18
 
-# Presentation
-# xticklabelsize = 18
-# yticklabelsize = 18
-# legendfontsize = 24
-# titlefontsize = 22
-# ylabelsize = 20
-# xlabelsize = 22
+def getStyle(style):
+    if style == 'paper':
+        xticklabelsize = 16
+        yticklabelsize = 16
+        legendfontsize = 16
+        titlefontsize = 18
+        ylabelsize = 16
+        xlabelsize = 18
+    elif style == 'presentation':
+        xticklabelsize = 18
+        yticklabelsize = 18
+        legendfontsize = 24
+        titlefontsize = 22
+        ylabelsize = 20
+        xlabelsize = 22
+    return xticklabelsize, yticklabelsize, legendfontsize, titlefontsize, ylabelsize, xlabelsize
+
+
+def decodeArgs(gridType, degree, refineType):
+    if gridType == 'all':
+        gridTypes = ['bspline', 'bsplineBoundary', 'modBspline',
+                     'bsplineClenshawCurtis',
+                     'fundamentalSpline', 'modFundamentalSpline',
+                     'nakbspline', 'nakbsplineboundary', 'nakbsplinemodified', 'nakbsplineextended']
+    elif gridType == 'nak':
+        gridTypes = [ 'nakbspline', 'nakbsplineboundary', 'nakbsplinemodified', 'nakbsplineextended']
+    elif gridType == 'naknobound':
+        gridTypes = [ 'nakbspline', 'nakbsplinemodified', 'nakbsplineextended']
+    elif gridType == 'nakmodex':
+        gridTypes = [  'nakbsplinemodified', 'nakbsplineextended']
+    else:
+        gridTypes = [gridType]
+        
+    if degree == 135:
+        degrees = [1, 3, 5]
+    elif degree == 35:
+        degrees = [3, 5]
+    else:
+        degrees = [degree]
+        
+    if refineType == 'regularAndSurplus':
+        refineTypes = ['regularByPoints', 'surplus']
+    elif refineType == 'regularLevelAndSurplus':
+        refineTypes = ['regular', 'surplus']
+    elif refineType == 'surplusAndMC':
+        refineTypes = ['surplus', 'mc']
+    elif refineType == 'regularAndSurplusAndMC':
+        refineTypes = ['regularByPoints', 'surplus', 'mc']
+    else:
+        refineTypes = [refineType] 
+    return gridTypes, degrees, refineTypes
 
 
 def getColorAndMarker(gridType, refineType):
@@ -50,7 +88,7 @@ def getColorAndMarker(gridType, refineType):
         color = '#2ca02c'; marker = 'D';label = '$b^{n,mod}_{l,i}$'
     elif gridType == 'nakbsplineextended':
         color = '#d62728'; marker = 'o';label = '$b^{n,e}_{l,i}$'
-    elif gridType == 'mc':
+    elif refineType == 'mc':
         color = '#9467bd'; marker = '<';label = 'Monte Carlo'
         
     else:
@@ -62,6 +100,70 @@ def getColorAndMarker(gridType, refineType):
         label = label + ', adaptive'
     
     return[color, marker, label]
+
+
+def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
+    saveDirectory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data/', model, objFunc.getName())
+    plt.tight_layout() 
+    if refineType == 'regular':
+        saveName = '{}_{}_{}_ {}'.format(objFunc.getName(), refineType, maxLevel, qoi)
+    elif refineType == 'surplus':
+        saveName = '{}_{}_{}_ {}'.format(objFunc.getName(), refineType, maxPoints, qoi)
+    elif refineType == 'regularAndSurplus':
+        saveName = '{}_{}_{}_ {}'.format(objFunc.getName(), refineType, maxPoints, qoi) 
+    elif refineType == 'regularLevelAndSurplus':
+        saveName = '{}_regular{}_surplus{}_ {}'.format(objFunc.getName(), maxLevel, maxPoints, qoi) 
+    elif refineType == 'surplusAndMC':
+        saveName = '{}_{}_{}_ {}'.format(objFunc.getName(), refineType, maxPoints, qoi) 
+    elif refineType == 'regularAndSurplusAndMC':
+        saveName = '{}_regular{}_surplusAndMC{}_ {}'.format(objFunc.getName(), maxLevel, maxPoints, qoi) 
+        
+    figname = os.path.join(saveDirectory, saveName + '_' + style)
+    plt.savefig(figname, dpi=300, bbox_inches='tight')
+    print('saved fig to {}'.format(figname))
+    # rearrange legend order and save legends in individual files.
+    legendstyle = 'external'
+    if legendstyle == 'external':
+        ax = plt.gca()
+        handles, labels = ax.get_legend_handles_labels()
+        ncol = 4
+        
+        originalHandles = handles[:]
+        originalLabels = labels[:]
+
+        # custom order in legend for clearer overview in plots for papers            
+        if model == 'plainE':
+            handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
+            handles[3] = originalHandles[2]; labels[3] = originalLabels[2];
+            handles[4] = originalHandles[5]; labels[4] = originalLabels[5];
+            handles[5] = originalHandles[3]; labels[5] = originalLabels[3];
+
+        elif model == 'boreholeUQ':
+            handles[1] = originalHandles[5]; labels[1] = originalLabels[5];
+            handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
+            handles[3] = originalHandles[1]; labels[3] = originalLabels[1];
+            handles[4] = originalHandles[6]; labels[4] = originalLabels[6];
+            handles[5] = originalHandles[9]; labels[5] = originalLabels[9];
+            handles[6] = originalHandles[2]; labels[6] = originalLabels[2];
+            handles[7] = originalHandles[7]; labels[7] = originalLabels[7];
+            handles[8] = originalHandles[3]; labels[8] = originalLabels[3];
+            handles[9] = originalHandles[8]; labels[9] = originalLabels[8];
+             
+        plt.figure()
+        axe = plt.gca()
+        axe.legend(handles, labels , loc='center', fontsize=legendfontsize, ncol=ncol)
+        axe.xaxis.set_visible(False)
+        axe.yaxis.set_visible(False)
+        for v in axe.spines.values():
+            v.set_visible(False)
+        legendname = os.path.join(figname + '_legend')
+        # cut off whitespace
+        plt.subplots_adjust(left=0.0, right=1.0, top=0.6, bottom=0.4)
+        plt.savefig(legendname, dpi=300, bbox_inches='tight', pad_inches=0.0)
+    elif legendstyle == 'none':
+        pass
+    else:    
+        plt.legend(ncol=4)
 
 
 def plotConvergenceOrder(order, start, length):
@@ -79,53 +181,40 @@ def plotConvergenceOrder(order, start, length):
     plt.plot(X, Y, linestyle=linestyle, color='k' , label=label)
 
 
-def plotter(qoi, data, refineTypes, objFunc, model):
+def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfontsize, titlefontsize, ylabelsize, xlabelsize):
+    
     gridSizes = data['gridSizes']
     refineType = data['refineType']
-    if len(refineTypes) == 2 and 'regular' in refineType:
+    gridType = data['gridType']
+    [color, marker, label] = getColorAndMarker(gridType, refineType)
+    if 'regular' in refineType:
         linestyle = '--'
     else:
         linestyle = '-'
     if qoi == 'l2':
         interpolErrors = data['interpolErrors']
         
-        # hack for SGA Paper: divide by max(MC Points)-min(MC Points) to get relative error.
-        # This is necessary because the borehole function values are somewhere aroung 10^-6 
-        # and thus the error looks smaller than it is
-        # Update: Now nrmse does exactly this!
-        # borehole:
-        # interpolErrors /= (3.2478e-06 - 7.05594e-07)
-        # exp:
-        # interpolErrors /= (9.369084388257171 - 6.670584029966912)
-        # Friedman:
-        # interpolErrors /= (29.065382369280560 - 0.627873930461282)
-        # monomials have max=1, min = 0.
-        
-        for i, gridType in enumerate(data['gridTypes']):
-            if gridType != 'mc':
-                [color, marker, label] = getColorAndMarker(gridType, refineType)
-                plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-                plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
-                plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-                # plt.ylabel('l2 error', fontsize=ylabelsize)
+        if refineType != 'mc':
+            plt.plot(gridSizes, interpolErrors, label=label, color=color, marker=marker, linestyle=linestyle)
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+            # plt.ylabel('l2 error', fontsize=ylabelsize)
     
     elif qoi == 'nrmseWithOrder':
         interpolErrors = data['nrmsErrors']
-        for i, gridType in enumerate(data['gridTypes']):
-            if gridType != 'mc':
-                [color, marker, label] = getColorAndMarker(gridType, refineType)
-                plt.plot(gridSizes[i, :], interpolErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-                plt.gca().set_yscale('log') 
-                plt.gca().set_xscale('log')
-                # plt.ylabel('l2 error', fontsize=ylabelsize)
-                if data['degree'] == 1:
-                    orders = [2]
-                elif data['degree'] == 3:
-                    orders = [2, 4]
-                elif data['degree'] == 5:
-                    orders = [2, 4, 6]
-                for order in orders:
-                    plotConvergenceOrder(order, [1, 0], 2.5)
+        if refineType != 'mc':
+            plt.plot(gridSizes, interpolErrors, label=label, color=color, marker=marker, linestyle=linestyle)
+            plt.gca().set_yscale('log') 
+            plt.gca().set_xscale('log')
+            # plt.ylabel('l2 error', fontsize=ylabelsize)
+            if data['degree'] == 1:
+                orders = [2]
+            elif data['degree'] == 3:
+                orders = [2, 4]
+            elif data['degree'] == 5:
+                orders = [2, 4, 6]
+            for order in orders:
+                plotConvergenceOrder(order, [1, 0], 2.5)
         
         # if degree == 1:
         plt.ylabel("NRMSE", fontsize=ylabelsize)
@@ -133,15 +222,13 @@ def plotter(qoi, data, refineTypes, objFunc, model):
                 
     elif qoi == 'nrmse':
         nrmsErrors = data['nrmsErrors']
-        for i, gridType in enumerate(data['gridTypes']):
-            if gridType != 'mc':
-                [color, marker, label] = getColorAndMarker(gridType, refineType)
-                plt.plot(gridSizes[i, :], nrmsErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
-                plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
-                plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-    #         if degree == 1:
-    #             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
-                plt.ylabel("NRMSE", fontsize=ylabelsize)
+        if refineType != 'mc':
+            plt.plot(gridSizes, nrmsErrors, label=label, color=color, marker=marker, linestyle=linestyle)
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)  # in contrast to 'log', 'symlog' allows
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+#         if degree == 1:
+#             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
+            plt.ylabel("NRMSE", fontsize=ylabelsize)
             
     elif qoi == 'meanErr':
         # meanErrors = data['meanErrors']
@@ -151,12 +238,24 @@ def plotter(qoi, data, refineTypes, objFunc, model):
         for i in range(len(means)):
             for j in range(len(means[0])):
                 meanErrors[i, j] = abs((means[i, j] - realMean) / realMean)
-        for i, gridType in enumerate(data['gridTypes']):
-            [color, marker, label] = getColorAndMarker(gridType, refineType)
-            plt.loglog(gridSizes[i, :], meanErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+        plt.loglog(gridSizes, meanErrors, label=label, color=color, marker=marker, linestyle=linestyle)
 #         if degree == 1:    
 #             plt.ylabel(r'$\ (vert E(u) - E(\tilde{u})) / E(u) \vert$', fontsize=ylabelsize)
-            plt.ylabel("mean error", fontsize=ylabelsize)
+        plt.ylabel("relative mean error", fontsize=ylabelsize)
+        
+        ######## TEMPORARY ############
+#         DakotaDetteMeans = [3.4114777576006873e+01, 3.4113812566041695e+01, 3.4113756707305889e+01]
+#         DakotaDetteMeanErrors = [abs((mean - realMean) / realMean) for mean in DakotaDetteMeans]
+#         plt.loglog([161, 1121, 6273], DakotaDetteMeanErrors, marker='*', label='DAKOTA dette')
+
+#         DakotaFriedmanMeans = [ 1.4414436872268618e+01, 1.4413295240995176e+01, 1.4413297342434106e+01 ]
+#         DakotaFriedmanMeanErrors = [abs((mean - realMean) / realMean) for mean in DakotaFriedmanMeans]
+#         plt.loglog([71, 351, 1391], DakotaFriedmanMeanErrors, marker='*', label='DAKOTA Friedman')
+
+#         DakotaIshigamiMeans = [ 3.4978568899629017e+00 , 3.4999999999995932e+00, 3.4999999999995905e+00]
+#         DakotaIshigamiMeanErrors = [abs((mean - realMean) / realMean) for mean in DakotaIshigamiMeans]
+#         plt.loglog([31, 111, 303], DakotaIshigamiMeanErrors,marker='*', label='DAKOTA Ishigami')           
+        ###############################
         
         if model == "boreholeUQ" and refineType == "surplus":
             dakotaPCEgridSizes = [18, 177, 1260 , 7169]  # , 34290]
@@ -197,12 +296,25 @@ def plotter(qoi, data, refineTypes, objFunc, model):
                 for j in range(len(vars[0])):
                     varErrors[i, j] = abs((vars[i, j] - realVar) / realVar)
                     
-        for i, gridType in enumerate(data['gridTypes']):
-            [color, marker, label] = getColorAndMarker(gridType, refineType)
-            plt.loglog(gridSizes[i, :], varErrors[i, :], label=label, color=color, marker=marker, linestyle=linestyle)
+        plt.loglog(gridSizes, varErrors, label=label, color=color, marker=marker, linestyle=linestyle)
 #         if degree == 1:
 #             plt.ylabel(r'$\vert (V(u) - V(\tilde{u})) / V(u) \vert$', fontsize=ylabelsize)
-            plt.ylabel("variance error", fontsize=ylabelsize)
+        plt.ylabel("relative variance error", fontsize=ylabelsize)
+            
+        ######## TEMPORARY ############
+#         DakotaDetteVars = [8.5039366526098217e+00 ** 2, 8.4923736984643909e+00 ** 2, 8.4917776350692957e+00 ** 2 ]
+#         DakotaDetteVarErrors = [abs((var - realVar) / realVar) for var in DakotaDetteVars]
+#         plt.loglog([161, 1121, 6273], DakotaDetteVarErrors, marker='*', label='DAKOTA dette')
+
+#         DakotaFriedmanVars = [5.0492199656125969e+00 ** 2, 4.8812399191269042e+00 ** 2, 4.8812351939697516e+00 ** 2 ]
+#         DakotaFriedmanVarErrors = [abs((var - realVar) / realVar) for var in DakotaFriedmanVars]
+#         plt.loglog([71, 351, 1391], DakotaFriedmanVarErrors, marker='*', label='DAKOTA friedman')
+
+#         DakotaIshigamiVars = [3.3451294269149523e+00 ** 2, 3.5857974927853418e+00 ** 2, 3.7206792853677029e+00 ** 2]
+#         DakotaIshigamiVarErrors = [abs((var - realVar) / realVar) for var in DakotaIshigamiVars]
+#         plt.loglog([31, 111, 303], DakotaIshigamiVarErrors,marker='*', label='DAKOTA ishigami')
+
+        ###############################
         
     else:
         print("qoi '{}' not supported".format(qoi))
@@ -225,10 +337,8 @@ def plotter(qoi, data, refineTypes, objFunc, model):
     # plt.ylim([ 10 ** (-9), 3])
     
     plt.xlabel('number of grid points', fontsize=xlabelsize)
-    # number of ticks
     plt.locator_params(axis='x', numticks=5)
     plt.locator_params(axis='y', numticks=5)
-    # ticklabel size
     for tick in plt.gca().xaxis.get_major_ticks():
         tick.label.set_fontsize(xticklabelsize)
     for tick in plt.gca().yaxis.get_major_ticks():
@@ -239,23 +349,21 @@ def plotter(qoi, data, refineTypes, objFunc, model):
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--qoi', default='meanErr', type=str, help='what to plot')
-    parser.add_argument('--model', default='ishigami', type=str, help='define which test case should be executed')
-    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')
+    parser.add_argument('--qoi', default='nrmseWithOrder', type=str, help='what to plot')
+    parser.add_argument('--model', default='plainE', type=str, help='define which test case should be executed')
+    parser.add_argument('--dim', default=1, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
-    parser.add_argument('--refineType', default='surplus', type=str, help='surplus (adaptive) or regular')
+    parser.add_argument('--gridType', default='nak', type=str, help='gridType(s) to use')
+    parser.add_argument('--degree', default=135, type=int, help='spline degree')
+    parser.add_argument('--refineType', default='regular', type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=1000, type=int, help='maximum number of points used')
-    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
+    parser.add_argument('--maxPoints', default=300, type=int, help='maximum number of points used')
+    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
+    parser.add_argument('--style', default='presentation', type=str, help='style of the plot, paper or presentation')
     args = parser.parse_args()
     
-    if args.degree == 135:
-        degrees = [1, 3, 5]
-    elif args.degree == 35:
-        degrees = [3, 5]
-    else:
-        degrees = [args.degree]
+    gridTypes, degrees, refineTypes = decodeArgs(args.gridType, args.degree, args.refineType)
+    xticklabelsize, yticklabelsize, legendfontsize, titlefontsize, ylabelsize, xlabelsize = getStyle(args.style)
       
     if args.degree == 135:
         fig = plt.figure(figsize=(20, 4.5))
@@ -264,98 +372,19 @@ if __name__ == '__main__':
     
     pyFunc = functions.getFunction(args.model, args.dim, args.scalarModelParameter)
     objFunc = objFuncSGpp(pyFunc)
-    loadDirectory = os.path.join('/home/rehmemk/git/SGpp/MR_Python/Extended/data/', args.model, objFunc.getName())
-    if args.refineType == 'regularAndSurplus':
-        refineTypes = ['regularByPoints', 'surplus']
-    elif args.refineType == 'regularLevelAndSurplus':
-        refineTypes = ['regular', 'surplus']
-    else:
-        refineTypes = [args.refineType] 
     
     l = 1
     for degree in degrees:
         fig.add_subplot(1, len(degrees) , l)
         l += 1
         for refineType in refineTypes:
-            if refineType == 'regular':
-                saveName = objFunc.getName() + '_' + refineType + str(args.maxLevel)
-            else:
-                saveName = objFunc.getName() + refineType + str(args.maxPoints)
-            # plt.gca().set_title('n={}'.format(degree), fontsize=titlefontsize)
-            datapath = os.path.join(loadDirectory, saveName + '_data{}.pkl'.format(degree))    
-            with open(datapath, 'rb') as fp:
-                data = pickle.load(fp, encoding='latin1')  # encoding necessary because the data was stored with cPickle from python2.7
-                orders = [degree + 1]
-                plotter(args.qoi, data, refineTypes, objFunc, args.model)
+            for gridType in gridTypes:
+                data = loadData(gridType, args.model, refineType, args.maxPoints, args.maxLevel, degree, objFunc)
+                plotter(args.qoi, data, objFunc, args.model,
+                        xticklabelsize, yticklabelsize, legendfontsize, titlefontsize, ylabelsize, xlabelsize)
     
     if args.saveFig == 1:
-        # save in original folder
-        saveDirectory = loadDirectory
-        # save in paper figures folder 
-        # saveDirectory = '/home/rehmemk/git/sga18proc/figures/'
-        # plt.tight_layout() 
-        if args.refineType == 'regular':
-            saveName = objFunc.getName() + '_' + args.refineType + str(args.maxLevel) + '_' + args.qoi
-        else:
-            saveName = objFunc.getName() + args.refineType + str(args.maxPoints) + '_' + args.qoi
-        figname = os.path.join(saveDirectory, saveName)
-        plt.savefig(figname, dpi=300, bbox_inches='tight')
-        print('saved fig to {}'.format(figname))
-        # rrearrange legend order and save legends in individual files.
-        legendstyle = 'external'
-        if legendstyle == 'external':
-            ax = plt.gca()
-            handles, labels = ax.get_legend_handles_labels()
-            ncol = 4
-            
-            originalHandles = handles[:]
-            originalLabels = labels[:]
-            boundaryInLegend = 1
-#             if boundaryInLegend == 1:
-#                 handles[1] = originalHandles[4]; labels[1] = originalLabels[4];
-#                 handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
-#                 handles[3] = originalHandles[5]; labels[3] = originalLabels[5];
-#                 handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
-#                 handles[5] = originalHandles[6]; labels[5] = originalLabels[6];
-#                 handles[6] = originalHandles[3]; labels[6] = originalLabels[3];
-#                 ncol = 4
-#             else:
-#                 handles[1] = originalHandles[3]; labels[1] = originalLabels[3];
-#                 handles[2] = originalHandles[1]; labels[2] = originalLabels[1];
-#                 handles[3] = originalHandles[4]; labels[3] = originalLabels[4];
-#                 handles[4] = originalHandles[2]; labels[4] = originalLabels[2];
-#                 ncol = 3
-
-# for plainE
-#             handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
-#             handles[3] = originalHandles[2]; labels[3] = originalLabels[2];
-#             handles[4] = originalHandles[5]; labels[4] = originalLabels[5];
-#             handles[5] = originalHandles[3]; labels[5] = originalLabels[3];
-
-# for boreholeUQ for milestone report
-#             handles[1] = originalHandles[5]; labels[1] = originalLabels[5];
-#             handles[2] = originalHandles[4]; labels[2] = originalLabels[4];
-#             handles[3] = originalHandles[1]; labels[3] = originalLabels[1];
-#             handles[4] = originalHandles[6]; labels[4] = originalLabels[6];
-#             handles[5] = originalHandles[2]; labels[5] = originalLabels[2];
-#             handles[6] = originalHandles[7]; labels[6] = originalLabels[7];
-#             handles[7] = originalHandles[3]; labels[7] = originalLabels[3];
-                 
-            plt.figure()
-            axe = plt.gca()
-            axe.legend(handles, labels , loc='center', fontsize=legendfontsize, ncol=ncol)
-            axe.xaxis.set_visible(False)
-            axe.yaxis.set_visible(False)
-            for v in axe.spines.values():
-                v.set_visible(False)
-            legendname = os.path.join(figname + '_legend')
-            # cut off whitespace
-            plt.subplots_adjust(left=0.0, right=1.0, top=0.6, bottom=0.4)
-            plt.savefig(legendname, dpi=300, bbox_inches='tight', pad_inches=0.0)
-        elif legendstyle == 'none':
-            pass
-        else:    
-            plt.legend(ncol=4)
+       saveFigure(args.model, objFunc, args.refineType, args.qoi, args.maxLevel, args.maxPoints, args.style)
     else:
         plt.legend()
         plt.show()

@@ -100,6 +100,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'cantileverBeamDisplacement':
         return cantileverBeamDisplacement()
     
+    elif model == 'rosenbrock':
+        return rosenbrock(dim)    
+    
     # RAVEN Diss
     # https://digitalrepository.unm.edu/cgi/viewcontent.cgi?article=1053&context=ne_etds
     elif model == 'tensorMonomialU':
@@ -741,9 +744,15 @@ class friedman():
     def getDistributions(self):
         return self.pdfs
     
+    # by Wolfram Alpha
     def getMean(self):
-        return 14.413297342419857063
-    
+        if self.dim == 5:
+            return 14.413297342419857063
+        else:
+            print("Mean not calculated")
+            return 0
+
+    # Wolfram Alpha cannot calculate meanSquare. Do this somewhere else
     def getVar(self):
         print("Var not yet calculated. DO!")
         return -1
@@ -786,12 +795,12 @@ class dette():
         return self.pdfs
     
     def getMean(self):
-        print("Var not yet calculated. DO!")
-        return 0
+        # Dakota PCE sparse grid level 5, 29569 points 
+        return 3.4113754258975398e+01
     
     def getVar(self):
-        print("Var not yet calculated. DO!")
-        return -1
+        # Dakota PCE sparse grid level 5, 29569 points
+        return 8.4917384204553983e+00 ** 2
 
 
 # https://www.sfu.ca/~ssurjano/detpep108d.html
@@ -1280,6 +1289,46 @@ class cantileverBeamDisplacement():
        return 777
     
     def getVar(self):
+        return -1
+
+
+class rosenbrock():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector(self.dim, pysgpp.DistributionUniform(-5, 10))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+        
+    def getName(self):
+       return "rosenbrock_{}D".format(self.dim)
+    
+    def getDim(self):
+        return self.dim
+
+    # has two outputs
+    def eval(self, v):
+        sum = 0
+        for d in range(self.dim - 1):
+            sum += 100 * (v[d + 1] - v[d] ** 2) ** 2 + (v[d] - 1) ** 2
+        return sum
+    
+    def getDistributions(self):
+        return self.pdfs
+    
+    def getMean(self):
+        print("mean not yet calcualted")
+        return 0
+    
+    def getVar(self):
+        print("var not yet calculated")
         return -1
 
 
