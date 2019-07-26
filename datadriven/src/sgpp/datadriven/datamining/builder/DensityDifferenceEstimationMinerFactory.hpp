@@ -63,7 +63,9 @@ class DensityDifferenceEstimationMinerFactory : public MinerFactory {
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override {
+    throw base::application_exception("HPO is not enabled for this model");
+  }
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

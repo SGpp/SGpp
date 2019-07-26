@@ -21,6 +21,8 @@
 // #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting_TwoDatasets.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
 #include <string>
 
@@ -81,11 +83,12 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
  new DensityEstimationFitterFactory(parser), parser);
  }
  }
+
+ FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
+ const DataMiningConfigParser &parser) const {
+ return new DensityEstimationFitterFactory(parser);
+ }
  */
-FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
-    const DataMiningConfigParser &parser) const {
-  return new DensityEstimationFitterFactory(parser);
-}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

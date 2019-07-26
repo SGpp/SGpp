@@ -19,7 +19,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <string>
 #include <vector>
@@ -127,7 +127,7 @@ base::OperationMatrix* ModelFittingDensityDifferenceEstimationCG::computeRegular
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
-        "ModelFittingDensityEstimationCG : unsupported regularization type");
+        "ModelFittingDensityDifferenceEstimationCG : unsupported regularization type");
   }
   return C;
 }

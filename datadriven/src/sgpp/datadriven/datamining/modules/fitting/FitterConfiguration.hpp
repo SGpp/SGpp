@@ -25,7 +25,12 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares, DensityEstimation };
+enum class FitterType {
+  RegressionLeastSquares,
+  DensityEstimation,
+  DensityRatioEstimation,
+  DensityDifferenceEstimation
+};
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,

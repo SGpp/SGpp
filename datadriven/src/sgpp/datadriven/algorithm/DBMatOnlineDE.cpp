@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <list>
 #include <vector>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
@@ -36,7 +37,6 @@ using sgpp::base::algorithm_exception;
 DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : DBMatOnline { offline },
       beta(beta),
-      totalPoints(0),
       testMat(nullptr),
       testMatRes(nullptr),
       normFactor(1.),
@@ -202,7 +202,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
         bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
 
         // Update weighting based on processed data points
-        b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
+        b.set(i, bSave.get(i) / bTotalPoints.get(i));
       }
     } else {
       // (1. / M) * Bt * 1
@@ -217,8 +217,8 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
 void DBMatOnlineDE::computeDensityDifferenceFunction(
     DataVector& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool save_b = false,
-    bool do_cv = false, std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0) {
+    DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv,
+    std::list<size_t>* deletedPoints, size_t newPoints) {
   // ---
   std::cout << "Computing density difference function..." << std::endl;
   // Normally, both datasets should still have data to process, otherwise we can't compute anything
@@ -324,18 +324,15 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
         bTotalPointsExtra.set(i, static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i));
 
         // Update weighting based on processed data points
-        b.set(
-            i,
-            bSave.get(i) * (1. / bTotalPoints.get(i))
-                - bSaveExtra.get(i) * (1. / bTotalPointsExtra.get(i)));
+        b.set(i, bSave.get(i) / bTotalPoints.get(i) - bSaveExtra.get(i) / bTotalPointsExtra.get(i));
       }
     } else {
       // (1. / M_p) * Bt_p * 1 - (1. / M_q) * Bt_q * 1
       for (size_t i = 0; i < b.getSize(); i++) {
         b.set(
             i,
-            bp.get(i) * (1. / static_cast<double>(numberOfPointsP))
-                - bq.get(i) * (1. / static_cast<double>(numberOfPointsQ)));
+            bp.get(i) / static_cast<double>(numberOfPointsP)
+                - bq.get(i) / static_cast<double>(numberOfPointsQ));
       }
     }
 
