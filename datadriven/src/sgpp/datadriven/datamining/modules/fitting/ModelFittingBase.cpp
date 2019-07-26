@@ -55,34 +55,28 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
                                   const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;
 
-  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
-  std::vector<std::vector<int64_t>> dim = geometryConfig.dim;
-
   // a regular sparse grid is created, if no geometryConfig is defined,
-  if (stencilType == sgpp::datadriven::StencilType::None) {
+  if (geometryConfig.stencils.empty()) {
     // interaction with size 0
     std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
     return gridFactory.createGrid(gridConfig, interactions);
   }
 
-  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(stencilType, dim));
+  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(geometryConfig));
 }
 
 std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
     const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;
 
-  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
-  std::vector<std::vector<int64_t>> dim = geometryConfig.dim;
-
   // no interactions get returned, if no geometryConfig is defined
-  if (stencilType == sgpp::datadriven::StencilType::None) {
+  if (geometryConfig.stencils.empty()) {
     // interaction with size 0
     std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
     return interactions;
   }
 
-  return gridFactory.getInteractions(stencilType, dim);
+  return gridFactory.getInteractions(geometryConfig);
 }
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {

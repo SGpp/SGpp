@@ -6,22 +6,31 @@
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <vector>
 
 using sgpp::datadriven::GridFactory;
 
 BOOST_AUTO_TEST_SUITE(GridFactoryTest)
 
-BOOST_AUTO_TEST_CASE(HierarchicalParentStencil) {
+BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
   GridFactory grid;
-  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::GeometryConfiguration geoConf;
+  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::StencilConfiguration s;
+  s.colorIndex = -1;
+  s.applyOnLayers = {1,2,3};
+  s.stencilType = sgpp::datadriven::StencilType::NextHierarchicalParent;
+  geoConf.stencils = {s};
+
   std::vector<std::vector<size_t>> expected = {
       {0, 9},   {1, 9},   {1, 10}, {2, 10}, {3, 9},  {3, 11}, {4, 9},  {4, 10}, {4, 11},
       {4, 12},  {5, 10},  {5, 12}, {6, 11}, {7, 11}, {7, 12}, {8, 12}, {9, 13}, {10, 13},
       {11, 13}, {12, 13}, {0},     {1},     {2},     {3},     {4},     {5},     {6},
       {7},      {8},      {9},     {10},    {11},    {12},    {13},    {}};
 
-  auto result = grid.getInteractions(sgpp::datadriven::StencilType::HierarchicalParent, dimensions);
+  
+  auto result = grid.getInteractions(geoConf);
 
   for (auto interaction : expected)
     BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
@@ -30,9 +39,17 @@ BOOST_AUTO_TEST_CASE(HierarchicalParentStencil) {
     BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
 }
 
-BOOST_AUTO_TEST_CASE(RecursiveHierarchicalParentStencil) {
+BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
   GridFactory grid;
-  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
+
+  sgpp::datadriven::GeometryConfiguration geoConf;
+  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::StencilConfiguration s;
+  s.colorIndex = -1;
+  s.applyOnLayers = {1};
+  s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
+  geoConf.stencils = {s};
+
   std::vector<std::vector<size_t>> expected = {
       {0, 9},  {0, 13}, {1, 9},  {1, 13}, {1, 10}, {1, 13}, {2, 10}, {2, 13}, {3, 9},
       {3, 11}, {3, 13}, {4, 9},  {4, 10}, {4, 11}, {4, 12}, {4, 13}, {5, 10}, {5, 12},
@@ -41,7 +58,7 @@ BOOST_AUTO_TEST_CASE(RecursiveHierarchicalParentStencil) {
       {10},    {11},    {12},    {13},    {}};
 
   auto result =
-      grid.getInteractions(sgpp::datadriven::StencilType::RecursiveHierarchicalParent, dimensions);
+      grid.getInteractions(geoConf);
 
   for (auto interaction : expected)
     BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
@@ -50,9 +67,17 @@ BOOST_AUTO_TEST_CASE(RecursiveHierarchicalParentStencil) {
     BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
 }
 
-BOOST_AUTO_TEST_CASE(FullyRecursiveHierarchicalParentStencil) {
+BOOST_AUTO_TEST_CASE(AllRecursiveHierarchicalParentStencil) {
   GridFactory grid;
-  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
+  
+  sgpp::datadriven::GeometryConfiguration geoConf;
+  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::StencilConfiguration s;
+  s.colorIndex = -1;
+  s.applyOnLayers = {1,2,3};
+  s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
+  geoConf.stencils = {s};
+
   std::vector<std::vector<size_t>> expected = {
       {0, 9},   {0, 13},  {1, 9},   {1, 13}, {1, 10}, {1, 13}, {2, 10}, {2, 13}, {3, 9},
       {3, 11},  {3, 13},  {4, 9},   {4, 10}, {4, 11}, {4, 12}, {4, 13}, {5, 10}, {5, 12},
@@ -60,8 +85,7 @@ BOOST_AUTO_TEST_CASE(FullyRecursiveHierarchicalParentStencil) {
       {10, 13}, {11, 13}, {12, 13}, {0},     {1},     {2},     {3},     {4},     {5},
       {6},      {7},      {8},      {9},     {10},    {11},    {12},    {13},    {}};
 
-  auto result = grid.getInteractions(
-      sgpp::datadriven::StencilType::FullyRecursiveHierarchicalParent, dimensions);
+  auto result = grid.getInteractions(geoConf);
 
   for (auto interaction : expected)
     BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
@@ -72,14 +96,20 @@ BOOST_AUTO_TEST_CASE(FullyRecursiveHierarchicalParentStencil) {
 
 BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   GridFactory grid;
+  sgpp::datadriven::GeometryConfiguration geoConf;
+  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::StencilConfiguration s;
+  s.colorIndex = -1;
+  s.applyOnLayers = {1,2,3};
+  s.stencilType = sgpp::datadriven::StencilType::DirectNeighbour;
+  geoConf.stencils = {s};
 
-  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
   std::vector<std::vector<size_t>> expected = {
       {0, 1}, {1, 2},  {3, 4},   {4, 5},  {6, 7},   {7, 8}, {0, 3}, {3, 6}, {1, 4}, {4, 7}, {2, 5},
       {5, 8}, {9, 10}, {11, 12}, {9, 11}, {10, 12}, {0},    {1},    {2},    {3},    {4},    {5},
       {6},    {7},     {8},      {9},     {10},     {11},   {12},   {13},   {}};
 
-  auto result = grid.getInteractions(sgpp::datadriven::StencilType::DirectNeighbour, dimensions);
+  auto result = grid.getInteractions(geoConf);
 
   for (auto interaction : expected)
     BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
@@ -87,30 +117,4 @@ BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   for (auto interaction : result)
     BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
 }
-
-BOOST_AUTO_TEST_CASE(DiagonalNeighbourStencil) {
-  GridFactory grid;
-
-  std::vector<std::vector<int64_t>> dimensions = {{3, 3}, {2, 2}, {1, 1}};
-  std::vector<std::vector<size_t>> expected = {
-      {0, 4},   {1, 5}, {3, 2}, {3, 7}, {4, 2}, {4, 8}, {6, 4}, {7, 5}, {9, 12},
-      {11, 10}, {0},    {1},    {2},    {3},    {4},    {5},    {6},    {7},
-      {8},      {9},    {10},   {11},   {12},   {13},   {}};
-
-  auto result = grid.getInteractions(sgpp::datadriven::StencilType::DiagonalNeighbour, dimensions);
-
-
-  for (auto interaction : expected)
-    BOOST_CHECK(std::find(result.begin(), result.end(), interaction) != result.end());
-  for(auto interaction : result){
-    for(auto d : interaction)
-      std::cout << d << "\t";
-    std::cout << "\n";
-
-  }
-
-  for (auto interaction : result)
-    BOOST_CHECK(std::find(expected.begin(), expected.end(), interaction) != expected.end());
-}
-
 BOOST_AUTO_TEST_SUITE_END()

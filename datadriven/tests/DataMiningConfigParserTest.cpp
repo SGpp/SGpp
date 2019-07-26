@@ -245,7 +245,6 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   sgpp::datadriven::GeometryConfiguration defaults;
   defaults.dim = std::vector<std::vector<int64_t>>();
-  defaults.stencilType = sgpp::datadriven::StencilType::None;
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
   std::vector<std::vector<int64_t>> dim = std::vector<std::vector<int64_t>>();
@@ -264,7 +263,7 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   hasConfig = parser.getGeometryConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
   
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());

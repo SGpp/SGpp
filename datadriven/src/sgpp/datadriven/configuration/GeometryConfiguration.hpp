@@ -21,12 +21,25 @@ namespace datadriven {
 
 enum class StencilType {
   DirectNeighbour,
-  DiagonalNeighbour,
-  HierarchicalParent,
-  RecursiveHierarchicalParent,
-  FullyRecursiveHierarchicalParent,
-  HierarchicalDirectNeighbour,
+  AllHierarchicalParent,
+  NextHierarchicalParent,
   None
+};
+
+struct StencilConfiguration {
+  /*
+   * Stenciltype to be used
+   */
+  StencilType stencilType;
+  /*
+   * Determines on which layers the stencils should be applied
+   */
+  std::vector<size_t> applyOnLayers;
+  /*
+   * Index of the color channel for this specific stencil
+   * -1 if no color channels available
+   */
+  int64_t colorIndex;
 };
 
 /*
@@ -36,7 +49,7 @@ struct GeometryConfiguration {
   /*
    * Stencil for geometric relation
    */
-  StencilType stencilType;
+  std::vector<StencilConfiguration> stencils;
 
   /*
    * resolution of image/video e.g 28x28

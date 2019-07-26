@@ -929,18 +929,36 @@ bool DataMiningConfigParser::getGeometryConfig(
     auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
     config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+    
+    //check if global color available
+    int64_t colorIndexDefault = parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
+    std::vector<size_t> layerDefault = std::vector<size_t>();
+    for (size_t i = 0; i < config.dim.size(); i++)
+    {
+      layerDefault.push_back(i);
+    }
+    
 
-    // parse  density estimation type
-    if (geometryConfig->contains("stencil")) {
-      config.stencilType = GeometryConfigurationParser::parse(
-          (*geometryConfig)["stencil"].get());
-    } else {
-      std::cout << "# Did not find geometryConfig[stencil]."
-                   " Setting default value ";
-      config.stencilType = defaults.stencilType;
+    config.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
+    
+
+    if((*geometryConfig).contains("stencils"))
+    {
+      size_t nStencils = (*geometryConfig)["stencils"].size();
+      for (size_t i = 0; i < nStencils; ++i) {
+        StencilConfiguration stencil;
+        auto stencilConfig = static_cast<DictNode *>(&(*geometryConfig)["stencils"][i]);
+        stencil.applyOnLayers = parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
+        stencil.colorIndex = parseInt(*geometryConfig, "colorIndex", colorIndexDefault, "stencils");
+        stencil.stencilType = GeometryConfigurationParser::parseStencil((*geometryConfig)["stencils"][i]["stencil"].get());
+        config.stencils.push_back(stencil);
+      }
+    }
+    else
+    {
+      config.stencils = defaults.stencils;
     }
   }
-
 
   return hasGeometryConfig;
 }

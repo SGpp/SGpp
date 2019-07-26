@@ -135,7 +135,8 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
   }
   for (size_t j = 0; j < samples.getNrows(); j++)
   {
-    double maxDensity = 0, prediction = 0;
+    double maxDensity = std::numeric_limits<double>::lowest();
+    double prediction = 0.0;
     for (auto& p : classIdx)
     {
       size_t idx = p.second;
@@ -321,9 +322,9 @@ bool ModelFittingClassification::refine() {
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by the functor
           GeometryConfiguration geoConf = config->getGeometryConfig();
-          if(geoConf.stencilType != StencilType::None){
+          if(!geoConf.stencils.empty()){
             GridFactory gridFactory;
-            grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf.stencilType, geoConf.dim));
+            grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf));
           }
           else{
             grids[idx]->getGenerator().refine(*func);

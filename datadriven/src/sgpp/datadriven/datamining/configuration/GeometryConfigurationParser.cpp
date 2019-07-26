@@ -21,22 +21,16 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-StencilType GeometryConfigurationParser::parse(const std::string &input) {
+StencilType GeometryConfigurationParser::parseStencil(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
   if (inputLower.compare("directneighbour") == 0) {
     return sgpp::datadriven::StencilType::DirectNeighbour;
-  } else if(inputLower.compare("diagonalneighbour") == 0){
-    return sgpp::datadriven::StencilType::DiagonalNeighbour;
-  } else if(inputLower.compare("hierarchicalparent") == 0){
-    return sgpp::datadriven::StencilType::HierarchicalParent;
-  } else if(inputLower.compare("recursivehierarchicalparent") == 0){
-    return sgpp::datadriven::StencilType::RecursiveHierarchicalParent;
-  } else if(inputLower.compare("fullyrecursivehierarchicalparent") == 0){
-    return sgpp::datadriven::StencilType::FullyRecursiveHierarchicalParent;
-  } else if(inputLower.compare("hierarchicaldirectneighbour") == 0){
-    return sgpp::datadriven::StencilType::HierarchicalDirectNeighbour;
+  } else if(inputLower.compare("allhierarchicalparent") == 0){
+    return sgpp::datadriven::StencilType::AllHierarchicalParent;
+  } else if(inputLower.compare("nexthierarchicalparent") == 0){
+    return sgpp::datadriven::StencilType::NextHierarchicalParent;
   } else if(inputLower.compare("none") == 0){
     return sgpp::datadriven::StencilType::None;
   } else {

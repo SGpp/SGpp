@@ -71,10 +71,10 @@ bool ModelFittingLeastSquares::refine() {
                                                  config->getRefinementConfig().threshold_);
       // refine grid
       auto noPoints = grid->getSize();
-      if(config->getGeometryConfig().stencilType != StencilType::None){
+      GeometryConfiguration geoConf = config->getGeometryConfig();
+      if(!geoConf.stencils.empty()){
         GridFactory gridFactory;
-        GeometryConfiguration geoConf = config->getGeometryConfig();
-        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf.stencilType, geoConf.dim));
+        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf));
       }
       else{
         grid->getGenerator().refine(refinementFunctor);
