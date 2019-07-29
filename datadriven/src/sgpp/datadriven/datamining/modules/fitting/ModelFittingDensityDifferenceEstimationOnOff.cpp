@@ -110,7 +110,10 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().beta);
-  online->normalize(alpha, *grid);
+
+  if (densityEstimationConfig.normalize_) {
+    online->normalize(alpha, *grid);
+  }
 }
 
 bool ModelFittingDensityDifferenceEstimationOnOff::refine(size_t newNoPoints,
@@ -156,7 +159,9 @@ void ModelFittingDensityDifferenceEstimationOnOff::update(DataMatrix& newDataset
     online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
                                              this->config->getDensityEstimationConfig(), true,
                                              this->config->getCrossvalidationConfig().enable_);
-    online->normalize(alpha, *grid);
+    if (this->config->getDensityEstimationConfig().normalize_) {
+      online->normalize(alpha, *grid);
+    }
   }
 }
 

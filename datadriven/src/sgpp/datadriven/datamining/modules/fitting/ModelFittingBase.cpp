@@ -18,6 +18,9 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
+#include <string>
+#include <vector>
+
 namespace sgpp {
 namespace datadriven {
 
@@ -27,7 +30,7 @@ using base::Grid;
 using base::GridPoint;
 using base::factory_exception;
 using base::GridGenerator;
-using base::RegularGridConfiguration;
+using base::GeneralGridConfiguration;
 using base::application_exception;
 using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverType;
@@ -47,25 +50,46 @@ const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const {
   return *config;
 }
 
-Grid *ModelFittingBase::buildGrid(const RegularGridConfiguration &gridConfig) const {
-  // load grid
-  Grid *tmpGrid;
-  if (gridConfig.type_ == GridType::Linear) {
-    tmpGrid = Grid::createLinearGrid(gridConfig.dim_);
-  } else if (gridConfig.type_ == GridType::LinearL0Boundary) {
-    tmpGrid = Grid::createLinearBoundaryGrid(
-        gridConfig.dim_, static_cast<GridPoint::level_type>(gridConfig.boundaryLevel_));
-  } else if (gridConfig.type_ == GridType::LinearBoundary) {
-    tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
-  } else if (gridConfig.type_ == GridType::ModLinear) {
-    tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
-  } else {
-    throw factory_exception("ModelFittingBase::createRegularGrid: grid type is not supported");
+Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig) const {
+  GridFactory gridFactory;
+
+  // pass interactions with size 0
+  std::vector < std::vector < size_t >> interactions = std::vector<std::vector<size_t>>();
+  return gridFactory.createGrid(gridConfig, interactions);
+}
+
+Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig,
+                                  const GeometryConfiguration &geometryConfig) const {
+  GridFactory gridFactory;
+
+  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
+  std::vector < int64_t > dim = geometryConfig.dim;
+
+  // a regular sparse grid is created, if no geometryConfig is defined,
+  if (stencilType == sgpp::datadriven::StencilType::None) {
+    // interaction with size 0
+    std::vector < std::vector < size_t >> interactions = std::vector<std::vector<size_t>>();
+    return gridFactory.createGrid(gridConfig, interactions);
   }
 
-  GridGenerator &gridGen = tmpGrid->getGenerator();
-  gridGen.regular(gridConfig.level_);
-  return tmpGrid;
+  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(stencilType, dim));
+}
+
+std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
+    const GeometryConfiguration &geometryConfig) const {
+  GridFactory gridFactory;
+
+  sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
+  std::vector < int64_t > dim = geometryConfig.dim;
+
+  // no interactions get returned, if no geometryConfig is defined
+  if (stencilType == sgpp::datadriven::StencilType::None) {
+    // interaction with size 0
+    std::vector < std::vector < size_t >> interactions = std::vector<std::vector<size_t>>();
+    return interactions;
+  }
+
+  return gridFactory.getInteractions(stencilType, dim);
 }
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {

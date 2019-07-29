@@ -25,13 +25,18 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param beta The initial weighting factor
    */
   explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
-      double beta = 0.);
+                                   double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
    * yields all the information about the refined points
    */
   sgpp::base::DataMatrix& getB() { return this->b_adapt_matrix_; }
+
+  /**
+   * @returns distributed version of matrix B
+   */
+  DataMatrixDistributed& getBDistributed() { return this->b_adapt_matrix_distributed_; }
 
   /**
    * Adds new DataVector to list of refined points
@@ -60,7 +65,6 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   void sherman_morrison_adapt(size_t newPoints, bool refine,
                               std::vector<size_t> coarsen_indices = {});
 
-
   /**
    * @param densityEstimationConfig configuration for the density estimation
    * @param grid the underlying grid
@@ -70,13 +74,21 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @return list of grid points, that cannot be coarsened
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
-      DensityEstimationConfiguration& densityEstimationConfig,
-      Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
-      double lambda) override;
+      DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
+
+  /**
+   * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
+   */
+  void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                    const ParallelConfiguration& parallelConfig) override;
 
  protected:
   // matrix, which holds information about refined/coarsened points
   sgpp::base::DataMatrix b_adapt_matrix_;
+
+  // distributed version of matrix B, only initialized if scalapack is used
+  DataMatrixDistributed b_adapt_matrix_distributed_;
 
   // holds all prior refined points, to know what to coarsen later on
   std::vector<sgpp::base::DataVector> refined_points_;
@@ -100,7 +112,21 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
    */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-      DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+                DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+
+  /**
+   * Solves the distributed system (R + lambda*I) * alpha = b in parallel and obtains alpha.
+   * For more information, see solveSLE.
+   *
+   * @param alpha distributed datavector for surplusses
+   * @param b distributed right hand side
+   * @param grid the underlying grid
+   * @param densityEstimationConfig configuration for the density estimation
+   * @param do_cv cross-validation (currently not implemented)
+   */
+  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+                        DensityEstimationConfiguration& densityEstimationConfig,
+                        bool do_cv) override;
 
  private:
   /**

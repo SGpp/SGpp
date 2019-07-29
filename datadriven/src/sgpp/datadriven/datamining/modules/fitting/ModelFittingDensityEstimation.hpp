@@ -43,6 +43,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   virtual void fit(DataMatrix& dataset) = 0;
   virtual void fit(DataMatrix& datasetP, DataMatrix& datasetQ) = 0;
 
+  virtual void fit(Dataset& dataset) = 0;
+
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
    * the data samples and no targets (since those are irrelevant for the density estimation
@@ -51,6 +53,12 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   virtual void update(DataMatrix& samples) = 0;
   virtual void update(DataMatrix& samplesP, DataMatrix& samplesQ) = 0;
+
+  virtual void update(Dataset& dataset) = 0;
+
+  virtual double evaluate(const DataVector& sample) = 0;
+
+  virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened

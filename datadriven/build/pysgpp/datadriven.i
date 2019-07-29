@@ -17,6 +17,12 @@
 %warnfilter(401) sgpp::datadriven::LearnerSGDEConfiguration;
 %warnfilter(401) sgpp::datadriven::SparseGridDensityEstimatorConfiguration;
 
+// overloaded methods in DataMatrixDistributed and DataVectorDistributed might be shadowed
+%warnfilter(509, 516) sgpp::datadriven::DataMatrixDistributed;
+%warnfilter(509, 516) sgpp::datadriven::DataVectorDistributed;
+%ignore sgpp::datadriven::DataMatrixDistributed::operator();
+%ignore sgpp::datadriven::DataVectorDistributed::operator();
+
 // The Good, i.e. without any modifications
 #ifdef SG_DATADRIVEN
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
@@ -24,6 +30,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
@@ -34,10 +41,13 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp"
 
+%include "datadriven/src/sgpp/datadriven/scalapack/BlacsProcessGrid.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataMatrixDistributed.hpp"
+%include "datadriven/src/sgpp/datadriven/scalapack/DataVectorDistributed.hpp"
+
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp"
 %ignore *::operator=;
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOffline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
@@ -58,10 +68,13 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp"
 %ignore sgpp::datadriven::DBMatOfflineLU::DBMatOfflineLU(DBMatOfflineLU &&);
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineLU.hpp"
-%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp"
 #endif /* USE_GSL */
 
 #ifdef __AVX__
@@ -154,6 +167,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"
@@ -163,6 +177,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Scorer.hpp"
 
+%ignore sgpp::datadriven::SparseGridMiner::print;
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
@@ -171,6 +186,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"

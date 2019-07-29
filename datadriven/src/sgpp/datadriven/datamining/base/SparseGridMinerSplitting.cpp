@@ -11,9 +11,11 @@
  */
 
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <iostream>
 
@@ -22,19 +24,32 @@ namespace datadriven {
 
 SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
                                                    ModelFittingBase* fitter, Scorer* scorer)
+
     : SparseGridMiner(fitter, scorer),
       dataSource { dataSource } {
 }
 
 double SparseGridMinerSplitting::learn(bool verbose) {
+#ifdef USE_SCALAPACK
+  if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
+    auto processGrid = fitter->getProcessGrid();
+    if (!processGrid->isProcessInGrid()) {
+      return 0.0;
+    }
+  }
+#endif /* USE_SCALAPACK */
+
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
   RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
+
   for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
     if (verbose) {
-      std::cout << "###############" << "Starting training epoch #" << epoch << std::endl;
+      std::ostringstream out;
+      out << "###############" << "Starting training epoch #" << epoch;
+      print(out);
     }
     dataSource->reset();
     // Process dataset iteratively
@@ -47,8 +62,10 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         break;
       }
       if (verbose) {
-        std::cout << "###############" << "Itertation #" << (iteration++) << std::endl
-            << "Batch size: " << numInstances << std::endl;
+        std::ostringstream out;
+        out << "###############" << "Itertation #" << (iteration++) << std::endl << "Batch size: "
+            << numInstances;
+        print(out);
       }
       // Train model on new batch
       fitter->update(*dataset);
@@ -58,9 +75,12 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
       if (verbose) {
-        std::cout << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: "
-            << scoreVal << std::endl;
+        std::ostringstream out;
+        out << "Score on batch: " << scoreTrain << std::endl << "Score on validation data: "
+            << scoreVal;
+        print(out);
       }
+
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
@@ -68,12 +88,13 @@ double SparseGridMinerSplitting::learn(bool verbose) {
         fitter->refine();
       }
       if (verbose) {
-        std::cout << "###############" << "Iteration finished." << std::endl;
+        print("###############Iteration finished.");
       }
     }
   }
   delete monitor;  // release memory
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
-} /* namespace datadriven */
-} /* namespace sgpp */
+
+}  // namespace datadriven
+}  // namespace sgpp

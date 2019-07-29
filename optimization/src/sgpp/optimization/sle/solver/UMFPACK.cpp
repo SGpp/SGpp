@@ -80,7 +80,7 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
   std::vector<double> Tx;
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, Ti, Tj, Tx, nnz) default(none)
+#pragma omp parallel if (system.isCloneable()) shared(system, Ti, Tj, Tx, nnz)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
