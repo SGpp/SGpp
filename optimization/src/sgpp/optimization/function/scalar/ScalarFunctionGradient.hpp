@@ -48,6 +48,36 @@ class ScalarFunctionGradient {
   virtual double eval(const base::DataVector& x, base::DataVector& gradient) = 0;
 
   /**
+   * Convenience method for calculating \f$f(\vec{x})\f$ together with
+   * \f$\nabla f(\vec{x})\f$ for multiple \f$\vec{x}\f$.
+   *
+   * @param      x        matrix \f$\vec{x} \in [0, 1]^{N \times d}\f$
+   *                      of evaluation points (row-wise)
+   * @param[out] value    vector of size \f$N\f$, where the \f$k\f$-th
+   *                      entry is \f$f(\vec{x}_k)\f$
+   *                      (where \f$\vec{x}_k\f$ is the \f$k\f$-th row
+   *                      of \f$x\f$)
+   * @param[out] gradient matrix of size \f$N \times d\f$
+   *                      where the \f$k\f$-th row is
+   *                      \f$\nabla f(\vec{x}_k)\f$
+   */
+  virtual void eval(const base::DataMatrix& x, base::DataVector& value,
+                    base::DataMatrix& gradient) {
+    const size_t N = x.getNrows();
+    base::DataVector xk(d);
+    base::DataVector yk(d);
+    value.resize(N);
+    gradient.resize(N, d);
+
+    for (size_t k = 0; k < N; k++) {
+      x.getRow(k, xk);
+      value[k] = eval(xk, yk);
+      gradient.setRow(k, yk);
+    }
+  }
+
+
+  /**
    * @return dimension \f$d\f$ of the domain
    */
   size_t getNumberOfParameters() const { return d; }
