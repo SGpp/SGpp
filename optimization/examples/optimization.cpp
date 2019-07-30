@@ -38,17 +38,17 @@
  * The clone method returns a std::unique_ptr to a clone of the object
  * and is used for parallelization (in case eval is not thread-safe).
  */
-class ExampleFunction : public sgpp::optimization::ScalarFunction {
+class ExampleFunction : public sgpp::base::ScalarFunction {
  public:
-  ExampleFunction() : sgpp::optimization::ScalarFunction(2) {}
+  ExampleFunction() : sgpp::base::ScalarFunction(2) {}
 
   double eval(const sgpp::base::DataVector& x) {
     // minimum is f(x) = -2 for x[0] = 3*pi/16, x[1] = 3*pi/14
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   }
 
-  virtual void clone(std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(new ExampleFunction(*this));
+  virtual void clone(std::unique_ptr<sgpp::base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::base::ScalarFunction>(new ExampleFunction(*this));
   }
 };
 
@@ -66,7 +66,7 @@ int main(int argc, const char* argv[]) {
 
   std::cout << "sgpp::optimization example program started.\n\n";
   // increase verbosity of the output
-  sgpp::optimization::Printer::getInstance().setVerbosity(2);
+  sgpp::base::Printer::getInstance().setVerbosity(2);
 
   /**
    * Here, we define some parameters: objective function, dimensionality,
@@ -110,8 +110,8 @@ int main(int argc, const char* argv[]) {
   std::cout << "Hierarchizing...\n\n";
   sgpp::base::DataVector functionValues(gridGen.getFunctionValues());
   sgpp::base::DataVector coeffs(functionValues.getSize());
-  sgpp::optimization::HierarchisationSLE hierSLE(grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::HierarchisationSLE hierSLE(grid);
+  sgpp::base::sle_solver::Auto sleSolver;
 
   // solve linear system
   if (!sleSolver.solve(hierSLE, functionValues, coeffs)) {
@@ -127,8 +127,8 @@ int main(int argc, const char* argv[]) {
    */
   printLine();
   std::cout << "Optimizing smooth interpolant...\n\n";
-  sgpp::optimization::InterpolantScalarFunction ft(grid, coeffs);
-  sgpp::optimization::InterpolantScalarFunctionGradient ftGradient(grid, coeffs);
+  sgpp::base::InterpolantScalarFunction ft(grid, coeffs);
+  sgpp::base::InterpolantScalarFunctionGradient ftGradient(grid, coeffs);
   sgpp::optimization::optimizer::GradientDescent gradientDescent(ft, ftGradient);
   sgpp::base::DataVector x0(d);
   double fX0;

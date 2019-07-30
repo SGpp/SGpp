@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/vector/EmptyVectorFunction.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -60,8 +60,8 @@ void FloudasInequalityConstraint::evalUndisplaced(const base::DataVector& x,
   value[1] = x2 - (4.0 * x1p4 - 32.0 * x1p3 + 88.0 * x1p2 - 96.0 * x1 + 36.0);
 }
 
-void FloudasInequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new FloudasInequalityConstraint(*this));
+void FloudasInequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new FloudasInequalityConstraint(*this));
 }
 
 FloudasEqualityConstraint::FloudasEqualityConstraint() : TestVectorFunction(2, 0) {}
@@ -71,8 +71,8 @@ FloudasEqualityConstraint::~FloudasEqualityConstraint() {}
 void FloudasEqualityConstraint::evalUndisplaced(const base::DataVector& x,
                                                 base::DataVector& value) {}
 
-void FloudasEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new FloudasEqualityConstraint(*this));
+void FloudasEqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new FloudasEqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

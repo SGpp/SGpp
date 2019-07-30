@@ -12,8 +12,6 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <map>
@@ -25,6 +23,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include "../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {

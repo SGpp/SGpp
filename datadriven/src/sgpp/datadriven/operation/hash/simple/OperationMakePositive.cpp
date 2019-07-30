@@ -9,7 +9,6 @@
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
@@ -17,6 +16,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>

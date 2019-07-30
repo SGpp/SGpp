@@ -6,8 +6,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -18,6 +16,7 @@
 
 #include <vector>
 #include <limits>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {

@@ -5,9 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/constrained/Soland.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
-
 #include <cmath>
+#include "../../../../../../base/src/sgpp/base/function/vector/EmptyVectorFunction.hpp"
 
 namespace sgpp {
 namespace optimization {

@@ -10,13 +10,13 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
 
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <vector>
+
+#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
+#include "../../../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
+#include "../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
 
 namespace sgpp {
 namespace combigrid {
