@@ -353,7 +353,8 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     
     print(eival)
     #     print(eivec)
-    print("first eigenvector {}".format(eivec[:, 0]))
+    # print("first eigenvector {}".format(eivec[:, 0]))
+    print("first eigenvector error {}".format(abs(eivec[:, 0] - objFunc.getEigenvec()[:, 0])))
     
     if doResponse == 1:
         n = 1  # active subspace identifier

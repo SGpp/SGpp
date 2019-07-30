@@ -119,8 +119,8 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
         saveName = '{}_regular{}_surplusAndMC{}_ {}'.format(objFunc.getName(), maxLevel, maxPoints, qoi) 
         
     figname = os.path.join(saveDirectory, saveName + '_' + style)
-    plt.savefig(figname, dpi=300, bbox_inches='tight')
-    print('saved fig to {}'.format(figname))
+    plt.savefig(figname + '.pdf', dpi=300, bbox_inches='tight', format='pdf')
+    print('saved fig to {}'.format(figname + '.pdf'))
     # rearrange legend order and save legends in individual files.
     legendstyle = 'external'
     if legendstyle == 'external':
@@ -159,7 +159,7 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
         legendname = os.path.join(figname + '_legend')
         # cut off whitespace
         plt.subplots_adjust(left=0.0, right=1.0, top=0.6, bottom=0.4)
-        plt.savefig(legendname, dpi=300, bbox_inches='tight', pad_inches=0.0)
+        plt.savefig(legendname + '.pdf', dpi=300, bbox_inches='tight', pad_inches=0.0, format='pdf')
     elif legendstyle == 'none':
         pass
     else:    
@@ -359,7 +359,7 @@ if __name__ == '__main__':
     parser.add_argument('--maxLevel', default=8, type=int, help='maximum level for regualr refinement')
     parser.add_argument('--maxPoints', default=300, type=int, help='maximum number of points used')
     parser.add_argument('--saveFig', default=1, type=int, help='save figure')
-    parser.add_argument('--style', default='presentation', type=str, help='style of the plot, paper or presentation')
+    parser.add_argument('--style', default='paper', type=str, help='style of the plot, paper or presentation')
     args = parser.parse_args()
     
     gridTypes, degrees, refineTypes = decodeArgs(args.gridType, args.degree, args.refineType)

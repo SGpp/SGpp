@@ -69,7 +69,10 @@ class DistributionNormal : public Distribution {
   }
 
  private:
+  // mean, often called mu
   double mean;
+  // standard deviation, often called sigma
+  // Note: This is sigma, not sigma^2!
   double stddev;
   std::normal_distribution<double> dist;
 };

@@ -91,6 +91,10 @@ def getFunction(model, genzIndex=-1):
     
     elif model == 'quadratic2D':
         return quadraticXD(2)
+    elif model == 'quadratic4D':
+        return quadraticXD(4)
+    elif model == 'quadratic8D':
+        return quadraticXD(8)
     elif model == 'quadratic10D':
         return quadraticXD(10)
     
@@ -215,9 +219,8 @@ class test():
 
     def __init__(self):
         self.dummy = 7
-        # ||alpha||=2 pi
-        self.alpha = [1.72618264, 3.0725052 , 2.09886846, 3.25706818, 1.97977555, 2.48262954, 1.26226932, 0.60695672]
-
+        self.alpha = 0.75
+        
     def getDomain(self):
         lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
@@ -231,11 +234,11 @@ class test():
         return 0.0
 
     def getDim(self):
-        return 4
+        return 8
 
     def getEigenvec(self):
-        print("activeSubspaceFunctions.py: eigenvec not calculated")
-        return 0.0
+        eivec = np.ones(shape=(self.getDim(), self.getDim())) / np.sqrt(self.dim)
+        return eivec
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -244,15 +247,16 @@ class test():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
-        D = self.getDim()
-        # Morokoff  (hat exakten 1D!)
+        arg = 0
+        for i in range(self.getDim()):
+            arg += x[:, i] 
+        arg = self.alpha * arg + 1
+        return (np.sin(arg) / arg).reshape(numSamples, 1)
+     # Morokoff  (hat exakten 1D!)
 #         res = 1 
 #         for i in range(self.getDim()):
 #             res *= (D - x[:, i]) 
 #         res *= 1 / ((D - 0.5) ** D)
-
-        res = np.exp(2 * (x[:, 0] + x[:, 1] + x[:, 2] + x[:, 3])) * np.exp(x[:, 0] - x[:, 1] - x[:, 2] - x[:, 3])
-        return (res).reshape(numSamples, 1)
     
     def eval_grad(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -609,7 +613,7 @@ class sinXD():
     def getEigenvec(self):
         eivec = np.zeros(shape=(self.getDim(), self.getDim()))
         for i in range(self.getDim()):
-            eivec[i, 0] = [1.0 / np.sqrt(self.getDim())]
+            eivec[i, 0] = 1.0 / np.sqrt(self.getDim())
         return eivec
 
     def eval(self, xx, lN=0, uN=1):
@@ -745,7 +749,7 @@ class sinCos8D():
         return  self.dim
 
     def getEigenvec(self):
-          path = '/home/rehmemk/git/SGpp/activeSubSpaces/results/sinCos{}D/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
+          path = '/home/rehmemk/git/uncecomp19/Paper/data/results/sinCos8D/AS_3_100_regular/ASeivec.txt'.format(self.getDim())
           print('loading real eivec from {}'.format(path))
           eivec = np.loadtxt(path)
           return eivec
@@ -1233,23 +1237,30 @@ class quadraticXD():
         self.dim = dim
        
     def getDomain(self):
-        lb = np.array([-1] * self.getDim())
+        lb = np.array([0] * self.getDim())
         ub = np.array([1] * self.getDim())
         return lb, ub
     
     def getName(self):
-        return "dampedSin{}D".format(self.getDim())
+        return "quadratic{}D".format(self.getDim())
     
     def getIntegral(self):
-        print("activeSubspaceFunctions.py: integral not calculated")
-        return 0.0
+        if self.dim == 2:
+            return   7.0 / 6.0
+        elif self.dim == 4:
+            return 13.0 / 3.0
+        else:
+            print("integral not calculated")
+            return 0
 
     def getDim(self):
         return self.dim
 
     def getEigenvec(self):
-        print("activeSubspaceFunctions.py: eivec not calculated")
-        return 0
+        eivec = np.zeros(shape=(self.getDim(), self.getDim()))
+        for i in range(self.getDim()):
+            eivec[i, 0] = 1.0 / np.sqrt(self.getDim())
+        return eivec
 
     def eval(self, xx, lN=0, uN=1):
         x = xx.copy()
@@ -1258,30 +1269,12 @@ class quadraticXD():
         # unnormalize the input to the functions domain
         lb, ub = self.getDomain()
         x = unnormalize(x, lb, ub, lN, uN)
+        sum = 0
+        for d in range(self.dim):
+            sum += x[:, d] 
+        sum = sum ** 2
         
-        if self.dim == 2:
-            A = np.array([[ 1, 2 ],
-                          [ 3, 4 ]])
-        elif self.dim == 10:
-            A = np.array([[ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-                          [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]])
-            
-        if self.dim in [2, 10]:
-            res = np.zeros((numSamples, 1))
-            for i in range(numSamples):
-                res[i] = 0.5 * (x[i, :].dot(A)).dot(x[i, :])
-            return (res).reshape(numSamples, 1)
-        else:
-            print("asFunctions::quadraticXD does not yet support this dimensionality")
-            return 0
+        return (sum).reshape(numSamples, 1)
 
 
 # https://www.sfu.ca/~ssurjano/welchetal92.html
@@ -1297,7 +1290,7 @@ class welch():
         return lb, ub
     
     def getName(self):
-        return "dampedSin{}D".format(self.getDim())
+        return "welch{}D".format(self.getDim())
     
     def getIntegral(self):
         print("activeSubspaceFunctions.py: integral not calculated")

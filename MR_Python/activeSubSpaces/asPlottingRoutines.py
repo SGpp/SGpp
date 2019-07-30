@@ -19,7 +19,7 @@ import pysgpp
 
 # plotting routines for the active subspace code
 # For analytically given functions simply use GridWise routines
-# For datadriven scenarios the GridWise routines plot fox a fixed amount of data and increasing grid sizes.
+# For datadriven scenarios the GridWise routines plot for a fixed amount of data and increasing grid sizes.
 # the DataWise routines plot for a fixed grid size and increasing amounts of data
 
 # font sizes
@@ -27,6 +27,7 @@ ylabelsize = 16
 xlabelsize = 16
 majortickfontsize = 14
 minortickfontsize = 12
+legendfontsize = 14
 
 
 # labels for regular use. Contain lots of extra information
@@ -66,7 +67,14 @@ def getPaperLabel(summary):
     elif method == 'Halton':
         label = 'quasi Monte Carlo'
     elif method == 'asSGpp':
-        label = 'sparse grid B-splines'
+        if summary["gridType"] == "nakbsplinemodified":
+            label = 'Sparse Grid $b^{3,mod}$'
+        elif summary["gridType"] == "nakbsplineextended":
+            label = 'Sparse Grid $b^{3,e}$'
+        elif summary["gridType"] == "nakbsplineboundary":
+            label = 'Sparse Grid $b^{3,nak}$, boundary'
+        else:
+            label = 'sparse grid {}'.format(summary["gridType"])
     elif method == 'SGpp':
         label = 'full dimensional sparse grid'
     return label
@@ -361,9 +369,11 @@ def plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker, dataI
         nPoints = summary['numGridPointsArray']
     ax.loglog(nPoints, err, label=label, color=color, marker=marker)
     ax2.loglog(nPoints, err, label=label, color=color, marker=marker)
-    ax.set_ylim(1e-6, 1e0)  
+    # ax.set_ylim(1e-6, 1e0)
+    ax.set_ylim(1e-7, 1e0)    
     ax.set_yticks([1e-0, 1e-2, 1e-4, 1e-6])
-    ax2.set_ylim(1e-16, 1e-15) 
+    # ax2.set_ylim(1e-16, 1e-15)
+    ax2.set_ylim(1e-16, 1e-13) 
     ax.spines['bottom'].set_visible(False)
     ax2.spines['top'].set_visible(False)
     ax.xaxis.tick_top()
@@ -389,7 +399,8 @@ def plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker, dataI
     
 # markers = ['o', '+', '*', '^', '<', '>', 's', 'd', 'v', '1', 'p', 'h', 'x', 'D']
 # colors = [[32.0 / 256.0, 86.0 / 256.0, 174.0 / 256.0], 'orange', 'g', 'c', 'r', 'y', 'm', 'fuchsia', 'aqua', 'k']
-def getColorAndMarker(method):
+def getColorAndMarker(summary):
+    method = summary["method"]
     if method == 'AS':
          marker = '>'; color = '#bcbd22'  # 'y'
     elif method == 'OLS':
@@ -397,9 +408,20 @@ def getColorAndMarker(method):
     elif method == 'QPHD':
         marker = 's'; color = '#d62728'  # 'r'
     elif method == 'asSGpp':
-        marker = 'o'; color = '#1f77b4'  # b'
+        if summary["degree"] == 3:
+            marker = 'o'
+        elif summary["degree"] == 5:
+            marker = 'D'
+        if summary["gridType"] == "nakbsplinemodified":
+             color = '#1f77b4'  # b'
+        elif summary["gridType"] == "nakbsplineextended":
+             color = '#ff7f0e'
+        elif summary["gridType"] == "nakbsplineboundary":
+             color = 'aqua'
+        else:
+            marker = 'x'; color = '#7f7f7f'   
     elif method == 'SGpp':
-        marker = '*'; color = '#ff7f0e'  # orange' 
+        marker = '*'; color = '#bcbd22'  # orange' 
     elif method == 'Halton':
         marker = 'd'; color = '#9467bd'  # 'm'
     else:
@@ -411,10 +433,10 @@ def getColorAndMarker(method):
 def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
    
    # In this case we wanted an interrupted y-axis. This requires two subplots
-    if paper == 1 and qoi == 'eivec1':
-        _, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 4), sharex=True, gridspec_kw={'height_ratios':[6, 1]})
-    else:
-        fig, ax = plt.subplots(figsize=(5, 4))
+#     if paper == 1 and qoi == 'eivec1':
+#         _, (ax, ax2) = plt.subplots(2, 1, figsize=(5, 4), sharex=True, gridspec_kw={'height_ratios':[6, 1]})
+#     else:
+    fig, ax = plt.subplots(figsize=(5, 4))
         
     model = 'X'  # dummy
     for n, folder in enumerate(folders):  
@@ -424,7 +446,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
                 summary = pickle.load(fp, encoding='latin1')
                 method = summary["method"]
                 model = summary["model"]
-                [color, marker] = getColorAndMarker(method)
+                [color, marker] = getColorAndMarker(summary)
                 responseType = summary["responseType"]
                 datatypes = ['data', 'dataR', 'datadriven', 'datadrivenR']
                 if paper == 1:
@@ -434,12 +456,12 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
                 if qoi == 'eival' and method not in  ['SGpp', 'Halton']:
                     plot_eigenvalues(summary, label, color, marker)
                 elif qoi == 'eivec1'and method not in  ['SGpp', 'Halton']:
-                    if paper == 1:
-                        plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker)
-                    else:
+#                     if paper == 1:
+#                         plot_error_first_eigenvecPaper(summary, ax, ax2, label, color, marker)
+#                     else:
                         plot_error_first_eigenvec(summary, label, color, marker)
                 elif qoi == 'eivec4'and method not in  ['SGpp', 'Halton']:
-                        plot_error_four_eigenvec(summary, label, color, marker)
+                    plot_error_four_eigenvec(summary, label, color, marker)
                 elif qoi == 'shadow1'and method not in  ['SGpp', 'Halton']:
                     shadowplot1DAnalytic(summary, label, path, color, paper=paper)
                 elif qoi == 'shadow1Data'and responseType in datatypes and method not in  ['SGpp', 'Halton']:
@@ -464,10 +486,10 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
     # add lines to one specific plots for the paper.
     if paper == 1 and qoi == 'integralerrorG':
         # hard coded errors of Cuba interpolating dampedSin8D calculated with demo-c
-        plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='#e377c2', marker='x', label='Cuhre')  # color was fuchsia
+        plt.semilogy([1105, 3315, 5525, 7735, 9945, 14365, 18785], [3.119563e-9, 1.094696e-9, 6.1661901e-10, 2.3058899e-10, 1.49807e-10, 9.1600061e-12, 4.7115006e-11], color='#ff7f0e', marker='x', label='Cuhre')  # color was fuchsia
         # hard coded errors of performing normal asSGppintegration , but give correct W1 for dampedsin8D (data is saved as /home/rehmemk/git/SGpp/activeSubSpaces/results/dampedSin8D/asSGpp_nakbsplinemodified_3_20001_adaptive_adaptive_Spline)
-        eW1label = 'sparse grid B-splines, true $W_1$'
-        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='#ff7f0e', marker='h', label=eW1label)  # color was cyan
+        eW1label = 'Sparse Grid $b^{3,mod}$, true $W_1$'
+        plt.semilogy([20, 42, 91, 196, 421, 902, 1932, 4140, 8869, 15000], [2.52112830501e-07, 6.99876642474e-08, 1.5684441218e-08, 5.00365499034e-10, 7.459421969e-12, 2.00037209019e-12, 2.31542562901e-12, 2.3287483053e-12, 2.32741603767e-12, 2.32741603767e-12], color='aqua', marker='h', label=eW1label)  # color was '#9467bd'
         # hard coded errors of integrating g on [l,r] in 1D for dampedSin8D. Calculated with  MR_dampedSin1DIntegration.cpp
         eglabel = '$|  \int_l^r g(y)dy - \int_l^r \hat{g}(y)dy |$'  # '$\epsilon_g$'
         plt.semilogy([5, 17, 33, 65, 129, 329, 529, 929, 1429, 5000, 12000, 20000], [0.00557185, 8.12984e-06, 1.74117e-07, 1.4239e-08, 6.78379e-10, 3.98837e-11, 2.61186e-12, 5.2064e-13, 9.9896e-14, 5.25158e-14, 1.01938e-14, 1.02588e-14], color='grey', marker='v', label=eglabel)
@@ -476,7 +498,7 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
     if paper == 1:
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
-        ncol = 4
+        ncol = 3
         if qoi == 'integralerrorG':
             originalHandles = handles[:]
             originalLabels = labels[:]
@@ -506,18 +528,18 @@ def plotter(folders, qoi, resultsPath, savefig=1, paper=0):
         figname = os.path.join(resultsPath, model + '_' + qoi)
         print("saving {}".format(figname))
         fig1.savefig(figname, dpi=900, bbox_inches='tight')
+    else:
+        plt.show()
 
 
 if __name__ == "__main__":
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='dampedSin8D', type=str, help="define which test case should be executed")
-    parser.add_argument('--degree', default=3, type=int, help="B-spline degree / degree of Constantines resposne surface")
-    parser.add_argument('--maxPoints', default=10000, type=int, help="maximum number of points used")
+    parser.add_argument('--model', default='sinCos8D', type=str, help="define which test case should be executed")
     # used in paper
-    parser.add_argument('--plotDetectionL2G', default=0, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
+    parser.add_argument('--plotDetectionL2G', default=1, type=bool, help="do (not) plot l2 error of interpolation dore detection grid-wise")
     parser.add_argument('--plotL2G', default=0, type=bool, help="do (not) plot l2 error of reduced resposne surface grid-wise")
-    parser.add_argument('--plotIntegralG', default=1, type=bool, help="do (not) plot integral error grid-wise")
+    parser.add_argument('--plotIntegralG', default=0, type=bool, help="do (not) plot integral error grid-wise")
     parser.add_argument('--plotEivec1', default=0, type=bool, help="do (not) plot error in first eigenvector")
     parser.add_argument('--plotEivec4', default=0, type=bool, help="do (not) plot error in first four eigenvectors")
     # additional options
@@ -530,6 +552,7 @@ if __name__ == "__main__":
     parser.add_argument('--surf2D', default=0, type=bool, help="do (not) plot surface plot (only works for 2D functions)")
     
     parser.add_argument('--Paper', default=1, type=bool, help="do (not) use specific option for paper plots")
+    parser.add_argument('--saveFig', default=0, type=bool, help="do (not) save plot")
     args = parser.parse_args()
     
     # use latex standard font
@@ -540,34 +563,41 @@ if __name__ == "__main__":
     resultsPath = "/home/rehmemk/git/uncecomp19/Paper/data/results"
     resultsPath = os.path.join(resultsPath, args.model)
 
-# Choose which hresults to plot
+# Choose which results to plot
 
 # dampedSin8D for paper
     if args.model == "dampedSin8D":
         names = [
-                # 'AS_5_25000_regular',  # doenst matter which one, the repsonse surface is not used
                 'QPHD_8_20000_regular',
-                # 'Halton_25000',
                 'OLS_8_20000_regular',
-                # 'SGpp_nakbsplinemodified_3_25000_adaptive',
-                'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline'
+                # 'AS_5_20000_regular',
+                # 'asSGpp_nakbsplineboundary_3_20000_adaptive_adaptive_Spline',
+                # 'asSGpp_nakbsplineboundary_5_10000_adaptive_adaptive_Spline'
+                'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline',
+                # 'asSGpp_nakbsplinemodified_5_10000_adaptive_adaptive_Spline', 
+                # 'asSGpp_nakbsplineextended_3_20000_adaptive_adaptive_Spline',  
+                # 'asSGpp_nakbsplineextended_5_10000_adaptive_adaptive_Spline',  
                  ]
 # sinCos8D for paper
     elif args.model == "sinCos8D":
         names = [
-                'AS_5_20000_regular',  # doenst matter which one, the repsonse surface is not used
+                # 'AS_5_20000_regular',  # doenst matter which one, the repsonse surface is not used
                 'QPHD_7_20000_regular',
                 'OLS_8_20000_regular',
-                'asSGpp_nakbsplinemodified_3_19000_adaptive_adaptive_Spline'
+                'asSGpp_nakbsplinemodified_3_20000_adaptive_adaptive_Spline',
+                # 'asSGpp_nakbsplinemodified_5_10000_adaptive_adaptive_Spline',
+                'asSGpp_nakbsplineextended_3_20000_adaptive_adaptive_Spline',
+                # 'asSGpp_nakbsplineextended_5_10000_adaptive_adaptive_Spline',
+               'asSGpp_nakbsplineboundary_3_20000_adaptive_adaptive_Spline',
+                # 'asSGpp_nakbsplineboundary_5_20000_adaptive_adaptive_Spline'
                  ]
     else:
         names = [
                 'asSGpp_nakbsplinemodified_3_10000_adaptive_adaptive_Spline'
                 ]
     
-    names = [n.format(args.degree, args.maxPoints) for n in names]
     folders = [os.path.join(resultsPath, name) for name in names]
-    savefig = 1
+    savefig = args.saveFig
      
     # plt.rcParams.update({'font.size': 18})
     # plt.rcParams.update({'lines.linewidth': 3})
