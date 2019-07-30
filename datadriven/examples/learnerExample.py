@@ -21,7 +21,7 @@ def g(x):
     return np.prod(0.0 * x + 5, axis=1)
 
 
-print "generate uniformly distributed samples (%i, %i)" % (numSamples, numDims)
+print("generate uniformly distributed samples (%i, %i)" % (numSamples, numDims))
 samples = np.random.rand(numSamples, numDims)
 values = f(samples)
 
@@ -48,16 +48,16 @@ learner = builder.andGetResult()
 
 gs = learner.grid.getStorage()
 
-print "Dimensions: %i" % gs.getDimension()
-print "Grid points: %i" % gs.getSize()
+print ("Dimensions: %i" % gs.getDimension())
+print ("Grid points: %i" % gs.getSize())
 
-print "================== Starting learning =================="
+print("================== Starting learning ==================")
 
 learner.setVerbosity(False)
 learner.learnData()
-print learner.alpha
+print(learner.alpha)
 
-print "======================================================="
+print("=======================================================")
 
 if numDims == 1:
     plt.scatter(samples[:, 0], values)

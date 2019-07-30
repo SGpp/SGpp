@@ -39,18 +39,18 @@ f = lambda x0, x1: math.sin(x0*10)+x1
 dim = 2
 grid = Grid.createLinearGrid(dim)
 HashGridStorage = grid.getStorage()
-print "dimensionality:                   {}".format(dim)
+print("dimensionality:                   {}".format(dim))
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of initial grid points:    {}".format(HashGridStorage.getSize())
+print("number of initial grid points:    {}".format(HashGridStorage.getSize()))
 
 
 # create coefficient vectors
 alpha = DataVector(HashGridStorage.getSize())
-print "length of alpha vector:           {}".format(alpha.getSize())
+print("length of alpha vector:           {}".format(alpha.getSize()))
 
 
 ## To create a dataset we use points on a regular 2d grid with a
@@ -62,8 +62,8 @@ cols = 100
 dataSet = DataMatrix(rows*cols,dim)
 vals = DataVector(rows*cols)
 
-for i in xrange(rows):
-    for j in xrange(cols):
+for i in range(rows):
+    for j in range(cols):
         #xcoord
         dataSet.set(i*cols+j,0,i*1.0/rows)
         #ycoord
@@ -78,7 +78,7 @@ for i in xrange(rows):
 
 # create coefficient vectors
 alpha = DataVector(HashGridStorage.getSize())
-print "length of alpha vector:           {}".format(alpha.getSize())
+print("length of alpha vector:           {}".format(alpha.getSize()))
 
 # now refine adaptively 2 times
 
@@ -90,7 +90,7 @@ for refnum in range(2):
     ## simply evaluate it at the coordinates of the grid points to
     ## obtain the nodal values. Then we use hierarchization to
     ## obtain the surplus value.
-    for i in xrange(HashGridStorage.getSize()):
+    for i in range(HashGridStorage.getSize()):
         gp = HashGridStorage.getPoint(i)
         alpha[i] = f(gp.getStandardCoordinate(0), gp.getStandardCoordinate(1))
 
@@ -113,7 +113,7 @@ for refnum in range(2):
     functor = SurplusRefinementFunctor(alpha,1)
     decorator.free_refine(HashGridStorage,functor)
 
-    print "Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.getSize())
+    print("Refinement step %d, new grid size: %d" % (refnum+1, HashGridStorage.getSize()))
 
 
     # extend alpha vector (new entries uninitialized)

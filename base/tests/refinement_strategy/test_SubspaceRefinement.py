@@ -38,12 +38,12 @@ class TestSubspaceRefinement(unittest.TestCase):
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.free_refine(self.HashGridStorage,functor)
-        for i in xrange(self.grid.getSize()):
+        for i in range(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
 
         self.assertEqual(self.grid.getSize(), 33)
         
-        for i in xrange(self.grid.getSize()):
+        for i in range(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4)
@@ -61,12 +61,12 @@ class TestSubspaceRefinement(unittest.TestCase):
         # refine a single grid point each time
         functor = SurplusRefinementFunctor(alpha,1)
         decorator.free_refine(self.HashGridStorage,functor)
-        for i in xrange(self.grid.getSize()):
+        for i in range(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
 
         self.assertEqual(self.grid.getSize(), 33)
         
-        for i in xrange(self.grid.getSize()):
+        for i in range(self.grid.getSize()):
             HashGridPoint = self.HashGridStorage.getPoint(i)
             levelIndex = eval(HashGridPoint.toString())
             self.assertFalse(levelIndex[0] == 4 or levelIndex[2] == 4)

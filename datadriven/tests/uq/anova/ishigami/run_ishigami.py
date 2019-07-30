@@ -51,9 +51,9 @@ if __name__ == '__main__':
                     maxGridPoints = scenarions_sg['maxGridPoints']
                 for level in scenarions_sg['level']:
                     for maxGridPoint in maxGridPoints:
-                        print "-" * 80
-                        print "scenario: (%s, %i, %i, %s)" % (gridType, level, maxGridPoint, refinement)
-                        print "-" * 80
+                        print("-" * 80)
+                        print("scenario: (%s, %i, %i, %s)" % (gridType, level, maxGridPoint, refinement))
+                        print("-" * 80)
                         if args.parallel:
                             myargs = (gridType, level, maxGridPoint, False, refinement, args.out)
                             processes.append(Process(target=run_ishigami_sg, args=myargs))
@@ -71,9 +71,9 @@ if __name__ == '__main__':
     if args.surrogate in ["both", "pce"]:
         for sampler in scenarions_pce['sampler']:
             for degree_1d in scenarions_pce['degree']:
-                print "-" * 80
-                print "scenario: (%s, %i)" % (sampler, degree_1d)
-                print "-" * 80
+                print("-" * 80)
+                print("scenario: (%s, %i)" % (sampler, degree_1d))
+                print("-" * 80)
                 if args.parallel:
                     myargs = (sampler, degree_1d, args.out)
                     processes.append(Process(target=run_ishigami_pce, args=myargs))

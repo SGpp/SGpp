@@ -1,4 +1,4 @@
-from Model import Model
+from pysgpp.extensions.datadriven.uq.models.Model import Model
 import numpy as np
 from pysgpp.extensions.datadriven.uq.uq_setting.UQBuilder import UQBuilder
 

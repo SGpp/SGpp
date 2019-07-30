@@ -78,14 +78,14 @@ class NatafTransformation(object):
         self.trans_Z_to_U(z_vars, u_vars)
 
     def trans_Z_to_X(self, z_vars, x_vars):
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             normcdf = self.normal.cdf(z_vars[i])
             scaled_x = self.x[i].ppf(normcdf.reshape(len(normcdf), 1))
             scaled_x = scaled_x.reshape(len(normcdf))
             x_vars[i] = self.lwr + (self.upr - self.lwr) * scaled_x
 
     def trans_X_to_Z(self, x_vars, z_vars):
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             betacdf = self.x[i].cdf(x_vars[i].reshape(len(x_vars[i]), 1))
             betacdf = betacdf.reshape(len(betacdf))
             z_vars[i] = self.normal.ppf(betacdf)

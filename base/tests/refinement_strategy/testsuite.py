@@ -6,12 +6,12 @@
 import unittest
 
 #correct the syspath, so python.ooks for packages in the root directory of SGpp
-import sys, os
-pathname = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(pathname) + '/../../..')
+#import sys, os
+#pathname = os.path.dirname(__file__)
+#sys.path.append(os.path.abspath(pathname) + '/../../..')
 
-from test_ANOVARefinement import TestANOVARefinement
-from test_SubspaceRefinement import TestSubspaceRefinement
+from refinement_strategy.test_ANOVARefinement import TestANOVARefinement
+from refinement_strategy.test_SubspaceRefinement import TestSubspaceRefinement
 
 suite1 = unittest.makeSuite(TestANOVARefinement,'test')
 suite2 = unittest.makeSuite(TestSubspaceRefinement,'test')

@@ -19,12 +19,8 @@
 ## the function itself using 100000 Monte Carlo points, and we then
 ## compute the L2-error.
 ##
-## For instructions on how to run the example, please see \ref installation.
-##
 ## The function, which sgpp::base::OperationQuadratureMC takes, has one parameter,
 ## a sequence (C++ provides a tuple) with the coordinates of the grid point \f$\in [0,1]^d\f$.
-##
-## This example can be found in the file quadrature.py 
 
 # import pysgpp library
 import pysgpp
@@ -44,17 +40,17 @@ def g(x):
   return res
 
 
-## Create a two-dimensional piecewise bi-linear grid with level 3
+## Create a two-dimensional piecewise bi-linear grid of level 3
 dim = 2
 grid = pysgpp.Grid.createLinearGrid(dim)
 gridStorage = grid.getStorage()
-print "dimensionality:        {}".format(dim)
+print("dimensionality:        {}".format(dim))
 
 # create regular grid, level 3
 level = 3
 gridGen = grid.getGenerator()
 gridGen.regular(level)
-print "number of grid points: {}".format(gridStorage.getSize())
+print("number of grid points: {}".format(gridStorage.getSize()))
 
 
 ## Calculate the surplus vector alpha for the interpolant of \f$
@@ -65,7 +61,7 @@ print "number of grid points: {}".format(gridStorage.getSize())
 
 # create coefficient vector
 alpha = pysgpp.DataVector(gridStorage.getSize())
-for i in xrange(gridStorage.getSize()):
+for i in range(gridStorage.getSize()):
   gp = gridStorage.getPoint(i)
   p = tuple([gp.getStandardCoordinate(j) for j in range(dim)])
   alpha[i] = f(p)
@@ -78,32 +74,32 @@ pysgpp.createOperationHierarchisation(grid).doHierarchisation(alpha)
 # direct quadrature
 opQ = pysgpp.createOperationQuadrature(grid)
 res = opQ.doQuadrature(alpha)
-print "exact integral value:  {}".format(res)
+print("exact integral value:  {}".format(res))
 
 # Monte Carlo quadrature using 100000 paths
 opMC = pysgpp.OperationQuadratureMC(grid, 100000)
 res = opMC.doQuadrature(alpha)
-print "Monte Carlo value:     {:.6f}".format(res)
+print("Monte Carlo value:     {:.6f}".format(res))
 res = opMC.doQuadrature(alpha)
-print "Monte Carlo value:     {:.6f}".format(res)
+print("Monte Carlo value:     {:.6f}".format(res))
 
 
 # Monte Carlo quadrature of a standard parabola
 res = opMC.doQuadratureFunc(f)
-print "MC value (f):          {:.6f}".format(res)
+print("MC value (f):          {:.6f}".format(res))
 
 # Monte Carlo quadrature of error
 res = opMC.doQuadratureL2Error(f, alpha)
-print "MC L2-error (f-u)      {:.7f}".format(res)
+print("MC L2-error (f-u)      {:.7f}".format(res))
 
 
 # Monte Carlo quadrature of a piramidal function
 res = opMC.doQuadratureFunc(g)
-print "MC value (g):          {:.6f}".format(res)
+print( "MC value (g):          {:.6f}".format(res))
 
 # Monte Carlo quadrature of error
 res = opMC.doQuadratureL2Error(g, alpha)
-print "MC L2-error (g-u)      {:.7f}".format(res)
+print( "MC L2-error (g-u)      {:.7f}".format(res))
 
 ## This results in an output similar to:
 ## \verbinclude quadrature.output.txt

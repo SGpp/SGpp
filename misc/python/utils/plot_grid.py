@@ -38,7 +38,7 @@ Example usage for gnuplot:
     
     # check arguments
     if not (options.gnuplot and options.grid and options.alpha):
-        print "param missing"
+        print ("param missing" )
         parser.parse_args(['-h'])
     
     

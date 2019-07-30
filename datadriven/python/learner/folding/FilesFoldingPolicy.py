@@ -7,7 +7,7 @@
                                     #
 #############################################################################
 
-from FoldingPolicy import FoldingPolicy
+from pysgpp.extensions.datadriven.learner.folding.FoldingPolicy import FoldingPolicy
 from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 import math
 
@@ -40,7 +40,7 @@ class FilesFoldingPolicy(FoldingPolicy):
         # number of files:
         self.level = fileCounter
 
-        for step in xrange(self.level):
+        for step in range(self.level):
             self.dataFold.append(
                                  # merge all data containers except the one with number =step
                                  DataContainer.merge(datasets[:step] + datasets[step+1:])

@@ -4497,7 +4497,8 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, nesting_state,
   # developers fault.
   if (not line.startswith('#include') and not is_header_guard and
       not Match(r'^\s*//.*http(s?)://\S*$', line) and
-      not Match(r'^// \$Id:.*#[0-9]+ \$$', line)):
+      not Match(r'^// \$Id:.*#[0-9]+ \$$', line) and
+      not Match(r'^\s* <td>\image', line)):
     line_width = GetLineWidth(line)
     extended_length = int((_line_length * 1.25))
     if line_width > extended_length:

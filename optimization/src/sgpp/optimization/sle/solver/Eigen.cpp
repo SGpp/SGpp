@@ -112,7 +112,7 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
       if (rowsDone % 100 == 0) {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
-                 static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
+               static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
         Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
                                                  ")");
       }

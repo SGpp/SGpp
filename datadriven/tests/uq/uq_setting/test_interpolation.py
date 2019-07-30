@@ -29,7 +29,7 @@ class InterpolationTest(unittest.TestCase):
         def postprocessor(x, *args, **kws):
             return {'x': np.array([x[0],
                                    -x[0]]),
-                    'time': range(len(x))}
+                    'time': list(range(len(x)))}
 
         f = lambda x, **kws: [x[0], 2 * x[0], 4 * x[0], 8 * x[0]]
         toi = [0, 1]

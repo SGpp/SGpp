@@ -31,44 +31,45 @@ def randu_mat(nrows, ncols):
 ## ~~~ Main ~~~ ##
 def main():
     # Generate data
-    print "generate dataset... ",
+    print("generate dataset... ", end=' ')
     data_tr,_ = generate_friedman1(123456)
-    print "Done"
-    print "generated a friedman1 dataset (10D) with 2000 samples"
+    print("Done")
+    print("generated a friedman1 dataset (10D) with 2000 samples")
     
     # Config grid
-    print "create grid config... ",
+    print("create grid config... ", end=' ')
     grid = sg.RegularGridConfiguration()
     grid.dim_ = 10
     grid.level_ = 3
     grid.type_ = sg.GridType_Linear
-    print "Done"
+    print("Done")
 
     # Config adaptivity
-    print "create adaptive refinement config... ",
+    print("create adaptive refinement config... ", end=' ')
     adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
     adapt.noPoints_ = 10
-    print "Done"
+    print("Done")
     
     # Config solver
-    print "create solver config... ",
+    print("create solver config... ", end=' ')
     solv = sg.SLESolverConfiguration()
     solv.maxIterations_ = 1000
     solv.eps_ = 1e-14
     solv.threshold_ = 1e-14
     solv.type_ = sg.SLESolverType_CG
-    print "Done"
+    print("Done")
 
     # Config regularization
-    print "create regularization config... ",
+    print("create regularization config... ", end=' ')
     regular = sg.RegularizationConfiguration()
     regular.regType_ = sg.RegularizationType_Laplace  
-    print "Done"
+    print("Done")
 
     # Config cross validation for learner
-    print "create learner config... ",
-    crossValid = sg.CrossvalidationForRegularizationConfiguration()
+    print("create learner config... ", end=' ')
+    #crossValid = sg.CrossvalidationConfiguration()
+    crossValid = sg.CrossvalidationConfiguration()
     crossValid.enable_ = False
     crossValid.kfold_ = 3
     crossValid.lambda_ = 3.16228e-06
@@ -79,42 +80,42 @@ def main():
     crossValid.shuffle_ = True
     crossValid.seed_ = 1234567
     crossValid.silent_ = False
-    print "Done"
+    print("Done")
 
     #
     # Create the learner with the given configuration
     #
-    print "create the learner... "
+    print("create the learner... ")
     learner = sg.LearnerSGDE(grid, adapt, solv, regular, crossValid)
     learner.initialize(data_tr)
     
     # Train the learner
-    print "start training... "
+    print("start training... ")
     learner.train()
-    print "done training"
+    print("done training")
     
     #
     # Estimate the probability density function (pdf) via a Gaussian kernel 
     # density estimation (KDE) and print the corresponding values
     #
-    kde = sg.GaussianKDE(data_tr)
+    kde = sg.KernelDensityEstimator(data_tr)
     x = sg.DataVector(learner.getDim())
     x.setAll(0.5)
     
-    print "-----------------------------------------------"
-    print learner.getSurpluses().getSize(), " -> ", learner.getSurpluses().sum()
-    print "pdf_SGDE(x) = ", learner.pdf(x), " ~ ", kde.pdf(x), " = pdf_KDE(x)"
-    print "mean_SGDE = ", learner.mean(), " ~ ", kde.mean(), " = mean_KDE"
-    print "var_SGDE = ", learner.variance(), " ~ ", kde.variance(), " = var_KDE"
+    print("-----------------------------------------------")
+    print(learner.getSurpluses().getSize(), " -> ", learner.getSurpluses().sum())
+    print("pdf_SGDE(x) = ", learner.pdf(x), " ~ ", kde.pdf(x), " = pdf_KDE(x)")
+    print("mean_SGDE = ", learner.mean(), " ~ ", kde.mean(), " = mean_KDE")
+    print("var_SGDE = ", learner.variance(), " ~ ", kde.variance(), " = var_KDE")
     
     # Print the covariances
     C = sg.DataMatrix(grid.dim_, grid.dim_)
-    print "----------------------- Cov_SGDE -----------------------"
+    print("----------------------- Cov_SGDE -----------------------")
     learner.cov(C)
-    print C
-    print "----------------------- Cov_KDE -----------------------"
+    print(C)
+    print("----------------------- Cov_KDE -----------------------")
     kde.cov(C)
-    print C
+    print(C)
     
     #
     # Apply the inverse Rosenblatt transformatio to a matrix of random points. To 
@@ -122,10 +123,10 @@ def main():
     # inverse Rosenblatt transformation operation and apply it to the points.
     # Finally print the calculated values
     #
-    print "-----------------------------------------------"
+    print("-----------------------------------------------")
     opInvRos = sg.createOperationInverseRosenblattTransformation(learner.getGrid())
     points = sg.DataMatrix(randu_mat(12, grid.dim_))
-    print points
+    print(points)
     
     pointsCdf = sg.DataMatrix(points.getNrows(), points.getNcols())
     opInvRos.doTransformation(learner.getSurpluses(), points, pointsCdf)
@@ -139,10 +140,10 @@ def main():
     opRos = sg.createOperationRosenblattTransformation(learner.getGrid())
     opRos.doTransformation(learner.getSurpluses(), pointsCdf, points)
     
-    print "-----------------------------------------------"
-    print pointsCdf
-    print "-----------------------------------------------"
-    print points
+    print("-----------------------------------------------")
+    print(pointsCdf)
+    print("-----------------------------------------------")
+    print(points)
     
     
 if __name__ == '__main__':

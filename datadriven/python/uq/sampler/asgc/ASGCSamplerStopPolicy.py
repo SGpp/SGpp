@@ -87,11 +87,11 @@ class ASGCSamplerStopPolicy(object):
             attrValue = self.__getattribute__(attrName)
             
             #lists, integers, floats, dictionaries can serialized with str()
-            if type(attrValue) in [types.ListType, types.IntType, 
-                             types.FloatType, types.DictType] and attrName.find("__") != 0: 
+            if type(attrValue) in [list, int, 
+                             float, dict] and attrName.find("__") != 0: 
                 serializationString += "'" + attrName + "'" + " : " + str(attrValue) + ",\n"
             # serialize strings with quotes    
-            elif type(attrValue) == types.StringType and attrName.find("__") != 0:
+            elif type(attrValue) == bytes and attrName.find("__") != 0:
                 serializationString += "'" + attrName + "'" + " : '" + attrValue + "',\n"
                 
         serializationString = "{" + serializationString.rstrip(",\n") + "}"

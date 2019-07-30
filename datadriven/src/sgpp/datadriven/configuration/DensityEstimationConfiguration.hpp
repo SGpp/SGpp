@@ -24,11 +24,14 @@ namespace datadriven {
 
 enum class DensityEstimationType { CG, Decomposition };
 
-enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
+enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
-  DensityEstimationType type_;  // Type of density estimation
+  DensityEstimationType type_;             // Type of density estimation
   MatrixDecompositionType decomposition_;  // Type of matrix decomposition
+
+  // flag for normalization in DBMatOnlineDE
+  bool normalize_ = false;
 
   // Incomplete Cholesky Decomposition parameters
   size_t iCholSweepsDecompose_ = 4;

@@ -51,15 +51,15 @@ class ASGCParabolaTest(unittest.TestCase):
         labels = ['sg', 'scc', 'fg', 'ref']
         filenames = ["%s.%s.%s.uqSetting.gz" % (cls.radix, cls.param_setting, label)
                      for label in labels]
-        cls.uqSettingsFilenames = dict(zip(labels, filenames))
+        cls.uqSettingsFilenames = dict(list(zip(labels, filenames)))
 
         # define UQSettings
         cls.uqSettings = {}
-        for label, filename in cls.uqSettingsFilenames.items():
-            print "Read %s" % filename,
+        for label, filename in list(cls.uqSettingsFilenames.items()):
+            print("Read %s" % filename, end=' ')
             cls.uqSettings[label] = cls.defineUQSetting(filename)
-            print cls.uqSettings[label].getSize(), \
-                cls.uqSettings[label].getAvailableQoI()
+            print(cls.uqSettings[label].getSize(), \
+                cls.uqSettings[label].getAvailableQoI())
             cls.uqSettings[label].convert(cls.params)
 
         # compute reference values
@@ -78,15 +78,15 @@ class ASGCParabolaTest(unittest.TestCase):
             diag = np.eye(numDims) * 0.005
             offdiag = np.abs(np.eye(numDims) - 1) * 0.001
             cov = diag + offdiag
-    
+
             # estimate the density
-            names = ", ".join(["x%i" for i in xrange(numDims)])
+            names = ", ".join(["x%i" for i in range(numDims)])
             up.new().isCalled(names).withMultivariateNormalDistribution(mu, cov, 0, 1)
         elif setting == "uniform":
-            for idim in xrange(numDims):
+            for idim in range(numDims):
                 up.new().isCalled("x%i" % idim).withUniformDistribution(0, 1)
         elif setting == "tnormal":
-            for idim in xrange(numDims):
+            for idim in range(numDims):
                 up.new().isCalled("x%i" % idim).withTNormalDistribution(0.5, 0.1, 0, 1)
 
         cls.params = builder.andGetResult()
@@ -113,25 +113,25 @@ class ASGCParabolaTest(unittest.TestCase):
         U = cls.params.getIndependentJointDistribution()
         computeWithMC = False
         if cls.param_setting == "uniform":
-            print "computing analytic results"
-            cls.E_ana = (2. / 3.) ** numDims, 0.0
+            print("computing analytic results")
+            cls.E_ana = ((2. / 3.)) ** numDims, 0.0
             if numDims == 1:
-                cls.V_ana = 4. / 45., 0.0
+                cls.V_ana = (4. / 45.), 0.0
             elif numDims == 2:
-                cls.V_ana = 176. / 2025., 0.0
+                cls.V_ana = (176. / 2025.), 0.0
             elif numDims == 3:
-                cls.V_ana = 60416. / 820125., 0.0
+                cls.V_ana = (60416. / 820125.), 0.0
             elif numDims == 4:
-                cls.V_ana = 1705984. / 36905625., 0.0
+                cls.V_ana = (1705984. / 36905625.), 0.0
             else:
                 computeWithMC = True
         else:
             if numDims == 1:
-                print "computing analytic results 1d"
+                print("computing analytic results 1d")
                 cls.E_ana = quad(lambda x: g([x]) * U.pdf([x]), 0, 1)
                 cls.V_ana = quad(lambda x: (g([x]) - cls.E_ana[0]) ** 2 * U.pdf([x]), 0, 1)
             elif numDims == 2:
-                print "computing analytic results 2d"
+                print("computing analytic results 2d")
                 cls.E_ana = dblquad(lambda x, y: g([x, y]) * U.pdf([x, y]),
                                     0, 1, lambda x: 0, lambda x: 1)
                 cls.V_ana = dblquad(lambda x, y: (g([x, y]) - cls.E_ana[0]) ** 2 * U.pdf([x, y]),
@@ -142,7 +142,7 @@ class ASGCParabolaTest(unittest.TestCase):
         # ----------------------------------------------------------
         # dicretize the stochastic space with Monte Carlo
         # ----------------------------------------------------------
-        print "computing monte carlo reference values"
+        print("computing monte carlo reference values")
         n -= uqSetting.getSize()
         if n > 0:
             mcSampler = MCSampler.withLatinHypercubeSampleGenerator(cls.params, n)
@@ -157,7 +157,7 @@ class ASGCParabolaTest(unittest.TestCase):
         analysis = MCAnalysis(cls.params, res)
 
         if computeWithMC:
-            print "computing analytic results > 2d"
+            print("computing analytic results > 2d")
             cls.E_ana = analysis.mean()
             cls.V_ana = analysis.var()
 
@@ -177,10 +177,10 @@ class ASGCParabolaTest(unittest.TestCase):
                  'filename': "results/%s/%s.ref.moments.arff" % (cls.param_setting, cls.param_setting)}
         writeDataARFF(stats)
 
-        print "-" * 60
-        print "E(f) = %.14f, %g" % cls.E_ana
-        print "V(f) = %.14f, %g" % cls.V_ana
-        print "-" * 60
+        print("-" * 60)
+        print("E(f) = %.14f, %g" % cls.E_ana)
+        print("V(f) = %.14f, %g" % cls.V_ana)
+        print("-" * 60)
 
     def buildSetting(self, label, level, gridType, deg=1,
                      nsamples=1000,
@@ -282,17 +282,17 @@ class ASGCParabolaTest(unittest.TestCase):
 
 #         print "sobol indices"
 #         analysis.writeSensitivityValues(os.path.join(pathResults, label))
-        print "surpluses"
+        print("surpluses")
         analysis.writeSurplusesLevelWise(os.path.join(pathResults, label))
-        print "stats"
+        print("stats")
         analysis.writeStats(os.path.join(pathResults, label))
-        print "moments"
+        print("moments")
         analysis.writeMoments(os.path.join(pathResults, label))
-        print "sampling"
+        print("sampling")
         analysis.sampleGrids(os.path.join(pathResults, "samples", label))
-        print "checkpoints"
+        print("checkpoints")
         analysis.writeCheckpoints(os.path.join(pathResults, "checkpoints", label))
-        print "density"
+        print("density")
         kde = analysis.estimateDensity(dtype="kde")
         sgde = analysis.estimateDensity(dtype="sgde")
         kdeMC = None
@@ -332,7 +332,7 @@ class ASGCParabolaTest(unittest.TestCase):
 
     def parabola_regular(self, label='sg', deg=1):
         dataContainer = None
-        for level in xrange(1, 10):
+        for level in range(1, 10):
             # run setting
             clabel = "%s_l%i" % (label, level)
             uqManager = self.buildSetting(label, level, GridType_Linear,
@@ -344,7 +344,7 @@ class ASGCParabolaTest(unittest.TestCase):
 
     def parabola_full(self, label='fg'):
         dataContainer = None
-        for level in xrange(1, 7):
+        for level in range(1, 7):
             # run setting
             clabel = "%s_l%i" % (label, level)
             uqManager = self.buildSetting(label, level, GridType_Linear,
@@ -356,7 +356,7 @@ class ASGCParabolaTest(unittest.TestCase):
 
     def parabola_regular_clenshaw_curtis(self, label='scc', deg=1):
         dataContainer = None
-        for level in xrange(1, 10):
+        for level in range(1, 10):
             # run setting
             clabel = "%s_l%i" % (label, level)
             uqManager = self.buildSetting(label, level,
@@ -369,7 +369,7 @@ class ASGCParabolaTest(unittest.TestCase):
 
 
     def parabola_adaptive(self, label='sg', deg=1):
-        for level in xrange(2, 6):
+        for level in range(2, 6):
             # run setting
             clabel = "%s_l%i" % (label, level)
             uqManager = self.buildSetting(label, level, GridType_Linear,

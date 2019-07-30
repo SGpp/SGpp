@@ -14,7 +14,14 @@
 namespace sgpp {
 namespace datadriven {
 
-enum class OperationMultipleEvalType { DEFAULT, STREAMING, SUBSPACELINEAR, ADAPTIVE, MORTONORDER };
+enum class OperationMultipleEvalType {
+  DEFAULT,
+  STREAMING,
+  SUBSPACELINEAR,
+  ADAPTIVE,
+  MORTONORDER,
+  SCALAPACK
+};
 
 enum class OperationMultipleEvalSubType {
   DEFAULT,

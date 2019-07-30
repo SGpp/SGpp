@@ -3,8 +3,8 @@ from pysgpp import (DataVector,
                     LatinHypercubeSampleGenerator,
                     HaltonSampleGenerator,
                     StratifiedSampleGenerator)
-from Sample import Samples, SampleType, DistributionType
-from Sampler import Sampler
+from pysgpp.extensions.datadriven.uq.sampler.Sample import Samples, SampleType, DistributionType
+from pysgpp.extensions.datadriven.uq.sampler.Sampler import Sampler
 
 
 class MCSampler(Sampler):
@@ -49,7 +49,7 @@ class MCSampler(Sampler):
             p = DataVector(self._dim)
             ans = Samples(self._params, dtype=DistributionType.UNITUNIFORM)
             U = self._params.activeParams().getIndependentJointDistribution()
-            for _ in xrange(n):
+            for _ in range(n):
                 self.__genObj.getSample(p)
 
                 # transform it to the probabilistic space

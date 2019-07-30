@@ -82,7 +82,8 @@ int main(int argc, char **argv) {
     std::cout << "lambda: " << lambda << std::endl;
   }
 
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(datasetFileName);
+  sgpp::datadriven::Dataset dataset =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(datasetFileName);
   size_t dimension = dataset.getDimension();
   std::cout << "dimension: " << dimension << std::endl;
   sgpp::base::DataMatrix &trainingData = dataset.getData();

@@ -129,7 +129,7 @@ printSurfaceFile = %s
         grid.getGenerator().regular(level)
 
         if grid.getSize() <= n:
-            print " l=%i" % level,
+            print(( " l=%i" % level, ))
             fd = open(gridFile, "w")
             fd.write(grid.serialize())
             fd.close()
@@ -284,8 +284,8 @@ printSurfaceFile = %s
 
                 writeAlphaARFF(alphaFileNew, ans.alpha)
                 # -----------------------------------------------------------
-            print ": %s = %g <= %g" % (optimization, measure, bestMeasure)
-    print
+            print( ": %s = %g <= %g" % (optimization, measure, bestMeasure) )
+    print( )
     # -----------------------------------------------------------
     # write results to file
     statsfilename = os.path.join(pathResults,

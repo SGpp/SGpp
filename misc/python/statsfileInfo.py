@@ -55,7 +55,7 @@ data = []
 for i in range(len(txt)):
     txt[i] = txt[i].strip()
     if txt[i] != "":
-        data.append(map(lambda x: float(x), txt[i].split(", ")))
+        data.append([float(x) for x in txt[i].split(", ")])
 
 # sort data by lambda
 def sortFun(a,b):
@@ -70,14 +70,14 @@ data.sort(sortFun, reverse=True)
 # init values
 if options.min:
     # minimum
-    opt_tr = sys.maxint
-    opt_te = sys.maxint
+    opt_tr = sys.maxsize
+    opt_te = sys.maxsize
 else:
     # maximum
     opt_tr = 0
     opt_te = 0
-opt_tr_numpoints = sys.maxint
-opt_te_numpoints = sys.maxint
+opt_tr_numpoints = sys.maxsize
+opt_te_numpoints = sys.maxsize
 opt_tr_s = ""
 opt_te_s = ""
 s = ""
@@ -90,8 +90,8 @@ for line in data:
         # get min and max
         if options.min:
             # minimum
-            lopt_tr = sys.maxint
-            lopt_te = sys.maxint
+            lopt_tr = sys.maxsize
+            lopt_te = sys.maxsize
         else:
             # maximum
             lopt_tr = 0
@@ -139,4 +139,4 @@ s = "Results for file %s\n" % (args[0]) + s
 if options.outfile:
     tools.writeStringToFile(s, options.outfile)
 else:
-    print s
+    print( s )

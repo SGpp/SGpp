@@ -1,12 +1,15 @@
 {
 	"dataSource": {
-		"filePath": "../../datasets/ripley/ripleyGarcke.train.arff",
+		"filePath": "../datasets/ripley/ripleyGarcke.train.arff",
 		"hasTargets" : true,
 		"batchSize" : 10,
 		"validationPortion" : 0.2,
 		"epochs" : 2,
 		"shuffling" : "random",
-		"randomSeed" : -1
+		"randomSeed" : -1,
+		"readinCutoff": -1,
+		"readinClasses": [-1, 1],
+		"readinColumns": [0, 1]
 	},
 	"scorer": {
 		"metric": "Accuracy"
@@ -14,8 +17,8 @@
 	"fitter": {
 		"type": "classification",
 		"gridConfig": {
-			"gridType": "linear",
-			"level": 5
+			"gridType": "modlinear",
+			"level": 3
 		},
 		"adaptivityConfig": {
 				"numRefinements": 10,
@@ -32,7 +35,8 @@
 			"lambda": 1e-2
 		},
 		"densityEstimationConfig" : {
-			"densityEstimationType" : "decomposition"
+			"densityEstimationType" : "decomposition",
+			"matrixDecompositionType" : "smw_ortho"
 		},
 		"learner" : {
 			"usePrior" : true,

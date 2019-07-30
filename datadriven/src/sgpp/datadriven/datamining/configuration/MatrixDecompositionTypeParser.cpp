@@ -35,9 +35,14 @@ MatrixDecompositionType MatrixDecompositionTypeParser::parse(const std::string &
     return sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   } else if (inputLower.compare("orthoadapt") == 0) {
     return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  } else if (inputLower.compare("smw_ortho") == 0) {
+    return sgpp::datadriven::MatrixDecompositionType::SMW_ortho;
+  } else if (inputLower.compare("smw_chol") == 0) {
+    return sgpp::datadriven::MatrixDecompositionType::SMW_chol;
   } else {
-    std::string errorMsg = "Failed to convert string \"" + input + "\" to any "
-        "known MatrixDecompositionType";
+    std::string errorMsg = "Failed to convert string \"" + input +
+                           "\" to any "
+                           "known MatrixDecompositionType";
     throw data_exception(errorMsg.c_str());
   }
 }
@@ -48,12 +53,14 @@ const std::string &MatrixDecompositionTypeParser::toString(MatrixDecompositionTy
 
 const MatrixDecompositionTypeParser::MatrixDecompositionTypeMap_t
     MatrixDecompositionTypeParser::matrixDecompositionTypeMap = []() {
-  return MatrixDecompositionTypeMap_t{
-      std::make_pair(MatrixDecompositionType::LU, "LU"),
-      std::make_pair(MatrixDecompositionType::Eigen, "Eigen"),
-      std::make_pair(MatrixDecompositionType::Chol, "Chol"),
-      std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
-      std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt")};
-}();
+      return MatrixDecompositionTypeMap_t{
+          std::make_pair(MatrixDecompositionType::LU, "LU"),
+          std::make_pair(MatrixDecompositionType::Eigen, "Eigen"),
+          std::make_pair(MatrixDecompositionType::Chol, "Chol"),
+          std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
+          std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt"),
+          std::make_pair(MatrixDecompositionType::SMW_ortho, "SMW_ortho"),
+          std::make_pair(MatrixDecompositionType::SMW_chol, "SMW_chol")};
+    }();
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -3,7 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-from __future__ import print_function
 
 import glob
 import os
@@ -21,11 +20,7 @@ def convertExampleSourceToDoxy(sourcePath):
   sourceFileName = sourcePathComponents[-1]
   sourceFileType = os.path.splitext(sourceFileName)[1][1:]
   moduleName = sourcePathComponents[sourcePathComponents.index("examples") - 1]
-
   doxyFolder = os.path.join(moduleName, "doc", "doxygen")
-  snippetFolder = os.path.join(doxyFolder, "snippets")
-  # create path if not there
-  if not os.path.exists(snippetFolder): os.makedirs(snippetFolder)
 
   # feasible languages
   if sourceFileType == "cpp":
@@ -145,6 +140,9 @@ def convertExampleSourcesToDoxy(modules):
   for moduleName in modules:
     examplePath = os.path.join(moduleName, "examples")
 
+    snippetsFolder = os.path.join(moduleName, "doc", "doxygen", "snippets")
+    if not os.path.exists(snippetsFolder): os.makedirs(snippetsFolder)
+
     # search for examples
     for exampleFileName in os.listdir(examplePath):
       if any([exampleFileName.endswith(ext) for ext in [".cpp", ".py", ".java", ".m"]]):
@@ -207,8 +205,6 @@ def createLanguageExampleDoxy(examples):
       languageName = {"cpp" : "C++", "py" : "Python", "java" : "Java", "m" : "MATLAB"}[language]
       examplesFile.write("@page examples_{} {} Examples\n".format(language, languageName))
       examplesFile.write("This is a list of all {} examples.\n".format(languageName))
-      examplesFile.write("If you don't know where to start, look at the @ref " +
-                         "example_tutorial_{} example first.\n".format(language))
       examplesFile.write("All examples can be found in the <tt>MODULE_NAME/example/</tt> " +
                          "directories.\n")
       if language == "cpp":
@@ -217,8 +213,6 @@ def createLanguageExampleDoxy(examples):
                            "same directory in which the examples reside and can be run " +
                            "directly, if <tt>LD_LIBRARY_PATH</tt> (on Linux/Mac) or " +
                            "<tt>PATH</tt> (on Windows) is set correctly.\n")
-      examplesFile.write("\nFor more instructions on how to run the examples, " +
-                         "please see @ref installation.\n\n")
 
       # split examples of current language into the different modules
       moduleNames = sorted(list(set([example["moduleName"] for example in examplesInLanguage])))
@@ -231,27 +225,6 @@ def createLanguageExampleDoxy(examples):
           examplesFile.write("- @subpage {}\n".format(example["pageName"]))
 
       examplesFile.write("**/\n")
-
-# create module page listing all the available modules
-def createModuleDoxy(modules):
-  with open(os.path.join("base", "doc", "doxygen", "modules.stub0"), "r") as f:
-    stub0 = f.read()
-  with open(os.path.join("base", "doc", "doxygen", "modules.stub1"), "r") as f:
-    stub1 = f.read()
-
-  with open(os.path.join("base", "doc", "doxygen", "modules.doxy"), "w") as f:
-    f.write(stub0)
-
-    for moduleName in modules:
-      for subpage in glob.glob(os.path.join(moduleName, "doc", "doxygen", "module_*.doxy")):
-        short_discription = ''
-        page = open(subpage, 'rt')
-        for line in page.xreadlines():
-          if "@short" in line:
-            short_discription = line.strip().replace('@short', '')
-        f.write("- @subpage %s %s\n"%(os.path.splitext(os.path.split(subpage)[-1])[0], short_discription))
-
-    f.write(stub1)
 
 # patch Doxygen navigation tree to extend specific navtree points by default
 # to ensure that users see and read those pages more likely;
@@ -308,4 +281,3 @@ def prepareDoxygen(modules):
   createDoxyfile(modules)
   examples = convertExampleSourcesToDoxy(modules)
   createLanguageExampleDoxy(examples)
-  createModuleDoxy(modules)
