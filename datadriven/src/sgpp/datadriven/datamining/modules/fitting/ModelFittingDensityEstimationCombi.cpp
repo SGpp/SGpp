@@ -233,7 +233,8 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
   }
 }
 
-void ModelFittingDensityEstimationCombi::addNewModel(std::pair<std::vector<size_t>, int> combiconfig) {
+void ModelFittingDensityEstimationCombi::addNewModel(
+    std::pair<std::vector<size_t>, int> combiconfig) {
   FitterConfigurationDensityEstimation newFitterConfig{};
   newFitterConfig.setupDefaults();
   newFitterConfig.getDensityEstimationConfig().type_ =
