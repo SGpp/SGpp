@@ -114,7 +114,7 @@
 #include "operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp"
 #endif
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include "../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 #ifdef USE_CUDA
 #include "operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp"

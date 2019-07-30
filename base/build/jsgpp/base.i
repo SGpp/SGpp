@@ -189,6 +189,50 @@ namespace std {
 %include "solver/src/sgpp/solver/ode/Euler.hpp"
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"*/
 
+%include "base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
+// SLE
+%include "base/src/sgpp/base/tools/sle/system/SLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/CloneableSLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
+
+%include "base/src/sgpp/base/tools/sle/solver/SLESolver.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Armadillo.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Auto.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Gmmpp.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/UMFPACK.hpp"
+
+%include "base/src/sgpp/base/tools/MutexType.hpp"
+%include "base/src/sgpp/base/tools/Printer.hpp"
+
+%include "base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/ScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/ScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunctionHessian.hpp"
+
+%include "base/src/sgpp/base/function/vector/VectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/VectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/VectorFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunctionHessian.hpp"
+
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/EmptyVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp"
 
 // and the rest
 //%apply std::string *INPUT { std::string& istr };

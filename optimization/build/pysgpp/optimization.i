@@ -43,7 +43,6 @@ const bool UMFPACK_ENABLED;
 
 // necessary tools
 %rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
-%include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
 
 // renames
 %rename(OptScalarFunction)                      sgpp::optimization::ScalarFunction;
@@ -77,17 +76,18 @@ const bool UMFPACK_ENABLED;
 %rename(OptIterativeGridGeneratorRitterNovak)   sgpp::optimization::IterativeGridGeneratorRitterNovak;
 %rename(OptIterativeGridGeneratorSOO)           sgpp::optimization::IterativeGridGeneratorSOO;
 
-%rename(OptSLE)                     sgpp::optimization::SLE;
-%rename(OptFullSLE)                 sgpp::optimization::FullSLE;
-%rename(OptHierarchisationSLE)      sgpp::optimization::HierarchisationSLE;
-%rename(OptSLESolver)               sgpp::optimization::sle_solver::SLESolver;
-%rename(OptArmadillo)               sgpp::optimization::sle_solver::Armadillo;
-%rename(OptAutoSLESolver)           sgpp::optimization::sle_solver::Auto;
-%rename(OptBiCGStab)                sgpp::optimization::sle_solver::BiCGStab;
-%rename(OptEigen)                   sgpp::optimization::sle_solver::Eigen;
-%rename(OptGaussianElimination)     sgpp::optimization::sle_solver::GaussianElimination;
-%rename(OptGmmpp)                   sgpp::optimization::sle_solver::Gmmpp;
-%rename(OptUMFPACK)                 sgpp::optimization::sle_solver::UMFPACK;
+// remove the following, if everything works with SLE in base
+//%rename(OptSLE)                     sgpp::optimization::SLE;
+//%rename(OptFullSLE)                 sgpp::optimization::FullSLE;
+//%rename(OptHierarchisationSLE)      sgpp::optimization::HierarchisationSLE;
+//%rename(OptSLESolver)               sgpp::optimization::sle_solver::SLESolver;
+//%rename(OptArmadillo)               sgpp::optimization::sle_solver::Armadillo;
+//%rename(OptAutoSLESolver)           sgpp::optimization::sle_solver::Auto;
+//%rename(OptBiCGStab)                sgpp::optimization::sle_solver::BiCGStab;
+//%rename(OptEigen)                   sgpp::optimization::sle_solver::Eigen;
+//%rename(OptGaussianElimination)     sgpp::optimization::sle_solver::GaussianElimination;
+//%rename(OptGmmpp)                   sgpp::optimization::sle_solver::Gmmpp;
+//%rename(OptUMFPACK)                 sgpp::optimization::sle_solver::UMFPACK;
 
 %rename(OptUnconstrainedOptimizer)  sgpp::optimization::optimizer::UnconstrainedOptimizer;
 %rename(OptAdaptiveGradientDescent) sgpp::optimization::optimizer::AdaptiveGradientDescent;
@@ -319,32 +319,6 @@ const bool UMFPACK_ENABLED;
 }
 
 // includes
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp"
-
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
-
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
-
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
@@ -352,20 +326,6 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
-
-%include "optimization/src/sgpp/optimization/sle/system/SLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/CloneableSLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/FullSLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/HierarchisationSLE.hpp"
-
-%include "optimization/src/sgpp/optimization/sle/solver/SLESolver.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Armadillo.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Auto.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/BiCGStab.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Eigen.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/GaussianElimination.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Gmmpp.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/UMFPACK.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp"
@@ -433,8 +393,6 @@ const bool UMFPACK_ENABLED;
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"
-%include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
-%include "optimization/src/sgpp/optimization/tools/Printer.hpp"
 
 %include "OpFactory.i"
 

@@ -11,10 +11,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <vector>
 #include <map>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {

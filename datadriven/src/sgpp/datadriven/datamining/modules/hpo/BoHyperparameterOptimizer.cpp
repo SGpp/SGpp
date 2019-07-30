@@ -13,11 +13,10 @@
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-
 #include <vector>
 #include <string>
 #include <limits>
+#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
 
 namespace sgpp {
 namespace datadriven {

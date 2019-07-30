@@ -35,7 +35,7 @@ class IterativeGridGeneratorSOO : public IterativeGridGenerator {
    * @param N             maximal number of grid points
    * @param adaptivity    adaptivity (positive number)
    */
-  IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
+  IterativeGridGeneratorSOO(base::ScalarFunction& f, base::Grid& grid, size_t N,
                             double adaptivity = DEFAULT_ADAPTIVITY);
 
   /**

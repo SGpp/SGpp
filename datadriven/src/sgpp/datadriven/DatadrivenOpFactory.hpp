@@ -30,13 +30,8 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
-/*
- * This file contains factory methods for operations.
- */
-
 #include <sgpp/globaldef.hpp>
+#include "../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace op_factory {
