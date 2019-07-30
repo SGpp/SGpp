@@ -41,12 +41,12 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
   } else if ((grid.getType() == base::GridType::BsplineBoundary) ||
              (grid.getType() == base::GridType::WaveletBoundary) ||
              (grid.getType() == base::GridType::LinearBoundary) ||
-             (grid.getType() == base::GridType::FundamentalNotAKnotSplineBoundary) ||
+             (grid.getType() == base::GridType::FundamentalNakSplineBoundary) ||
              (grid.getType() == base::GridType::FundamentalSplineBoundary) ||
-             (grid.getType() == base::GridType::WeaklyFundamentalNotAKnotSplineBoundary) ||
+             (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) ||
              (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) ||
              (grid.getType() == base::GridType::NaturalBsplineBoundary) ||
-             (grid.getType() == base::GridType::NotAKnotBsplineBoundary)) {
+             (grid.getType() == base::GridType::NakBsplineBoundary)) {
     linearGrid =
         std::unique_ptr<base::Grid>(new base::LinearBoundaryGrid(f.getNumberOfParameters()));
   } else if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
@@ -60,8 +60,8 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
              (grid.getType() == base::GridType::ModWavelet) ||
              (grid.getType() == base::GridType::ModLinear) ||
              (grid.getType() == base::GridType::ModFundamentalSpline) ||
-             (grid.getType() == base::GridType::ModWeaklyFundamentalNotAKnotSpline) ||
-             (grid.getType() == base::GridType::ModNotAKnotBspline)) {
+             (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) ||
+             (grid.getType() == base::GridType::ModNakBspline)) {
     linearGrid = std::unique_ptr<base::Grid>(new base::ModLinearGrid(f.getNumberOfParameters()));
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     linearGrid = std::unique_ptr<base::Grid>(
@@ -95,10 +95,10 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
       (grid.getType() == base::GridType::LinearBoundary) ||
       (grid.getType() == base::GridType::BsplineClenshawCurtis) ||
       (grid.getType() == base::GridType::LinearClenshawCurtisBoundary) ||
-      (grid.getType() == base::GridType::WeaklyFundamentalNotAKnotSplineBoundary) ||
+      (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) ||
       (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) ||
       (grid.getType() == base::GridType::NaturalBsplineBoundary) ||
-      (grid.getType() == base::GridType::NotAKnotBsplineBoundary)) {
+      (grid.getType() == base::GridType::NakBsplineBoundary)) {
     // grid with boundaries
     abstractRefinement =
         std::unique_ptr<base::AbstractRefinement>(new base::HashRefinementBoundaries());

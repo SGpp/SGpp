@@ -61,4 +61,4 @@ class OperationEvalNakBsplineBoundaryCombigridNaive : public OperationEval {
 }  // namespace base
 }  // namespace sgpp
 
-#endif /* OPERATIONEVALNOTAKNOTBSPLINEBOUNDARYNAIVE_HPP */
+#endif /* OPERATIONEVALNAKBSPLINEBOUNDARYNAIVE_HPP */

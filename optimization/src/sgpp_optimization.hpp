@@ -66,16 +66,16 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNakSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalNakSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalSplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNotAKnotSpline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNotAKnotBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNakSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNakBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNaturalBsplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>

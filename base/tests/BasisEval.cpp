@@ -20,22 +20,22 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
   sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
       dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
-  sgpp::base::SFundamentalNotAKnotSplineBase* fundamentalNotAKnotSplineBasis =
-      dynamic_cast<sgpp::base::SFundamentalNotAKnotSplineBase*>(&basis);
+  sgpp::base::SFundamentalNakSplineBase* fundamentalNakSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalNakSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineModifiedBase*>(&basis);
-  sgpp::base::SWeaklyFundamentalNotAKnotSplineBase* weaklyFundamentalNotAKnotSplineBasis =
-      dynamic_cast<sgpp::base::SWeaklyFundamentalNotAKnotSplineBase*>(&basis);
-  sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase* weaklyFundamentalNotAKnotSplineModifiedBasis =
-      dynamic_cast<sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase*>(&basis);
+  sgpp::base::SWeaklyFundamentalNakSplineBase* weaklyFundamentalNakSplineBasis =
+      dynamic_cast<sgpp::base::SWeaklyFundamentalNakSplineBase*>(&basis);
+  sgpp::base::SWeaklyFundamentalNakSplineModifiedBase* weaklyFundamentalNakSplineModifiedBasis =
+      dynamic_cast<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase*>(&basis);
   sgpp::base::SWeaklyFundamentalSplineBase* weaklyFundamentalSplineBasis =
       dynamic_cast<sgpp::base::SWeaklyFundamentalSplineBase*>(&basis);
-  sgpp::base::SNotAKnotBsplineBase* notAKnotBsplineBasis =
-      dynamic_cast<sgpp::base::SNotAKnotBsplineBase*>(&basis);
-  sgpp::base::SNotAKnotBsplineModifiedBase* notAKnotBsplineModifiedBasis =
-      dynamic_cast<sgpp::base::SNotAKnotBsplineModifiedBase*>(&basis);
+  sgpp::base::SNakBsplineBase* nakBsplineBasis =
+      dynamic_cast<sgpp::base::SNakBsplineBase*>(&basis);
+  sgpp::base::SNakBsplineModifiedBase* nakBsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SNakBsplineModifiedBase*>(&basis);
   sgpp::base::SWaveletBase* waveletBasis =
       dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
   sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
@@ -53,31 +53,31 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return bsplineModifiedBasis->evalDx(l, i, x);
   } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
     return bsplineModifiedClenshawCurtisBasis->evalDx(l, i, x);
-  } else if (fundamentalNotAKnotSplineBasis != nullptr) {
-    return fundamentalNotAKnotSplineBasis->evalDx(l, i, x);
+  } else if (fundamentalNakSplineBasis != nullptr) {
+    return fundamentalNakSplineBasis->evalDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {
     return fundamentalSplineModifiedBasis->evalDx(l, i, x);
-  } else if (weaklyFundamentalNotAKnotSplineBasis != nullptr) {
-    sgpp::base::SWeaklyFundamentalNotAKnotSplineBaseDeriv1
-    basisDeriv1(weaklyFundamentalNotAKnotSplineBasis->getDegree());
+  } else if (weaklyFundamentalNakSplineBasis != nullptr) {
+    sgpp::base::SWeaklyFundamentalNakSplineBaseDeriv1
+    basisDeriv1(weaklyFundamentalNakSplineBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
-  } else if (weaklyFundamentalNotAKnotSplineModifiedBasis != nullptr) {
-    sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBaseDeriv1
-    basisDeriv1(weaklyFundamentalNotAKnotSplineModifiedBasis->getDegree());
+  } else if (weaklyFundamentalNakSplineModifiedBasis != nullptr) {
+    sgpp::base::SWeaklyFundamentalNakSplineModifiedBaseDeriv1
+    basisDeriv1(weaklyFundamentalNakSplineModifiedBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
   } else if (weaklyFundamentalSplineBasis != nullptr) {
     sgpp::base::SWeaklyFundamentalSplineBaseDeriv1
     basisDeriv1(weaklyFundamentalSplineBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
-  } else if (notAKnotBsplineBasis != nullptr) {
-    sgpp::base::SNotAKnotBsplineBaseDeriv1
-    basisDeriv1(notAKnotBsplineBasis->getDegree());
+  } else if (nakBsplineBasis != nullptr) {
+    sgpp::base::SNakBsplineBaseDeriv1
+    basisDeriv1(nakBsplineBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
-  } else if (notAKnotBsplineModifiedBasis != nullptr) {
-    sgpp::base::SNotAKnotBsplineModifiedBaseDeriv1
-    basisDeriv1(notAKnotBsplineModifiedBasis->getDegree());
+  } else if (nakBsplineModifiedBasis != nullptr) {
+    sgpp::base::SNakBsplineModifiedBaseDeriv1
+    basisDeriv1(nakBsplineModifiedBasis->getDegree());
     return basisDeriv1.eval(l, i, x);
   } else if (waveletBasis != nullptr) {
     return waveletBasis->evalDx(l, i, x);
@@ -103,22 +103,22 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
       dynamic_cast<sgpp::base::SBsplineModifiedBase*>(&basis);
   sgpp::base::SBsplineModifiedClenshawCurtisBase* bsplineModifiedClenshawCurtisBasis =
       dynamic_cast<sgpp::base::SBsplineModifiedClenshawCurtisBase*>(&basis);
-  sgpp::base::SFundamentalNotAKnotSplineBase* fundamentalNotAKnotSplineBasis =
-      dynamic_cast<sgpp::base::SFundamentalNotAKnotSplineBase*>(&basis);
+  sgpp::base::SFundamentalNakSplineBase* fundamentalNakSplineBasis =
+      dynamic_cast<sgpp::base::SFundamentalNakSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineBase* fundamentalSplineBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineBase*>(&basis);
   sgpp::base::SFundamentalSplineModifiedBase* fundamentalSplineModifiedBasis =
       dynamic_cast<sgpp::base::SFundamentalSplineModifiedBase*>(&basis);
-  sgpp::base::SWeaklyFundamentalNotAKnotSplineBase* weaklyFundamentalNotAKnotSplineBasis =
-      dynamic_cast<sgpp::base::SWeaklyFundamentalNotAKnotSplineBase*>(&basis);
-  sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase* weaklyFundamentalNotAKnotSplineModifiedBasis =
-      dynamic_cast<sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase*>(&basis);
+  sgpp::base::SWeaklyFundamentalNakSplineBase* weaklyFundamentalNakSplineBasis =
+      dynamic_cast<sgpp::base::SWeaklyFundamentalNakSplineBase*>(&basis);
+  sgpp::base::SWeaklyFundamentalNakSplineModifiedBase* weaklyFundamentalNakSplineModifiedBasis =
+      dynamic_cast<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase*>(&basis);
   sgpp::base::SWeaklyFundamentalSplineBase* weaklyFundamentalSplineBasis =
       dynamic_cast<sgpp::base::SWeaklyFundamentalSplineBase*>(&basis);
-  sgpp::base::SNotAKnotBsplineBase* notAKnotBsplineBasis =
-      dynamic_cast<sgpp::base::SNotAKnotBsplineBase*>(&basis);
-  sgpp::base::SNotAKnotBsplineModifiedBase* notAKnotBsplineModifiedBasis =
-      dynamic_cast<sgpp::base::SNotAKnotBsplineModifiedBase*>(&basis);
+  sgpp::base::SNakBsplineBase* nakBsplineBasis =
+      dynamic_cast<sgpp::base::SNakBsplineBase*>(&basis);
+  sgpp::base::SNakBsplineModifiedBase* nakBsplineModifiedBasis =
+      dynamic_cast<sgpp::base::SNakBsplineModifiedBase*>(&basis);
   sgpp::base::SWaveletBase* waveletBasis =
       dynamic_cast<sgpp::base::SWaveletBase*>(&basis);
   sgpp::base::SWaveletBoundaryBase* waveletBoundaryBasis =
@@ -136,31 +136,31 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return bsplineModifiedBasis->evalDxDx(l, i, x);
   } else if (bsplineModifiedClenshawCurtisBasis != nullptr) {
     return bsplineModifiedClenshawCurtisBasis->evalDxDx(l, i, x);
-  } else if (fundamentalNotAKnotSplineBasis != nullptr) {
-    return fundamentalNotAKnotSplineBasis->evalDxDx(l, i, x);
+  } else if (fundamentalNakSplineBasis != nullptr) {
+    return fundamentalNakSplineBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineBasis != nullptr) {
     return fundamentalSplineBasis->evalDxDx(l, i, x);
   } else if (fundamentalSplineModifiedBasis != nullptr) {
     return fundamentalSplineModifiedBasis->evalDxDx(l, i, x);
-  } else if (weaklyFundamentalNotAKnotSplineBasis != nullptr) {
-    sgpp::base::SWeaklyFundamentalNotAKnotSplineBaseDeriv2
-    basisDeriv2(weaklyFundamentalNotAKnotSplineBasis->getDegree());
+  } else if (weaklyFundamentalNakSplineBasis != nullptr) {
+    sgpp::base::SWeaklyFundamentalNakSplineBaseDeriv2
+    basisDeriv2(weaklyFundamentalNakSplineBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
-  } else if (weaklyFundamentalNotAKnotSplineModifiedBasis != nullptr) {
-    sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBaseDeriv2
-    basisDeriv2(weaklyFundamentalNotAKnotSplineModifiedBasis->getDegree());
+  } else if (weaklyFundamentalNakSplineModifiedBasis != nullptr) {
+    sgpp::base::SWeaklyFundamentalNakSplineModifiedBaseDeriv2
+    basisDeriv2(weaklyFundamentalNakSplineModifiedBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
   } else if (weaklyFundamentalSplineBasis != nullptr) {
     sgpp::base::SWeaklyFundamentalSplineBaseDeriv2
     basisDeriv2(weaklyFundamentalSplineBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
-  } else if (notAKnotBsplineBasis != nullptr) {
-    sgpp::base::SNotAKnotBsplineBaseDeriv2
-    basisDeriv2(notAKnotBsplineBasis->getDegree());
+  } else if (nakBsplineBasis != nullptr) {
+    sgpp::base::SNakBsplineBaseDeriv2
+    basisDeriv2(nakBsplineBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
-  } else if (notAKnotBsplineModifiedBasis != nullptr) {
-    sgpp::base::SNotAKnotBsplineModifiedBaseDeriv2
-    basisDeriv2(notAKnotBsplineModifiedBasis->getDegree());
+  } else if (nakBsplineModifiedBasis != nullptr) {
+    sgpp::base::SNakBsplineModifiedBaseDeriv2
+    basisDeriv2(nakBsplineModifiedBasis->getDegree());
     return basisDeriv2.eval(l, i, x);
   } else if (waveletBasis != nullptr) {
     return waveletBasis->evalDxDx(l, i, x);

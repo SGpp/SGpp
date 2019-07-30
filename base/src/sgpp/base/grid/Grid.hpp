@@ -58,13 +58,13 @@ enum class GridType {
   ModLinearClenshawCurtis,            // 30
   NakBsplineBoundaryCombigrid,        // 31
   NaturalBsplineBoundary,             // 32
-  NotAKnotBsplineBoundary,            // 33
-  ModNotAKnotBspline,                 // 34
+  NakBsplineBoundary,            // 33
+  ModNakBspline,                 // 34
   WeaklyFundamentalSplineBoundary,             // 35
-  WeaklyFundamentalNotAKnotSplineBoundary,     // 36
-  ModWeaklyFundamentalNotAKnotSpline,          // 37
+  WeaklyFundamentalNakSplineBoundary,     // 36
+  ModWeaklyFundamentalNakSpline,          // 37
   FundamentalSplineBoundary,          // 38
-  FundamentalNotAKnotSplineBoundary,  // 39
+  FundamentalNakSplineBoundary,  // 39
 };
 
 /**
@@ -596,17 +596,17 @@ class Grid {
 
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
-  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree,
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree,
                                                  level_t boundaryLevel = 1);
-  static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
+  static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
   static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
-  static Grid* createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
                                                         level_t boundaryLevel = 1);
-  static Grid* createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim, size_t degree);
+  static Grid* createModWeaklyFundamentalNakSplineGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                    level_t boundaryLevel = 1);
-  static Grid* createFundamentalNotAKnotSplineBoundaryGrid(
+  static Grid* createFundamentalNakSplineBoundaryGrid(
       size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**

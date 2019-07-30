@@ -20,7 +20,7 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createFundamentalNotAKnotSplineBoundaryGrid(d, p)));
+      sgpp::base::Grid::createFundamentalNakSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
@@ -28,11 +28,11 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(d, p)));
+      sgpp::base::Grid::createWeaklyFundamentalNakSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createModWeaklyFundamentalNotAKnotSplineGrid(d, p)));
+      sgpp::base::Grid::createModWeaklyFundamentalNakSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
@@ -44,11 +44,11 @@ void createSupportedGrids(size_t d, size_t p,
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModLinearGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createModNotAKnotBsplineGrid(d, p)));
+      sgpp::base::Grid::createModNakBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createNaturalBsplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(d, p)));
+      sgpp::base::Grid::createNakBsplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
