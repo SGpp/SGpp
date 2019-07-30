@@ -13,8 +13,8 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
@@ -30,8 +30,9 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
   // if a file name was specified, we are reading from a file, so we need to open it.
   if (!this->config.filePath.empty()) {
     std::cout << "Read file " << config.filePath << std::endl;
-    dynamic_cast<FileSampleProvider*>(sampleProvider.get())->readFile(this->config.filePath,
-        this->config.hasTargets);
+    dynamic_cast<FileSampleProvider*>(sampleProvider.get())
+        ->readFile(this->config.filePath, this->config.hasTargets, this->config.readinCutoff,
+                   this->config.readinColumns, this->config.readinClasses);
   }
   // Build data transformation
   DataTransformationBuilder dataTrBuilder;
@@ -57,7 +58,7 @@ Dataset* DataSource::getNextSamples() {
     } else {
       return dataset;
     }
-  // several iterations
+    // several iterations
   } else {
     dataset = sampleProvider->getNextSamples(config.batchSize);
     currentIteration++;

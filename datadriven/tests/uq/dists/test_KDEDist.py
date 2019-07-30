@@ -61,7 +61,7 @@ class KDEDistTest(unittest.TestCase):
             kde.setBandwidths(bandwidths)
             x = np.ndarray(kde.getNsamples())
             values = np.ndarray(kde.getNsamples())
-            for i in xrange(kde.getNsamples()):
+            for i in range(kde.getNsamples()):
                 skipElements[0] = i
                 kde.getSample(i, sample)
                 values[i] = -np.log(kde.evalSubset(sample, skipElements))
@@ -96,12 +96,12 @@ class KDEDistTest(unittest.TestCase):
 #         plotDensity1d(U)
 #         plotDensity1d(dist)
 
-        print "quad = %s" % (quad(lambda x: dist.pdf([x]), 0, 3),)
-        print "mean = %g ~ %g" % (U.mean(), dist.mean())
-        print "var = %g ~ %g" % (U.var(), dist.var())
-        print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
-        print "CE = %g" % dist.crossEntropy(testSamples)
-        print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+        print("quad = %s" % (quad(lambda x: dist.pdf([x]), 0, 3),))
+        print("mean = %g ~ %g" % (U.mean(), dist.mean()))
+        print("var = %g ~ %g" % (U.var(), dist.var()))
+        print("KL = %g" % U.klDivergence(dist, testSamples, testSamples))
+        print("CE = %g" % dist.crossEntropy(testSamples))
+        print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
 
         plt.show()
 
@@ -127,13 +127,13 @@ class KDEDistTest(unittest.TestCase):
 #         plt.scatter(samples[:, 0], samples[:, 1])
 #         fig.show()
 
-        print "quad = %s" % (dblquad(lambda x, y: dist.pdf([x, y]),
-                                     0, 2, lambda _: 0, lambda _: 1),)
-        print "mean = %g ~ %g" % (U.mean(), dist.mean())
-        print "var = %g ~ %g" % (U.var(), dist.var())
-        print "KL = %g" % U.klDivergence(dist, testSamples, testSamples)
-        print "CE = %g" % dist.crossEntropy(testSamples)
-        print "MSE = %g" % dist.l2error(U, testSamples, testSamples)
+        print("quad = %s" % (dblquad(lambda x, y: dist.pdf([x, y]),
+                                     0, 2, lambda _: 0, lambda _: 1),))
+        print("mean = %g ~ %g" % (U.mean(), dist.mean()))
+        print("var = %g ~ %g" % (U.var(), dist.var()))
+        print("KL = %g" % U.klDivergence(dist, testSamples, testSamples))
+        print("CE = %g" % dist.crossEntropy(testSamples))
+        print("MSE = %g" % dist.l2error(U, testSamples, testSamples))
 
         plt.show()
 
@@ -197,8 +197,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DPPF(self):
         # prepare data
-        C = np.array([[0.1, 0.08],
-                      [0.08, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         fig = plt.figure()
@@ -238,8 +237,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DCDFandPPF(self):
         # prepare data
-        C = np.array([[0.1, 0.08],
-                      [0.08, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08], [0.08, 0.1]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
         train_samples = U.rvs(1000)
 
@@ -287,9 +285,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DCovarianceMatrix(self):
         # prepare data
-        C = np.array([[0.1, 0.08, 0.02],
-                      [0.08, 0.1, 0.02],
-                      [0.02, 0.02, 0.1]]) / 10.
+        C = np.array([[0.1, 0.08, 0.02], [0.08, 0.1, 0.02], [0.02, 0.02, 0.1]]) / 10.
 
         U = dists.MultivariateNormal([0.5, 0.5, 0.5], C, 0, 1)
         samples = U.rvs(20000)
@@ -303,8 +299,7 @@ class KDEDistTest(unittest.TestCase):
 
     def test2DMarginalize(self):
         # prepare data
-        C = np.array([[0.2, 0.08],
-                      [0.08, 0.2]]) / 10.
+        C = np.array([[0.2, 0.08], [0.08, 0.2]]) / 10.
         U = dists.MultivariateNormal([0.5, 0.5], C, 0, 1)
 
         fig = plt.figure()

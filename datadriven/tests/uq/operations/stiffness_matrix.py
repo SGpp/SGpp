@@ -11,16 +11,16 @@ for i, ai in enumerate(a):
         si += Rational(bj, i + j + 1)
     s += ai * si
 
-print s
+print(s)
 
 s = 0
 
-for p in xrange(len(a)):
-    for i in xrange(p + 1):
+for p in range(len(a)):
+    for i in range(p + 1):
         s += a[i] * b[p]
 
 
 # -----------------------------
 p = lambda x, a: sum([ai * x ** i for i, ai in enumerate(a)])
 from scipy.integrate import quad
-print quad(lambda x: p(x, a) * p(x, b), 0, 1)[0], 5. / 6.
+print(quad(lambda x: p(x, a) * p(x, b), 0, 1)[0], 5. / 6.)

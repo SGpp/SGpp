@@ -26,15 +26,16 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iomanip>
 #include <list>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::algorithm_exception;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::algorithm_exception;
 
 DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
@@ -45,7 +46,7 @@ DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
 bool DBMatOfflineChol::isRefineable() { return true; }
 
 void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+                                       DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {
@@ -57,6 +58,7 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
       size_t n = lhsMatrix.getNrows();
       gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
                                                 n);  // Create GSL matrix view for decomposition
+
       // Perform Cholesky decomposition
       gsl_linalg_cholesky_decomp(&m.matrix);
 
@@ -78,13 +80,36 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
 #else
-  throw algorithm_exception("built withot GSL");
+  throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
 }
 
-void DBMatOfflineChol::choleskyModification(Grid& grid,
-    datadriven::DensityEstimationConfiguration&, size_t newPoints,
-    std::list<size_t> deletedPoints, double lambda) {
+void DBMatOfflineChol::compute_inverse() {
+#ifdef USE_GSL
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineChol::compute_inverse:\noffline matrix not decomposed yet.\n");
+  }
+  // initialize lhsInverse
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+
+  // copy, in order to not mess with internal lhsMatrix of offlineChol object
+  this->lhsInverse.copyFrom(this->lhsMatrix);
+
+  // create matrix view in style of decomposition, see ::decomposeMatrix
+  gsl_matrix_view m =
+      gsl_matrix_view_array(lhsInverse.getPointer(), lhsInverse.getNrows(), lhsInverse.getNcols());
+
+  // inverts matrix, and stores it inplace, therefore in lhsInverse
+  gsl_linalg_cholesky_invert(&m.matrix);
+
+#else
+  throw algorithm_exception("build without GSL");
+#endif /*USE_GSL*/
+}
+void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
+                                            size_t newPoints, std::list<size_t> deletedPoints,
+                                            double lambda) {
 #ifdef USE_GSL
 
   // Start coarsening
@@ -160,70 +185,16 @@ void DBMatOfflineChol::choleskyModification(Grid& grid,
   // Start refinement
   if (newPoints > 0) {
     size_t gridSize = grid.getStorage().getSize();
-    size_t gridDim = grid.getStorage().getDimension();
 
     // DataMatrix to collect vectors to append
     DataMatrix mat_refine(gridSize, newPoints);
 
-    DataMatrix level(gridSize, gridDim);
-    DataMatrix index(gridSize, gridDim);
+    this->compute_L2_refine_vectors(&mat_refine, &grid, newPoints);
 
-    grid.getStorage().getLevelIndexArraysForEval(level, index);
-    double lambda_conf = lambda;
-    // Loop to calculate all L2-products of added points based on the
-    // hat-function as basis function
-    for (size_t i = 0; i < gridSize; i++) {
-      for (size_t j = gridSize - newPoints; j < gridSize; j++) {
-        double res = 1;
-        for (size_t k = 0; k < gridDim; k++) {
-          double lik = level.get(i, k);
-          double ljk = level.get(j, k);
-          double iik = index.get(i, k);
-          double ijk = index.get(j, k);
-
-          if (lik == ljk) {
-            if (iik == ijk) {
-              // Use formula for identical ansatz functions:
-              res *= 2 / lik / 3;
-            } else {
-              // Different index, but same level => ansatz functions do not
-              // overlap:
-              res = 0.;
-              break;
-            }
-          } else {
-            if (std::max((iik - 1) / lik, (ijk - 1) / ljk) >=
-                std::min((iik + 1) / lik, (ijk + 1) / ljk)) {
-              // Ansatz functions do not not overlap:
-              res = 0.;
-              break;
-            } else {
-              // Use formula for different overlapping ansatz functions:
-              if (lik > ljk) {  // Phi_i_k is the "smaller" ansatz function
-                double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
-                double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
-                temp_res *= ljk;
-                temp_res = (1 - temp_res) / lik;
-                res *= temp_res;
-              } else {  // Phi_j_k is the "smaller" ansatz function
-                double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-                double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
-                temp_res *= lik;
-                temp_res = (1 - temp_res) / ljk;
-                res *= temp_res;
-              }
-            }
-          }
-        }
-        // The new Rows/Cols are stored in mat_refine
-
-        // add current lambda to lower diagonal elements of mat_refine
-        if (i == j) {
-          mat_refine.set(i, j - gridSize + newPoints, res + lambda_conf);
-        } else {
-          mat_refine.set(i, j - gridSize + newPoints, res);
-        }
-      }
+    // add lambda to diagonal elements
+    for (size_t i = gridSize - newPoints; i < gridSize; i++) {
+      double res = mat_refine.get(i, i - gridSize + newPoints);
+      mat_refine.set(i, i - gridSize + newPoints, res + lambda);
     }
 
     // std::cout << "mat_refine:\n" << mat_refine.toString() << "\n\n";
@@ -243,10 +214,9 @@ void DBMatOfflineChol::choleskyModification(Grid& grid,
     }
   }
 #else
-  throw algorithm_exception("built withot GSL");
+  throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
 }
-
 
 void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
 #ifdef USE_GSL
@@ -398,5 +368,5 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineChol::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::Chol;
 }
-} /* namespace datadriven */
+}  // namespace datadriven
 } /* namespace sgpp */

@@ -8,7 +8,7 @@ export LD_LIBRARY_PATH=$SGPP_BUILD_PATH:$LD_LIBRARY_PATH
 # directory of SG++ to install the python library in your local
 # site-packages folder
 
-python setup.py install --user
+python3 setup.py install --user
 
 # or use the internal python package structure of SG++ by executing the
 # following code or by adding it to your ~/.bashrc file

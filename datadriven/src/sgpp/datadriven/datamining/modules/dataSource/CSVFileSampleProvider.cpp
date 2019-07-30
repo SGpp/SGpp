@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 
@@ -46,15 +47,19 @@ size_t CSVFileSampleProvider::getNumSamples() const {
   }
 }
 
-void CSVFileSampleProvider::readFile(const std::string& fileName, bool hasTargets) {
+void CSVFileSampleProvider::readFile(const std::string& fileName,
+                                     bool hasTargets,
+                                     size_t readinCutoff,
+                                     std::vector<size_t> readinColumns,
+                                     std::vector<double> readinClasses) {
   try {
     // call readCSV with skipfirstline set to true
-    dataset = CSVTools::readCSV(fileName, true, hasTargets);
+    dataset = CSVTools::readCSVFromFile(fileName, true, hasTargets, readinCutoff,
+        readinColumns, readinClasses);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
     // exception safe implementation.
-    const std::string msg{"Failed to parse CSV File " + fileName + "."};
-    throw base::data_exception{msg.c_str()};
+    throw base::data_exception{"Failed to parse CSV File."};
   }
 }
 
@@ -74,7 +79,11 @@ Dataset* CSVFileSampleProvider::getAllSamples() {
   }
 }
 
-void CSVFileSampleProvider::readString(const std::string& input, bool hasTargets) {
+void CSVFileSampleProvider::readString(const std::string& input,
+                                       bool hasTargets,
+                                       size_t readinCutoff,
+                                       std::vector<size_t> readinColumns,
+                                       std::vector<double> readinClasses) {
   // try {
   //   dataset = CSVTools::readCSVFromString(input);
   // } catch (...) {

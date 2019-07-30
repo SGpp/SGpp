@@ -35,9 +35,9 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
         self.level = 4
         points = DataMatrix(self.size, 1)
         values = DataVector(self.size)
-        for i in xrange(self.size):
+        for i in range(self.size):
             points.set(i, 0, i)
-            values[i] = -1 if i < self.size/2 else 1
+            values[i] = -1 if i < self.size//2 else 1
         self.dataContainer = DataContainer(points=points, values=values)
         self.policy = StratifiedFoldingPolicy(self.dataContainer, self.level)
 
@@ -56,9 +56,9 @@ class TestStratifiedFoldingPolicy(unittest.TestCase):
 
             self.assertEqual(trainPoints.getNrows(), len(trainCorrectD))
             self.assertEqual(validationPoints.getSize(), len(validCorrectD))
-            for k in xrange(trainPoints.getNrows()):
+            for k in range(trainPoints.getNrows()):
                 self.assertTrue(trainPoints.get(k,0)  in trainCorrectD)
-            for k in xrange(validationPoints.getSize()):
+            for k in range(validationPoints.getSize()):
                 self.assertTrue(validationPoints.get(k,0) in validCorrectD)
 
             i += 1

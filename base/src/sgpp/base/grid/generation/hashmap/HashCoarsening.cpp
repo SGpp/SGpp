@@ -11,7 +11,7 @@
 #include <list>
 #include <utility>
 #include <vector>
-
+#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -30,7 +30,8 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
 
   // Perepare temp-data in order to determine the removable grid points
   // -> leafs with minimal surplus
-  size_t remove_num = functor.getRemovementsNum();
+  // Makes sure at most grid-size number of points are considered for coarsening
+  size_t remove_num = std::min(storage.getSize(), functor.getRemovementsNum());
 
   if (remove_num == 0) return;
 

@@ -6,8 +6,8 @@ Created on Sun Mar 20 15:04:55 2016
 """
 
 import numpy as np
-import plot as p
 from pysgpp import *
+from pysgpp.extensions.combigrid import plot as p
 import random
 
 def integral(dim, f, a=0.0, b=1.0, points=10000):
@@ -16,10 +16,10 @@ def integral(dim, f, a=0.0, b=1.0, points=10000):
     for i in range(points):
         vec = DataVector(dim)
         for j in range(dim):
-	    vec[j] = random.random()*(b-a)+a
-	sum += f(vec)
+            vec[j] = random.random()*(b-a)+a
+    sum += f(vec)
     
-    return sum/points
+    return sum / points
 
 def createConvergenceFunc(approx_func, original_func):
     return lambda x : np.abs(approx_func(inputwrapper(x)) - original_func(inputwrapper(x)))
@@ -67,7 +67,7 @@ def test_func_sin(x):
 def gibbs_function(alpha, x):
     # TODO norm!
     #return 1.0 / (norm(x) ** alpha + 1)
-    return 1.0 / (alpha ** 2 + x[0] ** 2)
+    return 1.0/(alpha ** 2 + x[0] ** 2)
 
 def makePlots(dim, f, title="", filename="test"):
     """
@@ -149,7 +149,7 @@ def plot_multiDim():
         function = createConvergenceFunc(linLejaF, f)
         title = "n = " + str(n)
         filename = "plot_0.1_4_" + str(n)
-        p.plot3D(function, zName="Error", plot=False, filename=filename, n=70, xName="Gibbs (alpha=0.1)", yName="Sinus (Periods: 4)", title=title)
+        p.plot3D(function, zName="Error", plot=False, filename=filename, n=70, xName="Gibbs (alpha=0.1)", yName="Sinus (Periods: 4)")
 
 if __name__ == '__main__':
   

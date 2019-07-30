@@ -72,8 +72,8 @@ def load_results(inputspace, setting, qoi, settings, path="results"):
                             break
 
                 if load_file:
-                    print "-" * 80
-                    print "load %s -> " % filename
+                    print("-" * 80)
+                    print("load %s -> " % filename)
                     path = os.path.join(root, filename)
                     fd = open(path, "r")
                     currentStats = pkl.load(fd)
@@ -97,10 +97,10 @@ def load_results(inputspace, setting, qoi, settings, path="results"):
                                              currentStats["num_model_evaluations"])
                             ans["mc"][key] = currentStats
 
-                        print "  %s" % (key,)
+                        print("  %s" % (key,))
                 else:
-                    print "-" * 80
-                    print "available %s -> " % filename
+                    print("-" * 80)
+                    print("available %s -> " % filename)
     return ans
 
 
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     fig = plt.figure()
     for sampling_strategy, numSamples in mc_settings:
         res = parse_monte_carlo_results(results)
-        time_steps = np.array(res.keys())
+        time_steps = np.array(list(res.keys()))
         ixs = np.argsort(time_steps)
         time_steps = time_steps[ixs]
         ixs = np.where(time_steps <= 6)[0]
@@ -202,7 +202,7 @@ if __name__ == "__main__":
                                    refinement,
                                    isFull,
                                    results)
-            time_steps = np.array(res.keys())
+            time_steps = np.array(list(res.keys()))
             ixs = np.argsort(time_steps)
             time_steps = time_steps[ixs]
             ixs = np.where(time_steps <= 6)[0]

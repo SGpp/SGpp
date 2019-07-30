@@ -1,9 +1,8 @@
+#! /usr/bin/env python3
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
-
-from __future__ import print_function
 
 import atexit
 import glob
@@ -107,7 +106,7 @@ vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
 vars.Add(BoolVariable("PYDOC", "Build Python wrapper with docstrings", False))
-vars.Add(BoolVariable("USE_PYTHON3_FOR_PYSGPP", "Use Python 3.x for pysgpp", False))
+vars.Add(BoolVariable("USE_PYTHON2_FOR_PYSGPP", "Enforce using Python 2.x for pysgpp", False))
 vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if True, the modules must be disabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=0; " +
@@ -150,6 +149,8 @@ vars.Add("HPX_DEBUG_INCLUDE_PATH", "Sets the path to the HPX debug headers", Non
 vars.Add("HPX_RELEASE_INCLUDE_PATH", "Sets the path to the HPX release headers", None)
 vars.Add("GSL_INCLUDE_PATH", "Set path to the GSL header files", "/usr/include")
 vars.Add("GSL_LIBRARY_PATH", "Set path to the GSL library", None)
+vars.Add("SCALAPACK_LIBRARY_PATH", "Set the path to the ScaLAPACK/MKL library", None)
+vars.Add("SCALAPACK_LIBRARY_NAME", "Set the name of the ScaLAPACK library", None)
 vars.Add(BoolVariable("COMPILE_BOOST_TESTS",
                       "Compile the test cases written using Boost Test", True))
 vars.Add(BoolVariable("COMPILE_BOOST_PERFORMANCE_TESTS",
@@ -168,22 +169,24 @@ vars.Add(BoolVariable("USE_EIGEN", "Set if Eigen should be used " +
                                    "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_GMMPP", "Set if Gmm++ should be used " +
                                    "(only relevant for sgpp::optimization)", False))
-vars.Add(BoolVariable("USE_MATLAB", "Set if MATLAB should be used " +
-                                   "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_UMFPACK", "Set if UMFPACK should be used " +
                                      "(only relevant for sgpp::optimization)", False))
 vars.Add(BoolVariable("USE_DAKOTA", "Set if Dakota library should be used " +
                                    "(only relevant for sgpp::combigrid)", False))
 vars.Add(BoolVariable("USE_GSL", "Set if GNU Scientific Library should be used " +
-                                     "(only relevant for sgpp::datadriven::application::LearnerSGDEOnOff)", False))
+                                     "(only relevant for sgpp::datadriven)", False))
 vars.Add(BoolVariable("USE_CGAL", "Set if Computational Geometry Algorithms Library should be used " +
                                      "(only relevant for new_sgde)", False))
 
 vars.Add(BoolVariable("USE_ZLIB", "Set if zlib should be used " +
                                      "(relevant for sgpp::datadriven to read compressed dataset files), not available for windows", False))
+vars.Add(BoolVariable("USE_SCALAPACK", "Set if the ScaLAPACK library should be used " +
+                                          "(requires MPI, only relevant for sgpp::datadriven)", None))
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
+
+vars.Add(BoolVariable("USE_PYTHON_EMBEDDING", "Link to the Python.h", False))
 
 # create temporary environment to check which system and compiler we should use
 # (the Environment call without "tools=[]" crashes with MinGW,
@@ -309,7 +312,8 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
+if not env.GetOption('clean'):
+  SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
 # (from https://bitbucket.org/scons/scons/wiki/LongCmdLinesOnWin32)
@@ -357,9 +361,9 @@ if env["PLATFORM"] == "win32":
   # could cause trouble
   try:
     import pysgpp
-    Helper.printWarning("An existing installation of pysgpp was detected."
-                        "To get rid of this warning remove the pysgpp package"
-                        "from your local Oython installation.")
+    Helper.printWarning("An existing installation of pysgpp was detected. "
+                        "To get rid of this warning remove the pysgpp package "
+                        "from your local Python installation.")
   except:
     pass
 
@@ -372,11 +376,14 @@ if env["PLATFORM"] == "win32":
   os.makedirs(pysgppTempFolder)
 
   # add it to the build python path
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([pysgppTempFolder,
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      pysgppTempFolder,
                                               env["ENV"].get("PYTHONPATH", "")])
 else:
-  env["ENV"]["PYTHONPATH"] = os.pathsep.join([env["ENV"].get("PYTHONPATH", ""),
-                                              PYSGPP_PACKAGE_PATH.abspath])
+  env["ENV"]["PYTHONPATH"] = os.pathsep.join([
+      PYSGPP_PACKAGE_PATH.abspath,
+      PYSGPP_BUILD_PATH.abspath,
+      env["ENV"].get("PYTHONPATH", "")])
 
 # Style checker
 #########################################################################
@@ -420,13 +427,16 @@ env.Export("lintAction")
 # Custom builders for Python and Boost tests
 #########################################################################
 
-if env["RUN_PYTHON_TESTS"] and env["SG_PYTHON"]:
-  # do the actual thing
-  python = ("python3" if env["USE_PYTHON3_FOR_PYSGPP"] else "python")
-  builder = Builder(action=python + " $SOURCE", chdir=0)
-  env.Append(BUILDERS={"Test" : builder})
-  builder = Builder(action=python + " $SOURCE")
-  env.Append(BUILDERS={"SimpleTest" : builder})
+if env["RUN_PYTHON_TESTS"]:
+  if env["SG_PYTHON"]:
+    # do the actual thing
+    python = "python3"
+    builder = Builder(action=python + " $SOURCE", chdir=0)
+    env.Append(BUILDERS={"Test" : builder})
+    builder = Builder(action=python + " $SOURCE")
+    env.Append(BUILDERS={"SimpleTest" : builder})
+  else:
+    Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
 
 if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE --log_level=test_suite")
@@ -586,11 +596,8 @@ for module in moduleFolders:
 
 finalMessagePrinter.sgppBuildPath = BUILD_DIR.abspath
 
-if env["USE_PYTHON3_FOR_PYSGPP"]:
-  finalMessagePrinter.pysgppPackagePath = (
-      PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
-else:
-  finalMessagePrinter.pysgppPackagePath = PYSGPP_PACKAGE_PATH.abspath
+finalMessagePrinter.pysgppPackagePath = (
+    PYSGPP_PACKAGE_PATH.abspath + ":" + PYSGPP_BUILD_PATH.abspath)
 
 if env.GetOption("help"):
   finalMessagePrinter.disable()

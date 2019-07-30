@@ -18,15 +18,15 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
-#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -38,10 +38,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <string>
-#include <vector>
 #include <limits>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -333,9 +333,12 @@ size_t LearnerSGDE::getDim() { return gridConfig.dim_; }
 
 size_t LearnerSGDE::getNsamples() { return trainData->getNrows(); }
 
-std::shared_ptr<base::DataVector> LearnerSGDE::getSurpluses() { return alpha; }
+base::DataVector* LearnerSGDE::getSurpluses() { return alpha.get(); }
 
-std::shared_ptr<base::Grid> LearnerSGDE::getGrid() { return grid; }
+base::Grid* LearnerSGDE::getGrid() { return grid.get(); }
+
+std::shared_ptr<base::DataVector> LearnerSGDE::getSharedSurpluses() { return alpha; }
+std::shared_ptr<base::Grid> LearnerSGDE::getSharedGrid() { return grid; }
 
 // ---------------------------------------------------------------------------
 
@@ -541,12 +544,12 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
   double currentTrainError = 0.0;
 
   // create convergence monitor object
-  RefinementMonitor *monitor = nullptr;
+  RefinementMonitor* monitor = nullptr;
   if (refMonitor == "periodic") {
     monitor = new RefinementMonitorPeriodic(refPeriod);
   } else if (refMonitor == "convergence") {
-    monitor = new RefinementMonitorConvergence(
-            accDeclineThreshold, accDeclineBufferSize, minRefInterval);
+    monitor =
+        new RefinementMonitorConvergence(accDeclineThreshold, accDeclineBufferSize, minRefInterval);
   }
 
   // counts number of performed refinement steps

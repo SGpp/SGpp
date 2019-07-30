@@ -61,9 +61,8 @@ class DBMatOnline {
    * @return list of grid points, that cannot be coarsened
    */
   virtual std::vector<size_t> updateSystemMatrixDecomposition(
-      DensityEstimationConfiguration& densityEstimationConfig,
-      Grid& grid, size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices,
-                                                 double lambda);
+      DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
+      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda);
 
  protected:
   DBMatOffline& offlineObject;

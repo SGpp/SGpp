@@ -7,7 +7,7 @@ from pysgpp import DataVector, DataMatrix
 from scipy.stats import norm
 from pysgpp.extensions.datadriven.uq.plot import scatterplot_matrix
 
-from SparseGridEstimationStrategy import SparseGridEstimationStrategy
+from pysgpp.extensions.datadriven.uq.estimators.SparseGridEstimationStrategy import SparseGridEstimationStrategy
 from pysgpp.extensions.datadriven.uq.transformation import JointTransformation
 
 
@@ -57,7 +57,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
             for Ti in T:
                 jointT.add(Ti, Ti.getSize())
 
-            for i in xrange(ans.shape[0]):
+            for i in range(ans.shape[0]):
                 ans[i, :] = jointT.probabilisticToUnit(ans[i, :])
         else:
             # bootstrapping on the available samples
@@ -79,7 +79,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
                     # transform them to the unit hypercube
                     ans[i, self.__ixs] = sample
                     ans[i, :] = np.array([T[j].probabilisticToUnit(ans[i, j])
-                                          for j in xrange(len(T))])
+                                          for j in range(len(T))])
             else:
                 ans = dataSamples
 
@@ -98,7 +98,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # init
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
-        for i in xrange(self.__npaths):
+        for i in range(self.__npaths):
             samples = self.__getSamples(W, D, bootstrapping=True)
             res = evalSGFunctionMulti(grid, alpha, samples)
 
@@ -134,7 +134,7 @@ class MonteCarloStrategy(SparseGridEstimationStrategy):
         # init
         _, W, D = self._extractPDFforMomentEstimation(U, T)
         moments = np.zeros(self.__npaths)
-        for i in xrange(self.__npaths):
+        for i in range(self.__npaths):
             samples = self.__getSamples(W, D, bootstrapping=True)
             res = evalSGFunctionMulti(grid, alpha, samples)
 

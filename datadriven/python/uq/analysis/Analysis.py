@@ -88,9 +88,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute mean
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
+                    print( "-" * 80 )
+                    print(( "Estimate E[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations)),))
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'mean'):
                     moment = self.computeMean(iteration, self._qoi, t)
@@ -101,8 +101,8 @@ class Analysis(object):
                                                      t, 'mean')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                    print( "value = %g (err=%g)" % (moment["value"], 
+                                                   moment["err"]))
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment
@@ -138,9 +138,9 @@ class Analysis(object):
             for i, t in enumerate(ts):
                 # compute variance
                 if self._verbose:
-                    print "-" * 80
-                    print "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
-                        (t, i + 1, len(ts), iteration + 1, len(iterations)),
+                    print( "-" * 80 )
+                    print(( "Estimate V[t = %g] (%i/%i), iteration = %i/%i:" % \
+                        (t, i + 1, len(ts), iteration + 1, len(iterations))), end=' ')
 
                 if not self._moments.hasMoment(iteration, self._qoi, t, 'var'):
                     moment = self.computeVar(iteration, self._qoi, t)
@@ -151,8 +151,8 @@ class Analysis(object):
                                                      t, 'var')
 
                 if self._verbose:
-                    print "value = %g (err=%g)" % (moment["value"],
-                                                   moment["err"])
+                    print( "value = %g (err=%g)" % (moment["value"], 
+                                                   moment["err"]))
 
                 if len(ts) > 1:
                     ans[iteration][t] = moment

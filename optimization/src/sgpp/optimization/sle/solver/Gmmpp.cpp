@@ -152,13 +152,13 @@ bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
         }
 
 #pragma omp atomic
-      rowsDone++;
+        rowsDone++;
 
         // status message
         if (rowsDone % 100 == 0) {
           char str[10];
           snprintf(str, sizeof(str), "%.1f%%",
-                   static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
+                 static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
           Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
                                                    std::string(str) + ")");
         }

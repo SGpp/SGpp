@@ -59,12 +59,13 @@ int main(int argc, char** argv) {
   std::string filename = "../../datasets/friedman/friedman2_4d_300000.arff";
 
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFF(filename);
+  sgpp::datadriven::Dataset dataset =
+    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
   sgpp::base::DataMatrix& samples = dataset.getData();
 
   /**
    * Configure the sparse grid of level 3 with linear basis functions and the same dimension as the
-   * given test data.\n
+   * given test data.
    * Alternatively load a sparse grid that has been saved to a file, see the commented line.
    */
   std::cout << "# create grid config" << std::endl;
@@ -102,12 +103,11 @@ int main(int argc, char** argv) {
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   /**
-   * Configure the learner by specifying: \n
-   * - ??enable,kfold?, \n
-   * - an initial value for the lagrangian multiplier \f$\lambda\f$ and the interval \f$
-   * [\lambda_{Start} , \lambda_{End}] \f$ in which \f$\lambda\f$ will be searched, \n
-   * - whether a logarithmic scale is used, \n
-   * - the parameters shuffle and an initial seed for the random value generation, \n
+   * Configure the learner by specifying:
+   * - an initial value for the lagrangian multiplier \f$\lambda\f$ and the interval
+   *   \f$ [\lambda_{Start} , \lambda_{End}] \f$ in which \f$\lambda\f$ will be searched,
+   * - whether a logarithmic scale is used,
+   * - the parameters shuffle and an initial seed for the random value generation,
    * - whether parts of the output shall be kept off.
    */
   std::cout << "# create learner config" << std::endl;
@@ -166,7 +166,7 @@ int main(int argc, char** argv) {
   std::cout << "------------------------------------------------------" << std::endl;
   // inverse Rosenblatt transformation
   sgpp::datadriven::OperationInverseRosenblattTransformation* opInvRos(
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid().get()));
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(*learner.getGrid()));
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
@@ -174,7 +174,7 @@ int main(int argc, char** argv) {
   std::cout << points.toString() << std::endl;
 
   sgpp::base::DataMatrix pointsCdf(points.getNrows(), points.getNcols());
-  opInvRos->doTransformation(learner.getSurpluses().get(), &points, &pointsCdf);
+  opInvRos->doTransformation(learner.getSurpluses(), &points, &pointsCdf);
 
   /**
    * To check whether the results are correct perform a Rosenform transformation on the data that
@@ -183,8 +183,8 @@ int main(int argc, char** argv) {
    */
   points.setAll(0.0);
   sgpp::datadriven::OperationRosenblattTransformation* opRos(
-      sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid().get()));
-  opRos->doTransformation(learner.getSurpluses().get(), &pointsCdf, &points);
+      sgpp::op_factory::createOperationRosenblattTransformation(*learner.getGrid()));
+  opRos->doTransformation(learner.getSurpluses(), &pointsCdf, &points);
   std::cout << "------------------------------------------------------" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
   std::cout << "------------------------------------------------------" << std::endl;

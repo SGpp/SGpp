@@ -208,7 +208,7 @@ void MultiStart::optimize() {
       if (statusPrintingEnabled) {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
-                 static_cast<double>(pointsDone) / static_cast<double>(populationSize) * 100.0);
+                 static_cast<double>(k) / static_cast<double>(populationSize) * 100.0);
         Printer::getInstance().getMutex().lock();
         Printer::getInstance().enableStatusPrinting();
         Printer::getInstance().printStatusUpdate(std::string(str) + ", f(x) = " +

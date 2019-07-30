@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 import sys
 import os
 import re
@@ -29,17 +30,17 @@ for so_file in os.listdir("../../../lib/sgpp/"):
     if not so_file.endswith(".so"):
         continue
     modules.append(re.search(r"libsgpp(.*?)\.so", so_file).group(1))
-print("Found compiled modules: " + str(modules))
+print(("Found compiled modules: " + str(modules)))
 
 # enter version information
-major_version = str(input("Enter major version: "))
+major_version = input("Enter major version: ")
 if major_version == "":
     print("Aborting: You have to specify a major version")
     sys.exit(1)
 if not major_version.isdigit():
     print("Aborting: major version can only contain digits")
     sys.exit(1)
-minor_version = str(input("Enter minor version (default: \"0\"): "))
+minor_version = input("Enter minor version (default: \"0\"): ")
 if minor_version == "":
     minor_version = "0"
 if not minor_version.isdigit():
@@ -62,15 +63,15 @@ if maintainer_email == "":
     maintainer_email = "Dirk.Pflueger@ipvs.uni-stuttgart.de"
 
 package_name = "libsgpp_" + major_version + "." + minor_version + "-" + package_revision
-print("package name: " + package_name)
+print(("package name: " + package_name))
 deb_name = package_name + ".deb"
 
 if os.path.exists(package_name):
-    print("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)")
+    print(("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)"))
     sys.exit(1)
 
 if os.path.exists(deb_name):
-    print("Aborting: The deb file to build (\""+ deb_name + "\") already exists")
+    print(("Aborting: The deb file to build (\""+ deb_name + "\") already exists"))
     sys.exit(1)
 
 # create basic package structure
@@ -96,25 +97,25 @@ try:
 except Exception as e:
     print("Error: building the deb-file failed")
     print("reason: ")
-    print(str(e))
+    print((str(e)))
 
 # now create the python bindings package
 package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
-print("python bindings package name: " + package_name)
+print(("python bindings package name: " + package_name))
 deb_name = package_name + ".deb"
 
 if os.path.exists(package_name):
-    print("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)")
+    print(("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)"))
     sys.exit(1)
 
 if os.path.exists(deb_name):
-    print("Aborting: The deb file to build (\""+ deb_name + "\") already exists")
+    print(("Aborting: The deb file to build (\""+ deb_name + "\") already exists"))
     sys.exit(1)
 
-os.makedirs(os.path.join(package_name, "usr/lib/python2.7/dist-packages/pysgpp/"))
+os.makedirs(os.path.join(package_name, "usr/lib/python3/dist-packages/pysgpp/"))
 
 # copy main shared library
-shutil.copy("../../../lib/pysgpp/_pysgpp_swig.so", os.path.join(package_name, "usr/lib/python2.7/dist-packages/pysgpp/_pysgpp_swig.so"))
+shutil.copy("../../../lib/pysgpp/_pysgpp_swig.so", os.path.join(package_name, "usr/lib/python3/dist-packages/pysgpp/_pysgpp_swig.so"))
 # copy library files
 import copy_python
 copy_python.copy_python(package_name)
@@ -132,4 +133,4 @@ try:
 except Exception as e:
     print("Error: building the deb-file failed")
     print("reason: ")
-    print(str(e))
+    print((str(e)))

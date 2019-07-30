@@ -15,15 +15,19 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
+#include <initializer_list>
 #include <memory>
+#include <sstream>
+#include <string>
 
 namespace sgpp {
 namespace datadriven {
 
 /**
  * SparseGridMiner models the entire mining process for data mining with sparse grids. It aggregates
- * and automates data input, fitting and validation modules and controlls the mining process.
+ * and automates data input, fitting and validation modules and controls the mining process.
  */
 class SparseGridMiner {
  public:
@@ -35,7 +39,7 @@ class SparseGridMiner {
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
    */
-  SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer);
+  SparseGridMiner(ModelFittingBase *fitter, Scorer *scorer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -78,7 +82,7 @@ class SparseGridMiner {
    */
   ModelFittingBase *getModel();
 
-  void setModel(ModelFittingBase* model);
+  void setModel(ModelFittingBase *model);
 
   /**
    * Evaluate the model on a certain test dataset.
@@ -86,7 +90,25 @@ class SparseGridMiner {
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
    * @return score of the fit.
    */
-  double test(Dataset& testDataset);
+  double test(Dataset &testDataset);
+
+  /**
+   * Print output on one process.
+   * @param message
+   */
+  static void print(const std::string &message);
+
+  /**
+   * Print output on one process.
+   * @param message
+   */
+  static void print(const char *message);
+
+  /**
+   * Print output on one process.
+   * @param messageStream stream with the concatenated message
+   */
+  static void print(std::ostringstream &messageStream);
 
  protected:
   /**
@@ -98,5 +120,5 @@ class SparseGridMiner {
    */
   std::unique_ptr<Scorer> scorer;
 };
-} /* namespace datadriven */
-} /* namespace sgpp */
+}  // namespace datadriven
+}  // namespace sgpp

@@ -6,15 +6,15 @@
 #############################################################################
                                     #
 #############################################################################
-from DataSpecification import DataSpecification
+from pysgpp.extensions.datadriven.data.DataSpecification import DataSpecification
 
 
 import re
 import gzip
-from DataAdapter import DataAdapter
+from pysgpp.extensions.datadriven.data.DataAdapter import DataAdapter
 from pysgpp import DataVector, DataMatrix
 
-from DataContainer import DataContainer
+from pysgpp.extensions.datadriven.data.DataContainer import DataContainer
 
 ## Class implements the interface of DataAdapter for storing and restoring of input
 # data into / from files in <a href="http://www.cs.waikato.ac.nz/~ml/weka/arff.html" 
@@ -44,34 +44,34 @@ class ARFFAdapter(DataAdapter):
         size = points.getNrows()
         point = DataVector(dim)
         
-        fout.write("@RELATION \"%s\"\n\n" % self.filename)
+        fout.write(b"@RELATION \"%s\"\n\n" % self.filename.encode())
         
         hasclass = False
         if values != None:
             hasclass = True
         
         if attributes == None:
-            for i in xrange(dim):
-                fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
+            for i in range(dim):
+                fout.write(b"@ATTRIBUTE x%d NUMERIC\n" % i)
                
             if hasclass:
-                fout.write("@ATTRIBUTE class NUMERIC\n")
+                fout.write(b"@ATTRIBUTE class NUMERIC\n")
         else:
-            for key in attributes.keys():
-                fout.write("@ATTRIBUTE %s %s\n" % (key, attributes[key]))
+            for key in list(attributes.keys()):
+                fout.write(b"@ATTRIBUTE %s %s\n" % (key.encode(), attributes[key].encode()))
             
-        fout.write("\n@DATA\n")
+        fout.write(b"\n@DATA\n")
             
 
-        for row in xrange(size):
+        for row in range(size):
             points.getRow(row, point)
             lout = []
-            for col in xrange(dim):
+            for col in range(dim):
                 lout.append(point[col])
             if hasclass:
                 lout.append(values[row])
             string = ",".join(str(i) for i in lout)
-            fout.write(string+"\n")
+            fout.write((string+"\n").encode())
 
         fout.close()
 
@@ -89,15 +89,15 @@ class ARFFAdapter(DataAdapter):
         # get the different section of ARFF-File
         for line in fin:
             sline = line.strip().lower()
-            if sline.startswith("%") or len(sline) == 0:
+            if sline.startswith(b"%") or len(sline) == 0:
                 continue
     
-            if sline.startswith("@data"):
+            if sline.startswith(b"@data"):
                 break
             
-            if sline.startswith("@attribute"):
+            if sline.startswith(b"@attribute"):
                 value = sline.split()
-                if value[1].startswith("class"):
+                if value[1].startswith(b"class"):
                     hasclass = True
                 else:
                     data.append([])
@@ -105,14 +105,14 @@ class ARFFAdapter(DataAdapter):
         #read in the data stored in the ARFF file
         for line in fin:
             sline = line.strip()
-            if sline.startswith("%") or len(sline) == 0:
+            if sline.startswith(b"%") or len(sline) == 0:
                 continue
     
-            values = sline.split(",")
+            values = sline.split(b",")
             if hasclass:
                 classes.append(float(values[-1]))
                 values = values[:-1]
-            for i in xrange(len(values)):
+            for i in range(len(values)):
                 data[i].append(float(values[i]))
                 
         # cleaning up and return
@@ -123,8 +123,8 @@ class ARFFAdapter(DataAdapter):
         dataMatrix = DataMatrix(size, dim)
         tempVector = DataVector(dim)
         valuesVector = DataVector(size)
-        for rowIndex in xrange(size):
-            for colIndex in xrange(dim):
+        for rowIndex in range(size):
+            for colIndex in range(dim):
                 tempVector[colIndex] = data[colIndex][rowIndex]
             dataMatrix.setRow(rowIndex, tempVector)
             valuesVector[rowIndex] = classes[rowIndex]
@@ -142,16 +142,16 @@ class ARFFAdapter(DataAdapter):
         for line in fin:
             sline = line.strip().lower()
             # comments:
-            if sline.startswith("%") or len(sline) == 0:
+            if sline.startswith(b"%") or len(sline) == 0:
                 continue
             
             # attributes:
-            elif sline.startswith("@attribute"):
+            elif sline.startswith(b"@attribute"):
                 attrLine = line.strip().split()
                 spec.addAttribute(attrLine[1], attrLine[2])
             
             # data block therefore no attributes will come
-            elif sline.startswith("@data"):
+            elif sline.startswith(b"@data"):
                 break
             
         return spec
@@ -163,11 +163,11 @@ class ARFFAdapter(DataAdapter):
     # @param mode default: "r" for read only
     # @return file descriptor
     def __gzOpen(self, filename, mode="r"):
+        # mode set for binary data?
+        if not mode[-1] == "b":
+            mode += "b"
         # gzip-file
         if re.match(".*\.gz$", filename):
-            # mode set for binary data?
-            if not mode[-1] == "b":
-                mode += "b"
             fd = gzip.open(filename, mode)
         # non gzip-file
         else:

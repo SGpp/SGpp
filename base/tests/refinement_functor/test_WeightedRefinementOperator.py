@@ -30,14 +30,14 @@ class TestWeightedRefinementOperator(unittest.TestCase):
 
         xs = []
         DELTA = 0.05
-        DELTA_RECI = int(1/DELTA)
+        DELTA_RECI = int(1 / DELTA)
 
-        for i in xrange(DELTA_RECI):
-            for j in xrange(DELTA_RECI):
+        for i in range(DELTA_RECI):
+            for j in range(DELTA_RECI):
                 xs.append([DELTA*i, DELTA*j])
 
         random.seed(1208813)
-        ys = [ random.randint(-10, 10) for i in xrange(DELTA_RECI**2)]
+        ys = [ random.randint(-10, 10) for i in range(DELTA_RECI**2)]
 
         # print xs
         # print ys
@@ -50,7 +50,7 @@ class TestWeightedRefinementOperator(unittest.TestCase):
         coord = DataVector(DIM)
         opEval = createOperationEval(self.grid)
 
-        for i in xrange(self.trainData.getNrows()):
+        for i in range(self.trainData.getNrows()):
             self.trainData.getRow(i, coord)
             self.errors.__setitem__ (i, self.classes[i] - opEval.eval(self.alpha, coord))
 
@@ -71,15 +71,15 @@ class TestWeightedRefinementOperator(unittest.TestCase):
         coord = DataVector(storage.getDimension())
         num_coeff = self.alpha.__len__()
 
-        values = [self.functor.__call__(storage,i) for i in xrange(storage.getSize())]
+        values = [self.functor.__call__(storage,i) for i in range(storage.getSize())]
         expect = []
         opEval = createOperationEval(self.grid)
-        for i in xrange(num_coeff):
+        for i in range(num_coeff):
             # print i
             val = 0
             single = DataVector(num_coeff)
             single.__setitem__(i, self.alpha.__getitem__(i))
-            for j in xrange(self.trainData.getNrows()):
+            for j in range(self.trainData.getNrows()):
                 self.trainData.getRow(j, coord)
                 val += abs( opEval.eval(single, coord) * (self.errors.__getitem__(j)**2) )
             expect.append(val)

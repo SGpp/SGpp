@@ -6,7 +6,7 @@
 import unittest
 import math
 import random
-from pysgpp import Grid, DataVector, DataMatrix, BoundingBox1D, BoundingBox
+from pysgpp import Grid, DataVector, DataMatrix, BoundingBox1D, BoundingBox, createOperationEval
 
 class TestAlgorithmEvaluation(unittest.TestCase):
 
@@ -15,13 +15,13 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         d = 2
         l = 2
 
-        for i in xrange(100):
+        for i in range(100):
             self.general_test(d, l, self.get_random_bb(d), self.get_random_x(d))
 
     def general_test(self, d, l, bb, x):
 
         test_desc = "dim=%d, level=%d, bb=%s, x=%s" % (d, l, bb, x)
-        print test_desc
+        print(test_desc)
 
         self.grid = Grid.createLinearGrid(d)
         self.grid_gen = self.grid.getGenerator()
@@ -31,7 +31,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
 
         bb_ = BoundingBox(d)
 
-        for d_k in xrange(d):
+        for d_k in range(d):
             dimbb = BoundingBox1D()
             dimbb.leftBoundary = bb[d_k][0]
             dimbb.rightBoundary = bb[d_k][1]
@@ -46,7 +46,7 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         x_trans = DataVector(d)
         opEval = createOperationEval(self.grid)
 
-        for d_k in xrange(d):
+        for d_k in range(d):
             if not (bb[d_k][0] <= x[d_k] and x[d_k] <= bb[d_k][1]):
                 inside = False
                 break
@@ -74,16 +74,16 @@ class TestAlgorithmEvaluation(unittest.TestCase):
         base = [[0, 1], [0, 0.5], [0.5, 1], [0, 0.25], [0.25, 0.5], [0.5, 0.75], [0.75, 1]]
 
         bb = []
-        for i in xrange(d):
+        for i in range(d):
             bb.append(random.choice(base))
 
         return bb
 
     def get_random_x(self, d):
-        base = [i * 0.1 for i in xrange (11)]
+        base = [i * 0.1 for i in range (11)]
 
         x = []
-        for i in xrange(d):
+        for i in range(d):
             x.append(random.choice(base))
 
         return x

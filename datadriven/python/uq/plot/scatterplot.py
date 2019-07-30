@@ -39,7 +39,7 @@ def scatterplot_matrix(data, names, **kwargs):
                             ha='center', va='center')
 
     # Turn on the proper x or y axes ticks.
-    for i, j in zip(range(numvars), itertools.cycle((-1, 0))):
+    for i, j in zip(list(range(numvars)), itertools.cycle((-1, 0))):
         axes[j, i].xaxis.set_visible(True)
         axes[i, j].yaxis.set_visible(True)
 

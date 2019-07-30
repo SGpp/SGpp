@@ -6,15 +6,16 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
-#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
+#include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 
 #include <string>
+#include <vector>
 
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;
@@ -194,7 +195,6 @@ BOOST_AUTO_TEST_CASE(testSeq) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-
 
 BOOST_AUTO_TEST_SUITE(TestHashGridStorageWithT)
 
@@ -439,6 +439,40 @@ BOOST_AUTO_TEST_CASE(testRegularTruncatedBoundaries3D) {
 
   g.regularWithBoundaries(s, 2, 1);
   BOOST_CHECK_EQUAL(s.getSize(), 81U);
+}
+
+BOOST_AUTO_TEST_CASE(testAnisotropicFull) {
+  HashGridStorage s(2);
+  HashGenerator g;
+  std::vector<size_t> vec{2, 3};
+  g.anisotropicFull(s, vec);
+  HashGridPoint i(2);
+
+  for (sgpp::base::HashGridPoint::index_type n = 0; n <= 3; n++) {
+    if (n == 0) {
+      i.set(0, 1, 1);
+    } else {
+      i.set(0, 2, n);
+      n++;
+    }
+
+    i.set(1, 1, 1);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 2, 1);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 2, 3);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 3, 1);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 3, 3);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 3, 5);
+    BOOST_CHECK(s.isContaining(i));
+    i.set(1, 3, 7);
+    BOOST_CHECK(s.isContaining(i));
+  }
+
+  BOOST_CHECK_EQUAL(s.getSize(), 21);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
