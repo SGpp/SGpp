@@ -134,7 +134,7 @@ void CombiScheme::get_coefficients_to_index_set(
             int update_coefficient = std::accumulate(stencil_element.begin(),
                                                      stencil_element.end(), 0);
             update_coefficient = (abs(update_coefficient - 1) % 2) - (abs(update_coefficient) % 2);
-            std::vector<size_t> new_stencil_element;
+            std::vector<size_t> new_stencil_element(dimension, 0);
             std::transform(stencil_element.begin(), stencil_element.end(),
                            grid_levelvec.begin(), new_stencil_element.begin(), std::plus<int>());
             grid_dict[new_stencil_element] += update_coefficient;
