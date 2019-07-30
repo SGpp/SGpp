@@ -13,13 +13,14 @@
 #pragma once
 
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
-#include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
+#include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <list>
+#include <utility>
 #include <vector>
 
 namespace sgpp {
@@ -108,7 +109,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   /**
    * Contains all level vector and weights of the current component grid set
    */
-  std::vector<combiConfig> componentConfigs;
+  std::vector<std::pair<std::vector<size_t>, int>> componentConfigs;
 
   /**
    * Contains the status of the component grids.
@@ -120,7 +121,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   /**
    * Delivers the initial level vectors and weighs and manages refinements
    */
-  CombiConfigurator configurator;
+  CombiScheme scheme;
 
   bool isRefinable();
 
@@ -132,7 +133,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
-  void addNewModel(const combiConfig combiconfig);
+  void addNewModel(const std::pair<std::vector<size_t>, int> combiconfig);
 
   /**
    * @param indexRev the reverse index (distance from the end of the vector) of the component that
