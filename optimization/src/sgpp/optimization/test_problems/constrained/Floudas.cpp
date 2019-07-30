@@ -39,8 +39,8 @@ double FloudasObjective::evalUndisplaced(const base::DataVector& x) {
   return -x1 - x2;
 }
 
-void FloudasObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new FloudasObjective(*this));
+void FloudasObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new FloudasObjective(*this));
 }
 
 FloudasInequalityConstraint::FloudasInequalityConstraint() : TestVectorFunction(2, 2) {}

@@ -45,8 +45,8 @@ double Hartman3Objective::evalUndisplaced(const base::DataVector& x) {
                         35.0 * (x[2] - 0.8828) * (x[2] - 0.8828));
 }
 
-void Hartman3Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Hartman3Objective(*this));
+void Hartman3Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Hartman3Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
