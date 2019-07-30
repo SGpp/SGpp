@@ -39,8 +39,8 @@ double BubbleWrapObjective::evalUndisplaced(const base::DataVector& x) {
   return 1.0 - product;
 }
 
-void BubbleWrapObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new BubbleWrapObjective(*this));
+void BubbleWrapObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new BubbleWrapObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

@@ -17,12 +17,12 @@ import math
 import sys
 
 ## The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
-## is called <i>objective function</i> and has to derive from pysgpp.OptScalarFunction.
+## is called <i>objective function</i> and has to derive from pysgpp.ScalarFunction.
 ## In the constructor, we give the dimensionality of the domain
 ## (in this case \f$d = 2\f$).
 ## The eval method evaluates the objective function and returns the function
 ## value \f$f(\vec{x})\f$ for a given point \f$\vec{x} \in [0, 1]^d\f$.
-class ExampleFunction(pysgpp.OptScalarFunction):
+class ExampleFunction(pysgpp.ScalarFunction):
     """Example objective function from the title of my Master's thesis."""
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
@@ -75,8 +75,8 @@ printLine()
 print("Hierarchizing...\n")
 functionValues = gridGen.getFunctionValues()
 coeffs = pysgpp.DataVector(len(functionValues))
-hierSLE = pysgpp.OptHierarchisationSLE(grid)
-sleSolver = pysgpp.OptAutoSLESolver()
+hierSLE = pysgpp.HierarchisationSLE(grid)
+sleSolver = pysgpp.AutoSLESolver()
 
 # solve linear system
 if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
@@ -89,8 +89,8 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
 ## sgpp::optimization::optimizer.
 printLine()
 print("Optimizing smooth interpolant...\n")
-ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
-ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
+ft = pysgpp.InterpolantScalarFunction(grid, coeffs)
+ftGradient = pysgpp.InterpolantScalarFunctionGradient(grid, coeffs)
 gradientDescent = pysgpp.OptGradientDescent(ft, ftGradient)
 x0 = pysgpp.DataVector(d)
 
