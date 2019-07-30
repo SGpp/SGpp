@@ -102,7 +102,7 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   size_t getIdleGenerationsCount() const;
 
   /**
-   * @param crossoverProbability stopping criterion parameter 1
+   * @param idleGenerationsCount stopping criterion parameter 1
    */
   void setIdleGenerationsCount(size_t idleGenerationsCount);
 

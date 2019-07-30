@@ -42,7 +42,6 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *                    (\f$g(\vec{x}) \le 0\f$)
    * @param h           equality constraint function
    *                    (\f$h(\vec{x}) = 0\f$)
-   * @param hGradient   gradient of h (nullptr to omit)
    * @param N           maximal number of iterations or
    *                    objective function evaluations
    *                    (depending on the implementation)

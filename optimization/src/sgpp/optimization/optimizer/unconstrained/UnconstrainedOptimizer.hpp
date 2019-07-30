@@ -103,7 +103,7 @@ class UnconstrainedOptimizer {
   ScalarFunctionGradient* getObjectiveGradient() const { return fGradient.get(); }
 
   /**
-   * @param f  objective gradient
+   * @param fGradient  objective gradient
    */
   virtual void setObjectiveGradient(const ScalarFunctionGradient* fGradient) {
     if (fGradient != nullptr) {
@@ -119,7 +119,7 @@ class UnconstrainedOptimizer {
   ScalarFunctionHessian* getObjectiveHessian() const { return fHessian.get(); }
 
   /**
-   * @param f  objective Hessian
+   * @param fHessian  objective Hessian
    */
   virtual void setObjectiveHessian(const ScalarFunctionHessian* fHessian) {
     if (fHessian != nullptr) {
