@@ -11,7 +11,7 @@
  */
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
-#include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <cstdlib>
@@ -19,13 +19,12 @@
 #include <memory>
 #include <string>
 
-using sgpp::datadriven::ClassificationMinerFactory;
+using sgpp::datadriven::UniversalMinerFactory;
 using sgpp::datadriven::SparseGridMiner;
 
 /**
  * This example demonstrates how a parallel (distributed) sgpp::datadriven::SparseGridMiner is
- * constructed using a configuration file and how it is then used. Based on
- * ClassificationMinerFromConfigFile.cpp
+ * constructed using a configuration file and how it is then used.
  */
 int main(int argc, char **argv) {
   /**
@@ -49,7 +48,7 @@ int main(int argc, char **argv) {
     /**
      * We need a factory class to actually build the #sgpp::datadriven::SparseGridMiner.
      */
-    ClassificationMinerFactory factory;
+    UniversalMinerFactory factory;
     /**
      * The miner object is constructed by the factory from a supplied configuration file.
      */
