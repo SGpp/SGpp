@@ -103,12 +103,12 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalNotAKnotSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalNakSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createModWeaklyFundamentalNotAKnotSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createWeaklyFundamentalNakSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModWeaklyFundamentalNakSplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
@@ -116,8 +116,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createNaturalBsplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createNotAKnotBsplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createModNotAKnotBsplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createNakBsplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(Grid::createModNakBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModWaveletGrid(d)));
@@ -133,12 +133,12 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineClenshawCurtisBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalNotAKnotSplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalNakSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNotAKnotSplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNotAKnotSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNakSplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNakSplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
@@ -146,8 +146,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNaturalBsplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNotAKnotBsplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNotAKnotBsplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNakBsplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNakBsplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletModifiedBase()));
@@ -168,15 +168,15 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         (grid.getType() == GridType::BsplineClenshawCurtis) ||
         (grid.getType() == GridType::ModBspline) ||
         (grid.getType() == GridType::ModBsplineClenshawCurtis) ||
-        (grid.getType() == GridType::FundamentalNotAKnotSplineBoundary) ||
+        (grid.getType() == GridType::FundamentalNakSplineBoundary) ||
         (grid.getType() == GridType::FundamentalSpline) ||
         (grid.getType() == GridType::FundamentalSplineBoundary) ||
         (grid.getType() == GridType::ModFundamentalSpline) ||
-        (grid.getType() == GridType::WeaklyFundamentalNotAKnotSplineBoundary) ||
-        (grid.getType() == GridType::ModWeaklyFundamentalNotAKnotSpline) ||
+        (grid.getType() == GridType::WeaklyFundamentalNakSplineBoundary) ||
+        (grid.getType() == GridType::ModWeaklyFundamentalNakSpline) ||
         (grid.getType() == GridType::WeaklyFundamentalSplineBoundary) ||
-        (grid.getType() == GridType::NotAKnotBsplineBoundary) ||
-        (grid.getType() == GridType::ModNotAKnotBspline) ||
+        (grid.getType() == GridType::NakBsplineBoundary) ||
+        (grid.getType() == GridType::ModNakBspline) ||
         (grid.getType() == GridType::Wavelet) ||
         (grid.getType() == GridType::WaveletBoundary) ||
         (grid.getType() == GridType::ModWavelet);

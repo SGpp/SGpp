@@ -21,7 +21,7 @@
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNakSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
@@ -39,16 +39,16 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNakSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalNotAKnotSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalNakSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWeaklyFundamentalSplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNotAKnotSpline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNotAKnotBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNakSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNakBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNaturalBsplineBoundary.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNotAKnotBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
 
 #include <cstring>
 
@@ -96,9 +96,9 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return new optimization::OperationMultipleHierarchisationModWavelet(
         dynamic_cast<base::ModWaveletGrid&>(grid));
-  } else if (grid.getType() == base::GridType::FundamentalNotAKnotSplineBoundary) {
-    return new optimization::OperationMultipleHierarchisationFundamentalNotAKnotSplineBoundary(
-        dynamic_cast<base::FundamentalNotAKnotSplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::FundamentalNakSplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationFundamentalNakSplineBoundary(
+        dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new optimization::OperationMultipleHierarchisationFundamentalSpline(
         dynamic_cast<base::FundamentalSplineGrid&>(grid));
@@ -108,24 +108,24 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
-  } else if (grid.getType() == base::GridType::WeaklyFundamentalNotAKnotSplineBoundary) {
-    return new optimization::OperationMultipleHierarchisationWeaklyFundamentalNotAKnotSplineBoundary(
-        dynamic_cast<base::WeaklyFundamentalNotAKnotSplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationWeaklyFundamentalNakSplineBoundary(
+        dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid));
   } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
     return new optimization::OperationMultipleHierarchisationWeaklyFundamentalSplineBoundary(
         dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNotAKnotSpline) {
-    return new optimization::OperationMultipleHierarchisationModWeaklyFundamentalNotAKnotSpline(
-        dynamic_cast<base::ModWeaklyFundamentalNotAKnotSplineGrid&>(grid));
-  } else if (grid.getType() == base::GridType::ModNotAKnotBspline) {
-    return new optimization::OperationMultipleHierarchisationModNotAKnotBspline(
-        dynamic_cast<base::ModNotAKnotBsplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
+    return new optimization::OperationMultipleHierarchisationModWeaklyFundamentalNakSpline(
+        dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid));
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new optimization::OperationMultipleHierarchisationModNakBspline(
+        dynamic_cast<base::ModNakBsplineGrid&>(grid));
   } else if (grid.getType() == base::GridType::NaturalBsplineBoundary) {
     return new optimization::OperationMultipleHierarchisationNaturalBsplineBoundary(
         dynamic_cast<base::NaturalBsplineBoundaryGrid&>(grid));
-  } else if (grid.getType() == base::GridType::NotAKnotBsplineBoundary) {
-    return new optimization::OperationMultipleHierarchisationNotAKnotBsplineBoundary(
-        dynamic_cast<base::NotAKnotBsplineBoundaryGrid&>(grid));
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new optimization::OperationMultipleHierarchisationNakBsplineBoundary(
+        dynamic_cast<base::NakBsplineBoundaryGrid&>(grid));
   } else {
     throw base::factory_exception(
         "OperationMultipleHierarchisation is not implemented for this grid type.");

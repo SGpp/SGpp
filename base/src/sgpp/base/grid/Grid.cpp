@@ -33,13 +33,13 @@
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NotAKnotBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModNotAKnotBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/WeaklyFundamentalNotAKnotSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModWeaklyFundamentalNotAKnotSplineGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/FundamentalNotAKnotSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNakSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
@@ -168,34 +168,34 @@ Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, level_t 
   return new NaturalBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
-  return new NotAKnotBsplineBoundaryGrid(dim, degree, boundaryLevel);
+Grid* Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+  return new NakBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createModNotAKnotBsplineGrid(size_t dim, size_t degree) {
-  return new ModNotAKnotBsplineGrid(dim, degree);
+Grid* Grid::createModNakBsplineGrid(size_t dim, size_t degree) {
+  return new ModNakBsplineGrid(dim, degree);
 }
 
 Grid* Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new WeaklyFundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree,
+Grid* Grid::createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
                                                      level_t boundaryLevel) {
-  return new WeaklyFundamentalNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
+  return new WeaklyFundamentalNakSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim, size_t degree) {
-  return new ModWeaklyFundamentalNotAKnotSplineGrid(dim, degree);
+Grid* Grid::createModWeaklyFundamentalNakSplineGrid(size_t dim, size_t degree) {
+  return new ModWeaklyFundamentalNakSplineGrid(dim, degree);
 }
 
 Grid* Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new FundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createFundamentalNotAKnotSplineBoundaryGrid(
+Grid* Grid::createFundamentalNakSplineBoundaryGrid(
     size_t dim, size_t degree, level_t boundaryLevel) {
-  return new FundamentalNotAKnotSplineBoundaryGrid(dim, degree, boundaryLevel);
+  return new FundamentalNakSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
@@ -277,24 +277,24 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::NaturalBsplineBoundary:
         return Grid::createNaturalBsplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::NotAKnotBsplineBoundary:
-        return Grid::createNotAKnotBsplineBoundaryGrid(
+      case GridType::NakBsplineBoundary:
+        return Grid::createNakBsplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::ModNotAKnotBspline:
-        return Grid::createModNotAKnotBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModNakBspline:
+        return Grid::createModNakBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::WeaklyFundamentalSplineBoundary:
         return Grid::createWeaklyFundamentalSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
-        return Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(
+      case GridType::WeaklyFundamentalNakSplineBoundary:
+        return Grid::createWeaklyFundamentalNakSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::ModWeaklyFundamentalNotAKnotSpline:
-        return Grid::createModWeaklyFundamentalNotAKnotSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::ModWeaklyFundamentalNakSpline:
+        return Grid::createModWeaklyFundamentalNakSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::FundamentalSplineBoundary:
         return Grid::createFundamentalSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      case GridType::FundamentalNotAKnotSplineBoundary:
-        return Grid::createFundamentalNotAKnotSplineBoundaryGrid(
+      case GridType::FundamentalNakSplineBoundary:
+        return Grid::createFundamentalNakSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
@@ -420,15 +420,15 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createNaturalBsplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::NotAKnotBsplineBoundary:
-      degree = dynamic_cast<NotAKnotBsplineBoundaryGrid*>(this)->getDegree();
+    case GridType::NakBsplineBoundary:
+      degree = dynamic_cast<NakBsplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createNotAKnotBsplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createNakBsplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::ModNotAKnotBspline:
-      degree = dynamic_cast<ModNotAKnotBsplineGrid*>(this)->getDegree();
-      newGrid = Grid::createModNotAKnotBsplineGrid(numDims, degree);
+    case GridType::ModNakBspline:
+      degree = dynamic_cast<ModNakBsplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModNakBsplineGrid(numDims, degree);
       break;
     case GridType::PolyClenshawCurtis:
       degree = dynamic_cast<PolyClenshawCurtisGrid*>(this)->getDegree();
@@ -453,15 +453,15 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createWeaklyFundamentalSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
-      degree = dynamic_cast<WeaklyFundamentalNotAKnotSplineBoundaryGrid*>(this)->getDegree();
+    case GridType::WeaklyFundamentalNakSplineBoundary:
+      degree = dynamic_cast<WeaklyFundamentalNakSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createWeaklyFundamentalNakSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::ModWeaklyFundamentalNotAKnotSpline:
-      degree = dynamic_cast<ModWeaklyFundamentalNotAKnotSplineGrid*>(this)->getDegree();
-      newGrid = Grid::createModWeaklyFundamentalNotAKnotSplineGrid(numDims, degree);
+    case GridType::ModWeaklyFundamentalNakSpline:
+      degree = dynamic_cast<ModWeaklyFundamentalNakSplineGrid*>(this)->getDegree();
+      newGrid = Grid::createModWeaklyFundamentalNakSplineGrid(numDims, degree);
       break;
     case GridType::FundamentalSplineBoundary:
       degree = dynamic_cast<FundamentalSplineBoundaryGrid*>(this)->getDegree();
@@ -469,11 +469,11 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createFundamentalSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    case GridType::FundamentalNotAKnotSplineBoundary:
-      degree = dynamic_cast<FundamentalNotAKnotSplineBoundaryGrid*>(this)->getDegree();
+    case GridType::FundamentalNakSplineBoundary:
+      degree = dynamic_cast<FundamentalNakSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
-      newGrid = Grid::createFundamentalNotAKnotSplineBoundaryGrid(numDims, degree, boundaryLevel);
+      newGrid = Grid::createFundamentalNakSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
     default:
       throw generation_exception("Grid::clone - grid type not known");
@@ -535,18 +535,18 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::NakBsplineBoundaryCombigrid;
     case GridType::NaturalBsplineBoundary:
       return GridType::NaturalBsplineBoundary;
-    case GridType::NotAKnotBsplineBoundary:
-    case GridType::ModNotAKnotBspline:
-      return GridType::NotAKnotBsplineBoundary;
+    case GridType::NakBsplineBoundary:
+    case GridType::ModNakBspline:
+      return GridType::NakBsplineBoundary;
     case GridType::WeaklyFundamentalSplineBoundary:
       return GridType::WeaklyFundamentalSplineBoundary;
-    case GridType::WeaklyFundamentalNotAKnotSplineBoundary:
-    case GridType::ModWeaklyFundamentalNotAKnotSpline:
-      return GridType::WeaklyFundamentalNotAKnotSplineBoundary;
+    case GridType::WeaklyFundamentalNakSplineBoundary:
+    case GridType::ModWeaklyFundamentalNakSpline:
+      return GridType::WeaklyFundamentalNakSplineBoundary;
     case GridType::FundamentalSplineBoundary:
       return GridType::FundamentalSplineBoundary;
-    case GridType::FundamentalNotAKnotSplineBoundary:
-      return GridType::FundamentalNotAKnotSplineBoundary;
+    case GridType::FundamentalNakSplineBoundary:
+      return GridType::FundamentalNakSplineBoundary;
     // no non-boundary treatment basis available for the following grids
     case GridType::ModBsplineClenshawCurtis:
     default:
@@ -649,22 +649,22 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("naturalBsplineBoundary",
                                                        NaturalBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("notaknotBsplineBoundary",
-                                                       NotAKnotBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("modNotaknotBspline",
-                                                       ModNotAKnotBsplineGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakBsplineBoundary",
+                                                       NakBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("modNakBspline",
+                                                       ModNakBsplineGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("weaklyFundamentalSplineBoundary",
                                                        WeaklyFundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "weaklyFundamentalNotaknotSplineBoundary", WeaklyFundamentalNotAKnotSplineBoundaryGrid::unserialize));
+        "weaklyFundamentalNakSplineBoundary", WeaklyFundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
-        "modWeaklyFundamentalNotaknotSpline", ModWeaklyFundamentalNotAKnotSplineGrid::unserialize));
+        "modWeaklyFundamentalNakSpline", ModWeaklyFundamentalNakSplineGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
         FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(
-        std::pair<std::string, Grid::Factory>("fundamentalNotAKnotSplineBoundary",
-        FundamentalNotAKnotSplineBoundaryGrid::unserialize));
+        std::pair<std::string, Grid::Factory>("fundamentalNakSplineBoundary",
+        FundamentalNakSplineBoundaryGrid::unserialize));
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -704,20 +704,20 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("naturalBsplineBoundary",
                                 NaturalBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("notaknotBsplineBoundary",
-                                NotAKnotBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("modNotaknotBspline",
-                                ModNotAKnotBsplineGrid::unserialize));
+    tMap->insert(std::make_pair("nakBsplineBoundary",
+                                NakBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modNakBspline",
+                                ModNakBsplineGrid::unserialize));
     tMap->insert(std::make_pair("weaklyFundamentalSplineBoundary",
                                 WeaklyFundamentalSplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("weaklyFundamentalNotaknotSplineBoundary",
-                                WeaklyFundamentalNotAKnotSplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("modWeaklyFundamentalNotaknotSpline",
-                                ModWeaklyFundamentalNotAKnotSplineGrid::unserialize));
+    tMap->insert(std::make_pair("weaklyFundamentalNakSplineBoundary",
+                                WeaklyFundamentalNakSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modWeaklyFundamentalNakSpline",
+                                ModWeaklyFundamentalNakSplineGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalSplineBoundary",
                                 FundamentalSplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("fundamentalNotAKnotSplineBoundary",
-                                FundamentalNotAKnotSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("fundamentalNakSplineBoundary",
+                                FundamentalNakSplineBoundaryGrid::unserialize));
 #endif
   }
 
@@ -791,21 +791,21 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::NotAKnotBsplineBoundary, "notaknotBsplineBoundary"));
+        GridType::NakBsplineBoundary, "nakBsplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::ModNotAKnotBspline, "modNotaknotBspline"));
+        GridType::ModNakBspline, "modNakBspline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::WeaklyFundamentalNotAKnotSplineBoundary, "weaklyFundamentalNotaknotSplineBoundary"));
+        GridType::WeaklyFundamentalNakSplineBoundary, "weaklyFundamentalNakSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::ModWeaklyFundamentalNotAKnotSpline, "modWeaklyFundamentalNotaknotSpline"));
+        GridType::ModWeaklyFundamentalNakSpline, "modWeaklyFundamentalNakSpline"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalSplineBoundary,
         "fundamentalSplineBoundary"));
     verboseMap->insert(
-        std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalNotAKnotSplineBoundary,
-        "fundamentalNotAKnotSplineBoundary"));
+        std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalNakSplineBoundary,
+        "fundamentalNakSplineBoundary"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -849,20 +849,20 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::NotAKnotBsplineBoundary, "notaknotBsplineBoundary"));
+        std::make_pair(GridType::NakBsplineBoundary, "nakBsplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::ModNotAKnotBspline, "modNotaknotBspline"));
+        std::make_pair(GridType::ModNakBspline, "modNakBspline"));
     verboseMap->insert(
         std::make_pair(GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::WeaklyFundamentalNotAKnotSplineBoundary, "weaklyFundamentalNotaknotSplineBoundary"));
+        std::make_pair(GridType::WeaklyFundamentalNakSplineBoundary, "weaklyFundamentalNakSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::ModWeaklyFundamentalNotAKnotSpline, "modWeaklyFundamentalNotaknotSpline"));
+        std::make_pair(GridType::ModWeaklyFundamentalNakSpline, "modWeaklyFundamentalNakSpline"));
     verboseMap->insert(
         std::make_pair(GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::FundamentalNotAKnotSplineBoundary,
-                       "fundamentalNotAKnotSplineBoundary"));
+        std::make_pair(GridType::FundamentalNakSplineBoundary,
+                       "fundamentalNakSplineBoundary"));
 #endif
   }
 
@@ -1018,20 +1018,20 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::ModLinearStencil;
   } else if (gridType.compare("naturalBsplineBoundary") == 0) {
     return sgpp::base::GridType::NaturalBsplineBoundary;
-  } else if (gridType.compare("notaknotBsplineBoundary") == 0) {
-    return sgpp::base::GridType::NotAKnotBsplineBoundary;
-  } else if (gridType.compare("modNotaknotBspline") == 0) {
-    return sgpp::base::GridType::ModNotAKnotBspline;
+  } else if (gridType.compare("nakBsplineBoundary") == 0) {
+    return sgpp::base::GridType::NakBsplineBoundary;
+  } else if (gridType.compare("modNakBspline") == 0) {
+    return sgpp::base::GridType::ModNakBspline;
   } else if (gridType.compare("weaklyFundamentalSplineBoundary") == 0) {
     return sgpp::base::GridType::WeaklyFundamentalSplineBoundary;
-  } else if (gridType.compare("weaklyFundamentalNotaknotSplineBoundary") == 0) {
-    return sgpp::base::GridType::WeaklyFundamentalNotAKnotSplineBoundary;
-  } else if (gridType.compare("modWeaklyFundamentalNotaknotSpline") == 0) {
-    return sgpp::base::GridType::ModWeaklyFundamentalNotAKnotSpline;
+  } else if (gridType.compare("weaklyFundamentalNakSplineBoundary") == 0) {
+    return sgpp::base::GridType::WeaklyFundamentalNakSplineBoundary;
+  } else if (gridType.compare("modWeaklyFundamentalNakSpline") == 0) {
+    return sgpp::base::GridType::ModWeaklyFundamentalNakSpline;
   } else if (gridType.compare("fundamentalSplineBoundary") == 0) {
     return sgpp::base::GridType::FundamentalSplineBoundary;
-  } else if (gridType.compare("fundamentalNotAKnotSplineBoundary") == 0) {
-    return sgpp::base::GridType::FundamentalNotAKnotSplineBoundary;
+  } else if (gridType.compare("fundamentalNakSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalNakSplineBoundary;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

@@ -47,13 +47,13 @@
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createNotAKnotBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createModNotAKnotBsplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModNakBsplineGrid(size_t dim);
 %newobject sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createModWeaklyFundamentalNotAKnotSplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModWeaklyFundamentalNakSplineGrid(size_t dim);
 %newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-%newobject sgpp::base::Grid::createFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 
 %newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
@@ -135,13 +135,13 @@ enum class GridType {
   ModLinearClenshawCurtis,                  // 30
   NakBsplineBoundaryCombigrid,              // 31
   NaturalBsplineBoundary,                   // 32
-  NotAKnotBsplineBoundary,                  // 33
-  ModNotAKnotBspline,                       // 34
+  NakBsplineBoundary,                  // 33
+  ModNakBspline,                       // 34
   WeaklyFundamentalSplineBoundary,          // 35
-  WeaklyFundamentalNotAKnotSplineBoundary,  // 36
-  ModWeaklyFundamentalNotAKnotSpline,       // 37
+  WeaklyFundamentalNakSplineBoundary,  // 36
+  ModWeaklyFundamentalNakSpline,       // 37
   FundamentalSplineBoundary,                // 38
-  FundamentalNotAKnotSplineBoundary,        // 39
+  FundamentalNakSplineBoundary,        // 39
 };
 
 class Grid
@@ -183,12 +183,12 @@ public:
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-  static Grid* createNotAKnotBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-  static Grid* createModNotAKnotBsplineGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
   static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-  static Grid* createWeaklyFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-  static Grid* createFundamentalNotAKnotSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
 
   static Grid* unserialize(const std::string& istr);
 

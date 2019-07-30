@@ -67,8 +67,8 @@ GridType GridTypeParser::parse(const std::string &input) {
     return sgpp::base::GridType::Wavelet;
   } else if (inputLower.compare("waveletboundary") == 0) {
     return sgpp::base::GridType::WaveletBoundary;
-  } else if (inputLower.compare("fundamentalnotaknotsplineboundary") == 0) {
-    return sgpp::base::GridType::FundamentalNotAKnotSplineBoundary;
+  } else if (inputLower.compare("fundamentalnaksplineboundary") == 0) {
+    return sgpp::base::GridType::FundamentalNakSplineBoundary;
   } else if (inputLower.compare("fundamentalspline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
   } else if (inputLower.compare("fundamentalsplineboundary") == 0) {
@@ -112,8 +112,8 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::BsplineClenshawCurtis, "BsplineClenshawCurtis"),
       std::make_pair(GridType::Wavelet, "Wavelet"),
       std::make_pair(GridType::WaveletBoundary, "WaveletBoundary"),
-      std::make_pair(GridType::FundamentalNotAKnotSplineBoundary,
-                     "FundamentalNotAKnotSplineBoundary"),
+      std::make_pair(GridType::FundamentalNakSplineBoundary,
+                     "FundamentalNakSplineBoundary"),
       std::make_pair(GridType::FundamentalSpline, "FundamentalSpline"),
       std::make_pair(GridType::FundamentalSplineBoundary, "FundamentalSplineBoundary"),
       std::make_pair(GridType::ModFundamentalSpline, "ModFundamentalSpline"),
