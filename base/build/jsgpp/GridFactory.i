@@ -143,29 +143,24 @@ enum class GridType {
 class Grid
 {
 public:
-  static Grid* createGrid(RegularGridConfiguration gridConfig);
+  static Grid* createGrid(sgpp::base::RegularGridConfiguration gridConfig);
   static Grid* createLinearGrid(size_t dim);
   static Grid* createLinearStretchedGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim);
-  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createLinearClenshawCurtisGrid(size_t dim);
-  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createModLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
-  static Grid* createWaveletBoundaryGrid(size_t dim);
-  static Grid* createWaveletBoundaryGrid(size_t dim, size_t boundaryLevel);
+  static Grid* createWaveletBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createModWaveletGrid(size_t dim);
   static Grid* createBsplineGrid(size_t dim, size_t degree);
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
@@ -180,15 +175,17 @@ public:
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
-  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
-  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-  static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
-	
-  static Grid* unserialize(std::string& istr);
+  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+
+  static Grid* unserialize(const std::string& istr);
+
+  static sgpp::base::GridType stringToGridType(const std::string& gridType);
 	
 protected:
   Grid();
