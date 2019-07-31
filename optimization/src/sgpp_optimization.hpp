@@ -94,29 +94,5 @@
 
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
-#include "../../base/src/sgpp/base/function/scalar/ComponentScalarFunction.hpp"
-#include "../../base/src/sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/scalar/InterpolantScalarFunction.hpp"
-#include "../../base/src/sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/scalar/InterpolantScalarFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
-#include "../../base/src/sgpp/base/function/scalar/ScalarFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/scalar/ScalarFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
-#include "../../base/src/sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/vector/EmptyVectorFunction.hpp"
-#include "../../base/src/sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/vector/InterpolantVectorFunction.hpp"
-#include "../../base/src/sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/vector/InterpolantVectorFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/vector/VectorFunction.hpp"
-#include "../../base/src/sgpp/base/function/vector/VectorFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/vector/VectorFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/function/vector/WrapperVectorFunction.hpp"
-#include "../../base/src/sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp"
-#include "../../base/src/sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp"
-#include "../../base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
 
 #endif /* SGPP_OPTIMIZATION_HPP */
