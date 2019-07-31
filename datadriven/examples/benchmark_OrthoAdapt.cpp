@@ -41,7 +41,7 @@ int main() {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
   };
 
   // offline phase

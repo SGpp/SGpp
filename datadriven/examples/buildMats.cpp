@@ -24,41 +24,41 @@ using sgpp::base::DataVector;
  * @param res number of pixels in each dimension. The total image size is res*res
  * @param return vector of interactions
  */
-std::vector<std::vector<size_t>> getDirectNeighbours(size_t res) {
+std::set<std::set<size_t>> getDirectNeighbours(size_t res) {
   size_t geodim = res;
-  std::vector<std::vector<size_t>> vec = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> vec = std::set<std::set<size_t>>();
 
   for (size_t i = 0; i < geodim; i++) {
     for (size_t j = 0; j < geodim-1; j++) {
-      std::vector<size_t> xdir = std::vector<size_t>();
+      std::set<size_t> xdir = std::set<size_t>();
 
-      xdir.push_back(i*geodim+j);
+      xdir.insert(i*geodim+j);
 
-      xdir.push_back(i*geodim+j+1);
+      xdir.insert(i*geodim+j+1);
 
-      vec.push_back(xdir);
+      vec.insert(xdir);
     }
   }
   for (size_t i = 0; i < geodim-1; i++) {
     for (size_t j = 0; j < geodim; j++) {
-      std::vector<size_t> ydir = std::vector<size_t>();
+      std::set<size_t> ydir = std::set<size_t>();
 
-      ydir.push_back(i*geodim+j);
+      ydir.insert(i*geodim+j);
 
-      ydir.push_back((i+1)*geodim+j);
+      ydir.insert((i+1)*geodim+j);
 
-      vec.push_back(ydir);
+      vec.insert(ydir);
     }
   }
   // 1d vector for all dimensions
   for (size_t i = 0; i < geodim*geodim; i++) {
-    std::vector<size_t> tmp = std::vector<size_t>();
-    tmp.push_back(i);
-    vec.push_back(tmp);
+    std::set<size_t> tmp = std::set<size_t>();
+    tmp.insert(i);
+    vec.insert(tmp);
   }
   // add empty vector
-  std::vector<size_t> empty = std::vector<size_t>();
-  vec.push_back(empty);
+  std::set<size_t> empty = std::set<size_t>();
+  vec.insert(empty);
 
 
   return vec;

@@ -18,6 +18,7 @@
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,7 @@ using sgpp::solver::BiCGStab;
 using sgpp::solver::SLESolverConfiguration;
 
 ModelFittingBase::ModelFittingBase()
-    : verboseSolver{true}, config{nullptr}, dataset{nullptr}, solver{nullptr} {}
+    : verboseSolver{true}, config{nullptr}, interactions{nullptr}, dataset{nullptr}, solver{nullptr} {}
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
@@ -47,7 +48,7 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
   GridFactory gridFactory;
 
   // pass interactions with size 0
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
   return gridFactory.createGrid(gridConfig, interactions);
 }
 
@@ -58,25 +59,25 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
   // a regular sparse grid is created, if no geometryConfig is defined,
   if (geometryConfig.stencils.empty()) {
     // interaction with size 0
-    std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+    std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
     return gridFactory.createGrid(gridConfig, interactions);
   }
 
   return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(geometryConfig));
 }
 
-std::vector<std::vector<size_t>> ModelFittingBase::getInteractions(
-    const GeometryConfiguration &geometryConfig) const {
-  GridFactory gridFactory;
-
-  // no interactions get returned, if no geometryConfig is defined
-  if (geometryConfig.stencils.empty()) {
-    // interaction with size 0
-    std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
-    return interactions;
+std::set<std::set<size_t>> ModelFittingBase::getInteractions(
+    const GeometryConfiguration &geometryConfig) {
+  if(!interactions){
+    if (geometryConfig.stencils.empty()) {
+      // interaction with size 0
+      interactions = std::make_unique<std::set<std::set<size_t>>>();
+    } else {
+      GridFactory gridFactory;
+      interactions = std::make_unique<std::set<std::set<size_t>>>(gridFactory.getInteractions(geometryConfig));
+    }
   }
-
-  return gridFactory.getInteractions(geometryConfig);
+  return *interactions;
 }
 
 SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {

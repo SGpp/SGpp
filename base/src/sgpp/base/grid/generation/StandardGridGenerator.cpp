@@ -15,6 +15,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -35,7 +36,7 @@ void StandardGridGenerator::regular(size_t level, double T) {
 }
 
 void StandardGridGenerator::regularInter(size_t level,
-                                         const std::vector<std::vector<size_t>>& terms, double T) {
+                                         const std::set<std::set<size_t>>& terms, double T) {
   HashGenerator gen;
   gen.regularInter(this->storage, static_cast<level_t>(level), terms, T);
 }
@@ -72,7 +73,7 @@ void StandardGridGenerator::refineInter(RefinementFunctor& func,
 }
 
 void StandardGridGenerator::refineInter(RefinementFunctor& func,
-                                        const std::vector<std::vector<size_t>>& interactions) {
+                                        const std::set<std::set<size_t>>& interactions) {
   auto interset = std::unordered_set<std::vector<bool>>();
   const auto dim = storage.getDimension();
   for (const auto& interaction : interactions) {

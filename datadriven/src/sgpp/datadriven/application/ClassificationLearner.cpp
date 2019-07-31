@@ -17,7 +17,7 @@ ClassificationLearner::ClassificationLearner(
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
-    const std::vector<std::vector<size_t>> terms)
+    const std::set<std::set<size_t>> terms)
     : gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
@@ -36,7 +36,7 @@ ClassificationLearner::ClassificationLearner(
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig) {
-  terms = std::vector<std::vector<size_t>>();
+  terms = std::set<std::set<size_t>>();
 }
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,

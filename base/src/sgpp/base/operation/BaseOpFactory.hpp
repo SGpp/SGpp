@@ -133,7 +133,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
-    base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions);
+    base::DataMatrix& dataset, std::set<std::set<size_t>> interactions);
 
 /**
  * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.

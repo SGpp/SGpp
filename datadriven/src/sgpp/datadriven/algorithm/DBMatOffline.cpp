@@ -46,7 +46,7 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::RegularGridConfiguration;
 
 DBMatOffline::DBMatOffline() : lhsMatrix(), isConstructed(false), isDecomposed(false) {
-  interactions = std::vector<std::vector<size_t>>();
+  interactions = std::set<std::set<size_t>>();
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
@@ -142,7 +142,7 @@ void DBMatOffline::store(const std::string& fileName) {
   }
 
   std::string inter = "," + std::to_string(interactions.size());
-  for (std::vector<size_t> i : interactions) {
+  for (std::set<size_t> i : interactions) {
     inter.append("," + std::to_string(i.size()));
     for (size_t j : i) {
       inter.append("," + std::to_string(j));
@@ -197,7 +197,7 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(
-    const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const {
+    const std::string& fileName, std::set<std::set<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
@@ -211,11 +211,11 @@ void sgpp::datadriven::DBMatOffline::parseInter(
   StringTokenizer::tokenize(str, ",", tokens);
 
   for (size_t i = 4; i < tokens.size(); i += std::stoi(tokens[i]) + 1) {
-    std::vector<size_t> tmp = std::vector<size_t>();
+    std::set<size_t> tmp = std::set<size_t>();
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
-      tmp.push_back(std::stoi(tokens[i + j]));
+      tmp.insert(std::stoi(tokens[i + j]));
     }
-    interactions.push_back(tmp);
+    interactions.insert(tmp);
   }
 
   std::cout << interactions.size() << std::endl;

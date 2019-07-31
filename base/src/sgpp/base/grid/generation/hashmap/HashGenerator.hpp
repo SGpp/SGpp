@@ -15,6 +15,7 @@
 #include <cmath>
 #include <iostream>
 #include <iterator>
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -70,7 +71,7 @@ class HashGenerator {
    *        optimized tensor-product approximation spaces.
    */
   void regularInter(GridStorage& storage, level_t level,
-                    const std::vector<std::vector<size_t>>& terms, double T = 0) {
+                    const std::set<std::set<size_t>>& terms, double T = 0) {
     if (storage.getSize() > 0) {
       throw generation_exception("storage not empty");
     }
