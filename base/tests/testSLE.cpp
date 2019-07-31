@@ -100,7 +100,7 @@ void createSampleGridSLE(sgpp::base::Grid& grid, size_t l, sgpp::base::ScalarFun
 
 void testSLESystem(SLE& system, const sgpp::base::DataVector& x, const sgpp::base::DataVector& b,
                    sgpp::base::DataMatrix& A) {
-  // Test sgpp::optimization::SLE::getMatrixEntry, isMatrixEntryNonZero and
+  // Test sgpp::base::SLE::getMatrixEntry, isMatrixEntryNonZero and
   // matrixVectorMultiplication. Returns system matrix as pysgpp.DataMatrix.
   const size_t n = x.getSize();
   BOOST_CHECK_EQUAL(system.getDimension(), n);
@@ -151,7 +151,7 @@ void testSLESolution(const sgpp::base::DataMatrix& A, sgpp::base::DataVector& x,
 }
 
 BOOST_AUTO_TEST_CASE(TestSLESolvers) {
-  // Test sgpp::optimization::sle_solver with sgpp::optimization::FullSLE.
+  // Test sgpp::base::sle_solver with sgpp::base::FullSLE.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
@@ -176,12 +176,12 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
       std::unique_ptr<sgpp::base::sle_solver::SLESolver>(new sgpp::base::sle_solver::Eigen()));
 #endif /* USE_EIGEN */
 #ifdef USE_GMMPP
-  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-      new sgpp::optimization::sle_solver::Gmmpp()));
+  solvers.push_back(std::unique_ptr<sgpp::base::sle_solver::SLESolver>(
+      new sgpp::base::sle_solver::Gmmpp()));
 #endif /* USE_GMMPP */
 #ifdef USE_UMFPACK
-  solvers.push_back(std::unique_ptr<sgpp::optimization::sle_solver::SLESolver>(
-      new sgpp::optimization::sle_solver::UMFPACK()));
+  solvers.push_back(std::unique_ptr<sgpp::base::sle_solver::SLESolver>(
+      new sgpp::base::sle_solver::UMFPACK()));
 #endif /* USE_UMFPACK */
 
   // test getters/setters
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(TestSLESolvers) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFullSLE) {
-  // Test sgpp::optimization::FullSLE.
+  // Test sgpp::base::FullSLE.
   sgpp::base::DataMatrix A(3, 3, 0.0);
   A(0, 1) = 12.3;
   A(1, 2) = 42.1337;
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(TestFullSLE) {
 }
 
 BOOST_AUTO_TEST_CASE(TestHierarchisationSLE) {
-  // Test sgpp::optimization::HierarchisationSLE.
+  // Test sgpp::base::HierarchisationSLE.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
 
