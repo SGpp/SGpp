@@ -58,8 +58,8 @@ class VectorFunctionHessian {
    *                      \f$\nabla^2 g_i(\vec{x}) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  virtual void eval(const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient,
-                    std::vector<base::DataMatrix>& hessian) = 0;
+  virtual void eval(const DataVector& x, DataVector& value, DataMatrix& gradient,
+                    std::vector<DataMatrix>& hessian) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

@@ -39,7 +39,7 @@ class ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  virtual double eval(const base::DataVector& x) = 0;
+  virtual double eval(const DataVector& x) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

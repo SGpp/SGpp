@@ -43,7 +43,7 @@ class RandomNumberGenerator {
    * @param       a       lower bound
    * @param       b       upper bound
    */
-  void getUniformRV(base::DataVector& vector, double a = 0.0, double b = 1.0);
+  void getUniformRV(DataVector& vector, double a = 0.0, double b = 1.0);
 
   /**
    * Generate a uniform pseudo-random array index.
@@ -70,7 +70,7 @@ class RandomNumberGenerator {
    * @param       mean    mean of the Gaussian distribution
    * @param       stdDev  standard deviation of the Gaussian distribution
    */
-  void getGaussianRV(base::DataVector& vector, double mean = 0.0, double stdDev = 1.0);
+  void getGaussianRV(DataVector& vector, double mean = 0.0, double stdDev = 1.0);
 
   /**
    * @return      seed

@@ -19,7 +19,7 @@ namespace base {
  */
 class WrapperVectorFunction : public VectorFunction {
  public:
-  typedef std::function<void(const base::DataVector&, base::DataVector&)> FunctionEvalType;
+  typedef std::function<void(const DataVector&, DataVector&)> FunctionEvalType;
 
   /**
    * Constructor.
@@ -39,7 +39,7 @@ class WrapperVectorFunction : public VectorFunction {
    * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @param[out] value  \f$g(\vec{x})\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value) override { f(x, value); }
+  inline void eval(const DataVector& x, DataVector& value) override { f(x, value); }
 
   /**
    * @param[out] clone pointer to cloned object

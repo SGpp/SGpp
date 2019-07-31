@@ -23,7 +23,7 @@ double RandomNumberGenerator::getUniformRN(double a, double b) {
   return distr(generator);
 }
 
-void RandomNumberGenerator::getUniformRV(base::DataVector& vector, double a, double b) {
+void RandomNumberGenerator::getUniformRV(DataVector& vector, double a, double b) {
   for (size_t i = 0; i < vector.getSize(); i++) {
     vector[i] = getUniformRN(a, b);
   }
@@ -39,7 +39,7 @@ double RandomNumberGenerator::getGaussianRN(double mean, double stdDev) {
   return distr(generator);
 }
 
-void RandomNumberGenerator::getGaussianRV(base::DataVector& vector, double mean, double stdDev) {
+void RandomNumberGenerator::getGaussianRV(DataVector& vector, double mean, double stdDev) {
   for (size_t i = 0; i < vector.getSize(); i++) {
     vector[i] = getGaussianRN(mean, stdDev);
   }

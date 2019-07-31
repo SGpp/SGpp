@@ -31,7 +31,7 @@ class Armadillo : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
+  bool solve(SLE& system, DataVector& b, DataVector& x) const override;
 
   /**
    * @param       system  system to be solved
@@ -40,7 +40,7 @@ class Armadillo : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  bool solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const override;
+  bool solve(SLE& system, DataMatrix& B, DataMatrix& X) const override;
 };
 }  // namespace sle_solver
 }  // namespace base

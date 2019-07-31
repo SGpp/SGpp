@@ -37,7 +37,7 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunctionHessian(base::Grid& grid, const base::DataMatrix& alpha)
+  InterpolantVectorFunctionHessian(Grid& grid, const DataMatrix& alpha)
       : VectorFunctionHessian(grid.getDimension(), alpha.getNcols()),
         grid(grid),
         opEvalHessian(op_factory::createOperationEvalHessianNaive(grid)),
@@ -59,8 +59,8 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
    *                      \f$\nabla^2 g_i(\vec{x}) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient,
-                   std::vector<base::DataMatrix>& hessian) override {
+  inline void eval(const DataVector& x, DataVector& value, DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         value.setAll(INFINITY);
@@ -82,20 +82,20 @@ class InterpolantVectorFunctionHessian : public VectorFunctionHessian {
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const DataMatrix& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const DataMatrix& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
-  base::Grid& grid;
+  Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationEvalHessian> opEvalHessian;
+  std::unique_ptr<OperationEvalHessian> opEvalHessian;
   /// coefficient matrix
-  base::DataMatrix alpha;
+  DataMatrix alpha;
 };
 }  // namespace base
 }  // namespace sgpp

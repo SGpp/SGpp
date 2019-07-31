@@ -67,7 +67,7 @@ void Printer::printStatusBegin(const std::string& msg) {
   printStatusNewLine();
 
   // timing
-  watches.push(base::SGppStopwatch());
+  watches.push(SGppStopwatch());
 
   lastMsgLength = 0;
   cursorInClearLine = true;
@@ -153,7 +153,7 @@ void Printer::printStatusEnd(const std::string& msg) {
   printStatusIdentation();
 
   // timing
-  base::SGppStopwatch watch = watches.top();
+  SGppStopwatch watch = watches.top();
   lastDuration = watch.stop();
 
   // print message

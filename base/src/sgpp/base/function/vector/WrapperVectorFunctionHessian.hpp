@@ -21,8 +21,8 @@ namespace base {
  */
 class WrapperVectorFunctionHessian : public VectorFunctionHessian {
  public:
-  typedef std::function<void(const base::DataVector&, base::DataVector&, base::DataMatrix&,
-                             std::vector<base::DataMatrix>&)>
+  typedef std::function<void(const DataVector&, DataVector&, DataMatrix&,
+                             std::vector<DataMatrix>&)>
       FunctionHessianEvalType;
 
   /**
@@ -49,8 +49,8 @@ class WrapperVectorFunctionHessian : public VectorFunctionHessian {
    *                      \f$\nabla^2 g_i(\vec{x}) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient,
-                   std::vector<base::DataMatrix>& hessian) override {
+  inline void eval(const DataVector& x, DataVector& value, DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) override {
     fHessian(x, value, gradient, hessian);
   }
 

@@ -108,7 +108,7 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const DataVector& x, DataVector& gradient) override {
     size_t t2 = 0;
 
     // select entries of x which correspond to NAN entries in
@@ -168,11 +168,11 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
   /// vector of default values, indicating free variables with NAN
   std::vector<double> defaultValues;
   /// temporary vector 1
-  base::DataVector tmpVec1;
+  DataVector tmpVec1;
   /// temporary vector 2
-  base::DataVector tmpVec2;
+  DataVector tmpVec2;
   /// temporary matrix
-  base::DataMatrix tmpMat;
+  DataMatrix tmpMat;
 
   void initialize() {
     // make sure defaultValues has the correct size

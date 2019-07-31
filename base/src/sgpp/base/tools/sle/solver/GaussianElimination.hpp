@@ -30,7 +30,7 @@ class GaussianElimination : public SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const override;
+  bool solve(SLE& system, DataVector& b, DataVector& x) const override;
 };
 }  // namespace sle_solver
 }  // namespace base

@@ -39,7 +39,7 @@ typedef UF_long sslong;
  * @return              whether all went well (false if errors occurred)
  */
 bool solveInternal(void* numeric, const std::vector<sslong>& Ap, const std::vector<sslong>& Ai,
-                   const std::vector<double>& Ax, base::DataVector& b, base::DataVector& x) {
+                   const std::vector<double>& Ax, DataVector& b, DataVector& x) {
   const size_t n = b.getSize();
 
   x.resize(n);
@@ -53,9 +53,9 @@ bool solveInternal(void* numeric, const std::vector<sslong>& Ap, const std::vect
 
 UMFPACK::~UMFPACK() {}
 
-bool UMFPACK::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
-  base::DataMatrix B(b.getPointer(), b.getSize(), 1);
-  base::DataMatrix X(B.getNrows(), B.getNcols());
+bool UMFPACK::solve(SLE& system, DataVector& b, DataVector& x) const {
+  DataMatrix B(b.getPointer(), b.getSize(), 1);
+  DataMatrix X(B.getNrows(), B.getNcols());
 
   // call version for multiple RHSs
   if (solve(system, B, X)) {
@@ -67,7 +67,7 @@ bool UMFPACK::solve(SLE& system, base::DataVector& b, base::DataVector& x) const
   }
 }
 
-bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+bool UMFPACK::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
 #ifdef USE_UMFPACK
   Printer::getInstance().printStatusBegin("Solving linear system (UMFPACK)...");
 
@@ -202,8 +202,8 @@ bool UMFPACK::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const
 
   umfpack_dl_free_symbolic(&symbolic);
 
-  base::DataVector x(n);
-  base::DataVector b(n);
+  DataVector x(n);
+  DataVector b(n);
   X.resize(n, B.getNcols());
 
   // call umfpack_dl_solve for each RHS

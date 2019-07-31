@@ -20,7 +20,7 @@ namespace base {
  */
 class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
  public:
-  typedef std::function<double(const base::DataVector&, base::DataVector&)>
+  typedef std::function<double(const DataVector&, DataVector&)>
       FunctionGradientEvalType;
 
   /**
@@ -43,7 +43,7 @@ class WrapperScalarFunctionGradient : public ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const DataVector& x, DataVector& gradient) override {
     return fGradient(x, gradient);
   }
 

@@ -33,7 +33,7 @@ typedef ::Eigen::MatrixXd EigenMatrix;
  * @return            whether all went well (false if errors occurred)
  */
 bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatrix>& A_QR,
-                   base::DataVector& b, base::DataVector& x) {
+                   DataVector& b, DataVector& x) {
   const double tolerance = 1e-12;
 
   // solve system
@@ -42,7 +42,7 @@ bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatri
 
   // check solution
   if ((A * xEigen).isApprox(bEigen, tolerance)) {
-    x = base::DataVector(xEigen.data(), xEigen.size());
+    x = DataVector(xEigen.data(), xEigen.size());
     return true;
   } else {
     return false;
@@ -52,9 +52,9 @@ bool solveInternal(const EigenMatrix& A, const ::Eigen::HouseholderQR<EigenMatri
 
 Eigen::~Eigen() {}
 
-bool Eigen::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
-  base::DataMatrix B(b.getPointer(), b.getSize(), 1);
-  base::DataMatrix X(B.getNrows(), B.getNcols());
+bool Eigen::solve(SLE& system, DataVector& b, DataVector& x) const {
+  DataMatrix B(b.getPointer(), b.getSize(), 1);
+  DataMatrix X(B.getNrows(), B.getNcols());
 
   // call version for multiple RHSs
   if (solve(system, B, X)) {
@@ -66,7 +66,7 @@ bool Eigen::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   }
 }
 
-bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+bool Eigen::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
 #ifdef USE_EIGEN
   Printer::getInstance().printStatusBegin("Solving linear system (Eigen)...");
 
@@ -133,8 +133,8 @@ bool Eigen::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
   Printer::getInstance().printStatusUpdate("step 1: Householder QR factorization");
   ::Eigen::HouseholderQR<EigenMatrix> A_QR = A.householderQr();
 
-  base::DataVector x(n);
-  base::DataVector b(n);
+  DataVector x(n);
+  DataVector b(n);
   X.resize(n, B.getNcols());
 
   // solve system for each RHS

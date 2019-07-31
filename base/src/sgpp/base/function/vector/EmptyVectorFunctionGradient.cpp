@@ -12,7 +12,7 @@ namespace base {
 
 WrapperVectorFunctionGradient& EmptyVectorFunctionGradient::getInstance() {
   static WrapperVectorFunctionGradient wrapperVectorFunctionGradient(
-      0, 0, [](const base::DataVector& x, base::DataVector& value, base::DataMatrix& gradient) {});
+      0, 0, [](const DataVector& x, DataVector& value, DataMatrix& gradient) {});
   return wrapperVectorFunctionGradient;
 }
 }  // namespace base

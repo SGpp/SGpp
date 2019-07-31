@@ -14,18 +14,18 @@ namespace sgpp {
 namespace base {
 namespace sle_solver {
 
-BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, base::DataVector(0)) {}
+BiCGStab::BiCGStab() : BiCGStab(DEFAULT_MAX_IT_COUNT, DEFAULT_TOLERANCE, DataVector(0)) {}
 
-BiCGStab::BiCGStab(size_t maxItCount, double tolerance, const base::DataVector& x0)
+BiCGStab::BiCGStab(size_t maxItCount, double tolerance, const DataVector& x0)
     : SLESolver(), N(maxItCount), tol(tolerance), x0(x0) {}
 
 BiCGStab::~BiCGStab() {}
 
-bool BiCGStab::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
+bool BiCGStab::solve(SLE& system, DataVector& b, DataVector& x) const {
   Printer::getInstance().printStatusBegin("Solving linear system (BiCGStab)...");
 
   const size_t n = b.getSize();
-  base::DataVector r(n, 0.0);
+  DataVector r(n, 0.0);
 
   if (n == 1) {
     const double A = system.getMatrixEntry(0, 0);
@@ -55,14 +55,14 @@ bool BiCGStab::solve(SLE& system, base::DataVector& b, base::DataVector& x) cons
     r[i] = b[i] - r[i];
   }
 
-  base::DataVector r0Hat(r);
+  DataVector r0Hat(r);
   double rho = 1.0;
   double alpha = 1.0;
   double omega = 1.0;
-  base::DataVector v(n, 0.0);
-  base::DataVector p(n, 0.0);
-  base::DataVector s(n, 0.0);
-  base::DataVector t(n, 0.0);
+  DataVector v(n, 0.0);
+  DataVector p(n, 0.0);
+  DataVector s(n, 0.0);
+  DataVector t(n, 0.0);
   double rNormSquared = 0.0;
   size_t k = 0;
 
@@ -123,9 +123,9 @@ double BiCGStab::getTolerance() const { return tol; }
 
 void BiCGStab::setTolerance(double tolerance) { tol = tolerance; }
 
-const base::DataVector& BiCGStab::getStartingPoint() const { return x0; }
+const DataVector& BiCGStab::getStartingPoint() const { return x0; }
 
-void BiCGStab::setStartingPoint(const base::DataVector& startingPoint) {
+void BiCGStab::setStartingPoint(const DataVector& startingPoint) {
   x0.resize(startingPoint.getSize());
   x0 = startingPoint;
 }

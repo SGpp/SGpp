@@ -40,7 +40,7 @@ void callback(const gmm::iteration& iter) {
  * @param[out]  x   solution of the linear system
  * @return          whether all went well (false if errors occurred)
  */
-bool solveInternal(const gmm::csr_matrix<double>& A, base::DataVector& b, base::DataVector& x) {
+bool solveInternal(const gmm::csr_matrix<double>& A, DataVector& b, DataVector& x) {
   // allow warnings
   gmm::warning_level::level(1);
   const size_t n = b.getSize();
@@ -65,7 +65,7 @@ bool solveInternal(const gmm::csr_matrix<double>& A, base::DataVector& b, base::
 
     if (iter.converged() && (res < 1e3)) {
       // GMRES converged
-      x = base::DataVector(xVec);
+      x = DataVector(xVec);
       Printer::getInstance().printStatusUpdate(
           "solving with Gmm++ (k = " + std::to_string(iter.get_iteration()) +
           ", residual norm = " + std::to_string(res) + ")");
@@ -85,7 +85,7 @@ bool solveInternal(const gmm::csr_matrix<double>& A, base::DataVector& b, base::
       res = iter.get_res();
 
       if (iter.converged() && (res < 1e3)) {
-        x = base::DataVector(xVec);
+        x = DataVector(xVec);
         Printer::getInstance().printStatusUpdate(
             "solving with Gmm++ (k = " + std::to_string(iter.get_iteration()) +
             ", residual norm = " + std::to_string(res) + ")");
@@ -108,7 +108,7 @@ bool solveInternal(const gmm::csr_matrix<double>& A, base::DataVector& b, base::
 
 Gmmpp::~Gmmpp() {}
 
-bool Gmmpp::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
+bool Gmmpp::solve(SLE& system, DataVector& b, DataVector& x) const {
 #ifdef USE_GMMPP
   Printer::getInstance().printStatusBegin("Solving linear system (Gmm++)...");
 
