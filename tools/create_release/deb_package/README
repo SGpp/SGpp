@@ -21,4 +21,10 @@ and run the following commands in that folder:
 
 Root rights are needed, and the user will be prompted to allow for installing the
 needed dependencies.
+
+~~~
+The minimal package requirements for the machine running the Debian package build, 
+besides the manually added dependencies specified in the run script, are:
+
+      gcc, python3-dev, python3-numpy, swig, scons, python3-jinja2, fakeroot
 ~~~
