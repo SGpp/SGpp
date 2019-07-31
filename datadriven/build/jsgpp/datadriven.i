@@ -39,7 +39,7 @@
 %include "datadriven/src/sgpp/datadriven/scalapack/DataMatrixDistributed.hpp"
 %include "datadriven/src/sgpp/datadriven/scalapack/DataVectorDistributed.hpp"
 
-%ignore VectorHash::operator();
+%ignore *::operator();
 %include "datadriven/src/sgpp/datadriven/algorithm/CombiScheme.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSChol.hpp"
