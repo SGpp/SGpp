@@ -18,6 +18,16 @@
 #include <utility>
 #include <vector>
 
+struct VectorHash {
+    size_t operator()(const std::vector<size_t>& v) const {
+        std::hash<size_t> hasher;
+        size_t seed = 0;
+        for (size_t i : v) {
+            seed ^= hasher(i) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+        return seed;
+    }
+};
 
 namespace sgpp {
 namespace datadriven {
@@ -59,14 +69,9 @@ class CombiScheme {
 
  private:
   /**
-   * Set containing the active indices
+   * Set containing the indices
    */
-  std::set<std::vector<size_t>> active_index_set;
-
-  /**
-   * Set containing the old indices
-   */
-  std::set<std::vector<size_t>> old_index_set;
+  std::map<std::vector<size_t>, bool> index_set;
 
   /**
    * dimension
@@ -79,16 +84,10 @@ class CombiScheme {
   size_t level = 0;
 
   /**
-   * initialize the active index set
+   * initialize the index set
    * @return the active index set
    */
-  std::set<std::vector<size_t>> init_active_index_set();
-
-  /**
-   * initialize the old index set
-   * @return the active index set
-   */
-  std::set<std::vector<size_t>> init_old_index_set();
+  void init_index_set();
 
   /**
    * initialize the active index set
@@ -96,7 +95,7 @@ class CombiScheme {
    * @param values level plane
    * @return the active index set
    */
-  std::set<std::vector<size_t>> getGrids(size_t dim, size_t values);
+  std::unordered_set<std::vector<size_t>, VectorHash> getGrids(size_t dim, size_t values);
 
   /**
    * update the scheme by component of levelvec
@@ -104,14 +103,6 @@ class CombiScheme {
    * @param levelvec vector for the component in question
    */
   void refine_scheme(size_t dim, std::vector<size_t> levelvec);
-
-  /**
-   * initialize the active index set
-   * @param grid_dict dictionary containing the component level as key and the coefficients as values
-   * @param index_set index set containing the component levels
-   */
-  void get_coefficients_to_index_set(std::map<std::vector<size_t>, int> &grid_dict, std::set<std::vector<size_t>> &index_set);
-
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
