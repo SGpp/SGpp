@@ -8,6 +8,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <vector>
+#include <functional>
 
 namespace sgpp {
 namespace combigrid {
