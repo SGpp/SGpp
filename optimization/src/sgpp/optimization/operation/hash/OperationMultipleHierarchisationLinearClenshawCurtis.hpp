@@ -10,7 +10,7 @@
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "../../../../../../base/src/sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp"
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 
 namespace sgpp {
 namespace optimization {

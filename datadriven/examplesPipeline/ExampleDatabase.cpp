@@ -4,8 +4,6 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DataMatrixDatabaseFromConfigFile.cpp
- *
  * Created on: Mar 28, 2019
  *     Author: Jan Schopohl
  */
@@ -24,14 +22,16 @@
 using sgpp::datadriven::DBMatDatabase;
 
 /**
- * Based on dataMatrixDatabase.cpp, but with a configuration file parser, so the same config file as
- * for the online phase can be used.
- *
  * This example shows how to initialize a data matrix of offline decompositions (needed for
  * online objects) which enhances the performance since the decomposition usually takes some time.
  * A database is always initialized upon a json file which contains paths to different matrix
  * decompositions identified by the configuration of the grid, adaptivity and the density
  * estimation itself.
+ *
+ * NOTE (Sebastian Kreisel):
+ * Use this example with a config that includes a database attribute in the
+ * fitter config as well as an explicit dim in the gridConfig.
+ * You may for example use config_databaseExample.json.
  */
 
 int main(int argc, char** argv) {
@@ -67,7 +67,6 @@ int main(int argc, char** argv) {
   auto& regularizationConfig = config.getRegularizationConfig();
   auto& densityEstimationConfig = config.getDensityEstimationConfig();
   auto& databaseConfig = config.getDatabaseConfig();
-
   /**
    * The database has to be initialized. This is done by passing the file to the json
    * database file to the constructor of the DBMatDatabase class.
