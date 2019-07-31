@@ -6,24 +6,6 @@
 import Helper
 import ModuleHelper
 
-def checkForLibrary(name, flag, headers, libraries):
-  if type(headers) is str: headers = [headers]
-  if type(libraries) is str: libraries = [libraries]
-  if libraries is None: libraries = []
-
-  if (flag not in config.env) or (not config.env[flag]):
-    Helper.printInfo("sgpp::optimization will be compiled without {} (flag not set).".format(name))
-  elif not config.CheckHeader(headers, language="C++"):
-    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                             "necessary headers {} were not found.".format(headers))
-  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
-    Helper.printErrorAndExit("The flag {} was given, but the".format(flag),
-                             "necessary libraries {} were not found.".format(libraries))
-  else:
-    Helper.printInfo("sgpp::optimization will be compiled with {}.".format(name))
-    additionalDependencies.extend(libraries)
-    env["CPPDEFINES"][flag] = "1"
-
 Import("*")
 
 moduleDependencies = []
@@ -31,12 +13,15 @@ moduleDependencies = []
 additionalDependencies = []
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
-    
 
-checkForLibrary("UMFPACK",   "USE_UMFPACK",   "suitesparse/umfpack.h", "umfpack")
-checkForLibrary("Eigen",     "USE_EIGEN",     "eigen3/Eigen/Dense",    None)
-checkForLibrary("Armadillo", "USE_ARMADILLO", "armadillo",             "armadillo")
-checkForLibrary("Gmm++",     "USE_GMMPP",     "gmm/gmm.h",             None)
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "UMFPACK", "USE_UMFPACK", "suitesparse/umfpack.h", "umfpack")
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Eigen", "USE_EIGEN", "eigen3/Eigen/Dense", None)
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Armadillo", "USE_ARMADILLO", "armadillo", "armadillo")
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Gmm++", "USE_GMMPP", "gmm/gmm.h", None)
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
