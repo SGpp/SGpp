@@ -5,18 +5,16 @@
 
 #pragma once
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/combigrid/algebraic/FloatTensorVector.hpp>
 #include <sgpp/combigrid/functions/AbstractInfiniteFunctionBasis1D.hpp>
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/grid/TensorGrid.hpp>
-
-#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 
 #include <vector>
-
-#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -93,9 +91,9 @@ class FullGridPCESummationStrategy : public AbstractFullGridSummationStrategy<V>
       }
     }
 
-    sgpp::optimization::FullSLE sle(A);
-    sgpp::optimization::sle_solver::Auto solver;
-    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    sgpp::base::FullSLE sle(A);
+    sgpp::base::sle_solver::Auto solver;
+    sgpp::base::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
     if (!solved) {

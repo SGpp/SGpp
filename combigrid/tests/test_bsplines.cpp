@@ -407,8 +407,8 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
   std::shared_ptr<sgpp::base::Grid> grid;
   grid.reset(sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(numDimensions, degree));
   grid->getGenerator().regular(level);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::sle_solver::Auto sleSolver;
   sgpp::base::DataVector alpha(grid->getSize());
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector f_values(gridStorage.getSize(), 0.0);
@@ -421,7 +421,7 @@ double BsplineQuadratureSquare(size_t numDimensions, size_t degree,
     f_values[i] = func(p);
   }
 
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;
   }
