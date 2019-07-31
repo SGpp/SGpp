@@ -3,7 +3,7 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * DataMiningConfigParser.cpp
+ * DataMiningConfigParser.hpp
  *
  *  Created on: Aug 14, 2016
  *  	Author: Michael Lettrich
@@ -36,7 +36,7 @@ using json::DictNode;
 using json::JSON;
 
 using sgpp::base::AdaptivityConfiguration;
-using sgpp::base::RegularGridConfiguration;
+using sgpp::base::GeneralGridConfiguration;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
 using sgpp::solver::SLESolverConfiguration;
@@ -86,8 +86,8 @@ class DataMiningConfigParser {
   bool getScorerConfig(ScorerConfiguration &config, const ScorerConfiguration &defaults) const;
 
   bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
-  bool getFitterGridConfig(RegularGridConfiguration &config,
-                           const RegularGridConfiguration &defaults) const;
+  bool getFitterGridConfig(GeneralGridConfiguration &config,
+                           const GeneralGridConfiguration &defaults) const;
   bool getFitterAdaptivityConfig(AdaptivityConfiguration &config,
                                  const AdaptivityConfiguration &defaults) const;
   bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,

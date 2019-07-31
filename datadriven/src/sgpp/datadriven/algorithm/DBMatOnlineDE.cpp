@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
@@ -123,21 +124,35 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
-    // in case OrthoAdapt, the current size is not lhs size, but B size
+    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
     bool use_B_size = false;
-    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
+    size_t B_size = 0;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
     if (densityEstimationConfig.decomposition_ ==
         sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
-      thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
-      if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
+      this_OrthoAdapt_pointer = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
         use_B_size = true;
+        B_size = this_OrthoAdapt_pointer->getB().getNcols();
+      }
+    }
+
+    sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+      this_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
+      if (this_SMW_pointer->getB().getNcols() > 1) {
+        use_B_size = true;
+        B_size = this_SMW_pointer->getB().getNcols();
       }
     }
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
-    DataVector b(use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols());
+    DataVector b(use_B_size ? B_size : lhsMatrix.getNcols());
     b.setAll(0);
     if (b.getSize() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
@@ -160,11 +175,9 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 #ifdef USE_GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
 #else
-      throw algorithm_exception("built withot GSL");
+      throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
     }
-
-    // std::cout << b.getSize() << std::endl;
 
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
@@ -187,6 +200,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     functionComputed = true;
   }
+  std::cout << "\ndensity function computed successfully\n";
 }
 
 void DBMatOnlineDE::computeDensityFunctionParallel(
@@ -266,7 +280,8 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
     if (offlineObject.interactions.size() != 0) {
       throw sgpp::base::not_implemented_exception(
-          "Parallel evaluation operation not yet implemented for offline objects with interations");
+          "Parallel evaluation operation not yet implemented for offline objects with "
+          "interations");
     }
     std::unique_ptr<OperationMultipleEvalDistributed> B(
         static_cast<OperationMultipleEvalDistributed*>(
@@ -362,7 +377,8 @@ void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
     OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
     if (offlineObject.interactions.size() != 0) {
       throw sgpp::base::not_implemented_exception(
-          "Parallel evaluation operation not yet implemented for offline objects with interations");
+          "Parallel evaluation operation not yet implemented for offline objects with "
+          "interations");
     }
     std::unique_ptr<OperationMultipleEvalDistributed> opEval(
         static_cast<OperationMultipleEvalDistributed*>(

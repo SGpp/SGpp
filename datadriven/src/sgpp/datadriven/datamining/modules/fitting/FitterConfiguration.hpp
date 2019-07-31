@@ -27,7 +27,7 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares, DensityEstimation };
+enum class FitterType { RegressionLeastSquares, DensityEstimation, Classification };
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -79,9 +79,9 @@ class FitterConfiguration {
 
   /**
    * Get initial conditions for the grid before adaptive refinement.
-   * @return immutable RegularGridConfiguration
+   * @return immutable GeneralGridConfiguration
    */
-  const base::RegularGridConfiguration &getGridConfig() const;
+  const base::GeneralGridConfiguration &getGridConfig() const;
 
   /**
    * Get how the adaptivity algorithms for the grid should behave.
@@ -149,13 +149,13 @@ class FitterConfiguration {
    * Returns the configuration for the geometry parameters
    * @return immutable GeometryConfiguration
    */
-  const datadriven::GeometryConfiguration& getGeometryConfig() const;
+  const datadriven::GeometryConfiguration &getGeometryConfig() const;
 
   /**
    * Get or set initial conditions for the grid before adaptive refinement.
-   * @return RegularGridConfiguration
+   * @return GeneralGridConfiguration
    */
-  base::RegularGridConfiguration &getGridConfig();
+  base::GeneralGridConfiguration &getGridConfig();
 
   /**
    * Get or set how the adaptivity algorithms for the grid should behave.
@@ -216,7 +216,7 @@ class FitterConfiguration {
   /**
    * Initial conditions for the grid before adaptive refinement.
    */
-  base::RegularGridConfiguration gridConfig;
+  base::GeneralGridConfiguration gridConfig;
 
   /**
    * Configure how the adaptivity algorithms for the grid should behave.
