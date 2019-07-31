@@ -82,7 +82,7 @@ double BayesianOptimization::var(base::DataVector &knew, double kself) {
 
 BOConfig BayesianOptimization::main(BOConfig &prototype) {
   BOConfig nextconfig(prototype);
-  optimization::WrapperScalarFunction wrapper(prototype.getContSize(),
+  base::WrapperScalarFunction wrapper(prototype.getContSize(),
                                               std::bind(&BayesianOptimization::acquisitionOuter,
                                                         this,
                                                         std::placeholders::_1));
@@ -138,7 +138,7 @@ void BayesianOptimization::setScales(base::DataVector nscales, double factor) {
 }
 
 base::DataVector BayesianOptimization::fitScales() {
-  optimization::WrapperScalarFunction wrapper(scales.size(),
+  base::WrapperScalarFunction wrapper(scales.size(),
                                               std::bind(&BayesianOptimization::likelihood,
                                                         this,
                                                         std::placeholders::_1));

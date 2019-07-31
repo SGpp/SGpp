@@ -608,7 +608,7 @@ void ScottsRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVecto
 
 KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
     KernelDensityEstimator& kde, size_t kfold, std::uint64_t seedValue)
-    : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
+    : sgpp::base::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
   // split the data set
   auto samples = kde.getSamples();
   size_t numSamples = samples->getNrows();

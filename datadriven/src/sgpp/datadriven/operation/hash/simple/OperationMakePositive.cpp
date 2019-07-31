@@ -28,7 +28,7 @@ namespace datadriven {
 OperationMakePositive::OperationMakePositive(
     MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
-    bool verbose, sgpp::optimization::ScalarFunction* f)
+    bool verbose, sgpp::base::ScalarFunction* f)
     : maxLevel(0),
       minimumLevelSum(0),
       maximumLevelSum(0),
