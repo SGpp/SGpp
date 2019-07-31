@@ -21,6 +21,9 @@
 namespace sgpp {
 namespace datadriven {
 
+/**
+ * Hash to make an unordered_set over an vector of size_t's possible.
+ */
 struct VectorHash {
     size_t operator()(const std::vector<size_t>& v) const {
         std::hash<size_t> hasher;
@@ -83,14 +86,16 @@ class CombiScheme {
   size_t level = 0;
 
   /**
-   * initialize the index set
+   * Initialize the index set
    */
-  void init_index_set();
+  void initIndexSet();
 
   /**
-   * helper function to initialize the index set
+   * This method computes recursively all possible level vectors of dimension
+   * dim that have an l_1 norm of values.
+   * This is used to efficiently compute the standard combination scheme.
    * @param dim dimension
-   * @param values level plane
+   * @param values values that the l_1 norm of levels vectors of components have to fulfill
    * @return parts to build the index set
    */
   std::unordered_set<std::vector<size_t>, VectorHash> getGrids(size_t dim, size_t values);
@@ -98,9 +103,9 @@ class CombiScheme {
   /**
    * update the scheme by component of levelvec
    * @param dim dimension in which to refine
-   * @param levelvec vector for the component in question
+   * @param levelvec vector for the component that should be refined
    */
-  void refine_scheme(size_t dim, std::vector<size_t> levelvec);
+  void refineScheme(size_t dim, std::vector<size_t> levelvec);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
