@@ -9,9 +9,10 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive::evalGradient(const DataVector& alpha,
-                                                                 const DataVector& point,
-                                                                 DataVector& gradient) {
+double OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive::evalGradient(
+    const DataVector& alpha,
+    const DataVector& point,
+    DataVector& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -56,10 +57,11 @@ double OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive::evalGradient(c
   return result;
 }
 
-void OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive::evalGradient(const DataMatrix& alpha,
-                                                               const DataVector& point,
-                                                               DataVector& value,
-                                                               DataMatrix& gradient) {
+void OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive::evalGradient(
+    const DataMatrix& alpha,
+    const DataVector& point,
+    DataVector& value,
+    DataMatrix& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();

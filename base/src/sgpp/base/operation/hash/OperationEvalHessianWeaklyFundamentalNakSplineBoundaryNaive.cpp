@@ -11,10 +11,11 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive::evalHessian(const DataVector& alpha,
-                                                               const DataVector& point,
-                                                               DataVector& gradient,
-                                                               DataMatrix& hessian) {
+double OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive::evalHessian(
+    const DataVector& alpha,
+    const DataVector& point,
+    DataVector& gradient,
+    DataMatrix& hessian) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -83,11 +84,12 @@ double OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive::evalHessian(
   return result;
 }
 
-void OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive::evalHessian(const DataMatrix& alpha,
-                                                             const DataVector& point,
-                                                             DataVector& value,
-                                                             DataMatrix& gradient,
-                                                             std::vector<DataMatrix>& hessian) {
+void OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive::evalHessian(
+    const DataMatrix& alpha,
+    const DataVector& point,
+    DataVector& value,
+    DataMatrix& gradient,
+    std::vector<DataMatrix>& hessian) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();

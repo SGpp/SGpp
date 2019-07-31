@@ -176,7 +176,8 @@ Grid* Grid::createModNakBsplineGrid(size_t dim, size_t degree) {
   return new ModNakBsplineGrid(dim, degree);
 }
 
-Grid* Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
+Grid* Grid::createWeaklyFundamentalSplineBoundaryGrid(
+    size_t dim, size_t degree, level_t boundaryLevel) {
   return new WeaklyFundamentalSplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
@@ -289,7 +290,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createWeaklyFundamentalNakSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
       case GridType::ModWeaklyFundamentalNakSpline:
-        return Grid::createModWeaklyFundamentalNakSplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+        return Grid::createModWeaklyFundamentalNakSplineGrid(
+            gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::FundamentalSplineBoundary:
         return Grid::createFundamentalSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
@@ -654,7 +656,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("modNakBspline",
                                                        ModNakBsplineGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("weaklyFundamentalSplineBoundary",
-                                                       WeaklyFundamentalSplineBoundaryGrid::unserialize));
+        WeaklyFundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
         "weaklyFundamentalNakSplineBoundary", WeaklyFundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
@@ -853,9 +855,11 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::ModNakBspline, "modNakBspline"));
     verboseMap->insert(
-        std::make_pair(GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
+        std::make_pair(GridType::WeaklyFundamentalSplineBoundary,
+        "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::WeaklyFundamentalNakSplineBoundary, "weaklyFundamentalNakSplineBoundary"));
+        std::make_pair(GridType::WeaklyFundamentalNakSplineBoundary,
+        "weaklyFundamentalNakSplineBoundary"));
     verboseMap->insert(
         std::make_pair(GridType::ModWeaklyFundamentalNakSpline, "modWeaklyFundamentalNakSpline"));
     verboseMap->insert(

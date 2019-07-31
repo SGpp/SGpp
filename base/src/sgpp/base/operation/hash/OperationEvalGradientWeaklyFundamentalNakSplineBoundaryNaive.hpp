@@ -29,7 +29,8 @@ class OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive : public
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive(GridStorage& storage, size_t degree) :
+  OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive(
+      GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree),
     baseDeriv1(degree),

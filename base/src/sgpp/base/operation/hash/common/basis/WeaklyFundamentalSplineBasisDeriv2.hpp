@@ -327,7 +327,8 @@ class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
 };
 
 // default type-def (unsigned int for level and index)
-typedef WeaklyFundamentalSplineBasisDeriv2<unsigned int, unsigned int> SWeaklyFundamentalSplineBaseDeriv2;
+typedef WeaklyFundamentalSplineBasisDeriv2<unsigned int, unsigned int>
+SWeaklyFundamentalSplineBaseDeriv2;
 
 }  // namespace base
 }  // namespace sgpp
