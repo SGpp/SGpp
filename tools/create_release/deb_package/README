@@ -1,0 +1,24 @@
+~~~
+To generate the Debian package, the following steps need to be performed:
+
+  1. Update the create_deb.sh script to fit your needs:
+
+    a. Update the build process by setting the needed flags for the scons call
+  
+    b. Update the dependency lists for the two packages (sgpp and pysgpp), 
+       according to the scons flags set above
+
+  2. Run the script directly from this folder:
+
+      ./create_deb.sh
+
+~~~
+To install the packages, copy the Debian packages to a folder on the target system, 
+and run the following commands in that folder:
+
+      sudo apt install ./libsgpp_<ver>.deb
+      sudo apt install ./libsgpp-python_<ver>.deb
+
+Root rights are needed, and the user will be prompted to allow for installing the
+needed dependencies.
+~~~
