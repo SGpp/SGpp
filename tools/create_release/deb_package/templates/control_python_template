@@ -3,7 +3,7 @@ Version: {{major_version}}.{{minor_version}}-{{package_revision}}
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: libsgpp
+Depends: {{pysgpp_deps}}
 Maintainer: {{maintainer_name}} <{{maintainer_email}}>
 Description: The sparse grids toolkit SG++
   SG++ is a collection of numerical algorithms for spars grids.
