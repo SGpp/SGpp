@@ -130,8 +130,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
       DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
   // online phase
-  online = std::unique_ptr<DBMatOnlineDE>{
-      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
+  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
+      *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
   online->syncDistributedDecomposition(processGrid, parallelConfig);
 
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,

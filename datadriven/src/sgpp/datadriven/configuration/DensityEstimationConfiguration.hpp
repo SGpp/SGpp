@@ -24,7 +24,7 @@ namespace datadriven {
 
 enum class DensityEstimationType { CG, Decomposition };
 
-enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
+enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
   DensityEstimationType type_;             // Type of density estimation

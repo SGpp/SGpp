@@ -6,10 +6,10 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-#include <sgpp/base/grid/RefinementConfiguration.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -81,6 +81,8 @@ struct GeneralGridConfiguration {
   size_t dim_;
   /// number of levels
   int level_;
+  /// vector of levels for each dimension
+  std::vector<size_t> levelVector_;
   /// max. polynomial degree for poly basis
   size_t maxDegree_ = 1;
   /// level of boundary grid
@@ -95,9 +97,7 @@ struct GeneralGridConfiguration {
  * structure that can be used by applications to cluster regular grid information
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
-  RegularGridConfiguration() {
-    generalType_ = GeneralGridType::RegularSparseGrid;
-  }
+  RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
 };
 
 /**
