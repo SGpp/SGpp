@@ -160,13 +160,10 @@ public:
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
-  static Grid* createWaveletBoundaryGrid(size_t dim);
   static Grid* createWaveletBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createModWaveletGrid(size_t dim);
   static Grid* createBsplineGrid(size_t dim, size_t degree);
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
   static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
