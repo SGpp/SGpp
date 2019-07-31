@@ -30,7 +30,7 @@
 /**
  * The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
  * is called <i>objective function</i> and has to derive from
- * sgpp::optimization::ScalarFunction.
+ * sgpp::base::ScalarFunction.
  * In the constructor, we give the dimensionality of the domain
  * (in this case \f$d = 2\f$).
  * The eval method evaluates the objective function and returns the function
