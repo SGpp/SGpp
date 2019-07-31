@@ -20,7 +20,10 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
@@ -75,11 +78,22 @@ bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contai
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }
 
+bool DataMiningConfigParser::hasParallelConfig() const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+  return hasParallelConfig;
+}
+
 bool DataMiningConfigParser::hasFitterConfigCrossValidation() const {
   bool hasFitterCrossValidationConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
   return hasFitterCrossValidationConfig;
 }
+
+bool DataMiningConfigParser::hasGeometryConfig() const {
+  return configFile->contains("geometryConfig");
+}
+
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {
@@ -143,6 +157,40 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     config.randomSeed =
         parseUInt(*dataSourceConfig, "randomSeed", defaults.randomSeed, "dataSource");
     config.epochs = parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
+
+    // Parse info for test data
+    config.testFilePath = parseString(*dataSourceConfig, "testFilePath",
+           defaults.filePath, "dataSource");
+
+    // parse file type of test data
+    if (dataSourceConfig->contains("testFileType")) {
+      config.testFileType = DataSourceFileTypeParser::parse(
+      (*dataSourceConfig)["testFileType"].get());
+    } else {
+      std::cout << "# Did not find " << dataSource <<
+        "[testFileType]. Setting default value "
+        << DataSourceFileTypeParser::toString(defaults.testFileType)
+        << "." << std::endl;
+
+        config.testFileType = defaults.testFileType;
+    }
+
+    config.testIsCompressed = parseBool(*dataSourceConfig, "testCompression",
+            defaults.testIsCompressed, "dataSource");
+    config.testNumBatches = parseUInt(*dataSourceConfig, "testNumBatches",
+            defaults.testNumBatches, "dataSource");
+    config.testBatchSize = parseUInt(*dataSourceConfig, "testBatchSize",
+            defaults.testBatchSize, "dataSource");
+    config.testHasTargets = parseBool(*dataSourceConfig, "testHasTargets",
+            defaults.testHasTargets, "dataSource");
+
+    config.testReadinCutoff = static_cast<size_t>(parseInt(*dataSourceConfig,
+            "testReadinCutoff", defaults.testReadinCutoff, "dataSource"));
+    config.testReadinClasses = parseDoubleArray(*dataSourceConfig,
+            "testReadinClasses", defaults.testReadinClasses, "dataSource");
+    config.testReadinColumns = parseUIntArray(*dataSourceConfig,
+            "testReadinColumns", defaults.testReadinColumns, "dataSource");
+
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
               << std::endl;
@@ -193,8 +241,8 @@ bool DataMiningConfigParser::getFitterConfigType(FitterType &config,
   return hasFitterConfig;
 }
 
-bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &config,
-                                                 const RegularGridConfiguration &defaults) const {
+bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &config,
+                                                 const GeneralGridConfiguration &defaults) const {
   bool hasFitterGridConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("gridConfig") : false;
 
@@ -203,10 +251,26 @@ bool DataMiningConfigParser::getFitterGridConfig(RegularGridConfiguration &confi
     config.dim_ = parseUInt(*fitterConfig, "dim", defaults.dim_, "gridConfig");
     config.level_ =
         static_cast<int>(parseInt(*fitterConfig, "level", defaults.level_, "gridConfig"));
+    config.levelVector_ = static_cast<std::vector<size_t>>(
+        parseUIntArray(*fitterConfig, "levelVector", defaults.levelVector_, "gridConfig"));
     config.maxDegree_ = parseUInt(*fitterConfig, "maxDegree", defaults.maxDegree_, "gridConfig");
     config.boundaryLevel_ = static_cast<unsigned int>(
         parseUInt(*fitterConfig, "boundaryLevel", defaults.boundaryLevel_, "gridConfig"));
     config.filename_ = parseString(*fitterConfig, "fileName", defaults.filename_, "gridConfig");
+
+    // parse general grid type
+    if (fitterConfig->contains("generalGridType")) {
+      if ((*fitterConfig)["generalGridType"].size() == 1) {
+        config.generalType_ =
+            GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"].get());
+      } else {
+        config.generalType_ =
+            GeneralGridTypeParser::parse((*fitterConfig)["generalGridType"]["value"].get());
+      }
+    } else {
+      std::cout << "# Did not find gridConfig[generalGridType]. Setting default value."
+                << std::endl;
+    }
 
     // parse  grid type
     if (fitterConfig->contains("gridType")) {
@@ -343,6 +407,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
                   defaults.iCholSweepsUpdateLambda_, "densityEstimationConfig");
     config.iCholSweepsSolver_ = parseUInt(*densityEstimationConfig, "iCholSweepsSolver",
                                           defaults.iCholSweepsSolver_, "densityEstimationConfig");
+
+    config.normalize_ = parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
+                                  "densityEstimationConfig");
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
@@ -814,7 +881,6 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   bool hasLearnerConfig = hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
 
   if (hasLearnerConfig) {
-    std::cout << "Has Learner config";
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
     config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
@@ -822,6 +888,58 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   }
 
   return hasLearnerConfig;
+}
+
+bool DataMiningConfigParser::getGeometryConfig(
+    datadriven::GeometryConfiguration &config,
+    const datadriven::GeometryConfiguration &defaults) const {
+  bool hasGeometryConfig = hasFitterConfig() ?
+    (*configFile)[fitter].contains("geometryConfig") : false;
+
+  if (hasGeometryConfig) {
+    std::cout << "Has geometry config" << std::endl;
+    auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
+
+    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+
+    // parse  density estimation type
+    if (geometryConfig->contains("stencil")) {
+      config.stencilType = GeometryConfigurationParser::parse(
+          (*geometryConfig)["stencil"].get());
+    } else {
+      std::cout << "# Did not find geometryConfig[stencil]."
+                   " Setting default value ";
+      config.stencilType = defaults.stencilType;
+    }
+  }
+
+
+  return hasGeometryConfig;
+}
+
+bool DataMiningConfigParser::getFitterParallelConfig(
+    datadriven::ParallelConfiguration &config,
+    const datadriven::ParallelConfiguration &defaults) const {
+  bool hasParallelConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("parallelConfig") : false;
+
+  if (hasParallelConfig) {
+    auto parallelConfig = static_cast<DictNode *>(&(*configFile)[fitter]["parallelConfig"]);
+
+    config.scalapackEnabled_ = true;
+
+    config.processRows_ = static_cast<int>(
+        parseInt(*parallelConfig, "processRows", defaults.processRows_, "parallelConfig"));
+    config.processCols_ = static_cast<int>(
+        parseInt(*parallelConfig, "processColumns", defaults.processCols_, "parallelConfig"));
+
+    config.rowBlockSize_ =
+        parseUInt(*parallelConfig, "rowBlockSize", defaults.rowBlockSize_, "parallelConfig");
+    config.columnBlockSize_ =
+        parseUInt(*parallelConfig, "columnBlockSize", defaults.columnBlockSize_, "parallelConfig");
+  }
+
+  return hasParallelConfig;
 }
 
 } /* namespace datadriven */

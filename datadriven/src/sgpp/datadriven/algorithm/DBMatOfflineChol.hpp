@@ -48,7 +48,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -60,9 +60,17 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param deletedPoints list of indices of last coarsed points
    * @param lambda the regularization parameter
    */
-  virtual void choleskyModification(Grid& grid,
-      datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
-      std::list<size_t> deletedPoints, double lambda);
+  virtual void choleskyModification(
+      Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+
+  /*
+   * explicitly computes the inverse
+   * note: the computed inverse is not the inverse of the decomposed matrix,
+   * but rather the inverse of the previous undecomposed matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse() override;
 
  protected:
   /**
