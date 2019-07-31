@@ -24,7 +24,7 @@ namespace datadriven {
 OperationLimitFunctionValueRange::OperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearch,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
-    sgpp::optimization::ScalarFunction* f)
+    sgpp::base::ScalarFunction* f)
     : verbose(verbose) {
   opPositive.reset(op_factory::createOperationMakePositive(candidateSearch, interpolationAlgorithm,
                                                            true, verbose, f));

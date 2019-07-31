@@ -10,6 +10,7 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 
 #include <functional>
 #include <map>
