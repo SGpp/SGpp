@@ -4,21 +4,21 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
- * SGDEMinerFromConfigFile.cpp
- *
- *  Created on: Jun 9, 2018
- *      Author: dominik
+ * Created on: Mar 16, 2018
+ *     Author: Eric Koepke
  */
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
-#include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
+
 
 #include <cstdlib>
 #include <iostream>
 #include <memory>
 #include <string>
 
-using sgpp::datadriven::ClassificationMinerFactory;
+using sgpp::datadriven::UniversalMinerFactory;
 using sgpp::datadriven::SparseGridMiner;
 
 /**
@@ -42,18 +42,13 @@ int main(int argc, char **argv) {
   /**
    * We need a factory class to actually build the #sgpp::datadriven::SparseGridMiner.
    */
-  ClassificationMinerFactory factory;
+  UniversalMinerFactory factory;
   /**
    * The miner object is constructed by the factory from a supplied configuration file.
    */
-  auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
+  auto hpo = std::unique_ptr<sgpp::datadriven::HyperparameterOptimizer>(factory.buildHPO(path));
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  miner->learn(true);
-  std::cout << std::endl;
+  hpo->run(true);
 }
-
-
-
-

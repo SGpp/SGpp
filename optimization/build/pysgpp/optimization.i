@@ -4,6 +4,14 @@
 // sgpp.sparsegrids.org
 
 // to disable OpenMP multi-threading within Python
+%{
+#ifndef _OPENMP
+static void omp_set_num_threads(int num_threads)
+{
+}
+#endif
+%}
+
 void omp_set_num_threads(int num_threads);
 %init %{
     omp_set_num_threads(1);
