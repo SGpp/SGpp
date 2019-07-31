@@ -41,7 +41,7 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param grid  sparse grid
    * @param alpha coefficient vector
    */
-  InterpolantScalarFunction(base::Grid& grid, const base::DataVector& alpha)
+  InterpolantScalarFunction(Grid& grid, const DataVector& alpha)
       : ScalarFunction(grid.getDimension()),
         grid(grid),
         opEval(op_factory::createOperationEvalNaive(grid)),
@@ -58,7 +58,7 @@ class InterpolantScalarFunction : public ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline double eval(const base::DataVector& x) override {
+  inline double eval(const DataVector& x) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -78,20 +78,20 @@ class InterpolantScalarFunction : public ScalarFunction {
   /**
    * @return coefficient vector
    */
-  const base::DataVector& getAlpha() const { return alpha; }
+  const DataVector& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient vector
    */
-  void setAlpha(const base::DataVector& alpha) { this->alpha = alpha; }
+  void setAlpha(const DataVector& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
-  base::Grid& grid;
+  Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationEval> opEval;
+  std::unique_ptr<OperationEval> opEval;
   /// coefficient vector
-  base::DataVector alpha;
+  DataVector alpha;
 };
 }  // namespace base
 }  // namespace sgpp

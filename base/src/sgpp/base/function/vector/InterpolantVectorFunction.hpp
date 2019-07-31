@@ -31,7 +31,7 @@ namespace base {
  * But most often, the function (e.g., its coefficients) is constructed
  * as an interpolant at the grid points for some function values.
  */
-class InterpolantVectorFunction : public base::VectorFunction {
+class InterpolantVectorFunction : public VectorFunction {
  public:
   /**
    * Constructor.
@@ -43,7 +43,7 @@ class InterpolantVectorFunction : public base::VectorFunction {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunction(base::Grid& grid, const base::DataMatrix& alpha)
+  InterpolantVectorFunction(Grid& grid, const DataMatrix& alpha)
       : VectorFunction(grid.getDimension(), alpha.getNcols()),
         grid(grid),
         opEval(op_factory::createOperationEvalNaive(grid)),
@@ -60,7 +60,7 @@ class InterpolantVectorFunction : public base::VectorFunction {
    * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @param[out] value  \f$g(\vec{x})\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value) override {
+  inline void eval(const DataVector& x, DataVector& value) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         value.setAll(INFINITY);
@@ -81,20 +81,20 @@ class InterpolantVectorFunction : public base::VectorFunction {
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const DataMatrix& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const DataMatrix& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
-  base::Grid& grid;
+  Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationEval> opEval;
+  std::unique_ptr<OperationEval> opEval;
   /// coefficient matrix
-  base::DataMatrix alpha;
+  DataMatrix alpha;
 };
 }  // namespace base
 }  // namespace sgpp

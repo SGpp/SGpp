@@ -50,8 +50,8 @@ class VectorFunctionGradient {
    * @param[out] gradient gradient \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  virtual void eval(const base::DataVector& x, base::DataVector& value,
-                    base::DataMatrix& gradient) = 0;
+  virtual void eval(const DataVector& x, DataVector& value,
+                    DataMatrix& gradient) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

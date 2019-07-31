@@ -94,8 +94,8 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
         tmpVec1(dF),
         tmpVec2(fHessian.getNumberOfComponents()),
         tmpMat(fHessian.getNumberOfComponents(), dF),
-        tmpVecMat(std::vector<base::DataMatrix>(fHessian.getNumberOfComponents(),
-                                                base::DataMatrix(dF, dF))) {
+        tmpVecMat(std::vector<DataMatrix>(fHessian.getNumberOfComponents(),
+                                                DataMatrix(dF, dF))) {
     initialize();
   }
 
@@ -112,8 +112,8 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
    *              where \f$(x_1, \dotsc, x_n) =
    *              (y_{i_1}, \dotsc, y_{i_n})\f$
    */
-  inline double eval(const base::DataVector& x, base::DataVector& gradient,
-                     base::DataMatrix& hessian) override {
+  inline double eval(const DataVector& x, DataVector& gradient,
+                     DataMatrix& hessian) override {
     size_t t2 = 0, t4;
 
     // select entries of x which correspond to NAN entries in
@@ -191,13 +191,13 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
   /// vector of default values, indicating free variables with NAN
   std::vector<double> defaultValues;
   /// temporary vector 1
-  base::DataVector tmpVec1;
+  DataVector tmpVec1;
   /// temporary vector 2
-  base::DataVector tmpVec2;
+  DataVector tmpVec2;
   /// temporary matrix
-  base::DataMatrix tmpMat;
+  DataMatrix tmpMat;
   /// temporary vector of matrices
-  std::vector<base::DataMatrix> tmpVecMat;
+  std::vector<DataMatrix> tmpVecMat;
 
   void initialize() {
     // make sure defaultValues has the correct size

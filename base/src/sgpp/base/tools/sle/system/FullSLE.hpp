@@ -16,7 +16,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Full linear system, essentially a wrapper around base::DataMatrix.
+ * Full linear system, essentially a wrapper around DataMatrix.
  */
 class FullSLE : public CloneableSLE {
  public:
@@ -26,7 +26,7 @@ class FullSLE : public CloneableSLE {
    *
    * @param A     coefficient matrix
    */
-  explicit FullSLE(base::DataMatrix& A) : CloneableSLE(), A(A) {}
+  explicit FullSLE(DataMatrix& A) : CloneableSLE(), A(A) {}
 
   /**
    * Destructor.
@@ -50,7 +50,7 @@ class FullSLE : public CloneableSLE {
   /**
    * @return  coefficient matrix
    */
-  base::DataMatrix& getA() { return A; }
+  DataMatrix& getA() { return A; }
 
   size_t getDimension() const override { return A.getNrows(); }
 
@@ -66,7 +66,7 @@ class FullSLE : public CloneableSLE {
 
  protected:
   /// coefficient matrix
-  base::DataMatrix& A;
+  DataMatrix& A;
 };
 }  // namespace base
 }  // namespace sgpp

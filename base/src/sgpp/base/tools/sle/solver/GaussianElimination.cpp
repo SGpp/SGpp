@@ -17,13 +17,13 @@ namespace sle_solver {
 
 GaussianElimination::~GaussianElimination() {}
 
-bool GaussianElimination::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
+bool GaussianElimination::solve(SLE& system, DataVector& b, DataVector& x) const {
   Printer::getInstance().printStatusBegin("Solving linear system (Gaussian elimination)...");
 
   // size of the system
   const size_t n = b.getSize();
   // working matrix
-  base::DataMatrix W(n, n + 1);
+  DataMatrix W(n, n + 1);
 
   // set W := (A, b) at the beginning
   for (size_t i = 0; i < n; i++) {

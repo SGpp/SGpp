@@ -25,9 +25,9 @@ namespace sle_solver {
 
 Armadillo::~Armadillo() {}
 
-bool Armadillo::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
-  base::DataMatrix B(b.getPointer(), b.getSize(), 1);
-  base::DataMatrix X(B.getNrows(), B.getNcols());
+bool Armadillo::solve(SLE& system, DataVector& b, DataVector& x) const {
+  DataMatrix B(b.getPointer(), b.getSize(), 1);
+  DataMatrix X(B.getNrows(), B.getNcols());
 
   // call version for multiple RHSs
   if (solve(system, B, X)) {
@@ -39,7 +39,7 @@ bool Armadillo::solve(SLE& system, base::DataVector& b, base::DataVector& x) con
   }
 }
 
-bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+bool Armadillo::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
 #ifdef USE_ARMADILLO
   Printer::getInstance().printStatusBegin("Solving linear system (Armadillo)...");
 
@@ -112,7 +112,7 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
     Printer::getInstance().printStatusUpdate("solving with Armadillo");
 
     if (arma::solve(xArmadillo, A, bArmadillo)) {
-      base::DataVector x(xArmadillo.memptr(), n);
+      DataVector x(xArmadillo.memptr(), n);
       X.resize(n, 1);
       X.setColumn(0, x);
       Printer::getInstance().printStatusEnd();
@@ -126,7 +126,7 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
     const arma::uword B_count = static_cast<arma::uword>(B.getNcols());
     ArmadilloMatrix BArmadillo(n, B_count);
     ArmadilloMatrix XArmadillo(n, B_count);
-    base::DataVector b(n);
+    DataVector b(n);
 
     // copy RHSs to Armadillo matrix
     for (arma::uword i = 0; i < B_count; i++) {
@@ -139,9 +139,9 @@ bool Armadillo::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) con
     if (arma::solve(XArmadillo, A, BArmadillo)) {
       X.resize(n, B_count);
 
-      // convert solutions to base::DataVector
+      // convert solutions to DataVector
       for (arma::uword i = 0; i < B_count; i++) {
-        base::DataVector x(XArmadillo.colptr(i), n);
+        DataVector x(XArmadillo.colptr(i), n);
         X.setColumn(i, x);
       }
 

@@ -20,7 +20,7 @@ namespace base {
  */
 class WrapperVectorFunctionGradient : public VectorFunctionGradient {
  public:
-  typedef std::function<void(const base::DataVector&, base::DataVector&, base::DataMatrix&)>
+  typedef std::function<void(const DataVector&, DataVector&, DataMatrix&)>
       FunctionGradientEvalType;
 
   /**
@@ -44,8 +44,8 @@ class WrapperVectorFunctionGradient : public VectorFunctionGradient {
    * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value,
-                   base::DataMatrix& gradient) override {
+  inline void eval(const DataVector& x, DataVector& value,
+                   DataMatrix& gradient) override {
     fGradient(x, value, gradient);
   }
 

@@ -19,7 +19,7 @@ namespace base {
  */
 class WrapperScalarFunction : public ScalarFunction {
  public:
-  typedef std::function<double(const base::DataVector&)> FunctionEvalType;
+  typedef std::function<double(const DataVector&)> FunctionEvalType;
 
   /**
    * Constructor.
@@ -38,7 +38,7 @@ class WrapperScalarFunction : public ScalarFunction {
    * @param x     evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @return      \f$f(\vec{x})\f$
    */
-  inline double eval(const base::DataVector& x) override { return f(x); }
+  inline double eval(const DataVector& x) override { return f(x); }
 
   /**
    * @param[out] clone pointer to cloned object

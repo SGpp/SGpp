@@ -42,7 +42,7 @@ class VectorFunction {
    * @param[in]  x      evaluation point \f$\vec{x} \in [0, 1]^d\f$
    * @param[out] value  \f$g(\vec{x})\f$
    */
-  virtual void eval(const base::DataVector& x, base::DataVector& value) = 0;
+  virtual void eval(const DataVector& x, DataVector& value) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

@@ -44,7 +44,7 @@ class ScalarFunctionGradient {
    *                      \f$\nabla f(\vec{x}) \in \mathbb{R}^d\f$
    * @return              \f$f(\vec{x})\f$
    */
-  virtual double eval(const base::DataVector& x, base::DataVector& gradient) = 0;
+  virtual double eval(const DataVector& x, DataVector& gradient) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

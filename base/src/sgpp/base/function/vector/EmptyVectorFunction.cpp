@@ -12,7 +12,7 @@ namespace base {
 
 WrapperVectorFunction& EmptyVectorFunction::getInstance() {
   static WrapperVectorFunction wrapperVectorFunction(
-      0, 0, [](const base::DataVector& x, base::DataVector& value) {});
+      0, 0, [](const DataVector& x, DataVector& value) {});
   return wrapperVectorFunction;
 }
 }  // namespace base

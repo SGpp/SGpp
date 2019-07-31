@@ -43,9 +43,9 @@ void addSLESolver(SLESolver* solver, std::vector<SLESolver*>& solvers,
 
 Auto::~Auto() {}
 
-bool Auto::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
-  base::DataMatrix B(b.getPointer(), b.getSize(), 1);
-  base::DataMatrix X(B.getNrows(), B.getNcols());
+bool Auto::solve(SLE& system, DataVector& b, DataVector& x) const {
+  DataMatrix B(b.getPointer(), b.getSize(), 1);
+  DataMatrix X(B.getNrows(), B.getNcols());
 
   // call version for multiple RHSs
   if (solve(system, B, X)) {
@@ -57,7 +57,7 @@ bool Auto::solve(SLE& system, base::DataVector& b, base::DataVector& x) const {
   }
 }
 
-bool Auto::solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+bool Auto::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
   Printer::getInstance().printStatusBegin("Solving linear system (automatic method)...");
 
   Armadillo solverArmadillo;

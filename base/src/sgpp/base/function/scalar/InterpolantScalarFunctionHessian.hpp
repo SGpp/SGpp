@@ -32,7 +32,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    * @param grid  sparse grid
    * @param alpha coefficient vector
    */
-  InterpolantScalarFunctionHessian(base::Grid& grid, const base::DataVector& alpha)
+  InterpolantScalarFunctionHessian(Grid& grid, const DataVector& alpha)
       : ScalarFunctionHessian(grid.getDimension()),
         grid(grid),
         opEvalHessian(op_factory::createOperationEvalHessianNaive(grid)),
@@ -53,8 +53,8 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline double eval(const base::DataVector& x, base::DataVector& gradient,
-                     base::DataMatrix& hessian) override {
+  inline double eval(const DataVector& x, DataVector& gradient,
+                     DataMatrix& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         return INFINITY;
@@ -75,20 +75,20 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
   /**
    * @return coefficient vector
    */
-  const base::DataVector& getAlpha() const { return alpha; }
+  const DataVector& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient vector
    */
-  void setAlpha(const base::DataVector& alpha) { this->alpha = alpha; }
+  void setAlpha(const DataVector& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
-  base::Grid& grid;
+  Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationEvalHessian> opEvalHessian;
+  std::unique_ptr<OperationEvalHessian> opEvalHessian;
   /// coefficient vector
-  base::DataVector alpha;
+  DataVector alpha;
 };
 }  // namespace base
 }  // namespace sgpp

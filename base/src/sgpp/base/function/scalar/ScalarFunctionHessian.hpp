@@ -51,8 +51,8 @@ class ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  virtual double eval(const base::DataVector& x, base::DataVector& gradient,
-                      base::DataMatrix& hessian) = 0;
+  virtual double eval(const DataVector& x, DataVector& gradient,
+                      DataMatrix& hessian) = 0;
 
   /**
    * @return dimension \f$d\f$ of the domain

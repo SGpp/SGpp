@@ -39,25 +39,25 @@ inline std::ostream& operator<<(std::ostream& stream, const std::vector<T>& x) {
 }
 
 /**
- * Concatenate output stream with base::DataVector.
+ * Concatenate output stream with DataVector.
  *
  * @param stream    output stream
  * @param x         vector
  * @return          stream
  */
-inline std::ostream& operator<<(std::ostream& stream, const base::DataVector& x) {
+inline std::ostream& operator<<(std::ostream& stream, const DataVector& x) {
   return stream << x.toString();
 }
 
 /**
- * Concatenate output stream with base::GridPoint.
+ * Concatenate output stream with GridPoint.
  *
  * @param stream    output stream
  * @param x         pointer to grid point
  * @return          stream
  */
 inline std::ostream& operator<<(std::ostream& stream, const GridPoint& x) {
-  base::DataVector xCoord(x.getDimension());
+  DataVector xCoord(x.getDimension());
 
   for (size_t t = 0; t < x.getDimension(); t++) {
     xCoord[t] = x.getStandardCoordinate(t);
@@ -209,7 +209,7 @@ class Printer {
   /// length of the last status message in characters
   size_t lastMsgLength;
   /// stack of stop watches (started at time of printStatusBegin() calls)
-  std::stack<base::SGppStopwatch> watches;
+  std::stack<SGppStopwatch> watches;
   /// length of last operation in seconds
   double lastDuration;
   /// maximum length of lines, 0 if unbounded

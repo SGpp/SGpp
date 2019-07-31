@@ -36,7 +36,7 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
    *              (j-th column contains hierarchical surplusses
    *              \f$\alpha_{\cdot,j}\f$ of \f$g_j\f$)
    */
-  InterpolantVectorFunctionGradient(base::Grid& grid, const base::DataMatrix& alpha)
+  InterpolantVectorFunctionGradient(Grid& grid, const DataMatrix& alpha)
       : VectorFunctionGradient(grid.getDimension(), alpha.getNcols()),
         grid(grid),
         opEvalGradient(op_factory::createOperationEvalGradientNaive(grid)),
@@ -55,8 +55,8 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
    * @param[out] gradient Jacobian \f$\nabla g(\vec{x}) \in
    *                      \mathbb{R}^{m \times d}\f$
    */
-  inline void eval(const base::DataVector& x, base::DataVector& value,
-                   base::DataMatrix& gradient) override {
+  inline void eval(const DataVector& x, DataVector& value,
+                   DataMatrix& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         value.setAll(INFINITY);
@@ -78,20 +78,20 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
   /**
    * @return coefficient matrix
    */
-  const base::DataMatrix& getAlpha() const { return alpha; }
+  const DataMatrix& getAlpha() const { return alpha; }
 
   /**
    * @param alpha coefficient matrix
    */
-  void setAlpha(const base::DataMatrix& alpha) { this->alpha = alpha; }
+  void setAlpha(const DataMatrix& alpha) { this->alpha = alpha; }
 
  protected:
   /// sparse grid
-  base::Grid& grid;
+  Grid& grid;
   /// pointer to evaluation operation
-  std::unique_ptr<base::OperationEvalGradient> opEvalGradient;
+  std::unique_ptr<OperationEvalGradient> opEvalGradient;
   /// coefficient matrix
-  base::DataMatrix alpha;
+  DataMatrix alpha;
 };
 }  // namespace base
 }  // namespace sgpp

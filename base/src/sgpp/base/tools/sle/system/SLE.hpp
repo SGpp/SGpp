@@ -55,7 +55,7 @@ class SLE {
    * @param       x   vector to be multiplied
    * @param[out]  y   \f$y = Ax\f$
    */
-  virtual void matrixVectorMultiplication(const base::DataVector& x, base::DataVector& y) {
+  virtual void matrixVectorMultiplication(const DataVector& x, DataVector& y) {
     const size_t n = getDimension();
     y.resize(n);
     y.setAll(0.0);

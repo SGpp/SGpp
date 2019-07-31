@@ -40,7 +40,7 @@ class SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system, base::DataVector& b, base::DataVector& x) const = 0;
+  virtual bool solve(SLE& system, DataVector& b, DataVector& x) const = 0;
 
   /**
    * Virtual method for solving multiple linear systems with
@@ -54,11 +54,11 @@ class SLESolver {
    * @return              whether all went well
    *                      (false if errors occurred)
    */
-  virtual bool solve(SLE& system, base::DataMatrix& B, base::DataMatrix& X) const {
+  virtual bool solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
     const size_t n = system.getDimension();
     const size_t m = B.getNcols();
-    base::DataVector b(n);
-    base::DataVector x(n);
+    DataVector b(n);
+    DataVector x(n);
     X.resize(n, m);
 
     for (size_t i = 0; i < m; i++) {

@@ -20,7 +20,7 @@ namespace base {
  */
 class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
  public:
-  typedef std::function<double(const base::DataVector&, base::DataVector&, base::DataMatrix&)>
+  typedef std::function<double(const DataVector&, DataVector&, DataMatrix&)>
       FunctionHessianEvalType;
 
   /**
@@ -45,8 +45,8 @@ class WrapperScalarFunctionHessian : public ScalarFunctionHessian {
    *                      \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
    * @return              \f$f(\vec{x})\f$
    */
-  inline double eval(const base::DataVector& x, base::DataVector& gradient,
-                     base::DataMatrix& hessian) override {
+  inline double eval(const DataVector& x, DataVector& gradient,
+                     DataMatrix& hessian) override {
     return fHessian(x, gradient, hessian);
   }
 
