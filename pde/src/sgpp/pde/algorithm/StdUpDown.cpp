@@ -39,8 +39,8 @@ void StdUpDown::multParallelBuildingBlock(sgpp::base::DataVector& alpha,
 }
 
 void StdUpDown::updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result, size_t dim) {
-  size_t curNumAlgoDims = this->numAlgoDims_;
-  size_t curMaxParallelDims = this->maxParallelDims_;
+  // size_t curNumAlgoDims = this->numAlgoDims_;
+  // size_t curMaxParallelDims = this->maxParallelDims_;
 
   // Unidirectional scheme
   if (dim > 0) {
@@ -55,7 +55,7 @@ void StdUpDown::updown(sgpp::base::DataVector& alpha, sgpp::base::DataVector& re
       updown(temp, result, dim - 1);
     }
 
-// #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp_two, \
+// #pragma omp task if (curNumAlgoDims - dim <= curMaxParallelDims) shared(alpha, temp_two, 
 //                                                                        result_temp)
     {  // NOLINT(whitespace/braces)
       updown(alpha, temp_two, dim - 1);
