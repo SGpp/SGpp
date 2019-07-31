@@ -18,6 +18,9 @@
 #include <utility>
 #include <vector>
 
+namespace sgpp {
+namespace datadriven {
+
 struct VectorHash {
     size_t operator()(const std::vector<size_t>& v) const {
         std::hash<size_t> hasher;
@@ -29,14 +32,10 @@ struct VectorHash {
     }
 };
 
-namespace sgpp {
-namespace datadriven {
-
 class CombiScheme {
  public:
   /**
    * Empty Constructor
-   *
    */
   CombiScheme() {}
 
@@ -50,19 +49,19 @@ class CombiScheme {
   /**
    * check if the component of levelvec is refinable
    * @param levelvec vector for the component in question
-   * @return wheter we can refine the scheme
+   * @return whether we can refine the scheme
    */
   bool isRefinable(std::vector<size_t> levelvec);
 
   /**
    * update the scheme by component of levelvec
    * @param levelvec vector for the component in question
-   * @return wheter the scheme was refined
+   * @return whether the scheme was refined
    */
   bool refineComponent(std::vector<size_t> levelvec);
 
   /**
-   * initialize the active index set
+   * return the combigrid scheme (levelvectors of the components and their coefficients)
    * @return levelvectors of the components and their corresponding coefficients
    */
   std::vector<std::pair<std::vector<size_t>, int>> getCombiScheme();
@@ -85,15 +84,14 @@ class CombiScheme {
 
   /**
    * initialize the index set
-   * @return the active index set
    */
   void init_index_set();
 
   /**
-   * initialize the active index set
+   * helper function to initialize the index set
    * @param dim dimension
    * @param values level plane
-   * @return the active index set
+   * @return parts to build the index set
    */
   std::unordered_set<std::vector<size_t>, VectorHash> getGrids(size_t dim, size_t values);
 
