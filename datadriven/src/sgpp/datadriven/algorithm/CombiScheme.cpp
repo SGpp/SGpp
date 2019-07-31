@@ -28,7 +28,7 @@ namespace datadriven {
 void CombiScheme::initialize(size_t dim, size_t level) {
     dimension = dim;
     this->level = level;
-    init_index_set();
+    initIndexSet();
 }
 
 bool CombiScheme::isRefinable(std::vector<size_t> levelvec) {
@@ -44,12 +44,12 @@ bool CombiScheme::refineComponent(std::vector<size_t> levelvec) {
     }
     index_set[levelvec] = false;
     for (size_t dim = 0; dim < dimension; dim++) {
-        refine_scheme(dim, levelvec);
+        refineScheme(dim, levelvec);
     }
     return true;
 }
 
-void CombiScheme::refine_scheme(size_t dim, std::vector<size_t> levelvec) {
+void CombiScheme::refineScheme(size_t dim, std::vector<size_t> levelvec) {
     levelvec[dim]++;
     for (size_t d = 0; d < dimension; d++) {
         std::vector<size_t> levelvec_copy = levelvec;
@@ -62,7 +62,7 @@ void CombiScheme::refine_scheme(size_t dim, std::vector<size_t> levelvec) {
     index_set[levelvec] = true;
 }
 
-void CombiScheme::init_index_set() {
+void CombiScheme::initIndexSet() {
     for (const std::vector<size_t>& v : getGrids(dimension, level)) {
         index_set[v] = true;
     }
