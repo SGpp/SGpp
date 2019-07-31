@@ -134,7 +134,8 @@ class HierarchisationSLE : public CloneableSLE {
       basisType = FUNDAMENTAL_SPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) {
       weaklyFundamentalNakSplineBasis =
-          std::unique_ptr<base::SWeaklyFundamentalNakSplineBase>(new base::SWeaklyFundamentalNakSplineBase(
+          std::unique_ptr<base::SWeaklyFundamentalNakSplineBase>(
+              new base::SWeaklyFundamentalNakSplineBase(
               dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).getDegree()));
       basisType = WEAKLY_FUNDAMENTAL_NAK_SPLINE;
     } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
@@ -145,7 +146,8 @@ class HierarchisationSLE : public CloneableSLE {
       basisType = WEAKLY_FUNDAMENTAL_NAK_SPLINE_MODIFIED;
     } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
       weaklyFundamentalSplineBasis =
-          std::unique_ptr<base::SWeaklyFundamentalSplineBase>(new base::SWeaklyFundamentalSplineBase(
+          std::unique_ptr<base::SWeaklyFundamentalSplineBase>(
+              new base::SWeaklyFundamentalSplineBase(
               dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree()));
       basisType = WEAKLY_FUNDAMENTAL_SPLINE;
     } else if (grid.getType() == base::GridType::Linear) {

@@ -25,7 +25,8 @@ class WeaklyFundamentalNakSplineBasis: public Basis<LT, IT> {
   /**
    * Default constructor.
    */
-  WeaklyFundamentalNakSplineBasis() : weaklyFundamentalSplineBasis(WeaklyFundamentalSplineBasis<LT, IT>()) {
+  WeaklyFundamentalNakSplineBasis() : weaklyFundamentalSplineBasis(
+      WeaklyFundamentalSplineBasis<LT, IT>()) {
   }
 
   /**

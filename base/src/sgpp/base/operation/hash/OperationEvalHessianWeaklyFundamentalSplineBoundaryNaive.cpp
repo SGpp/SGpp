@@ -11,10 +11,11 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalHessianWeaklyFundamentalSplineBoundaryNaive::evalHessian(const DataVector& alpha,
-                                                               const DataVector& point,
-                                                               DataVector& gradient,
-                                                               DataMatrix& hessian) {
+double OperationEvalHessianWeaklyFundamentalSplineBoundaryNaive::evalHessian(
+    const DataVector& alpha,
+    const DataVector& point,
+    DataVector& gradient,
+    DataMatrix& hessian) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;

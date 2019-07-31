@@ -138,7 +138,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNakSplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNakSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SWeaklyFundamentalNakSplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));

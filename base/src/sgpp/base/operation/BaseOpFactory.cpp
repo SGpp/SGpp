@@ -676,7 +676,8 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
         grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
     return new base::OperationEvalWeaklyFundamentalSplineBoundaryNaive(
-        grid.getStorage(), dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) {
     return new base::OperationEvalWeaklyFundamentalNakSplineBoundaryNaive(
         grid.getStorage(), dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).
@@ -733,10 +734,12 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
         dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
     return new base::OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive(
-        grid.getStorage(), dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
     return new base::OperationEvalGradientModWeaklyFundamentalNakSplineNaive(
-        grid.getStorage(), dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalGradientNakBsplineBoundaryNaive(
         grid.getStorage(),
@@ -791,10 +794,12 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
         dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
     return new base::OperationEvalHessianWeaklyFundamentalSplineBoundaryNaive(
-        grid.getStorage(), dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
     return new base::OperationEvalHessianModWeaklyFundamentalNakSplineNaive(
-        grid.getStorage(), dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalHessianNakBsplineBoundaryNaive(
         grid.getStorage(),
@@ -849,10 +854,12 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
         dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalSplineBoundary) {
     return new base::OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundaryNaive(
-        grid.getStorage(), dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
     return new base::OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive(
-        grid.getStorage(), dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalPartialDerivativeNakBsplineBoundaryNaive(
         grid.getStorage(),

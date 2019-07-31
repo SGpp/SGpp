@@ -35,10 +35,12 @@ double GoldsteinPriceObjective::evalUndisplaced(const base::DataVector& x) {
 
   return (1.0 +
           (x1 + x2 + 1.0) * (x1 + x2 + 1.0) *
-              (19.0 - 14.0 * x1 + 3.0 * x1 * x1 - 14.0 * x2 + 6.0 * x1 * x2 + 3.0 * x2 * x2)) *
+              (19.0 - 14.0 * x1 + 3.0 * x1 * x1 - 14.0 * x2 + 6.0 * x1 * x2 +
+                  3.0 * x2 * x2)) *
          (30.0 +
           (2.0 * x1 - 3.0 * x2) * (2.0 * x1 - 3.0 * x2) *
-              (18.0 - 32.0 * x1 + 12.0 * x1 * x1 + 48.0 * x2 - 36.0 * x1 * x2 + 27.0 * x2 * x2)) * 1e-4;
+              (18.0 - 32.0 * x1 + 12.0 * x1 * x1 + 48.0 * x2 - 36.0 * x1 * x2 +
+                  27.0 * x2 * x2)) * 1e-4;
 }
 
 void GoldsteinPriceObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {

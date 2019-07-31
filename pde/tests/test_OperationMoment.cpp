@@ -47,7 +47,8 @@ double secondMomentApproximation(sgpp::base::Grid* grid, sgpp::base::DataVector&
   const double h = 1.0 / static_cast<double>(resolution);
   sgpp::base::GridStorage& storage = grid->getStorage();
   if (storage.getSize() != alpha.getSize()) {
-    throw sgpp::base::application_exception("secondMomentApproximation: Grid and alpha don't match");
+    throw sgpp::base::application_exception(
+        "secondMomentApproximation: Grid and alpha don't match");
   }
   sgpp::base::SBasis& basis = const_cast<sgpp::base::SBasis&>(grid->getBasis());
 

@@ -29,7 +29,8 @@ class OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundaryNaive :
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundaryNaive(GridStorage& storage, size_t degree) :
+  OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundaryNaive(
+      GridStorage& storage, size_t degree) :
     storage(storage),
     base(degree),
     baseDeriv1(degree),

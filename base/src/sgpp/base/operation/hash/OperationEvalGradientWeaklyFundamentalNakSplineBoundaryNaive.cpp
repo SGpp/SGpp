@@ -57,10 +57,11 @@ double OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive::evalGradien
   return result;
 }
 
-void OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive::evalGradient(const DataMatrix& alpha,
-                                                               const DataVector& point,
-                                                               DataVector& value,
-                                                               DataMatrix& gradient) {
+void OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive::evalGradient(
+    const DataMatrix& alpha,
+    const DataVector& point,
+    DataVector& value,
+    DataMatrix& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();

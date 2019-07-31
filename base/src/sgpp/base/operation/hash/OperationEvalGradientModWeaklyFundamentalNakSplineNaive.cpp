@@ -9,9 +9,10 @@
 namespace sgpp {
 namespace base {
 
-double OperationEvalGradientModWeaklyFundamentalNakSplineNaive::evalGradient(const DataVector& alpha,
-                                                                 const DataVector& point,
-                                                                 DataVector& gradient) {
+double OperationEvalGradientModWeaklyFundamentalNakSplineNaive::evalGradient(
+    const DataVector& alpha,
+    const DataVector& point,
+    DataVector& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
