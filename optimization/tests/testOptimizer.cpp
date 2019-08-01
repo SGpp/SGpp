@@ -31,11 +31,12 @@
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
+
+#include <vector>
+
 #include "CheckEqualFunction.hpp"
 #include "GridCreator.hpp"
 #include "ObjectiveFunctions.hpp"
-
-#include <vector>
 
 using sgpp::base::EmptyVectorFunction;
 using sgpp::base::EmptyVectorFunctionGradient;
