@@ -5,17 +5,19 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(
-    const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-    size_t maxItCount, double tolerance,
-    double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
+AdaptiveGradientDescent::AdaptiveGradientDescent(const base::ScalarFunction& f,
+                                                 const base::ScalarFunctionGradient& fGradient,
+                                                 size_t maxItCount, double tolerance,
+                                                 double stepSizeIncreaseFactor,
+                                                 double stepSizeDecreaseFactor,
+                                                 double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -24,19 +26,19 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(
   fGradient.clone(this->fGradient);
 }
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other) :
-    UnconstrainedOptimizer(other),
-    theta(other.theta),
-    rhoAlphaPlus(other.rhoAlphaPlus),
-    rhoAlphaMinus(other.rhoAlphaMinus),
-    rhoLs(other.rhoLs) {
+AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other)
+    : UnconstrainedOptimizer(other),
+      theta(other.theta),
+      rhoAlphaPlus(other.rhoAlphaPlus),
+      rhoAlphaMinus(other.rhoAlphaMinus),
+      rhoLs(other.rhoLs) {
   other.fGradient->clone(fGradient);
 }
 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
 
 void AdaptiveGradientDescent::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -129,8 +131,8 @@ void AdaptiveGradientDescent::optimize() {
     alpha *= rhoAlphaPlus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha is smaller than tolerance theta
@@ -149,10 +151,12 @@ void AdaptiveGradientDescent::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return *fGradient; }
+base::ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const {
+  return *fGradient;
+}
 
 double AdaptiveGradientDescent::getTolerance() const { return theta; }
 

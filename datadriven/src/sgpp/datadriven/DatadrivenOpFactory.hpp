@@ -30,13 +30,8 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
-/*
- * This file contains factory methods for operations.
- */
-
 #include <sgpp/globaldef.hpp>
+#include "../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace op_factory {
@@ -211,7 +206,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
     bool generateConsistentGrid = true, bool verbose = false,
-    sgpp::optimization::ScalarFunction* f = nullptr);
+    sgpp::base::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
@@ -230,7 +225,7 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
+    bool verbose = false, sgpp::base::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationCovariance for the grid at hand.
