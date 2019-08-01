@@ -465,7 +465,7 @@ def configureGNUCompiler(config):
   import platform
   linux_dist = platform.dist()
   if linux_dist[0] == "Ubuntu" and linux_dist[1] in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"]:
-    p = subprocess.Popen("gcc -v  -fopenmp -xc /dev/null 2>&1 | awk -F'[=:]' '/LIBRARY_PATH/{print $2}'", shell=True, stdout=subprocess.PIPE)
+    p = subprocess.Popen(config.env["CXX"] + " -v  -fopenmp -xc /dev/null 2>&1 | awk -F'[=:]' '/LIBRARY_PATH/{print $2}'", shell=True, stdout=subprocess.PIPE)
     first_libpath, _ = p.communicate()
     first_libpath = first_libpath.rstrip() # remove trailing newline
     if not os.path.exists(first_libpath):
