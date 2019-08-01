@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>

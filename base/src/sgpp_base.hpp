@@ -180,6 +180,31 @@
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/base/tools/sle/system/SLE.hpp>
 
+#include <sgpp/base/function/scalar/ComponentScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunctionHessian.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionHessian.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunction.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #endif /* BASE_HPP */
