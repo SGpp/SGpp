@@ -42,8 +42,8 @@ double IncreasingPowerObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void IncreasingPowerObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new IncreasingPowerObjective(*this));
+void IncreasingPowerObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new IncreasingPowerObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

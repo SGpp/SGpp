@@ -43,7 +43,7 @@ class G08Objective : public TestScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const override;
 };
 
 /**
@@ -77,7 +77,7 @@ class G08InequalityConstraint : public TestVectorFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  void clone(std::unique_ptr<base::VectorFunction>& clone) const override;
 };
 
 /**
@@ -106,7 +106,7 @@ class G08EqualityConstraint : public TestVectorFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  void clone(std::unique_ptr<base::VectorFunction>& clone) const override;
 };
 
 /**

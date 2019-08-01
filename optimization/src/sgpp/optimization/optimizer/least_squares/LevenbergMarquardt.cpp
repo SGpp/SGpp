@@ -5,16 +5,17 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
+
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-LevenbergMarquardt::LevenbergMarquardt(const VectorFunction& phi,
-                                       const VectorFunctionGradient& phiGradient,
+LevenbergMarquardt::LevenbergMarquardt(const base::VectorFunction& phi,
+                                       const base::VectorFunctionGradient& phiGradient,
                                        size_t maxItCount, double tolerance, double initialDamping,
                                        double acceptanceThreshold, double effectivenessThreshold)
     : LeastSquaresOptimizer(phi, maxItCount),
@@ -22,22 +23,22 @@ LevenbergMarquardt::LevenbergMarquardt(const VectorFunction& phi,
       mu0(initialDamping),
       beta0(acceptanceThreshold),
       beta1(effectivenessThreshold),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
   phiGradient.clone(this->phiGradient);
 }
 
-LevenbergMarquardt::LevenbergMarquardt(const VectorFunction& phi,
-                                       const VectorFunctionGradient& phiGradient,
+LevenbergMarquardt::LevenbergMarquardt(const base::VectorFunction& phi,
+                                       const base::VectorFunctionGradient& phiGradient,
                                        size_t maxItCount, double tolerance, double damping,
                                        double acceptanceThreshold, double effectivenessThreshold,
-                                       const sle_solver::SLESolver& sleSolver)
+                                       const base::sle_solver::SLESolver& sleSolver)
     : LeastSquaresOptimizer(phi, maxItCount),
       tol(tolerance),
       mu0(damping),
       beta0(acceptanceThreshold),
       beta1(effectivenessThreshold),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
   phiGradient.clone(this->phiGradient);
 }
@@ -48,7 +49,7 @@ LevenbergMarquardt::LevenbergMarquardt(const LevenbergMarquardt& other)
       mu0(other.mu0),
       beta0(other.beta0),
       beta1(other.beta1),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
   other.phiGradient->clone(phiGradient);
 }
@@ -56,7 +57,7 @@ LevenbergMarquardt::LevenbergMarquardt(const LevenbergMarquardt& other)
 LevenbergMarquardt::~LevenbergMarquardt() {}
 
 void LevenbergMarquardt::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Levenberg-Marquardt)...");
 
   const size_t d = phi->getNumberOfParameters();
   const size_t m = phi->getNumberOfComponents();
@@ -74,7 +75,7 @@ void LevenbergMarquardt::optimize() {
   base::DataVector phiy(m);
 
   base::DataMatrix A(d, d);
-  FullSLE system(A);
+  base::FullSLE system(A);
   base::DataVector s(d);
   base::DataVector b(d);
 
@@ -84,7 +85,7 @@ void LevenbergMarquardt::optimize() {
   base::DataMatrix gradPhixSquared(m, m);
 
   size_t k = 0;
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
   while (k < N) {
     // calculate gradient of phi
@@ -136,13 +137,13 @@ void LevenbergMarquardt::optimize() {
 
       // solve linear system
       if (statusPrintingEnabled) {
-        Printer::getInstance().disableStatusPrinting();
+        base::Printer::getInstance().disableStatusPrinting();
       }
 
       bool lsSolved = sleSolver.solve(system, b, s);
 
       if (statusPrintingEnabled) {
-        Printer::getInstance().enableStatusPrinting();
+        base::Printer::getInstance().enableStatusPrinting();
       }
 
       // fallback to mu * gradient of f, if linear system solving fails
@@ -193,8 +194,8 @@ void LevenbergMarquardt::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     x = y;
     xHist.appendRow(x);
@@ -209,10 +210,10 @@ void LevenbergMarquardt::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
-VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return *phiGradient; }
+base::VectorFunctionGradient& LevenbergMarquardt::getPhiGradient() const { return *phiGradient; }
 
 double LevenbergMarquardt::getTolerance() const { return tol; }
 
