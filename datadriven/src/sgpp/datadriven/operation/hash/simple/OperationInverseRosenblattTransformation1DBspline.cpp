@@ -17,6 +17,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 
 #include <algorithm>
 #include <cstdlib>

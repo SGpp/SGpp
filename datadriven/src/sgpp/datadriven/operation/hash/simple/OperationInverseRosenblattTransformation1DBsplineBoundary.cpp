@@ -6,6 +6,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -257,8 +258,8 @@ double OperationInverseRosenblattTransformation1DBsplineBoundary::doTransformati
     base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
-      const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
