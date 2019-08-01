@@ -6,9 +6,9 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTVECTORFUNCTION_HPP
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
 
+#include <sgpp/globaldef.hpp>
 #include <cstddef>
 
 namespace sgpp {
@@ -27,7 +27,7 @@ namespace test_problems {
  * \f$\vec{x} \mapsto \vec{f}(\vec{x} + \vec{d})\f$
  * for a vector \f$\vec{d}\f$ ("displacement").
  */
-class TestVectorFunction : public VectorFunction {
+class TestVectorFunction : public base::VectorFunction {
  public:
   /**
    * Constructor.

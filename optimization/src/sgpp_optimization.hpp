@@ -6,31 +6,6 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
-#include <sgpp/optimization/function/scalar/ComponentScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp>
-
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/InterpolantVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionHessian.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
-
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
@@ -39,18 +14,18 @@
 
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
@@ -65,27 +40,14 @@
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 #include <sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp>
 #include <sgpp/optimization/optimizer/least_squares/LevenbergMarquardt.hpp>
-
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/solver/BiCGStab.hpp>
-#include <sgpp/optimization/sle/solver/Eigen.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
-#include <sgpp/optimization/sle/solver/Gmmpp.hpp>
-#include <sgpp/optimization/sle/solver/SLESolver.hpp>
-#include <sgpp/optimization/sle/solver/UMFPACK.hpp>
-#include <sgpp/optimization/sle/system/CloneableSLE.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/sle/system/SLE.hpp>
 
 #include <sgpp/optimization/test_problems/TestScalarFunction.hpp>
 #include <sgpp/optimization/test_problems/TestVectorFunction.hpp>
@@ -112,8 +74,8 @@
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
 
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
@@ -132,9 +94,5 @@
 
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
-#include <sgpp/optimization/tools/MutexType.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
-#include <sgpp/optimization/tools/ScopedLock.hpp>
 
 #endif /* SGPP_OPTIMIZATION_HPP */

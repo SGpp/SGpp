@@ -42,8 +42,8 @@ double AbsoluteValueObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void AbsoluteValueObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new AbsoluteValueObjective(*this));
+void AbsoluteValueObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new AbsoluteValueObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
