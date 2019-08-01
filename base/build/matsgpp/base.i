@@ -183,8 +183,66 @@ namespace std {
 %include "solver/src/sgpp/solver/ode/Euler.hpp"
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"*/
 
+%include "base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
+
+// SLE
+
+// global variables for the support of SLE solver libaries (set at compile-time)
+const bool ARMADILLO_ENABLED;
+const bool EIGEN_ENABLED;
+const bool GMMPP_ENABLED;
+const bool UMFPACK_ENABLED;
+
+%{
+#ifdef USEARMADILLO
+    const bool ARMADILLO_ENABLED = true;
+#else
+    const bool ARMADILLO_ENABLED = false;
+#endif
+    
+#ifdef USEEIGEN
+    const bool EIGEN_ENABLED = true;
+#else
+    const bool EIGEN_ENABLED = false;
+#endif
+    
+#ifdef USEGMMPP
+    const bool GMMPP_ENABLED = true;
+#else
+    const bool GMMPP_ENABLED = false;
+#endif
+    
+#ifdef USEUMFPACK
+    const bool UMFPACK_ENABLED = true;
+#else
+    const bool UMFPACK_ENABLED = false;
+#endif
+%}
+
+%rename(AutoSLESolver)          sgpp::base::sle_solver::Auto;
+
+%include "base/src/sgpp/base/tools/sle/system/SLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/CloneableSLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+%include "base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
+
+%include "base/src/sgpp/base/tools/sle/solver/SLESolver.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Armadillo.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Auto.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/Gmmpp.hpp"
+%include "base/src/sgpp/base/tools/sle/solver/UMFPACK.hpp"
+
+
+%include "base/src/sgpp/base/tools/MutexType.hpp"
+%rename(OperatorInsertion) sgpp::base::operator<<;
+%include "base/src/sgpp/base/tools/Printer.hpp"
 
 // and the rest
+%rename(RNG)         sgpp::base::RandomNumberGenerator;
+
 //%apply std::string *INPUT { std::string& istr };
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
@@ -217,3 +275,79 @@ namespace std {
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
 %template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
+
+
+// classes with director interface
+%feature("director") sgpp::base::ScalarFunction;
+%feature("director") sgpp::base::ScalarFunctionGradient;
+%feature("director") sgpp::base::ScalarFunctionHessian;
+%feature("director") sgpp::base::VectorFunction;
+%feature("director") sgpp::base::VectorFunctionGradient;
+%feature("director") sgpp::base::VectorFunctionHessian;
+%feature("director") sgpp::base::SLE;
+%feature("director") sgpp::base::sle_solver::SLESolver;
+
+// dirty hack to override SWIG's generated director method for "clone"
+%typemap(directorin, descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__ScalarFunction_t;") std::unique_ptr<sgpp::base::ScalarFunction>& {
+    clone = std::unique_ptr<sgpp::base::ScalarFunction>(
+        new SwigDirector_ScalarFunction(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__ScalarFunctionGradient_t;") std::unique_ptr<sgpp::base::ScalarFunctionGradient>& {
+    clone = std::unique_ptr<sgpp::base::ScalarFunctionGradient>(
+        new SwigDirector_ScalarFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__ScalarFunctionHessian_t;") std::unique_ptr<sgpp::base::ScalarFunctionHessian>& {
+    clone = std::unique_ptr<sgpp::base::ScalarFunctionHessian>(
+        new SwigDirector_ScalarFunctionHessian(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__VectorFunction_t;") std::unique_ptr<sgpp::base::VectorFunction>& {
+    clone = std::unique_ptr<sgpp::base::VectorFunction>(
+        new SwigDirector_VectorFunction(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__VectorFunctionGradient_t;") std::unique_ptr<sgpp::base::VectorFunctionGradient>& {
+    clone = std::unique_ptr<sgpp::base::VectorFunctionGradient>(
+        new SwigDirector_VectorFunctionGradient(*this));
+    return;
+}
+
+%typemap(directorin,descriptor="Lsgpp/SWIGTYPE_p_std__unique_ptrT_sgpp__base__VectorFunctionHessian_t;") std::unique_ptr<sgpp::base::VectorFunctionHessian>& {
+    clone = std::unique_ptr<sgpp::base::VectorFunctionHessian>(
+        new SwigDirector_VectorFunctionHessian(*this));
+    return;
+}
+
+%include "base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/ScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/ScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/InterpolantScalarFunctionHessian.hpp"
+
+%include "base/src/sgpp/base/function/vector/VectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/VectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/VectorFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/InterpolantVectorFunctionHessian.hpp"
+
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp"
+%include "base/src/sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp"
+%include "base/src/sgpp/base/function/vector/EmptyVectorFunction.hpp"
+%include "base/src/sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp"
+
+

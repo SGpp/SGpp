@@ -3,13 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 #include <vector>
 
@@ -38,7 +37,7 @@ class MultiStart : public UnconstrainedOptimizer {
    * @param populationSize  number of individual points
    *                        (default: \f$\min(10d, 100)\f$)
    */
-  MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+  MultiStart(const base::ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
              size_t populationSize = 0);
 
   /**
@@ -53,8 +52,7 @@ class MultiStart : public UnconstrainedOptimizer {
    *                         (default: \f$\min(10d, 100)\f$)
    */
   MultiStart(const UnconstrainedOptimizer& optimizer,
-             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-             size_t populationSize = 0);
+             size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT, size_t populationSize = 0);
 
   /**
    * Copy constructor.
@@ -128,5 +126,3 @@ class MultiStart : public UnconstrainedOptimizer {
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_MULTISTART_HPP */

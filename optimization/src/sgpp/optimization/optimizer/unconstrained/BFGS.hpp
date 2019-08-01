@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace sgpp {
@@ -40,9 +41,8 @@ class BFGS : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  BFGS(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-       size_t maxItCount = DEFAULT_N,
-       double tolerance = DEFAULT_TOLERANCE,
+  BFGS(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
        double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
        double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
        double lineSearchAccuracy = DEFAULT_LINE_SEARCH_ACCURACY);

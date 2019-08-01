@@ -57,7 +57,7 @@ void createSupportedGrids(size_t d, size_t p,
       sgpp::base::Grid::createModWaveletGrid(d)));
 }
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::ScalarFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::ScalarFunction& f,
                       sgpp::base::DataVector& functionValues) {
   sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
@@ -76,7 +76,7 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::Scal
   }
 }
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::VectorFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::VectorFunction& f,
                       sgpp::base::DataMatrix& functionValues) {
   sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();

@@ -8,6 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
 
 #include <vector>
@@ -39,8 +41,8 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  LogBarrier(const ScalarFunction& f,
-             const VectorFunction& g,
+  LogBarrier(const base::ScalarFunction& f,
+             const base::VectorFunction& g,
              size_t maxItCount = DEFAULT_N,
              double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
@@ -54,17 +56,15 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param fGradient             objective function gradient
    * @param g                     inequality constraint
    * @param gGradient             inequality constraint gradient
-   * @param maxItCount            maximal number of function evaluations
+   * @param maxItCount            maximal number of
+   *                              function evaluations
    * @param tolerance             tolerance
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  LogBarrier(const ScalarFunction& f,
-             const ScalarFunctionGradient& fGradient,
-             const VectorFunction& g,
-             const VectorFunctionGradient& gGradient,
-             size_t maxItCount = DEFAULT_N,
-             double tolerance = DEFAULT_TOLERANCE,
+  LogBarrier(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+             const base::VectorFunction& g, const base::VectorFunctionGradient& gGradient,
+             size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
              double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
 
@@ -82,8 +82,8 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param barrierDecreaseFactor   barrier decrease factor
    */
   LogBarrier(const UnconstrainedOptimizer& unconstrainedOptimizer,
-             const VectorFunction& g,
-             const VectorFunctionGradient* gGradient,
+             const base::VectorFunction& g,
+             const base::VectorFunctionGradient* gGradient,
              size_t maxItCount = DEFAULT_N,
              double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,

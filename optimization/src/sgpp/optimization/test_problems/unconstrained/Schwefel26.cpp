@@ -39,8 +39,8 @@ double Schwefel26Objective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void Schwefel26Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Schwefel26Objective(*this));
+void Schwefel26Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Schwefel26Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

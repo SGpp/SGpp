@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -20,7 +20,7 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-DifferentialEvolution::DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount,
+DifferentialEvolution::DifferentialEvolution(const base::ScalarFunction& f, size_t maxFcnEvalCount,
                                              size_t populationSize, double crossoverProbability,
                                              double scalingFactor, size_t idleGenerationsCount,
                                              double avgImprovementThreshold,
@@ -40,13 +40,12 @@ DifferentialEvolution::DifferentialEvolution(const DifferentialEvolution& other)
       scalingFactor(other.scalingFactor),
       idleGenerationsCount(other.idleGenerationsCount),
       avgImprovementThreshold(other.avgImprovementThreshold),
-      maxDistanceThreshold(other.maxDistanceThreshold) {
-}
+      maxDistanceThreshold(other.maxDistanceThreshold) {}
 
 DifferentialEvolution::~DifferentialEvolution() {}
 
 void DifferentialEvolution::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -71,7 +70,7 @@ void DifferentialEvolution::optimize() {
   // initial pseudorandom points
   for (size_t i = 0; i < populationSize; i++) {
     for (size_t t = 0; t < d; t++) {
-      (*xOld)[i][t] = RandomNumberGenerator::getInstance().getUniformRN();
+      (*xOld)[i][t] = base::RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     fx[i] = f->eval((*xOld)[i]);
@@ -103,22 +102,22 @@ void DifferentialEvolution::optimize() {
   for (size_t k = 0; k < maxK; k++) {
     for (size_t i = 0; i < populationSize; i++) {
       do {
-        a[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        a[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while (a[k][i] == i);
 
       do {
-        b[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        b[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
 
       do {
-        c[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        c[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while ((c[k][i] == i) || (c[k][i] == a[k][i]) || (c[k][i] == b[k][i]));
 
-      j[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(d);
+      j[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(d);
 
       for (size_t t = 0; t < d; t++) {
         if (t != j[k][i]) {
-          prob[k][i][t] = RandomNumberGenerator::getInstance().getUniformRN();
+          prob[k][i][t] = base::RandomNumberGenerator::getInstance().getUniformRN();
         }
       }
     }
@@ -127,17 +126,16 @@ void DifferentialEvolution::optimize() {
   // "real" algorithm loop
   for (size_t k = 0; k < maxK; k++) {
     // abbreviations
-    const std::vector<size_t> &a_k = a[k], &b_k = b[k], &c_k = c[k];
+    const std::vector<size_t>&a_k = a[k], &b_k = b[k], &c_k = c[k];
     const std::vector<size_t>& j_k = j[k];
     const std::vector<base::DataVector>& prob_k = prob[k];
 
-#pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, \
-                            xNew)
+#pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, xNew)
     {  // NOLINT(whitespace/braces)
       base::DataVector y(d);
-      ScalarFunction* curFPtr = f.get();
+      base::ScalarFunction* curFPtr = f.get();
 #ifdef _OPENMP
-      std::unique_ptr<ScalarFunction> curF;
+      std::unique_ptr<base::ScalarFunction> curF;
 
       if (omp_get_max_threads() > 1) {
         f->clone(curF);
@@ -249,8 +247,8 @@ void DifferentialEvolution::optimize() {
 
     // status message
     if (k % 10 == 0) {
-      Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                               std::to_string(fCurrentOpt));
+      base::Printer::getInstance().printStatusUpdate(
+          std::to_string(k) + " steps, f(x) = " + std::to_string(fCurrentOpt));
     }
 
     xHist.appendRow((*xOld)[xOptIndex]);
@@ -262,9 +260,9 @@ void DifferentialEvolution::optimize() {
   xOpt = (*xOld)[xOptIndex];
   fOpt = fCurrentOpt;
 
-  Printer::getInstance().printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                           std::to_string(fCurrentOpt));
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusUpdate(std::to_string(maxK) +
+                                                 " steps, f(x) = " + std::to_string(fCurrentOpt));
+  base::Printer::getInstance().printStatusEnd();
 }
 
 size_t DifferentialEvolution::getPopulationSize() const { return populationSize; }

@@ -43,8 +43,8 @@ double G03Objective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void G03Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G03Objective(*this));
+void G03Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G03Objective(*this));
 }
 
 G03InequalityConstraint::G03InequalityConstraint(size_t d) : TestVectorFunction(d, 0) {}
@@ -53,8 +53,8 @@ G03InequalityConstraint::~G03InequalityConstraint() {}
 
 void G03InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
 
-void G03InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G03InequalityConstraint(*this));
+void G03InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G03InequalityConstraint(*this));
 }
 
 G03EqualityConstraint::G03EqualityConstraint(size_t d) : TestVectorFunction(d, 1) {}
@@ -71,8 +71,8 @@ void G03EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::Dat
   value[0] = result;
 }
 
-void G03EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G03EqualityConstraint(*this));
+void G03EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G03EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

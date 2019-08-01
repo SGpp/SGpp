@@ -7,14 +7,15 @@
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisNaive.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationLinearClenshawCurtis::
-    OperationMultipleHierarchisationLinearClenshawCurtis(base::LinearClenshawCurtisGrid& grid)
+    OperationMultipleHierarchisationLinearClenshawCurtis(
+        base::LinearClenshawCurtisGrid& grid)
     : grid(grid) {}
 
 OperationMultipleHierarchisationLinearClenshawCurtis::
@@ -22,8 +23,8 @@ OperationMultipleHierarchisationLinearClenshawCurtis::
 
 bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
     base::DataVector& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
@@ -47,8 +48,8 @@ void OperationMultipleHierarchisationLinearClenshawCurtis::doDehierarchisation(
 
 bool OperationMultipleHierarchisationLinearClenshawCurtis::doHierarchisation(
     base::DataMatrix& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }

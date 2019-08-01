@@ -12,8 +12,6 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <map>
@@ -25,6 +23,7 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include "../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -609,7 +608,7 @@ void ScottsRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVecto
 
 KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
     KernelDensityEstimator& kde, size_t kfold, std::uint64_t seedValue)
-    : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
+    : sgpp::base::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
   // split the data set
   auto samples = kde.getSamples();
   size_t numSamples = samples->getNrows();

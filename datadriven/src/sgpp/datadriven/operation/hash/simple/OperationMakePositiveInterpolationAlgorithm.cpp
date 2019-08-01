@@ -152,7 +152,7 @@ void OperationMakePositiveInterpolateBoundaryOfSupport::computeHierarchicalCoeff
 // -------------------------------------------------------------------------------------------
 
 OperationMakePositiveInterpolateFunction::OperationMakePositiveInterpolateFunction(
-    optimization::ScalarFunction* f)
+    base::ScalarFunction* f)
     : f(f) {}
 OperationMakePositiveInterpolateFunction::~OperationMakePositiveInterpolateFunction() {}
 
