@@ -7,21 +7,21 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <string>
 #include <vector>
 
 #include "ObjectiveFunctions.hpp"
 
-using sgpp::optimization::Printer;
-using sgpp::optimization::RandomNumberGenerator;
+using sgpp::base::Printer;
+using sgpp::base::RandomNumberGenerator;
 
 void gridEqualityTest(sgpp::base::Grid& grid1, sgpp::base::Grid& grid2) {
   sgpp::base::GridStorage& storage1 = grid1.getStorage();
@@ -535,7 +535,7 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   sgpp::base::DataMatrix A(3, 3, 0.0);
   A(0, 1) = 12.3;
   A(1, 2) = 42.1337;
-  sgpp::optimization::FullSLE sle(A);
+  sgpp::base::FullSLE sle(A);
   Printer::getInstance().printSLE(sle);
 
   const size_t d = 1;
@@ -545,7 +545,7 @@ BOOST_AUTO_TEST_CASE(TestPrinter) {
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
   sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(f, *grid, N, 0.85);
   BOOST_CHECK(gridGen.generate());
-  Printer::getInstance().printIterativeGridGenerator(gridGen);
+  gridGen.printIterativeGridGenerator();
 
   // undo redirection
   outStream.close();
