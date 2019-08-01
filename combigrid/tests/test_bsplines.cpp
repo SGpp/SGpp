@@ -23,10 +23,10 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModel.hpp>
 #include <sgpp/combigrid/utils/AnalyticModels.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
-#include "../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <cmath>

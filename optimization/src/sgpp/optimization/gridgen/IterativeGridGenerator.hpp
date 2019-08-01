@@ -53,9 +53,7 @@ class IterativeGridGenerator {
   const base::DataVector& getFunctionValues() const;
 
   /**
-   * Print a grid (grid points and function values).
-   *
-   * @param gridGen       grid to be printed
+   * Prints grid points and function values.
    */
   void printIterativeGridGenerator() const;
 
