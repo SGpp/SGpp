@@ -44,8 +44,8 @@ double G05Objective::evalUndisplaced(const base::DataVector& x) {
   return 3.0 * x1 + 0.000001 * std::pow(x1, 3.0) + 2.0 * x2 + (0.000002 / 3.0) * std::pow(x2, 3.0);
 }
 
-void G05Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G05Objective(*this));
+void G05Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G05Objective(*this));
 }
 
 G05InequalityConstraint::G05InequalityConstraint() : TestVectorFunction(4, 2) {}
@@ -62,8 +62,8 @@ void G05InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[1] = -x3 + x4 - 0.55;
 }
 
-void G05InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G05InequalityConstraint(*this));
+void G05InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G05InequalityConstraint(*this));
 }
 
 G05EqualityConstraint::G05EqualityConstraint() : TestVectorFunction(4, 3) {}
@@ -81,8 +81,8 @@ void G05EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::Dat
   value[2] = 1000.0 * std::sin(x4 - 0.25) + 1000.0 * std::sin(x4 - x3 - 0.25) + 1294.8;
 }
 
-void G05EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G05EqualityConstraint(*this));
+void G05EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G05EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

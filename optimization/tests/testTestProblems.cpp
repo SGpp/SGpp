@@ -49,17 +49,16 @@
 #include <sgpp/optimization/test_problems/constrained/Simionescu.hpp>
 #include <sgpp/optimization/test_problems/constrained/Soland.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
-
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <vector>
 
-using sgpp::optimization::Printer;
-using sgpp::optimization::RandomNumberGenerator;
-using sgpp::optimization::ScalarFunction;
+using sgpp::base::Printer;
+using sgpp::base::RandomNumberGenerator;
+using sgpp::base::ScalarFunction;
+using sgpp::base::VectorFunction;
 using sgpp::optimization::test_problems::ConstrainedTestProblem;
 using sgpp::optimization::test_problems::UnconstrainedTestProblem;
-using sgpp::optimization::VectorFunction;
 
 BOOST_AUTO_TEST_CASE(TestUnconstrainedTestProblem) {
   // Test unconstrained test problems in sgpp::optimization::test_problems.

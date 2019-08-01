@@ -7,13 +7,14 @@
 #define OPERATIONINVERSEROSENBLATTTRANSFORMATIONPOLYCLENSHAWCURTISBOUNDARY1D_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 
-#include <sgpp/globaldef.hpp>
-#include <map>
-#include <vector>
 #include <functional>
+#include <map>
+#include <sgpp/globaldef.hpp>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

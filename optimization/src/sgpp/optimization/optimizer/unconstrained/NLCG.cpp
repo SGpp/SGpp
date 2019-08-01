@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 
 #include <numeric>
 
@@ -15,9 +15,9 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NLCG::NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-           size_t maxItCount, double beta,
-           double gamma, double tolerance, double epsilon, double restartThreshold)
+NLCG::NLCG(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+           size_t maxItCount, double beta, double gamma, double tolerance, double epsilon,
+           double restartThreshold)
     : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
@@ -38,7 +38,7 @@ NLCG::NLCG(const NLCG& other)
 NLCG::~NLCG() {}
 
 void NLCG::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (NLCG)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -149,14 +149,14 @@ void NLCG::optimize() {
     fHist.append(fx);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
   }
 
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double NLCG::getBeta() const { return beta; }

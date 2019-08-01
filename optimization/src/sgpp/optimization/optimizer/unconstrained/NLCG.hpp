@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace sgpp {
@@ -47,9 +48,8 @@ class NLCG : public UnconstrainedOptimizer {
    * @param epsilon           epsilon (parameter for Armijo's rule)
    * @param restartThreshold  restart threshold
    */
-  NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-       size_t maxItCount = DEFAULT_N,
-       double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+  NLCG(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N, double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
        double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
        double restartThreshold = DEFAULT_RESTART_THRESHOLD);
 

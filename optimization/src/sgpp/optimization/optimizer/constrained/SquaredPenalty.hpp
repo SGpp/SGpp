@@ -8,6 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
 
 #include <vector>
@@ -43,9 +45,9 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  SquaredPenalty(const ScalarFunction& f,
-                 const VectorFunction& g,
-                 const VectorFunction& h,
+  SquaredPenalty(const base::ScalarFunction& f,
+                 const base::VectorFunction& g,
+                 const base::VectorFunction& h,
                  size_t maxItCount = DEFAULT_N,
                  double xTolerance = DEFAULT_X_TOLERANCE,
                  double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
@@ -62,20 +64,17 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param gGradient             inequality constraint gradient
    * @param h                     equality constraint
    * @param hGradient             equality constraint gradient
-   * @param maxItCount            maximal number of function evaluations
+   * @param maxItCount            maximal number of
+   *                              function evaluations
    * @param xTolerance            point tolerance
    * @param constraintTolerance   constraint tolerance
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  SquaredPenalty(const ScalarFunction& f,
-                 const ScalarFunctionGradient& fGradient,
-                 const VectorFunction& g,
-                 const VectorFunctionGradient& gGradient,
-                 const VectorFunction& h,
-                 const VectorFunctionGradient& hGradient,
-                 size_t maxItCount = DEFAULT_N,
-                 double xTolerance = DEFAULT_X_TOLERANCE,
+  SquaredPenalty(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+                 const base::VectorFunction& g, const base::VectorFunctionGradient& gGradient,
+                 const base::VectorFunction& h, const base::VectorFunctionGradient& hGradient,
+                 size_t maxItCount = DEFAULT_N, double xTolerance = DEFAULT_X_TOLERANCE,
                  double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                  double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                  double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
@@ -98,10 +97,10 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param penaltyIncreaseFactor   penalty increase factor
    */
   SquaredPenalty(const UnconstrainedOptimizer& unconstrainedOptimizer,
-                 const VectorFunction& g,
-                 const VectorFunctionGradient* gGradient,
-                 const VectorFunction& h,
-                 const VectorFunctionGradient* hGradient,
+                 const base::VectorFunction& g,
+                 const base::VectorFunctionGradient* gGradient,
+                 const base::VectorFunction& h,
+                 const base::VectorFunctionGradient* hGradient,
                  size_t maxItCount = DEFAULT_N,
                  double xTolerance = DEFAULT_X_TOLERANCE,
                  double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,

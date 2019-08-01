@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace sgpp {
@@ -40,9 +41,9 @@ class Rprop : public UnconstrainedOptimizer {
    * @param stepSizeIncreaseFactor  step size increase factor
    * @param stepSizeDecreaseFactor  step size decrease factor
    */
-  Rprop(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-        size_t maxItCount = DEFAULT_N,
-        double tolerance = DEFAULT_TOLERANCE, double initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
+  Rprop(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+        size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
+        double initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
         double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
         double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 

@@ -47,7 +47,7 @@ class GoldsteinPriceObjective : public TestScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const override;
 };
 
 /**

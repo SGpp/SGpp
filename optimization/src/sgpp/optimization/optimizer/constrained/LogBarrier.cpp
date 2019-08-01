@@ -5,11 +5,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -18,9 +18,9 @@ namespace optimization {
 namespace optimizer {
 
 namespace {
-class PenalizedObjectiveFunction : public ScalarFunction {
+class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
-  PenalizedObjectiveFunction(ScalarFunction& f, VectorFunction& g, double mu)
+  PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g, double mu)
       : ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
@@ -51,23 +51,23 @@ class PenalizedObjectiveFunction : public ScalarFunction {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new PenalizedObjectiveFunction(*this));
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunction>(new PenalizedObjectiveFunction(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunction& f;
-  VectorFunction& g;
+  base::ScalarFunction& f;
+  base::VectorFunction& g;
   double mu;
   size_t m;
 };
 
-class PenalizedObjectiveGradient : public ScalarFunctionGradient {
+class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
  public:
-  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient, VectorFunctionGradient& gGradient,
-                             double mu)
+  PenalizedObjectiveGradient(base::ScalarFunctionGradient& fGradient,
+                             base::VectorFunctionGradient& gGradient, double mu)
       : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
@@ -109,22 +109,22 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
+  void clone(std::unique_ptr<base::ScalarFunctionGradient>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunctionGradient& fGradient;
-  VectorFunctionGradient& gGradient;
+  base::ScalarFunctionGradient& fGradient;
+  base::VectorFunctionGradient& gGradient;
   double mu;
   size_t m;
 };
 }  // namespace
 
-LogBarrier::LogBarrier(const ScalarFunction& f,
-                       const VectorFunction& g,
+LogBarrier::LogBarrier(const base::ScalarFunction& f,
+                       const base::VectorFunction& g,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
     : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
@@ -136,16 +136,13 @@ LogBarrier::LogBarrier(const ScalarFunction& f,
       kHistInner() {
 }
 
-LogBarrier::LogBarrier(const ScalarFunction& f,
-                       const ScalarFunctionGradient& fGradient,
-                       const VectorFunction& g,
-                       const VectorFunctionGradient& gGradient,
+LogBarrier::LogBarrier(const base::ScalarFunction& f,
+                       const base::ScalarFunctionGradient& fGradient,
+                       const base::VectorFunction& g,
+                       const base::VectorFunctionGradient& gGradient,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, fGradient, g, gGradient,
-                           EmptyVectorFunction::getInstance(),
-                           EmptyVectorFunctionGradient::getInstance(),
-                           maxItCount),
+    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(), maxItCount),
       theta(tolerance),
       mu0(barrierStartValue),
       rhoMuMinus(barrierDecreaseFactor),
@@ -156,13 +153,13 @@ LogBarrier::LogBarrier(const ScalarFunction& f,
 }
 
 LogBarrier::LogBarrier(const UnconstrainedOptimizer& unconstrainedOptimizer,
-                       const VectorFunction& g,
-                       const VectorFunctionGradient* gGradient,
+                       const base::VectorFunction& g,
+                       const base::VectorFunctionGradient* gGradient,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
     : ConstrainedOptimizer(unconstrainedOptimizer, g, gGradient,
-                           EmptyVectorFunction::getInstance(),
-                           &EmptyVectorFunctionGradient::getInstance(),
+                           base::EmptyVectorFunction::getInstance(),
+                           &base::EmptyVectorFunctionGradient::getInstance(),
                            maxItCount),
       theta(tolerance),
       mu0(barrierStartValue),
@@ -183,7 +180,7 @@ LogBarrier::LogBarrier(const LogBarrier& other)
 LogBarrier::~LogBarrier() {}
 
 void LogBarrier::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Log Barrier)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -255,8 +252,8 @@ void LogBarrier::optimize() {
     kHistInner.push_back(numberInnerIterations);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx) +
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx) +
                                              ", g(x) = " + gx.toString());
 
     mu *= rhoMuMinus;
@@ -279,7 +276,7 @@ void LogBarrier::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double LogBarrier::getTolerance() const { return theta; }

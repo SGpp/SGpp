@@ -5,12 +5,12 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
 
 #include <algorithm>
 #include <numeric>
@@ -19,9 +19,9 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
-               double beta, double gamma, double tolerance, double epsilon, double alpha1,
-               double alpha2, double p)
+Newton::Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+               size_t max_it_count, double beta, double gamma, double tolerance, double epsilon,
+               double alpha1, double alpha2, double p)
     : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
@@ -30,13 +30,13 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       alpha1(alpha1),
       alpha2(alpha2),
       p(p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
 }
 
-Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
-               double beta, double gamma, double tolerance, double epsilon, double alpha1,
-               double alpha2, double p, const sle_solver::SLESolver& sleSolver)
+Newton::Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+               size_t max_it_count, double beta, double gamma, double tolerance, double epsilon,
+               double alpha1, double alpha2, double p, const base::sle_solver::SLESolver& sleSolver)
     : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
@@ -45,7 +45,7 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       alpha1(alpha1),
       alpha2(alpha2),
       p(p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
 }
 
@@ -58,14 +58,14 @@ Newton::Newton(const Newton& other)
       alpha1(other.alpha1),
       alpha2(other.alpha2),
       p(other.p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
 }
 
 Newton::~Newton() {}
 
 void Newton::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -85,7 +85,7 @@ void Newton::optimize() {
 
   FullSLE system(hessianFx);
   size_t k = 0;
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
   const double BINDING_TOLERANCE = 1e-6;
 
@@ -132,13 +132,13 @@ void Newton::optimize() {
 
     // solve linear system with Hessian as system matrix
     if (statusPrintingEnabled) {
-      Printer::getInstance().disableStatusPrinting();
+      base::Printer::getInstance().disableStatusPrinting();
     }
 
     bool lsSolved = sleSolver.solve(system, s, dk);
 
     if (statusPrintingEnabled) {
-      Printer::getInstance().enableStatusPrinting();
+      base::Printer::getInstance().enableStatusPrinting();
     }
 
     // norm of solution
@@ -157,8 +157,8 @@ void Newton::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
@@ -176,7 +176,7 @@ void Newton::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double Newton::getBeta() const { return beta; }

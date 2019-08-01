@@ -5,17 +5,17 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-GradientDescent::GradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-                                 size_t maxItCount, double beta, double gamma, double tolerance,
-                                 double epsilon)
+GradientDescent::GradientDescent(const base::ScalarFunction& f,
+                                 const base::ScalarFunctionGradient& fGradient, size_t maxItCount,
+                                 double beta, double gamma, double tolerance, double epsilon)
     : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
@@ -33,7 +33,7 @@ GradientDescent::GradientDescent(const GradientDescent& other)
 GradientDescent::~GradientDescent() {}
 
 void GradientDescent::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (gradient descent)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -87,8 +87,8 @@ void GradientDescent::optimize() {
     s.mult(1.0 / sNorm);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
@@ -106,7 +106,7 @@ void GradientDescent::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double GradientDescent::getBeta() const { return beta; }

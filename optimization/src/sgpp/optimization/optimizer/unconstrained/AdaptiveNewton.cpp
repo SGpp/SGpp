@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
 
 #include <algorithm>
 #include <vector>
@@ -16,8 +16,9 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
-                               size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
+                               const base::ScalarFunctionHessian& fHessian, size_t maxItCount,
+                               double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
@@ -27,23 +28,24 @@ AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHess
       rhoLambdaPlus(dampingIncreaseFactor),
       rhoLambdaMinus(dampingDecreaseFactor),
       rhoLs(lineSearchAccuracy),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
 }
 
-AdaptiveNewton::AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
-                               size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
+                               const base::ScalarFunctionHessian& fHessian, size_t maxItCount,
+                               double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy,
-                               const sle_solver::SLESolver& sleSolver)
-    : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
+                               const base::sle_solver::SLESolver& sleSolver)
+    : UnconstrainedOptimizer(f, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
       rhoLambdaPlus(dampingIncreaseFactor),
       rhoLambdaMinus(dampingDecreaseFactor),
       rhoLs(lineSearchAccuracy),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
 }
 
@@ -55,14 +57,14 @@ AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
       rhoLambdaPlus(other.rhoLambdaPlus),
       rhoLambdaMinus(other.rhoLambdaMinus),
       rhoLs(other.rhoLs),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
 }
 
 AdaptiveNewton::~AdaptiveNewton() {}
 
 void AdaptiveNewton::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (adaptive Newton)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -82,7 +84,7 @@ void AdaptiveNewton::optimize() {
   base::DataVector xNew(x0);
   double fxNew;
 
-  FullSLE system(hessianFx);
+  base::FullSLE system(hessianFx);
   size_t k = 0;
   double alpha = 1.0;
   double lambda = 1.0;
@@ -97,7 +99,7 @@ void AdaptiveNewton::optimize() {
   const double ALPHA2 = 1e-6;
   const double BINDING_TOLERANCE = 1e-6;
   const double P = 0.1;
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
   while (k < N) {
     // calculate gradient and Hessian
@@ -139,13 +141,13 @@ void AdaptiveNewton::optimize() {
 
     // solve linear system with damped Hessian as system matrix
     if (statusPrintingEnabled) {
-      Printer::getInstance().disableStatusPrinting();
+      base::Printer::getInstance().disableStatusPrinting();
     }
 
     lsSolved = sleSolver.solve(system, b, dir);
 
     if (statusPrintingEnabled) {
-      Printer::getInstance().enableStatusPrinting();
+      base::Printer::getInstance().enableStatusPrinting();
     }
 
     double dirNorm = dir.l2Norm();
@@ -157,7 +159,7 @@ void AdaptiveNewton::optimize() {
       dir = b;
     }
 
-    for (size_t t = 0; t < d; t++) {
+      for (size_t t = 0; t < d; t++) {
       // is constraint binding?
       // (i.e., we are at the boundary and the search direction points outwards)
       if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
@@ -170,8 +172,8 @@ void AdaptiveNewton::optimize() {
           // reset step size as it's most likely very small due to approach to the boundary
           alpha = 1.0;
           isConstraintBinding[t] = true;
-        }
-      } else {
+      }
+    } else {
         isConstraintBinding[t] = false;
       }
     }
@@ -200,7 +202,7 @@ void AdaptiveNewton::optimize() {
     // evaluate at new point
     if (inDomain) {
       fxNew = f->eval(xNew);
-      k++;
+    k++;
     } else {
       fxNew = INFINITY;
     }
@@ -239,13 +241,13 @@ void AdaptiveNewton::optimize() {
 
         // solve linear system with damped Hessian as system matrix
         if (statusPrintingEnabled) {
-          Printer::getInstance().disableStatusPrinting();
+          base::Printer::getInstance().disableStatusPrinting();
         }
 
         lsSolved = sleSolver.solve(system, b, dir);
 
         if (statusPrintingEnabled) {
-          Printer::getInstance().enableStatusPrinting();
+          base::Printer::getInstance().enableStatusPrinting();
         }
 
         for (size_t t = 0; t < d; t++) {
@@ -310,8 +312,8 @@ void AdaptiveNewton::optimize() {
     lambda *= rhoLambdaMinus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha * dir is smaller than tolerance theta
@@ -330,7 +332,7 @@ void AdaptiveNewton::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double AdaptiveNewton::getTolerance() const { return theta; }

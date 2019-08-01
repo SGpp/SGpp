@@ -40,7 +40,8 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  AdaptiveGradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+  AdaptiveGradientDescent(const base::ScalarFunction& f,
+                          const base::ScalarFunctionGradient& fGradient,
                           size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
                           double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                           double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,

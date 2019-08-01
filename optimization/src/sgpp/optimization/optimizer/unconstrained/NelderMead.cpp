@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -16,8 +16,8 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-NelderMead::NelderMead(const ScalarFunction& f, size_t maxFcnEvalCount, double alpha, double beta,
-                       double gamma, double delta)
+NelderMead::NelderMead(const base::ScalarFunction& f, size_t maxFcnEvalCount, double alpha,
+                       double beta, double gamma, double delta)
     : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       alpha(alpha),
       beta(beta),
@@ -29,13 +29,12 @@ NelderMead::NelderMead(const NelderMead& other)
       alpha(other.alpha),
       beta(other.beta),
       gamma(other.gamma),
-      delta(other.delta) {
-}
+      delta(other.delta) {}
 
 NelderMead::~NelderMead() {}
 
 void NelderMead::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Nelder-Mead)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -197,8 +196,8 @@ void NelderMead::optimize() {
 
     // status printing
     if (k % 10 == 0) {
-      Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                               std::to_string(fPoints[0]));
+      base::Printer::getInstance().printStatusUpdate(
+          std::to_string(k) + " steps, f(x) = " + std::to_string(fPoints[0]));
     }
 
     if (numberOfFcnEvals + (d + 2) > N) {
@@ -214,9 +213,9 @@ void NelderMead::optimize() {
   xOpt = points[0];
   fOpt = fPoints[0];
 
-  Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                           std::to_string(fPoints[0]));
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusUpdate(std::to_string(k) +
+                                                 " steps, f(x) = " + std::to_string(fPoints[0]));
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double NelderMead::getAlpha() const { return alpha; }

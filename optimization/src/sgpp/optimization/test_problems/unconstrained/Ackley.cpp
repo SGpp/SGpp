@@ -46,8 +46,8 @@ double AckleyObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void AckleyObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new AckleyObjective(*this));
+void AckleyObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new AckleyObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

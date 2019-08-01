@@ -269,8 +269,8 @@ double OperationInverseRosenblattTransformation1DModPoly::doTransformation1D(
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
-  optimization::Printer::getInstance().disableStatusPrinting();
-  optimization::WrapperScalarFunction f(1, optFunc);
+  base::Printer::getInstance().disableStatusPrinting();
+  base::WrapperScalarFunction f(1, optFunc);
   optimization::optimizer::NelderMead nelderMead(f, 10000);
   nelderMead.optimize();
   return nelderMead.getOptimalPoint()[0];

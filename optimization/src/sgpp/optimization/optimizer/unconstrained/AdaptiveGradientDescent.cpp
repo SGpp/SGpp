@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
 #include <vector>
@@ -14,10 +14,12 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(
-    const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+AdaptiveGradientDescent::AdaptiveGradientDescent(const base::ScalarFunction& f,
+                                                 const base::ScalarFunctionGradient& fGradient,
     size_t maxItCount, double tolerance,
-    double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
+                                                 double stepSizeIncreaseFactor,
+                                                 double stepSizeDecreaseFactor,
+                                                 double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -25,8 +27,8 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(
       rhoLs(lineSearchAccuracy) {
 }
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other) :
-    UnconstrainedOptimizer(other),
+AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other)
+    : UnconstrainedOptimizer(other),
     theta(other.theta),
     rhoAlphaPlus(other.rhoAlphaPlus),
     rhoAlphaMinus(other.rhoAlphaMinus),
@@ -36,7 +38,7 @@ AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
 
 void AdaptiveGradientDescent::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -115,7 +117,7 @@ void AdaptiveGradientDescent::optimize() {
     // evaluate at new point
     if (inDomain) {
       fxNew = f->eval(xNew);
-      k++;
+    k++;
     } else {
       fxNew = INFINITY;
     }
@@ -141,7 +143,7 @@ void AdaptiveGradientDescent::optimize() {
       // evaluate at new point
       if (inDomain) {
         fxNew = f->eval(xNew);
-        k++;
+      k++;
       } else {
         fxNew = INFINITY;
       }
@@ -162,8 +164,8 @@ void AdaptiveGradientDescent::optimize() {
     alpha *= rhoAlphaPlus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha is smaller than tolerance theta
@@ -182,7 +184,7 @@ void AdaptiveGradientDescent::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 double AdaptiveGradientDescent::getTolerance() const { return theta; }
