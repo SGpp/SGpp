@@ -148,7 +148,7 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
       }
     }
     if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf, stencilConf, i, offsetsPerLevel.at(i),
+      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel.at(i),
                            multiplicatorsPerLevel.at(i), interactions);
     }
     addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel.at(i), interactions);
@@ -208,6 +208,9 @@ void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>& dimens
                                                     std::vector<int64_t>& position,
                                                     size_t colorIndex) const {
   for (size_t i = 0; i < position.size(); i++) {
+    if (colorIndex == position.size() - 1 && i == colorIndex) {
+      position.clear();
+    }
     if (i == colorIndex) {
       continue;
     }
@@ -226,24 +229,22 @@ void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>& dimens
 }
 
 void sgpp::datadriven::GridFactory::addColorInteractions(
-    GeometryConfiguration& geometryConf, StencilConfiguration& stencilConf, size_t layer,
-    size_t offset, std::vector<size_t>& multiplicators,
-    std::set<std::set<size_t>>& interactions) const {
-  std::vector<int64_t> position = std::vector<int64_t>(geometryConf.dim.at(layer).size(), 0);
+    std::vector<int64_t>& layerDim, size_t colorIndex, size_t offset,
+    std::vector<size_t>& multiplicators, std::set<std::set<size_t>>& interactions) const {
+  std::vector<int64_t> position = std::vector<int64_t>(layerDim.size(), 0);
   while (position.size() != 0) {
-    size_t colorChannels = geometryConf.dim.at(layer).at(stencilConf.colorIndex);
-    for (size_t j = 1; j < pow(2, static_cast<double>(colorChannels)); j++) {
+    size_t colorChannels = layerDim.at(colorIndex);
+    for (size_t j = 1; j < ((size_t)1<<colorChannels); j++) {
       std::set<size_t> tmp = std::set<size_t>();
       for (size_t k = 0; k < colorChannels; k++) {
         if (j & (1 << k)) {
-          position.at(stencilConf.colorIndex) = k;
-          tmp.insert(offset +
-                     getDataIndex(geometryConf.dim.at(layer).size(), multiplicators, position));
+          position.at(colorIndex) = k;
+          tmp.insert(offset + getDataIndex(layerDim.size(), multiplicators, position));
         }
       }
       interactions.insert(tmp);
     }
-    getNextPosition(geometryConf.dim.at(layer), position, stencilConf.colorIndex);
+    getNextPosition(layerDim, position, colorIndex);
   }
 }
 
@@ -275,7 +276,7 @@ void sgpp::datadriven::GridFactory::getDirectNeighbours(
     } while (position.size() != 0);
 
     if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf, stencilConf, i, offsetsPerLevel.at(i),
+      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel.at(i),
                            multiplicatorsPerLevel.at(i), interactions);
     }
     addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel.at(i), interactions);

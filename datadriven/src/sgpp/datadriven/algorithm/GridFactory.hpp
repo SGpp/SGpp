@@ -46,8 +46,7 @@ class GridFactory {
    * @param stencil(geometry relation of pixels) e.g. DirectNeighbours
    * @return returns the calculated interaction that have been choosen by the stencil
    */
-  std::set<std::set<size_t>> getInteractions(
-      sgpp::datadriven::GeometryConfiguration config) const;
+  std::set<std::set<size_t>> getInteractions(sgpp::datadriven::GeometryConfiguration config) const;
 
   /*
    * calculates hierachical parent interactions
@@ -104,9 +103,9 @@ class GridFactory {
   std::vector<std::vector<size_t>> getMultiplicatorsPerLevel(
       std::vector<std::vector<int64_t>>& imageDimensions) const;
 
-  void addColorInteractions(
-      GeometryConfiguration& geometryConf, StencilConfiguration& stencilConf, size_t layer, size_t offset,
-      std::vector<size_t>& multiplicators, std::set<std::set<size_t>>& interactions) const;
+  void addColorInteractions(std::vector<int64_t>& layerDim, size_t colorIndex, size_t offset,
+                            std::vector<size_t>& multiplicators,
+                            std::set<std::set<size_t>>& interactions) const;
   /*
    * Calculates the offset for each level. The offset is the starting index of each image level
    * @param vector of resolutions
@@ -122,8 +121,7 @@ class GridFactory {
    * @param vector of resolutions
    * @param the vector in which the interactions are stored
    */
-  void addOneDimensionalInteractions(std::vector<int64_t>& layerDimensions,
-                                     size_t layerOffset,
+  void addOneDimensionalInteractions(std::vector<int64_t>& layerDimensions, size_t layerOffset,
                                      std::set<std::set<size_t>>& vec) const;
 };
 }  // namespace datadriven
