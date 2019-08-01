@@ -949,7 +949,7 @@ bool DataMiningConfigParser::getGeometryConfig(
         StencilConfiguration stencil;
         auto stencilConfig = static_cast<DictNode *>(&(*geometryConfig)["stencils"][i]);
         stencil.applyOnLayers = parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
-        stencil.colorIndex = parseInt(*geometryConfig, "colorIndex", colorIndexDefault, "stencils");
+        stencil.colorIndex = parseInt(*stencilConfig, "colorIndex", colorIndexDefault, "stencils");
         stencil.stencilType = GeometryConfigurationParser::parseStencil((*geometryConfig)["stencils"][i]["stencil"].get());
         config.stencils.push_back(stencil);
       }
