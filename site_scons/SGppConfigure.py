@@ -469,9 +469,9 @@ def configureGNUCompiler(config):
     first_libpath, _ = p.communicate()
     first_libpath = first_libpath.rstrip() # remove trailing newline
     if not os.path.exists(first_libpath):
-      print("Mitigation for old Ubuntu failed. Did not get libpath. Continuing WITHOUT openmp.")
+      Helper.printWarning("Mitigation for old Ubuntu failed. Did not get libpath. Continuing WITHOUT openmp.")
     else:
-      print("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(first_libpath))
+      Helper.printInfo("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(first_libpath))
       config.env.Append(LIBPATH=[first_libpath])
       # Safety first: Manually specity libgomp.so.1 as additional library before -fopenmp
       config.env.Append(LINKFLAGS=["-l:libgomp.so.1", "-fopenmp"])
