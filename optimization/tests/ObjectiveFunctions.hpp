@@ -6,13 +6,14 @@
 #ifndef OBJECTIVE_FUNCTIONS_HPP
 #define OBJECTIVE_FUNCTIONS_HPP
 
-#include <cmath>
 #include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
 #include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/base/function/vector/VectorFunctionHessian.hpp>
+
+#include <cmath>
 
 using sgpp::base::ScalarFunction;
 using sgpp::base::ScalarFunctionGradient;
