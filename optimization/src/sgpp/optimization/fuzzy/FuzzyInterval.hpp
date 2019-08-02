@@ -27,21 +27,27 @@ class FuzzyInterval {
   virtual double evaluateConfidenceIntervalLowerBound(double alpha) const = 0;
   virtual double evaluateConfidenceIntervalUpperBound(double alpha) const = 0;
 
-  double approximateL1Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateL2Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateLinfNorm(NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateL1Error(const FuzzyInterval& other,
-                            NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateL2Error(const FuzzyInterval& other,
-                            NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateLinfError(const FuzzyInterval& other,
-                              NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateRelativeL1Error(const FuzzyInterval& other,
-                                    NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateRelativeL2Error(const FuzzyInterval& other,
-                                    NormMode normMode = NormMode::ViaMembershipFunction) const;
-  double approximateRelativeLinfError(const FuzzyInterval& other,
-                                      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeL1Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeL2Norm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeLinfNorm(NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeL1Error(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeL2Error(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeLinfError(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeRelativeL1Error(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeRelativeL2Error(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
+  double computeRelativeLinfError(
+      const FuzzyInterval& other,
+      NormMode normMode = NormMode::ViaMembershipFunction) const;
 
   double getSupportLowerBound() const;
   double getSupportUpperBound() const;

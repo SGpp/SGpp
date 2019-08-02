@@ -79,18 +79,18 @@ def applyExtensionPrinciple(label, optimizer, xFuzzy, yFuzzyExact):
   yFuzzy = extensionPrinciple.apply(xFuzzy)
   
   # output norms
-  print("L1 norm:   {:.5g}".format(yFuzzy.approximateL1Norm()))
-  print("L2 norm:   {:.5g}".format(yFuzzy.approximateL2Norm()))
-  print("Linf norm: {:.5g}".format(yFuzzy.approximateLinfNorm()))
+  print("L1 norm:   {:.5g}".format(yFuzzy.computeL1Norm()))
+  print("L2 norm:   {:.5g}".format(yFuzzy.computeL2Norm()))
+  print("Linf norm: {:.5g}".format(yFuzzy.computeLinfNorm()))
   
   # output errors if reference solution is given
   if yFuzzyExact is not None:
-    print("L1 error:   {:.5g}".format(yFuzzyExact.approximateL1Error(yFuzzy)))
-    print("L2 error:   {:.5g}".format(yFuzzyExact.approximateL2Error(yFuzzy)))
-    print("Linf error: {:.5g}".format(yFuzzyExact.approximateLinfError(yFuzzy)))
-    print("Relative L1 error:   {:.5g}".format(yFuzzyExact.approximateRelativeL1Error(yFuzzy)))
-    print("Relative L2 error:   {:.5g}".format(yFuzzyExact.approximateRelativeL2Error(yFuzzy)))
-    print("Relative Linf error: {:.5g}".format(yFuzzyExact.approximateRelativeLinfError(yFuzzy)))
+    print("L1 error:   {:.5g}".format(yFuzzyExact.computeL1Error(yFuzzy)))
+    print("L2 error:   {:.5g}".format(yFuzzyExact.computeL2Error(yFuzzy)))
+    print("Linf error: {:.5g}".format(yFuzzyExact.computeLinfError(yFuzzy)))
+    print("Relative L1 error:   {:.5g}".format(yFuzzyExact.computeRelativeL1Error(yFuzzy)))
+    print("Relative L2 error:   {:.5g}".format(yFuzzyExact.computeRelativeL2Error(yFuzzy)))
+    print("Relative Linf error: {:.5g}".format(yFuzzyExact.computeRelativeLinfError(yFuzzy)))
   
   return yFuzzy
 
