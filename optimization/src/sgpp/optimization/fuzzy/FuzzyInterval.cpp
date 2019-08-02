@@ -22,7 +22,7 @@ FuzzyInterval::FuzzyInterval(double supportLowerBound, double supportUpperBound)
 FuzzyInterval::~FuzzyInterval() {
 }
 
-double FuzzyInterval::approximateL1Norm(NormMode normMode) const {
+double FuzzyInterval::computeL1Norm(NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
   double norm = 0.0;
 
@@ -59,7 +59,7 @@ double FuzzyInterval::approximateL1Norm(NormMode normMode) const {
   return norm;
 }
 
-double FuzzyInterval::approximateL2Norm(NormMode normMode) const {
+double FuzzyInterval::computeL2Norm(NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
   double norm = 0.0;
 
@@ -95,7 +95,7 @@ double FuzzyInterval::approximateL2Norm(NormMode normMode) const {
   return norm;
 }
 
-double FuzzyInterval::approximateLinfNorm(NormMode normMode) const {
+double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
   double norm = 0.0;
 
@@ -130,7 +130,7 @@ double FuzzyInterval::approximateLinfNorm(NormMode normMode) const {
   return norm;
 }
 
-double FuzzyInterval::approximateL1Error(const FuzzyInterval& other, NormMode normMode) const {
+double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
 
   switch (normMode) {
@@ -175,7 +175,7 @@ double FuzzyInterval::approximateL1Error(const FuzzyInterval& other, NormMode no
   }
 }
 
-double FuzzyInterval::approximateL2Error(const FuzzyInterval& other, NormMode normMode) const {
+double FuzzyInterval::computeL2Error(const FuzzyInterval& other, NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
 
   switch (normMode) {
@@ -221,7 +221,7 @@ double FuzzyInterval::approximateL2Error(const FuzzyInterval& other, NormMode no
   }
 }
 
-double FuzzyInterval::approximateLinfError(const FuzzyInterval& other, NormMode normMode) const {
+double FuzzyInterval::computeLinfError(const FuzzyInterval& other, NormMode normMode) const {
   const double N = static_cast<double>(numberOfIntegralSamples);
 
   switch (normMode) {
@@ -261,26 +261,26 @@ double FuzzyInterval::approximateLinfError(const FuzzyInterval& other, NormMode 
   }
 }
 
-double FuzzyInterval::approximateRelativeL1Error(
+double FuzzyInterval::computeRelativeL1Error(
     const FuzzyInterval& other, NormMode normMode) const {
-  const double absoluteError = approximateL1Error(other, normMode);
-  const double norm = approximateL1Norm(normMode);
+  const double absoluteError = computeL1Error(other, normMode);
+  const double norm = computeL1Norm(normMode);
 
   return absoluteError / norm;
 }
 
-double FuzzyInterval::approximateRelativeL2Error(
+double FuzzyInterval::computeRelativeL2Error(
     const FuzzyInterval& other, NormMode normMode) const {
-  const double absoluteError = approximateL2Error(other, normMode);
-  const double norm = approximateL2Norm(normMode);
+  const double absoluteError = computeL2Error(other, normMode);
+  const double norm = computeL2Norm(normMode);
 
   return absoluteError / norm;
 }
 
-double FuzzyInterval::approximateRelativeLinfError(
+double FuzzyInterval::computeRelativeLinfError(
     const FuzzyInterval& other, NormMode normMode) const {
-  const double absoluteError = approximateLinfError(other, normMode);
-  const double norm = approximateLinfNorm(normMode);
+  const double absoluteError = computeLinfError(other, normMode);
+  const double norm = computeLinfNorm(normMode);
 
   return absoluteError / norm;
 }

@@ -119,24 +119,24 @@ void applyExtensionPrinciple(
 void showErrors(const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy,
                 const sgpp::optimization::FuzzyInterval* yFuzzyExact = nullptr) {
   // output norms
-  std::cout << "L1 norm:   " << yFuzzy->approximateL1Norm() << "\n";
-  std::cout << "L2 norm:   " << yFuzzy->approximateL2Norm() << "\n";
-  std::cout << "Linf norm: " << yFuzzy->approximateLinfNorm() << "\n";
+  std::cout << "L1 norm:   " << yFuzzy->computeL1Norm() << "\n";
+  std::cout << "L2 norm:   " << yFuzzy->computeL2Norm() << "\n";
+  std::cout << "Linf norm: " << yFuzzy->computeLinfNorm() << "\n";
 
   // output errors if reference solution is given
   if (yFuzzyExact != nullptr) {
     std::cout << "L1 error:   " <<
-        yFuzzyExact->approximateL1Error(*yFuzzy) << "\n";
+        yFuzzyExact->computeL1Error(*yFuzzy) << "\n";
     std::cout << "L2 error:   " <<
-        yFuzzyExact->approximateL2Error(*yFuzzy) << "\n";
+        yFuzzyExact->computeL2Error(*yFuzzy) << "\n";
     std::cout << "Linf error: " <<
-        yFuzzyExact->approximateLinfError(*yFuzzy) << "\n";
+        yFuzzyExact->computeLinfError(*yFuzzy) << "\n";
     std::cout << "Relative L1 error:   " <<
-        yFuzzyExact->approximateRelativeL1Error(*yFuzzy) << "\n";
+        yFuzzyExact->computeRelativeL1Error(*yFuzzy) << "\n";
     std::cout << "Relative L2 error:   " <<
-        yFuzzyExact->approximateRelativeL2Error(*yFuzzy) << "\n";
+        yFuzzyExact->computeRelativeL2Error(*yFuzzy) << "\n";
     std::cout << "Relative Linf error: " <<
-        yFuzzyExact->approximateRelativeLinfError(*yFuzzy) << "\n";
+        yFuzzyExact->computeRelativeLinfError(*yFuzzy) << "\n";
   }
 }
 
