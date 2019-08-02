@@ -256,7 +256,7 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
         double gMin;
         double gMax;
 
-        if (powMethod == STD_POW) {
+        if (powMethod == PowMethod::STD_POW) {
           gMin = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
                  std::pow(static_cast<double>(rankRestricted[j]) + 1.0, 1.0 - gamma);
           gMax = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
