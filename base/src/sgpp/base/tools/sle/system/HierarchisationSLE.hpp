@@ -320,7 +320,6 @@ class HierarchisationSLE : public CloneableSLE {
     WAVELET,
     WAVELET_BOUNDARY,
     WAVELET_MODIFIED,
-    NAK_BSPLINEBOUNDARY_COMBIGRID
   } basisType;
 
   /**
