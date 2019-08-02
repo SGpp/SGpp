@@ -3,39 +3,38 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTION_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTION_HPP
+#pragma once
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 namespace sgpp {
-namespace optimization {
+namespace base {
 
 class ScaledScalarFunction : public ScalarFunction {
  public:
   explicit ScaledScalarFunction(const ScalarFunction& fOrig) :
     ScaledScalarFunction(
         fOrig,
-        base::DataVector(fOrig.getNumberOfParameters()),
-        base::DataVector(fOrig.getNumberOfParameters()),
+        DataVector(fOrig.getNumberOfParameters()),
+        DataVector(fOrig.getNumberOfParameters()),
         1.0) {}
 
   ScaledScalarFunction(const ScalarFunction& fOrig,
-                       const base::DataVector& lowerBounds,
-                       const base::DataVector& upperBounds,
+                       const DataVector& lowerBounds,
+                       const DataVector& upperBounds,
                        double valueFactor) :
     ScalarFunction(fOrig.getNumberOfParameters()),
     lowerBounds(lowerBounds),
     upperBounds(upperBounds),
     valueFactor(valueFactor),
-    xScaled(base::DataVector(d)) {
+    xScaled(DataVector(d)) {
     fOrig.clone(this->fOrig);
   }
 
   ~ScaledScalarFunction() override {}
 
-  inline double eval(const base::DataVector& x) override {
+  inline double eval(const DataVector& x) override {
     // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
@@ -50,23 +49,21 @@ class ScaledScalarFunction : public ScalarFunction {
         new ScaledScalarFunction(*fOrig, lowerBounds, upperBounds, valueFactor));
   }
 
-  const base::DataVector& getLowerBounds() const { return lowerBounds; }
-  void setLowerBounds(const base::DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
+  const DataVector& getLowerBounds() const { return lowerBounds; }
+  void setLowerBounds(const DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
 
-  const base::DataVector& getUpperBounds() const { return upperBounds; }
-  void setUpperBounds(const base::DataVector& upperBounds) { this->upperBounds = upperBounds; }
+  const DataVector& getUpperBounds() const { return upperBounds; }
+  void setUpperBounds(const DataVector& upperBounds) { this->upperBounds = upperBounds; }
 
   double getValueFactor(double valueFactor) const { return valueFactor; }
   void setValueFactor(double valueFactor) { this->valueFactor = valueFactor; }
 
  protected:
   std::unique_ptr<ScalarFunction> fOrig;
-  base::DataVector lowerBounds;
-  base::DataVector upperBounds;
+  DataVector lowerBounds;
+  DataVector upperBounds;
   double valueFactor;
-  base::DataVector xScaled;
+  DataVector xScaled;
 };
-}  // namespace optimization
+}  // namespace base
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTION_HPP */

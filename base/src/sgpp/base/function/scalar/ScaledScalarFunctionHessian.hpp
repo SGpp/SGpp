@@ -3,45 +3,44 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONHESSIAN_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONHESSIAN_HPP
+#pragma once
 
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <functional>
 
 namespace sgpp {
-namespace optimization {
+namespace base {
 
 class ScaledScalarFunctionHessian : public ScalarFunctionHessian {
  public:
   explicit ScaledScalarFunctionHessian(const ScalarFunctionHessian& fHessianOrig) :
     ScaledScalarFunctionHessian(
         fHessianOrig,
-        base::DataVector(fHessianOrig.getNumberOfParameters()),
-        base::DataVector(fHessianOrig.getNumberOfParameters()),
+        DataVector(fHessianOrig.getNumberOfParameters()),
+        DataVector(fHessianOrig.getNumberOfParameters()),
         1.0) {}
 
   ScaledScalarFunctionHessian(const ScalarFunctionHessian& fHessianOrig,
-                              const base::DataVector& lowerBounds,
-                              const base::DataVector& upperBounds,
+                              const DataVector& lowerBounds,
+                              const DataVector& upperBounds,
                               double valueFactor) :
     ScalarFunctionHessian(fHessianOrig.getNumberOfParameters()),
     lowerBounds(lowerBounds),
     upperBounds(upperBounds),
     valueFactor(valueFactor),
-    xScaled(base::DataVector(d)) {
+    xScaled(DataVector(d)) {
     fHessianOrig.clone(this->fHessianOrig);
   }
 
   ~ScaledScalarFunctionHessian() override {}
 
-  inline double eval(const base::DataVector& x,
-                     base::DataVector& gradient,
-                     base::DataMatrix& hessian) override {
+  inline double eval(const DataVector& x,
+                     DataVector& gradient,
+                     DataMatrix& hessian) override {
     // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
@@ -69,23 +68,21 @@ class ScaledScalarFunctionHessian : public ScalarFunctionHessian {
         new ScaledScalarFunctionHessian(*fHessianOrig, lowerBounds, upperBounds, valueFactor));
   }
 
-  const base::DataVector& getLowerBounds() const { return lowerBounds; }
-  void setLowerBounds(const base::DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
+  const DataVector& getLowerBounds() const { return lowerBounds; }
+  void setLowerBounds(const DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
 
-  const base::DataVector& getUpperBounds() const { return upperBounds; }
-  void setUpperBounds(const base::DataVector& upperBounds) { this->upperBounds = upperBounds; }
+  const DataVector& getUpperBounds() const { return upperBounds; }
+  void setUpperBounds(const DataVector& upperBounds) { this->upperBounds = upperBounds; }
 
   double getValueFactor(double valueFactor) const { return valueFactor; }
   void setValueFactor(double valueFactor) { this->valueFactor = valueFactor; }
 
  protected:
   std::unique_ptr<ScalarFunctionHessian> fHessianOrig;
-  base::DataVector lowerBounds;
-  base::DataVector upperBounds;
+  DataVector lowerBounds;
+  DataVector upperBounds;
   double valueFactor;
-  base::DataVector xScaled;
+  DataVector xScaled;
 };
-}  // namespace optimization
+}  // namespace base
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONHESSIAN_HPP */
