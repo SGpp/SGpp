@@ -73,15 +73,15 @@ class ScalarFunctionHessian {
    *                      \f$\nabla^2 f(\vec{x}_k) \in
    *                      \mathbb{R}^{d \times d}\f$
    */
-  inline void eval(const base::DataMatrix& x, base::DataVector& value,
-                   base::DataMatrix& gradient,
-                   std::vector<base::DataMatrix>& hessian) {
+  inline void eval(const DataMatrix& x, DataVector& value,
+                   DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) {
     const size_t N = x.getNrows();
-    base::DataVector xk(d);
-    base::DataVector yk(d);
+    DataVector xk(d);
+    DataVector yk(d);
     value.resize(N);
     gradient.resize(N, d);
-    hessian.assign(N, base::DataMatrix(d, d));
+    hessian.assign(N, DataMatrix(d, d));
 
     for (size_t k = 0; k < N; k++) {
       x.getRow(k, xk);

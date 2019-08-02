@@ -60,11 +60,11 @@ class ScalarFunctionGradient {
    *                      where the \f$k\f$-th row is
    *                      \f$\nabla f(\vec{x}_k)\f$
    */
-  virtual void eval(const base::DataMatrix& x, base::DataVector& value,
-                    base::DataMatrix& gradient) {
+  virtual void eval(const DataMatrix& x, DataVector& value,
+                    DataMatrix& gradient) {
     const size_t N = x.getNrows();
-    base::DataVector xk(d);
-    base::DataVector yk(d);
+    DataVector xk(d);
+    DataVector yk(d);
     value.resize(N);
     gradient.resize(N, d);
 

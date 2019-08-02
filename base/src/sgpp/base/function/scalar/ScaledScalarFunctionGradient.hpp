@@ -3,43 +3,42 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONGRADIENT_HPP
-#define SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONGRADIENT_HPP
+#pragma once
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 #include <cstddef>
 #include <memory>
 #include <functional>
 
 namespace sgpp {
-namespace optimization {
+namespace base {
 
 class ScaledScalarFunctionGradient : public ScalarFunctionGradient {
  public:
   explicit ScaledScalarFunctionGradient(const ScalarFunctionGradient& fGradientOrig) :
     ScaledScalarFunctionGradient(
         fGradientOrig,
-        base::DataVector(fGradientOrig.getNumberOfParameters()),
-        base::DataVector(fGradientOrig.getNumberOfParameters()),
+        DataVector(fGradientOrig.getNumberOfParameters()),
+        DataVector(fGradientOrig.getNumberOfParameters()),
         1.0) {}
 
   ScaledScalarFunctionGradient(const ScalarFunctionGradient& fGradientOrig,
-                               const base::DataVector& lowerBounds,
-                               const base::DataVector& upperBounds,
+                               const DataVector& lowerBounds,
+                               const DataVector& upperBounds,
                                double valueFactor) :
     ScalarFunctionGradient(fGradientOrig.getNumberOfParameters()),
     lowerBounds(lowerBounds),
     upperBounds(upperBounds),
     valueFactor(valueFactor),
-    xScaled(base::DataVector(d)) {
+    xScaled(DataVector(d)) {
     fGradientOrig.clone(this->fGradientOrig);
   }
 
   ~ScaledScalarFunctionGradient() override {}
 
-  inline double eval(const base::DataVector& x, base::DataVector& gradient) override {
+  inline double eval(const DataVector& x, DataVector& gradient) override {
     // scale x from restricted domain
     for (size_t t = 0; t < d; t++) {
       xScaled[t] = lowerBounds[t] + x[t] * (upperBounds[t] - lowerBounds[t]);
@@ -61,23 +60,21 @@ class ScaledScalarFunctionGradient : public ScalarFunctionGradient {
         new ScaledScalarFunctionGradient(*fGradientOrig, lowerBounds, upperBounds, valueFactor));
   }
 
-  const base::DataVector& getLowerBounds() const { return lowerBounds; }
-  void setLowerBounds(const base::DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
+  const DataVector& getLowerBounds() const { return lowerBounds; }
+  void setLowerBounds(const DataVector& lowerBounds) { this->lowerBounds = lowerBounds; }
 
-  const base::DataVector& getUpperBounds() const { return upperBounds; }
-  void setUpperBounds(const base::DataVector& upperBounds) { this->upperBounds = upperBounds; }
+  const DataVector& getUpperBounds() const { return upperBounds; }
+  void setUpperBounds(const DataVector& upperBounds) { this->upperBounds = upperBounds; }
 
   double getValueFactor(double valueFactor) const { return valueFactor; }
   void setValueFactor(double valueFactor) { this->valueFactor = valueFactor; }
 
  protected:
   std::unique_ptr<ScalarFunctionGradient> fGradientOrig;
-  base::DataVector lowerBounds;
-  base::DataVector upperBounds;
+  DataVector lowerBounds;
+  DataVector upperBounds;
   double valueFactor;
-  base::DataVector xScaled;
+  DataVector xScaled;
 };
-}  // namespace optimization
+}  // namespace base
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_FUNCTION_SCALAR_SCALEDSCALARFUNCTIONGRADIENT_HPP */
