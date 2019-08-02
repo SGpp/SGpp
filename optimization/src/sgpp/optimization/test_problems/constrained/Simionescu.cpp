@@ -39,8 +39,8 @@ double SimionescuObjective::evalUndisplaced(const base::DataVector& x) {
   return 0.1 * x1 * x2;
 }
 
-void SimionescuObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new SimionescuObjective(*this));
+void SimionescuObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new SimionescuObjective(*this));
 }
 
 SimionescuInequalityConstraint::SimionescuInequalityConstraint() : TestVectorFunction(2, 1) {}
@@ -59,8 +59,8 @@ void SimionescuInequalityConstraint::evalUndisplaced(const base::DataVector& x,
   value[0] = x1 * x1 + x2 * x2 - tmp * tmp;
 }
 
-void SimionescuInequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new SimionescuInequalityConstraint(*this));
+void SimionescuInequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new SimionescuInequalityConstraint(*this));
 }
 
 SimionescuEqualityConstraint::SimionescuEqualityConstraint() : TestVectorFunction(2, 0) {}
@@ -70,8 +70,8 @@ SimionescuEqualityConstraint::~SimionescuEqualityConstraint() {}
 void SimionescuEqualityConstraint::evalUndisplaced(const base::DataVector& x,
                                                    base::DataVector& value) {}
 
-void SimionescuEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new SimionescuEqualityConstraint(*this));
+void SimionescuEqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new SimionescuEqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
