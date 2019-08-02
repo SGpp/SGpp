@@ -4,50 +4,23 @@
 // sgpp.sparsegrids.org
 
 // to disable OpenMP multi-threading within Python
+%{
+#ifndef _OPENMP
+static void omp_set_num_threads(int num_threads)
+{
+}
+#endif
+%}
+
 void omp_set_num_threads(int num_threads);
 %init %{
     omp_set_num_threads(1);
 %}
 
-// global variables for the support of SLE solver libaries (set at compile-time)
-const bool ARMADILLO_ENABLED;
-const bool EIGEN_ENABLED;
-const bool GMMPP_ENABLED;
-const bool UMFPACK_ENABLED;
-
-%{
-#ifdef USEARMADILLO
-    const bool ARMADILLO_ENABLED = true;
-#else
-    const bool ARMADILLO_ENABLED = false;
-#endif
-    
-#ifdef USEEIGEN
-    const bool EIGEN_ENABLED = true;
-#else
-    const bool EIGEN_ENABLED = false;
-#endif
-    
-#ifdef USEGMMPP
-    const bool GMMPP_ENABLED = true;
-#else
-    const bool GMMPP_ENABLED = false;
-#endif
-    
-#ifdef USEUMFPACK
-    const bool UMFPACK_ENABLED = true;
-#else
-    const bool UMFPACK_ENABLED = false;
-#endif
-%}
-
-// necessary tools
-%rename(OptRNG)         sgpp::optimization::RandomNumberGenerator;
-%include "optimization/src/sgpp/optimization/tools/RandomNumberGenerator.hpp"
+%include <std_shared_ptr.i>
+%shared_ptr(sgpp::optimization::ASInterpolantScalarFunction)
 
 // shared pointer compatibility for ScalarFunction (needs to know about all derived classes too)
-%include <std_shared_ptr.i>
-%shared_ptr(sgpp::optimization::ScalarFunction)
 %shared_ptr(sgpp::optimization::ExampleFunction)
 %shared_ptr(sgpp::optimization::G3ObjectiveFunction)
 %shared_ptr(sgpp::optimization::G8ObjectiveFunction)
@@ -120,49 +93,12 @@ const bool UMFPACK_ENABLED;
 %shared_ptr(sgpp::optimization::test_problems::SimionescuObjective)
 %shared_ptr(sgpp::optimization::test_problems::SolandObjective)
 
-// renames
-%rename(OptScalarFunction)                      sgpp::optimization::ScalarFunction;
-%rename(OptScalarFunctionGradient)              sgpp::optimization::ScalarFunctionGradient;
-%rename(OptScalarFunctionHessian)               sgpp::optimization::ScalarFunctionHessian;
-%rename(OptInterpolantScalarFunction)           sgpp::optimization::InterpolantScalarFunction;
-%rename(OptInterpolantScalarFunctionGradient)   sgpp::optimization::InterpolantScalarFunctionGradient;
-%rename(OptInterpolantScalarFunctionHessian)    sgpp::optimization::InterpolantScalarFunctionHessian;
-%rename(OptComponentScalarFunction)             sgpp::optimization::ComponentScalarFunction;
-%rename(OptComponentScalarFunctionGradient)     sgpp::optimization::ComponentScalarFunctionGradient;
-%rename(OptComponentScalarFunctionHessian)      sgpp::optimization::ComponentScalarFunctionHessian;
-%rename(OptWrapperScalarFunction)               sgpp::optimization::WrapperScalarFunction;
-%rename(OptWrapperScalarFunctionGradient)       sgpp::optimization::WrapperScalarFunctionGradient;
-%rename(OptWrapperScalarFunctionHessian)        sgpp::optimization::WrapperScalarFunctionHessian;
-
-%rename(OptVectorFunction)                      sgpp::optimization::VectorFunction;
-%rename(OptVectorFunctionGradient)              sgpp::optimization::VectorFunctionGradient;
-%rename(OptVectorFunctionHessian)               sgpp::optimization::VectorFunctionHessian;
-%rename(OptEmptyVectorFunction)                 sgpp::optimization::EmptyVectorFunction;
-%rename(OptEmptyVectorFunctionGradient)         sgpp::optimization::EmptyVectorFunctionGradient;
-%rename(OptInterpolantVectorFunction)           sgpp::optimization::InterpolantVectorFunction;
-%rename(OptInterpolantVectorGradient)           sgpp::optimization::InterpolantVectorGradient;
-%rename(OptInterpolantVectorHessian)            sgpp::optimization::InterpolantVectorHessian;
-%rename(OptWrapperVectorFunction)               sgpp::optimization::WrapperVectorFunction;
-%rename(OptWrapperVectorFunctionGradient)       sgpp::optimization::WrapperVectorFunctionGradient;
-%rename(OptWrapperVectorFunctionHessian)        sgpp::optimization::WrapperVectorFunctionHessian;
 
 %rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
 %rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
 %rename(OptIterativeGridGeneratorLinearSurplus) sgpp::optimization::IterativeGridGeneratorLinearSurplus;
 %rename(OptIterativeGridGeneratorRitterNovak)   sgpp::optimization::IterativeGridGeneratorRitterNovak;
 %rename(OptIterativeGridGeneratorSOO)           sgpp::optimization::IterativeGridGeneratorSOO;
-
-%rename(OptSLE)                     sgpp::optimization::SLE;
-%rename(OptFullSLE)                 sgpp::optimization::FullSLE;
-%rename(OptHierarchisationSLE)      sgpp::optimization::HierarchisationSLE;
-%rename(OptSLESolver)               sgpp::optimization::sle_solver::SLESolver;
-%rename(OptArmadillo)               sgpp::optimization::sle_solver::Armadillo;
-%rename(OptAutoSLESolver)           sgpp::optimization::sle_solver::Auto;
-%rename(OptBiCGStab)                sgpp::optimization::sle_solver::BiCGStab;
-%rename(OptEigen)                   sgpp::optimization::sle_solver::Eigen;
-%rename(OptGaussianElimination)     sgpp::optimization::sle_solver::GaussianElimination;
-%rename(OptGmmpp)                   sgpp::optimization::sle_solver::Gmmpp;
-%rename(OptUMFPACK)                 sgpp::optimization::sle_solver::UMFPACK;
 
 %rename(OptUnconstrainedOptimizer)  sgpp::optimization::optimizer::UnconstrainedOptimizer;
 %rename(OptAdaptiveGradientDescent) sgpp::optimization::optimizer::AdaptiveGradientDescent;
@@ -300,8 +236,8 @@ const bool UMFPACK_ENABLED;
 %rename(OptMathQRDecomposition)             sgpp::optimization::math::QRDecomposition;
 %rename(OptMathHessenbergForm)              sgpp::optimization::math::hessenbergForm;
 %rename(OptMathHouseholderTransformation)   sgpp::optimization::math::householderTransformation;
-%rename(OptMutexType)                       sgpp::optimization::MutexType;
-%rename(OptPrinter)                         sgpp::optimization::Printer;
+//%rename(OptMutexType)                       sgpp::optimization::MutexType;
+//%rename(OptPrinter)                         sgpp::optimization::Printer;
 
 // classes with director interface
 %feature("director") sgpp::optimization::ConstraintFunction;
@@ -310,15 +246,8 @@ const bool UMFPACK_ENABLED;
 %feature("director") sgpp::optimization::ObjectiveFunction;
 %feature("director") sgpp::optimization::ObjectiveGradient;
 %feature("director") sgpp::optimization::ObjectiveHessian;
-%feature("director") sgpp::optimization::ScalarFunction;
-%feature("director") sgpp::optimization::ScalarFunctionGradient;
-%feature("director") sgpp::optimization::ScalarFunctionHessian;
-%feature("director") sgpp::optimization::VectorFunction;
-%feature("director") sgpp::optimization::VectorFunctionGradient;
-%feature("director") sgpp::optimization::VectorFunctionHessian;
 %feature("director") sgpp::optimization::IterativeGridGenerator;
-%feature("director") sgpp::optimization::SLE;
-%feature("director") sgpp::optimization::sle_solver::SLESolver;
+
 
 // dirty hack to override SWIG's generated director method for "clone"
 %typemap(directorin) std::unique_ptr<sgpp::optimization::ConstraintFunction>& {
@@ -357,70 +286,11 @@ const bool UMFPACK_ENABLED;
     return;
 }
 
-%typemap(directorin) std::unique_ptr<sgpp::optimization::ScalarFunction>& {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
-        new SwigDirector_OptScalarFunction(*this));
-    return;
-}
 
-%typemap(directorin) std::unique_ptr<sgpp::optimization::ScalarFunctionGradient>& {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunctionGradient>(
-        new SwigDirector_OptScalarFunctionGradient(*this));
-    return;
-}
-
-%typemap(directorin) std::unique_ptr<sgpp::optimization::ScalarFunctionHessian>& {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunctionHessian>(
-        new SwigDirector_OptScalarFunctionHessian(*this));
-    return;
-}
-
-%typemap(directorin) std::unique_ptr<sgpp::optimization::VectorFunction>& {
-    clone = std::unique_ptr<sgpp::optimization::VectorFunction>(
-        new SwigDirector_OptVectorFunction(*this));
-    return;
-}
-
-%typemap(directorin) std::unique_ptr<sgpp::optimization::VectorFunctionGradient>& {
-    clone = std::unique_ptr<sgpp::optimization::VectorFunctionGradient>(
-        new SwigDirector_OptVectorFunctionGradient(*this));
-    return;
-}
-
-%typemap(directorin) std::unique_ptr<sgpp::optimization::VectorFunctionHessian>& {
-    clone = std::unique_ptr<sgpp::optimization::VectorFunctionHessian>(
-        new SwigDirector_OptVectorFunctionHessian(*this));
-    return;
-}
 
 // includes
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/InterpolantScalarFunctionHessian.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/ResponseSurface.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
-
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/VectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/InterpolantVectorFunctionHessian.hpp"
-
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunction.hpp"
-%include "optimization/src/sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp"
 
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
@@ -429,20 +299,6 @@ const bool UMFPACK_ENABLED;
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
-
-%include "optimization/src/sgpp/optimization/sle/system/SLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/CloneableSLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/FullSLE.hpp"
-%include "optimization/src/sgpp/optimization/sle/system/HierarchisationSLE.hpp"
-
-%include "optimization/src/sgpp/optimization/sle/solver/SLESolver.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Armadillo.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Auto.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/BiCGStab.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Eigen.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/GaussianElimination.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/Gmmpp.hpp"
-%include "optimization/src/sgpp/optimization/sle/solver/UMFPACK.hpp"
 
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp"
@@ -510,8 +366,6 @@ const bool UMFPACK_ENABLED;
 
 %include "optimization/src/sgpp/optimization/tools/FileIO.hpp"
 %include "optimization/src/sgpp/optimization/tools/Math.hpp"
-%include "optimization/src/sgpp/optimization/tools/MutexType.hpp"
-%include "optimization/src/sgpp/optimization/tools/Printer.hpp"
 
 %include "OpFactory.i"
 

@@ -41,12 +41,12 @@ def interpolateAndError(degree, dim, level, numErrPoints, func):
             p[d] = gp.getStandardCoordinate(d)
         f_values[i] = func(p)
     alpha = pysgpp.DataVector(len(f_values))
-    hierSLE = pysgpp.OptHierarchisationSLE(grid)
-    sleSolver = pysgpp.OptAutoSLESolver()
+    hierSLE = pysgpp.HierarchisationSLE(grid)
+    sleSolver = pysgpp.AutoSLESolver()
     if not sleSolver.solve(hierSLE, f_values, alpha):
         print "Solving failed, exiting."
         sys.exit(1)
-    I = pysgpp.OptInterpolantScalarFunction(grid, alpha)
+    I = pysgpp.InterpolantScalarFunction(grid, alpha)
      
     x = pysgpp.DataVector(dim, 0) 
     err = np.zeros(numErrPoints + 1)
@@ -58,7 +58,7 @@ def interpolateAndError(degree, dim, level, numErrPoints, func):
     return np.linalg.norm(err)
 
 
-pysgpp.OptPrinter.getInstance().setVerbosity(-1)
+pysgpp.Printer.getInstance().setVerbosity(-1)
 dim = 1
 numErrPoints = 1000
 degree = 5

@@ -41,7 +41,7 @@ def reverseDataMatrixToNdArray(m):
 
 
 # wraps the objective function for SGpp    
-class objFuncSGpp(pysgpp.OptScalarFunction):
+class objFuncSGpp(pysgpp.ScalarFunction):
 
     def __init__(self, objFunc):
         self.numDim = objFunc.getDim()
@@ -181,7 +181,7 @@ def boreholeX(numSamples):
 def SGpp(objFunc, gridType, degree, numResponse, model, responseType, numErrorPoints=10000, savePath=None, numDataPoints=10000,
                 numRefine=10, initialLevel=2):
     print("\nnumGridPoints = {}".format(numResponse))
-    pysgpp.OptPrinter.getInstance().setVerbosity(-1)
+    pysgpp.Printer.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
 
@@ -339,7 +339,7 @@ def SGppAS(objFunc, gridType, degree, numASM, numResponse, model, asmType='adapt
     print("numDataPoints = {}".format(numDataPoints))
     datatypes = ['data', 'datadriven', 'dataR', 'datadrivenR']
     
-    pysgpp.OptPrinter.getInstance().setVerbosity(-1)
+    pysgpp.Printer.getInstance().setVerbosity(-1)
     numDim = objFunc.getDim()
     f = objFuncSGpp(objFunc)
     

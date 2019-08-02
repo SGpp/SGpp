@@ -32,14 +32,14 @@ void ASMatrixBspline::initialize(sgpp::base::GridType gridType) {
 void ASMatrixBspline::createMatrix(size_t numPoints) { this->createMatrixMonteCarlo(numPoints); }
 
 void ASMatrixBspline::createMatrixMonteCarlo(size_t numMCPoints) {
-  sgpp::optimization::InterpolantScalarFunctionGradient interpolantGradient(*grid, coefficients);
+  sgpp::base::InterpolantScalarFunctionGradient interpolantGradient(*grid, coefficients);
 
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed();
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed();
   C.resize(numDim, numDim);
   C.setZero();
   for (size_t i = 0; i < numMCPoints; ++i) {
     sgpp::base::DataVector randomVector(numDim, 1);
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     sgpp::base::DataVector gradient(numDim);
     interpolantGradient.eval(randomVector, gradient);
     Eigen::VectorXd e = DataVectorToEigen(gradient);
@@ -146,7 +146,7 @@ double ASMatrixBspline::scalarProductDxbiDxbj(
 }
 
 double ASMatrixBspline::evalInterpolant(sgpp::base::DataVector v) {
-  sgpp::optimization::InterpolantScalarFunction interpolant(*grid, coefficients);
+  sgpp::base::InterpolantScalarFunction interpolant(*grid, coefficients);
   return interpolant.eval(v);
 }
 

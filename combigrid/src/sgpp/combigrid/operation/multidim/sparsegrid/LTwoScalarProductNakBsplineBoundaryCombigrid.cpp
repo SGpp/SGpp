@@ -7,7 +7,10 @@
 
 #include <sgpp/combigrid/threading/ThreadPool.hpp>
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
+
 #include <algorithm>
 #include <map>
 #include <vector>

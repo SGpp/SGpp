@@ -3,7 +3,7 @@ import numpy as np
 import pysgpp
 
 
-class ExampleFunction(pysgpp.OptScalarFunction):
+class ExampleFunction(pysgpp.ScalarFunction):
 
     def __init__(self, dim):
         super(ExampleFunction, self).__init__(dim)
@@ -58,8 +58,8 @@ print("variance error {}    (variance = {})".format(abs(reSurfVariance - realVar
 #         p[d] = gp.getStandardCoordinate(d)
 #     f_values[i] = objFunc.eval(p)
 # alpha = pysgpp.DataVector(len(f_values))
-# hierSLE = pysgpp.OptHierarchisationSLE(grid)
-# sleSolver = pysgpp.OptAutoSLESolver()
+# hierSLE = pysgpp.HierarchisationSLE(grid)
+# sleSolver = pysgpp.AutoSLESolver()
 # if not sleSolver.solve(hierSLE, f_values, alpha):
 #     print "Solving failed, exiting."
 #     sys.exit(1)

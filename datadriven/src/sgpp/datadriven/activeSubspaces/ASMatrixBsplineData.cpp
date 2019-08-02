@@ -33,7 +33,7 @@ void ASMatrixBsplineData::calculateCoefficients() {
 
 double ASMatrixBsplineData::l2InterpolationError(Eigen::MatrixXd errorPoints,
                                                  Eigen::VectorXd values) {
-  sgpp::optimization::InterpolantScalarFunction interpolant(*grid, coefficients);
+  sgpp::base::InterpolantScalarFunction interpolant(*grid, coefficients);
   Eigen::VectorXd evaluations(errorPoints.cols());
   for (unsigned int i = 0; i < errorPoints.cols(); i++) {
     evaluations(i) = interpolant.eval(EigenToDataVector(errorPoints.col(i)));

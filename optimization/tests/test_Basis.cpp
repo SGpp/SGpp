@@ -5,14 +5,14 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/tools/sle/solver/Armadillo.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 BOOST_AUTO_TEST_SUITE(TestBasis)
 
@@ -28,7 +28,7 @@ double funcx5(sgpp::base::DataVector v) { return v[0] * v[0] * v[0] * v[0] * v[0
 // with a grid of GridType and degree and return the l2 error caluclated on numMCPoints Monte Carlo
 // points.
 // returns grid and alpha
-void interpolate(size_t degree, size_t level, sgpp::optimization::WrapperScalarFunction func,
+void interpolate(size_t degree, size_t level, sgpp::base::WrapperScalarFunction func,
                  sgpp::base::GridType gridType, std::shared_ptr<sgpp::base::Grid>& grid,
                  sgpp::base::DataVector& alpha) {
   size_t dim = 1;
@@ -47,20 +47,20 @@ void interpolate(size_t degree, size_t level, sgpp::optimization::WrapperScalarF
     f_values[i] = func.eval(gridPointVector);
   }
   alpha.resizeZero(gridStorage.getSize());
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::sle_solver::Armadillo sleSolver;
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed.\n";
     return;
   }
 }
 double l2Error(std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector alpha,
-               sgpp::optimization::WrapperScalarFunction func, size_t numMCPoints) {
-  sgpp::optimization::InterpolantScalarFunction I(*grid, alpha);
+               sgpp::base::WrapperScalarFunction func, size_t numMCPoints) {
+  sgpp::base::InterpolantScalarFunction I(*grid, alpha);
   double l2Err = 0.0;
   sgpp::base::DataVector randomVector(func.getNumberOfParameters());
   for (size_t i = 0; i < numMCPoints; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     double evalInterpolant = I.eval(randomVector);
     double evalObjectiveFunc = func.eval(randomVector);
     l2Err += std::pow(evalInterpolant - evalObjectiveFunc, 2.0);
@@ -93,16 +93,16 @@ double integrate(std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector 
 
 void testInterpolationAndIntegration(sgpp::base::GridType gridType) {
   // test if Basis of degree p in {1,3,5} represents polynomials of degree p exact
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
   size_t numMCPoints = 1000;
   std::shared_ptr<sgpp::base::Grid> grid;
   sgpp::base::DataVector alpha;
-  sgpp::optimization::WrapperScalarFunction Func1(1, func1);
-  sgpp::optimization::WrapperScalarFunction Funcx(1, funcx);
-  sgpp::optimization::WrapperScalarFunction Funcx2(1, funcx2);
-  sgpp::optimization::WrapperScalarFunction Funcx3(1, funcx3);
-  sgpp::optimization::WrapperScalarFunction Funcx4(1, funcx4);
-  sgpp::optimization::WrapperScalarFunction Funcx5(1, funcx5);
+  sgpp::base::WrapperScalarFunction Func1(1, func1);
+  sgpp::base::WrapperScalarFunction Funcx(1, funcx);
+  sgpp::base::WrapperScalarFunction Funcx2(1, funcx2);
+  sgpp::base::WrapperScalarFunction Funcx3(1, funcx3);
+  sgpp::base::WrapperScalarFunction Funcx4(1, funcx4);
+  sgpp::base::WrapperScalarFunction Funcx5(1, funcx5);
 
   interpolate(1, 1, Func1, gridType, grid, alpha);
   double l2error11 = l2Error(grid, alpha, Func1, numMCPoints);

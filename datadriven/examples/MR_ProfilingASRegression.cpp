@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineData.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 class objectiveFunctionVarious {
  public:
@@ -19,9 +19,9 @@ class objectiveFunctionVarious {
     //    return exp(0.01 * v[0] + 0.02 * v[1] + 0.03 * v[2] + 0.04 * v[3] + 0.05 * v[4] +
     //    0.06 * v[5] +  0.07 * v[6] + 0.08 * v[7]);
   }
-  sgpp::optimization::WrapperScalarFunction getObjectiveFunction() {
+  sgpp::base::WrapperScalarFunction getObjectiveFunction() {
     size_t numDim = 2;
-    return sgpp::optimization::WrapperScalarFunction(numDim, f);
+    return sgpp::base::WrapperScalarFunction(numDim, f);
   }
 };
 
@@ -31,13 +31,13 @@ int main() {
   sgpp::base::SGppStopwatch watch;
   mainWatch.start();
   watch.start();
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
   size_t numDim = 2;
   size_t degree = 3;
   size_t n = 1;  // active subspace specifier
   size_t numInterpolPoints = 300;
   objectiveFunctionVarious objectiveFuncInstance;
-  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+  auto objectiveFunc = std::make_shared<sgpp::base::WrapperScalarFunction>(
       objectiveFuncInstance.getObjectiveFunction());
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
 
@@ -46,7 +46,7 @@ int main() {
   sgpp::base::DataVector functionValues(numDataPoints);
   sgpp::base::DataVector point(numDim);
   for (size_t i = 0; i < numDataPoints; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(point, 0.0, 1.0);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(point, 0.0, 1.0);
     evaluationPoints.setColumn(i, point);
     functionValues[i] = objectiveFunc->eval(point);
   }

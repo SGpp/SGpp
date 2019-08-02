@@ -3,20 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 class objectiveFunctionVarious {
  public:
   objectiveFunctionVarious() {}
   ~objectiveFunctionVarious() {}
   static double f(sgpp::base::DataVector v) { return sin(M_PI * v.sum()); }
-  sgpp::optimization::WrapperScalarFunction getObjectiveFunction() {
+  sgpp::base::WrapperScalarFunction getObjectiveFunction() {
     size_t numDim = 6;
-    return sgpp::optimization::WrapperScalarFunction(numDim, f);
+    return sgpp::base::WrapperScalarFunction(numDim, f);
   }
 };
 
@@ -27,13 +27,13 @@ int main() {
   sgpp::base::SGppStopwatch watch;
   mainWatch.start();
   watch.start();
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
   size_t degree = 3;
   size_t n = 1;  // active subspace specifier
   size_t numInterpolPoints = 2000;
   size_t numASM = numInterpolPoints;
   objectiveFunctionVarious objectiveFuncInstance;
-  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(
+  auto objectiveFunc = std::make_shared<sgpp::base::WrapperScalarFunction>(
       objectiveFuncInstance.getObjectiveFunction());
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineModified;
 

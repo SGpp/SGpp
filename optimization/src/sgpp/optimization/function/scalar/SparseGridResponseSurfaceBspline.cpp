@@ -164,9 +164,9 @@ void SparseGridResponseSurfaceBspline::calculateInterpolationCoefficients() {
     transformPoint(p, unitLBounds, unitUBounds, lb, ub);
     functionValues[i] = objectiveFunc->eval(p);
   }
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::sle_solver::Armadillo sleSolver;
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }

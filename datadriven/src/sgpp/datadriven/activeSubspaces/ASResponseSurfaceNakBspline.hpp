@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
@@ -15,6 +16,9 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/tools/sle/solver/Armadillo.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASResponseSurface.hpp>
 #include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 #include <sgpp/datadriven/activeSubspaces/MSplineBasis.hpp>
@@ -24,11 +28,7 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/HaltonSequence.hpp>
 #include <sgpp/datadriven/tools/SobolSequence.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
 
 #include <algorithm>
 #include <limits>
@@ -116,7 +116,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param objectiveFunction	the objective function
    */
   void createRegularReducedSurfaceWithPseudoInverse(
-      size_t level, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
+      size_t level, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc);
 
   /**
    * creates a surplus adaptive grid of the dimension of the reduced space ( = # columns of W1)
@@ -130,7 +130,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * grid is created adaptively.
    */
   void createAdaptiveReducedSurfaceWithPseudoInverse(
-      size_t maxNumGridPoints, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+      size_t maxNumGridPoints, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
       size_t initialLevel = 1, size_t refinementsNum = 3);
 
   /**
@@ -278,7 +278,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    *@pram objectiveFunc		the objective function
    */
   void refineInterpolationSurplusAdaptive(
-      size_t refinementsNum, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
+      size_t refinementsNum, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc);
 
   /**
    * calculates the interpolation coefficients for the reduced response surface on the active
@@ -291,7 +291,7 @@ class ASResponseSurfaceNakBspline : public ASResponseSurface {
    * @param objectiveFunc	the objective function
    */
   void calculateInterpolationCoefficientsWithPseudoInverse(
-      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc);
+      std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc);
 
   /**
    *refines the grid surplus adaptive based on the coefficients and recalculates the regression

@@ -35,7 +35,7 @@ def anugaError(reSurf, objFunc):
 
 
 pysgpp.omp_set_num_threads(1)
-pysgpp.OptPrinter.getInstance().setVerbosity(-1)
+pysgpp.Printer.getInstance().setVerbosity(-1)
 
 dim = 4
 pyFunc = functions.getFunction('anuga', dim)
@@ -63,8 +63,8 @@ for i, p in enumerate(nPoints):
         
         grid = reSurf.getGrid()
         coeffs = reSurf.getCoefficients()
-        ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
-        ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
+        ft = pysgpp.InterpolantScalarFunction(grid, coeffs)
+        ftGradient = pysgpp.InterpolantScalarFunctionGradient(grid, coeffs)
         print("grid size: {}".format(reSurf.getSize()))
         print("l2 error: {}".format(anugaError(reSurf, objFunc)))
         gridSizes[i, j] = reSurf.getSize()

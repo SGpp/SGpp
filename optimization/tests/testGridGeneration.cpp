@@ -6,24 +6,24 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <vector>
 
 #include "GridCreator.hpp"
 
+using sgpp::base::Printer;
+using sgpp::base::RandomNumberGenerator;
+using sgpp::base::ScalarFunction;
 using sgpp::optimization::IterativeGridGenerator;
 using sgpp::optimization::IterativeGridGeneratorLinearSurplus;
 using sgpp::optimization::IterativeGridGeneratorRitterNovak;
 using sgpp::optimization::IterativeGridGeneratorSOO;
-using sgpp::optimization::Printer;
-using sgpp::optimization::RandomNumberGenerator;
-using sgpp::optimization::ScalarFunction;
 using sgpp::optimization::test_problems::Rosenbrock;
 
 BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
@@ -62,6 +62,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     gridGen.setPowMethod(powMethod);
     BOOST_CHECK_EQUAL(gridGen.getPowMethod(), powMethod);
   }
+
   {
     IterativeGridGeneratorLinearSurplus gridGen(f, *grids[0], N);
 
@@ -71,6 +72,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     gridGen.setAdaptivity(adaptivity);
     BOOST_CHECK_EQUAL(gridGen.getAdaptivity(), adaptivity);
   }
+
   {
     IterativeGridGeneratorSOO gridGen(f, *grids[0], N);
 
@@ -85,6 +87,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     gridGen.setAdaptivity(adaptivityFunction);
     BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42), static_cast<size_t>(42 * 42));
   }
+
   for (auto& grid : grids) {
     // repeat for grid generators
     IterativeGridGeneratorRitterNovak gridGenRN(f, *grid, N, 0.85);

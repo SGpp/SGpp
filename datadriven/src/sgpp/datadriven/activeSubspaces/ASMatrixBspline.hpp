@@ -6,6 +6,9 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
@@ -14,16 +17,13 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/tools/sle/solver/Armadillo.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrix.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 #include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <string>
 

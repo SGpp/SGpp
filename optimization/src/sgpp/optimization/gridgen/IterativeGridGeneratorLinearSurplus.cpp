@@ -9,16 +9,15 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
-
-#include <sgpp/optimization/sle/solver/BiCGStab.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 #include <algorithm>
 #include <cstring>
@@ -28,19 +27,20 @@
 namespace sgpp {
 namespace optimization {
 
-IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarFunction& f,
+IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(base::ScalarFunction& f,
                                                                          base::Grid& grid, size_t N,
                                                                          double adaptivity,
                                                                          base::level_t initialLevel)
     : IterativeGridGenerator(f, grid, N), gamma(adaptivity), initialLevel(initialLevel) {
   if ((grid.getType() == base::GridType::Bspline) || (grid.getType() == base::GridType::Wavelet) ||
       (grid.getType() == base::GridType::Linear) ||
-      (grid.getType() == base::GridType::FundamentalSpline) ||
-      (grid.getType() == base::GridType::NakBspline)) {
-    linearGrid = std::unique_ptr<base::Grid>(new base::LinearGrid(f.getNumberOfParameters()));
-  } else if ((grid.getType() == base::GridType::BsplineBoundary) ||
-             (grid.getType() == base::GridType::WaveletBoundary) ||
-             (grid.getType() == base::GridType::LinearBoundary)) {
+      (grid.getType() == base::GridType::FundamentalSpline)||
+      (grid.getType() == base::GridType::NakBspline)){
+      linearGrid = std::unique_ptr<base::Grid>(new base::LinearGrid(f.getNumberOfParameters()));
+    }
+  else if ((grid.getType() == base::GridType::BsplineBoundary) ||
+           (grid.getType() == base::GridType::WaveletBoundary) ||
+           (grid.getType() == base::GridType::LinearBoundary)) {
     linearGrid =
         std::unique_ptr<base::Grid>(new base::LinearBoundaryGrid(f.getNumberOfParameters()));
   } else if ((grid.getType() == base::GridType::BsplineClenshawCurtis) ||
@@ -59,6 +59,7 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarF
     linearGrid =
         std::unique_ptr<base::Grid>(new base::NakBsplineExtendedGrid(f.getNumberOfParameters(), 1));
   } else {
+    std::cout << "GRIDGENERATOR\n";
     throw std::invalid_argument("Grid type not supported.");
   }
 }
@@ -78,7 +79,7 @@ void IterativeGridGeneratorLinearSurplus::setInitialLevel(base::level_t initialL
 }
 
 bool IterativeGridGeneratorLinearSurplus::generate() {
-  Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
+  base::Printer::getInstance().printStatusBegin("Adaptive grid generation (linear surplus)...");
 
   std::unique_ptr<base::AbstractRefinement> abstractRefinement;
 
@@ -105,7 +106,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   // (no linear solver due to forward substitution).
   // The right-hand side of the system does only matter for the
   // first purpose.
-  HierarchisationSLE hierSLE(*linearGrid, gridStorage);
+  base::HierarchisationSLE hierSLE(*linearGrid, gridStorage);
 
   // generate initial grid
   grid.getGenerator().regular(initialLevel);
@@ -131,12 +132,12 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   // initial hierarchization
   if (currentN > 1) {
     base::DataVector fXCutoff(fX.getPointer(), currentN);
-    sle_solver::BiCGStab sleSolver;
+    base::sle_solver::BiCGStab sleSolver;
 
     // solve system
-    Printer::getInstance().disableStatusPrinting();
+    base::Printer::getInstance().disableStatusPrinting();
     sleSolver.solve(hierSLE, fXCutoff, coeffs);
-    Printer::getInstance().enableStatusPrinting();
+    base::Printer::getInstance().enableStatusPrinting();
   }
 
   // iteration counter
@@ -160,8 +161,8 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
       char str[10];
       snprintf(str, sizeof(str), "%.1f%%",
                static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) +
-                                               " (N = " + std::to_string(currentN) + ")");
+      base::Printer::getInstance().printStatusUpdate(std::string(str) +
+                                                     " (N = " + std::to_string(currentN) + ")");
     }
 
     // calculate number of points to be refined
@@ -178,7 +179,7 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
 
     if (newN == currentN) {
       // size unchanged ==> nothing refined (should not happen)
-      Printer::getInstance().printStatusEnd(
+      base::Printer::getInstance().printStatusEnd(
           "error: size unchanged in IterativeGridGeneratorLinearSurplus");
       result = false;
       break;
@@ -222,8 +223,8 @@ bool IterativeGridGeneratorLinearSurplus::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
-    Printer::getInstance().printStatusEnd();
+    base::Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ")");
+    base::Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;

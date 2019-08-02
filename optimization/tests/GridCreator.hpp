@@ -6,19 +6,18 @@
 #ifndef GRID_CREATOR_HPP
 #define GRID_CREATOR_HPP
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
-
 #include <vector>
 
 void createSupportedGrids(size_t d, size_t p,
                           std::vector<std::unique_ptr<sgpp::base::Grid>>& grids);
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::ScalarFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::ScalarFunction& f,
                       sgpp::base::DataVector& functionValues);
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::optimization::VectorFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::VectorFunction& f,
                       sgpp::base::DataMatrix& functionValues);
 
 #endif /* GRID_CREATOR_HPP */

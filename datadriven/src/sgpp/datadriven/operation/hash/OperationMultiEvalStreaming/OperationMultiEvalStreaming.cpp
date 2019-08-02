@@ -68,8 +68,12 @@ void OperationMultiEvalStreaming::getPartitionSegment(size_t start, size_t end, 
 void OperationMultiEvalStreaming::getOpenMPPartitionSegment(size_t start, size_t end,
                                                             size_t* segmentStart,
                                                             size_t* segmentEnd, size_t blocksize) {
-  size_t threadCount = omp_get_num_threads();
-  size_t myThreadNum = omp_get_thread_num();
+  size_t threadCount = 1;
+  size_t myThreadNum = 0;
+#ifdef _OPENMP
+  threadCount = omp_get_num_threads();
+  myThreadNum = omp_get_thread_num();
+#endif
   getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
 }
 

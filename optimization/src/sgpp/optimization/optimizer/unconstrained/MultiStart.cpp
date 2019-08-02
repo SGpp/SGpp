@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -19,9 +19,8 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-MultiStart::MultiStart(const ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
-      defaultOptimizer(NelderMead(f)) {
+MultiStart::MultiStart(const base::ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
+    : UnconstrainedOptimizer(f, maxFcnEvalCount), defaultOptimizer(NelderMead(f)) {
   defaultOptimizer.clone(optimizer);
   initialize(populationSize);
 }
@@ -35,8 +34,7 @@ MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEva
 }
 
 MultiStart::MultiStart(const MultiStart& other)
-    : UnconstrainedOptimizer(other),
-      defaultOptimizer(NelderMead(*f)) {
+    : UnconstrainedOptimizer(other), defaultOptimizer(NelderMead(*f)) {
   other.optimizer->clone(optimizer);
   initialize(populationSize);
 }
@@ -50,7 +48,7 @@ void MultiStart::initialize(size_t populationSize) {
 }
 
 void MultiStart::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (multi-start)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (multi-start)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -72,14 +70,14 @@ void MultiStart::optimize() {
     remainingN -= roundN[k];
 
     for (size_t t = 0; t < d; t++) {
-      x0[k][t] = RandomNumberGenerator::getInstance().getUniformRN();
+      x0[k][t] = base::RandomNumberGenerator::getInstance().getUniformRN();
     }
   }
 
   /*Printer::getInstance().disableStatusPrinting();
 
-  #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt, printer) \
-  default(none)
+  #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt,base::Printer) \
+
   {
     Optimizer* curOptimizerPtr = &optimizer;
   #ifdef _OPENMP
@@ -121,17 +119,17 @@ void MultiStart::optimize() {
         snprintf(str, 10, "%.1f%%",
                  static_cast<double>(k) /
                  static_cast<double>(populationSize) * 100.0);
-        Printer::getInstance().getMutex().lock();
-        Printer::getInstance().enableStatusPrinting();
-        Printer::getInstance().printStatusUpdate(std::string(str) +
+       base::Printer::getInstance().getMutex().lock();
+       base::Printer::getInstance().enableStatusPrinting();
+       base::Printer::getInstance().printStatusUpdate(std::string(str) +
                                   ", f(x) = " + std::to_string(fOpt));
-        Printer::getInstance().disableStatusPrinting();
-        Printer::getInstance().getMutex().unlock();
+       base::Printer::getInstance().disableStatusPrinting();
+       base::Printer::getInstance().getMutex().unlock();
       }
     }
   }
 
-  Printer::getInstance().enableStatusPrinting();*/
+ base::Printer::getInstance().enableStatusPrinting();*/
 
   base::DataVector xCurrentOpt(d);
   double fCurrentOpt = INFINITY;
@@ -139,13 +137,13 @@ void MultiStart::optimize() {
   // temporarily save x0 and N (will be overwritten by the loop)
   const base::DataVector tmpX0(optimizer->getStartingPoint());
   const size_t tmpN = optimizer->getN();
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
   if (statusPrintingEnabled) {
-    Printer::getInstance().disableStatusPrinting();
+    base::Printer::getInstance().disableStatusPrinting();
   }
 
-#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt) default(none)
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt)
   {
     UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
@@ -187,12 +185,12 @@ void MultiStart::optimize() {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
                  static_cast<double>(k) / static_cast<double>(populationSize) * 100.0);
-        Printer::getInstance().getMutex().lock();
-        Printer::getInstance().enableStatusPrinting();
-        Printer::getInstance().printStatusUpdate(std::string(str) + ", f(x) = " +
-                                                 std::to_string(fCurrentOpt));
-        Printer::getInstance().disableStatusPrinting();
-        Printer::getInstance().getMutex().unlock();
+        base::Printer::getInstance().getMutex().lock();
+        base::Printer::getInstance().enableStatusPrinting();
+        base::Printer::getInstance().printStatusUpdate(std::string(str) +
+                                                       ", f(x) = " + std::to_string(fCurrentOpt));
+        base::Printer::getInstance().disableStatusPrinting();
+        base::Printer::getInstance().getMutex().unlock();
       }
 
 #pragma omp critical
@@ -213,11 +211,11 @@ void MultiStart::optimize() {
   fOpt = fCurrentOpt;
 
   if (statusPrintingEnabled) {
-    Printer::getInstance().enableStatusPrinting();
+    base::Printer::getInstance().enableStatusPrinting();
   }
 
-  Printer::getInstance().printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusUpdate("100.0%, f(x) = " + std::to_string(fOpt));
+  base::Printer::getInstance().printStatusEnd();
 }
 
 size_t MultiStart::getPopulationSize() const { return populationSize; }

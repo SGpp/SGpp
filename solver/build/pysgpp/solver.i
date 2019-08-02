@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+%rename(SolverModuleSLESolver)          sgpp::solver::SLESolver;
+%rename(SolverModuleBiCGStab)           sgpp::solver::BiCGStab;
+
 // The Good, i.e. without any modifications
 %include "solver/src/sgpp/solver/SGSolver.hpp"
 %include "solver/src/sgpp/solver/SLESolver.hpp"

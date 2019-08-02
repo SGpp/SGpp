@@ -5,7 +5,9 @@
 
 #pragma once
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include "sgpp/base/exception/operation_exception.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"

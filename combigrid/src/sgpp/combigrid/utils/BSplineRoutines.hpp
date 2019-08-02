@@ -18,14 +18,15 @@
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <vector>
+
+#include "../../../../../base/src/sgpp/base/function/scalar/InterpolantScalarFunction.hpp"
+#include "../../../../../base/src/sgpp/base/tools/Printer.hpp"
+#include "../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
+#include "../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include "../../../../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points

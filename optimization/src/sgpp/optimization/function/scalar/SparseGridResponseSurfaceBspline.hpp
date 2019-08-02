@@ -1,10 +1,12 @@
-// Copyright (C) 2008-today The SG++ project
+// Copyright(C) 2008 - today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 #pragma once
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
@@ -15,15 +17,13 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Armadillo.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
-#include <sgpp/optimization/sle/solver/Armadillo.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <algorithm>
 #include <iomanip>
@@ -45,7 +45,7 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param degree				degree of the interpolants basis
    */
   SparseGridResponseSurfaceBspline(
-      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, sgpp::base::DataVector lb,
+      std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc, sgpp::base::DataVector lb,
       sgpp::base::DataVector ub, sgpp::base::GridType gridType, size_t degree = 3)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
@@ -226,7 +226,7 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
 
  private:
   // objective function
-  std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
+  std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc;
   // type of grid/basis
   sgpp::base::GridType gridType;
   // degree of the basis

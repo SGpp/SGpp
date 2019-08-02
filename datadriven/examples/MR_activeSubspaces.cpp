@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrixGradientMC.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <cmath>
 #include <sstream>
@@ -112,13 +112,13 @@ int main(int argc, char* argv[]) {
   size_t maxNumPoints = 2000;
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
   initialize(argc, argv, adaptive, print, degree, maxLevel, maxNumPoints, gridType);
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
   sgpp::base::SGppStopwatch watch;
   size_t numDim = 2;
 
-  auto objectiveFunc = std::make_shared<sgpp::optimization::WrapperScalarFunction>(numDim, f);
+  auto objectiveFunc = std::make_shared<sgpp::base::WrapperScalarFunction>(numDim, f);
   auto objectiveFuncGradient =
-      std::make_shared<sgpp::optimization::WrapperScalarFunctionGradient>(numDim, df);
+      std::make_shared<sgpp::base::WrapperScalarFunctionGradient>(numDim, df);
   sgpp::datadriven::ASMatrixBsplineAnalytic ASM(objectiveFunc, gridType, degree);
   size_t maxNumGridPointsMatrix = maxNumPoints;
   size_t initialLevel = 1;

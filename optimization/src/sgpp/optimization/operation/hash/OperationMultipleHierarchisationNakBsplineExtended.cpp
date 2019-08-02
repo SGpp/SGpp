@@ -8,8 +8,8 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineExtendedNaive.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -23,8 +23,8 @@ OperationMultipleHierarchisationNakBsplineExtended::
 
 bool OperationMultipleHierarchisationNakBsplineExtended::doHierarchisation(
     base::DataVector& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
@@ -48,8 +48,8 @@ void OperationMultipleHierarchisationNakBsplineExtended::doDehierarchisation(
 
 bool OperationMultipleHierarchisationNakBsplineExtended::doHierarchisation(
     base::DataMatrix& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }

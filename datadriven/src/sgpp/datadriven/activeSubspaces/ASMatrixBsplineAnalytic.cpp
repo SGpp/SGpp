@@ -37,8 +37,8 @@ void ASMatrixBsplineAnalytic::calculateCoefficients() {
 
   // solve linear system
   sgpp::base::DataVector alpha(functionValues.getSize());
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::sle_solver::Armadillo sleSolver;
   if (!sleSolver.solve(hierSLE, functionValues, alpha)) {
     std::cout << "ASMatrixNakBspline: Solving failed.\n";
     return;
@@ -47,11 +47,11 @@ void ASMatrixBsplineAnalytic::calculateCoefficients() {
 }
 
 double ASMatrixBsplineAnalytic::l2InterpolationError(size_t numMCPoints) {
-  sgpp::optimization::InterpolantScalarFunction interpolant(*grid, coefficients);
+  sgpp::base::InterpolantScalarFunction interpolant(*grid, coefficients);
   double l2Err = 0.0;
   sgpp::base::DataVector randomVector(objectiveFunc->getNumberOfParameters());
   for (size_t i = 0; i < numMCPoints; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     double evalInterpolant = interpolant.eval(randomVector);
     double evalObjectiveFunc = objectiveFunc->eval(randomVector);
     l2Err += std::pow(evalInterpolant - evalObjectiveFunc, 2.0);
@@ -61,16 +61,16 @@ double ASMatrixBsplineAnalytic::l2InterpolationError(size_t numMCPoints) {
 }
 
 sgpp::base::DataVector ASMatrixBsplineAnalytic::l2InterpolationGradientError(
-    std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
+    std::shared_ptr<sgpp::base::WrapperScalarFunctionGradient> objectiveFuncGradient,
     size_t numMCPoints) {
-  sgpp::optimization::InterpolantScalarFunctionGradient interpolant(*grid, coefficients);
+  sgpp::base::InterpolantScalarFunctionGradient interpolant(*grid, coefficients);
   size_t numDim = objectiveFuncGradient->getNumberOfParameters();
   sgpp::base::DataVector errors(numDim, 0);
   sgpp::base::DataVector randomVector(numDim);
   sgpp::base::DataVector interpolantEval(numDim);
   sgpp::base::DataVector gradientEval(numDim);
   for (size_t i = 0; i < numMCPoints; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(randomVector, 0.0, 1.0);
     interpolant.eval(randomVector, interpolantEval);
     objectiveFuncGradient->eval(randomVector, gradientEval);
     for (size_t d = 0; d < numDim; d++) {

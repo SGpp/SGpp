@@ -13,9 +13,9 @@
 //#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 //#include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
 //#include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 
 #include <functional>
 

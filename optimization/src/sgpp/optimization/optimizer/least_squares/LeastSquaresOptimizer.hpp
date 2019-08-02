@@ -3,17 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
 
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
 
 namespace sgpp {
 namespace optimization {
@@ -36,13 +35,8 @@ class LeastSquaresOptimizer {
    * @param N     maximal number of iterations or function evaluations
    *              (depending on the implementation)
    */
-  explicit LeastSquaresOptimizer(const VectorFunction& phi, size_t N = DEFAULT_N)
-      : N(N),
-        x0(phi.getNumberOfParameters(), 0.5),
-        xOpt(0),
-        fOpt(NAN),
-        xHist(0, 0),
-        fHist(0) {
+  explicit LeastSquaresOptimizer(const base::VectorFunction& phi, size_t N = DEFAULT_N)
+      : N(N), x0(phi.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
     phi.clone(this->phi);
   }
 
@@ -75,7 +69,7 @@ class LeastSquaresOptimizer {
   /**
    * @return phi
    */
-  VectorFunction& getPhiFunction() const { return *phi; }
+  base::VectorFunction& getPhiFunction() const { return *phi; }
 
   /**
    * @return  maximal number of iterations or function evaluations
@@ -134,7 +128,7 @@ class LeastSquaresOptimizer {
 
  protected:
   /// phi function
-  std::unique_ptr<VectorFunction> phi;
+  std::unique_ptr<base::VectorFunction> phi;
   /// maximal number of iterations or function evaluations
   size_t N;
   /// starting point
@@ -151,5 +145,3 @@ class LeastSquaresOptimizer {
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_LEAST_SQUARES_LEASTSQUARESOPTIMIZER_HPP */

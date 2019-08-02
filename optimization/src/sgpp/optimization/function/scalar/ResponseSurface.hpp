@@ -9,11 +9,11 @@
 // #endif /* USE_EIGEN */
 
 #include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunction.hpp>
 #include <sgpp/optimization/function/scalar/ASInterpolantScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <iostream>
 #include <string>
@@ -64,7 +64,7 @@ class ResponseSurface {
    *
    * @return 					l2 error
    */
-  double l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+  double l2Error(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                  size_t numMCPoints = 1000);
 
   /**
@@ -76,8 +76,8 @@ class ResponseSurface {
    *
    * @return 					vector [NRMSE, l2 error, min, max]
    */
-  sgpp::base::DataVector nrmsError(
-      std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, size_t numMCPoints = 1000);
+  sgpp::base::DataVector nrmsError(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
+                                   size_t numMCPoints = 1000);
 
   /**
    * Calculates the normalized root mean square error between interpolant and objective function
@@ -103,7 +103,7 @@ class ResponseSurface {
    * @param	path					path specifying where to save the generated
    * data
    */
-  void precalculateErrorTestData(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+  void precalculateErrorTestData(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                                  size_t numMCPoints, const std::string& fileName);
 
  protected:
@@ -112,8 +112,8 @@ class ResponseSurface {
   sgpp::base::DataVector lb;
   // upper bounds of the objective function's domain
   sgpp::base::DataVector ub;
-  std::shared_ptr<sgpp::optimization::ScalarFunction> interpolant;
-  std::shared_ptr<sgpp::optimization::ScalarFunctionGradient> interpolantGradient;
+  std::shared_ptr<sgpp::base::ScalarFunction> interpolant;
+  std::shared_ptr<sgpp::base::ScalarFunctionGradient> interpolantGradient;
 
   /**
    * transforms a point in hyper-rectangle [lBounds,rBounds] to the hyper-rectangle

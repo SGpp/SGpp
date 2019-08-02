@@ -6,10 +6,10 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrix.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -21,16 +21,16 @@ namespace datadriven {
  */
 class ASMatrixGradientMC : public ASMatrix {
  public:
-  explicit ASMatrixGradientMC(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc)
+  explicit ASMatrixGradientMC(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc)
       : ASMatrix(), objectiveFunc(objectiveFunc), numDim(objectiveFunc->getNumberOfParameters()) {}
   void createMatrix(size_t numPoints) { createMatrixMonteCarloFiniteDifference(numPoints); }
-  void createMatrixMonteCarlo(
-      size_t numPoints, sgpp::optimization::WrapperScalarFunctionGradient objectiveFuncGradient);
+  void createMatrixMonteCarlo(size_t numPoints,
+                              sgpp::base::WrapperScalarFunctionGradient objectiveFuncGradient);
   void createMatrixMonteCarloFiniteDifference(size_t numPoints, double h = 1e-08);
 
  private:
   // objective function
-  std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
+  std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc;
   // dimensionality
   size_t numDim;
 };

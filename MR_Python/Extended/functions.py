@@ -132,7 +132,7 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     
 ####################### auxiliary functions #######################
 # wraps the objective function for SGpp    
-class objFuncSGpp(pysgpp.OptScalarFunction):
+class objFuncSGpp(pysgpp.ScalarFunction):
 
     def __init__(self, objFunc):
         self.dim = objFunc.getDim()
@@ -167,7 +167,7 @@ class objFuncSGpp(pysgpp.OptScalarFunction):
 
 
 # wraps the negative of the objective function for SGpp. Needed for optimization (Max -> Min)    
-class objFuncSGppSign(pysgpp.OptScalarFunction):
+class objFuncSGppSign(pysgpp.ScalarFunction):
 
     def __init__(self, objFunc):
         self.dim = objFunc.getDim()

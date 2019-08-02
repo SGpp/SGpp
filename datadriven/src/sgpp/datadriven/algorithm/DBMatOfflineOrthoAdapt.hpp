@@ -5,6 +5,14 @@
 
 #pragma once
 
+#ifdef USE_GSL
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 
@@ -93,6 +101,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                     const ParallelConfiguration& parallelConfig) override;
+
+  /*
+   * explicitly computes the inverse
+   * note: the computed inverse is not the inverse of the decomposed matrix,
+   * but rather the inverse of the previous undecomposed matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse() override;
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 

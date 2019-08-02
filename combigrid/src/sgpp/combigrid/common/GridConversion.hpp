@@ -10,10 +10,7 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include "../../../../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -95,22 +92,10 @@ sgpp::base::DataMatrix convertLevelStructureToGridPoints(
  * @param levelStructure the level structure of the combigrid
  * @return the coefficients for the hierarchical sparse grid interpolant
  */
-sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedCombigird(
+sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformBoundaryCombigird(
     std::shared_ptr<sgpp::base::Grid>& grid, sgpp::base::GridStorage& gridStorage,
     std::shared_ptr<sgpp::combigrid::CombigridMultiOperation>& combigridInterpolationOperation,
     std::shared_ptr<sgpp::combigrid::TreeStorage<uint8_t>> const& levelStructure);
-
-/**
- * after a combigrid has been converted to a hierarchical sparse grid via
- * convertCombigridToHierarchicalSparseGrid and the hierarchical grid has been coarsened, the
- * coefficients can be recalculated for the coarse grid by this operation
- * @param oldGrid the grid before it was coarsened
- * @param the coarsened grid
- * @param oldCoefficients correpsonding to oldGrid
- */
-sgpp::base::DataVector recalculateInterpolationCoefficientsAfterCoarsening(
-    std::shared_ptr<sgpp::base::Grid>& oldGrid, std::shared_ptr<sgpp::base::Grid>& newGrid,
-    sgpp::base::DataVector oldCoefficients);
 
 } /* namespace combigrid */
 } /* namespace sgpp */

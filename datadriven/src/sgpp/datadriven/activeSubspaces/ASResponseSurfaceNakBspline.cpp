@@ -121,7 +121,7 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceFromData(
     double lambda) {
   // number of points to be refined in each step
   grid->getGenerator().regular(initialLevel);
-  std::shared_ptr<sgpp::optimization::ScalarFunction> transformedObjectiveFunc;
+  std::shared_ptr<sgpp::base::ScalarFunction> transformedObjectiveFunc;
   // Special case one dimensional active subspace allows for reasonable response grid structure.
   // (Transform the one dimensional grid to an interval of according size). For active subspace
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
@@ -142,7 +142,7 @@ void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceFromData(
 }
 
 void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
-    size_t level, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
+    size_t level, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc) {
   grid->getGenerator().regular(level);
   // Special case one dimensional active subspace allows for reasonable response grid structure.
   // (Transform the one dimensional grid to an interval of according size). For active subspace
@@ -173,11 +173,11 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceWithPseudoInverse(
 }
 
 void ASResponseSurfaceNakBspline::createAdaptiveReducedSurfaceWithPseudoInverse(
-    size_t maxNumGridPoints, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+    size_t maxNumGridPoints, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
     size_t initialLevel, size_t refinementsNum) {
   // number of points to be refined in each step
   grid->getGenerator().regular(initialLevel);
-  std::shared_ptr<sgpp::optimization::ScalarFunction> transformedObjectiveFunc;
+  std::shared_ptr<sgpp::base::ScalarFunction> transformedObjectiveFunc;
   // Special case one dimensional active subspace allows for reasonable response grid structure.
   // (Transform the one dimensional grid to an interval of according size). For active subspace
   // dimensions >1 we do not yet know how to transform the grid and recommend using regression on
@@ -289,8 +289,8 @@ double ASResponseSurfaceNakBspline::getApproximateSplineBasedIntegral(size_t app
       caclculateVolumeSimplexWise(interpolPoints, simplexVolume, projectedCorners);
   //  std::cout << "caclculateVolumeSimplexWise " << watch.stop() << "s\n";
 
-  sgpp::optimization::HierarchisationSLE hierSLE(*volGrid);
-  sgpp::optimization::sle_solver::Armadillo sleSolver;
+  sgpp::base::HierarchisationSLE hierSLE(*volGrid);
+  sgpp::base::sle_solver::Armadillo sleSolver;
   sgpp::base::DataVector volCoefficients;
   if (!sleSolver.solve(hierSLE, volumes, volCoefficients)) {
     std::cerr << "ASMatrixNakBspline: Solving failed.\n";
@@ -376,17 +376,17 @@ sgpp::base::DataVector ASResponseSurfaceNakBspline::caclculateVolumeSimplexWise(
 }
 
 void ASResponseSurfaceNakBspline::refineInterpolationSurplusAdaptive(
-    size_t refinementsNum, std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
+    size_t refinementsNum, std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc) {
   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
   grid->getGenerator().refine(functor);
   calculateInterpolationCoefficientsWithPseudoInverse(objectiveFunc);
 }
 
 void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoInverse(
-    std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc) {
+    std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc) {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   sgpp::base::DataVector functionValues(grid->getSize());
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
 
   Eigen::MatrixXd P(grid->getDimension(), grid->getSize());
 
@@ -417,7 +417,7 @@ void ASResponseSurfaceNakBspline::calculateInterpolationCoefficientsWithPseudoIn
     functionValues[i] = objectiveFunc->eval(EigenToDataVector(Pinv.col(i)));
   }
 
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::sle_solver::Auto sleSolver;
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed, exiting.\n";
     return;

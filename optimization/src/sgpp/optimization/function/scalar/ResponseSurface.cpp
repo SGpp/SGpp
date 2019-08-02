@@ -14,15 +14,14 @@ namespace optimization {
 
 double ResponseSurface::eval(sgpp::base::DataVector v) { return interpolant->eval(v); }
 
-double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+double ResponseSurface::l2Error(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                                 size_t numMCPoints) {
   double l2Err = 0.0;
   size_t numDim = objectiveFunc->getNumberOfParameters();
   sgpp::base::DataVector randomVector(numDim);
   for (size_t i = 0; i < numMCPoints; i++) {
     for (size_t d = 0; d < numDim; d++) {
-      randomVector[d] =
-          sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
+      randomVector[d] = sgpp::base::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
     }
     double evalInterpolant = this->eval(randomVector);
     double evalObjectiveFunc = objectiveFunc->eval(randomVector);
@@ -35,7 +34,7 @@ double ResponseSurface::l2Error(std::shared_ptr<sgpp::optimization::ScalarFuncti
 }
 
 sgpp::base::DataVector ResponseSurface::nrmsError(
-    std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, size_t numMCPoints) {
+    std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc, size_t numMCPoints) {
   double max = -1e+15;
   double min = 1e+15;
   double l2Err = 0.0;
@@ -43,8 +42,7 @@ sgpp::base::DataVector ResponseSurface::nrmsError(
   sgpp::base::DataVector randomVector(numDim);
   for (size_t i = 0; i < numMCPoints; i++) {
     for (size_t d = 0; d < numDim; d++) {
-      randomVector[d] =
-          sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
+      randomVector[d] = sgpp::base::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
     }
     double evalInterpolant = this->eval(randomVector);
     double evalObjectiveFunc = objectiveFunc->eval(randomVector);
@@ -104,15 +102,14 @@ sgpp::base::DataVector ResponseSurface::nrmsErrorFromTestData(const std::string&
 }
 
 void ResponseSurface::precalculateErrorTestData(
-    std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc, size_t numMCPoints,
+    std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc, size_t numMCPoints,
     const std::string& fileName) {
   size_t numDim = objectiveFunc->getNumberOfParameters();
   sgpp::base::DataMatrix data(numMCPoints, numDim + 1);
   sgpp::base::DataVector randomVector(numDim);
   for (size_t i = 0; i < numMCPoints; i++) {
     for (size_t d = 0; d < numDim; d++) {
-      randomVector[d] =
-          sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
+      randomVector[d] = sgpp::base::RandomNumberGenerator::getInstance().getUniformRN(lb[d], ub[d]);
     }
     double evalObjectiveFunc = objectiveFunc->eval(randomVector);
     for (size_t d = 0; d < numDim; d++) {

@@ -23,7 +23,7 @@ from functions import objFuncSGpp as objFuncSGpp
 def plot2DGrid(reSurf):
     grid = reSurf.getGrid()
     gridStorage = grid.getStorage()
-    for i in xrange(gridStorage.getSize()):
+    for i in range(gridStorage.getSize()):
         gp = gridStorage.getPoint(i)
         x = gp.getStandardCoordinate(0)
         y = gp.getStandardCoordinate(1)
@@ -205,12 +205,12 @@ if __name__ == '__main__':
     parser.add_argument('--model', default='boreholeUQ', type=str, help='define which test case should be executed')
     parser.add_argument('--dim', default=8, type=int, help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int, help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nak', type=str, help='gridType(s) to use')
+    parser.add_argument('--gridType', default='nakbsplineextended', type=str, help='gridType(s) to use')
     parser.add_argument('--degree', default=5, type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus', type=str, help='surplus or regular or mc for Monte Carlo')
     parser.add_argument('--maxLevel', default=6, type=int, help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=10, type=int, help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=10000, type=int, help='maximum number of points used')
+    parser.add_argument('--maxPoints', default=100, type=int, help='maximum number of points used')
     parser.add_argument('--numSteps', default=8, type=int, help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int, help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=100, type=int, help='max number of grid points added in refinement steps for sparse grids')
@@ -219,7 +219,7 @@ if __name__ == '__main__':
     parser.add_argument('--var', default=1, type=int, help='calculate variance')
     parser.add_argument('--quadOrder', default=100, type=int, help='quadrature order for mean and variance calculations')
     parser.add_argument('--numErrPoints', default=100000, type=int, help='number of MC samples for l2 and nrmse')
-    parser.add_argument('--saveDataFlag', default=1, type=int, help='saveData')
+    parser.add_argument('--saveDataFlag', default=0, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int, help='number of threads for omp parallelization')
     
     # configure according to input
@@ -256,7 +256,7 @@ if __name__ == '__main__':
      
     # numErrPoints = max(10000, 2 * args.maxPoints)
 
-    pysgpp.OptPrinter.getInstance().setVerbosity(-1)
+    pysgpp.Printer.getInstance().setVerbosity(-1)
 
     for degree in degrees:
         data = interpolateAndError(degree, args.maxLevel, args.minPoints, args.maxPoints, args.numSteps,

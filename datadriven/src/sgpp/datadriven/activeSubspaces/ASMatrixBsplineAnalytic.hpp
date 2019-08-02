@@ -6,8 +6,8 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/datadriven/activeSubspaces/ASMatrixBspline.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <string>
 
 namespace sgpp {
@@ -28,7 +28,7 @@ class ASMatrixBsplineAnalytic : public ASMatrixBspline {
    * @param gridType          type of the grid for the interpolant
    * @param degree            degree for the B-spline basis functions
    */
-  ASMatrixBsplineAnalytic(std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc,
+  ASMatrixBsplineAnalytic(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                           sgpp::base::GridType gridType, size_t degree)
       : ASMatrixBspline(objectiveFunc->getNumberOfParameters(), degree, gridType),
         objectiveFunc(objectiveFunc) {}
@@ -74,12 +74,12 @@ class ASMatrixBsplineAnalytic : public ASMatrixBspline {
    * @return l2 error of gradient
    */
   sgpp::base::DataVector l2InterpolationGradientError(
-      std::shared_ptr<sgpp::optimization::WrapperScalarFunctionGradient> objectiveFuncGradient,
+      std::shared_ptr<sgpp::base::WrapperScalarFunctionGradient> objectiveFuncGradient,
       size_t numMCPoints = 1000);
 
  private:
   // objective function
-  std::shared_ptr<sgpp::optimization::ScalarFunction> objectiveFunc;
+  std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc;
 };
 
 }  // namespace datadriven

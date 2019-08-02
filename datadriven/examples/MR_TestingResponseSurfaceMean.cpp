@@ -3,19 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/DistributionNormal.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp>
 
 #include <iostream>
 #include <random>
-#include "../../optimization/src/sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
 
 // double f(sgpp::base::DataVector v) { return sin(2 * M_PI * v[0]); }
 double f(sgpp::base::DataVector v) { return sin(v[0]) * cos(v[1]); }
