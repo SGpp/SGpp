@@ -10,8 +10,6 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunctionGradient.hpp>
 
 #include <algorithm>
 #include <vector>

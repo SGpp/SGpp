@@ -5,10 +5,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <algorithm>
 #include <cstring>

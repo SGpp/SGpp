@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 namespace sgpp {
 namespace optimization {

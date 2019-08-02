@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
 
 #include <vector>
