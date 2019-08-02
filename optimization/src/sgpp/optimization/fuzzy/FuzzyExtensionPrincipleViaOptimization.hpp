@@ -8,12 +8,12 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/ScaledScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScaledScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScaledScalarFunctionHessian.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/ScaledScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/ScaledScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ScaledScalarFunctionHessian.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 

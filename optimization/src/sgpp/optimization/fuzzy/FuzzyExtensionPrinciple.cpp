@@ -5,9 +5,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
 #include <sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <limits>
 #include <string>
