@@ -29,7 +29,7 @@ class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrincipleV
    * @param numberOfAlphaSegments   number of \f$\alpha\f$ segments
    */
   explicit FuzzyExtensionPrincipleViaTransformation(
-      const ScalarFunction& f,
+      const base::ScalarFunction& f,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS);
 
   /**

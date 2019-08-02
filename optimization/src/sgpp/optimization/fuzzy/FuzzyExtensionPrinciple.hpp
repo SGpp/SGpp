@@ -36,7 +36,7 @@ class FuzzyExtensionPrinciple {
    * @param numberOfAlphaSegments   number of \f$\alpha\f$ segments
    */
   explicit FuzzyExtensionPrinciple(
-      const ScalarFunction& f,
+      const base::ScalarFunction& f,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS);
 
   /**
@@ -119,7 +119,7 @@ class FuzzyExtensionPrinciple {
 
  protected:
   /// function through which to propagate the uncertainties
-  std::unique_ptr<ScalarFunction> f;
+  std::unique_ptr<base::ScalarFunction> f;
   /// number of \f$\alpha\f$ segments
   size_t m;
   /// number of \f$\alpha\f$ segments

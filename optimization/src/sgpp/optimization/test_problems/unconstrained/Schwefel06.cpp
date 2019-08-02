@@ -36,8 +36,8 @@ double Schwefel06Objective::evalUndisplaced(const base::DataVector& x) {
   return std::max(std::abs(x1 + 2.0 * x2 - 7), std::abs(2.0 * x1 + x2 - 5));
 }
 
-void Schwefel06Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Schwefel06Objective(*this));
+void Schwefel06Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Schwefel06Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

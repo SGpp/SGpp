@@ -37,8 +37,8 @@ double Branin02Objective::evalUndisplaced(const base::DataVector& x) {
       std::log(x1 * x1 + x2 * x2 + 1.0) + 10.0;
 }
 
-void Branin02Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Branin02Objective(*this));
+void Branin02Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Branin02Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

@@ -28,7 +28,7 @@ class FuzzyExtensionPrincipleViaVertexMethod : public FuzzyExtensionPrincipleVia
    * @param numberOfAlphaSegments   number of \f$\alpha\f$ segments
    */
   explicit FuzzyExtensionPrincipleViaVertexMethod(
-      const ScalarFunction& f,
+      const base::ScalarFunction& f,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS);
 
   /**

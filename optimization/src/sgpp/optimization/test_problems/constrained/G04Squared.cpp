@@ -55,8 +55,8 @@ double G04SquaredObjective::evalUndisplaced(const base::DataVector& x) {
   return tmp * tmp;
 }
 
-void G04SquaredObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G04SquaredObjective(*this));
+void G04SquaredObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G04SquaredObjective(*this));
 }
 
 G04SquaredInequalityConstraint::G04SquaredInequalityConstraint() :
@@ -81,8 +81,8 @@ void G04SquaredInequalityConstraint::evalUndisplaced(
 }
 
 void G04SquaredInequalityConstraint::clone(
-    std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G04SquaredInequalityConstraint(*this));
+    std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G04SquaredInequalityConstraint(*this));
 }
 
 G04SquaredEqualityConstraint::G04SquaredEqualityConstraint() :
@@ -94,8 +94,8 @@ void G04SquaredEqualityConstraint::evalUndisplaced(
     const base::DataVector& x, base::DataVector& value) {}
 
 void G04SquaredEqualityConstraint::clone(
-    std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G04SquaredEqualityConstraint(*this));
+    std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G04SquaredEqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

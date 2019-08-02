@@ -52,7 +52,7 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
    *                                but only approximative)
    */
   IterativeGridGeneratorFuzzyRitterNovak(
-      ScalarFunction& f, base::Grid& grid, size_t N,
+      base::ScalarFunction& f, base::Grid& grid, size_t N,
       const std::vector<const FuzzyInterval*>& xFuzzy,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS,
       double adaptivity = DEFAULT_ADAPTIVITY,

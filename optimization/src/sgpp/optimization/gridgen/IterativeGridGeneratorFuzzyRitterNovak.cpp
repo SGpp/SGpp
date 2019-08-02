@@ -43,7 +43,7 @@ inline double fastPow(double a, double b) {
 }  // namespace
 
 IterativeGridGeneratorFuzzyRitterNovak::IterativeGridGeneratorFuzzyRitterNovak(
-    ScalarFunction& f, base::Grid& grid, size_t N,
+    base::ScalarFunction& f, base::Grid& grid, size_t N,
     const std::vector<const FuzzyInterval*>& xFuzzy, size_t numberOfAlphaSegments,
     double adaptivity, base::level_t initialLevel,
     base::level_t maxLevel, PowMethod powMethod)
@@ -73,7 +73,7 @@ void IterativeGridGeneratorFuzzyRitterNovak::setNumberOfAlphaSegments(
 }
 
 bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
-  Printer::getInstance().printStatusBegin("Adaptive grid generation (fuzzy Ritter-Novak)...");
+  base::Printer::getInstance().printStatusBegin("Adaptive grid generation (fuzzy Ritter-Novak)...");
 
   bool result = true;
   base::GridStorage& gridStorage = grid.getStorage();
@@ -173,7 +173,7 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
       char str[10];
       snprintf(str, sizeof(str),
                "%.1f%%", static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
+      base::Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
                                                std::to_string(currentN) + ", k = " +
                                                std::to_string(k) + ")");
     }
@@ -380,7 +380,7 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
 
       if (newN == currentN) {
         // size unchanged ==> point not refined (should not happen)
-        Printer::getInstance().printStatusEnd(
+        base::Printer::getInstance().printStatusEnd(
             "error: size unchanged in IterativeGridGeneratorFuzzyRitterNovak");
         result = false;
         exit = true;
@@ -427,9 +427,9 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate(
+    base::Printer::getInstance().printStatusUpdate(
         "100.0% (N = " + std::to_string(currentN) + ", k = " + std::to_string(k) + ")");
-    Printer::getInstance().printStatusEnd();
+    base::Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;

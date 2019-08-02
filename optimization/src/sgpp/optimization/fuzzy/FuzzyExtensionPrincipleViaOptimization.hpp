@@ -36,7 +36,7 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
    * @param numberOfAlphaSegments   number of \f$\alpha\f$ segments
    */
   explicit FuzzyExtensionPrincipleViaOptimization(
-      const ScalarFunction& f,
+      const base::ScalarFunction& f,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS);
 
   /**
@@ -73,15 +73,15 @@ class FuzzyExtensionPrincipleViaOptimization : public FuzzyExtensionPrinciple {
   /// optimization algorithm
   std::unique_ptr<optimizer::UnconstrainedOptimizer> optimizer;
   /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
+  std::unique_ptr<base::ScalarFunctionGradient> fGradient;
   /// objective function Hessian
-  std::unique_ptr<ScalarFunctionHessian> fHessian;
+  std::unique_ptr<base::ScalarFunctionHessian> fHessian;
   /// scaled objective function (confidence interval to unit hyper-cube)
-  std::unique_ptr<ScalarFunction> fScaled;
+  std::unique_ptr<base::ScalarFunction> fScaled;
   /// scaled objective gradient (confidence interval to unit hyper-cube)
-  std::unique_ptr<ScalarFunctionGradient> fGradientScaled;
+  std::unique_ptr<base::ScalarFunctionGradient> fGradientScaled;
   /// scaled objective Hessian (confidence interval to unit hyper-cube)
-  std::unique_ptr<ScalarFunctionHessian> fHessianScaled;
+  std::unique_ptr<base::ScalarFunctionHessian> fHessianScaled;
 
   /**
    * Custom preparation method that is called before the parallelized

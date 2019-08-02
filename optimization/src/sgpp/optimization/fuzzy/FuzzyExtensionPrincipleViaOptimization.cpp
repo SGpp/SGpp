@@ -14,7 +14,7 @@ namespace sgpp {
 namespace optimization {
 
 FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
-    const ScalarFunction& f,
+    const base::ScalarFunction& f,
     size_t numberOfAlphaSegments) :
         FuzzyExtensionPrinciple(f, numberOfAlphaSegments),
         defaultOptimizer(optimizer::MultiStart(f)) {
@@ -67,16 +67,16 @@ FuzzyExtensionPrincipleViaOptimization::FuzzyExtensionPrincipleViaOptimization(
 FuzzyExtensionPrincipleViaOptimization::~FuzzyExtensionPrincipleViaOptimization() {}
 
 void FuzzyExtensionPrincipleViaOptimization::prepareApply() {
-  fScaled.reset(new ScaledScalarFunction(*f));
+  fScaled.reset(new base::ScaledScalarFunction(*f));
 
   // create scaled gradient function if gradient is given
   if (fGradient.get() != nullptr) {
-    fGradientScaled.reset(new ScaledScalarFunctionGradient(*fGradient));
+    fGradientScaled.reset(new base::ScaledScalarFunctionGradient(*fGradient));
   }
 
   // create scaled Hessian function if Hessian is given
   if (fHessian.get() != nullptr) {
-    fHessianScaled.reset(new ScaledScalarFunctionHessian(*fHessian));
+    fHessianScaled.reset(new base::ScaledScalarFunctionHessian(*fHessian));
   }
 }
 
@@ -87,12 +87,12 @@ void FuzzyExtensionPrincipleViaOptimization::optimizeForSingleAlphaLevel(
   const base::DataVector& lowerBounds = optimizationDomainsLowerBounds[j];
   const base::DataVector& upperBounds = optimizationDomainsUpperBounds[j];
 
-  ScaledScalarFunction* fScaled2 =
-      dynamic_cast<ScaledScalarFunction*>(fScaled.get());
-  ScaledScalarFunctionGradient* fGradientScaled2 =
-      dynamic_cast<ScaledScalarFunctionGradient*>(fGradientScaled.get());
-  ScaledScalarFunctionHessian* fHessianScaled2 =
-      dynamic_cast<ScaledScalarFunctionHessian*>(fHessianScaled.get());
+  base::ScaledScalarFunction* fScaled2 =
+      dynamic_cast<base::ScaledScalarFunction*>(fScaled.get());
+  base::ScaledScalarFunctionGradient* fGradientScaled2 =
+      dynamic_cast<base::ScaledScalarFunctionGradient*>(fGradientScaled.get());
+  base::ScaledScalarFunctionHessian* fHessianScaled2 =
+      dynamic_cast<base::ScaledScalarFunctionHessian*>(fHessianScaled.get());
 
   fScaled2->setLowerBounds(lowerBounds);
   fScaled2->setUpperBounds(upperBounds);

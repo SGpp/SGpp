@@ -16,7 +16,7 @@ namespace sgpp {
 namespace optimization {
 
 FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
-    const ScalarFunction& f,
+    const base::ScalarFunction& f,
     size_t numberOfAlphaSegments) :
       FuzzyExtensionPrincipleViaOptimization(f, numberOfAlphaSegments) {
 }

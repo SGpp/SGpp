@@ -21,7 +21,7 @@ namespace {
 class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
   PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g, double mu)
-      : ScalarFunction(f.getNumberOfParameters()),
+      : base::ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
         mu(mu),
@@ -68,7 +68,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
  public:
   PenalizedObjectiveGradient(base::ScalarFunctionGradient& fGradient,
                              base::VectorFunctionGradient& gGradient, double mu)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+      : base::ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
         mu(mu),
@@ -127,7 +127,7 @@ LogBarrier::LogBarrier(const base::ScalarFunction& f,
                        const base::VectorFunction& g,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(),
+    : ConstrainedOptimizer(f, g, base::EmptyVectorFunction::getInstance(),
                            maxItCount),
       theta(tolerance),
       mu0(barrierStartValue),
@@ -142,7 +142,7 @@ LogBarrier::LogBarrier(const base::ScalarFunction& f,
                        const base::VectorFunctionGradient& gGradient,
                        size_t maxItCount, double tolerance,
                        double barrierStartValue, double barrierDecreaseFactor)
-    : ConstrainedOptimizer(f, g, EmptyVectorFunction::getInstance(), maxItCount),
+    : ConstrainedOptimizer(f, g, base::EmptyVectorFunction::getInstance(), maxItCount),
       theta(tolerance),
       mu0(barrierStartValue),
       rhoMuMinus(barrierDecreaseFactor),

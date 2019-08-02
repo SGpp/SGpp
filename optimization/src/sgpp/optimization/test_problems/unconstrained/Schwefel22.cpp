@@ -43,8 +43,8 @@ double Schwefel22Objective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void Schwefel22Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Schwefel22Objective(*this));
+void Schwefel22Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Schwefel22Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

@@ -74,7 +74,7 @@ class LeastSquaresOptimizer {
   /**
    * @param phi  phi
    */
-  void setPhiFunction(const VectorFunction& phi) { phi.clone(this->phi); }
+  void setPhiFunction(const base::VectorFunction& phi) { phi.clone(this->phi); }
 
   /**
    * @return  maximal number of iterations or function evaluations
