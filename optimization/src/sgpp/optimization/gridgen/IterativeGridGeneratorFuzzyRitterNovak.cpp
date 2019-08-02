@@ -129,8 +129,8 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
         boundsSize = minimumBoundsSize;
       }
 
-      lowerBound -= 0.05 * boundsSize;
-      upperBound += 0.05 * boundsSize;
+      lowerBound = std::max(lowerBound - 0.05 * boundsSize, 0.0);
+      upperBound = std::min(upperBound + 0.05 * boundsSize, 1.0);
 
       lowerBounds(j + 1, t) = lowerBound;
       upperBounds(j + 1, t) = upperBound;
