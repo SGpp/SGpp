@@ -173,7 +173,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       // refinement criterion
       double g;
 
-      if (powMethod == STD_POW) {
+      if (powMethod == PowMethod::STD_POW) {
         g = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
             std::pow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
       } else {

@@ -38,7 +38,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   static const base::level_t DEFAULT_MAX_LEVEL = 20;
 
   /// exponentiation methods
-  enum PowMethod { STD_POW, FAST_POW };
+  enum class PowMethod { STD_POW, FAST_POW };
 
   /**
    * Constructor.
@@ -58,7 +58,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
                                     double adaptivity = DEFAULT_ADAPTIVITY,
                                     base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
                                     base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-                                    PowMethod powMethod = STD_POW);
+                                    PowMethod powMethod = PowMethod::STD_POW);
 
   /**
    * Destructor.

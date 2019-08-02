@@ -58,7 +58,7 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
       double adaptivity = DEFAULT_ADAPTIVITY,
       base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
       base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-      PowMethod powMethod = STD_POW);
+      PowMethod powMethod = PowMethod::STD_POW);
 
   ~IterativeGridGeneratorFuzzyRitterNovak() override;
 
