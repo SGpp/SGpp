@@ -11,7 +11,7 @@ namespace optimization {
 namespace test_problems {
 
 TestScalarFunction::TestScalarFunction(size_t d)
-    : ScalarFunction(d), displacement(d, 0.0), xTmp(d) {}
+    : base::ScalarFunction(d), displacement(d, 0.0), xTmp(d) {}
 
 TestScalarFunction::~TestScalarFunction() {}
 

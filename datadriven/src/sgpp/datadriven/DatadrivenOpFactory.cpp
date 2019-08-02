@@ -114,7 +114,7 @@
 #include "operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp"
 #endif
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include "../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 #ifdef USE_CUDA
 #include "operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp"
@@ -554,7 +554,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose, sgpp::optimization::ScalarFunction* f) {
+    bool generateConsistentGrid, bool verbose, sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
                                                generateConsistentGrid, verbose, f);
 }
@@ -562,7 +562,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
-    sgpp::optimization::ScalarFunction* f) {
+    sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
                                                           interpolationAlgorithm, verbose, f);
 }

@@ -3,18 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
-#include <cstddef>
 #include <cmath>
-
+#include <cstddef>
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -36,7 +34,7 @@ class UnconstrainedOptimizer {
    * @param N     maximal number of iterations or function evaluations
    *              (depending on the implementation)
    */
-  explicit UnconstrainedOptimizer(const ScalarFunction& f, size_t N = DEFAULT_N)
+  explicit UnconstrainedOptimizer(const base::ScalarFunction& f, size_t N = DEFAULT_N)
       : N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
     f.clone(this->f);
   }
@@ -70,7 +68,7 @@ class UnconstrainedOptimizer {
   /**
    * @return objective function
    */
-  ScalarFunction& getObjectiveFunction() const { return *f; }
+  base::ScalarFunction& getObjectiveFunction() const { return *f; }
 
   /**
    * @return  maximal number of iterations or function evaluations
@@ -129,7 +127,7 @@ class UnconstrainedOptimizer {
 
  protected:
   /// objective function
-  std::unique_ptr<ScalarFunction> f;
+  std::unique_ptr<base::ScalarFunction> f;
   /// maximal number of iterations or function evaluations
   size_t N;
   /// starting point
@@ -146,5 +144,3 @@ class UnconstrainedOptimizer {
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_UNCONSTRAINEDOPTIMIZER_HPP */
