@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/globaldef.hpp>
 
