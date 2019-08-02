@@ -24,7 +24,7 @@ if env["USE_GSL"]:
     additionalDependencies += ["gsl", "gslcblas"]
 if env["USE_CGAL"]:
   additionalDependencies += ["CGAL"]
-if env["USE_SCALAPACK"]:
+if (not env.GetOption("clean")) and env["USE_SCALAPACK"]:
     if env["SCALAPACK_VERSION"] == "netlib":
         additionalDependencies += ["scalapack"]
     elif env["SCALAPACK_VERSION"] == "mkl":
