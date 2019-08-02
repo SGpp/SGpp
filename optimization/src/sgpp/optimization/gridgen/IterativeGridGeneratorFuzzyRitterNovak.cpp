@@ -185,10 +185,10 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
       std::vector<size_t> fXOrderRestricted(NRestricted);
       std::vector<size_t> rankRestricted(NRestricted);
 
-      for (size_t k = 0; k < NRestricted; k++) {
-        fXRestricted[k] = fX[pointsRestricted[k]];
-        fXOrderRestricted[k] = k;
-        rankRestricted[k] = k + 1;
+      for (size_t j = 0; j < NRestricted; j++) {
+        fXRestricted[j] = fX[pointsRestricted[j]];
+        fXOrderRestricted[j] = j;
+        rankRestricted[j] = j + 1;
       }
 
       std::sort(fXOrderRestricted.begin(), fXOrderRestricted.end(),
@@ -205,21 +205,21 @@ bool IterativeGridGeneratorFuzzyRitterNovak::generate() {
       double gMaxBest = std::numeric_limits<double>::infinity();
       size_t iMaxBest;
 
-      for (size_t k = 0; k < NRestricted; k++) {
-        const size_t i = pointsRestricted[k];
+      for (size_t j = 0; j < NRestricted; j++) {
+        const size_t i = pointsRestricted[j];
         double gMin;
         double gMax;
 
         if (powMethod == STD_POW) {
           gMin = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
-                 std::pow(static_cast<double>(rankRestricted[k]) + 1.0, 1.0 - gamma);
+                 std::pow(static_cast<double>(rankRestricted[j]) + 1.0, 1.0 - gamma);
           gMax = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
-                 std::pow(static_cast<double>(NRestricted - rankRestricted[k]) + 2.0, 1.0 - gamma);
+                 std::pow(static_cast<double>(NRestricted - rankRestricted[j]) + 2.0, 1.0 - gamma);
         } else {
           gMin = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
-                 fastPow(static_cast<double>(rankRestricted[k]) + 1.0, 1.0 - gamma);
+                 fastPow(static_cast<double>(rankRestricted[j]) + 1.0, 1.0 - gamma);
           gMax = fastPow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
-                 fastPow(static_cast<double>(NRestricted - rankRestricted[k]) + 2.0, 1.0 - gamma);
+                 fastPow(static_cast<double>(NRestricted - rankRestricted[j]) + 2.0, 1.0 - gamma);
         }
 
         if ((gMin >= gMinBest) && (gMax >= gMaxBest)) {
