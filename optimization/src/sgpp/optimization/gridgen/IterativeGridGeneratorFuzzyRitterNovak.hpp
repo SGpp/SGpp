@@ -16,10 +16,41 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * Iterative grid generation based on Ritter/Novak's refinement criterion
+ * like IterativeGridGeneratorRitterNovak, but adapted for the use with
+ * fuzzy intervals.
+ * Caution: This class uses HashRefinementMultiple, so it generates grids
+ * that don't meet the "hierarchical ancestors" requirement!
+ *
+ * Literature: Julian Valentin. B-Splines for Sparse Grids: Algorithms
+ * and Application to Higher-Dimensional Optimization. PhD thesis,
+ * University of Stuttgart, IPVS, 2019.
+ *
+ * @see IterativeGridGeneratorRitterNovak
+ * @see HashRefinementMultiple
+ */
 class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitterNovak {
  public:
   static const size_t DEFAULT_NUMBER_OF_ALPHA_SEGMENTS = 10;
 
+  /**
+   * Constructor.
+   * Do not destruct the grid before this object!
+   *
+   * @param f                       objective function
+   * @param grid                    grid (should be empty)
+   * @param N                       maximal number of grid points
+   * @param xFuzzy                  fuzzy input intervals
+   * @param numberOfAlphaSegments   number of alpha segments (i.e., number of
+   *                                inner Ritter-Novak generations)
+   * @param adaptivity              adaptivity between 0 and 1
+   * @param initialLevel            level of initial regular sparse grid
+   * @param maxLevel                maximal level of grid points
+   * @param powMethod               exponentiation method
+   *                                (fastPow is faster than std::pow,
+   *                                but only approximative)
+   */
   IterativeGridGeneratorFuzzyRitterNovak(
       ScalarFunction& f, base::Grid& grid, size_t N,
       const std::vector<const FuzzyInterval*>& xFuzzy,
@@ -31,16 +62,37 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
 
   ~IterativeGridGeneratorFuzzyRitterNovak() override;
 
+  /**
+   * Destructor.
+   */
   bool generate() override;
 
+  /**
+   * @return  fuzzy input intervals
+   */
   const std::vector<const FuzzyInterval*>& getXFuzzy() const;
+
+  /**
+   * @param xFuzzy  fuzzy input intervals
+   */
   void setXFuzzy(const std::vector<const FuzzyInterval*>& xFuzzy);
 
+  /**
+   * @return  number of alpha segments (i.e., number of inner Ritter-Novak
+   *          generations)
+   */
   size_t getNumberOfAlphaSegments() const;
+
+  /**
+   * @param numberOfAlphaSegments   number of alpha segments (i.e., number of
+   *                                inner Ritter-Novak generations)
+   */
   void setNumberOfAlphaSegments(size_t numberOfAlphaSegments);
 
  protected:
+  /// fuzzy input intervals
   std::vector<const FuzzyInterval*> xFuzzy;
+  /// number of alpha segments (i.e., number of inner Ritter-Novak generations)
   size_t numberOfAlphaSegments;
 };
 }  // namespace optimization

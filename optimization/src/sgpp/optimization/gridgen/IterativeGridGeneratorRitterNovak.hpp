@@ -19,7 +19,7 @@ namespace optimization {
  * Caution: This class uses HashRefinementMultiple, so it generates grids
  * that don't meet the "hierarchical ancestors" requirement!
  *
- * Literature: Erich Novak, Klaus Ritter: Global Optimization Using
+ * Literature: Erich Novak, Klaus Ritter. Global Optimization Using
  * Hyperbolic Cross Points.
  * In: Christodoulos A. Floudas, Panos M. Pardalos (eds.): State of the
  * Art in Global Optimization,
