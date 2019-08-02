@@ -161,7 +161,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
                                                            ", k = " + std::to_string(k) + ")");
     }
 
-    // determine the best i (i.e. i_best = argmin_i g_i)
+    // determine the best i (i.e., iBest = argmin_i g_i)
     size_t iBest = 0;
     double gBest = INFINITY;
 
@@ -247,7 +247,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       }
     }
 
-    // refine point no. i_best
+    // refine point no. iBest
     degree[iBest]++;
     refinementAlpha[iBest] = 1.0;
     base::SurplusRefinementFunctor refineFunc(refinementAlpha, 1);
