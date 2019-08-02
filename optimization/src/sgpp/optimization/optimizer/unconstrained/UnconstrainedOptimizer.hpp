@@ -10,6 +10,8 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 
 #include <cmath>
 #include <cstddef>
