@@ -20,9 +20,9 @@ void omp_set_num_threads(int num_threads);
 // renames
 %rename(OptHashRefinementMultiple)                  sgpp::optimization::HashRefinementMultiple;
 %rename(OptIterativeGridGenerator)                  sgpp::optimization::IterativeGridGenerator;
+%rename(OptIterativeGridGeneratorRitterNovak)       sgpp::optimization::IterativeGridGeneratorRitterNovak;
 %rename(OptIterativeGridGeneratorFuzzyRitterNovak)  sgpp::optimization::IterativeGridGeneratorFuzzyRitterNovak;
 %rename(OptIterativeGridGeneratorLinearSurplus)     sgpp::optimization::IterativeGridGeneratorLinearSurplus;
-%rename(OptIterativeGridGeneratorRitterNovak)       sgpp::optimization::IterativeGridGeneratorRitterNovak;
 %rename(OptIterativeGridGeneratorSOO)               sgpp::optimization::IterativeGridGeneratorSOO;
 
 %rename(OptUnconstrainedOptimizer)  sgpp::optimization::optimizer::UnconstrainedOptimizer;
@@ -239,9 +239,9 @@ void omp_set_num_threads(int num_threads);
 
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
-%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
