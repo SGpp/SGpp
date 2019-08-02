@@ -13,11 +13,32 @@
 namespace sgpp {
 namespace optimization {
 
+/**
+ * Abstract class for a fuzzy interval which is defined by stating its
+ * confidence intervals \f$(\tilde{x})_\alpha\f$ for all \f$\alpha \in [0, 1]\f$.
+ */
 class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
  public:
+  /**
+   * Constructor. Needs the support of the fuzzy interval (which is
+   * always a closed interval, so it suffices to supply lower and upper bound).
+   *
+   * @param supportLowerBound   lower bound of the support
+   * @param supportUpperBound   upper bound of the support
+   */
   FuzzyIntervalViaConfidenceInterval(double supportLowerBound, double supportUpperBound);
+
+  /**
+   * Destructor.
+   */
   ~FuzzyIntervalViaConfidenceInterval() override;
 
+  /**
+   * Evaluate the membership function.
+   *
+   * @param x   \f$x \in X\f$
+   * @return    \f$\mu_{\tilde{x}}(x) \in [0, 1]\f$
+   */
   double evaluateMembershipFunction(double x) const override;
 };
 
