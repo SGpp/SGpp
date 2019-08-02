@@ -6,41 +6,40 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/optimization/function/scalar/ComponentScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/ComponentScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ComponentScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunction.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/WrapperVectorFunctionHessian.hpp>
-
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunction.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
 #include <vector>
 
 #include "CheckEqualFunction.hpp"
 
+using sgpp::base::ComponentScalarFunction;
+using sgpp::base::ComponentScalarFunctionGradient;
+using sgpp::base::ComponentScalarFunctionHessian;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::optimization::ComponentScalarFunction;
-using sgpp::optimization::ComponentScalarFunctionGradient;
-using sgpp::optimization::ComponentScalarFunctionHessian;
-using sgpp::optimization::RandomNumberGenerator;
-using sgpp::optimization::ScalarFunction;
-using sgpp::optimization::ScalarFunctionGradient;
-using sgpp::optimization::ScalarFunctionHessian;
-using sgpp::optimization::VectorFunction;
-using sgpp::optimization::VectorFunctionGradient;
-using sgpp::optimization::VectorFunctionHessian;
-using sgpp::optimization::WrapperScalarFunction;
-using sgpp::optimization::WrapperScalarFunctionGradient;
-using sgpp::optimization::WrapperScalarFunctionHessian;
-using sgpp::optimization::WrapperVectorFunction;
-using sgpp::optimization::WrapperVectorFunctionGradient;
-using sgpp::optimization::WrapperVectorFunctionHessian;
+using sgpp::base::RandomNumberGenerator;
+using sgpp::base::ScalarFunction;
+using sgpp::base::ScalarFunctionGradient;
+using sgpp::base::ScalarFunctionHessian;
+using sgpp::base::VectorFunction;
+using sgpp::base::VectorFunctionGradient;
+using sgpp::base::VectorFunctionHessian;
+using sgpp::base::WrapperScalarFunction;
+using sgpp::base::WrapperScalarFunctionGradient;
+using sgpp::base::WrapperScalarFunctionHessian;
+using sgpp::base::WrapperVectorFunction;
+using sgpp::base::WrapperVectorFunctionGradient;
+using sgpp::base::WrapperVectorFunctionHessian;
 
 class ScalarTestFunction : public ScalarFunction {
  public:
@@ -48,13 +47,10 @@ class ScalarTestFunction : public ScalarFunction {
 
   ~ScalarTestFunction() override {}
 
-  double eval(const DataVector& x) override {
-    return x.sum();
-  }
+  double eval(const DataVector& x) override { return x.sum(); }
 
   void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(
-              new ScalarTestFunction(*this));
+    clone = std::unique_ptr<ScalarFunction>(new ScalarTestFunction(*this));
   }
 };
 
@@ -64,8 +60,7 @@ class ScalarTestGradient : public ScalarFunctionGradient {
 
   ~ScalarTestGradient() override {}
 
-  double eval(const DataVector& x,
-                     DataVector& gradient) override {
+  double eval(const DataVector& x, DataVector& gradient) override {
     for (size_t t = 0; t < d; t++) {
       gradient[t] = static_cast<double>(t) * x[t];
     }
@@ -73,10 +68,8 @@ class ScalarTestGradient : public ScalarFunctionGradient {
     return x.sum();
   }
 
-  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const
-  override {
-    clone = std::unique_ptr<ScalarFunctionGradient>(
-              new ScalarTestGradient(*this));
+  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const override {
+    clone = std::unique_ptr<ScalarFunctionGradient>(new ScalarTestGradient(*this));
   }
 };
 
@@ -86,25 +79,20 @@ class ScalarTestHessian : public ScalarFunctionHessian {
 
   ~ScalarTestHessian() override {}
 
-  double eval(const DataVector& x,
-                     DataVector& gradient,
-                     DataMatrix& hessian) override {
+  double eval(const DataVector& x, DataVector& gradient, DataMatrix& hessian) override {
     for (size_t t = 0; t < d; t++) {
       gradient[t] = static_cast<double>(t) * x[t];
 
       for (size_t t2 = 0; t2 < d; t2++) {
-        hessian(t, t2) = static_cast<double>(t) * x[t] +
-                         static_cast<double>(t2) * x[t2];
+        hessian(t, t2) = static_cast<double>(t) * x[t] + static_cast<double>(t2) * x[t2];
       }
     }
 
     return x.sum();
   }
 
-  void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const
-  override {
-    clone = std::unique_ptr<ScalarFunctionHessian>(
-              new ScalarTestHessian(*this));
+  void clone(std::unique_ptr<ScalarFunctionHessian>& clone) const override {
+    clone = std::unique_ptr<ScalarFunctionHessian>(new ScalarTestHessian(*this));
   }
 };
 
@@ -114,16 +102,14 @@ class VectorTestFunction : public VectorFunction {
 
   ~VectorTestFunction() override {}
 
-  void eval(const DataVector& x,
-            DataVector& value) override {
+  void eval(const DataVector& x, DataVector& value) override {
     for (size_t i = 0; i < m; i++) {
       value[i] = static_cast<double>(i) * x.sum();
     }
   }
 
   void clone(std::unique_ptr<VectorFunction>& clone) const override {
-    clone = std::unique_ptr<VectorFunction>(
-              new VectorTestFunction(*this));
+    clone = std::unique_ptr<VectorFunction>(new VectorTestFunction(*this));
   }
 };
 
@@ -133,23 +119,18 @@ class VectorTestGradient : public VectorFunctionGradient {
 
   ~VectorTestGradient() override {}
 
-  void eval(const DataVector& x,
-            DataVector& value,
-            DataMatrix& gradient) override {
+  void eval(const DataVector& x, DataVector& value, DataMatrix& gradient) override {
     for (size_t i = 0; i < m; i++) {
       value[i] = static_cast<double>(i) * x.sum();
 
       for (size_t t = 0; t < d; t++) {
-        gradient(i, t) = static_cast<double>(i) *
-                         static_cast<double>(t) * x[t];
+        gradient(i, t) = static_cast<double>(i) * static_cast<double>(t) * x[t];
       }
     }
   }
 
-  void clone(std::unique_ptr<VectorFunctionGradient>& clone) const
-  override {
-    clone = std::unique_ptr<VectorFunctionGradient>(
-              new VectorTestGradient(*this));
+  void clone(std::unique_ptr<VectorFunctionGradient>& clone) const override {
+    clone = std::unique_ptr<VectorFunctionGradient>(new VectorTestGradient(*this));
   }
 };
 
@@ -159,30 +140,24 @@ class VectorTestHessian : public VectorFunctionHessian {
 
   ~VectorTestHessian() override {}
 
-  void eval(const DataVector& x,
-            DataVector& value,
-            DataMatrix& gradient,
+  void eval(const DataVector& x, DataVector& value, DataMatrix& gradient,
             std::vector<DataMatrix>& hessian) override {
     for (size_t i = 0; i < m; i++) {
       value[i] = static_cast<double>(i) * x.sum();
 
       for (size_t t = 0; t < d; t++) {
-        gradient(i, t) = static_cast<double>(i) *
-                         static_cast<double>(t) * x[t];
+        gradient(i, t) = static_cast<double>(i) * static_cast<double>(t) * x[t];
 
         for (size_t t2 = 0; t2 < d; t2++) {
-          hessian[i](t, t2) = static_cast<double>(i) *
-                              static_cast<double>(t) * x[t] *
+          hessian[i](t, t2) = static_cast<double>(i) * static_cast<double>(t) * x[t] *
                               static_cast<double>(t2) * x[t];
         }
       }
     }
   }
 
-  void clone(std::unique_ptr<VectorFunctionHessian>& clone) const
-  override {
-    clone = std::unique_ptr<VectorFunctionHessian>(
-              new VectorTestHessian(*this));
+  void clone(std::unique_ptr<VectorFunctionHessian>& clone) const override {
+    clone = std::unique_ptr<VectorFunctionHessian>(new VectorTestHessian(*this));
   }
 };
 
@@ -204,10 +179,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunction) {
     g.clone(g2);
     BOOST_CHECK_EQUAL(f.eval(x), g2->eval(y));
 
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN}),
-                      std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN, NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
   }
 
   {
@@ -219,10 +192,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunction) {
     g.clone(g2);
     BOOST_CHECK_EQUAL(fx[1], g2->eval(y));
 
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN}),
-                      std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN, NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN, NAN, NAN}), std::runtime_error);
   }
 }
 
@@ -247,10 +218,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
     BOOST_CHECK_EQUAL(gradF[0], gradG[0]);
     BOOST_CHECK_EQUAL(gradF[2], gradG[1]);
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN}),
-                      std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN, NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
   }
 
   {
@@ -266,8 +235,7 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
     BOOST_CHECK_EQUAL(gradF(1, 0), gradG[0]);
     BOOST_CHECK_EQUAL(gradF(1, 2), gradG[1]);
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {NAN, NAN}), std::runtime_error);
     BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {NAN, NAN, NAN, NAN}),
                       std::runtime_error);
   }
@@ -299,10 +267,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
     BOOST_CHECK_EQUAL(hessF(2, 0), hessG(1, 0));
     BOOST_CHECK_EQUAL(hessF(2, 2), hessG(1, 1));
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN}),
-                      std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN, NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
   }
 
   {
@@ -324,8 +290,7 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
     BOOST_CHECK_EQUAL(hessF[1](2, 0), hessG(1, 0));
     BOOST_CHECK_EQUAL(hessF[1](2, 2), hessG(1, 1));
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {NAN, NAN}),
-                      std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {NAN, NAN}), std::runtime_error);
     BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {NAN, NAN, NAN, NAN}),
                       std::runtime_error);
   }
@@ -335,9 +300,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunction) {
   // Test sgpp::optimization::TestWrapperScalarFunction.
   const size_t d = 3;
   ScalarTestFunction f1(d);
-  WrapperScalarFunction f2(d, [](const DataVector & x) {
-    return x.sum();
-  });
+  WrapperScalarFunction f2(d, [](const DataVector& x) { return x.sum(); });
   std::unique_ptr<ScalarFunction> f2Clone;
   f2.clone(f2Clone);
   checkEqualFunction(f1, *f2Clone);
@@ -347,8 +310,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
   // Test sgpp::optimization::TestWrapperScalarFunctionGradient.
   const size_t d = 3;
   ScalarTestGradient f1(d);
-  WrapperScalarFunctionGradient f2(d, [](const DataVector & x,
-  DataVector & gradient) {
+  WrapperScalarFunctionGradient f2(d, [](const DataVector& x, DataVector& gradient) {
     for (size_t t = 0; t < d; t++) {
       gradient[t] = static_cast<double>(t) * x[t];
     }
@@ -364,20 +326,18 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
   // Test sgpp::optimization::TestWrapperScalarFunctionHessian.
   const size_t d = 3;
   ScalarTestHessian f1(d);
-  WrapperScalarFunctionHessian f2(d, [](const DataVector & x,
-                                        DataVector & gradient,
-  DataMatrix & hessian) {
-    for (size_t t = 0; t < d; t++) {
-      gradient[t] = static_cast<double>(t) * x[t];
+  WrapperScalarFunctionHessian f2(
+      d, [](const DataVector& x, DataVector& gradient, DataMatrix& hessian) {
+        for (size_t t = 0; t < d; t++) {
+          gradient[t] = static_cast<double>(t) * x[t];
 
-      for (size_t t2 = 0; t2 < d; t2++) {
-        hessian(t, t2) = static_cast<double>(t) * x[t] +
-                         static_cast<double>(t2) * x[t2];
-      }
-    }
+          for (size_t t2 = 0; t2 < d; t2++) {
+            hessian(t, t2) = static_cast<double>(t) * x[t] + static_cast<double>(t2) * x[t2];
+          }
+        }
 
-    return x.sum();
-  });
+        return x.sum();
+      });
   std::unique_ptr<ScalarFunctionHessian> f2Clone;
   f2.clone(f2Clone);
   checkEqualFunction(f1, *f2Clone);
@@ -389,8 +349,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
   const size_t m = 4;
   DataVector value1(m), value2(m);
   VectorTestFunction f1(d, m);
-  WrapperVectorFunction f2(d, m, [](const DataVector & x,
-  DataVector & value) {
+  WrapperVectorFunction f2(d, m, [](const DataVector& x, DataVector& value) {
     for (size_t i = 0; i < m; i++) {
       value[i] = static_cast<double>(i) * x.sum();
     }
@@ -405,18 +364,16 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
   const size_t d = 3;
   const size_t m = 4;
   VectorTestGradient f1(d, m);
-  WrapperVectorFunctionGradient f2(d, m, [](const DataVector & x,
-                                   DataVector & value,
-  DataMatrix & gradient) {
-    for (size_t i = 0; i < m; i++) {
-      value[i] = static_cast<double>(i) * x.sum();
+  WrapperVectorFunctionGradient f2(
+      d, m, [](const DataVector& x, DataVector& value, DataMatrix& gradient) {
+        for (size_t i = 0; i < m; i++) {
+          value[i] = static_cast<double>(i) * x.sum();
 
-      for (size_t t = 0; t < d; t++) {
-        gradient(i, t) = static_cast<double>(i) *
-                         static_cast<double>(t) * x[t];
-      }
-    }
-  });
+          for (size_t t = 0; t < d; t++) {
+            gradient(i, t) = static_cast<double>(i) * static_cast<double>(t) * x[t];
+          }
+        }
+      });
   std::unique_ptr<VectorFunctionGradient> f2Clone;
   f2.clone(f2Clone);
   checkEqualFunction(f1, *f2Clone);
@@ -427,25 +384,23 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
   const size_t d = 3;
   const size_t m = 4;
   VectorTestHessian f1(d, m);
-  WrapperVectorFunctionHessian f2(d, m, [](const DataVector & x,
-                                  DataVector & value,
-                                  DataMatrix & gradient,
-  std::vector<DataMatrix>& hessian) {
-    for (size_t i = 0; i < m; i++) {
-      value[i] = static_cast<double>(i) * x.sum();
+  WrapperVectorFunctionHessian f2(
+      d, m,
+      [](const DataVector& x, DataVector& value, DataMatrix& gradient,
+         std::vector<DataMatrix>& hessian) {
+        for (size_t i = 0; i < m; i++) {
+          value[i] = static_cast<double>(i) * x.sum();
 
-      for (size_t t = 0; t < d; t++) {
-        gradient(i, t) = static_cast<double>(i) *
-                         static_cast<double>(t) * x[t];
+          for (size_t t = 0; t < d; t++) {
+            gradient(i, t) = static_cast<double>(i) * static_cast<double>(t) * x[t];
 
-        for (size_t t2 = 0; t2 < d; t2++) {
-          hessian[i](t, t2) = static_cast<double>(i) *
-                              static_cast<double>(t) * x[t] *
-                              static_cast<double>(t2) * x[t];
+            for (size_t t2 = 0; t2 < d; t2++) {
+              hessian[i](t, t2) = static_cast<double>(i) * static_cast<double>(t) * x[t] *
+                                  static_cast<double>(t2) * x[t];
+            }
+          }
         }
-      }
-    }
-  });
+      });
   std::unique_ptr<VectorFunctionHessian> f2Clone;
   f2.clone(f2Clone);
   checkEqualFunction(f1, *f2Clone);

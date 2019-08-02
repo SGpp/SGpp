@@ -5,16 +5,16 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-BFGS::BFGS(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
-           double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
-           double lineSearchAccuracy)
+BFGS::BFGS(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+           size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+           double stepSizeDecreaseFactor, double lineSearchAccuracy)
     : UnconstrainedOptimizer(f, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
@@ -35,7 +35,7 @@ BFGS::BFGS(const BFGS& other)
 BFGS::~BFGS() {}
 
 void BFGS::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (BFGS)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -183,8 +183,8 @@ void BFGS::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if delta is smaller than tolerance theta
@@ -203,10 +203,10 @@ void BFGS::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return *fGradient; }
+base::ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return *fGradient; }
 
 double BFGS::getTolerance() const { return theta; }
 
