@@ -17,7 +17,7 @@ namespace sgpp {
 namespace optimization {
 
 FuzzyExtensionPrinciple::FuzzyExtensionPrinciple(
-    const ScalarFunction& f,
+    const base::ScalarFunction& f,
     size_t numberOfAlphaSegments) :
       m(numberOfAlphaSegments) {
   f.clone(this->f);
@@ -41,7 +41,7 @@ void FuzzyExtensionPrinciple::prepareApply() {}
 
 FuzzyInterval* FuzzyExtensionPrinciple::apply(
     const std::vector<const FuzzyInterval*>& xFuzzy) {
-  Printer::getInstance().printStatusBegin("Applying fuzzy extension principle...");
+  base::Printer::getInstance().printStatusBegin("Applying fuzzy extension principle...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -56,8 +56,8 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
   maximumPoints.resize(m + 1, base::DataVector(d));
   maximumValues.resize(m + 1);
 
-  Printer::getInstance().printStatusUpdate("calculating confidence intervals");
-  Printer::getInstance().printStatusNewLine();
+  base::Printer::getInstance().printStatusUpdate("calculating confidence intervals");
+  base::Printer::getInstance().printStatusNewLine();
 
   // calculate alpha levels and corresponding confidence intervals
   for (size_t j = 0; j <= m; j++) {
@@ -92,10 +92,10 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
   base::DataVector lastOptimalPointMin(d);
   base::DataVector lastOptimalPointMax(d);
 
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
   if (statusPrintingEnabled) {
-    Printer::getInstance().disableStatusPrinting();
+    base::Printer::getInstance().disableStatusPrinting();
   }
 
   size_t alphaLevelsDone = 0;
@@ -123,22 +123,22 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
                  static_cast<double>(alphaLevelsDone) / static_cast<double>(m + 1) * 100.0);
-        Printer::getInstance().getMutex().lock();
-        Printer::getInstance().enableStatusPrinting();
-        Printer::getInstance().printStatusUpdate("optimizing (" + std::string(str) +
+        base::Printer::getInstance().getMutex().lock();
+        base::Printer::getInstance().enableStatusPrinting();
+        base::Printer::getInstance().printStatusUpdate("optimizing (" + std::string(str) +
                                                  ")");
-        Printer::getInstance().disableStatusPrinting();
-        Printer::getInstance().getMutex().unlock();
+        base::Printer::getInstance().disableStatusPrinting();
+        base::Printer::getInstance().getMutex().unlock();
       }
     }
   }
 
   if (statusPrintingEnabled) {
-    Printer::getInstance().enableStatusPrinting();
+    base::Printer::getInstance().enableStatusPrinting();
   }
 
-  Printer::getInstance().printStatusUpdate("optimizing (100.0%)");
-  Printer::getInstance().printStatusNewLine();
+  base::Printer::getInstance().printStatusUpdate("optimizing (100.0%)");
+  base::Printer::getInstance().printStatusNewLine();
 
   // iterate through alphas from 1 to 0
   for (size_t j = m + 1; j-- > 0;) {
@@ -169,7 +169,7 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
     alphaData[2*m+1-j] = alphaLevels[j];
   }
 
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 
   // interpolate between alpha data points
   return new InterpolatedFuzzyInterval(xData, alphaData);

@@ -40,8 +40,8 @@ double Alpine02Objective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void Alpine02Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new Alpine02Objective(*this));
+void Alpine02Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Alpine02Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

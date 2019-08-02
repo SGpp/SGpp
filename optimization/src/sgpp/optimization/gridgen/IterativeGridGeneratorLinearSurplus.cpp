@@ -28,7 +28,7 @@
 namespace sgpp {
 namespace optimization {
 
-IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(ScalarFunction& f,
+IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(base::ScalarFunction& f,
                                                                          base::Grid& grid, size_t N,
                                                                          double adaptivity,
                                                                          base::level_t initialLevel)

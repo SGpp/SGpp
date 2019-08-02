@@ -23,7 +23,7 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
   PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g,
                              base::VectorFunction& h, double mu, base::DataVector& lambda)
-      : ScalarFunction(f.getNumberOfParameters()),
+      : base::ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
         h(h),
@@ -86,7 +86,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
                              base::VectorFunctionGradient& gGradient,
                              base::VectorFunctionGradient& hGradient, double mu,
                              base::DataVector& lambda)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+      : base::ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
         hGradient(hGradient),
@@ -226,7 +226,7 @@ class AuxiliaryConstraintFunction : public base::VectorFunction {
  public:
   AuxiliaryConstraintFunction(size_t d, base::VectorFunction& g, base::VectorFunction& h,
                               double sMin, double sMax)
-      : VectorFunction(d + 1, g.getNumberOfComponents() + 2 * h.getNumberOfComponents() + 1),
+      : base::VectorFunction(d + 1, g.getNumberOfComponents() + 2 * h.getNumberOfComponents() + 1),
         g(g),
         h(h),
         mG(g.getNumberOfComponents()),
@@ -284,7 +284,7 @@ class AuxiliaryConstraintGradient : public base::VectorFunctionGradient {
  public:
   AuxiliaryConstraintGradient(size_t d, base::VectorFunctionGradient& gGradient,
                               base::VectorFunctionGradient& hGradient, double sMin, double sMax)
-      : VectorFunctionGradient(
+      : base::VectorFunctionGradient(
             d + 1, gGradient.getNumberOfComponents() + 2 * hGradient.getNumberOfComponents() + 1),
         gGradient(gGradient),
         hGradient(hGradient),

@@ -20,7 +20,7 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
   PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g,
                              base::VectorFunction& h, double mu)
-      : ScalarFunction(f.getNumberOfParameters()),
+      : base::ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
         h(h),
@@ -58,8 +58,8 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new PenalizedObjectiveFunction(*this));
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunction>(new PenalizedObjectiveFunction(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }
@@ -78,7 +78,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
   PenalizedObjectiveGradient(base::ScalarFunctionGradient& fGradient,
                              base::VectorFunctionGradient& gGradient,
                              base::VectorFunctionGradient& hGradient, double mu)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+      : base::ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
         hGradient(hGradient),
@@ -133,8 +133,8 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
+  void clone(std::unique_ptr<base::ScalarFunctionGradient>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }

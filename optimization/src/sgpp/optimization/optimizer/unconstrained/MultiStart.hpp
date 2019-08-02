@@ -69,17 +69,17 @@ class MultiStart : public UnconstrainedOptimizer {
   /**
    * @param f           objective function
    */
-  void setObjectiveFunction(const ScalarFunction& f) override;
+  void setObjectiveFunction(const base::ScalarFunction& f) override;
 
   /**
    * @param fGradient   objective gradient
    */
-  void setObjectiveGradient(const ScalarFunctionGradient* fGradient) override;
+  void setObjectiveGradient(const base::ScalarFunctionGradient* fGradient) override;
 
   /**
    * @param fHessian    objective Hessian
    */
-  void setObjectiveHessian(const ScalarFunctionHessian* fHessian) override;
+  void setObjectiveHessian(const base::ScalarFunctionHessian* fHessian) override;
 
   void optimize() override;
 

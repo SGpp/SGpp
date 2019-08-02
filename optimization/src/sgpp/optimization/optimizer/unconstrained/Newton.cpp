@@ -83,7 +83,7 @@ void Newton::optimize() {
   base::DataVector s(d);
   base::DataVector y(d);
 
-  FullSLE system(hessianFx);
+  base::FullSLE system(hessianFx);
   size_t k = 0;
   const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
