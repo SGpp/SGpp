@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-using sgpp::optimization::ScalarFunction;
-using sgpp::optimization::InterpolantScalarFunction;
-using sgpp::optimization::InterpolantScalarFunctionGradient;
-using sgpp::optimization::InterpolantScalarFunctionHessian;
+using sgpp::base::ScalarFunction;
+using sgpp::base::InterpolantScalarFunction;
+using sgpp::base::InterpolantScalarFunctionGradient;
+using sgpp::base::InterpolantScalarFunctionHessian;
 
-class BilinearFunction : public sgpp::optimization::ScalarFunction {
+class BilinearFunction : public sgpp::base::ScalarFunction {
  public:
   BilinearFunction() : ScalarFunction(2) {}
   ~BilinearFunction() override {}
@@ -69,8 +69,8 @@ bool createInterpolants(
 
   {
     sgpp::base::DataVector surpluses(N);
-    sgpp::optimization::HierarchisationSLE hierSLE(*gridBSpline);
-    sgpp::optimization::sle_solver::Auto sleSolver;
+    sgpp::base::HierarchisationSLE hierSLE(*gridBSpline);
+    sgpp::base::sle_solver::Auto sleSolver;
 
     if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
       std::cout << "Solving failed, exiting.\n";
@@ -87,8 +87,8 @@ bool createInterpolants(
 
   {
     sgpp::base::DataVector surpluses(N);
-    sgpp::optimization::HierarchisationSLE hierSLE(*gridLinear);
-    sgpp::optimization::sle_solver::Auto sleSolver;
+    sgpp::base::HierarchisationSLE hierSLE(*gridLinear);
+    sgpp::base::sle_solver::Auto sleSolver;
 
     if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
       std::cout << "Solving failed, exiting.\n";
@@ -141,8 +141,8 @@ void showErrors(const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy
 }
 
 int main() {
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(1);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(1);
 
   // objective function
   // BilinearFunction f;
