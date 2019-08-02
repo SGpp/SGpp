@@ -3,15 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -42,8 +41,8 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *              objective function evaluations
    *              (depending on the implementation)
    */
-  ConstrainedOptimizer(const ScalarFunction& f, const VectorFunction& g, const VectorFunction& h,
-                       size_t N = DEFAULT_N)
+  ConstrainedOptimizer(const base::ScalarFunction& f, const base::VectorFunction& g,
+                       const base::VectorFunction& h, size_t N = DEFAULT_N)
       : UnconstrainedOptimizer(f, N) {
     g.clone(this->g);
     h.clone(this->h);
@@ -54,8 +53,7 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    *
    * @param other optimizer to be copied
    */
-  ConstrainedOptimizer(const ConstrainedOptimizer& other)
-      : UnconstrainedOptimizer(other) {
+  ConstrainedOptimizer(const ConstrainedOptimizer& other) : UnconstrainedOptimizer(other) {
     other.g->clone(g);
     other.h->clone(h);
   }
@@ -68,21 +66,19 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
   /**
    * @return inequality constraint function
    */
-  VectorFunction& getInequalityConstraintFunction() const { return *g; }
+  base::VectorFunction& getInequalityConstraintFunction() const { return *g; }
 
   /**
    * @return equality constraint function
    */
-  VectorFunction& getEqualityConstraintFunction() const { return *h; }
+  base::VectorFunction& getEqualityConstraintFunction() const { return *h; }
 
  protected:
   /// inequality constraint function
-  std::unique_ptr<VectorFunction> g;
+  std::unique_ptr<base::VectorFunction> g;
   /// equality constraint function
-  std::unique_ptr<VectorFunction> h;
+  std::unique_ptr<base::VectorFunction> h;
 };
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_CONSTRAINEDOPTIMIZER_HPP */

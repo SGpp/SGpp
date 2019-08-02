@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
+#include "../../../../../../base/src/sgpp/base/function/vector/VectorFunctionGradient.hpp"
 
 namespace sgpp {
 namespace optimization {
@@ -44,8 +44,9 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param acceptanceThreshold     acceptance threshold
    * @param effectivenessThreshold  effectiveness threshold
    */
-  LevenbergMarquardt(const VectorFunction& phi, const VectorFunctionGradient& phiGradient,
-                     size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
+  LevenbergMarquardt(const base::VectorFunction& phi,
+                     const base::VectorFunctionGradient& phiGradient, size_t maxItCount = DEFAULT_N,
+                     double tolerance = DEFAULT_TOLERANCE,
                      double initialDamping = DEFAULT_INITIAL_DAMPING,
                      double acceptanceThreshold = DEFAULT_ACCEPTANCE_THRESHOLD,
                      double effectivenessThreshold = DEFAULT_EFFECTIVENESS_THRESHOLD);
@@ -65,10 +66,10 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
    * @param sleSolver               reference to linear solver
    *                                for solving the linear systems
    */
-  LevenbergMarquardt(const VectorFunction& phi, const VectorFunctionGradient& phiGradient,
-                     size_t maxItCount,
+  LevenbergMarquardt(const base::VectorFunction& phi,
+                     const base::VectorFunctionGradient& phiGradient, size_t maxItCount,
                      double tolerance, double initialDamping, double acceptanceThreshold,
-                     double effectivenessThreshold, const sle_solver::SLESolver& sleSolver);
+                     double effectivenessThreshold, const base::sle_solver::SLESolver& sleSolver);
 
   /**
    * Copy constructor.
@@ -87,7 +88,7 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /**
    * @return phi gradient
    */
-  VectorFunctionGradient& getPhiGradient() const;
+  base::VectorFunctionGradient& getPhiGradient() const;
 
   /**
    * @return tolerance
@@ -136,7 +137,7 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
 
  protected:
   /// phi gradient
-  std::unique_ptr<VectorFunctionGradient> phiGradient;
+  std::unique_ptr<base::VectorFunctionGradient> phiGradient;
   /// tolerance
   double tol;
   /// initial damping
@@ -146,9 +147,9 @@ class LevenbergMarquardt : public LeastSquaresOptimizer {
   /// effectiveness threshold
   double beta1;
   /// default linear solver
-  const sle_solver::GaussianElimination defaultSleSolver;
+  const base::sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
-  const sle_solver::SLESolver& sleSolver;
+  const base::sle_solver::SLESolver& sleSolver;
 };
 }  // namespace optimizer
 }  // namespace optimization

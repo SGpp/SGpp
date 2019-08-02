@@ -3,17 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
-#define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <cstddef>
-
 namespace sgpp {
 namespace optimization {
 
@@ -30,7 +28,7 @@ class IterativeGridGenerator {
    * @param grid  grid (should be empty)
    * @param N     maximal number of grid points
    */
-  IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N);
+  IterativeGridGenerator(base::ScalarFunction& f, base::Grid& grid, size_t N);
 
   /**
    * Destructor.
@@ -54,9 +52,14 @@ class IterativeGridGenerator {
    */
   const base::DataVector& getFunctionValues() const;
 
+  /**
+   * Prints grid points and function values.
+   */
+  void printIterativeGridGenerator() const;
+
  protected:
   /// objective function
-  ScalarFunction& f;
+  base::ScalarFunction& f;
   /// underlying grid
   base::Grid& grid;
   /// maximal number of grid points
@@ -84,5 +87,3 @@ class IterativeGridGenerator {
 };
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATOR_HPP */
