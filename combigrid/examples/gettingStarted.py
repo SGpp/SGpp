@@ -9,7 +9,7 @@
 ## module. The combigrid module is quite separated from the other modules. It only refers to the
 ## base module for things like DataVector and DataMatrix.
 
-## At the beginning of the program, we have to import the pysgpp library, 
+## At the beginning of the program, we have to import the pysgpp library,
 ## and visualization tools if required
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
@@ -367,26 +367,6 @@ def example7(dtype="uniform", maxLevel=2):
 
     if visualOutput:
         initialize_plotting_style()
-    ##     def g(x, y):
-    ##         evaluationPoint = pysgpp.DataVector([x, y])
-    ##         result = operation.evaluate(maxLevel, evaluationPoint)
-    ##         return result
-
-    ##     fig, ax, _ = plotSG3d(g=g, contour_xy=False)
-    ##     ax.scatter(gridList[0], gridList[1], np.zeros(len(gridList[0])),
-    ##                color=load_color(0),
-    ##                marker='o', s=20)
-        ## ax.set_axis_off()
-    ##     ax.set_xlabel(r"$x$")
-    ##     ax.set_ylabel(r"$y$")
-    ##     ax.set_xticks([0, 0.5, 1])
-    ##     ax.set_yticks([0, 0.5, 1])
-    ##     ax.set_zticks([0, 0.5, 1])
-    ##     ax.xaxis.labelpad = 13
-    ##     ax.yaxis.labelpad = 13
-    ##     ax.set_title(r"$f(x,y) = 16 x(1-x)y(1-y)$",
-    ##                  fontproperties=load_font_properties())
-        savefig(fig, "./normal_parabola", mpl3d=True)
 
         fig = plt.figure()
         plt.plot(gridList[0, :], gridList[1, :], " ",
@@ -445,8 +425,6 @@ def example7(dtype="uniform", maxLevel=2):
                             fontproperties=load_font_properties())
                 ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
 
-            ## plt.xlim(0, 1)
-            ## plt.ylim(0, 1)
             fig.set_size_inches(6, 6, forward=True)
             savefig(fig, "./tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
                    mpl3d=True)
