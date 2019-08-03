@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -128,7 +129,7 @@ void CMAES::optimize() {
           }
         }
 
-        fX[j] = (inDomain ? f->eval(x) : INFINITY);
+        fX[j] = (inDomain ? f->eval(x) : std::numeric_limits<double>::infinity());
         fXOrder[j] = j;
       }
     }

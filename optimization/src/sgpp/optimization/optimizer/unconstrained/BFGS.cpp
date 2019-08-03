@@ -8,6 +8,8 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -113,7 +115,7 @@ void BFGS::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
+    fxNew = (inDomain ? f->eval(xNew) : std::numeric_limits<double>::infinity());
     k++;
 
     // inner product of gradient and search direction
@@ -135,7 +137,8 @@ void BFGS::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? fGradient->eval(xNew, gradFxNew) : INFINITY);
+      fxNew = (inDomain ? fGradient->eval(xNew, gradFxNew) :
+          std::numeric_limits<double>::infinity());
       k++;
     }
 

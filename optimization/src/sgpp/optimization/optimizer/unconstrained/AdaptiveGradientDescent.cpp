@@ -8,6 +8,7 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -119,7 +120,7 @@ void AdaptiveGradientDescent::optimize() {
       fxNew = f->eval(xNew);
       k++;
     } else {
-      fxNew = INFINITY;
+      fxNew = std::numeric_limits<double>::infinity();
     }
 
     // inner product of gradient (in free variables) and search direction
@@ -145,7 +146,7 @@ void AdaptiveGradientDescent::optimize() {
         fxNew = f->eval(xNew);
       k++;
       } else {
-        fxNew = INFINITY;
+        fxNew = std::numeric_limits<double>::infinity();
       }
     }
 

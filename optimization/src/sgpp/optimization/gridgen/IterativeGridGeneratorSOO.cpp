@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -99,10 +100,10 @@ bool IterativeGridGeneratorSOO::generate() {
 
     const size_t curDepthBound =
         std::min(depthMap.size() - 1, static_cast<size_t>(hMax(n)) + depthBoundOffset);
-    double nuMin = INFINITY;
+    double nuMin = std::numeric_limits<double>::infinity();
 
     for (size_t depth = 0; depth <= curDepthBound; depth++) {
-      double fBest = INFINITY;
+      double fBest = std::numeric_limits<double>::infinity();
       size_t iBest = 0;
 
       for (size_t i : depthMap[depth]) {

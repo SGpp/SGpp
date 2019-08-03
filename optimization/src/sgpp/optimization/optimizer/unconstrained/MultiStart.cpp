@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -95,7 +96,7 @@ void MultiStart::optimize() {
   }
 
   base::DataVector xCurrentOpt(d);
-  double fCurrentOpt = INFINITY;
+  double fCurrentOpt = std::numeric_limits<double>::infinity();
 
   // temporarily save x0 and N (will be overwritten by the loop)
   const base::DataVector tmpX0(optimizer->getStartingPoint());
