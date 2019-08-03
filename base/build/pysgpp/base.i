@@ -197,6 +197,17 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationFirstMoment.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
 
+// needed to use RandomNumberGenerator::setSeed(SeedType)
+%typemap(in) sgpp::base::RandomNumberGenerator::SeedType {
+  // convert Python integer to SeedType
+  $1 = PyInt_AsLong($input);
+}
+
+%typemap(typecheck, precedence=SWIG_TYPECHECK_INTEGER) sgpp::base::RandomNumberGenerator::SeedType {
+  // check if valid Python integer
+  $1 = PyInt_Check($input) ? 1 : 0;
+}
+
 %include "base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
 
 // SLE
