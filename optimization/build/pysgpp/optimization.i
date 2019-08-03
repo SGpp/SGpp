@@ -336,3 +336,4 @@ void omp_set_num_threads(int num_threads);
 %template(OptFileIOReadMatrix)       sgpp::optimization::file_io::readMatrix<double>;
 %template(OptFileIOWriteVector)      sgpp::optimization::file_io::writeVector<double>;
 %template(OptFileIOReadVector)       sgpp::optimization::file_io::readVector<double>;
+%template(OptFuzzyIntervalVector)    std::vector<const sgpp::optimization::FuzzyInterval*>;
