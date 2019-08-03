@@ -13,8 +13,8 @@
 #include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 
-#include <cmath>
 #include <cstddef>
+#include <limits>
 
 namespace sgpp {
 namespace optimization {
@@ -44,7 +44,8 @@ class UnconstrainedOptimizer {
       const base::ScalarFunctionGradient* fGradient,
       const base::ScalarFunctionHessian* fHessian,
       size_t N = DEFAULT_N)
-      : N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
+      : N(N), x0(f.getNumberOfParameters(), 0.5), xOpt(0),
+        fOpt(std::numeric_limits<double>::quiet_NaN()), xHist(0, 0), fHist(0) {
     f.clone(this->f);
 
     if (fGradient != nullptr) {
@@ -156,7 +157,7 @@ class UnconstrainedOptimizer {
 
   /**
    * @return result of optimization (optimal function value),
-   *         NAN on error
+   *         NaN on error
    */
   double getOptimalValue() const { return fOpt; }
 

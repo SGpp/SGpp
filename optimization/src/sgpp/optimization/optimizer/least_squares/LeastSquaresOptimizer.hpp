@@ -11,8 +11,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
 
-#include <cmath>
 #include <cstddef>
+#include <limits>
 
 namespace sgpp {
 namespace optimization {
@@ -36,7 +36,8 @@ class LeastSquaresOptimizer {
    *              (depending on the implementation)
    */
   explicit LeastSquaresOptimizer(const base::VectorFunction& phi, size_t N = DEFAULT_N)
-      : N(N), x0(phi.getNumberOfParameters(), 0.5), xOpt(0), fOpt(NAN), xHist(0, 0), fHist(0) {
+      : N(N), x0(phi.getNumberOfParameters(), 0.5), xOpt(0),
+        fOpt(std::numeric_limits<double>::quiet_NaN()), xHist(0, 0), fHist(0) {
     phi.clone(this->phi);
   }
 

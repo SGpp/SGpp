@@ -40,12 +40,12 @@ void BFGS::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
   base::DataVector gradFx(d);
 
   base::DataVector xNew(d);

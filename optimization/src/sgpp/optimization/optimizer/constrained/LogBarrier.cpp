@@ -78,7 +78,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
   double eval(const base::DataVector& x, base::DataVector& gradient) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        gradient.setAll(NAN);
+        gradient.setAll(std::numeric_limits<double>::quiet_NaN());
         return std::numeric_limits<double>::infinity();
       }
     }
@@ -186,7 +186,7 @@ void LogBarrier::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
   xHistInner.resize(0, d);
