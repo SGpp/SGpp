@@ -3,54 +3,63 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+/**
+ * \page example_fuzzy_cpp Fuzzy Extension Principle (C++)
+ *
+ * We consider an example for the application of the fuzzy extension principle to
+ * fuzzy input uncertainties to obtain a fuzzy output interval using three different methods:
+ * optimization of the objective function, optimization of a piecewise linear sparse grid
+ * surrogate, and optimization of a surrogate with B-splines on sparse grids.
+ * This example is available in C++ and in Python.
+ */
+
+/**
+ * First, we include all the necessary headers, including those of the sgpp::base and
+ * sgpp::optimization module.
+ */
 #include <sgpp_base.hpp>
 #include <sgpp_optimization.hpp>
 
 #include <iostream>
-#include <string>
 #include <vector>
 
-using sgpp::base::ScalarFunction;
-using sgpp::base::InterpolantScalarFunction;
-using sgpp::base::InterpolantScalarFunctionGradient;
-using sgpp::base::InterpolantScalarFunctionHessian;
+/**
+ * Now, we can start with the \c main function.
+ */
+int main() {
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
-class BilinearFunction : public sgpp::base::ScalarFunction {
- public:
-  BilinearFunction() : ScalarFunction(2) {}
-  ~BilinearFunction() override {}
-
-  inline double eval(const sgpp::base::DataVector& x) override {
-    return (8.0 * x[0]) * (8.0 * x[1]) / 10.0;
-  }
-
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override {
-    clone = std::unique_ptr<ScalarFunction>(new BilinearFunction());
-  }
-};
-
-bool createInterpolants(
-    ScalarFunction& f,
-    std::unique_ptr<sgpp::base::Grid>& gridBSpline,
-    std::unique_ptr<InterpolantScalarFunction>& fInterpBSpline,
-    std::unique_ptr<InterpolantScalarFunctionGradient>& fInterpBSplineGradient,
-    std::unique_ptr<InterpolantScalarFunctionHessian>& fInterpBSplineHessian,
-    std::unique_ptr<sgpp::base::Grid>& gridLinear,
-    std::unique_ptr<InterpolantScalarFunction>& fInterpLinear) {
-  // sparse grid parameters
-  const size_t p = 3;  // B-spline degree
-  const size_t b = 1;  // boundary parameter
-  const size_t n = 5;  // regular sparse grid level
-
+  /**
+   * Here, we define some parameters: objective function, dimensionality,
+   * B-spline degree, maximal number of grid points, and adaptivity.
+   */
+  // objective function
+  sgpp::optimization::test_problems::Branin01Objective f;
+  // dimension of domain
   const size_t d = f.getNumberOfParameters();
+  // B-spline degree
+  const size_t p = 3;
+  // boundary parameter for the sparse grid
+  const size_t b = 1;
+  // level of the regular sparse grid
+  const size_t n = 5;
+  // accuracy of the extension principle
+  const size_t numberOfAlphaSegments = 100;
 
-  // sparse grid construction
+  /**
+   * We use regular sparse grids for the sparse grid surrogates.
+   */
+  std::unique_ptr<sgpp::base::Grid> gridBSpline;
+  std::unique_ptr<sgpp::base::Grid> gridLinear;
+  std::unique_ptr<sgpp::base::InterpolantScalarFunction> fInterpLinear;
+
   std::cout << "Constructing the sparse grids...\n";
 
   gridBSpline.reset(new sgpp::base::BsplineBoundaryGrid(d, p, b));
   gridBSpline->getGenerator().regular(n);
 
-  gridLinear.reset(new sgpp::base::BsplineBoundaryGrid(d, 1, b));
+  gridLinear.reset(new sgpp::base::LinearBoundaryGrid(d, b));
   gridLinear->getGenerator().regular(n);
 
   const size_t N = gridBSpline->getSize();
@@ -64,8 +73,15 @@ bool createInterpolants(
     functionValues[k] = f.eval(x);
   }
 
-  // B-spline hierarchization
+  /**
+   * For the hierarchization for the B-spline surrogate, we solve the corresponding
+   * system of linear equations and create the interpolant and its gradient.
+   */
   std::cout << "Hierarchizing (B-spline coefficients)...\n";
+
+  std::unique_ptr<sgpp::base::InterpolantScalarFunction> fInterpBSpline;
+  std::unique_ptr<sgpp::base::InterpolantScalarFunctionGradient> fInterpBSplineGradient;
+  std::unique_ptr<sgpp::base::InterpolantScalarFunctionHessian> fInterpBSplineHessian;
 
   {
     sgpp::base::DataVector surpluses(N);
@@ -74,15 +90,20 @@ bool createInterpolants(
 
     if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
       std::cout << "Solving failed, exiting.\n";
-      return false;
+      return 1;
     }
 
-    fInterpBSpline.reset(new InterpolantScalarFunction(*gridBSpline, surpluses));
-    fInterpBSplineGradient.reset(new InterpolantScalarFunctionGradient(*gridBSpline, surpluses));
-    fInterpBSplineHessian.reset(new InterpolantScalarFunctionHessian(*gridBSpline, surpluses));
+    fInterpBSpline.reset(
+        new sgpp::base::InterpolantScalarFunction(*gridBSpline, surpluses));
+    fInterpBSplineGradient.reset(
+        new sgpp::base::InterpolantScalarFunctionGradient(*gridBSpline, surpluses));
   }
 
-  // piecewise linear hierarchization
+  /**
+   * The piecewise linear interpolant is only continuous, but not continuously differentiable.
+   * Therefore, we do not use the discontinuous gradient for gradient-based optimization,
+   * but only use gradient-free optimization methods.
+   */
   std::cout << "Hierarchizing (linear coefficients)...\n";
 
   {
@@ -92,114 +113,72 @@ bool createInterpolants(
 
     if (!sleSolver.solve(hierSLE, functionValues, surpluses)) {
       std::cout << "Solving failed, exiting.\n";
-      return false;
+      return 1;
     }
 
-    fInterpLinear.reset(new InterpolantScalarFunction(*gridLinear, surpluses));
+    fInterpLinear.reset(new sgpp::base::InterpolantScalarFunction(*gridLinear, surpluses));
   }
 
-  return true;
-}
+  std::cout << "\n";
 
-void applyExtensionPrinciple(
-    std::string label,
-    sgpp::optimization::optimizer::UnconstrainedOptimizer& optimizer,
-    const std::vector<const sgpp::optimization::FuzzyInterval*>& xFuzzy,
-    const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzyExact,
-    std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy) {
-  const size_t numberOfAlphaSegments = 100;
-  sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrinciple(
-      optimizer, numberOfAlphaSegments);
-
-  // apply extension principle
-  std::cout << "\n=== " << label << " ===\n";
-  yFuzzy.reset(extensionPrinciple.apply(xFuzzy));
-}
-
-void showErrors(const std::unique_ptr<sgpp::optimization::FuzzyInterval>& yFuzzy,
-                const sgpp::optimization::FuzzyInterval* yFuzzyExact = nullptr) {
-  // output norms
-  std::cout << "L1 norm:   " << yFuzzy->computeL1Norm() << "\n";
-  std::cout << "L2 norm:   " << yFuzzy->computeL2Norm() << "\n";
-  std::cout << "Linf norm: " << yFuzzy->computeLinfNorm() << "\n";
-
-  // output errors if reference solution is given
-  if (yFuzzyExact != nullptr) {
-    std::cout << "L1 error:   " <<
-        yFuzzyExact->computeL1Error(*yFuzzy) << "\n";
-    std::cout << "L2 error:   " <<
-        yFuzzyExact->computeL2Error(*yFuzzy) << "\n";
-    std::cout << "Linf error: " <<
-        yFuzzyExact->computeLinfError(*yFuzzy) << "\n";
-    std::cout << "Relative L1 error:   " <<
-        yFuzzyExact->computeRelativeL1Error(*yFuzzy) << "\n";
-    std::cout << "Relative L2 error:   " <<
-        yFuzzyExact->computeRelativeL2Error(*yFuzzy) << "\n";
-    std::cout << "Relative Linf error: " <<
-        yFuzzyExact->computeRelativeLinfError(*yFuzzy) << "\n";
-  }
-}
-
-int main() {
-  sgpp::base::Printer::getInstance().setVerbosity(-1);
-  sgpp::base::RandomNumberGenerator::getInstance().setSeed(1);
-
-  // objective function
-  // BilinearFunction f;
-  sgpp::optimization::test_problems::Branin01Objective f;
-  // sgpp::optimization::test_problems::Schwefel26Objective f(2);
-
-  // create sparse grid interpolants
-  std::unique_ptr<sgpp::base::Grid> gridBSpline;
-  std::unique_ptr<InterpolantScalarFunction> fInterpBSpline;
-  std::unique_ptr<InterpolantScalarFunctionGradient> fInterpBSplineGradient;
-  std::unique_ptr<InterpolantScalarFunctionHessian> fInterpBSplineHessian;
-  std::unique_ptr<sgpp::base::Grid> gridLinear;
-  std::unique_ptr<InterpolantScalarFunction> fInterpLinear;
-
-  if (!createInterpolants(
-      f, gridBSpline, fInterpBSpline, fInterpBSplineGradient, fInterpBSplineHessian,
-      gridLinear, fInterpLinear)) {
-    return 1;
-  }
-
-  // accuracy of the extension principle
-  const size_t numberOfAlphaSegments = 100;
-
-  // input fuzzy intervals
+  /**
+   * Now we define the fuzzy input intervals.
+   */
   sgpp::optimization::TriangularFuzzyInterval x0Fuzzy(0.25, 0.375, 0.125, 0.25);
   sgpp::optimization::QuasiGaussianFuzzyNumber x1Fuzzy(0.5, 0.125, 3.0);
   std::vector<const sgpp::optimization::FuzzyInterval*> xFuzzy{&x0Fuzzy, &x1Fuzzy};
 
-  // extension principle with exact objective function
-  std::cout << "\n=== EXACT ===\n";
+  /**
+   * Finally, we can apply the fuzzy extension principle. First, we apply it directly
+   * to the objective function to obtain a reference solution (fuzzy interval). Note that
+   * usually the objective function is too expensive to use it directly in real-world
+   * scenarios.
+   */
   sgpp::optimization::optimizer::MultiStart optimizerExact(f, 10000, 100);
   sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleExact(
       optimizerExact, numberOfAlphaSegments);
   std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyExact(
       extensionPrincipleExact.apply(xFuzzy));
-  showErrors(yFuzzyExact);
+  std::cout << "L2 norm of exact solution: " << yFuzzyExact->computeL2Norm() << "\n";
 
-  // extension principle with piecewise linear sparse grid interpolant
-  std::cout << "\n=== LINEAR ===\n";
+  /**
+   * For the piecewise linear and for the B-spline solution, we compute the relative
+   * \f$L^2\f$ error to the exact solution computed previously.
+   */
   sgpp::optimization::optimizer::MultiStart optimizerLinear(*fInterpLinear, 10000, 100);
   sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleLinear(
       optimizerLinear, numberOfAlphaSegments);
   std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyLinear(
       extensionPrincipleLinear.apply(xFuzzy));
-  showErrors(yFuzzyLinear, yFuzzyExact.get());
+  std::cout << "Relative L2 error of piecewise linear solution: " <<
+      yFuzzyExact->computeRelativeL2Error(*yFuzzyLinear) << "\n";
 
-  // extension principle with B-spline sparse grid interpolant
-  std::cout << "\n=== B-SPLINE ===\n";
-  sgpp::optimization::optimizer::MultiStart optimizerBSpline(*fInterpBSpline, 10000, 100);
-  // sgpp::optimization::optimizer::AdaptiveNewton localOptimizer(
-  //     *fInterpBSpline, *fInterpBSplineHessian);
-  // sgpp::optimization::optimizer::MultiStart optimizerBSpline(localOptimizer);
+  /**
+   * For B-splines, we use gradient descent as our optimization method.
+   */
+  sgpp::optimization::optimizer::AdaptiveGradientDescent localOptimizer(
+      *fInterpBSpline, *fInterpBSplineGradient);
+  sgpp::optimization::optimizer::MultiStart optimizerBSpline(localOptimizer);
   sgpp::optimization::FuzzyExtensionPrincipleViaOptimization extensionPrincipleBSpline(
       optimizerBSpline, numberOfAlphaSegments);
   std::unique_ptr<sgpp::optimization::FuzzyInterval> yFuzzyBSpline(
       extensionPrincipleBSpline.apply(xFuzzy));
-  showErrors(yFuzzyBSpline, yFuzzyExact.get());
+  std::cout << "Relative L2 error of B-spline solution: " <<
+      yFuzzyExact->computeRelativeL2Error(*yFuzzyBSpline) << "\n";
 
   return 0;
 }
+
+/**
+ * The example outputs something similar to the following:
+ * \verbinclude fuzzy.output.txt
+ *
+ * The exact output is not deterministic (despite setting the seed of the
+ * random number generator at the start of <tt>main</tt>), since the \c MultiStart
+ * optimizer calls are executed in parallel for the different confidence intervals.
+ *
+ * We see that the relative \f$L^2\f$ error is over three orders of magnitude smaller
+ * for the B-spline solution compared to the piecewise linear solution.
+ * This is due to the higher approximation quality of the B-splines and
+ * to the gradient-based optimization.
+ */
