@@ -13,6 +13,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
 
 namespace sgpp {
@@ -70,12 +71,12 @@ void Newton::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
 
   base::DataVector gradFx(d);
   base::DataMatrix hessianFx(d, d);
