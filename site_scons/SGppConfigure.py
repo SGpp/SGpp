@@ -456,22 +456,25 @@ def configureGNUCompiler(config):
   # Mitigation for old Ubuntu (should probably be also applied to Debian?):
   # Package 'libomp-dev' installs a symlink 'libgomp.so' to 'libomp.so' in /usr/lib/x86_64-linux.
   # If this path is manually added (-L...), then ld uses this symlink and, thus, links against
-  # the wrong openmp library.
+  # the wrong OpenMP library.
   # The mitigation is to ask gcc for its LIBRARY_PATH in combination with -fopenmp and manually
   # add this as the very first LIBPATH.
-  # Note, that this code also disables openmp if the mitigation command did not produce an
+  # Note, that this code also disables OpenMP if the mitigation command did not produce an
   # adequate path.
   import platform
-  linux_dist = platform.dist()
-  if linux_dist[0] == "Ubuntu" and linux_dist[1] in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"]:
-    p = subprocess.Popen(config.env["CXX"] + " -v  -fopenmp -xc /dev/null 2>&1 | awk -F'[=:]' '/LIBRARY_PATH/{print $2}'", shell=True, stdout=subprocess.PIPE)
-    first_libpath, _ = p.communicate()
-    first_libpath = first_libpath.rstrip() # remove trailing newline
-    if not os.path.exists(first_libpath):
-      Helper.printWarning("Mitigation for old Ubuntu failed. Did not get libpath. Continuing WITHOUT openmp.")
+  linuxDist = platform.dist()
+  if ((linuxDist[0] == "Ubuntu") and
+      (linuxDist[1] in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"])):
+    output = getOutput([config.env["CXX"], "-v", "-fopenmp", "-xc", "/dev/null"])
+    match = re.search(r"LIBRARY_PATH=(.*?):", output)
+    firstLibPath = (match.group(1) if match is not None else None)
+    if (firstLibPath is None) or (not os.path.exists(firstLibPath)):
+      Helper.printWarning("Mitigation for old Ubuntu failed. Did not get libpath. "
+                          "Continuing WITHOUT OpenMP.")
     else:
-      Helper.printInfo("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(first_libpath))
-      config.env.Append(LIBPATH=[first_libpath])
+      Helper.printInfo("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(
+          firstLibPath))
+      config.env.Append(LIBPATH=[firstLibPath])
       # Safety first: Manually specity libgomp.so.1 as additional library before -fopenmp
       config.env.Append(LINKFLAGS=["-l:libgomp.so.1", "-fopenmp"])
       config.env.Append(CPPFLAGS=["-fopenmp"])
