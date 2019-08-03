@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     const IterativeGridGeneratorRitterNovak::PowMethod powMethod =
         IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW;
     gridGen.setPowMethod(powMethod);
-    BOOST_CHECK_EQUAL(gridGen.getPowMethod(), powMethod);
+    BOOST_CHECK(gridGen.getPowMethod() == powMethod);
   }
 
   {
