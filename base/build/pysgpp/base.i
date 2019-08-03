@@ -253,8 +253,6 @@ const bool UMFPACK_ENABLED;
 %include "base/src/sgpp/base/tools/Printer.hpp"
 
 // and the rest
-%rename(RNG)         sgpp::base::RandomNumberGenerator;
-
 %apply std::string *INPUT { std::string& istr };
 
 %template(SLinearBase) sgpp::base::LinearBasis<unsigned int, unsigned int>;
