@@ -4,7 +4,8 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_constrainedOptimization_cpp constrainedOptimization.cpp
+ * \page example_constrainedOptimization_cpp Constrained Optimization
+ *
  * This example demonstrates the optimization of an objective function \f$ f\f$ with additional
  * constraints.
  * The inequality constraints are specified via a function \f$ g\f$, the equality constraints are

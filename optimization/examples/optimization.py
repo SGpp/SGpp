@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-## \page example_optimization_py optimization.py
+## \page example_optimization_py Optimization Example (Python)
 ##
 ## On this page, we look at an example application of the sgpp::optimization module.
 ## Versions of the example are given in all languages
