@@ -37,8 +37,8 @@ double MichalewiczObjective::evalUndisplaced(const base::DataVector& x) {
          std::sin(x2) * std::pow(std::sin(2.0 * x2 * x2 / M_PI), 20.0);
 }
 
-void MichalewiczObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new MichalewiczObjective(*this));
+void MichalewiczObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new MichalewiczObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

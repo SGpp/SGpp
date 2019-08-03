@@ -44,7 +44,7 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
    * @param avgImprovementThreshold   stopping criterion parameter 2
    * @param maxDistanceThreshold      stopping criterion parameter 3
    */
-  DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
+  DifferentialEvolution(const base::ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
                         size_t populationSize = 0,
                         double crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
                         double scalingFactor = DEFAULT_SCALING_FACTOR,

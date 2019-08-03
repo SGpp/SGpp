@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 #include <memory>
 
@@ -44,7 +44,7 @@ class GradientDescent : public UnconstrainedOptimizer {
    * @param tolerance     tolerance (parameter for Armijo's rule)
    * @param epsilon       epsilon (parameter for Armijo's rule)
    */
-  GradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+  GradientDescent(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
                   size_t maxItCount = DEFAULT_MAX_IT_COUNT, double beta = DEFAULT_BETA,
                   double gamma = DEFAULT_GAMMA, double tolerance = DEFAULT_TOLERANCE,
                   double epsilon = DEFAULT_EPSILON);
@@ -66,7 +66,7 @@ class GradientDescent : public UnconstrainedOptimizer {
   /**
    * @return objective function gradient
    */
-  ScalarFunctionGradient& getObjectiveGradient() const;
+  base::ScalarFunctionGradient& getObjectiveGradient() const;
 
   /**
    * @return              beta (parameter for Armijo's rule)
@@ -115,7 +115,7 @@ class GradientDescent : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
+  std::unique_ptr<base::ScalarFunctionGradient> fGradient;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

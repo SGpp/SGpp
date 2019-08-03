@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DModPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DModPolyClenshawCurtis.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
@@ -269,8 +270,8 @@ double OperationInverseRosenblattTransformation1DModPolyClenshawCurtis::doTransf
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
-  optimization::Printer::getInstance().disableStatusPrinting();
-  optimization::WrapperScalarFunction f(1, optFunc);
+  base::Printer::getInstance().disableStatusPrinting();
+  base::WrapperScalarFunction f(1, optFunc);
   optimization::optimizer::NelderMead nelderMead(f);
   nelderMead.optimize();
   return nelderMead.getOptimalPoint()[0];

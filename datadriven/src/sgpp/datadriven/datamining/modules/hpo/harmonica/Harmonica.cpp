@@ -11,7 +11,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -21,6 +20,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include "../../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
 
 namespace sgpp {
 namespace datadriven {

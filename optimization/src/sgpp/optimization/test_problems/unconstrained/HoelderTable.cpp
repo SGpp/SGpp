@@ -46,8 +46,8 @@ double HoelderTableObjective::evalUndisplaced(const base::DataVector& x) {
                    std::exp(std::abs(1.0 - std::sqrt(x1 * x1 + x2 * x2) / M_PI)));
 }
 
-void HoelderTableObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(
+void HoelderTableObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(
 
       new HoelderTableObjective(*this));
 }

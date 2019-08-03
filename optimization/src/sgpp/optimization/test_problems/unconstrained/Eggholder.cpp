@@ -42,8 +42,8 @@ double EggholderObjective::evalUndisplaced(const base::DataVector& x) {
          x1 * std::sin(std::sqrt(std::abs(x1 - (x2 + 47.0))));
 }
 
-void EggholderObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new EggholderObjective(*this));
+void EggholderObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new EggholderObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
