@@ -9,7 +9,6 @@
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 
 #include <algorithm>
-#include <iostream>
 #include <limits>
 #include <vector>
 
