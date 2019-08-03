@@ -1,4 +1,4 @@
-%% \page example_optimization_m optimization.m
+%% \page example_optimization_m Optimization Example (MATLAB)
 %%
 %% On this page, we look at an example application of the sgpp::optimization module.
 %% Versions of the example are given in all languages
