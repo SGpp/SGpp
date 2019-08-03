@@ -108,7 +108,7 @@ void MultiStart::optimize() {
 
   size_t pointsDone = 0;
 
-#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt, pointsDone) default(none)
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt, pointsDone)
   {
     UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
