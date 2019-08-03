@@ -244,8 +244,6 @@ const bool UMFPACK_ENABLED;
 #endif
 %}
 
-%rename(AutoSLESolver)          sgpp::base::sle_solver::Auto;
-
 %include "base/src/sgpp/base/tools/sle/system/SLE.hpp"
 %include "base/src/sgpp/base/tools/sle/system/CloneableSLE.hpp"
 %include "base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
@@ -253,6 +251,7 @@ const bool UMFPACK_ENABLED;
 
 %include "base/src/sgpp/base/tools/sle/solver/SLESolver.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/Armadillo.hpp"
+%rename(AutoSLESolver) sgpp::base::sle_solver::Auto;
 %include "base/src/sgpp/base/tools/sle/solver/Auto.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
 %include "base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
