@@ -117,7 +117,7 @@ void AdaptiveGradientDescent::optimize() {
     // evaluate at new point
     if (inDomain) {
       fxNew = f->eval(xNew);
-    k++;
+      k++;
     } else {
       fxNew = INFINITY;
     }
