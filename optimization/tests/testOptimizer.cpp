@@ -29,6 +29,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 
 #include <vector>
