@@ -101,7 +101,7 @@ FuzzyInterval* FuzzyExtensionPrinciple::apply(
   size_t alphaLevelsDone = 0;
 
 #pragma omp parallel shared(curMinimumPoints, curMinimumValues, \
-    alphaLevelsDone, curMaximumPoints, curMaximumValues) default(none)
+    alphaLevelsDone, curMaximumPoints, curMaximumValues)
   {
     std::unique_ptr<FuzzyExtensionPrinciple> curFuzzyExtensionPrinciple;
     clone(curFuzzyExtensionPrinciple);
