@@ -4,7 +4,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_gettingStarted_py gettingStarted.py (Start Here)
+## \page example_combigrid_py Combigrid Example (Python)
 ## This tutorial contains examples with increasing complexity to introduce you to the combigrid
 ## module. The combigrid module is quite separated from the other modules. It only refers to the
 ## base module for things like DataVector and DataMatrix.
