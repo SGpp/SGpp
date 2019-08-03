@@ -10,7 +10,7 @@
 
 #include <stdexcept>
 #include <string>
-#include <vector>  // namespace
+#include <vector>
 
 namespace sgpp {
 namespace optimization {
