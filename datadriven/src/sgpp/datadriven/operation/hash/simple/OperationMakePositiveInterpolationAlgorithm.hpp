@@ -7,11 +7,10 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -63,7 +62,7 @@ class OperationMakePositiveInterpolateBoundaryOfSupport
 class OperationMakePositiveInterpolateFunction
     : public OperationMakePositiveInterpolationAlgorithm {
  public:
-  explicit OperationMakePositiveInterpolateFunction(optimization::ScalarFunction* f);
+  explicit OperationMakePositiveInterpolateFunction(base::ScalarFunction* f);
   virtual ~OperationMakePositiveInterpolateFunction();
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
@@ -71,7 +70,7 @@ class OperationMakePositiveInterpolateFunction
                                        double tol = -1e-14) override;
 
  private:
-  optimization::ScalarFunction* f;
+  base::ScalarFunction* f;
 };
 
 } /* namespace datadriven */

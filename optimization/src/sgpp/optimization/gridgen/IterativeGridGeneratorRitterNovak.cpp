@@ -5,14 +5,14 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
-#include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <iterator>
-#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -40,8 +40,8 @@ inline double fastPow(double a, double b) {
 }
 
 IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
-    ScalarFunction& f, base::Grid& grid, size_t N, double adaptivity, base::level_t initialLevel,
-    base::level_t maxLevel, PowMethod powMethod)
+    base::ScalarFunction& f, base::Grid& grid, size_t N, double adaptivity,
+    base::level_t initialLevel, base::level_t maxLevel, PowMethod powMethod)
     : IterativeGridGenerator(f, grid, N),
       gamma(adaptivity),
       initialLevel(initialLevel),
@@ -79,7 +79,7 @@ void IterativeGridGeneratorRitterNovak::setPowMethod(
 }
 
 bool IterativeGridGeneratorRitterNovak::generate() {
-  Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
+  sgpp::base::Printer::getInstance().printStatusBegin("Adaptive grid generation (Ritter-Novak)...");
 
   bool result = true;
   base::GridStorage& gridStorage = grid.getStorage();
@@ -152,11 +152,11 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     // status printing
     {
       char str[10];
-      snprintf(str, sizeof(str),
-               "%.1f%%", static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
-                                               std::to_string(currentN) + ", k = " +
-                                               std::to_string(k) + ")");
+      snprintf(str, sizeof(str), "%.1f%%",
+               static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
+      sgpp::base::Printer::getInstance().printStatusUpdate(std::string(str) +
+                                                           " (N = " + std::to_string(currentN) +
+                                                           ", k = " + std::to_string(k) + ")");
     }
 
     // determine the best i (i.e. i_best = argmin_i g_i)
@@ -256,7 +256,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
     if (newN == currentN) {
       // size unchanged ==> point not refined (should not happen)
-      Printer::getInstance().printStatusEnd(
+      sgpp::base::Printer::getInstance().printStatusEnd(
           "error: size unchanged in IterativeGridGeneratorRitterNovak");
       result = false;
       break;
@@ -323,9 +323,9 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ", k = " +
-                                             std::to_string(k) + ")");
-    Printer::getInstance().printStatusEnd();
+    sgpp::base::Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
+                                                         ", k = " + std::to_string(k) + ")");
+    sgpp::base::Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;

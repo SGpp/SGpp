@@ -84,11 +84,11 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 // #include <sgpp/base/grid/generation/functors/ANOVACoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
-#include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 /*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
@@ -103,26 +103,26 @@
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
@@ -141,5 +141,46 @@
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <sgpp/base/tools/MutexType.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/ScopedLock.hpp>
+#include <sgpp/base/tools/sle/solver/Armadillo.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/base/tools/sle/solver/Gmmpp.hpp>
+#include <sgpp/base/tools/sle/solver/SLESolver.hpp>
+#include <sgpp/base/tools/sle/solver/UMFPACK.hpp>
+#include <sgpp/base/tools/sle/system/CloneableSLE.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/sle/system/SLE.hpp>
+
+#include <sgpp/base/function/scalar/ComponentScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ComponentScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunctionHessian.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunction.hpp>
+#include <sgpp/base/function/vector/EmptyVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/InterpolantVectorFunctionHessian.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionHessian.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunction.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/WrapperVectorFunctionHessian.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
 #endif /* BASE_HPP */

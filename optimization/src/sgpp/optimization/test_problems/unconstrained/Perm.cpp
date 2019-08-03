@@ -54,8 +54,8 @@ double PermObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void PermObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new PermObjective(*this));
+void PermObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new PermObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
