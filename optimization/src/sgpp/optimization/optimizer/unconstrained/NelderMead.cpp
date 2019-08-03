@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -103,7 +104,7 @@ void NelderMead::optimize() {
       }
     }
 
-    double fPointR = (inDomain ? f->eval(pointR) : INFINITY);
+    double fPointR = (inDomain ? f->eval(pointR) : std::numeric_limits<double>::infinity());
     numberOfFcnEvals++;
 
     if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -121,7 +122,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double f_point_e = (inDomain ? f->eval(pointE) : INFINITY);
+      double f_point_e = (inDomain ? f->eval(pointE) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (f_point_e < fPointR) {
@@ -143,7 +144,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointOC = (in_domain ? f->eval(pointOC) : INFINITY);
+      double fPointOC = (in_domain ? f->eval(pointOC) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (fPointOC <= fPointR) {
@@ -164,7 +165,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointIC = (in_domain ? f->eval(pointIC) : INFINITY);
+      double fPointIC = (in_domain ? f->eval(pointIC) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (fPointIC < fPoints[d]) {
@@ -188,7 +189,7 @@ void NelderMead::optimize() {
           }
         }
 
-        fPoints[i] = (in_domain ? f->eval(points[i]) : INFINITY);
+        fPoints[i] = (in_domain ? f->eval(points[i]) : std::numeric_limits<double>::infinity());
       }
 
       numberOfFcnEvals += d;

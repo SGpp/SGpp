@@ -173,7 +173,7 @@ void DifferentialEvolution::optimize() {
         }
 
         // evaluate mutated point (if not out of bounds)
-        const double fy = (inDomain ? curFPtr->eval(y) : INFINITY);
+        const double fy = (inDomain ? curFPtr->eval(y) : std::numeric_limits<double>::infinity());
 
         if (fy < fx[i]) {
 // function_value is better ==> replace point with mutated one

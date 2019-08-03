@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -163,7 +164,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
 
     // determine the best i (i.e., iBest = argmin_i g_i)
     size_t iBest = 0;
-    double gBest = INFINITY;
+    double gBest = std::numeric_limits<double>::infinity();
 
     for (size_t i = 0; i < currentN; i++) {
       if (ignore[i]) {

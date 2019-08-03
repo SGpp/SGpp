@@ -10,6 +10,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -204,7 +205,7 @@ void AdaptiveNewton::optimize() {
       fxNew = f->eval(xNew);
     k++;
     } else {
-      fxNew = INFINITY;
+      fxNew = std::numeric_limits<double>::infinity();
     }
 
     // inner product of gradient and search direction
@@ -290,7 +291,7 @@ void AdaptiveNewton::optimize() {
         fxNew = f->eval(xNew);
         k++;
       } else {
-        fxNew = INFINITY;
+        fxNew = std::numeric_limits<double>::infinity();
       }
     }
 

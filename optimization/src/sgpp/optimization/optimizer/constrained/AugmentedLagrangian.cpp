@@ -12,6 +12,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
 #include <algorithm>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -35,7 +36,7 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
   double eval(const base::DataVector& x) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -99,7 +100,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         gradient.setAll(NAN);
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -177,7 +178,7 @@ class AuxiliaryObjectiveFunction : public base::ScalarFunction {
 
     for (size_t t = 0; t < d + 1; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -204,7 +205,7 @@ class AuxiliaryObjectiveGradient : public base::ScalarFunctionGradient {
     for (size_t t = 0; t < d + 1; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         gradient.setAll(NAN);
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
 
       gradient[t] = ((t < d) ? 0.0 : (sMax - sMin));
@@ -240,7 +241,7 @@ class AuxiliaryConstraintFunction : public base::VectorFunction {
 
     for (size_t t = 0; t < d + 1; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        value.setAll(INFINITY);
+        value.setAll(std::numeric_limits<double>::infinity());
         return;
       }
 
@@ -299,7 +300,7 @@ class AuxiliaryConstraintGradient : public base::VectorFunctionGradient {
 
     for (size_t t = 0; t < d + 1; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        value.setAll(INFINITY);
+        value.setAll(std::numeric_limits<double>::infinity());
         gradient.setAll(NAN);
         return;
       }

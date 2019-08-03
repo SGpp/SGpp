@@ -11,6 +11,7 @@
 #include <sgpp/optimization/optimizer/constrained/LogBarrier.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -30,7 +31,7 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
   double eval(const base::DataVector& x) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -44,7 +45,7 @@ class PenalizedObjectiveFunction : public base::ScalarFunction {
       if (gx[i] < 0.0) {
         value -= mu * std::log(-gx[i]);
       } else {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -78,7 +79,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
         gradient.setAll(NAN);
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -102,7 +103,7 @@ class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
           gradient[t] -= mu * gradGx(i, t) / gx[i];
         }
       } else {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
