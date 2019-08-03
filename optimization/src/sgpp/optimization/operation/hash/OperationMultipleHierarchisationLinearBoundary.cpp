@@ -5,10 +5,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundaryNaive.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -21,8 +21,8 @@ OperationMultipleHierarchisationLinearBoundary::~OperationMultipleHierarchisatio
 
 bool OperationMultipleHierarchisationLinearBoundary::doHierarchisation(
     base::DataVector& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
@@ -45,8 +45,8 @@ void OperationMultipleHierarchisationLinearBoundary::doDehierarchisation(base::D
 
 bool OperationMultipleHierarchisationLinearBoundary::doHierarchisation(
     base::DataMatrix& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }
