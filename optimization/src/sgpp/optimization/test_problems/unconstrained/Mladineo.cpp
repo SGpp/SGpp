@@ -46,8 +46,8 @@ double MladineoObjective::evalUndisplaced(const base::DataVector& x) {
          std::cos(10.0 * std::log(2.0 * x1)) * std::cos(10.0 * std::log(3.0 * x2));
 }
 
-void MladineoObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new MladineoObjective(*this));
+void MladineoObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new MladineoObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

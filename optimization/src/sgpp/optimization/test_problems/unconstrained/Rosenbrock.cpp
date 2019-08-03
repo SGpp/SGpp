@@ -45,8 +45,8 @@ double RosenbrockObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void RosenbrockObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new RosenbrockObjective(*this));
+void RosenbrockObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new RosenbrockObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

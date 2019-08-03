@@ -5,22 +5,22 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
-#include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
 
+#include <algorithm>
 #include <cstring>
 #include <iterator>
-#include <algorithm>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace optimization {
 
-IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(ScalarFunction& f, base::Grid& grid, size_t N,
-                                                     double adaptivity)
+IterativeGridGeneratorSOO::IterativeGridGeneratorSOO(base::ScalarFunction& f, base::Grid& grid,
+                                                     size_t N, double adaptivity)
     : IterativeGridGenerator(f, grid, N) {
   setAdaptivity(adaptivity);
 }
@@ -41,7 +41,7 @@ void IterativeGridGeneratorSOO::setAdaptivity(
 }
 
 bool IterativeGridGeneratorSOO::generate() {
-  Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
+  sgpp::base::Printer::getInstance().printStatusBegin("Adaptive grid generation (SOO)...");
 
   bool result = true;
   base::GridStorage& gridStorage = grid.getStorage();
@@ -92,9 +92,9 @@ bool IterativeGridGeneratorSOO::generate() {
       char str[10];
       snprintf(str, sizeof(str), "%.1f%%",
                static_cast<double>(currentN) / static_cast<double>(N) * 100.0);
-      Printer::getInstance().printStatusUpdate(std::string(str) + " (N = " +
-                                               std::to_string(currentN) + ", k = " +
-                                               std::to_string(k) + ")");
+      sgpp::base::Printer::getInstance().printStatusUpdate(std::string(str) +
+                                                           " (N = " + std::to_string(currentN) +
+                                                           ", k = " + std::to_string(k) + ")");
     }
 
     const size_t curDepthBound =
@@ -122,7 +122,7 @@ bool IterativeGridGeneratorSOO::generate() {
 
         if (newN == currentN) {
           // size unchanged ==> point not refined (should not happen)
-          Printer::getInstance().printStatusEnd(
+          sgpp::base::Printer::getInstance().printStatusEnd(
               "error: size unchanged in IterativeGridGeneratorSOO");
           result = false;
           breakLoop = true;
@@ -182,9 +182,9 @@ bool IterativeGridGeneratorSOO::generate() {
   fX.resize(currentN);
 
   if (result) {
-    Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) + ", k = " +
-                                             std::to_string(k) + ")");
-    Printer::getInstance().printStatusEnd();
+    sgpp::base::Printer::getInstance().printStatusUpdate("100.0% (N = " + std::to_string(currentN) +
+                                                         ", k = " + std::to_string(k) + ")");
+    sgpp::base::Printer::getInstance().printStatusEnd();
     return true;
   } else {
     return false;

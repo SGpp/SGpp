@@ -41,8 +41,8 @@ double G12Objective::evalUndisplaced(const base::DataVector& x) {
          1.0;
 }
 
-void G12Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G12Objective(*this));
+void G12Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G12Objective(*this));
 }
 
 G12InequalityConstraint::G12InequalityConstraint() : TestVectorFunction(3, 1) {}
@@ -71,8 +71,8 @@ void G12InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[0] = result;
 }
 
-void G12InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G12InequalityConstraint(*this));
+void G12InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G12InequalityConstraint(*this));
 }
 
 G12EqualityConstraint::G12EqualityConstraint() : TestVectorFunction(3, 0) {}
@@ -81,8 +81,8 @@ G12EqualityConstraint::~G12EqualityConstraint() {}
 
 void G12EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
 
-void G12EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G12EqualityConstraint(*this));
+void G12EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G12EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

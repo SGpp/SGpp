@@ -5,7 +5,7 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
@@ -16,9 +16,10 @@ namespace optimization {
 namespace optimizer {
 
 namespace {
-class PenalizedObjectiveFunction : public ScalarFunction {
+class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
-  PenalizedObjectiveFunction(ScalarFunction& f, VectorFunction& g, VectorFunction& h, double mu)
+  PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g,
+                             base::VectorFunction& h, double mu)
       : ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
@@ -64,18 +65,19 @@ class PenalizedObjectiveFunction : public ScalarFunction {
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunction& f;
-  VectorFunction& g;
-  VectorFunction& h;
+  base::ScalarFunction& f;
+  base::VectorFunction& g;
+  base::VectorFunction& h;
   double mu;
   size_t mG;
   size_t mH;
 };
 
-class PenalizedObjectiveGradient : public ScalarFunctionGradient {
+class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
  public:
-  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient, VectorFunctionGradient& gGradient,
-                             VectorFunctionGradient& hGradient, double mu)
+  PenalizedObjectiveGradient(base::ScalarFunctionGradient& fGradient,
+                             base::VectorFunctionGradient& gGradient,
+                             base::VectorFunctionGradient& hGradient, double mu)
       : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
@@ -138,22 +140,22 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunctionGradient& fGradient;
-  VectorFunctionGradient& gGradient;
-  VectorFunctionGradient& hGradient;
+  base::ScalarFunctionGradient& fGradient;
+  base::VectorFunctionGradient& gGradient;
+  base::VectorFunctionGradient& hGradient;
   double mu;
   size_t mG;
   size_t mH;
 };
 }  // namespace
 
-SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
-                               const ScalarFunctionGradient& fGradient,
-                               const VectorFunction& g,
-                               const VectorFunctionGradient& gGradient,
-                               const VectorFunction& h,
-                               const VectorFunctionGradient& hGradient,
-                               size_t maxItCount, double xTolerance, double constraintTolerance,
+SquaredPenalty::SquaredPenalty(const base::ScalarFunction& f,
+                               const base::ScalarFunctionGradient& fGradient,
+                               const base::VectorFunction& g,
+                               const base::VectorFunctionGradient& gGradient,
+                               const base::VectorFunction& h,
+                               const base::VectorFunctionGradient& hGradient, size_t maxItCount,
+                               double xTolerance, double constraintTolerance,
                                double penaltyStartValue, double penaltyIncreaseFactor)
     : ConstrainedOptimizer(f, g, h, maxItCount),
       theta(xTolerance),
@@ -183,7 +185,7 @@ SquaredPenalty::SquaredPenalty(const SquaredPenalty& other)
 SquaredPenalty::~SquaredPenalty() {}
 
 void SquaredPenalty::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
 
   const size_t d = f->getNumberOfParameters();
 
@@ -251,7 +253,7 @@ void SquaredPenalty::optimize() {
     kHistInner.push_back(numberInnerIterations);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
+    base::Printer::getInstance().printStatusUpdate(
         std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx) +
         ", g(x) = " + gx.toString() + ", h(x) = " + hx.toString());
 
@@ -275,16 +277,18 @@ void SquaredPenalty::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
-ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const { return *fGradient; }
+base::ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const { return *fGradient; }
 
-VectorFunctionGradient& SquaredPenalty::getInequalityConstraintGradient() const {
+base::VectorFunctionGradient& SquaredPenalty::getInequalityConstraintGradient() const {
   return *gGradient;
 }
 
-VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const { return *hGradient; }
+base::VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const {
+  return *hGradient;
+}
 
 double SquaredPenalty::getXTolerance() const { return theta; }
 
