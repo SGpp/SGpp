@@ -13,7 +13,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
+#include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <list>
+#include <utility>
 #include <vector>
 
 using std::vector;
@@ -47,9 +48,8 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
-  configurator = CombiConfigurator();
-  configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
-  configurator.getCombiScheme(componentConfigs);
+  scheme.initialize(newDataset.getNcols(), config->getGridConfig().level_);
+  componentConfigs = scheme.getCombiScheme();
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());
 
@@ -59,7 +59,7 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     newFitterConfig.getDensityEstimationConfig().type_ = config->getDensityEstimationConfig().type_;
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
     newFitterConfig.getGridConfig().levelVector_.clear();
-    for (auto v : componentConfigs.at(i).levels) {
+    for (auto v : componentConfigs.at(i).first) {
       newFitterConfig.getGridConfig().levelVector_.push_back(v);
     }
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
@@ -119,7 +119,7 @@ double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
       result +=
-          components.at(i)->evaluate(sample) * static_cast<double>(componentConfigs.at(i).coef);
+          components.at(i)->evaluate(sample) * static_cast<double>(componentConfigs.at(i).second);
     }
   }
   return result;
@@ -132,7 +132,7 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVecto
     if (fitted.at(i)) {
       temp.setAll(0);
       components.at(i)->evaluate(samples, temp);
-      temp.mult(static_cast<double>(componentConfigs.at(i).coef));
+      temp.mult(static_cast<double>(componentConfigs.at(i).second));
       results.add(temp);
     }
   }
@@ -159,7 +159,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
       double now = components.at(i)->getSurpluses().l2Norm() /
                    static_cast<double>(components.at(i)->getSurpluses().getSize());
       if (now > max) {
-        if (configurator.isRefinable(componentConfigs.at(i))) {
+        if (scheme.isRefinable(componentConfigs.at(i).first)) {
           max = now;
           ind = i;
         }
@@ -169,9 +169,9 @@ bool ModelFittingDensityEstimationCombi::refine() {
     /*
      * Refining the chosen block
      */
-    configurator.refineComponent(componentConfigs.at(ind));
-    vector<combiConfig> newConfigs;
-    configurator.getCombiScheme(newConfigs);
+    scheme.refineComponent(componentConfigs.at(ind).first);
+    std::vector<std::pair<std::vector<size_t>, int>> newConfigs = scheme.getCombiScheme();
+
     /*
      * Actualizing coefficients and finding newly-added and newly-removed components
      */
@@ -180,10 +180,10 @@ bool ModelFittingDensityEstimationCombi::refine() {
 
     for (size_t i = 0; i < newConfigs.size(); i++) {
       for (size_t k = 0; k < componentConfigs.size(); k++) {
-        if (newConfigs.at(i).levels == componentConfigs.at(k).levels) {
+        if (newConfigs.at(i).first == componentConfigs.at(k).first) {
           toAdd.at(i) = 0;
           toRemove.at(k) = false;
-          componentConfigs.at(k).coef = newConfigs.at(i).coef;
+          componentConfigs.at(k).second = newConfigs.at(i).second;
         }
       }
     }
@@ -212,7 +212,7 @@ bool ModelFittingDensityEstimationCombi::refine(size_t newNoPoints,
                                                 std::list<size_t>* deletedGridPoints) {
   throw application_exception(
       "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
-      "deletedGridPoints): not ready jet\n");
+      "deletedGridPoints): not ready yet\n");
 }
 
 void ModelFittingDensityEstimationCombi::reset() {
@@ -233,14 +233,15 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
   }
 }
 
-void ModelFittingDensityEstimationCombi::addNewModel(combiConfig combiconfig) {
+void ModelFittingDensityEstimationCombi::addNewModel(
+    std::pair<std::vector<size_t>, int> combiconfig) {
   FitterConfigurationDensityEstimation newFitterConfig{};
   newFitterConfig.setupDefaults();
   newFitterConfig.getDensityEstimationConfig().type_ =
       this->config->getDensityEstimationConfig().type_;
   newFitterConfig.getRefinementConfig().numRefinements_ = 0;
   newFitterConfig.getGridConfig().levelVector_.clear();
-  for (auto v : combiconfig.levels) {
+  for (auto v : combiconfig.first) {
     newFitterConfig.getGridConfig().levelVector_.push_back(v);
   }
   newFitterConfig.getGridConfig().generalType_ = this->config->getGridConfig().generalType_;

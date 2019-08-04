@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -41,7 +41,8 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
    * @param stepSizeDecreaseFactor  step size decrease factor
    * @param lineSearchAccuracy      line search accuracy
    */
-  AdaptiveGradientDescent(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+  AdaptiveGradientDescent(const base::ScalarFunction& f,
+                          const base::ScalarFunctionGradient& fGradient,
                           size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
                           double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                           double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
@@ -64,7 +65,7 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   /**
    * @return objective function gradient
    */
-  ScalarFunctionGradient& getObjectiveGradient() const;
+  base::ScalarFunctionGradient& getObjectiveGradient() const;
 
   /**
    * @return tolerance
@@ -113,7 +114,7 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
 
  protected:
   /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
+  std::unique_ptr<base::ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// step size increase factor
