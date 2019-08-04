@@ -120,6 +120,9 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         // test function value
         BOOST_CHECK_CLOSE(functionValues[i], f.eval(x), 1e-10);
       }
+
+      // test printing of grid points and function values
+      gridGen->printIterativeGridGenerator();
     }
   }
 }
