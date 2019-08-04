@@ -3,8 +3,14 @@ Version: {{major_version}}.{{minor_version}}-{{package_revision}}
 Section: base
 Priority: optional
 Architecture: amd64
-Depends:
+Depends: {{sgpp_deps}}
 Maintainer: {{maintainer_name}} <{{maintainer_email}}>
 Description: The sparse grids toolkit SG++
-  SG++ is a collection of numerical algorithms for spars grids.
-	It contains modules for interpolation, quadrature, data mining (regression, classification, clustering), PDEs and more. SG++ implements algorithm for spatially-adaptive grids and also provides a module for the combination technique. Many of the implemented algorithm are also available as a high-performance version, often orders of magnitude faster than standard implementations.
+ SG++ is a collection of numerical algorithms for sparse grids. It
+ contains modules for interpolation, quadrature, data mining
+ (regression, classification, clustering), optimization, PDEs, and
+ more. SG++ implements algorithms for spatially adaptive grids and
+ also provides a module for the combination technique. Many of the
+ implemented algorithms are also available as a high-performance
+ version, often orders of magnitude faster than standard
+ implementations.
