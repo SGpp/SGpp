@@ -39,8 +39,8 @@ double SphereObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void SphereObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new SphereObjective(*this));
+void SphereObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new SphereObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

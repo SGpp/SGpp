@@ -3,11 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
-#define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
+#pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 #include <cstddef>
@@ -55,7 +54,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
    *                      (fastPow is faster than std::pow,
    *                      but only approximative)
    */
-  IterativeGridGeneratorRitterNovak(ScalarFunction& f, base::Grid& grid, size_t N,
+  IterativeGridGeneratorRitterNovak(base::ScalarFunction& f, base::Grid& grid, size_t N,
                                     double adaptivity = DEFAULT_ADAPTIVITY,
                                     base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
                                     base::level_t maxLevel = DEFAULT_MAX_LEVEL,
@@ -125,5 +124,3 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
 };
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */
