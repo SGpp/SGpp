@@ -4,27 +4,29 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-## \page example_gettingStarted_py gettingStarted.py (Start Here)
+## \page example_combigrid_py Combigrid Example (Python)
 ## This tutorial contains examples with increasing complexity to introduce you to the combigrid
 ## module. The combigrid module is quite separated from the other modules. It only refers to the
 ## base module for things like DataVector and DataMatrix.
 
-## At the beginning of the program, we have to import the pysgpp library.
+## At the beginning of the program, we have to import the pysgpp library,
+## and visualization tools if required
 from itertools import product, combinations, permutations,\
     combinations_with_replacement
 from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
-from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
-    load_color, load_font_properties, savefig
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
 import math
 import pysgpp
-
-from matplotlib.patches import Rectangle
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
-import matplotlib.pyplot as plt
-import numpy as np
+visualOutput = True
+
+if visualOutput:
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
+    from mpl_toolkits.mplot3d import Axes3D
+    from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
+        load_color, load_font_properties, savefig
+    from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
 
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
@@ -40,7 +42,6 @@ def f(x):
 
 def g(x):
     return np.prod([4 * xi * (1 - xi) for xi in x.array()])
-
 
 ## We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(g)
@@ -149,17 +150,18 @@ def example2():
     print("Adaptive result: " + str(operation.getResult()))
     print("Total function evaluations: " + str(operation.numGridPoints()))
 
-    ## We can also fetch the used grid points and plot the grid:
-    grid = levelManager.getGridPointMatrix()
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
+    if visualOutput:
+        ## We can also fetch the used grid points and plot the grid:
+        grid = levelManager.getGridPointMatrix()
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
 
-    ax.scatter(gridList[0], gridList[1], gridList[2], c='r', marker='o')
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
-    plt.show()
+        ax.scatter(gridList[0], gridList[1], gridList[2], c='r', marker='o')
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
+        plt.show()
 
 
 ## @section py_combigrid_example_3 Example 3: Evaluation at multiple points
@@ -363,91 +365,69 @@ def example7(dtype="uniform", maxLevel=2):
     gridList = np.array([[grid.get(r, c) for c in range(grid.getNcols())]
                          for r in range(grid.getNrows())])
 
-    initialize_plotting_style()
-##     def g(x, y):
-##         evaluationPoint = pysgpp.DataVector([x, y])
-##         result = operation.evaluate(maxLevel, evaluationPoint)
-##         return result
+    if visualOutput:
+        initialize_plotting_style()
 
-##     fig, ax, _ = plotSG3d(g=g, contour_xy=False)
-##     ax.scatter(gridList[0], gridList[1], np.zeros(len(gridList[0])),
-##                color=load_color(0),
-##                marker='o', s=20)
-    ## ax.set_axis_off()
-##     ax.set_xlabel(r"$x$")
-##     ax.set_ylabel(r"$y$")
-##     ax.set_xticks([0, 0.5, 1])
-##     ax.set_yticks([0, 0.5, 1])
-##     ax.set_zticks([0, 0.5, 1])
-##     ax.xaxis.labelpad = 13
-##     ax.yaxis.labelpad = 13
-##     ax.set_title(r"$f(x,y) = 16 x(1-x)y(1-y)$",
-##                  fontproperties=load_font_properties())
-    ## savefig(fig, "/home/franzefn/Desktop/Mario/normal_parabola", mpl3d=True)
+        fig = plt.figure()
+        plt.plot(gridList[0, :], gridList[1, :], " ",
+                color=load_color(0),
+                marker='o', markersize=10)
+        plt.axis('off')
+        currentAxis = plt.gca()
+        currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
+        plt.xlim(0, 1)
+        plt.ylim(0, 1)
+        if dtype == "uniform":
+            plt.title(r"Sparse Grid $\ell=%i$" % (maxLevel + 1,),
+                    fontproperties=load_font_properties())
+        else:
+            plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
+                    fontproperties=load_font_properties())
 
-    fig = plt.figure()
-    plt.plot(gridList[0, :], gridList[1, :], " ",
-             color=load_color(0),
-             marker='o', markersize=10)
-    plt.axis('off')
-    currentAxis = plt.gca()
-    currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
-    if dtype == "uniform":
-        plt.title(r"Sparse Grid $\ell=%i$" % (maxLevel + 1,),
-                  fontproperties=load_font_properties())
-    else:
-        plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
-                  fontproperties=load_font_properties())
+        savefig(fig, "./sparse_grid_%s" % dtype, mpl3d=True)
 
-    savefig(fig, "/home/franzefn/Desktop/tmp/sparse_grid_%s" % dtype,
-            mpl3d=True)
+        maxLevel = 1
+        for tr in ["fg", "ct"]:
+            ## We can also fetch the used grid points and plot the grid:
+            fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
+                                    sharex=True, sharey=True, squeeze=True)
 
-    maxLevel = 1
-    for tr in ["fg", "ct"]:
-        ## We can also fetch the used grid points and plot the grid:
-        fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
-                                  sharex=True, sharey=True, squeeze=True)
+            levels = []
+            for level in product(list(range(maxLevel + 1)), repeat=2):
+                levels.append(level)
+                ax = axarr[level[0], level[1]]
+                ax.axis('off')
 
-        levels = []
-        for level in product(list(range(maxLevel + 1)), repeat=2):
-            levels.append(level)
-            ax = axarr[level[0], level[1]]
-            ax.axis('off')
+            for level in levels:
+                print(( tr, level ))
+                if tr == "ct" and np.sum(level) > maxLevel:
+                    print( "skip %s" % (level,) )
+                    continue
 
-        for level in levels:
-            print(( tr, level ))
-            if tr == "ct" and np.sum(level) > maxLevel:
-                print( "skip %s" % (level,) )
-                continue
+                ax = axarr[level[0], level[1]]
+                if level[0] == 0:
+                    xs = np.array([gridList[0, 1]])
+                else:
+                    xs = gridList[0, :]
 
-            ax = axarr[level[0], level[1]]
-            if level[0] == 0:
-                xs = np.array([gridList[0, 1]])
-            else:
-                xs = gridList[0, :]
+                if level[1] == 0:
+                    ys = np.array([gridList[1, 1]])
+                else:
+                    ys = gridList[1, :]
 
-            if level[1] == 0:
-                ys = np.array([gridList[1, 1]])
-            else:
-                ys = gridList[1, :]
+                xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
 
-            xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
+                for i in range(len(xs)):
+                    for j in range(len(ys)):
+                        ax.plot(yv[j, i], xv[j, i], color=load_color(0),
+                                marker="o", markersize=10)
+                ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
+                            fontproperties=load_font_properties())
+                ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
 
-            for i in range(len(xs)):
-                for j in range(len(ys)):
-                    ax.plot(yv[j, i], xv[j, i], color=load_color(0),
-                            marker="o", markersize=10)
-            ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
-                         fontproperties=load_font_properties())
-            ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
-
-        ## plt.xlim(0, 1)
-        ## plt.ylim(0, 1)
-        fig.set_size_inches(6, 6, forward=True)
-        savefig(fig, "/home/franzefn/Desktop/tmp/tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
-                mpl3d=True)
+            fig.set_size_inches(6, 6, forward=True)
+            savefig(fig, "./tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
+                   mpl3d=True)
 
 
 ## @section py_combigrid_example_8 Example 8: UQ setting with variance refinement
@@ -494,32 +474,30 @@ def example8(dist_type="uniform"):
 
 ## Call the examples
 
-#print("Example 1:")
-## example1()
+print("Example 1:")
+example1()
 
-#print("\nExample 2:")
-## example2()
+print("\nExample 2:")
+example2()
 
-#print("\nExample 3:")
-## example3()
+print("\nExample 3:")
+example3()
 
-#print("\nExample 4:")
-## example4()
+print("\nExample 4:")
+example4()
 
-#print("\nExample 5:")
-## example5()
+print("\nExample 5:")
+example5()
 
-#print("\nExample 6:")
-## example6()
-
+print("\nExample 6:")
+example6()
 
 print("\nExample 7:")
 example7(dtype="cc")
 example7(dtype="uniform")
 example7(dtype="l2leja")
 
-
-## print("\nExample 8:")
-## example8(dist_type="beta")
-## print( "-" * 80 )
-## example8(dist_type="uniform")
+print("\nExample 8:")
+example8(dist_type="beta")
+print( "-" * 80 )
+example8(dist_type="uniform")
