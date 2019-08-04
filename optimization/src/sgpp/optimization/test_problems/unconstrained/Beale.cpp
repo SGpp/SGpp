@@ -39,8 +39,8 @@ double BealeObjective::evalUndisplaced(const base::DataVector& x) {
   return tmp1 * tmp1 + tmp2 * tmp2 + tmp3 * tmp3;
 }
 
-void BealeObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new BealeObjective(*this));
+void BealeObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new BealeObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
