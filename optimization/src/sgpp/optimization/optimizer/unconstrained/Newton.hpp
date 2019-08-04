@@ -8,10 +8,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/base/tools/sle/solver/SLESolver.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
-#include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -60,9 +60,8 @@ class Newton : public UnconstrainedOptimizer {
    * @param alpha2            steepest descent restart parameter 2
    * @param p                 steepest descent restart exponent
    */
-  Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
-         size_t maxItCount = DEFAULT_N,
-         double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+  Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+         size_t maxItCount = DEFAULT_N, double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
          double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
          double alpha1 = DEFAULT_ALPHA1, double alpha2 = DEFAULT_ALPHA2, double p = DEFAULT_P);
 
@@ -84,10 +83,9 @@ class Newton : public UnconstrainedOptimizer {
    *                          the linear systems
    *                          (Hessian as coefficient matrix)
    */
-  Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
-         size_t maxItCount, double beta,
-         double gamma, double tolerance, double epsilon, double alpha1, double alpha2,
-         double p, const sle_solver::SLESolver& sleSolver);
+  Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+         size_t maxItCount, double beta, double gamma, double tolerance, double epsilon,
+         double alpha1, double alpha2, double p, const base::sle_solver::SLESolver& sleSolver);
 
   /**
    * Copy constructor.
@@ -106,7 +104,7 @@ class Newton : public UnconstrainedOptimizer {
   /**
    * @return objective function Hessian
    */
-  ScalarFunctionHessian& getObjectiveHessian() const;
+  base::ScalarFunctionHessian& getObjectiveHessian() const;
 
   /**
    * @return              beta (parameter for Armijo's rule)
@@ -185,7 +183,7 @@ class Newton : public UnconstrainedOptimizer {
 
  protected:
   /// objective function Hessian
-  std::unique_ptr<ScalarFunctionHessian> fHessian;
+  std::unique_ptr<base::ScalarFunctionHessian> fHessian;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)
@@ -201,9 +199,9 @@ class Newton : public UnconstrainedOptimizer {
   /// steepest descent restart exponent
   double p;
   /// default linear solver
-  const sle_solver::GaussianElimination defaultSleSolver;
+  const base::sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
-  const sle_solver::SLESolver& sleSolver;
+  const base::sle_solver::SLESolver& sleSolver;
 };
 }  // namespace optimizer
 }  // namespace optimization

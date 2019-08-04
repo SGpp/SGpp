@@ -41,8 +41,8 @@ double EasomYangObjective::evalUndisplaced(const base::DataVector& x) {
   return -std::exp(-sum) * product;
 }
 
-void EasomYangObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new EasomYangObjective(*this));
+void EasomYangObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new EasomYangObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

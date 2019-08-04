@@ -3,10 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/globaldef.hpp>
-
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -20,32 +19,32 @@ OperationMultipleHierarchisationModFundamentalSpline::
 
 bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
     base::DataVector& nodeValues) {
-  Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
+  base::Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
   return true;
 }
 
 void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
     base::DataVector& alpha) {
-  Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
+  base::Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 
 bool OperationMultipleHierarchisationModFundamentalSpline::doHierarchisation(
     base::DataMatrix& nodeValues) {
-  Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
+  base::Printer::getInstance().printStatusBegin("Hierarchization (BFS)...");
   op.doHierarchisation(nodeValues);
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
   return true;
 }
 
 void OperationMultipleHierarchisationModFundamentalSpline::doDehierarchisation(
     base::DataMatrix& alpha) {
-  Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
+  base::Printer::getInstance().printStatusBegin("Dehierarchization (BFS)...");
   op.doDehierarchisation(alpha);
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
 }  // namespace optimization
 }  // namespace sgpp
