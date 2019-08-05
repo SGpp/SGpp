@@ -18,7 +18,9 @@ namespace optimization {
 /**
  * Zadeh's fuzzy extension principle by the transformation method, where the optimization
  * problems are solved by sampling the optimization domains and taking the
- * best points.
+ * best points. The transformation method produces inaccurate results if the
+ * fuzzy input intervals are not fuzzy numbers, i.e., if the confidence intervals for
+ * \f$\alpha = 1\f$ contain more than one point.
  */
 class FuzzyExtensionPrincipleViaTransformation : public FuzzyExtensionPrincipleViaOptimization {
  public:
