@@ -28,15 +28,17 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
    * (which are always closed intervals, so it suffices to supply lower and upper bounds).
    * The core is needed since the binary search cannot be performed for \f$\alpha = 1\f$.
    *
-   * @param supportLowerBound       lower bound of the support
-   * @param supportUpperBound       upper bound of the support
-   * @param coreLowerBound          lower bound of the core
-   * @param coreUpperBound          upper bound of the core
-   * @param binarySearchTolerance   tolerance for the binary search
+   * @param supportLowerBound         lower bound of the support
+   * @param supportUpperBound         upper bound of the support
+   * @param coreLowerBound            lower bound of the core
+   * @param coreUpperBound            upper bound of the core
+   * @param numberOfIntegralSamples   number of samples to compute norms
+   * @param binarySearchTolerance     tolerance for the binary search
    */
   FuzzyIntervalViaMembershipFunction(
       double supportLowerBound, double supportUpperBound,
       double coreLowerBound, double coreUpperBound,
+      size_t numberOfIntegralSamples = DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES,
       double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**

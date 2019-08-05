@@ -12,8 +12,9 @@ namespace optimization {
 
 FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
     double supportLowerBound, double supportUpperBound,
-    double coreLowerBound, double coreUpperBound, double binarySearchTolerance) :
-        FuzzyInterval(supportLowerBound, supportUpperBound),
+    double coreLowerBound, double coreUpperBound, size_t numberOfIntegralSamples,
+    double binarySearchTolerance) :
+        FuzzyInterval(supportLowerBound, supportUpperBound, numberOfIntegralSamples),
         coreLowerBound(coreLowerBound),
         coreUpperBound(coreUpperBound),
         binarySearchTolerance(binarySearchTolerance) {

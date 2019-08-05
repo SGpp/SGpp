@@ -46,16 +46,19 @@ class FuzzyInterval {
   };
 
   /// default number of samples to compute norms
-  const size_t DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES = 10000;
+  static const size_t DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES = 10000;
 
   /**
    * Constructor. Needs the support of the fuzzy interval (which is
    * always a closed interval, so it suffices to supply lower and upper bound).
    *
-   * @param supportLowerBound   lower bound of the support
-   * @param supportUpperBound   upper bound of the support
+   * @param supportLowerBound         lower bound of the support
+   * @param supportUpperBound         upper bound of the support
+   * @param numberOfIntegralSamples   number of samples to compute norms
    */
-  FuzzyInterval(double supportLowerBound, double supportUpperBound);
+  FuzzyInterval(
+      double supportLowerBound, double supportUpperBound,
+      size_t numberOfIntegralSamples = DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES);
 
   /**
    * Destructor.
