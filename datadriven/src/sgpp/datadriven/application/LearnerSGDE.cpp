@@ -189,8 +189,12 @@ sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(std::string& gri
     return sgpp::base::GridType::Wavelet;
   } else if (gridType.compare("WaveletBoundary") == 0) {
     return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("FundamentalNakSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalNakSplineBoundary;
   } else if (gridType.compare("FundamentalSpline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
+  } else if (gridType.compare("FundamentalSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalSplineBoundary;
   } else if (gridType.compare("ModFundamentalSpline") == 0) {
     return sgpp::base::GridType::ModFundamentalSpline;
   } else if (gridType.compare("ModBsplineClenshawCurtis") == 0) {

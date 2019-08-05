@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_optimization_java optimization.java
+ * \page example_optimization_java Optimization Example (Java)
  *
  * On this page, we look at an example application of the sgpp::optimization module.
  * Versions of the example are given in all languages

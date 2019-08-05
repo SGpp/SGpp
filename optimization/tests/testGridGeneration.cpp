@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     const IterativeGridGeneratorRitterNovak::PowMethod powMethod =
         IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW;
     gridGen.setPowMethod(powMethod);
-    BOOST_CHECK_EQUAL(gridGen.getPowMethod(), powMethod);
+    BOOST_CHECK(gridGen.getPowMethod() == powMethod);
   }
 
   {
@@ -120,6 +120,9 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
         // test function value
         BOOST_CHECK_CLOSE(functionValues[i], f.eval(x), 1e-10);
       }
+
+      // test printing of grid points and function values
+      gridGen->printIterativeGridGenerator();
     }
   }
 }

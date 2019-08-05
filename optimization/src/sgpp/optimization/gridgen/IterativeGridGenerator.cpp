@@ -8,6 +8,7 @@
 #endif
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 #include <list>
@@ -29,16 +30,17 @@ void IterativeGridGenerator::printIterativeGridGenerator() const {
   base::GridStorage& gridStorage = this->getGrid().getStorage();
   const base::DataVector& functionValues = this->getFunctionValues();
 
-  for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    if (i > 0) {
-      std::cout << "\n";
-    }
+  base::Printer::getInstance().printStatusBegin("IterativeGridGenerator contents begin");
 
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
     // print grid point and function value
-    std::cout << gridStorage[i].toString() << ", " << functionValues[i];
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(i) + ": " + gridStorage[i].toString() + ", " +
+        std::to_string(functionValues[i]));
+    base::Printer::getInstance().printStatusNewLine();
   }
 
-  std::cout << "\n";
+  base::Printer::getInstance().printStatusEnd("IterativeGridGenerator contents end");
 }
 
 void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {

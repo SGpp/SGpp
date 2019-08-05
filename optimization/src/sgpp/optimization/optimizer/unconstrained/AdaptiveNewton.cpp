@@ -10,6 +10,8 @@
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveNewton.hpp>
 
 #include <algorithm>
+#include <limits>
+#include <vector>
 
 namespace sgpp {
 namespace optimization {
@@ -20,7 +22,7 @@ AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
                                double tolerance, double stepSizeIncreaseFactor,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -29,7 +31,6 @@ AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
@@ -38,7 +39,7 @@ AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
                                double stepSizeDecreaseFactor, double dampingIncreaseFactor,
                                double dampingDecreaseFactor, double lineSearchAccuracy,
                                const base::sle_solver::SLESolver& sleSolver)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
@@ -47,7 +48,6 @@ AdaptiveNewton::AdaptiveNewton(const base::ScalarFunction& f,
       rhoLs(lineSearchAccuracy),
       defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
@@ -60,7 +60,6 @@ AdaptiveNewton::AdaptiveNewton(const AdaptiveNewton& other)
       rhoLs(other.rhoLs),
       defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
-  other.fHessian->clone(fHessian);
 }
 
 AdaptiveNewton::~AdaptiveNewton() {}
@@ -71,12 +70,12 @@ void AdaptiveNewton::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
   base::DataVector gradFx(d);
   base::DataMatrix hessianFx(d, d);
 
@@ -92,12 +91,14 @@ void AdaptiveNewton::optimize() {
   double lambda = 1.0;
   base::DataVector dir(d);
   bool inDomain;
+  std::vector<bool> isConstraintBinding(d, false);
 
   size_t breakIterationCounter = 0;
   const size_t BREAK_ITERATION_COUNTER_MAX = 10;
 
   const double ALPHA1 = 1e-6;
   const double ALPHA2 = 1e-6;
+  const double BINDING_TOLERANCE = 1e-6;
   const double P = 0.1;
   const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
 
@@ -122,6 +123,21 @@ void AdaptiveNewton::optimize() {
       b[t] = -gradFx[t];
       // add damping
       hessianFx(t, t) += lambda;
+
+      // eliminate rows and columns corresponding to binding constraints
+      if (isConstraintBinding[t]) {
+        // discard variable by setting RHS to zero
+        b[t] = 0.0;
+        // eliminate variable from linear system matrix
+        hessianFx(t, t) = 1.0;
+
+        for (size_t t2 = 0; t2 < d; t2++) {
+          if (t != t2) {
+            hessianFx(t, t2) = 0.0;
+            hessianFx(t2, t) = 0.0;
+          }
+        }
+      }
     }
 
     // solve linear system with damped Hessian as system matrix
@@ -135,26 +151,46 @@ void AdaptiveNewton::optimize() {
       base::Printer::getInstance().enableStatusPrinting();
     }
 
-    const double dirNorm = dir.l2Norm();
+    double dirNorm = dir.l2Norm();
 
     // acceptance criterion
-    if (lsSolved && (b.dotProduct(dir) >=
-                     std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) * dirNorm * dirNorm)) {
-      // normalize search direction
+    if (!(lsSolved && (b.dotProduct(dir) >=
+                       std::min(ALPHA1, ALPHA2 * std::pow(dirNorm, P)) * dirNorm * dirNorm))) {
+      // restart method (negated normalized gradient as new search direction)
+      dir = b;
+    }
+
       for (size_t t = 0; t < d; t++) {
-        dir[t] /= dirNorm;
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (dir[t] > 0.0))) {
+        // discard variable by setting direction to zero
+        dir[t] = 0.0;
+
+        // was the constraint not binding in the previous iteration?
+        if (!isConstraintBinding[t]) {
+          // reset step size as it's most likely very small due to approach to the boundary
+          alpha = 1.0;
+          isConstraintBinding[t] = true;
       }
     } else {
-      // restart method
-      // (negated normalized gradient as new search direction)
-      for (size_t t = 0; t < d; t++) {
-        dir[t] = b[t] / gradFxNorm;
+        isConstraintBinding[t] = false;
       }
+    }
+
+    dirNorm = dir.l2Norm();
+
+    if (dirNorm == 0.0) {
+      break;
     }
 
     inDomain = true;
 
     for (size_t t = 0; t < d; t++) {
+      // normalize search direction
+      dir[t] /= dirNorm;
+
       // new point
       xNew[t] = x[t] + alpha * dir[t];
 
@@ -165,8 +201,12 @@ void AdaptiveNewton::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
+    if (inDomain) {
+      fxNew = f->eval(xNew);
     k++;
+    } else {
+      fxNew = std::numeric_limits<double>::infinity();
+    }
 
     // inner product of gradient and search direction
     double gradFxTimesDir = gradFx.dotProduct(dir);
@@ -183,12 +223,52 @@ void AdaptiveNewton::optimize() {
         for (size_t t = 0; t < d; t++) {
           // add damping
           hessianFx(t, t) += lambda - oldLambda;
+
+          // eliminate rows and columns corresponding to binding constraints
+          if (isConstraintBinding[t]) {
+            // discard variable by setting RHS to zero
+            b[t] = 0.0;
+            // eliminate variable from linear system matrix
+            hessianFx(t, t) = 1.0;
+
+            for (size_t t2 = 0; t2 < d; t2++) {
+              if (t != t2) {
+                hessianFx(t, t2) = 0.0;
+                hessianFx(t2, t) = 0.0;
+              }
+            }
+          }
         }
 
         // solve linear system with damped Hessian as system matrix
-        base::Printer::getInstance().disableStatusPrinting();
+        if (statusPrintingEnabled) {
+          base::Printer::getInstance().disableStatusPrinting();
+        }
+
         lsSolved = sleSolver.solve(system, b, dir);
-        base::Printer::getInstance().enableStatusPrinting();
+
+        if (statusPrintingEnabled) {
+          base::Printer::getInstance().enableStatusPrinting();
+        }
+
+        for (size_t t = 0; t < d; t++) {
+          // is constraint binding?
+          // (i.e., we are at the boundary and the search direction points outwards)
+          if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
+              ((x[t] > 1.0 - BINDING_TOLERANCE) && (dir[t] > 0.0))) {
+            // discard variable by setting direction to zero
+            dir[t] = 0.0;
+
+            // was the constraint not binding in the previous iteration?
+            if (!isConstraintBinding[t]) {
+              // reset step size as it's most likely very small due to approach to the boundary
+              alpha = 1.0;
+              isConstraintBinding[t] = true;
+            }
+          } else {
+            isConstraintBinding[t] = false;
+          }
+        }
 
         // recalculate inner product
         gradFxTimesDir = gradFx.dotProduct(dir);
@@ -207,8 +287,12 @@ void AdaptiveNewton::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? f->eval(xNew) : INFINITY);
-      k++;
+      if (inDomain) {
+        fxNew = f->eval(xNew);
+        k++;
+      } else {
+        fxNew = std::numeric_limits<double>::infinity();
+      }
     }
 
     // after too many line search steps, alpha will be numerically zero
@@ -251,8 +335,6 @@ void AdaptiveNewton::optimize() {
   fOpt = fx;
   base::Printer::getInstance().printStatusEnd();
 }
-
-base::ScalarFunctionHessian& AdaptiveNewton::getObjectiveHessian() const { return *fHessian; }
 
 double AdaptiveNewton::getTolerance() const { return theta; }
 

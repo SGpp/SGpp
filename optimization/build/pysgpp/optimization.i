@@ -17,11 +17,13 @@ void omp_set_num_threads(int num_threads);
     omp_set_num_threads(1);
 %}
 
-%rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
-%rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
-%rename(OptIterativeGridGeneratorLinearSurplus) sgpp::optimization::IterativeGridGeneratorLinearSurplus;
-%rename(OptIterativeGridGeneratorRitterNovak)   sgpp::optimization::IterativeGridGeneratorRitterNovak;
-%rename(OptIterativeGridGeneratorSOO)           sgpp::optimization::IterativeGridGeneratorSOO;
+// renames
+%rename(OptHashRefinementMultiple)                  sgpp::optimization::HashRefinementMultiple;
+%rename(OptIterativeGridGenerator)                  sgpp::optimization::IterativeGridGenerator;
+%rename(OptIterativeGridGeneratorRitterNovak)       sgpp::optimization::IterativeGridGeneratorRitterNovak;
+%rename(OptIterativeGridGeneratorFuzzyRitterNovak)  sgpp::optimization::IterativeGridGeneratorFuzzyRitterNovak;
+%rename(OptIterativeGridGeneratorLinearSurplus)     sgpp::optimization::IterativeGridGeneratorLinearSurplus;
+%rename(OptIterativeGridGeneratorSOO)               sgpp::optimization::IterativeGridGeneratorSOO;
 
 %rename(OptUnconstrainedOptimizer)  sgpp::optimization::optimizer::UnconstrainedOptimizer;
 %rename(OptAdaptiveGradientDescent) sgpp::optimization::optimizer::AdaptiveGradientDescent;
@@ -44,6 +46,17 @@ void omp_set_num_threads(int num_threads);
 %rename(OptLogBarrier)              sgpp::optimization::optimizer::LogBarrier;
 %rename(OptSquaredPenalty)          sgpp::optimization::optimizer::SquaredPenalty;
 
+%rename(OptFuzzyInterval)                               sgpp::optimization::FuzzyInterval;
+%rename(OptFuzzyExtensionPrinciple)                     sgpp::optimization::FuzzyExtensionPrinciple;
+%rename(OptFuzzyExtensionPrincipleViaOptimization)      sgpp::optimization::FuzzyExtensionPrincipleViaOptimization;
+%rename(OptFuzzyExtensionPrincipleViaTransformation)    sgpp::optimization::FuzzyExtensionPrincipleViaTransformation;
+%rename(OptFuzzyExtensionPrincipleViaVertexMethod)      sgpp::optimization::FuzzyExtensionPrincipleViaVertexMethod;
+%rename(OptFuzzyIntervalViaConfidenceInterval)          sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
+%rename(OptFuzzyIntervalViaMembershipFunction)          sgpp::optimization::FuzzyIntervalViaMembershipFunction;
+%rename(OptInterpolatedFuzzyInterval)                   sgpp::optimization::InterpolatedFuzzyInterval;
+%rename(OptQuasiGaussianFuzzyNumber)                    sgpp::optimization::QuasiGaussianFuzzyNumber;
+%rename(OptTriangularFuzzyInterval)                     sgpp::optimization::TriangularFuzzyInterval;
+
 %rename(OptTestScalarFunction)  sgpp::optimization::test_problems::TestScalarFunction;
 %rename(OptTestVectorFunction)  sgpp::optimization::test_problems::TestVectorFunction;
 
@@ -52,10 +65,14 @@ void omp_set_num_threads(int num_threads);
 %rename(OptAbsoluteValueObjective)      sgpp::optimization::test_problems::AbsoluteValue;
 %rename(OptAckley)                      sgpp::optimization::test_problems::Ackley;
 %rename(OptAckleyObjective)             sgpp::optimization::test_problems::AckleyObjective;
+%rename(OptAlpine02)                    sgpp::optimization::test_problems::Alpine02;
+%rename(OptAlpine02Objective)           sgpp::optimization::test_problems::Alpine02Objective;
 %rename(OptBeale)                       sgpp::optimization::test_problems::Beale;
 %rename(OptBealeObjective)              sgpp::optimization::test_problems::BealeObjective;
-%rename(OptBranin)                      sgpp::optimization::test_problems::Branin;
-%rename(OptBraninObjective)             sgpp::optimization::test_problems::BraninObjective;
+%rename(OptBranin01)                    sgpp::optimization::test_problems::Branin01;
+%rename(OptBranin01Objective)           sgpp::optimization::test_problems::Branin01Objective;
+%rename(OptBranin02)                    sgpp::optimization::test_problems::Branin02;
+%rename(OptBranin02Objective)           sgpp::optimization::test_problems::Branin02Objective;
 %rename(OptBubbleWrap)                  sgpp::optimization::test_problems::BubbleWrap;
 %rename(OptBubbleWrapObjective)         sgpp::optimization::test_problems::BubbleWrapObjective;
 %rename(OptEasomYang)                   sgpp::optimization::test_problems::EasomYang;
@@ -88,8 +105,12 @@ void omp_set_num_threads(int num_threads);
 %rename(OptRosenbrockObjective)         sgpp::optimization::test_problems::RosenbrockObjective;
 %rename(OptSHCB)                        sgpp::optimization::test_problems::SHCB;
 %rename(OptSHCBObjective)               sgpp::optimization::test_problems::SHCBObjective;
-%rename(OptSchwefel)                    sgpp::optimization::test_problems::Schwefel;
-%rename(OptSchwefelObjective)           sgpp::optimization::test_problems::SchwefelObjective;
+%rename(OptSchwefel06)                  sgpp::optimization::test_problems::Schwefel06;
+%rename(OptSchwefel06Objective)         sgpp::optimization::test_problems::Schwefel06Objective;
+%rename(OptSchwefel22)                  sgpp::optimization::test_problems::Schwefel22;
+%rename(OptSchwefel22Objective)         sgpp::optimization::test_problems::Schwefel22Objective;
+%rename(OptSchwefel26)                  sgpp::optimization::test_problems::Schwefel26;
+%rename(OptSchwefel26Objective)         sgpp::optimization::test_problems::Schwefel26Objective;
 %rename(OptSphere)                      sgpp::optimization::test_problems::Sphere;
 %rename(OptSphereObjective)             sgpp::optimization::test_problems::SphereObjective;
 %rename(OptTremblingParabola)           sgpp::optimization::test_problems::TremblingParabola;
@@ -108,6 +129,10 @@ void omp_set_num_threads(int num_threads);
 %rename(OptG04Objective)                    sgpp::optimization::test_problems::G04Objective;
 %rename(OptG04InequalityConstraint)         sgpp::optimization::test_problems::G04InequalityConstraint;
 %rename(OptG04EqualityConstraint)           sgpp::optimization::test_problems::G04EqualityConstraint;
+%rename(OptG04Squared)                      sgpp::optimization::test_problems::G04Squared;
+%rename(OptG04SquaredObjective)             sgpp::optimization::test_problems::G04SquaredObjective;
+%rename(OptG04SquaredInequalityConstraint)  sgpp::optimization::test_problems::G04SquaredInequalityConstraint;
+%rename(OptG04SquaredEqualityConstraint)    sgpp::optimization::test_problems::G04SquaredEqualityConstraint;
 %rename(OptG05)                             sgpp::optimization::test_problems::G05;
 %rename(OptG05Objective)                    sgpp::optimization::test_problems::G05Objective;
 %rename(OptG05InequalityConstraint)         sgpp::optimization::test_problems::G05InequalityConstraint;
@@ -159,8 +184,6 @@ void omp_set_num_threads(int num_threads);
 %rename(OptMathQRDecomposition)             sgpp::optimization::math::QRDecomposition;
 %rename(OptMathHessenbergForm)              sgpp::optimization::math::hessenbergForm;
 %rename(OptMathHouseholderTransformation)   sgpp::optimization::math::householderTransformation;
-//%rename(OptMutexType)                       sgpp::optimization::MutexType;
-//%rename(OptPrinter)                         sgpp::optimization::Printer;
 
 // classes with director interface
 %feature("director") sgpp::optimization::ConstraintFunction;
@@ -169,8 +192,10 @@ void omp_set_num_threads(int num_threads);
 %feature("director") sgpp::optimization::ObjectiveFunction;
 %feature("director") sgpp::optimization::ObjectiveGradient;
 %feature("director") sgpp::optimization::ObjectiveHessian;
+%feature("director") sgpp::optimization::FuzzyInterval;
+%feature("director") sgpp::optimization::FuzzyIntervalViaConfidenceInterval;
+%feature("director") sgpp::optimization::FuzzyIntervalViaMembershipFunction;
 %feature("director") sgpp::optimization::IterativeGridGenerator;
-
 
 // dirty hack to override SWIG's generated director method for "clone"
 %typemap(directorin) std::unique_ptr<sgpp::optimization::ConstraintFunction>& {
@@ -209,13 +234,14 @@ void omp_set_num_threads(int num_threads);
     return;
 }
 
-
-
 // includes
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
+
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
-%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp"
+%include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp"
 
 %include "optimization/src/sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp"
@@ -241,14 +267,26 @@ void omp_set_num_threads(int num_threads);
 %include "optimization/src/sgpp/optimization/optimizer/constrained/LogBarrier.hpp"
 %include "optimization/src/sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp"
 
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaVertexMethod.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/QuasiGaussianFuzzyNumber.hpp"
+%include "optimization/src/sgpp/optimization/fuzzy/TriangularFuzzyInterval.hpp"
+
 %include "optimization/src/sgpp/optimization/test_problems/TestScalarFunction.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/TestVectorFunction.hpp"
 
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Ackley.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Alpine02.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Beale.hpp"
-%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin01.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Branin02.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/EasomYang.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Eggholder.hpp"
@@ -265,7 +303,9 @@ void omp_set_num_threads(int num_threads);
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/SHCB.hpp"
-%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel06.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel22.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/Sphere.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp"
 
@@ -273,6 +313,7 @@ void omp_set_num_threads(int num_threads);
 %include "optimization/src/sgpp/optimization/test_problems/constrained/Floudas.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G03.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G04.hpp"
+%include "optimization/src/sgpp/optimization/test_problems/constrained/G04Squared.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G05.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G06.hpp"
 %include "optimization/src/sgpp/optimization/test_problems/constrained/G08.hpp"
@@ -295,3 +336,4 @@ void omp_set_num_threads(int num_threads);
 %template(OptFileIOReadMatrix)       sgpp::optimization::file_io::readMatrix<double>;
 %template(OptFileIOWriteVector)      sgpp::optimization::file_io::writeVector<double>;
 %template(OptFileIOReadVector)       sgpp::optimization::file_io::readVector<double>;
+%template(OptFuzzyIntervalVector)    std::vector<const sgpp::optimization::FuzzyInterval*>;

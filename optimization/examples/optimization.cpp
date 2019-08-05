@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_optimization_cpp optimization.cpp
+ * \page example_optimization_cpp Optimization Example (C++)
  *
  * On this page, we look at an example application of the sgpp::optimization module.
  * Versions of the example are given in all languages

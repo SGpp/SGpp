@@ -4,32 +4,31 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Branin.hpp>
-
+#include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
 #include <cmath>
 
 namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-Branin::Branin() : UnconstrainedTestProblem(2), f() {}
+Branin01::Branin01() : UnconstrainedTestProblem(2), f() {}
 
-Branin::~Branin() {}
+Branin01::~Branin01() {}
 
-TestScalarFunction& Branin::getObjectiveFunction() { return f; }
+TestScalarFunction& Branin01::getObjectiveFunction() { return f; }
 
-double Branin::getOptimalPointUndisplaced(base::DataVector& x) {
+double Branin01::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(2);
   x[0] = 0.5427728435726528825641;
   x[1] = 0.151666666666666666666666667;
   return 5.0 / (4.0 * M_PI);
 }
 
-BraninObjective::BraninObjective() : TestScalarFunction(2) {}
+Branin01Objective::Branin01Objective() : TestScalarFunction(2) {}
 
-BraninObjective::~BraninObjective() {}
+Branin01Objective::~Branin01Objective() {}
 
-double BraninObjective::evalUndisplaced(const base::DataVector& x) {
+double Branin01Objective::evalUndisplaced(const base::DataVector& x) {
   const double x1 = 15.0 * x[0] - 5.0;
   const double x2 = 15.0 * x[1];
   const double tmp = x2 - 5.1 * x1 * x1 / (4.0 * M_PI * M_PI) + 5.0 * x1 / M_PI - 6.0;
@@ -37,8 +36,8 @@ double BraninObjective::evalUndisplaced(const base::DataVector& x) {
   return tmp * tmp + 10.0 * (1.0 - 1.0 / (8.0 * M_PI)) * std::cos(x1) + 10.0;
 }
 
-void BraninObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
-  clone = std::unique_ptr<base::ScalarFunction>(new BraninObjective(*this));
+void Branin01Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Branin01Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 
 #include <cmath>
 
@@ -12,23 +12,23 @@ namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
-Schwefel::Schwefel(size_t d) : UnconstrainedTestProblem(d), f(d) {}
+Schwefel26::Schwefel26(size_t d) : UnconstrainedTestProblem(d), f(d) {}
 
-Schwefel::~Schwefel() {}
+Schwefel26::~Schwefel26() {}
 
-TestScalarFunction& Schwefel::getObjectiveFunction() { return f; }
+TestScalarFunction& Schwefel26::getObjectiveFunction() { return f; }
 
-double Schwefel::getOptimalPointUndisplaced(base::DataVector& x) {
+double Schwefel26::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
   x.setAll(0.920968746359982027311844365);
   return -418.9828872724337 * static_cast<double>(d);
 }
 
-SchwefelObjective::SchwefelObjective(size_t d) : TestScalarFunction(d) {}
+Schwefel26Objective::Schwefel26Objective(size_t d) : TestScalarFunction(d) {}
 
-SchwefelObjective::~SchwefelObjective() {}
+Schwefel26Objective::~Schwefel26Objective() {}
 
-double SchwefelObjective::evalUndisplaced(const base::DataVector& x) {
+double Schwefel26Objective::evalUndisplaced(const base::DataVector& x) {
   double result = 0.0;
 
   for (size_t t = 0; t < d; t++) {
@@ -39,8 +39,8 @@ double SchwefelObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void SchwefelObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
-  clone = std::unique_ptr<base::ScalarFunction>(new SchwefelObjective(*this));
+void Schwefel26Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new Schwefel26Objective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

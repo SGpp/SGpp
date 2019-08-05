@@ -10,6 +10,8 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -63,7 +65,7 @@ void LevenbergMarquardt::optimize() {
   const size_t m = phi->getNumberOfComponents();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -79,7 +81,7 @@ void LevenbergMarquardt::optimize() {
   base::DataVector s(d);
   base::DataVector b(d);
 
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
   double mu = mu0;
   base::DataVector gradPhixTimesS(m);
   base::DataMatrix gradPhixSquared(m, m);

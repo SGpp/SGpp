@@ -8,7 +8,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 namespace sgpp {
@@ -63,11 +62,6 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function gradient
-   */
-  base::ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
    * @return tolerance
    */
   double getTolerance() const;
@@ -113,8 +107,6 @@ class AdaptiveGradientDescent : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<base::ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// step size increase factor

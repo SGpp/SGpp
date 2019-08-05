@@ -55,6 +55,42 @@ class ScalarFunctionHessian {
                       DataMatrix& hessian) = 0;
 
   /**
+   * Convenience method for calculating \f$f(\vec{x})\f$ together with
+   * \f$\nabla f(\vec{x})\f$ and
+   * \f$H_f(\vec{x}) \in \mathbb{R}^{d \times d}\f$
+   * for multiple \f$\vec{x}\f$.
+   *
+   * @param      x        matrix \f$\vec{x} \in [0, 1]^{N \times d}\f$
+   *                      of evaluation points (row-wise)
+   * @param[out] value    vector of size \f$N\f$, where the \f$k\f$-th
+   *                      entry is \f$f(\vec{x}_k)\f$
+   *                      (where \f$\vec{x}_k\f$ is the \f$k\f$-th row
+   *                      of \f$x\f$)
+   * @param[out] gradient matrix of size \f$N \times d\f$
+   *                      where the \f$k\f$-th row is
+   *                      \f$\nabla f(\vec{x}_k)\f$
+   * @param[out] hessian  \f$N\f$-vector of Hessians
+   *                      \f$\nabla^2 f(\vec{x}_k) \in
+   *                      \mathbb{R}^{d \times d}\f$
+   */
+  inline void eval(const DataMatrix& x, DataVector& value,
+                   DataMatrix& gradient,
+                   std::vector<DataMatrix>& hessian) {
+    const size_t N = x.getNrows();
+    DataVector xk(d);
+    DataVector yk(d);
+    value.resize(N);
+    gradient.resize(N, d);
+    hessian.assign(N, DataMatrix(d, d));
+
+    for (size_t k = 0; k < N; k++) {
+      x.getRow(k, xk);
+      value[k] = eval(xk, yk, hessian[k]);
+      gradient.setRow(k, yk);
+    }
+  }
+
+  /**
    * @return dimension \f$d\f$ of the domain
    */
   size_t getNumberOfParameters() const { return d; }

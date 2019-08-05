@@ -21,7 +21,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Fundamental spline basis on Noboundary grids.
+ * Fundamental spline basis.
  */
 template <class LT, class IT>
 class FundamentalSplineBasis : public Basis<LT, IT> {
