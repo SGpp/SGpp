@@ -11,8 +11,9 @@ namespace sgpp {
 namespace optimization {
 
 FuzzyIntervalViaConfidenceInterval::FuzzyIntervalViaConfidenceInterval(
-    double supportLowerBound, double supportUpperBound, double binarySearchTolerance) :
-        FuzzyInterval(supportLowerBound, supportUpperBound),
+    double supportLowerBound, double supportUpperBound, size_t numberOfIntegralSamples,
+    double binarySearchTolerance) :
+        FuzzyInterval(supportLowerBound, supportUpperBound, numberOfIntegralSamples),
         binarySearchTolerance(binarySearchTolerance) {
 }
 

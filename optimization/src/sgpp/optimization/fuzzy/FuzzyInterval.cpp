@@ -13,10 +13,11 @@
 namespace sgpp {
 namespace optimization {
 
-FuzzyInterval::FuzzyInterval(double supportLowerBound, double supportUpperBound) :
+FuzzyInterval::FuzzyInterval(
+    double supportLowerBound, double supportUpperBound, size_t numberOfIntegralSamples) :
     supportLowerBound(supportLowerBound),
     supportUpperBound(supportUpperBound),
-    numberOfIntegralSamples(DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES) {
+    numberOfIntegralSamples(numberOfIntegralSamples) {
 }
 
 FuzzyInterval::~FuzzyInterval() {

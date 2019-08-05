@@ -26,12 +26,14 @@ class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
    * Constructor. Needs the support of the fuzzy interval (which is
    * always a closed interval, so it suffices to supply lower and upper bound).
    *
-   * @param supportLowerBound       lower bound of the support
-   * @param supportUpperBound       upper bound of the support
-   * @param binarySearchTolerance   tolerance for the binary search
+   * @param supportLowerBound         lower bound of the support
+   * @param supportUpperBound         upper bound of the support
+   * @param numberOfIntegralSamples   number of samples to compute norms
+   * @param binarySearchTolerance     tolerance for the binary search
    */
   FuzzyIntervalViaConfidenceInterval(
       double supportLowerBound, double supportUpperBound,
+      size_t numberOfIntegralSamples = DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES,
       double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**
