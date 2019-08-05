@@ -27,7 +27,7 @@ class QuasiGaussianFuzzyNumber : public FuzzyIntervalViaMembershipFunction {
    *
    * @param mean    mean
    * @param stdev   standard deviation
-   * @param cutoff  cut-off point
+   * @param cutoff  cut-off point (multiples of the standard deviation)
    */
   QuasiGaussianFuzzyNumber(double mean, double stdev, double cutoff);
 
@@ -62,7 +62,7 @@ class QuasiGaussianFuzzyNumber : public FuzzyIntervalViaMembershipFunction {
   double getStdev() const;
 
   /**
-   * @return  cut-off point
+   * @return  cut-off point (multiples of the standard deviation)
    */
   double getCutoff() const;
 
@@ -71,7 +71,7 @@ class QuasiGaussianFuzzyNumber : public FuzzyIntervalViaMembershipFunction {
   double mean;
   /// standard deviation
   double stdev;
-  /// cut-off point
+  /// cut-off point (multiples of the standard deviation)
   double cutoff;
 };
 
