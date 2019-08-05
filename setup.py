@@ -114,7 +114,7 @@ setup(name='pysgpp',
       platforms='any',
       zip_safe=False,
       package_dir={'': 'lib'},
-      packages=find_packages(where='lib', include=['pysgpp.*', 'pysgpp.extensions*']),
+      packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
       package_data={'pysgpp': ['*.so', '*.lib', '*.pyd']},
       )
 
