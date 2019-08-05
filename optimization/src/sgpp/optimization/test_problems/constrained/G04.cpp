@@ -32,6 +32,13 @@ double G04::getOptimalPointUndisplaced(base::DataVector& x) {
   return -30665.538671783201;
 }
 
+bool G04::isDisplacementFeasible() {
+  displacement[0] = 0.0;
+  displacement[1] = 0.0;
+  displacement[3] = 0.0;
+  return ConstrainedTestProblem::isDisplacementFeasible();
+}
+
 G04Objective::G04Objective() : TestScalarFunction(5) {}
 
 G04Objective::~G04Objective() {}

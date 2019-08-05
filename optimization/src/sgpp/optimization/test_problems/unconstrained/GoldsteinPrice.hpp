@@ -19,6 +19,7 @@ namespace test_problems {
  *
  * Definition:
  * \f[\bar{f}(\bar{\vec{x}}) :=
+ * 10^{-4} \cdot
  * (1 + (\bar{x}_1+\bar{x}_2+1)^2 (19 - 14\bar{x}_1 + 3\bar{x}_1^2 -
  * 14\bar{x}_2 + 6\bar{x}_1 \bar{x}_2 + 3\bar{x}_2^2))
  * \cdot (30 + (2\bar{x}_1 - 3\bar{x}_2)^2
@@ -57,7 +58,7 @@ class GoldsteinPriceObjective : public TestScalarFunction {
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
  *   (0, -1)\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
- *   3\f$
+ *   0.0003\f$
  */
 class GoldsteinPrice : public UnconstrainedTestProblem {
  public:

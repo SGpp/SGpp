@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -19,7 +20,7 @@ namespace optimization {
 namespace optimizer {
 
 CMAES::CMAES(const base::ScalarFunction& f, size_t maxFcnEvalCount)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount) {}
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount) {}
 
 CMAES::CMAES(const CMAES& other) : UnconstrainedOptimizer(other) {}
 
@@ -31,7 +32,7 @@ void CMAES::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -61,7 +62,7 @@ void CMAES::optimize() {
   const double c1 = 2.0 / (std::pow(static_cast<double>(dDbl + 1.3), 2.0) + muEff);
   const double alphaMu = 2.0;
   const double cMu = std::min(1.0 - c1, alphaMu * (muEff - 2.0 + 1.0 / muEff) /
-                                            (std::pow(dDbl + 2.0, 2.0) + alphaMu * muEff / 2.0));
+                                             (std::pow(dDbl + 2.0, 2.0) + alphaMu * muEff / 2.0));
 
   base::DataVector pSigma(d, 0.0);
   base::DataVector pC(d, 0.0);
@@ -128,7 +129,7 @@ void CMAES::optimize() {
           }
         }
 
-        fX[j] = (inDomain ? f->eval(x) : INFINITY);
+        fX[j] = (inDomain ? f->eval(x) : std::numeric_limits<double>::infinity());
         fXOrder[j] = j;
       }
     }

@@ -9,6 +9,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 
+#include <limits>
 #include <numeric>
 
 namespace sgpp {
@@ -18,13 +19,12 @@ namespace optimizer {
 NLCG::NLCG(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
            size_t maxItCount, double beta, double gamma, double tolerance, double epsilon,
            double restartThreshold)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
       eps(epsilon),
       alpha(restartThreshold) {
-  fGradient.clone(this->fGradient);
 }
 
 NLCG::NLCG(const NLCG& other)
@@ -34,7 +34,6 @@ NLCG::NLCG(const NLCG& other)
       tol(other.tol),
       eps(other.eps),
       alpha(other.alpha) {
-  other.fGradient->clone(fGradient);
 }
 
 NLCG::~NLCG() {}
@@ -45,7 +44,7 @@ void NLCG::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -67,6 +66,8 @@ void NLCG::optimize() {
 
   size_t k = 1;
 
+  const double BINDING_TOLERANCE = 1e-6;
+
   // negated gradient as starting search direction
   for (size_t t = 0; t < d; t++) {
     s[t] = -gradFx[t];
@@ -78,6 +79,20 @@ void NLCG::optimize() {
       break;
     }
 
+    for (size_t t = 0; t < d; t++) {
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (s[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (s[t] > 0.0))) {
+        // discard variable by setting direction to zero
+        s[t] = 0.0;
+        gradFx[t] = 0.0;
+      }
+    }
+
+    // recalculate norm of gradient
+    gradFxNorm = gradFx.l2Norm();
+
     // normalize search direction
     const double sNorm = s.l2Norm();
 
@@ -88,7 +103,7 @@ void NLCG::optimize() {
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, sNormalized, y, k)) {
       // line search failed ==> exit
-      // (either a "real" error occured or the improvement achieved is
+      // (either a "real" error occurred or the improvement achieved is
       // too small)
       break;
     }
@@ -96,6 +111,16 @@ void NLCG::optimize() {
     // calculate gradient and norm
     fy = fGradient->eval(y, gradFy);
     k++;
+
+    for (size_t t = 0; t < d; t++) {
+      // is constraint binding?
+      // (i.e., we are at the boundary and the negated gradient points outwards)
+      if (((y[t] < BINDING_TOLERANCE) && (-gradFy[t] < 0.0)) ||
+          ((y[t] > 1.0 - BINDING_TOLERANCE) && (-gradFy[t] > 0.0))) {
+        // discard variable by setting gradient to zero
+        gradFy[t] = 0.0;
+      }
+    }
 
     const double gradFyNorm = gradFy.l2Norm();
 
@@ -134,8 +159,6 @@ void NLCG::optimize() {
   fOpt = fx;
   base::Printer::getInstance().printStatusEnd();
 }
-
-base::ScalarFunctionGradient& NLCG::getObjectiveGradient() const { return *fGradient; }
 
 double NLCG::getBeta() const { return beta; }
 

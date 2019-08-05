@@ -8,6 +8,8 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/BFGS.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -15,12 +17,11 @@ namespace optimizer {
 BFGS::BFGS(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
            size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
            double stepSizeDecreaseFactor, double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
       rhoLs(lineSearchAccuracy) {
-  fGradient.clone(this->fGradient);
 }
 
 BFGS::BFGS(const BFGS& other)
@@ -29,7 +30,6 @@ BFGS::BFGS(const BFGS& other)
       rhoAlphaPlus(other.rhoAlphaPlus),
       rhoAlphaMinus(other.rhoAlphaMinus),
       rhoLs(other.rhoLs) {
-  other.fGradient->clone(fGradient);
 }
 
 BFGS::~BFGS() {}
@@ -40,12 +40,12 @@ void BFGS::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
   base::DataVector gradFx(d);
 
   base::DataVector xNew(d);
@@ -115,7 +115,7 @@ void BFGS::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
+    fxNew = (inDomain ? f->eval(xNew) : std::numeric_limits<double>::infinity());
     k++;
 
     // inner product of gradient and search direction
@@ -137,7 +137,8 @@ void BFGS::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? fGradient->eval(xNew, gradFxNew) : INFINITY);
+      fxNew = (inDomain ? fGradient->eval(xNew, gradFxNew) :
+          std::numeric_limits<double>::infinity());
       k++;
     }
 
@@ -205,8 +206,6 @@ void BFGS::optimize() {
   fOpt = fx;
   base::Printer::getInstance().printStatusEnd();
 }
-
-base::ScalarFunctionGradient& BFGS::getObjectiveGradient() const { return *fGradient; }
 
 double BFGS::getTolerance() const { return theta; }
 

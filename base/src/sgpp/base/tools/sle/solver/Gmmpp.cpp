@@ -114,13 +114,14 @@ bool Gmmpp::solve(SLE& system, DataVector& b, DataVector& x) const {
 
   const size_t n = system.getDimension();
   size_t nnz = 0;
+  size_t rowsDone = 0;
   gmm::csr_matrix<double> A2;
 
   {
     gmm::row_matrix<gmm::rsvector<double>> A(n, n);
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz)
+#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz, rowsDone) default(none)
     {
       SLE* system2 = &system;
 #ifdef _OPENMP
@@ -134,7 +135,7 @@ bool Gmmpp::solve(SLE& system, DataVector& b, DataVector& x) const {
 #endif /* _OPENMP */
 
 // copy system matrix to Gmm++ matrix object
-#pragma omp for ordered schedule(dynamic)
+#pragma omp for ordered schedule(static)
 
       for (size_t i = 0; i < n; i++) {
         for (size_t j = 0; j < n; j++) {
@@ -149,16 +150,16 @@ bool Gmmpp::solve(SLE& system, DataVector& b, DataVector& x) const {
           }
         }
 
+#pragma omp atomic
+        rowsDone++;
+
         // status message
-        if (i % 100 == 0) {
-#pragma omp ordered
-          {
-            char str[10];
-            snprintf(str, sizeof(str), "%.1f%%",
-                     static_cast<double>(i) / static_cast<double>(n) * 100.0);
-            Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
-                                                     std::string(str) + ")");
-          }
+        if (rowsDone % 100 == 0) {
+          char str[10];
+          snprintf(str, sizeof(str), "%.1f%%",
+                 static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
+          Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
+                                                   std::string(str) + ")");
         }
       }
     }

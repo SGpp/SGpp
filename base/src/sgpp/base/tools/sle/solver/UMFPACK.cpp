@@ -77,9 +77,11 @@ bool UMFPACK::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
   std::vector<uint32_t> Ti;
   std::vector<uint32_t> Tj;
   std::vector<double> Tx;
+  size_t rowsDone = 0;
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, Ti, Tj, Tx, nnz)
+#pragma omp parallel if (system.isCloneable()) \
+shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
@@ -92,36 +94,43 @@ bool UMFPACK::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
 
 #endif /* _OPENMP */
 
+    std::vector<uint32_t> curTi;
+    std::vector<uint32_t> curTj;
+    std::vector<double> curTx;
+
 // get indices and values of nonzero entries
-#pragma omp for ordered schedule(dynamic)
+#pragma omp for ordered schedule(static)
 
     for (uint32_t i = 0; i < n; i++) {
       for (uint32_t j = 0; j < n; j++) {
         double entry = system2->getMatrixEntry(i, j);
 
         if (entry != 0) {
-#pragma omp critical
-          {
-            Ti.push_back(i);
-            Tj.push_back(j);
-            Tx.push_back(entry);
-            nnz++;
-          }
+          curTi.push_back(i);
+          curTj.push_back(j);
+          curTx.push_back(entry);
         }
       }
+
+#pragma omp atomic
+      rowsDone++;
 
       // status message
-      if (i % 100 == 0) {
-#pragma omp ordered
-
-        {
-          char str[10];
-          snprintf(str, sizeof(str), "%.1f%%",
-                   static_cast<double>(i) / static_cast<double>(n) * 100.0);
-          Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
-                                                   std::string(str) + ")");
-        }
+      if (rowsDone % 100 == 0) {
+        char str[10];
+        snprintf(str, sizeof(str), "%.1f%%",
+                 static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
+        Printer::getInstance().printStatusUpdate("constructing sparse matrix (" +
+                                                 std::string(str) + ")");
       }
+    }
+
+#pragma omp critical
+    {
+      Ti.insert(Ti.end(), curTi.begin(), curTi.end());
+      Tj.insert(Tj.end(), curTj.begin(), curTj.end());
+      Tx.insert(Tx.end(), curTx.begin(), curTx.end());
+      nnz += curTx.size();
     }
   }
 

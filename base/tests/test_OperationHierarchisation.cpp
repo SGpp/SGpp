@@ -24,7 +24,7 @@ using sgpp::base::Stretching;
 using sgpp::base::Stretching1D;
 
 void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
-                                          double (*func)(DataVector&), double tolerance = 0.0,
+                                          double (*func)(DataVector&), double tolerance = 1e-12,
                                           bool naiveOp = false, bool arbitraryBoundary = false) {
   grid.getGenerator().regular(level);
   GridStorage& gridStore = grid.getStorage();
@@ -58,14 +58,23 @@ void testHierarchisationDehierarchisation(sgpp::base::Grid& grid, size_t level,
   for (size_t n = 0; n < gridStore.getSize(); n++) {
     gridStore.getCoordinates(gridStore[n], coords);
     double eval = op->eval(alpha, coords);
-    BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
+
+    if (std::abs(node_values[n]) < 1e-10) {
+      BOOST_CHECK_SMALL(eval - node_values[n], tolerance);
+    } else {
+      BOOST_CHECK_CLOSE(eval, node_values[n], tolerance);
+    }
   }
 
   DataVector node_values_back = DataVector(alpha);
   hierarchisation->doDehierarchisation(node_values_back);
 
   for (size_t n = 0; n < gridStore.getSize(); n++) {
-    BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    if (std::abs(node_values[n]) < 1e-10) {
+      BOOST_CHECK_SMALL(node_values_back[n] - node_values[n], tolerance);
+    } else {
+      BOOST_CHECK_CLOSE(node_values_back[n], node_values[n], tolerance);
+    }
   }
 }
 
@@ -159,7 +168,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationBoundary) {
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim, 0));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+    testHierarchisationDehierarchisation(*grid, level, &parabola);
   }
 }
 
@@ -179,7 +188,18 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPrewavelet) {
 
   for (int dim = 1; dim < 4; dim++) {
     std::unique_ptr<Grid> grid(Grid::createPrewaveletGrid(dim));
-    testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12);
+    testHierarchisationDehierarchisation(*grid, level, &parabola);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalNakSplineBoundary) {
+  int level = 5;
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int degree = 1; degree < 6; degree += 2) {
+      std::unique_ptr<Grid> grid(Grid::createFundamentalNakSplineBoundaryGrid(dim, degree));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
+    }
   }
 }
 
@@ -189,6 +209,17 @@ BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSpline) {
   for (int dim = 1; dim < 4; dim++) {
     for (int degree = 1; degree < 6; degree += 2) {
       std::unique_ptr<Grid> grid(Grid::createFundamentalSplineGrid(dim, degree));
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
+    }
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testHierarchisationFundamentalSplineBoundary) {
+  int level = 5;
+
+  for (int dim = 1; dim < 4; dim++) {
+    for (int degree = 1; degree < 6; degree += 2) {
+      std::unique_ptr<Grid> grid(Grid::createFundamentalSplineBoundaryGrid(dim, degree));
       testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-9, true);
     }
   }
@@ -212,7 +243,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPoly) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createPolyGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }
@@ -224,7 +255,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationPolyTruncatedBoundary) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createPolyBoundaryGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }
@@ -236,7 +267,7 @@ BOOST_AUTO_TEST_CASE(testHierarchisationModPoly) {
   for (int dim = 1; dim < 4; dim++) {
     for (int i = 0; i < 4; i++) {
       std::unique_ptr<Grid> grid(Grid::createModPolyGrid(dim, degree[i]));
-      testHierarchisationDehierarchisation(*grid, level, &parabola, 0.0, true);
+      testHierarchisationDehierarchisation(*grid, level, &parabola, 1e-12, true);
     }
   }
 }

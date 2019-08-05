@@ -7,6 +7,7 @@
 #include <sgpp/optimization/test_problems/constrained/G12.hpp>
 
 #include <cmath>
+#include <limits>
 
 namespace sgpp {
 namespace optimization {
@@ -53,7 +54,7 @@ void G12InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   const double x1 = 10.0 * x[0];
   const double x2 = 10.0 * x[1];
   const double x3 = 10.0 * x[2];
-  double result = INFINITY;
+  double result = std::numeric_limits<double>::infinity();
 
   for (double y1 = 1.0; y1 <= 9.0; y1++) {
     for (double y2 = 1.0; y2 <= 9.0; y2++) {

@@ -3,37 +3,39 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP
-#define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP
+#ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_BRANIN02_HPP
+#define SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_BRANIN02_HPP
 
 #include <sgpp/globaldef.hpp>
-
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
+
+#include <cmath>
 
 namespace sgpp {
 namespace optimization {
 namespace test_problems {
 
 /**
- * Schwefel objective function.
+ * Branin02 objective function.
  *
  * Definition:
  * \f[\bar{f}(\bar{\vec{x}}) :=
- * -\sum_{t=1}^d \bar{x}_t \sin \sqrt{|\bar{x}_t|}\f],
+ * \left(\bar{x}_2 - 5.1 \bar{x}_1^2/(4\pi^2) +
+ * 5 \bar{x}_1/\pi - 6\right)^2 +
+ * 10 \left(1 - 1/(8\pi)\right) \cos \bar{x}_1 \cos \bar{x}_2 +
+ * \ln(\bar{x}_1^2 + \bar{x}_2^2 + 1) + 10\f]
  */
-class SchwefelObjective : public TestScalarFunction {
+class Branin02Objective : public TestScalarFunction {
  public:
   /**
    * Constructor.
-   *
-   * @param d     dimension of the domain
    */
-  explicit SchwefelObjective(size_t d);
+  Branin02Objective();
 
   /**
    * Destructor.
    */
-  ~SchwefelObjective() override;
+  ~Branin02Objective() override;
 
   /**
    * @param x     point \f$\vec{x} \in [0, 1]^d\f$
@@ -48,28 +50,26 @@ class SchwefelObjective : public TestScalarFunction {
 };
 
 /**
- * Schwefel unconstrained test problem.
+ * Branin02 unconstrained test problem.
  *
- * * Number of parameters: \f$d\f$
- * * Domain: \f$\bar{\vec{x}} \in [-500, 500]^d\f$
+ * * Number of parameters: 2
+ * * Domain: \f$\bar{\vec{x}} \in [-5, 15]^2\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
- *   420.9687 \cdot \vec{1}\f$
+ *   (-3.196988424804, 12.52625788532)\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
- *   -418.9829d\f$
+ *   5.559037320859\f$
  */
-class Schwefel : public UnconstrainedTestProblem {
+class Branin02 : public UnconstrainedTestProblem {
  public:
   /**
    * Constructor.
-   *
-   * @param d     dimension of the domain
    */
-  explicit Schwefel(size_t d);
+  Branin02();
 
   /**
    * Destructor.
    */
-  ~Schwefel() override;
+  ~Branin02() override;
 
   /**
    * @return  objective function of the test problem
@@ -86,10 +86,10 @@ class Schwefel : public UnconstrainedTestProblem {
 
  protected:
   /// objective function
-  SchwefelObjective f;
+  Branin02Objective f;
 };
 }  // namespace test_problems
 }  // namespace optimization
 }  // namespace sgpp
 
-#endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_SCHWEFEL_HPP */
+#endif /* SGPP_OPTIMIZATION_TEST_PROBLEMS_UNCONSTRAINED_BRANIN02_HPP */
