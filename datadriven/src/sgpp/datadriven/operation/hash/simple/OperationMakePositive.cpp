@@ -9,7 +9,6 @@
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
@@ -17,6 +16,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -28,7 +28,7 @@ namespace datadriven {
 OperationMakePositive::OperationMakePositive(
     MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool generateConsistentGrid,
-    bool verbose, sgpp::optimization::ScalarFunction* f)
+    bool verbose, sgpp::base::ScalarFunction* f)
     : maxLevel(0),
       minimumLevelSum(0),
       maximumLevelSum(0),

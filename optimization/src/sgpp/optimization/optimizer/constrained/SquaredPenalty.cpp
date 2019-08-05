@@ -5,10 +5,11 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/constrained/SquaredPenalty.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
 
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -16,10 +17,11 @@ namespace optimization {
 namespace optimizer {
 
 namespace {
-class PenalizedObjectiveFunction : public ScalarFunction {
+class PenalizedObjectiveFunction : public base::ScalarFunction {
  public:
-  PenalizedObjectiveFunction(ScalarFunction& f, VectorFunction& g, VectorFunction& h, double mu)
-      : ScalarFunction(f.getNumberOfParameters()),
+  PenalizedObjectiveFunction(base::ScalarFunction& f, base::VectorFunction& g,
+                             base::VectorFunction& h, double mu)
+      : base::ScalarFunction(f.getNumberOfParameters()),
         f(f),
         g(g),
         h(h),
@@ -30,7 +32,7 @@ class PenalizedObjectiveFunction : public ScalarFunction {
   double eval(const base::DataVector& x) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -57,26 +59,27 @@ class PenalizedObjectiveFunction : public ScalarFunction {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunction>& clone) const {
-    clone = std::unique_ptr<ScalarFunction>(new PenalizedObjectiveFunction(*this));
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunction>(new PenalizedObjectiveFunction(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunction& f;
-  VectorFunction& g;
-  VectorFunction& h;
+  base::ScalarFunction& f;
+  base::VectorFunction& g;
+  base::VectorFunction& h;
   double mu;
   size_t mG;
   size_t mH;
 };
 
-class PenalizedObjectiveGradient : public ScalarFunctionGradient {
+class PenalizedObjectiveGradient : public base::ScalarFunctionGradient {
  public:
-  PenalizedObjectiveGradient(ScalarFunctionGradient& fGradient, VectorFunctionGradient& gGradient,
-                             VectorFunctionGradient& hGradient, double mu)
-      : ScalarFunctionGradient(fGradient.getNumberOfParameters()),
+  PenalizedObjectiveGradient(base::ScalarFunctionGradient& fGradient,
+                             base::VectorFunctionGradient& gGradient,
+                             base::VectorFunctionGradient& hGradient, double mu)
+      : base::ScalarFunctionGradient(fGradient.getNumberOfParameters()),
         fGradient(fGradient),
         gGradient(gGradient),
         hGradient(hGradient),
@@ -87,8 +90,8 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
   double eval(const base::DataVector& x, base::DataVector& gradient) {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        gradient.setAll(NAN);
-        return INFINITY;
+        gradient.setAll(std::numeric_limits<double>::quiet_NaN());
+        return std::numeric_limits<double>::infinity();
       }
     }
 
@@ -131,28 +134,25 @@ class PenalizedObjectiveGradient : public ScalarFunctionGradient {
     return value;
   }
 
-  void clone(std::unique_ptr<ScalarFunctionGradient>& clone) const {
-    clone = std::unique_ptr<ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
+  void clone(std::unique_ptr<base::ScalarFunctionGradient>& clone) const {
+    clone = std::unique_ptr<base::ScalarFunctionGradient>(new PenalizedObjectiveGradient(*this));
   }
 
   void setMu(double mu) { this->mu = mu; }
 
  protected:
-  ScalarFunctionGradient& fGradient;
-  VectorFunctionGradient& gGradient;
-  VectorFunctionGradient& hGradient;
+  base::ScalarFunctionGradient& fGradient;
+  base::VectorFunctionGradient& gGradient;
+  base::VectorFunctionGradient& hGradient;
   double mu;
   size_t mG;
   size_t mH;
 };
 }  // namespace
 
-SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
-                               const ScalarFunctionGradient& fGradient,
-                               const VectorFunction& g,
-                               const VectorFunctionGradient& gGradient,
-                               const VectorFunction& h,
-                               const VectorFunctionGradient& hGradient,
+SquaredPenalty::SquaredPenalty(const base::ScalarFunction& f,
+                               const base::VectorFunction& g,
+                               const base::VectorFunction& h,
                                size_t maxItCount, double xTolerance, double constraintTolerance,
                                double penaltyStartValue, double penaltyIncreaseFactor)
     : ConstrainedOptimizer(f, g, h, maxItCount),
@@ -162,9 +162,41 @@ SquaredPenalty::SquaredPenalty(const ScalarFunction& f,
       rhoMuPlus(penaltyIncreaseFactor),
       xHistInner(0, 0),
       kHistInner() {
-  fGradient.clone(this->fGradient);
-  gGradient.clone(this->gGradient);
-  hGradient.clone(this->hGradient);
+}
+
+SquaredPenalty::SquaredPenalty(const base::ScalarFunction& f,
+                               const base::ScalarFunctionGradient& fGradient,
+                               const base::VectorFunction& g,
+                               const base::VectorFunctionGradient& gGradient,
+                               const base::VectorFunction& h,
+                               const base::VectorFunctionGradient& hGradient, size_t maxItCount,
+                               double xTolerance, double constraintTolerance,
+                               double penaltyStartValue, double penaltyIncreaseFactor)
+    : ConstrainedOptimizer(f, fGradient, g, gGradient, h, hGradient, maxItCount),
+      theta(xTolerance),
+      epsilon(constraintTolerance),
+      mu0(penaltyStartValue),
+      rhoMuPlus(penaltyIncreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
+  dynamic_cast<AdaptiveGradientDescent*>(
+      unconstrainedOptimizer.get())->setTolerance(10.0 * theta);
+}
+
+SquaredPenalty::SquaredPenalty(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                               const base::VectorFunction& g,
+                               const base::VectorFunctionGradient* gGradient,
+                               const base::VectorFunction& h,
+                               const base::VectorFunctionGradient* hGradient,
+                               size_t maxItCount, double xTolerance, double constraintTolerance,
+                               double penaltyStartValue, double penaltyIncreaseFactor)
+    : ConstrainedOptimizer(unconstrainedOptimizer, g, gGradient, h, hGradient, maxItCount),
+      theta(xTolerance),
+      epsilon(constraintTolerance),
+      mu0(penaltyStartValue),
+      rhoMuPlus(penaltyIncreaseFactor),
+      xHistInner(0, 0),
+      kHistInner() {
 }
 
 SquaredPenalty::SquaredPenalty(const SquaredPenalty& other)
@@ -175,20 +207,17 @@ SquaredPenalty::SquaredPenalty(const SquaredPenalty& other)
       rhoMuPlus(other.rhoMuPlus),
       xHistInner(other.xHistInner),
       kHistInner(other.kHistInner) {
-  other.fGradient->clone(fGradient);
-  other.gGradient->clone(gGradient);
-  other.hGradient->clone(hGradient);
 }
 
 SquaredPenalty::~SquaredPenalty() {}
 
 void SquaredPenalty::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Squared Penalty)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
   xHistInner.resize(0, d);
@@ -217,19 +246,28 @@ void SquaredPenalty::optimize() {
   const size_t unconstrainedN = N / 20;
 
   PenalizedObjectiveFunction fPenalized(*f, *g, *h, mu);
-  PenalizedObjectiveGradient fPenalizedGradient(*fGradient, *gGradient, *hGradient, mu);
+  std::unique_ptr<PenalizedObjectiveGradient> fPenalizedGradient;
+
+  if ((fGradient != nullptr) && (gGradient != nullptr) && (hGradient != nullptr)) {
+    fPenalizedGradient.reset(
+        new PenalizedObjectiveGradient(*fGradient, *gGradient, *hGradient, mu));
+  }
 
   while (k < N) {
     fPenalized.setMu(mu);
-    fPenalizedGradient.setMu(mu);
+    unconstrainedOptimizer->setObjectiveFunction(fPenalized);
 
-    AdaptiveGradientDescent unconstrainedOptimizer(fPenalized, fPenalizedGradient, unconstrainedN,
-                                                   10.0 * theta);
-    unconstrainedOptimizer.setStartingPoint(x);
-    unconstrainedOptimizer.optimize();
-    x = unconstrainedOptimizer.getOptimalPoint();
+    if (fPenalizedGradient) {
+      fPenalizedGradient->setMu(mu);
+      unconstrainedOptimizer->setObjectiveGradient(fPenalizedGradient.get());
+    }
 
-    const base::DataMatrix& innerPoints = unconstrainedOptimizer.getHistoryOfOptimalPoints();
+    unconstrainedOptimizer->setN(unconstrainedN);
+    unconstrainedOptimizer->setStartingPoint(x);
+    unconstrainedOptimizer->optimize();
+    x = unconstrainedOptimizer->getOptimalPoint();
+
+    const base::DataMatrix& innerPoints = unconstrainedOptimizer->getHistoryOfOptimalPoints();
     const size_t numberInnerIterations = innerPoints.getNrows();
     k += numberInnerIterations;
 
@@ -251,7 +289,7 @@ void SquaredPenalty::optimize() {
     kHistInner.push_back(numberInnerIterations);
 
     // status printing
-    Printer::getInstance().printStatusUpdate(
+    base::Printer::getInstance().printStatusUpdate(
         std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx) +
         ", g(x) = " + gx.toString() + ", h(x) = " + hx.toString());
 
@@ -275,16 +313,8 @@ void SquaredPenalty::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& SquaredPenalty::getObjectiveGradient() const { return *fGradient; }
-
-VectorFunctionGradient& SquaredPenalty::getInequalityConstraintGradient() const {
-  return *gGradient;
-}
-
-VectorFunctionGradient& SquaredPenalty::getEqualityConstraintGradient() const { return *hGradient; }
 
 double SquaredPenalty::getXTolerance() const { return theta; }
 

@@ -64,8 +64,8 @@ inline double TremblingParabolaObjective::splineTrembling(double x) const {
   return result;
 }
 
-void TremblingParabolaObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new TremblingParabolaObjective(*this));
+void TremblingParabolaObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new TremblingParabolaObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

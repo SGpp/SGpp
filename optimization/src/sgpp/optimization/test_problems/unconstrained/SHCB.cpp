@@ -37,8 +37,8 @@ double SHCBObjective::evalUndisplaced(const base::DataVector& x) {
          4.0 * x2 * x2 * (x2 * x2 - 1.0);
 }
 
-void SHCBObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new SHCBObjective(*this));
+void SHCBObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new SHCBObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

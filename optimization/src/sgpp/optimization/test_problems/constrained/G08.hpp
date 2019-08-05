@@ -43,7 +43,7 @@ class G08Objective : public TestScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const override;
 };
 
 /**
@@ -77,7 +77,7 @@ class G08InequalityConstraint : public TestVectorFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  void clone(std::unique_ptr<base::VectorFunction>& clone) const override;
 };
 
 /**
@@ -106,7 +106,7 @@ class G08EqualityConstraint : public TestVectorFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<VectorFunction>& clone) const override;
+  void clone(std::unique_ptr<base::VectorFunction>& clone) const override;
 };
 
 /**
@@ -115,7 +115,7 @@ class G08EqualityConstraint : public TestVectorFunction {
  * * Number of parameters: 2
  * * Number of inequality constraints: 2
  * * Number of equality constraints: 0
- * * Domain: \f$\bar{\vec{x}} \in [0, 10]^2\f$
+ * * Domain: \f$\bar{\vec{x}} \in [0.5, 2.5] \times [3, 6]\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
  *   (1.227971, 4.245373)\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =

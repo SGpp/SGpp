@@ -45,9 +45,9 @@ class NelderMead : public UnconstrainedOptimizer {
    * @param gamma                 contraction coefficient
    * @param delta                 shrinking coefficient
    */
-  NelderMead(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
-             double alpha = DEFAULT_ALPHA, double beta = DEFAULT_BETA,
-             double gamma = DEFAULT_GAMMA, double delta = DEFAULT_DELTA);
+  NelderMead(const base::ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_MAX_FCN_EVAL_COUNT,
+             double alpha = DEFAULT_ALPHA, double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+             double delta = DEFAULT_DELTA);
 
   /**
    * Copy constructor.

@@ -76,10 +76,9 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # beware: if symbols are missing that are actually required
     # (because the symbols don't reside in a shared library),
     # there will be no error during compilation
-    # the python binding (pysgpp) requires lpython and a flat namespace
     # also for the python binding, the library must be suffixed with '*.so' even
     # though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
-    config.env.AppendUnique(LINKFLAGS=["-flat_namespace", "-undefined", "dynamic_lookup", "-lpython"])
+    config.env.AppendUnique(LINKFLAGS=["-undefined", "dynamic_lookup"])
     # The GNU assembler (GAS) is not supported in Mac OS X.
     # A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
     # From the man pages for as (version 1.38):
@@ -120,7 +119,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   detectGSL(config)
   detectZlib(config)
   detectScaLAPACK(config)
-  detectPythonAPI(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -453,9 +451,36 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse"])
-#   if not config.env["USE_HPX"]:
-  config.env.Append(CPPFLAGS=["-fopenmp"])
-  config.env.Append(LINKFLAGS=["-fopenmp"])
+
+  # Mitigation for old Ubuntu (should probably be also applied to Debian?):
+  # Package 'libomp-dev' installs a symlink 'libgomp.so' to 'libomp.so' in /usr/lib/x86_64-linux.
+  # If this path is manually added (-L...), then ld uses this symlink and, thus, links against
+  # the wrong OpenMP library.
+  # The mitigation is to ask gcc for its LIBRARY_PATH in combination with -fopenmp and manually
+  # add this as the very first LIBPATH.
+  # Note, that this code also disables OpenMP if the mitigation command did not produce an
+  # adequate path.
+  import platform
+  linuxDist = platform.dist()
+  if ((linuxDist[0] == "Ubuntu") and
+      (linuxDist[1] in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"])):
+    output = getOutput([config.env["CXX"], "-v", "-fopenmp", "-xc", "/dev/null"])
+    match = re.search(r"LIBRARY_PATH=(.*?):", output)
+    firstLibPath = (match.group(1) if match is not None else None)
+    if (firstLibPath is None) or (not os.path.exists(firstLibPath)):
+      Helper.printWarning("Mitigation for old Ubuntu failed. Did not get libpath. "
+                          "Continuing WITHOUT OpenMP.")
+    else:
+      Helper.printInfo("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(
+          firstLibPath))
+      config.env.Append(LIBPATH=[firstLibPath])
+      # Safety first: Manually specity libgomp.so.1 as additional library before -fopenmp
+      config.env.Append(LINKFLAGS=["-l:libgomp.so.1", "-fopenmp"])
+      config.env.Append(CPPFLAGS=["-fopenmp"])
+  else:
+    config.env.Append(CPPFLAGS=["-fopenmp"])
+    config.env.Append(LINKFLAGS=["-fopenmp"])
+
 
   #   # limit the number of errors display to something reasonable (useful for templated code)
   #   config.env.Append(CPPFLAGS=["-fmax-errors=5"])
@@ -680,8 +705,3 @@ def detectScaLAPACK(config):
   else:
     config.env["USE_SCALAPACK"] = False
     Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
-
-
-def detectPythonAPI(config):
-  if config.env["USE_PYTHON_EMBEDDING"]:
-    config.env["CPPDEFINES"]["USE_PYTHON_EMBEDDING"] = "1"

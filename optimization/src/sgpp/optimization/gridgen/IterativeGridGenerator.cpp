@@ -8,15 +8,16 @@
 #endif
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
-#include <numeric>
 #include <list>
+#include <numeric>
 
 namespace sgpp {
 namespace optimization {
 
-IterativeGridGenerator::IterativeGridGenerator(ScalarFunction& f, base::Grid& grid, size_t N)
+IterativeGridGenerator::IterativeGridGenerator(base::ScalarFunction& f, base::Grid& grid, size_t N)
     : f(f), grid(grid), N(N), functionValues(0) {}
 
 IterativeGridGenerator::~IterativeGridGenerator() {}
@@ -24,6 +25,23 @@ IterativeGridGenerator::~IterativeGridGenerator() {}
 base::Grid& IterativeGridGenerator::getGrid() const { return grid; }
 
 const base::DataVector& IterativeGridGenerator::getFunctionValues() const { return functionValues; }
+
+void IterativeGridGenerator::printIterativeGridGenerator() const {
+  base::GridStorage& gridStorage = this->getGrid().getStorage();
+  const base::DataVector& functionValues = this->getFunctionValues();
+
+  base::Printer::getInstance().printStatusBegin("IterativeGridGenerator contents begin");
+
+  for (size_t i = 0; i < gridStorage.getSize(); i++) {
+    // print grid point and function value
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(i) + ": " + gridStorage[i].toString() + ", " +
+        std::to_string(functionValues[i]));
+    base::Printer::getInstance().printStatusNewLine();
+  }
+
+  base::Printer::getInstance().printStatusEnd("IterativeGridGenerator contents end");
+}
 
 void IterativeGridGenerator::undoRefinement(size_t oldGridSize) {
   base::GridStorage& gridStorage = grid.getStorage();
@@ -41,9 +59,9 @@ void IterativeGridGenerator::evalFunction(size_t oldGridSize) {
 #pragma omp parallel shared(fX, oldGridSize, gridStorage)
   {
     base::DataVector x(d);
-    ScalarFunction* curFPtr = &f;
+    base::ScalarFunction* curFPtr = &f;
 #ifdef _OPENMP
-    std::unique_ptr<ScalarFunction> curF;
+    std::unique_ptr<base::ScalarFunction> curF;
 
     if (omp_get_max_threads() > 1) {
       f.clone(curF);

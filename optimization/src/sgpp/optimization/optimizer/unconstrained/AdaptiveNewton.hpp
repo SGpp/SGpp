@@ -3,15 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVENEWTON_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVENEWTON_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/base/tools/sle/solver/SLESolver.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
-#include <sgpp/optimization/sle/solver/SLESolver.hpp>
 
 #include <cstddef>
 #include <memory>
@@ -54,9 +53,8 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    * @param dampingDecreaseFactor     damping decrease factor
    * @param lineSearchAccuracy        line search accuracy
    */
-  AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian,
-                 size_t maxItCount = DEFAULT_N,
-                 double tolerance = DEFAULT_TOLERANCE,
+  AdaptiveNewton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+                 size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
                  double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
                  double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR,
                  double dampingIncreaseFactor = DEFAULT_DAMPING_INCREASE_FACTOR,
@@ -81,10 +79,11 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
    *                                  solving the linear systems
    *                                  (Hessian as coefficient matrix)
    */
-  AdaptiveNewton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t maxItCount,
-                 double tolerance, double stepSizeIncreaseFactor, double stepSizeDecreaseFactor,
-                 double dampingIncreaseFactor, double dampingDecreaseFactor,
-                 double lineSearchAccuracy, const sle_solver::SLESolver& sleSolver);
+  AdaptiveNewton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+                 size_t maxItCount, double tolerance, double stepSizeIncreaseFactor,
+                 double stepSizeDecreaseFactor, double dampingIncreaseFactor,
+                 double dampingDecreaseFactor, double lineSearchAccuracy,
+                 const base::sle_solver::SLESolver& sleSolver);
 
   /**
    * Copy constructor.
@@ -99,11 +98,6 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   ~AdaptiveNewton() override;
 
   void optimize() override;
-
-  /**
-   * @return objective function Hessian
-   */
-  ScalarFunctionHessian& getObjectiveHessian() const;
 
   /**
    * @return tolerance
@@ -171,8 +165,6 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function Hessian
-  std::unique_ptr<ScalarFunctionHessian> fHessian;
   /// tolerance
   double theta;
   /// step size increase factor
@@ -186,12 +178,10 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   /// line search accuracy
   double rhoLs;
   /// default linear solver
-  const sle_solver::GaussianElimination defaultSleSolver;
+  const base::sle_solver::GaussianElimination defaultSleSolver;
   /// linear solver
-  const sle_solver::SLESolver& sleSolver;
+  const base::sle_solver::SLESolver& sleSolver;
 };
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_UNCONSTRAINED_ADAPTIVENEWTON_HPP */

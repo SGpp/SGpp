@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -48,9 +48,8 @@ class NLCG : public UnconstrainedOptimizer {
    * @param epsilon           epsilon (parameter for Armijo's rule)
    * @param restartThreshold  restart threshold
    */
-  NLCG(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-       size_t maxItCount = DEFAULT_N,
-       double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
+  NLCG(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+       size_t maxItCount = DEFAULT_N, double beta = DEFAULT_BETA, double gamma = DEFAULT_GAMMA,
        double tolerance = DEFAULT_TOLERANCE, double epsilon = DEFAULT_EPSILON,
        double restartThreshold = DEFAULT_RESTART_THRESHOLD);
 
@@ -67,11 +66,6 @@ class NLCG : public UnconstrainedOptimizer {
   ~NLCG() override;
 
   void optimize() override;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
 
   /**
    * @return              beta (parameter for Armijo's rule)
@@ -129,8 +123,6 @@ class NLCG : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)
