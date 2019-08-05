@@ -186,8 +186,6 @@ vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be buil
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
 
-vars.Add(BoolVariable("USE_PYTHON_EMBEDDING", "Link to the Python.h", False))
-
 # create temporary environment to check which system and compiler we should use
 # (the Environment call without "tools=[]" crashes with MinGW,
 # so we do it like that)
