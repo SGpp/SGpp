@@ -199,6 +199,11 @@ class Module(object):
     else:
       raise ValueError("Unsupported language for running examples.")
 
+    if not os.path.isdir(exampleFolder):
+      Helper.printWarning(("Skipping running of examples for the {} module "
+                           "as there is no examples directory.").format(moduleName))
+      return
+
     for fileName in os.listdir(exampleFolder):
       if fnmatch.fnmatch(fileName, fileNameFilter):
         sourcePath = os.path.join(exampleFolder, fileName)
