@@ -37,7 +37,7 @@ double FuzzyInterval::computeL1Norm(NormMode normMode) const {
         norm += std::abs(mu);
       }
 
-      break;
+      return norm * (ub - lb) / N;
     }
     case NormMode::ViaConfidenceInterval: {
       for (size_t i = 0; i < numberOfIntegralSamples; i++) {
@@ -48,15 +48,11 @@ double FuzzyInterval::computeL1Norm(NormMode normMode) const {
         norm += std::abs(ub - lb);
       }
 
-      break;
+      return norm / N;
     }
     default:
       throw std::invalid_argument("Unknown normMode.");
   }
-
-  norm /= N;
-
-  return norm;
 }
 
 double FuzzyInterval::computeL2Norm(NormMode normMode) const {
@@ -74,7 +70,7 @@ double FuzzyInterval::computeL2Norm(NormMode normMode) const {
         norm += mu * mu;
       }
 
-      break;
+      return std::sqrt((ub - lb) * norm / N);
     }
     case NormMode::ViaConfidenceInterval: {
       for (size_t i = 0; i < numberOfIntegralSamples; i++) {
@@ -84,15 +80,11 @@ double FuzzyInterval::computeL2Norm(NormMode normMode) const {
         norm += (ub - lb) * (ub - lb);
       }
 
-      break;
+      return std::sqrt(norm / N);
     }
     default:
       throw std::invalid_argument("Unknown normMode.");
   }
-
-  norm = std::sqrt(norm / N);
-
-  return norm;
 }
 
 double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
@@ -110,7 +102,7 @@ double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
         norm = std::max(std::abs(mu), norm);
       }
 
-      break;
+      return norm;
     }
     case NormMode::ViaConfidenceInterval: {
       for (size_t i = 0; i < numberOfIntegralSamples; i++) {
@@ -121,13 +113,11 @@ double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
         norm = std::max(ub - lb, norm);
       }
 
-      break;
+      return norm;
     }
     default:
       throw std::invalid_argument("Unknown normMode.");
   }
-
-  return norm;
 }
 
 double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMode) const {
@@ -146,9 +136,7 @@ double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMo
         norm += std::abs(mu1 - mu2);
       }
 
-      norm /= N;
-
-      return norm;
+      return norm * (ub - lb) / N;
     }
     case NormMode::ViaConfidenceInterval: {
       double normLB = 0.0;
@@ -165,10 +153,7 @@ double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMo
         normUB += std::abs(ub1 - ub2);
       }
 
-      normLB /= N;
-      normUB /= N;
-
-      return normLB + normUB;
+      return normLB / N + normUB / N;
     }
     default:
       throw std::invalid_argument("Unknown normMode.");
@@ -192,9 +177,7 @@ double FuzzyInterval::computeL2Error(const FuzzyInterval& other, NormMode normMo
         norm += (mu1 - mu2) * (mu1 - mu2);
       }
 
-      norm /= N;
-
-      return norm;
+      return std::sqrt(norm * (ub - lb) / N);
     }
     case NormMode::ViaConfidenceInterval: {
       double normLB = 0.0;
@@ -211,10 +194,7 @@ double FuzzyInterval::computeL2Error(const FuzzyInterval& other, NormMode normMo
         normUB += (ub1 - ub2) * (ub1 - ub2);
       }
 
-      normLB = std::sqrt(normLB / N);
-      normUB = std::sqrt(normUB / N);
-
-      return normLB + normUB;
+      return std::sqrt(normLB / N) + std::sqrt(normUB / N);
     }
     default:
       throw std::invalid_argument("Unknown normMode.");

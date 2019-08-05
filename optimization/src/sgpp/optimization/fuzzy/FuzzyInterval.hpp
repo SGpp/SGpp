@@ -179,17 +179,17 @@ class FuzzyInterval {
       NormMode normMode = NormMode::ViaMembershipFunction) const;
 
   /**
-   * @return lower bound of the support
+   * @return  lower bound of the support
    */
   double getSupportLowerBound() const;
 
   /**
-   * @return upper bound of the support
+   * @return  upper bound of the support
    */
   double getSupportUpperBound() const;
 
   /**
-   * @return number of samples to compute norms
+   * @return  number of samples to compute norms
    */
   size_t getNumberOfIntegralSamples() const;
 
