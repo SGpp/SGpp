@@ -23,9 +23,8 @@ FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
 
 FuzzyExtensionPrincipleViaVertexMethod::FuzzyExtensionPrincipleViaVertexMethod(
     const FuzzyExtensionPrincipleViaVertexMethod& other) :
-        FuzzyExtensionPrincipleViaVertexMethod(*other.f, other.m) {
-  powersOfTwo = other.powersOfTwo;
-  xTmp = other.xTmp;
+        FuzzyExtensionPrincipleViaOptimization(other),
+        powersOfTwo(other.powersOfTwo), xTmp(other.xTmp) {
 }
 
 FuzzyExtensionPrincipleViaVertexMethod::~FuzzyExtensionPrincipleViaVertexMethod() {}
