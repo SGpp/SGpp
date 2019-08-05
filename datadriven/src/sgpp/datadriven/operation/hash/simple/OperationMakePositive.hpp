@@ -11,10 +11,9 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositiveInterpolationAlgorithm.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <vector>
 #include <map>
+#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -57,7 +56,7 @@ class OperationMakePositive {
                                      MakePositiveInterpolationAlgorithm::SetToZero,
 
                                  bool generateConsistentGrid = true, bool verbose = false,
-                                 sgpp::optimization::ScalarFunction* f = nullptr);
+                                 sgpp::base::ScalarFunction* f = nullptr);
 
   /**
    * Descrutor
@@ -192,7 +191,7 @@ class OperationMakePositive {
 
   std::shared_ptr<datadriven::OperationMakePositiveCandidateSetAlgorithm> candidateSearch;
   std::shared_ptr<datadriven::OperationMakePositiveInterpolationAlgorithm> interpolation;
-  sgpp::optimization::ScalarFunction* f;
+  sgpp::base::ScalarFunction* f;
 
   /// verbosity
   bool verbose;

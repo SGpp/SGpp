@@ -12,24 +12,28 @@
 %newobject sgpp::base::Grid::createGrid(RegularGridConfiguration gridConfig);
 %newobject sgpp::base::Grid::createLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedGrid(size_t dim);
+%newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearClenshawCurtisBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModLinearClenshawCurtisGrid(size_t dim);
-%newobject sgpp::base::Grid::createLinearBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearBoundaryGrid(sgpp::base::BoudingBox& BB);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
 %newobject sgpp::base::Grid::createModLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModPolyGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createWaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createWaveletBoundaryGrid(size_t dim);
+%newobject sgpp::base::Grid::createWaveletBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModWaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createBsplineGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createBsplineClenshawCurtisGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModBsplineGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createFundamentalSplineGrid(size_t dim, size_t degree);
@@ -42,6 +46,14 @@
 %newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModNakBsplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createModWeaklyFundamentalNakSplineGrid(size_t dim);
+%newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 
 %newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
@@ -90,38 +102,46 @@ struct AdaptivityConfiguration {
 };
 
 enum class GridType {
-  Linear,                       //  0
-  LinearStretched,              //  1
-  LinearL0Boundary,             //  2
-  LinearBoundary,               //  3
-  LinearStretchedBoundary,      //  4
-  LinearTruncatedBoundary,      //  5
-  ModLinear,                    //  6
-  Poly,                         //  7
-  PolyBoundary,                 //  8
-  ModPoly,                      //  9
-  ModWavelet,                   // 10
-  ModBspline,                   // 11
-  Prewavelet,                   // 12
-  SquareRoot,                   // 13
-  Periodic,                     // 14
-  LinearClenshawCurtisBoundary, // 15
-  Bspline,                      // 16
-  BsplineBoundary,              // 17
-  BsplineClenshawCurtis,        // 18
-  Wavelet,                      // 19
-  WaveletBoundary,              // 20
-  FundamentalSpline,            // 21
-  ModFundamentalSpline,         // 22
-  ModBsplineClenshawCurtis,     // 23
-  LinearStencil,                // 24
-  ModLinearStencil,             // 25
-  PolyClenshawCurtisBoundary,   // 26
-  PolyClenshawCurtis,           // 27
-  LinearClenshawCurtis,         // 28
-  ModPolyClenshawCurtis,        // 29
-  ModLinearClenshawCurtis,      // 30
-  NakBsplineBoundaryCombigrid   // 31
+  Linear,                                   //  0
+  LinearStretched,                          //  1
+  LinearL0Boundary,                         //  2
+  LinearBoundary,                           //  3
+  LinearStretchedBoundary,                  //  4
+  LinearTruncatedBoundary,                  //  5
+  ModLinear,                                //  6
+  Poly,                                     //  7
+  PolyBoundary,                             //  8
+  ModPoly,                                  //  9
+  ModWavelet,                               // 10
+  ModBspline,                               // 11
+  Prewavelet,                               // 12
+  SquareRoot,                               // 13
+  Periodic,                                 // 14
+  LinearClenshawCurtisBoundary,             // 15
+  Bspline,                                  // 16
+  BsplineBoundary,                          // 17
+  BsplineClenshawCurtis,                    // 18
+  Wavelet,                                  // 19
+  WaveletBoundary,                          // 20
+  FundamentalSpline,                        // 21
+  ModFundamentalSpline,                     // 22
+  ModBsplineClenshawCurtis,                 // 23
+  LinearStencil,                            // 24
+  ModLinearStencil,                         // 25
+  PolyClenshawCurtisBoundary,               // 26
+  PolyClenshawCurtis,                       // 27
+  LinearClenshawCurtis,                     // 28
+  ModPolyClenshawCurtis,                    // 29
+  ModLinearClenshawCurtis,                  // 30
+  NakBsplineBoundaryCombigrid,              // 31
+  NaturalBsplineBoundary,                   // 32
+  NakBsplineBoundary,                  // 33
+  ModNakBspline,                       // 34
+  WeaklyFundamentalSplineBoundary,          // 35
+  WeaklyFundamentalNakSplineBoundary,  // 36
+  ModWeaklyFundamentalNakSpline,       // 37
+  FundamentalSplineBoundary,                // 38
+  FundamentalNakSplineBoundary,        // 39
 };
 
 class Grid
@@ -140,11 +160,11 @@ public:
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);
   static Grid* createWaveletGrid(size_t dim);
-  static Grid* createWaveletBoundaryGrid(size_t dim);
+  static Grid* createWaveletBoundaryGrid(size_t dim, size_t boundaryLevel=1);
   static Grid* createModWaveletGrid(size_t dim);
   static Grid* createBsplineGrid(size_t dim, size_t degree);
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModBsplineGrid(size_t dim, size_t degree);
   static Grid* createModBsplineClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineGrid(size_t dim, size_t degree);
@@ -159,6 +179,13 @@ public:
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
+  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
 
   static Grid* unserialize(const std::string& istr);
 

@@ -49,9 +49,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureLinear) {
   const double determinant = 2.0 * 4.0 * 1.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v.push_back(static_cast<int>(i));
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -88,9 +88,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModLinear) {
   const double determinant = 2.0 * 4.0 * 1.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v.push_back(static_cast<int>(i));
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -100,7 +100,19 @@ BOOST_AUTO_TEST_CASE(testQuadratureModLinear) {
   // double resDirect = sgpp::op_factory::createOperationQuadrature(*grid)->doQuadrature(*alpha);
 
   for (size_t i = 0; i < N; i++) {
-    lSum = static_cast<double>(gS.getPoint(i).getLevelSum());
+    HashGridPoint& gp = gS.getPoint(i);
+    lSum = static_cast<double>(gp.getLevelSum());
+
+    // account for the fact that the modified basis functions (left-most and right-most)
+    // have integral 2*2^(-lvl) = 2^(-lvl+1)
+    for (size_t d = 0; d < dim; d++) {
+      HashGridPoint::level_type lvl = gp.getLevel(d);
+      HashGridPoint::index_type idx = gp.getIndex(d);
+      if ((idx == 1) || (idx == (static_cast<HashGridPoint::index_type>(1) << lvl) - 1)) {
+        lSum -= 1.0;
+      }
+    }
+
     qres += pow(2, -lSum) * alpha->get(i);
   }
 
@@ -128,9 +140,9 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBasis) {
   const double determinant = 42.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -174,9 +186,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModPolyBasis) {
   const double determinant = 42.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -222,9 +234,9 @@ BOOST_AUTO_TEST_CASE(testQuadraturePolyBoundaryBasis) {
   const double determinant = 42.0;  // volume of BoundingBox
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -273,9 +285,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureMC) {
   grid->getBoundingBox().setBoundary(2, BoundingBox1D(2.0, 3.0));
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector* alpha = new DataVector(v);
 
@@ -334,9 +346,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureBSpline) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -359,9 +371,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModBSpline) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -382,9 +394,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureBSplineBoundary) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -407,9 +419,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureBSplineClenshawCurtis) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -432,9 +444,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModBSplineClenshawCurtis) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -457,9 +469,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureFundamentalSpline) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 
@@ -482,9 +494,9 @@ BOOST_AUTO_TEST_CASE(testQuadratureModFundamentalSpline) {
   GridStorage& gS = grid->getStorage();
 
   size_t N = gS.getSize();
-  std::vector<int> v(N);
+  std::vector<double> v;
 
-  for (size_t i = 0; i < N; i++) v[static_cast<int>(i)] = static_cast<int>(i);
+  for (size_t i = 0; i < N; i++) v.push_back(static_cast<double>(i));
 
   DataVector alpha(v);
 

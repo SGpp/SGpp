@@ -5,10 +5,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinearNaive.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -20,8 +20,8 @@ OperationMultipleHierarchisationModLinear::OperationMultipleHierarchisationModLi
 OperationMultipleHierarchisationModLinear::~OperationMultipleHierarchisationModLinear() {}
 
 bool OperationMultipleHierarchisationModLinear::doHierarchisation(base::DataVector& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataVector b(nodeValues);
   return solver.solve(system, b, nodeValues);
 }
@@ -43,8 +43,8 @@ void OperationMultipleHierarchisationModLinear::doDehierarchisation(base::DataVe
 }
 
 bool OperationMultipleHierarchisationModLinear::doHierarchisation(base::DataMatrix& nodeValues) {
-  HierarchisationSLE system(grid);
-  sle_solver::Auto solver;
+  base::HierarchisationSLE system(grid);
+  base::sle_solver::Auto solver;
   base::DataMatrix B(nodeValues);
   return solver.solve(system, B, nodeValues);
 }

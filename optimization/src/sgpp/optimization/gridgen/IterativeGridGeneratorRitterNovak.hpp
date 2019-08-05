@@ -3,11 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
-#define SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP
+#pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
 
 #include <cstddef>
@@ -20,7 +19,7 @@ namespace optimization {
  * Caution: This class uses HashRefinementMultiple, so it generates grids
  * that don't meet the "hierarchical ancestors" requirement!
  *
- * Literature: Erich Novak, Klaus Ritter: Global Optimization Using
+ * Literature: Erich Novak, Klaus Ritter. Global Optimization Using
  * Hyperbolic Cross Points.
  * In: Christodoulos A. Floudas, Panos M. Pardalos (eds.): State of the
  * Art in Global Optimization,
@@ -39,7 +38,7 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
   static const base::level_t DEFAULT_MAX_LEVEL = 20;
 
   /// exponentiation methods
-  enum PowMethod { STD_POW, FAST_POW };
+  enum class PowMethod { STD_POW, FAST_POW };
 
   /**
    * Constructor.
@@ -55,11 +54,11 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
    *                      (fastPow is faster than std::pow,
    *                      but only approximative)
    */
-  IterativeGridGeneratorRitterNovak(ScalarFunction& f, base::Grid& grid, size_t N,
+  IterativeGridGeneratorRitterNovak(base::ScalarFunction& f, base::Grid& grid, size_t N,
                                     double adaptivity = DEFAULT_ADAPTIVITY,
                                     base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
                                     base::level_t maxLevel = DEFAULT_MAX_LEVEL,
-                                    PowMethod powMethod = STD_POW);
+                                    PowMethod powMethod = PowMethod::STD_POW);
 
   /**
    * Destructor.
@@ -125,5 +124,3 @@ class IterativeGridGeneratorRitterNovak : public IterativeGridGenerator {
 };
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_GRIDGEN_ITERATIVEGRIDGENERATORRITTERNOVAK_HPP */

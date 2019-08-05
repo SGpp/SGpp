@@ -39,8 +39,8 @@ double RastriginObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void RastriginObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new RastriginObjective(*this));
+void RastriginObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new RastriginObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

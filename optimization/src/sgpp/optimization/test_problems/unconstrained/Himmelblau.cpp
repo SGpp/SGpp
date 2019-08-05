@@ -37,8 +37,8 @@ double HimmelblauObjective::evalUndisplaced(const base::DataVector& x) {
          (x1 + x2 * x2 - 7.0) * (x1 + x2 * x2 - 7.0);
 }
 
-void HimmelblauObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new HimmelblauObjective(*this));
+void HimmelblauObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new HimmelblauObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

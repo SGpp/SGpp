@@ -186,8 +186,6 @@ vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be buil
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
 
-vars.Add(BoolVariable("USE_PYTHON_EMBEDDING", "Link to the Python.h", False))
-
 # create temporary environment to check which system and compiler we should use
 # (the Environment call without "tools=[]" crashes with MinGW,
 # so we do it like that)
@@ -336,23 +334,22 @@ Export("config")
 # update PATH under win32/LD_LIBRARY_PATH otherwise
 # to add BUILD_DIR (so we can run the Boost tests)
 if env["PLATFORM"] == "win32":
-  env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
-                                        BUILD_DIR.abspath])
+  env["ENV"]["PATH"] = os.pathsep.join([BUILD_DIR.abspath,
+                                        env["ENV"].get("PATH", "")])
 
   # also add the Boost library path to the PATH
   # so that the Boost test *.dll can be found when running the tests
   if env["COMPILE_BOOST_TESTS"]:
-    env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
-                                          env["BOOST_LIBRARY_PATH"]])
+    env["ENV"]["PATH"] = os.pathsep.join([env["BOOST_LIBRARY_PATH"],
+                                          env["ENV"].get("PATH", "")])
 # Mac OS X doesn't use LD_LIBRARY_PATH
 elif env["PLATFORM"] == "darwin":
   env["ENV"]["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join([
-      env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", ""),
-      BUILD_DIR.abspath])
+      BUILD_DIR.abspath,
+      env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", "")])
 else:
   env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
-      env["ENV"].get("LD_LIBRARY_PATH", ""),
-      BUILD_DIR.abspath])
+      BUILD_DIR.abspath, env["ENV"].get("LD_LIBRARY_PATH", "")])
 
 # Add the pysgpp package path to the environment
 #########################################################################
@@ -379,7 +376,7 @@ if env["PLATFORM"] == "win32":
   # add it to the build python path
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([
       pysgppTempFolder,
-      env["ENV"].get("PYTHONPATH", "")])
+                                              env["ENV"].get("PYTHONPATH", "")])
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([
       PYSGPP_PACKAGE_PATH.abspath,
