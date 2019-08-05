@@ -11,8 +11,9 @@ namespace sgpp {
 namespace optimization {
 
 FuzzyIntervalViaConfidenceInterval::FuzzyIntervalViaConfidenceInterval(
-    double supportLowerBound, double supportUpperBound) :
-        FuzzyInterval(supportLowerBound, supportUpperBound) {
+    double supportLowerBound, double supportUpperBound, double binarySearchTolerance) :
+        FuzzyInterval(supportLowerBound, supportUpperBound),
+        binarySearchTolerance(binarySearchTolerance) {
 }
 
 FuzzyIntervalViaConfidenceInterval::~FuzzyIntervalViaConfidenceInterval() {
@@ -37,11 +38,10 @@ double FuzzyIntervalViaConfidenceInterval::evaluateMembershipFunction(double x) 
   const bool isOnLeftBranch = (x < coreLowerBound);
 
   // do a binary search in alpha space
-  const double tol = 1e-6;
   double alphaLower = 0.0;
   double alphaUpper = 1.0;
 
-  while (alphaUpper - alphaLower > tol) {
+  while (alphaUpper - alphaLower > binarySearchTolerance) {
     const double alphaCenter = (alphaLower + alphaUpper) / 2.0;
 
     if (isOnLeftBranch) {
@@ -73,6 +73,14 @@ double FuzzyIntervalViaConfidenceInterval::evaluateMembershipFunction(double x) 
 
   // return center of last search interval
   return (alphaLower + alphaUpper) / 2.0;
+}
+
+double FuzzyIntervalViaConfidenceInterval::getBinarySearchTolerance() const {
+  return binarySearchTolerance;
+}
+
+void FuzzyIntervalViaConfidenceInterval::setBinarySearchTolerance(double binarySearchTolerance) {
+  this->binarySearchTolerance = binarySearchTolerance;
 }
 
 }  // namespace optimization

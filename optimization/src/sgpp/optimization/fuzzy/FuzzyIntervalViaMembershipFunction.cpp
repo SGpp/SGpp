@@ -12,10 +12,11 @@ namespace optimization {
 
 FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
     double supportLowerBound, double supportUpperBound,
-    double coreLowerBound, double coreUpperBound) :
+    double coreLowerBound, double coreUpperBound, double binarySearchTolerance) :
         FuzzyInterval(supportLowerBound, supportUpperBound),
         coreLowerBound(coreLowerBound),
-        coreUpperBound(coreUpperBound) {
+        coreUpperBound(coreUpperBound),
+        binarySearchTolerance(binarySearchTolerance) {
 }
 
 FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
@@ -31,11 +32,10 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalLowerBound(
   }
 
   // do a binary search in x space
-  const double tol = 1e-6;
   double xLower = supportLowerBound;
   double xUpper = coreLowerBound;
 
-  while (xUpper - xLower > tol) {
+  while (xUpper - xLower > binarySearchTolerance) {
     const double xCenter = (xLower + xUpper) / 2.0;
     const double alphaCenter = evaluateMembershipFunction(xCenter);
 
@@ -64,11 +64,10 @@ double FuzzyIntervalViaMembershipFunction::evaluateConfidenceIntervalUpperBound(
   }
 
   // do a binary search in x space
-  const double tol = 1e-6;
   double xLower = coreUpperBound;
   double xUpper = supportUpperBound;
 
-  while (xUpper - xLower > tol) {
+  while (xUpper - xLower > binarySearchTolerance) {
     const double xCenter = (xLower + xUpper) / 2.0;
     const double alphaCenter = evaluateMembershipFunction(xCenter);
 
@@ -93,6 +92,14 @@ double FuzzyIntervalViaMembershipFunction::getCoreLowerBound() const {
 
 double FuzzyIntervalViaMembershipFunction::getCoreUpperBound() const {
   return coreUpperBound;
+}
+
+double FuzzyIntervalViaMembershipFunction::getBinarySearchTolerance() const {
+  return binarySearchTolerance;
+}
+
+void FuzzyIntervalViaMembershipFunction::setBinarySearchTolerance(double binarySearchTolerance) {
+  this->binarySearchTolerance = binarySearchTolerance;
 }
 
 }  // namespace optimization
