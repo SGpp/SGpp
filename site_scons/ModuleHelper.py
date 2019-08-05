@@ -158,6 +158,11 @@ class Module(object):
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     """Build the examples.
     """
+    if not os.path.isdir(exampleFolder):
+      Helper.printWarning(("Skipping building of examples for the {} module "
+                           "as there is no examples directory.").format(moduleName))
+      return
+
     # set libraries
     exampleEnv = env.Clone()
     exampleEnv.AppendUnique(LIBS=[self.libname] +
