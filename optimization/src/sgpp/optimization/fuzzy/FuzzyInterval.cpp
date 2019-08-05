@@ -20,6 +20,10 @@ FuzzyInterval::FuzzyInterval(
     numberOfIntegralSamples(numberOfIntegralSamples) {
 }
 
+FuzzyInterval::FuzzyInterval(const FuzzyInterval& other) :
+    FuzzyInterval(supportLowerBound, supportUpperBound, numberOfIntegralSamples) {
+}
+
 FuzzyInterval::~FuzzyInterval() {
 }
 

@@ -20,6 +20,13 @@ FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
         binarySearchTolerance(binarySearchTolerance) {
 }
 
+FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
+    const FuzzyIntervalViaMembershipFunction& other) :
+        FuzzyIntervalViaMembershipFunction(
+            supportLowerBound, supportUpperBound, coreLowerBound, coreUpperBound,
+            numberOfIntegralSamples, binarySearchTolerance) {
+}
+
 FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
 }
 
