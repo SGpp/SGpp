@@ -188,7 +188,7 @@ class Module(object):
     """
     if language == "all":
       for language in ["cpp", "python"]:
-        self.runExamples(exampleFolder="examples", language=language)
+        self.runExamples(exampleFolder=exampleFolder, language=language)
       return
     elif language == "cpp":
       if not env["RUN_CPP_EXAMPLES"]: return
