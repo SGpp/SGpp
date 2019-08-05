@@ -119,7 +119,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   detectGSL(config)
   detectZlib(config)
   detectScaLAPACK(config)
-  detectPythonAPI(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -706,8 +705,3 @@ def detectScaLAPACK(config):
   else:
     config.env["USE_SCALAPACK"] = False
     Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
-
-
-def detectPythonAPI(config):
-  if config.env["USE_PYTHON_EMBEDDING"]:
-    config.env["CPPDEFINES"]["USE_PYTHON_EMBEDDING"] = "1"

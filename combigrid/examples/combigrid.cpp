@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_gettingStarted_cpp gettingStarted.cpp (Start Here)
+ * \page example_combigrid_cpp Combigrid Example (C++)
  *
  * This tutorial contains examples with increasing complexity to introduce you to the combigrid
  * module. The combigrid module is quite separated from the other modules. It only refers to the
