@@ -31,9 +31,7 @@ int main(int argc, char **argv) {
    */
   const std::string path = [argc, &argv]() {
     if (argc != 2) {
-      std::cout << "No or bad path given, aborting\n";
-      exit(1);
-      return std::string{};
+      return std::string("config_hpoRegression.json");
     } else {
       return std::string{argv[1]};
     }

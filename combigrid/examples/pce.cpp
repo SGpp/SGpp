@@ -10,6 +10,7 @@
  * adaptively refined combigrid.
  */
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -95,8 +96,7 @@ int main() {
       std::cout << "Total Sobol indices = " << total_sobol_indices.toString() << std::endl;
       std::cout << "---------------------------------------------------------" << std::endl;
     }
-  }
-  catch (sgpp::base::generation_exception& exc)  {
+  } catch (sgpp::base::application_exception& exc)  {
     std::cout << "Exception: " << exc.what() << std::endl;
     std::cout << "Skipping example..." << std::endl;
   }

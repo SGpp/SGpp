@@ -41,9 +41,8 @@ int main(int argc, char** argv) {
   std::string configPath = "";
   std::string outputPath = "";
   if (argc != 3) {
-    std::cout << "No or bad paths given, aborting" << std::endl;
-    std::cout << "Usage: " << argv[0] << " pathToConfigFile pathForOutputFile" << std::endl;
-    exit(1);
+    configPath = "config_databaseExample.json";
+    outputPath = "output_databaseExample.dat";
   } else {
     configPath = std::string{argv[1]};
     outputPath = std::string{argv[2]};

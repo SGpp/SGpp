@@ -68,9 +68,10 @@ if __name__ == "__main__":
         ct_to_pce()
     except RuntimeError as e:
         if "Eigen" in e.args[0]:
-            print("SGpp was built without Eigen support. \nSkipping example...")
+            print("SGpp was built without Eigen support.\nSkipping example...")
+            exit(0)
+        elif "DAKOTA" in e.args[0]:
+            print("SGpp was built without DAKOTA support.\nSkipping example...")
             exit(0)
         else:
             raise(e)
-
-    
