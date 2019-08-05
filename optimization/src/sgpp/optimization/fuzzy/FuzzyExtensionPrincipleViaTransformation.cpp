@@ -73,7 +73,7 @@ void FuzzyExtensionPrincipleViaTransformation::optimizeForSingleAlphaLevel(
   // number of points to check (= (m+1-j)^d)
   const size_t K = gammaSize[0] * (m + 1 - j);
 
-  // calculate minimum and maximum on all vertices of the interval box
+  // calculate minimum and maximum on all points
   minimumValue = std::numeric_limits<double>::infinity();
   maximumValue = -std::numeric_limits<double>::infinity();
 
