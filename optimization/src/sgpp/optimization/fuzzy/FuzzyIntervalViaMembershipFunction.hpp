@@ -42,6 +42,13 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
       double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**
+   * Copy constructor.
+   *
+   * @param other   other fuzzy interval
+   */
+  FuzzyIntervalViaMembershipFunction(const FuzzyIntervalViaMembershipFunction& other);
+
+  /**
    * Destructor.
    */
   ~FuzzyIntervalViaMembershipFunction() override;

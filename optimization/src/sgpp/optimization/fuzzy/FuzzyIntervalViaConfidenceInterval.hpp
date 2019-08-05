@@ -37,6 +37,13 @@ class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
       double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**
+   * Copy constructor.
+   *
+   * @param other   other fuzzy interval
+   */
+  FuzzyIntervalViaConfidenceInterval(const FuzzyIntervalViaConfidenceInterval& other);
+
+  /**
    * Destructor.
    */
   ~FuzzyIntervalViaConfidenceInterval() override;

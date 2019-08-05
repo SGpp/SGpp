@@ -61,6 +61,13 @@ class FuzzyInterval {
       size_t numberOfIntegralSamples = DEFAULT_NUMBER_OF_INTEGRAL_SAMPLES);
 
   /**
+   * Copy constructor.
+   *
+   * @param other   other fuzzy interval
+   */
+  FuzzyInterval(const FuzzyInterval& other);
+
+  /**
    * Destructor.
    */
   virtual ~FuzzyInterval();
