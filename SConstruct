@@ -508,7 +508,7 @@ def installPythonLibToTmp(target, source, env):
 
   # install python interface to tmp directory
   p = subprocess.call(["python", "setup.py",
-                      #  "--quiet",
+                       "--quiet",
                        "install", "--install-lib=%s" % pysgppTempFolder])
   if p != 0:
     Helper.printErrorAndExit("Installing Python package to the temporary folder",
