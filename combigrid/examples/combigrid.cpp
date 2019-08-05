@@ -12,6 +12,7 @@
  * First, we need some includes.
  */
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
@@ -534,8 +535,7 @@ int main() {
   try {
     std::cout << "\nExample 8: \n";
     example8();
-  }
-  catch (sgpp::base::generation_exception& exc)  {
+  } catch (sgpp::base::application_exception& exc)  {
     std::cout << "Exception: " << exc.what() << std::endl;
     std::cout << "Skipping example 8..." << std::endl;
   }
