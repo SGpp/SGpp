@@ -19,20 +19,25 @@ namespace optimization {
  */
 class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
  public:
+  /// default tolerance for the binary search
+  static constexpr double DEFAULT_BINARY_SEARCH_TOLERANCE = 1e-6;
+
   /**
    * Constructor. Needs the support of the fuzzy interval and its core, i.e.,
    * \f$(\tilde{x})_\alpha\f$ for \f$alpha = 0\f$ and for \f$\alpha = 1\f$,
    * (which are always closed intervals, so it suffices to supply lower and upper bounds).
    * The core is needed since the binary search cannot be performed for \f$\alpha = 1\f$.
    *
-   * @param supportLowerBound   lower bound of the support
-   * @param supportUpperBound   upper bound of the support
-   * @param coreLowerBound      lower bound of the core
-   * @param coreUpperBound      upper bound of the core
+   * @param supportLowerBound       lower bound of the support
+   * @param supportUpperBound       upper bound of the support
+   * @param coreLowerBound          lower bound of the core
+   * @param coreUpperBound          upper bound of the core
+   * @param binarySearchTolerance   tolerance for the binary search
    */
   FuzzyIntervalViaMembershipFunction(
       double supportLowerBound, double supportUpperBound,
-      double coreLowerBound, double coreUpperBound);
+      double coreLowerBound, double coreUpperBound,
+      double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**
    * Destructor.
@@ -67,11 +72,23 @@ class FuzzyIntervalViaMembershipFunction : public FuzzyInterval {
    */
   double getCoreUpperBound() const;
 
+  /**
+   * @return  tolerance for the binary search
+   */
+  double getBinarySearchTolerance() const;
+
+  /**
+   * @param binarySearchTolerance   tolerance for the binary search
+   */
+  void setBinarySearchTolerance(double binarySearchTolerance);
+
  protected:
   /// lower bound of the core
   double coreLowerBound;
   /// upper bound of the core
   double coreUpperBound;
+  /// tolerance for the binary search
+  double binarySearchTolerance;
 };
 
 }  // namespace optimization

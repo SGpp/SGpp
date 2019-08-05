@@ -19,14 +19,20 @@ namespace optimization {
  */
 class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
  public:
+  /// default tolerance for the binary search
+  static constexpr double DEFAULT_BINARY_SEARCH_TOLERANCE = 1e-6;
+
   /**
    * Constructor. Needs the support of the fuzzy interval (which is
    * always a closed interval, so it suffices to supply lower and upper bound).
    *
-   * @param supportLowerBound   lower bound of the support
-   * @param supportUpperBound   upper bound of the support
+   * @param supportLowerBound       lower bound of the support
+   * @param supportUpperBound       upper bound of the support
+   * @param binarySearchTolerance   tolerance for the binary search
    */
-  FuzzyIntervalViaConfidenceInterval(double supportLowerBound, double supportUpperBound);
+  FuzzyIntervalViaConfidenceInterval(
+      double supportLowerBound, double supportUpperBound,
+      double binarySearchTolerance = DEFAULT_BINARY_SEARCH_TOLERANCE);
 
   /**
    * Destructor.
@@ -40,6 +46,20 @@ class FuzzyIntervalViaConfidenceInterval : public FuzzyInterval {
    * @return    \f$\mu_{\tilde{x}}(x) \in [0, 1]\f$
    */
   double evaluateMembershipFunction(double x) const override;
+
+  /**
+   * @return  tolerance for the binary search
+   */
+  double getBinarySearchTolerance() const;
+
+  /**
+   * @param binarySearchTolerance   tolerance for the binary search
+   */
+  void setBinarySearchTolerance(double binarySearchTolerance);
+
+ protected:
+  /// tolerance for the binary search
+  double binarySearchTolerance;
 };
 
 }  // namespace optimization
