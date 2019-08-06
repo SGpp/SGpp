@@ -98,8 +98,10 @@ vars.Add("CPPDEFINES", "Set additional C++ defines "
                        "(multiple defines combined with comma, e.g. FLAG_A=1,FLAG_B=2)", "",
                        converter=(lambda x: dict([y.split("=")
                            for y in Helper.multiParamConverter(x)] if x != "" else [])))
-vars.Add("CPPPATH", "Set path where to look for additional headers", "")
-vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
+vars.Add("CPPPATH", "Set path where to look for additional headers", "",
+                    converter=Helper.multiParamConverter)
+vars.Add("LIBPATH", "Set path where to look for additional libraries", "",
+                    converter=Helper.multiParamConverter)
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
                  "for COMPILER=gnu, e.g., the following values are possible: " +
                  "sse3, sse42, avx, fma4, avx2, avx512", "sse3")
