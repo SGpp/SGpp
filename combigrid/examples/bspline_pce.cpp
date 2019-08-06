@@ -50,7 +50,8 @@ int main() {
     auto tensor_op =
         sgpp::combigrid::CombigridTensorOperation::createExpUniformBoundaryBSplineInterpolation(
             numDims, func, degree);
-    tensor_op->getLevelManager()->addLevelsFromStructure(op->getLevelManager()->getLevelStructure());
+    tensor_op->getLevelManager()->addLevelsFromStructure(
+        op->getLevelManager()->getLevelStructure());
 
     sgpp::combigrid::FloatTensorVector tensor_result = tensor_op->getResult();
 
