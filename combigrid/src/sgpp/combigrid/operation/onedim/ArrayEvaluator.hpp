@@ -9,12 +9,12 @@
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <vector>
-#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
 namespace sgpp {
 namespace combigrid {

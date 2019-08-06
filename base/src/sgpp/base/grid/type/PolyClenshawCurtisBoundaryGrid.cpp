@@ -7,10 +7,10 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <vector>
-#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 
 namespace sgpp {
 namespace base {

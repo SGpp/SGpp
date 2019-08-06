@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include <mutex>
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <mutex>
 
 namespace sgpp {
 namespace base {

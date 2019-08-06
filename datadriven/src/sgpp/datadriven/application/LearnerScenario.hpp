@@ -5,12 +5,12 @@
 
 #pragma once
 
-#include <string>
-
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

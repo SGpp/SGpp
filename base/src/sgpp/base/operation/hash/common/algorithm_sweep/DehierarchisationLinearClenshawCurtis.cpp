@@ -6,12 +6,11 @@
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationLinearClenshawCurtis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <cmath>
-
-#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationLinearClenshawCurtis.hpp>
 
 namespace sgpp {
 namespace base {

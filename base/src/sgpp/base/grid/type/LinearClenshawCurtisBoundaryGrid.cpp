@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <vector>
-#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 
 namespace sgpp {
 namespace base {

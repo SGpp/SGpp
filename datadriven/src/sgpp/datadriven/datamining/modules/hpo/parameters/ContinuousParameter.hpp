@@ -13,9 +13,9 @@
 #ifndef CONTINUOUSPARAMETER_HPP_
 #define CONTINUOUSPARAMETER_HPP_
 
-#include <string>
-
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/HyperParameter.hpp>
+
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

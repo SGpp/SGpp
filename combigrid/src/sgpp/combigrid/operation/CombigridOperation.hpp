@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/grid/ordering/IdentityPointOrdering.hpp>
 #include <sgpp/combigrid/operation/Configurations.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
@@ -26,8 +27,6 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
-
-#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 
 namespace sgpp {
 namespace combigrid {

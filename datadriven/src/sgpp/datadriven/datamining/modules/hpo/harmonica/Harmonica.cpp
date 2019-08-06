@@ -15,12 +15,12 @@
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 
 #include <vector>
 #include <string>
 #include <algorithm>
-#include <sgpp/base/tools/Printer.hpp>
 
 namespace sgpp {
 namespace datadriven {

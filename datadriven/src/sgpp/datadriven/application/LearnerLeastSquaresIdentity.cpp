@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <utility>
-#include <string>
-#include <vector>
-
 #include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
 #include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <utility>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
