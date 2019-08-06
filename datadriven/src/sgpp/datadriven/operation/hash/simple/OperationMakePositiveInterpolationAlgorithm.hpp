@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
-#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 namespace sgpp {
 namespace datadriven {

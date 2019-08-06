@@ -12,11 +12,11 @@
 #include <iostream>
 #include <map>
 #include <vector>
-#include "omp.h"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/omp.h>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
-#include "OperationMultipleEvalSubspaceCombinedParameters.hpp"
-#include "SubspaceNodeCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/SubspaceNodeCombined.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -89,7 +89,7 @@ class OperationMultipleEvalSubspaceCombined : public AbstractOperationMultipleEv
   uint32_t flattenLevel(size_t dim, size_t maxLevel, std::vector<uint32_t>& level);
 
  public:
-#include "OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined_calculateIndexCombined.hpp>
 
   /**
    * Creates a new instance of the OperationMultipleEvalSubspaceCombined class.

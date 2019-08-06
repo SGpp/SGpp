@@ -18,7 +18,7 @@
 
 #include <vector>
 #include <string>
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 namespace sgpp {
 namespace datadriven {

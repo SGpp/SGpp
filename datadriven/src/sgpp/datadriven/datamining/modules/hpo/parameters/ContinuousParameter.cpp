@@ -11,7 +11,7 @@
  */
 
 #include <cmath>
-#include "ContinuousParameter.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 
 namespace sgpp {
 namespace datadriven {

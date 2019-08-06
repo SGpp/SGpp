@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 #include <vector>
-#include "../../operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
-#include "LinearClenshawCurtisBoundaryGrid.hpp"
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 
 namespace sgpp {
 namespace base {

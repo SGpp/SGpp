@@ -25,9 +25,9 @@
 #include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 #include <vector>
 
-#include "../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 typedef sgpp::combigrid::AveragingLevelManager StandardLevelManager;
 

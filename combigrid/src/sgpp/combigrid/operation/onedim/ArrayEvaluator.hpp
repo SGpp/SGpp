@@ -14,7 +14,7 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <vector>
-#include "../OperationConfiguration.hpp"
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 
 namespace sgpp {
 namespace combigrid {

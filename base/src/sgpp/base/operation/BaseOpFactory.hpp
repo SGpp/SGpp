@@ -28,9 +28,9 @@
 
 #include <vector>
 
-#include "hash/OperationEvalGradient.hpp"
-#include "hash/OperationEvalHessian.hpp"
-#include "hash/OperationEvalPartialDerivative.hpp"
+#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp>
 
 namespace sgpp {
 

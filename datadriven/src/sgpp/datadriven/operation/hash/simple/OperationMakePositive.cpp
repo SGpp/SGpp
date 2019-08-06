@@ -16,7 +16,7 @@
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
-#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>

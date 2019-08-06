@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LocalityMultiplier.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/LocalityMultiplier.hpp>
 
 #include <hpx/include/iostreams.hpp>
 #include <hpx/include/lcos.hpp>

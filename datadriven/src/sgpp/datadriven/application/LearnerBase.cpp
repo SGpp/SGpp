@@ -10,17 +10,17 @@
 #include <utility>
 #include <vector>
 
-#include "sgpp/base/exception/application_exception.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/grid/type/LinearBoundaryGrid.hpp"
-#include "sgpp/base/grid/type/LinearGrid.hpp"
-#include "sgpp/base/grid/type/ModLinearGrid.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/GridPrinter.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/solver/sle/BiCGStab.hpp"
-#include "sgpp/solver/sle/ConjugateGradients.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 namespace sgpp {
 namespace datadriven {

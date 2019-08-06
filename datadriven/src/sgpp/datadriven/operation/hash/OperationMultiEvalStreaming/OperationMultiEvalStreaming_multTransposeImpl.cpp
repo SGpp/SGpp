@@ -5,8 +5,8 @@
 
 #include <algorithm>
 
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/globaldef.hpp>
 
 #if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>

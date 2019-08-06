@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 namespace sgpp {
 namespace datadriven {
