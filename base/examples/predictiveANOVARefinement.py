@@ -31,8 +31,6 @@ import sys
 import math
 
 from pysgpp import *
-import matplotlib.pyplot as plotter
-from mpl_toolkits.mplot3d import Axes3D
 
 ## Spatially-dimension-adaptive refinement uses squared prediction
 ## error on a dataset to compute refinement indicators. Hence, here

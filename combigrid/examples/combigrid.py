@@ -9,24 +9,28 @@
 ## module. The combigrid module is quite separated from the other modules. It only refers to the
 ## base module for things like DataVector and DataMatrix.
 
-## At the beginning of the program, we have to import the pysgpp library,
-## and visualization tools if required
-from itertools import product, combinations, permutations,\
-    combinations_with_replacement
-from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
-import math
-import pysgpp
-import numpy as np
-
-visualOutput = True
-
-if visualOutput:
-    import matplotlib.pyplot as plt
-    from matplotlib.patches import Rectangle
-    from mpl_toolkits.mplot3d import Axes3D
+## At the beginning of the program, we have to import the pysgpp library.
+try:
+    from itertools import product, combinations, permutations,\
+        combinations_with_replacement
+    from pysgpp.extensions.datadriven.uq.dists import J, Beta, Uniform
     from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style, \
         load_color, load_font_properties, savefig
     from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d
+    import math
+    import pysgpp
+
+    from matplotlib.patches import Rectangle
+    from mpl_toolkits.mplot3d import Axes3D
+    import numpy as np
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 
 ## The first thing we need is a function to evaluate. This function will be evaluated on the domain
@@ -42,6 +46,7 @@ def f(x):
 
 def g(x):
     return np.prod([4 * xi * (1 - xi) for xi in x.array()])
+
 
 ## We have to wrap f in a pysgpp.MultiFunction object.
 func = pysgpp.multiFunc(g)
@@ -150,18 +155,17 @@ def example2():
     print("Adaptive result: " + str(operation.getResult()))
     print("Total function evaluations: " + str(operation.numGridPoints()))
 
-    if visualOutput:
-        ## We can also fetch the used grid points and plot the grid:
-        grid = levelManager.getGridPointMatrix()
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
+    ## We can also fetch the used grid points and plot the grid:
+    grid = levelManager.getGridPointMatrix()
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    gridList = [[grid.get(r, c) for c in range(grid.getNcols())] for r in range(grid.getNrows())]
 
-        ax.scatter(gridList[0], gridList[1], gridList[2], c='r', marker='o')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('z')
-        plt.show()
+    ax.scatter(gridList[0], gridList[1], gridList[2], c='r', marker='o')
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.show()
 
 
 ## @section py_combigrid_example_3 Example 3: Evaluation at multiple points
@@ -365,69 +369,69 @@ def example7(dtype="uniform", maxLevel=2):
     gridList = np.array([[grid.get(r, c) for c in range(grid.getNcols())]
                          for r in range(grid.getNrows())])
 
-    if visualOutput:
-        initialize_plotting_style()
+    initialize_plotting_style()
 
-        fig = plt.figure()
-        plt.plot(gridList[0, :], gridList[1, :], " ",
-                color=load_color(0),
-                marker='o', markersize=10)
-        plt.axis('off')
-        currentAxis = plt.gca()
-        currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
-        plt.xlim(0, 1)
-        plt.ylim(0, 1)
-        if dtype == "uniform":
-            plt.title(r"Sparse Grid $\ell=%i$" % (maxLevel + 1,),
-                    fontproperties=load_font_properties())
-        else:
-            plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
-                    fontproperties=load_font_properties())
+    fig = plt.figure()
+    plt.plot(gridList[0, :], gridList[1, :], " ",
+             color=load_color(0),
+             marker='o', markersize=10)
+    plt.axis('off')
+    currentAxis = plt.gca()
+    currentAxis.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=2))
+    plt.xlim(0, 1)
+    plt.ylim(0, 1)
+    if dtype == "uniform":
+        plt.title(r"Sparse Grid $\ell=%i$" % (maxLevel + 1,),
+                  fontproperties=load_font_properties())
+    else:
+        plt.title(r"Sparse Grid $\ell=%i$ (stretched)" % (maxLevel + 1,),
+                  fontproperties=load_font_properties())
 
-        savefig(fig, "./sparse_grid_%s" % dtype, mpl3d=True)
+    savefig(fig, "sparse_grid_%s" % dtype,
+            mpl3d=True)
 
-        maxLevel = 1
-        for tr in ["fg", "ct"]:
-            ## We can also fetch the used grid points and plot the grid:
-            fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
-                                    sharex=True, sharey=True, squeeze=True)
+    maxLevel = 1
+    for tr in ["fg", "ct"]:
+        ## We can also fetch the used grid points and plot the grid:
+        fig, axarr = plt.subplots(maxLevel + 1, maxLevel + 1,
+                                  sharex=True, sharey=True, squeeze=True)
 
-            levels = []
-            for level in product(list(range(maxLevel + 1)), repeat=2):
-                levels.append(level)
-                ax = axarr[level[0], level[1]]
-                ax.axis('off')
+        levels = []
+        for level in product(list(range(maxLevel + 1)), repeat=2):
+            levels.append(level)
+            ax = axarr[level[0], level[1]]
+            ax.axis('off')
 
-            for level in levels:
-                print(( tr, level ))
-                if tr == "ct" and np.sum(level) > maxLevel:
-                    print( "skip %s" % (level,) )
-                    continue
+        for level in levels:
+            print(( tr, level ))
+            if tr == "ct" and np.sum(level) > maxLevel:
+                print( "skip %s" % (level,) )
+                continue
 
-                ax = axarr[level[0], level[1]]
-                if level[0] == 0:
-                    xs = np.array([gridList[0, 1]])
-                else:
-                    xs = gridList[0, :]
+            ax = axarr[level[0], level[1]]
+            if level[0] == 0:
+                xs = np.array([gridList[0, 1]])
+            else:
+                xs = gridList[0, :]
 
-                if level[1] == 0:
-                    ys = np.array([gridList[1, 1]])
-                else:
-                    ys = gridList[1, :]
+            if level[1] == 0:
+                ys = np.array([gridList[1, 1]])
+            else:
+                ys = gridList[1, :]
 
-                xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
+            xv, yv = np.meshgrid(xs, ys, sparse=False, indexing='xy')
 
-                for i in range(len(xs)):
-                    for j in range(len(ys)):
-                        ax.plot(yv[j, i], xv[j, i], color=load_color(0),
-                                marker="o", markersize=10)
-                ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
-                            fontproperties=load_font_properties())
-                ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
+            for i in range(len(xs)):
+                for j in range(len(ys)):
+                    ax.plot(yv[j, i], xv[j, i], color=load_color(0),
+                            marker="o", markersize=10)
+            ax.set_title(r"$(%i, %i)$" % (level[0] + 1, level[1] + 1),
+                         fontproperties=load_font_properties())
+            ax.add_patch(Rectangle((0, 0), 1, 1, fill=None, alpha=1, linewidth=1))
 
-            fig.set_size_inches(6, 6, forward=True)
-            savefig(fig, "./tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
-                   mpl3d=True)
+        fig.set_size_inches(6, 6, forward=True)
+        savefig(fig, "tableau_%s_%s_l%i" % (dtype, tr, maxLevel, ),
+                mpl3d=True)
 
 
 ## @section py_combigrid_example_8 Example 8: UQ setting with variance refinement

@@ -15,7 +15,7 @@ hypercube to an arbitrary hypercube
 """
 from pysgpp.extensions.datadriven.uq.transformation.Transformation import Transformation
 
-from  pysgpp.extensions.datadriven.uq import jsonLib as ju
+from pysgpp.extensions.datadriven.uq import jsonLib as ju
 
 
 class LinearTransformation(Transformation):
