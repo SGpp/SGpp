@@ -86,18 +86,21 @@ else:
 
 # define the flags
 vars.Add("CFLAGS", "Set additional C compiler flags, they are compiler-dependent "
-                   "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                   "(multiple flags separated by space: '-Wall -Wextra')", "",
                    converter=Helper.multiParamConverter)
 vars.Add("CPPFLAGS", "Set additional C++ compiler flags, they are compiler-dependent "
-                     "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                     "(multiple flags separated by space: '-Wall -Wextra')", "",
                      converter=Helper.multiParamConverter)
-vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " +
-                      "(multiple flags combined with comma, e.g. -lpython,-lm)", "",
+vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent "
+                      "(multiple flags separated by space: '-lpython -lm')", "",
                      converter=Helper.multiParamConverter)
 vars.Add("CPPDEFINES", "Set additional C++ defines "
-                       "(multiple defines combined with comma, e.g. FLAG_A=1,FLAG_B=2)", "",
+                       "(multiple defines separated by space: 'FLAG_A=1 FLAG_B=2')", "",
                        converter=Helper.multiParamDefineConverter)
-vars.Add("CPPPATH", "Set path where to look for additional headers", "",
+vars.Add("CPPPATH", "Set path where to look for additional headers "
+                    "(multiple paths separated by '{}': '{}')".format(
+                        os.pathsep, os.pathsep.join([os.path.join("first", "path"),
+                                                     os.path.join("second", "path")])), "",
                     converter=Helper.multiParamPathConverter)
 vars.Add("LIBPATH", "Set path where to look for additional libraries", "",
                     converter=Helper.multiParamPathConverter)
@@ -123,8 +126,8 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
-vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
-                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+vars.Add("SWIGFLAGS", "Set additional SWIG flags, they are compiler-dependent "
+                      "(multiple flags separated by space: '-Wall -Wextra')", "",
                       converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
