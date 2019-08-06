@@ -280,6 +280,9 @@ BOOST_AUTO_TEST_CASE(TestInterpolatedFuzzyInterval) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFuzzyExtensionPrinciple) {
+  Printer::getInstance().setVerbosity(-1);
+  RandomNumberGenerator::getInstance().setSeed(42);
+
   const BilinearFunction f;
   const BilinearFunctionGradient fGradient;
   sgpp::optimization::optimizer::AdaptiveGradientDescent optimizer(f, fGradient);
@@ -348,21 +351,21 @@ BOOST_AUTO_TEST_CASE(TestFuzzyExtensionPrinciple) {
     const std::vector<sgpp::base::DataVector>& minimumPoints = curPrinciple->getMinimumPoints();
     BOOST_CHECK_EQUAL(minimumPoints.size(), m + 1);
     BOOST_CHECK_EQUAL(minimumPoints[m/2].size(), 2);
-    BOOST_CHECK_CLOSE(minimumPoints[m/2][0], 0.5, 1e0);
-    BOOST_CHECK_CLOSE(minimumPoints[m/2][1], 0.25, 1e0);
+    BOOST_CHECK_CLOSE(minimumPoints[m/2][0], 0.5, 5e0);
+    BOOST_CHECK_CLOSE(minimumPoints[m/2][1], 0.25, 5e0);
 
     const sgpp::base::DataVector& minimumValues = curPrinciple->getMinimumValues();
     BOOST_CHECK_EQUAL(minimumValues.size(), m + 1);
-    BOOST_CHECK_CLOSE(minimumValues[m/2], 0.8, 1e0);
+    BOOST_CHECK_CLOSE(minimumValues[m/2], 0.8, 5e0);
 
     const std::vector<sgpp::base::DataVector>& maximumPoints = curPrinciple->getMaximumPoints();
     BOOST_CHECK_EQUAL(maximumPoints.size(), m + 1);
     BOOST_CHECK_EQUAL(maximumPoints[m/2].size(), 2);
-    BOOST_CHECK_CLOSE(maximumPoints[m/2][0], 0.8125, 1e0);
-    BOOST_CHECK_CLOSE(maximumPoints[m/2][1], 0.75, 1e0);
+    BOOST_CHECK_CLOSE(maximumPoints[m/2][0], 0.8125, 5e0);
+    BOOST_CHECK_CLOSE(maximumPoints[m/2][1], 0.75, 5e0);
 
     const sgpp::base::DataVector& maximumValues = curPrinciple->getMaximumValues();
     BOOST_CHECK_EQUAL(maximumValues.size(), m + 1);
-    BOOST_CHECK_CLOSE(maximumValues[m/2], 3.9, 1e0);
+    BOOST_CHECK_CLOSE(maximumValues[m/2], 3.9, 5e0);
   }
 }
