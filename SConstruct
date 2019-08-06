@@ -85,12 +85,19 @@ else:
 
 
 # define the flags
-vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +
+vars.Add("CFLAGS", "Set additional C compiler flags, they are compiler-dependent "
+                   "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+                   converter=Helper.multiParamConverter)
+vars.Add("CPPFLAGS", "Set additional C++ compiler flags, they are compiler-dependent "
                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
                      converter=Helper.multiParamConverter)
 vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " +
                       "(multiple flags combined with comma, e.g. -lpython,-lm)", "",
                      converter=Helper.multiParamConverter)
+vars.Add("CPPDEFINES", "Set additional C++ defines "
+                       "(multiple defines combined with comma, e.g. FLAG_A=1,FLAG_B=2)", "",
+                       converter=(lambda x: dict([y.split("=")
+                           for y in Helper.multiParamConverter(x)] if x != "" else [])))
 vars.Add("CPPPATH", "Set path where to look for additional headers", "")
 vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
@@ -210,8 +217,7 @@ if env["USE_HPX"]:
   env["USE_OCL"] = True
 
 # fail if unknown variables where encountered on the command line
-unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CFLAGS", "CPPDEFINES"]]
+unknownVariables = vars.UnknownVariables()
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,
