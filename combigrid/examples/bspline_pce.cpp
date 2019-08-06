@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/functions/MonomialFunctionBasis1D.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
@@ -20,6 +21,7 @@
 #include <cmath>
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 double u(sgpp::base::DataVector x) {
@@ -75,9 +77,13 @@ int main() {
     std::cout << "E(u)   = " << model.mean(numDims) << " ~ " << mean << std::endl;
     std::cout << "Var(u) = " << model.variance(numDims) << " ~ " << variance << std::endl;
     std::cout << "---------------------------------------------------------" << std::endl;
-  }
-  catch (sgpp::base::generation_exception& exc)  {
-    std::cout << "Exception: " << exc.what() << std::endl;
-    std::cout << "Skipping example..." << std::endl;
+  } catch (sgpp::base::application_exception& exc)  {
+    if ((std::string(exc.what()).find("need Eigen") != std::string::npos) ||
+        (std::string(exc.what()).find("without DAKOTA") != std::string::npos)) {
+      std::cout << "Exception: " << exc.what() << std::endl;
+      std::cout << "Skipping example..." << std::endl;
+    } else {
+      throw;
+    }
   }
 }

@@ -11,7 +11,7 @@
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridSummationStrategy.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
 #include "../../../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
 #include "../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
@@ -121,7 +121,7 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
 
     return V(resultCoefficients);
 #else
-    throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+    throw sgpp::base::application_exception("need Eigen to use the PCE transformation.");
 #endif
   }
 
