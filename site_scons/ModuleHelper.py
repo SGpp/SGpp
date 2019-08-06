@@ -158,10 +158,7 @@ class Module(object):
   def buildExamples(self, exampleFolder="examples", additionalExampleDependencies=[]):
     """Build the examples.
     """
-    if not os.path.isdir(exampleFolder):
-      Helper.printWarning(("Skipping building of examples for the {} module "
-                           "as there is no examples directory.").format(moduleName))
-      return
+    if not os.path.isdir(exampleFolder): return
 
     # set libraries
     exampleEnv = env.Clone()
@@ -199,10 +196,7 @@ class Module(object):
     else:
       raise ValueError("Unsupported language for running examples.")
 
-    if not os.path.isdir(exampleFolder):
-      Helper.printWarning(("Skipping running of examples for the {} module "
-                           "as there is no examples directory.").format(moduleName))
-      return
+    if not os.path.isdir(exampleFolder): return
 
     for fileName in os.listdir(exampleFolder):
       if fnmatch.fnmatch(fileName, fileNameFilter):
