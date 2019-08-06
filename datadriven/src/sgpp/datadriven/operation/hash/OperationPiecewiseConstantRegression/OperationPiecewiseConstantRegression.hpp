@@ -5,10 +5,6 @@
 
 #pragma once
 
-#include <omp.h>
-
-#include <vector>
-
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -16,6 +12,10 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <omp.h>
+
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

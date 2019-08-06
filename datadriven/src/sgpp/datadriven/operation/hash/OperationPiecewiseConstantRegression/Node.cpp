@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
+
 #include <algorithm>
 #include <vector>
-
-#include <sgpp/datadriven/operation/hash/OperationPiecewiseConstantRegression/Node.hpp>
 
 namespace sgpp {
 namespace datadriven {

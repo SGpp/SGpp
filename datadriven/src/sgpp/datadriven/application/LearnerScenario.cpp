@@ -3,11 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <string>
-#include <vector>
-
 #include <sgpp/datadriven/application/LearnerScenario.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

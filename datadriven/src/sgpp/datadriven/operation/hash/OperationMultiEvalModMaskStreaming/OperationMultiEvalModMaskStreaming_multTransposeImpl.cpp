@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
+#include <sgpp/globaldef.hpp>
+
 #if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>
 #endif
@@ -17,9 +20,6 @@
 
 #include <vector>
 #include <algorithm>
-
-#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
-#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

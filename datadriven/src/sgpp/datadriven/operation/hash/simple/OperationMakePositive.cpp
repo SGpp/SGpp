@@ -12,11 +12,11 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
-#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 #ifdef _OPENMP
 #include <omp.h>

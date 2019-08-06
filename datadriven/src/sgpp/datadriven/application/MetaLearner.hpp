@@ -5,11 +5,6 @@
 
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -21,6 +16,11 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

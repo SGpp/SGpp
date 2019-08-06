@@ -5,6 +5,15 @@
 
 #if USE_OCL == 1
 
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/application/StaticParameterTuner.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
@@ -14,15 +23,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-#include <sgpp/datadriven/application/MetaLearner.hpp>
-#include <sgpp/datadriven/application/StaticParameterTuner.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -14,11 +14,11 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
 #include <vector>
 #include <string>
-#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 namespace sgpp {
 namespace datadriven {

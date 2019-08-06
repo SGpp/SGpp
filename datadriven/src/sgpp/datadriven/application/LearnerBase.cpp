@@ -3,13 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerBase.hpp>
-
-#include <iostream>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
@@ -18,9 +11,15 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
-#include <sgpp/globaldef.hpp>
+#include <sgpp/datadriven/application/LearnerBase.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <iostream>
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {

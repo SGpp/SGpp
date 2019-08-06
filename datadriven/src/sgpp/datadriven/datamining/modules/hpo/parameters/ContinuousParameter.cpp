@@ -10,8 +10,9 @@
  *      Author: Eric Koepke
  */
 
-#include <cmath>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
+
+#include <cmath>
 
 namespace sgpp {
 namespace datadriven {
