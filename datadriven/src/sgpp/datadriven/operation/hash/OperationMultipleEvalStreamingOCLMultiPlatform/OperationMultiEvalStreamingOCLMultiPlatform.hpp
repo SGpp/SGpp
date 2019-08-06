@@ -12,16 +12,16 @@
 #include <mutex>  // NOLINT(build/c++11)
 #include <vector>
 
-#include "Configuration.hpp"
-#include "KernelMult.hpp"
-#include "KernelMultTranspose.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/Configuration.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/KernelMult.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/KernelMultTranspose.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/QueueLoadBalancerOpenMP.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

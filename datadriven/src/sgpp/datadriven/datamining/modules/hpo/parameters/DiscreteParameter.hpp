@@ -15,7 +15,7 @@
 
 #include <string>
 
-#include "HyperParameter.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/HyperParameter.hpp>
 
 namespace sgpp {
 namespace datadriven {

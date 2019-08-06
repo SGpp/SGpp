@@ -17,11 +17,11 @@
 #include <iostream>
 #include <limits>
 
-#include "../../../../../../../../base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
 
 namespace sgpp {
 namespace datadriven {

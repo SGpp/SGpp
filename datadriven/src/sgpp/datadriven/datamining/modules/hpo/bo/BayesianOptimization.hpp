@@ -17,7 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 
 #include <vector>
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 namespace sgpp {
 namespace datadriven {

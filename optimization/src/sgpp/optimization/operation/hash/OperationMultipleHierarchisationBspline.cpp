@@ -7,8 +7,8 @@
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
-#include "../../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 namespace sgpp {
 namespace optimization {

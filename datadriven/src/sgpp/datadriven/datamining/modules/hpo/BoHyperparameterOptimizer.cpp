@@ -16,7 +16,7 @@
 #include <vector>
 #include <string>
 #include <limits>
-#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
+#include <sgpp/base/tools/Printer.hpp>
 
 namespace sgpp {
 namespace datadriven {

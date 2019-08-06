@@ -18,9 +18,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "KernelB.hpp"
-#include "KernelMult.hpp"
-#include "OperationDensityOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelB.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelMult.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCL.hpp>
 
 namespace sgpp {
 namespace datadriven {

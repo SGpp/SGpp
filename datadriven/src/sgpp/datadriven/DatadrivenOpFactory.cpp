@@ -95,29 +95,29 @@
 #endif
 
 #ifdef USE_OCL
-#include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp>
 
-#include "operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
-#include "operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
-#include "operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 #endif
 
 #ifdef USE_MPI
-#include "operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp>
 #endif
 
 #ifdef USE_HPX
-#include "operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp>
 #endif
 
-#include "../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 #ifdef USE_CUDA
-#include "operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp>
 #endif
 
 #ifdef USE_SCALAPACK

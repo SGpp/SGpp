@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "NormalAdder.hpp"
+#include <sgpp/combigrid/numeric/NormalAdder.hpp>
 
 namespace sgpp {
 namespace combigrid {}  // namespace combigrid

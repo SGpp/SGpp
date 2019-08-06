@@ -7,12 +7,12 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp"
-#include "sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp"
-#include "sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/exception/factory_exception.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
+#include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
+#include <sgpp/datadriven/tools/LearnerVectorizedPerformanceCalculator.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

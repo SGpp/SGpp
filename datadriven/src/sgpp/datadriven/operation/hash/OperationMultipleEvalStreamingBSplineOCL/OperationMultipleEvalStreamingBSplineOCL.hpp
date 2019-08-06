@@ -9,14 +9,14 @@
 
 #include <chrono>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/grid/type/BsplineGrid.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "StreamingBSplineOCLKernelImpl.hpp"
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLKernelImpl.hpp>
 
 namespace sgpp {
 namespace datadriven {

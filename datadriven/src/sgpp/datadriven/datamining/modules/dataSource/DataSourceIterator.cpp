@@ -9,7 +9,7 @@
  *      Author: Michael Lettrich
  */
 
-#include "DataSourceIterator.hpp"
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 
 namespace sgpp {
 namespace datadriven {

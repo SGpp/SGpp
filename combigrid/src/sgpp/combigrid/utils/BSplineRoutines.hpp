@@ -22,11 +22,11 @@
 
 #include <vector>
 
-#include "../../../../../base/src/sgpp/base/function/scalar/InterpolantScalarFunction.hpp"
-#include "../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 /**
  * Creates the knot sequence xi needed for the evaluation of B-splines from the evaluation points

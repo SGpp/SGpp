@@ -6,8 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/base/exception/not_implemented_exception.hpp"
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 
 namespace sgpp {
 namespace datadriven {

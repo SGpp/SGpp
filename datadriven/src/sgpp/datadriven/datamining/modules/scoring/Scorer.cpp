@@ -10,7 +10,7 @@
  *     Author: Michael Lettrich
  */
 
-#include "Scorer.hpp"
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>

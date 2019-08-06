@@ -6,8 +6,8 @@
 #pragma once
 
 #include <mutex>
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {

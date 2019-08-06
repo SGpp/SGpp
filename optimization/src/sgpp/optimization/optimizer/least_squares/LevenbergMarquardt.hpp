@@ -10,7 +10,7 @@
 
 #include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
 #include <sgpp/optimization/optimizer/least_squares/LeastSquaresOptimizer.hpp>
-#include "../../../../../../base/src/sgpp/base/function/vector/VectorFunctionGradient.hpp"
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 
 namespace sgpp {
 namespace optimization {

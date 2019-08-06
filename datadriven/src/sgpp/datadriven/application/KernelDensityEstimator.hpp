@@ -13,7 +13,7 @@
 
 #include <vector>
 #include <random>
-#include "../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -7,10 +7,10 @@
 
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/grid/GridStorage.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 
 namespace sgpp {
 namespace datadriven {

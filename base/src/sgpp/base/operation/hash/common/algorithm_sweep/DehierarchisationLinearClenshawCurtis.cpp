@@ -11,7 +11,7 @@
 
 #include <cmath>
 
-#include "DehierarchisationLinearClenshawCurtis.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationLinearClenshawCurtis.hpp>
 
 namespace sgpp {
 namespace base {

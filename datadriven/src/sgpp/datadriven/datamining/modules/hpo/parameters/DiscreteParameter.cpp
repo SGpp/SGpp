@@ -12,7 +12,7 @@
 #include <cmath>
 #include <string>
 
-#include "DiscreteParameter.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
 
 
 namespace sgpp {

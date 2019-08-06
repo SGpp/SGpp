@@ -15,7 +15,7 @@
 // Caution: Subspace-skipping is disabled by default for this kernel
 //////////////////////////////////////////////////////////////////////
 
-#include "omp.h"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/omp.h>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
