@@ -9,6 +9,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
 #include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp>
@@ -280,8 +282,8 @@ BOOST_AUTO_TEST_CASE(TestInterpolatedFuzzyInterval) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFuzzyExtensionPrinciple) {
-  Printer::getInstance().setVerbosity(-1);
-  RandomNumberGenerator::getInstance().setSeed(42);
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const BilinearFunction f;
   const BilinearFunctionGradient fGradient;
