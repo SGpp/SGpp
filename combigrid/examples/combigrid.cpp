@@ -12,6 +12,7 @@
  * First, we need some includes.
  */
 
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridOperation.hpp>
 #include <sgpp/combigrid/operation/CombigridTensorOperation.hpp>
@@ -26,6 +27,7 @@
 #include <cmath>
 
 #include <iostream>
+#include <string>
 #include <vector>
 
 /**
@@ -531,6 +533,16 @@ int main() {
   std::cout << "\nExample 7: \n";
   example7();
 
-  std::cout << "\nExample 8: \n";
-  example8();
+  try {
+    std::cout << "\nExample 8: \n";
+    example8();
+  } catch (sgpp::base::application_exception& exc)  {
+    if ((std::string(exc.what()).find("need Eigen") != std::string::npos) ||
+        (std::string(exc.what()).find("without DAKOTA") != std::string::npos)) {
+      std::cout << "Exception: " << exc.what() << std::endl;
+      std::cout << "Skipping example..." << std::endl;
+    } else {
+      throw;
+    }
+  }
 }  // end of main
