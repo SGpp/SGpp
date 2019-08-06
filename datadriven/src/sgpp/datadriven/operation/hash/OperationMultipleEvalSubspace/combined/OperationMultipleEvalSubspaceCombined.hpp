@@ -9,10 +9,10 @@
 
 #include <assert.h>
 #include <immintrin.h>
+#include <omp.h>
 #include <iostream>
 #include <map>
 #include <vector>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/omp.h>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombinedParameters.hpp>
