@@ -27,8 +27,6 @@ import sys
 import math
 
 from pysgpp import *
-import matplotlib.pyplot as plotter
-from mpl_toolkits.mplot3d import Axes3D
 
 ## We define the function \f$ f(x) =
 ## \sin(10x_0)+x_1\f$ to interpolate.

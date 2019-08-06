@@ -1,8 +1,14 @@
-import pysgpp
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
-import numpy as np
-import random
-import matplotlib.pyplot as plt
+try:
+  import pysgpp
+  from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
+  import numpy as np
+  import random
+  import matplotlib.pyplot as plt
+  
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 def test_base():
     n = 100000

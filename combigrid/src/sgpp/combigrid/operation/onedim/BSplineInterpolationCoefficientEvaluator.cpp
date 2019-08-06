@@ -9,7 +9,7 @@
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
 
-#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -158,7 +158,7 @@ void BSplineInterpolationCoefficientEvaluator::setGridPoints(const std::vector<d
   }
 
 #else
-  throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+  throw sgpp::base::application_exception("need Eigen to use the PCE transformation.");
 #endif
 }
 
