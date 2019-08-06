@@ -19,6 +19,7 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 if env["ARCH"] != "mic":
   module.buildExamples()
+  module.runExamples()
 module.buildBoostTests()
 module.runBoostTests()
 module.runCpplint()

@@ -15,10 +15,9 @@
 #include <iostream>
 
 int main(int argc, char **argv) {
-  if (argc != 4) return 42;
-  auto dimensions = std::atoi(argv[1]);
-  auto level = std::atoi(argv[2]);
-  double T = std::atof(argv[3]);
+  auto dimensions = ((argc >= 2) ? std::atoi(argv[1]) : 2);
+  auto level = ((argc >= 3) ? std::atoi(argv[2]) : 3);
+  double T = ((argc >= 4) ? std::atof(argv[3]) : 0);
 
   auto grid = sgpp::base::Grid::createModLinearGrid(dimensions);
   auto& generator = grid->getGenerator();

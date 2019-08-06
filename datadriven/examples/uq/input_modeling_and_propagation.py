@@ -1,12 +1,18 @@
-from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
-from pysgpp import createOperationSecondMoment, \
-    createOperationFirstMoment, Grid, DataVector, \
-    createOperationDensityMargTo1D
+try:
+    from pysgpp.extensions.datadriven.uq.dists import SGDEdist, MultivariateNormal
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+    from pysgpp.extensions.datadriven.uq.plot.plot3d import plotDensity3d, plotSG3d
+    from pysgpp import createOperationSecondMoment, \
+        createOperationFirstMoment, Grid, DataVector, \
+        createOperationDensityMargTo1D
 
-import numpy as np
-import matplotlib.pyplot as plt
+    import numpy as np
+    import matplotlib.pyplot as plt
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 # -------------------- prepare data
 C = np.array([[0.1, 0.08],
