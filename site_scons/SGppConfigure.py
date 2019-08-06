@@ -336,6 +336,9 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
+      if config.env["RUN_PYTHON_EXAMPLES"]:
+        Helper.printWarning("Python examples were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_EXAMPLES"] = False
     else:
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):

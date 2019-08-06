@@ -7,17 +7,23 @@
 ## \page example_convergence_py convergence.py
 ## simple code that provides convergence plots for various analytic models
 
-from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
-from pysgpp.pysgpp_swig import DataVector, CombigridOperation,\
-    CombigridMultiOperation, CombigridTensorOperation
-import pysgpp
+try:
+    from argparse import ArgumentParser
+    from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+    from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
+    from pysgpp.pysgpp_swig import DataVector, CombigridOperation,\
+        CombigridMultiOperation, CombigridTensorOperation
+    import pysgpp
 
-import matplotlib.pyplot as plt
-import numpy as np
-from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, TLognormal
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from pysgpp.extensions.datadriven.uq.dists import Uniform, Beta, TLognormal
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 
 def expModel(x, params):
@@ -177,13 +183,12 @@ class RefinementWrapper(object):
         self.levelManagerType = levelManagerType
         self.levelManager = buildLevelManager(levelManagerType)
         if levelManagerType == "variance":
-            self.orthogonal_basis = params.getUnivariateOrthogonalPolynomials(dtype="orthogonal")[0]
+            self.orthogonal_basis = params.getOrthogonalPolynomialBasisFunctions().get(0)
             self.tensor_operation = buildSparseGrid(gridType,
                                                     basisType,
                                                     degree,
                                                     growthFactor,
                                                     orthogonal_basis=self.orthogonal_basis)
-            print( self.tensor_operation.getLevelManager() )
             self.tensor_operation.getLevelManager().addRegularLevels(1)
             self.tensor_operation.setLevelManager(self.levelManager)
         else:
@@ -245,14 +250,22 @@ if __name__ == "__main__":
             #             ("Leja", "variance", "poly"),
             ("ClenshawCurtis", "regular", "poly")]:
 
-        refinement_wrapper = RefinementWrapper(gridType,
-                                               basisType,
-                                               args.degree,
-                                               args.growthFactor,
-                                               levelManagerType,
-                                               distType=args.dist,
-                                               samples=x,
-                                               params=params)
+        try:
+            refinement_wrapper = RefinementWrapper(gridType,
+                                                basisType,
+                                                args.degree,
+                                                args.growthFactor,
+                                                levelManagerType,
+                                                distType=args.dist,
+                                                samples=x,
+                                                params=params)
+        except RuntimeError as e:
+            if "Eigen" in e.args[0]:
+                print("SGpp was built without Eigen support. \nSkipping example...")
+                exit(0)
+            else:
+                raise(e)
+
         numGridPoints = np.array([])
         l2errors = np.array([])
         adaptive = levelManagerType != "regular"
