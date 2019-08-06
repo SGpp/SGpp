@@ -5,10 +5,11 @@
 
 #pragma once
 
+#include <CL/cl.h>
+
 #include <vector>
 #include <string>
 
-#include <sgpp/base/opencl/CL/cl.h>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
