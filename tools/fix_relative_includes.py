@@ -26,9 +26,10 @@ def processFile(path, dirName, dryRun):
   for match in matches[::-1]:
     includePath = match.group(1)
 
-    # if the include path starts with sgpp/,
-    # then just change the "" to <>
-    if not includePath.startswith("sgpp/"):
+    # if the include path starts with sgpp/ or if we include a library
+    # like omp.h, cl.h, etc., # then just change the "" to <>
+    if ((os.path.splitext(includePath)[1] == ".hpp") and
+        (not includePath.startswith("sgpp/"))):
       includePath = convertIncludePath(path, includePath)
 
     oldIncludeLine = match.group()
