@@ -183,6 +183,34 @@ class Module(object):
         hpp = os.path.join(exampleFolder, fileName)
         self.hpps.append(hpp)
 
+  def runExamples(self, exampleFolder="examples", language="all"):
+    """Run the examples.
+    """
+    if language == "all":
+      for language in ["cpp", "python"]:
+        self.runExamples(exampleFolder="examples", language=language)
+      return
+    elif language == "cpp":
+      if not env["RUN_CPP_EXAMPLES"]: return
+      fileNameFilter = "*.cpp"
+    elif language == "python":
+      if not env["RUN_PYTHON_EXAMPLES"]: return
+      fileNameFilter = "*.py"
+    else:
+      raise ValueError("Unsupported language for running examples.")
+
+    for fileName in os.listdir(exampleFolder):
+      if fnmatch.fnmatch(fileName, fileNameFilter):
+        sourcePath = os.path.join(exampleFolder, fileName)
+
+        if language == "cpp":
+          sourcePath = os.path.splitext(sourcePath)[0]
+          cppExampleRun = env.CppExample(sourcePath + "_run", sourcePath)
+          cppTestRunTargetList.append(cppExampleRun)
+        elif language == "python":
+          pythonExampleRun = env.PythonExample(sourcePath + "_run", sourcePath)
+          pythonTestRunTargetList.append(pythonExampleRun)
+
   def runPythonTests(self):
     """Run the Python tests.
     """
@@ -231,7 +259,7 @@ class Module(object):
     """
     if env[compileFlag] and env[runFlag]:
       # run Boost tests
-      testRun = env.BoostTest(self.boostTestExecutable + "_run", source=self.boostTestExecutable)
+      testRun = env.BoostTest(self.boostTestExecutable + "_run", self.boostTestExecutable)
       boostTestRunTargetList.append(testRun)
 
   def runCpplint(self):
