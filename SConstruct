@@ -250,30 +250,6 @@ if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
                    ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
   DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
 
-if "CXX" in ARGUMENTS:
-  Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
-  env["CXX"] = ARGUMENTS["CXX"]
-if "CC" in ARGUMENTS:
-  Helper.printInfo("CC: {}".format(ARGUMENTS["CC"]))
-  env["CC"] = ARGUMENTS["CC"]
-if "CPPFLAGS" in ARGUMENTS:
-  env["CPPFLAGS"] = ARGUMENTS["CPPFLAGS"].split(",")
-if "CFLAGS" in ARGUMENTS:
-  env["CFLAGS"] = ARGUMENTS["CFLAGS"]
-env.AppendUnique(CPPDEFINES = {})
-if "CPPDEFINES" in ARGUMENTS:
-  for define in ARGUMENTS["CPPDEFINES"].split(","):
-    key, value = define.split("=")
-    env["CPPDEFINES"][key] = value
-
-if "CPPPATH" in ARGUMENTS:
-  env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
-if "LIBPATH" in ARGUMENTS:
-  env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
-
-if "SWIGFLAGS" in ARGUMENTS:
-    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
-
 env.Export("moduleNames")
 env.Export("moduleFolders")
 
