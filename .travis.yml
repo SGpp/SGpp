@@ -19,7 +19,6 @@ matrix:
         packages:
         - scons
     script:
-    - scons -j 2 SG_PYTHON=0 SG_JAVA=0
     - scons -j 2 SG_PYTHON=0 SG_JAVA=0 RUN_CPP_EXAMPLES=1
   - name: "SGpp-travis-medium"
     addons:
@@ -33,7 +32,6 @@ matrix:
         - openjdk-8-jdk
         - doxygen
     script:
-    - scons -j 2 SG_ALL=0 SG_BASE=1 SG_PYTHON=1 SG_JAVA=1
     - scons -j 2 SG_ALL=0 SG_BASE=1 SG_PYTHON=1 SG_JAVA=1 RUN_CPP_EXAMPLES=1 RUN_PYTHON_EXAMPLES=1
   - name: "SGpp-travis-full"
     addons:
@@ -54,5 +52,4 @@ matrix:
         - libarmadillo-dev
         - libgmm++-dev
     script:
-    - scons -j 2
     - scons -j 2 RUN_CPP_EXAMPLES=1 RUN_PYTHON_EXAMPLES=1
