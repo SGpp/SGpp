@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "ClenshawCurtisDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 
 #include <cmath>
 #include <stdexcept>

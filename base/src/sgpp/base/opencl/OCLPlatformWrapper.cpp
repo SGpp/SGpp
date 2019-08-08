@@ -8,9 +8,9 @@
 #include <vector>
 #include <string>
 
-#include "sgpp/base/opencl/OCLPlatformWrapper.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {
