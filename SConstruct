@@ -85,14 +85,25 @@ else:
 
 
 # define the flags
-vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +
-                     "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+vars.Add("CFLAGS", "Set additional C compiler flags, they are compiler-dependent "
+                   "(multiple flags separated by space: '-Wall -Wextra')", "",
+                   converter=Helper.multiParamConverter)
+vars.Add("CPPFLAGS", "Set additional C++ compiler flags, they are compiler-dependent "
+                     "(multiple flags separated by space: '-Wall -Wextra')", "",
                      converter=Helper.multiParamConverter)
-vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " +
-                      "(multiple flags combined with comma, e.g. -lpython,-lm)", "",
+vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent "
+                      "(multiple flags separated by space: '-lpython -lm')", "",
                      converter=Helper.multiParamConverter)
-vars.Add("CPPPATH", "Set path where to look for additional headers", "")
-vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
+vars.Add("CPPDEFINES", "Set additional C++ defines "
+                       "(multiple defines separated by space: 'FLAG_A=1 FLAG_B=2')", "",
+                       converter=Helper.multiParamDefineConverter)
+vars.Add("CPPPATH", "Set path where to look for additional headers "
+                    "(multiple paths separated by '{}': '{}')".format(
+                        os.pathsep, os.pathsep.join([os.path.join("first", "path"),
+                                                     os.path.join("second", "path")])), "",
+                    converter=Helper.multiParamPathConverter)
+vars.Add("LIBPATH", "Set path where to look for additional libraries", "",
+                    converter=Helper.multiParamPathConverter)
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
                  "for COMPILER=gnu, e.g., the following values are possible: " +
                  "sse3, sse42, avx, fma4, avx2, avx512", "sse3")
@@ -115,8 +126,8 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
-vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
-                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+vars.Add("SWIGFLAGS", "Set additional SWIG flags, they are compiler-dependent "
+                      "(multiple flags separated by space: '-Wall -Wextra')", "",
                       converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
@@ -212,8 +223,7 @@ if env["USE_HPX"]:
   env["USE_OCL"] = True
 
 # fail if unknown variables where encountered on the command line
-unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CFLAGS", "CPPDEFINES"]]
+unknownVariables = vars.UnknownVariables()
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,
@@ -243,30 +253,6 @@ if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
   Helper.printInfo("Building Doxyfile for modules: "+
                    ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
   DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
-
-if "CXX" in ARGUMENTS:
-  Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
-  env["CXX"] = ARGUMENTS["CXX"]
-if "CC" in ARGUMENTS:
-  Helper.printInfo("CC: {}".format(ARGUMENTS["CC"]))
-  env["CC"] = ARGUMENTS["CC"]
-if "CPPFLAGS" in ARGUMENTS:
-  env["CPPFLAGS"] = ARGUMENTS["CPPFLAGS"].split(",")
-if "CFLAGS" in ARGUMENTS:
-  env["CFLAGS"] = ARGUMENTS["CFLAGS"]
-env.AppendUnique(CPPDEFINES = {})
-if "CPPDEFINES" in ARGUMENTS:
-  for define in ARGUMENTS["CPPDEFINES"].split(","):
-    key, value = define.split("=")
-    env["CPPDEFINES"][key] = value
-
-if "CPPPATH" in ARGUMENTS:
-  env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
-if "LIBPATH" in ARGUMENTS:
-  env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
-
-if "SWIGFLAGS" in ARGUMENTS:
-    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
