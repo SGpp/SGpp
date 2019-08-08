@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractPointHierarchy.hpp"
+#include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 
 namespace sgpp {
 namespace combigrid {

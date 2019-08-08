@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombigridTreeStorage.hpp"
+#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 
 #include <sgpp/combigrid/serialization/FloatSerializationStrategy.hpp>
 #include <sgpp/combigrid/serialization/TreeStorageSerializationStrategy.hpp>

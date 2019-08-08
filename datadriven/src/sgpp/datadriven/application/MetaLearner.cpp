@@ -3,7 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "MetaLearner.hpp"
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <cstdio>
 #include <fstream>
@@ -12,13 +18,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "LearnerLeastSquaresIdentity.hpp"
-#include "sgpp/base/exception/application_exception.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/datadriven/tools/Dataset.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {

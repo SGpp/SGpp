@@ -6,7 +6,7 @@
 #ifndef SRC_SGPP_COMBIGRID_GRID_DISTRIBUTION_CHEBYSHEVDISTRIBUTION_HPP_
 #define SRC_SGPP_COMBIGRID_GRID_DISTRIBUTION_CHEBYSHEVDISTRIBUTION_HPP_
 
-#include "AbstractPointDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 
 namespace sgpp {
 namespace combigrid {

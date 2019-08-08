@@ -18,8 +18,8 @@
 #include <vector>
 #include <string>
 
-#include "OperationPruneGraphOCL.hpp"
-#include "KernelPruneGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OperationPruneGraphOCL.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/KernelPruneGraph.hpp>
 
 namespace sgpp {
 namespace datadriven {

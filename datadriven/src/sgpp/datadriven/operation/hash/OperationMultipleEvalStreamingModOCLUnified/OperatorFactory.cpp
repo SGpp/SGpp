@@ -7,8 +7,8 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/globaldef.hpp>
-#include "Configuration.hpp"
-#include "OperationMultiEvalStreamingModOCLUnified.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLUnified/Configuration.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLUnified/OperationMultiEvalStreamingModOCLUnified.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -8,20 +8,19 @@
  *  Created on: Feb 2, 2018
  *      Author: Eric Koepke
  */
-#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 
 #include <vector>
 #include <iostream>
 #include <limits>
-
-#include "../../../../../../../../base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
 
 namespace sgpp {
 namespace datadriven {

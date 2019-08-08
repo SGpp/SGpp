@@ -13,12 +13,12 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/base/tools/QueueLoadBalancerOpenMP.hpp"
-#include "SourceBuilderMult.hpp"
-#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/base/tools/QueueLoadBalancerOpenMP.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLUnified/SourceBuilderMult.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

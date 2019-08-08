@@ -9,7 +9,7 @@
 #include <map>
 #include <string>
 
-#include "sgpp/base/opencl/OCLConfigurationParameters.hpp"
+#include <sgpp/base/opencl/OCLConfigurationParameters.hpp>
 
 namespace sgpp {
 namespace base {

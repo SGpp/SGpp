@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "SortedDataset.hpp"
+#include <sgpp/datadriven/tools/SortedDataset.hpp>
 
 #include <algorithm>  // std::random_shuffle
 #include <cstdlib>    // std::rand, std::srand

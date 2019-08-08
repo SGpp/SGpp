@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "TreeStorageGuidedIterator.hpp"
+#include <sgpp/combigrid/storage/tree/TreeStorageGuidedIterator.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */
