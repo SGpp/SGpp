@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractGrowthStrategy.hpp"
+#include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 
 namespace sgpp {
 namespace combigrid {

@@ -10,10 +10,10 @@
 #include <memory>
 #include <string>
 
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/opencl/KernelSourceBuilderBase.hpp"
-#include "sgpp/base/opencl/OCLDevice.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/opencl/KernelSourceBuilderBase.hpp>
+#include <sgpp/base/opencl/OCLDevice.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace sgpp {
 namespace datadriven {

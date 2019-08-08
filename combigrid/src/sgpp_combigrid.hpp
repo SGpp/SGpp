@@ -104,6 +104,6 @@
 #include <sgpp/combigrid/pce/CombigridSurrogateModelFactory.hpp>
 #include <sgpp/combigrid/pce/PolynomialChaosExpansion.hpp>
 #include <sgpp/combigrid/pce/PolynomialStochasticCollocation.hpp>
-#include "sgpp/combigrid/utils/BSplineRoutines.hpp"
+#include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 
 #endif /* COMBIGRID_HPP_ */

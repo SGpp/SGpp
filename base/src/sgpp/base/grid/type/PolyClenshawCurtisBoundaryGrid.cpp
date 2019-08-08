@@ -3,14 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "PolyClenshawCurtisBoundaryGrid.hpp"
+#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 #include <vector>
-#include "../../operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
 
 namespace sgpp {
 namespace base {

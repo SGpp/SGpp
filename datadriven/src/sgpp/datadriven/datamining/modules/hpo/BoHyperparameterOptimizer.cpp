@@ -10,13 +10,13 @@
  *     Author: Eric Koepke
  */
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+
 #include <vector>
 #include <string>
 #include <limits>
-#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
 
 namespace sgpp {
 namespace datadriven {

@@ -11,9 +11,9 @@
  * Also it permits easy but limited object serialization functionality.
  */
 
-#include "../src/sgpp/base/tools/json/JSON.hpp"
-#include "../src/sgpp/base/tools/json/TextNode.hpp"
-#include "../src/sgpp/base/tools/json/json_exception.hpp"
+#include <sgpp/base/tools/json/JSON.hpp>
+#include <sgpp/base/tools/json/TextNode.hpp>
+#include <sgpp/base/tools/json/json_exception.hpp>
 
 int main(int argc, char **argv) {
   try {

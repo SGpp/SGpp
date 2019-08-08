@@ -10,7 +10,7 @@
 #include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/tree/TreeStorage.hpp>
-#include "../../../../../base/src/sgpp/base/tools/sle/system/HierarchisationSLE.hpp"
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 namespace sgpp {
 namespace combigrid {

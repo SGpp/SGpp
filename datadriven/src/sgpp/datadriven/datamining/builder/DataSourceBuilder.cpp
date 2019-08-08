@@ -9,7 +9,7 @@
  *      Author: Michael Lettrich
  */
 
-#include "DataSourceBuilder.hpp"
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>

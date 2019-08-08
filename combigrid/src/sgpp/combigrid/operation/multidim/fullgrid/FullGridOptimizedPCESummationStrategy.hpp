@@ -12,9 +12,9 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 
 #ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
