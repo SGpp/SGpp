@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "FitterConfiguration.hpp"
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 
 #include <string>
 #include <vector>

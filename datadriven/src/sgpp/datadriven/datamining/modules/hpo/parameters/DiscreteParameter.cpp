@@ -9,11 +9,11 @@
  *  Created on: Jan 25, 2018
  *      Author: Eric Koepke
  */
+
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
+
 #include <cmath>
 #include <string>
-
-#include "DiscreteParameter.hpp"
-
 
 namespace sgpp {
 namespace datadriven {

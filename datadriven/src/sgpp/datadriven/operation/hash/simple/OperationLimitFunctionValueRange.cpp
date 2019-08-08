@@ -10,13 +10,13 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <vector>
 #include <limits>
-#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {

@@ -9,7 +9,7 @@
  *  Created on:	20.03.2018
  *      Author: Eric Koepke
  */
-#include "BOConfig.hpp"
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 

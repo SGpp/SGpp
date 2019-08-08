@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "KernelSourceBuilderB.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelSourceBuilderB.hpp>
 
 namespace sgpp {
 namespace datadriven {
