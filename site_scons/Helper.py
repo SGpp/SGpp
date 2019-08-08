@@ -57,7 +57,13 @@ def getModules(ignoreFolders):
 #########################################################################
 
 def multiParamConverter(s):
-  return s.split(",")
+  return s.split(" ")
+
+def multiParamPathConverter(s):
+  return s.split(os.pathsep)
+
+def multiParamDefineConverter(s):
+  return (dict([x.split("=") for x in s.split(" ")]) if s != "" else {})
 
 # this class is used with "sys.stdout = Logger(sys.stdout)" at the very beginning
 # => print lines to the terminal and to the log file simultaneously
