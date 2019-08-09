@@ -4,14 +4,14 @@
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
  *
+ * MinerPrototype.cpp
+ *
  * Created on: Mar 16, 2018
  *     Author: Eric Koepke
  */
 
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/builder/UniversalMinerFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
-
 
 #include <cstdlib>
 #include <iostream>
@@ -46,9 +46,9 @@ int main(int argc, char **argv) {
   /**
    * The miner object is constructed by the factory from a supplied configuration file.
    */
-  auto hpo = std::unique_ptr<sgpp::datadriven::HyperparameterOptimizer>(factory.buildHPO(path));
+  auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(path));
   /**
    * Once we have a configured miner object, we can start the learning process.
    */
-  hpo->run(true);
+  miner->learn(true);
 }

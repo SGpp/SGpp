@@ -63,7 +63,6 @@ else:
     module.buildExamples()
     module.runExamples()
     module.buildExamples("examplesPipeline")
-    module.runExamples("examplesPipeline")
 if env["USE_OCL"]:
     module.buildExamples("examplesOCL",
                          additionalExampleDependencies=["boost_program_options",
