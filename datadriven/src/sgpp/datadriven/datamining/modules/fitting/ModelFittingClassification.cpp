@@ -378,9 +378,9 @@ void ModelFittingClassification::storeClassificator() {
   }
 }
 
-std::unique_ptr<ModelFittingDensityEstimation>* ModelFittingClassification::
-getModel(size_t index) {
- return &(models.at(index));
+std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* ModelFittingClassification::
+getModels() {
+ return &(models);
 }
 
 #ifdef USE_SCALAPACK
