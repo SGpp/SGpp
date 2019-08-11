@@ -94,7 +94,8 @@ class ModelFittingClassification : public ModelFittingBase {
   /*
    * obtain the density estimation models per each calss
    */
-  std::unique_ptr<ModelFittingDensityEstimation>* getModel(size_t index);
+  std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* getModels();
+
 
 #ifdef USE_SCALAPACK
     /**

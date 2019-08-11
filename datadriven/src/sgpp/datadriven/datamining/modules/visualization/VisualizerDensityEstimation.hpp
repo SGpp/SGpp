@@ -66,6 +66,7 @@ class VisualizerDensityEstimation:public Visualizer {
   void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
 
   void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
+
   void storeCutJson(DataMatrix &matrix,
     std::vector<size_t> indexes, size_t &varDim, std::string filepath);
   void storeCutJson(DataMatrix &matrix, std::string filepath);

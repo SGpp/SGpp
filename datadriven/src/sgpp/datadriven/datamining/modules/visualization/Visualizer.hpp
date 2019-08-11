@@ -67,6 +67,11 @@ class Visualizer{
    * Matrix to store the data provided by the tsne algorithm
    */
   DataMatrix tsneCompressedData;
+
+  /**
+   * Resolution used in the graphs
+   */
+  size_t resolution;
 };
 
 } // namespace datadriven
