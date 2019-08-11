@@ -12,7 +12,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <vector>
-#include "KernelPruneGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/KernelPruneGraph.hpp>
 
 namespace sgpp {
 namespace datadriven {

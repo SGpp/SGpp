@@ -9,7 +9,7 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include "OperationMultipleEvalStreamingBSplineOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/OperationMultipleEvalStreamingBSplineOCL.hpp>
 
 namespace sgpp {
 namespace datadriven {

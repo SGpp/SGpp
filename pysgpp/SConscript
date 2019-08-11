@@ -34,7 +34,6 @@ if env["PLATFORM"] == "cygwin":
 elif env["PLATFORM"] == "darwin":
   pyEnv["SHLIBSUFFIX"] = ".so"
 
-#TODO: bug, plz fix
 # add C++ defines for all modules
 for module in moduleNames:
   if pyEnv[module]: 
@@ -80,6 +79,13 @@ if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pythonVersion = getOutput(["python3", "-c", "import distutils.sysconfig; "
                              "print(distutils.sysconfig.get_config_var(\"VERSION\"))"])
   libs.append("python{}".format(pythonVersion))
+  # GCC sometimes fails with internal compiler error on mingw-w64
+  # (e.g., "in gt_ggc_m_S, at ggc-page.c:1474" or "segmentation fault").
+  # Disabling -Wmisleading-indentation (from -Wall) seems to fix the problem.
+  # Although GCC says when the warning is not disabled that "pysgpp\pysgpp_wrap.cc:322190:0: note:
+  # -Wmisleading-indentation is disabled from this point onwards, since column-tracking
+  # was disabled due to the size of the code/headers", it still crashes...
+  pyEnv.AppendUnique(CPPFLAGS=["-Wno-misleading-indentation"])
 
 pyEnv.AppendUnique(LIBPATH=pythonLibPaths)
 pyEnv.AppendUnique(LIBS=libs)

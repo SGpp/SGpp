@@ -14,9 +14,9 @@
 #include <vector>
 #include <string>
 
-#include "sgpp/base/opencl/OCLPlatformWrapper.hpp"
-#include "OCLOperationConfiguration.hpp"
-#include "OCLDevice.hpp"
+#include <sgpp/base/opencl/OCLPlatformWrapper.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/opencl/OCLDevice.hpp>
 
 namespace sgpp {
 namespace base {

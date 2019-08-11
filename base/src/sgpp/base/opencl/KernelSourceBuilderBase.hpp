@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "OCLDevice.hpp"
-#include "sgpp/base/tools/json/Node.hpp"
+#include <sgpp/base/opencl/OCLDevice.hpp>
+#include <sgpp/base/tools/json/Node.hpp>
 
 namespace sgpp {
 namespace base {

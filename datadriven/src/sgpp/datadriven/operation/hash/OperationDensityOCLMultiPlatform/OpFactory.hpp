@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OperationDensityOCLMultiPlatform.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCLMultiPlatform.hpp>
 namespace sgpp {
 namespace datadriven {
 

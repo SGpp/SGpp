@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LevelHelpers.hpp"
+#include <sgpp/combigrid/operation/multidim/LevelHelpers.hpp>
 
 #include <algorithm>
 #include <cmath>

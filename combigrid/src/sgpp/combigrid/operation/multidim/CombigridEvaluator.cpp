@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "CombigridEvaluator.hpp"
+#include <sgpp/combigrid/operation/multidim/CombigridEvaluator.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

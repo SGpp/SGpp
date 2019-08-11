@@ -14,7 +14,7 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
 
 #include <vector>

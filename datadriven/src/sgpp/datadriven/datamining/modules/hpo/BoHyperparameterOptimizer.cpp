@@ -10,10 +10,9 @@
  *     Author: Eric Koepke
  */
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 
 #include <vector>
 #include <string>
@@ -30,7 +29,7 @@ BoHyperparameterOptimizer::BoHyperparameterOptimizer(SparseGridMiner* miner,
 
 double BoHyperparameterOptimizer::run(bool writeToFile) {
   // mute auxiliary optimizers
-  optimization::Printer::getInstance().disableStatusPrinting();
+  base::Printer::getInstance().disableStatusPrinting();
 
   std::cout << std::endl << "Starting Hyperparameter Optimization using Bayesian Optimization."
       " Results are saved with timestamp." << std::endl << std::endl;

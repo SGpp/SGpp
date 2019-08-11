@@ -8,8 +8,8 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OpFactory.hpp"
-#include "OperationPruneGraphOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OperationPruneGraphOCL.hpp>
 namespace sgpp {
 namespace datadriven {
 

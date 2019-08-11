@@ -3,10 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <algorithm>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
-#include "sgpp/globaldef.hpp"
+#include <algorithm>
 
 #if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>

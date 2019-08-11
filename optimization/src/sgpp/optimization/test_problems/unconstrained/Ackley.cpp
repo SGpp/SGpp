@@ -20,8 +20,8 @@ TestScalarFunction& Ackley::getObjectiveFunction() { return f; }
 
 double Ackley::getOptimalPointUndisplaced(base::DataVector& x) {
   x.resize(d);
-  x.setAll(0.1);
-  return 0.0;
+  x.setAll(0.0948903972968234);
+  return 6.559645375627878;
 }
 
 AckleyObjective::AckleyObjective(size_t d) : TestScalarFunction(d) {}
@@ -35,7 +35,7 @@ double AckleyObjective::evalUndisplaced(const base::DataVector& x) {
   double arg2 = 0.0;
 
   for (size_t t = 0; t < d; t++) {
-    const double xt = 10.0 * x[t] - 1.0;
+    const double xt = 5.0 * x[t] + 1.5;
     arg1 += xt * xt;
     arg2 += std::cos(2.0 * M_PI * xt);
   }
@@ -46,8 +46,8 @@ double AckleyObjective::evalUndisplaced(const base::DataVector& x) {
   return result;
 }
 
-void AckleyObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new AckleyObjective(*this));
+void AckleyObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new AckleyObjective(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization
