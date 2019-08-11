@@ -105,14 +105,21 @@ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model) {
 void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
   DataSource &dataSource, size_t fold, size_t batch) {
     if ( originalData.getNcols() == 1 ) {
-     std::cout << "The tsne algorithm can only be applied if "
-     "the dimension is greater than 1" << std::endl;
-     return;
+      std::cout << "The tsne algorithm can only be applied if "
+      "the dimension is greater than 1" << std::endl;
+      return;
     }
 
     size_t N = originalData.getNrows();
     size_t D = originalData.getNcols();
 
+    std::cout << "Rows: "<< std::to_string(N) << std::endl;
+    std::cout << "Columns: " << std::to_string(D) << std::endl;
+
+    if (N == 0 || D == 0) {
+      std::cout << "No data found. TSNE wo't run" << std::endl;
+      return;
+    }
     double* input =  reinterpret_cast<double*>(malloc(N * D * sizeof(double)));
 
     std::copy(originalData.data(), originalData.data()+N*D,
@@ -140,32 +147,6 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
     tsneCompressedData = DataMatrix(output, N, D);
     tsneCompressedData.appendCol(evaluation);
     free(output);
-<<<<<<< HEAD
-=======
-  } else {
-    if (originalData.getNcols() == 1 ) {
-         std::cout << "The tsne algorithm can only be applied if "
-         "the dimension is greater than 1" << std::endl;
-         return;
-        }
-
-    DataVector evaluation(originalData.getNrows());
-    model.evaluate(originalData, evaluation);
-    tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
-  }
-  if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
-    CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
-      "/tsneCompression", tsneCompressedData);
-  } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
-    if (config.getVisualizationParameters().targetDimension != 2) {
-    std::cout << "A json output is only available for compressions in 2 dimensions"
-    "Storing the CSV instead" << std::endl;
-    CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
-      "/tsneCompression", tsneCompressedData);
-    }
-    storeTsneJson(tsneCompressedData, model);
-  }
->>>>>>> branch 'classification' of https://github.com/Vince505/SGpp.git
 }
 
 void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model) {

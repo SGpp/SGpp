@@ -380,7 +380,7 @@ void ModelFittingClassification::storeClassificator() {
 
 std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* ModelFittingClassification::
 getModels() {
- return &(models);
+  return &(models);
 }
 
 #ifdef USE_SCALAPACK
