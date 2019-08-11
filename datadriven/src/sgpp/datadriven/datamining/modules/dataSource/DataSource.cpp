@@ -9,7 +9,7 @@
  *      Author: Michael Lettrich
  */
 
-#include "DataSource.hpp"
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>

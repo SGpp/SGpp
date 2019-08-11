@@ -3,16 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <vector>
 
 #include "CheckEqualFunction.hpp"
 
-void checkEqualFunction(sgpp::optimization::ScalarFunction& f,
-                        sgpp::optimization::ScalarFunction& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::ScalarFunction& f, sgpp::base::ScalarFunction& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t N = 100;
@@ -21,14 +20,14 @@ void checkEqualFunction(sgpp::optimization::ScalarFunction& f,
   BOOST_CHECK_EQUAL(g.getNumberOfParameters(), d);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     BOOST_CHECK_EQUAL(f.eval(x), g.eval(x));
   }
 }
 
-void checkEqualFunction(sgpp::optimization::ScalarFunctionGradient& f,
-                        sgpp::optimization::ScalarFunctionGradient& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::ScalarFunctionGradient& f,
+                        sgpp::base::ScalarFunctionGradient& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t N = 100;
@@ -38,7 +37,7 @@ void checkEqualFunction(sgpp::optimization::ScalarFunctionGradient& f,
   BOOST_CHECK_EQUAL(g.getNumberOfParameters(), d);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     BOOST_CHECK_EQUAL(f.eval(x, gradient1), g.eval(x, gradient2));
     BOOST_CHECK_EQUAL(gradient2.getSize(), d);
 
@@ -48,9 +47,9 @@ void checkEqualFunction(sgpp::optimization::ScalarFunctionGradient& f,
   }
 }
 
-void checkEqualFunction(sgpp::optimization::ScalarFunctionHessian& f,
-                        sgpp::optimization::ScalarFunctionHessian& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::ScalarFunctionHessian& f,
+                        sgpp::base::ScalarFunctionHessian& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t N = 100;
@@ -61,7 +60,7 @@ void checkEqualFunction(sgpp::optimization::ScalarFunctionHessian& f,
   BOOST_CHECK_EQUAL(g.getNumberOfParameters(), d);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     BOOST_CHECK_EQUAL(f.eval(x, gradient1, hessian1), g.eval(x, gradient2, hessian2));
     BOOST_CHECK_EQUAL(gradient2.getSize(), d);
     BOOST_CHECK_EQUAL(hessian2.getNrows(), d);
@@ -75,9 +74,8 @@ void checkEqualFunction(sgpp::optimization::ScalarFunctionHessian& f,
   }
 }
 
-void checkEqualFunction(sgpp::optimization::VectorFunction& f,
-                        sgpp::optimization::VectorFunction& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::VectorFunction& f, sgpp::base::VectorFunction& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
@@ -89,7 +87,7 @@ void checkEqualFunction(sgpp::optimization::VectorFunction& f,
   BOOST_CHECK_EQUAL(g.getNumberOfComponents(), m);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     f.eval(x, value1);
     g.eval(x, value2);
 
@@ -101,9 +99,9 @@ void checkEqualFunction(sgpp::optimization::VectorFunction& f,
   }
 }
 
-void checkEqualFunction(sgpp::optimization::VectorFunctionGradient& f,
-                        sgpp::optimization::VectorFunctionGradient& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::VectorFunctionGradient& f,
+                        sgpp::base::VectorFunctionGradient& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
@@ -116,7 +114,7 @@ void checkEqualFunction(sgpp::optimization::VectorFunctionGradient& f,
   BOOST_CHECK_EQUAL(g.getNumberOfComponents(), m);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     f.eval(x, value1, gradient1);
     g.eval(x, value2, gradient2);
 
@@ -134,9 +132,9 @@ void checkEqualFunction(sgpp::optimization::VectorFunctionGradient& f,
   }
 }
 
-void checkEqualFunction(sgpp::optimization::VectorFunctionHessian& f,
-                        sgpp::optimization::VectorFunctionHessian& g) {
-  sgpp::optimization::RandomNumberGenerator::getInstance().setSeed(42);
+void checkEqualFunction(sgpp::base::VectorFunctionHessian& f,
+                        sgpp::base::VectorFunctionHessian& g) {
+  sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);
 
   const size_t d = f.getNumberOfParameters();
   const size_t m = f.getNumberOfComponents();
@@ -151,7 +149,7 @@ void checkEqualFunction(sgpp::optimization::VectorFunctionHessian& f,
   BOOST_CHECK_EQUAL(g.getNumberOfComponents(), m);
 
   for (size_t i = 0; i < N; i++) {
-    sgpp::optimization::RandomNumberGenerator::getInstance().getUniformRV(x);
+    sgpp::base::RandomNumberGenerator::getInstance().getUniformRV(x);
     f.eval(x, value1, gradient1, hessian1);
     g.eval(x, value2, gradient2, hessian2);
 

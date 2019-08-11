@@ -6,7 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_CLENSHAWCURTISDISTRIBUTION_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_DISTRIBUTION_CLENSHAWCURTISDISTRIBUTION_HPP_
 
-#include "AbstractPointDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 
 namespace sgpp {
 namespace combigrid {

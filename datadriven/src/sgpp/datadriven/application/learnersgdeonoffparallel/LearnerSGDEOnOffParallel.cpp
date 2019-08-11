@@ -31,7 +31,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
-#include "../../algorithm/RefinementMonitorConvergence.hpp"
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;

@@ -1,12 +1,18 @@
 # coding: utf-8
-from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.sampler import MCSampler
+try:
+    from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
+    from pysgpp.extensions.datadriven.uq.sampler import MCSampler
 
-from pysgpp import *
+    from pysgpp import *
 
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 
 parameterBuilder = ParameterBuilder()

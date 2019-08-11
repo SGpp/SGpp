@@ -59,7 +59,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
  */
 int main(int argc, char** argv) {
   const auto filenameTrain =
-      std::string("../../datasets/ripley/ripleyGarcke.train.arff");
+      std::string("../datasets/ripley/ripleyGarcke.train.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractPermutationIterator.hpp"
+#include <sgpp/combigrid/common/AbstractPermutationIterator.hpp>
 
 namespace sgpp {
 namespace combigrid {

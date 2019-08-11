@@ -33,6 +33,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #endif /* USE_GSL */
 
+#include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>

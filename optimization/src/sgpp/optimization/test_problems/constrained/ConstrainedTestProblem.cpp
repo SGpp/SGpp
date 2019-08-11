@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -32,7 +32,7 @@ void ConstrainedTestProblem::generateDisplacement(double stdDev) {
   do {
     for (size_t t = 0; t < d; t++) {
       // every component is normally distributed
-      displacement[t] = RandomNumberGenerator::getInstance().getGaussianRN(0.0, stdDev);
+      displacement[t] = base::RandomNumberGenerator::getInstance().getGaussianRN(0.0, stdDev);
     }
   } while (!isDisplacementFeasible());
 

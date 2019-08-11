@@ -6,19 +6,19 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 
 #include <vector>
 
 #include "GridCreator.hpp"
 
+using sgpp::base::Printer;
+using sgpp::base::RandomNumberGenerator;
+using sgpp::base::ScalarFunction;
 using sgpp::optimization::OperationMultipleHierarchisation;
-using sgpp::optimization::Printer;
-using sgpp::optimization::RandomNumberGenerator;
-using sgpp::optimization::ScalarFunction;
 using sgpp::optimization::test_problems::Sphere;
 
 BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
     }
 
     std::unique_ptr<OperationMultipleHierarchisation> op(
-      sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
+        sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
 
     sgpp::base::DataVector functionValues2(functionValues);
     op->doHierarchisation(functionValues2);
@@ -69,8 +69,7 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
 
     for (size_t i = 0; i < grid->getSize(); i++) {
       for (size_t j = 0; j < m; j++) {
-        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j),
-                          functionValuesMatrix2(i, j), tol);
+        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j), functionValuesMatrix2(i, j), tol);
       }
     }
   }

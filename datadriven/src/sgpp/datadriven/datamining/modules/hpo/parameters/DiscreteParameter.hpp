@@ -13,9 +13,9 @@
 #ifndef DISCRETEPARAMETER_HPP_
 #define DISCRETEPARAMETER_HPP_
 
-#include <string>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/HyperParameter.hpp>
 
-#include "HyperParameter.hpp"
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

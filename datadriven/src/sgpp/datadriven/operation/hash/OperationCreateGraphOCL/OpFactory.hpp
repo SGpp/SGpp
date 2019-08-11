@@ -8,7 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OperationCreateGraphOCLSingleDevice.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp>
 namespace sgpp {
 namespace datadriven {
 

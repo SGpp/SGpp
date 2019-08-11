@@ -25,7 +25,6 @@
 #include <BoundedLognormalRandomVariable.hpp>
 #endif
 
-#include <iostream>
 #include <string>
 
 namespace sgpp {
@@ -197,9 +196,8 @@ double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
   double normalized_xValue = normalizeInput(xValue);
   return invNorm * basisPoly->type1_value(normalized_xValue, castedBasisIndex);
 #else
-  std::cerr << "Error in OrthogonalBasis1D::evaluate: "
-            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
-  return 0.0;
+  throw sgpp::base::application_exception(
+      "Error in OrthogonalBasis1D::evaluate: SG++ was compiled without DAKOTA support!");
 #endif
 }
 
@@ -207,9 +205,8 @@ double OrthogonalPolynomialBasis1D::pdf(double xValue) {
 #ifdef USE_DAKOTA
   return rv->pdf(xValue);
 #else
-  std::cerr << "Error in OrthogonalBasis1D::pdf: "
-            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
-  return 0.0;
+  throw sgpp::base::application_exception(
+      "Error in OrthogonalBasis1D::evaluate: SG++ was compiled without DAKOTA support!");
 #endif
 }
 
@@ -218,9 +215,8 @@ double OrthogonalPolynomialBasis1D::mean() {
   return rv->mean();
 
 #else
-  std::cerr << "Error in OrthogonalBasis1D::mean: "
-            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
-  return 0.0;
+  throw sgpp::base::application_exception(
+      "Error in OrthogonalBasis1D::evaluate: SG++ was compiled without DAKOTA support!");
 #endif
 }
 
@@ -229,9 +225,8 @@ double OrthogonalPolynomialBasis1D::variance() {
   return rv->variance();
 
 #else
-  std::cerr << "Error in OrthogonalBasis1D::variance: "
-            << "SG++ was compiled without DAKOTAsupport!" << std::endl;
-  return 0.0;
+  throw sgpp::base::application_exception(
+      "Error in OrthogonalBasis1D::evaluate: SG++ was compiled without DAKOTA support!");
 #endif
 }
 

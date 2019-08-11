@@ -328,7 +328,6 @@ namespace std {
     %template(FloatScalarVectorVector) vector<sgpp::combigrid::FloatScalarVector>;
     %template(FloatArrayVectorVector) vector<sgpp::combigrid::FloatArrayVector>;
     %template(FloatTensorVectorVector) vector<sgpp::combigrid::FloatTensorVector>;
-    %template(DataVectorVector) vector<sgpp::base::DataVector>;
 
     // %template(PyTaskVector) std::vector<sgpp::combigrid::GeneralFunction1<void>>;
 

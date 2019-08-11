@@ -15,17 +15,17 @@
 #include <string>
 #include <vector>
 
-#include "LoadBalancerComponent.hpp"
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/exception/not_implemented_exception.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/LoadBalancerComponent.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
-#include "sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {

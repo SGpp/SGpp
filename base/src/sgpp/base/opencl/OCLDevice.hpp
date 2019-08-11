@@ -9,7 +9,7 @@
 #include <vector>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {

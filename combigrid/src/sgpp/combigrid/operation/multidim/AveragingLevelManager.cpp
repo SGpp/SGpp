@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AveragingLevelManager.hpp"
+#include <sgpp/combigrid/operation/multidim/AveragingLevelManager.hpp>
 
 namespace sgpp {
 namespace combigrid {

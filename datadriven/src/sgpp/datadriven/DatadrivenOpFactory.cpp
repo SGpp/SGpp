@@ -95,29 +95,29 @@
 #endif
 
 #ifdef USE_OCL
-#include "operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp"
-#include "operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp>
 
-#include "operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
-#include "operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
-#include "operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 #endif
 
 #ifdef USE_MPI
-#include "operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp>
 #endif
 
 #ifdef USE_HPX
-#include "operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp>
 #endif
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 #ifdef USE_CUDA
-#include "operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp>
 #endif
 
 #ifdef USE_SCALAPACK
@@ -554,7 +554,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose, sgpp::optimization::ScalarFunction* f) {
+    bool generateConsistentGrid, bool verbose, sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
                                                generateConsistentGrid, verbose, f);
 }
@@ -562,7 +562,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
-    sgpp::optimization::ScalarFunction* f) {
+    sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
                                                           interpolationAlgorithm, verbose, f);
 }
