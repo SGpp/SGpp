@@ -38,8 +38,9 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   if (fold == 0 && batch == 0) {
     originalData = dataSource.getAllSamples()->getData();
     resolution = pow(2, model.getFitterConfiguration().getGridConfig().level_+2);
+    std::cout << "Initializing Matrices" << std::endl;
   }
-
+  initializeMatrices(model);
 
   omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
 
@@ -149,12 +150,92 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
     free(output);
 }
 
+void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
+
+  auto nDimensions = model.getDataset()->getDimension();
+
+  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
+  double step = 1.0/resolution;
+
+  cutMatrix.resize(0, nDimensions);
+  heatMapMatrix.resize(0, nDimensions);
+
+  if (nDimensions >= 2 ) {
+    if (nDimensions >=3) {
+      for (double dim1 = 0; dim1 <= 1; dim1 += 0.25) {
+        for (double dim2 = 0; dim2 <= 1; dim2 += 0.25) {
+          for (double dim3=0; dim3 <= 1; dim3 += step) {
+            DataVector row(cutMatrix.getNcols(), 0.5);
+            row.set(2, dim2);
+            row.set(0, dim3);
+            row.set(1, dim1);
+            cutMatrix.appendRow(row);
+          }
+        }
+      }
+
+      if (nDimensions >= 4) {
+        for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
+          for (double dim2 = 0; dim2 <= 1; dim2+=0.25) {
+            for (double dim3 = 0; dim3 <= 1; dim3+= step) {
+              for (double dim4 = 0; dim4 <= 1; dim4+= step) {
+              DataVector row(heatMapMatrix.getNcols(), 0.5);
+              row.set(0, dim3);
+              row.set(1, dim4);
+              row.set(2, dim1);
+              row.set(3, dim2);
+
+              heatMapMatrix.appendRow(row);
+              }
+            }
+          }
+        }
+     } else {
+       for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
+         for (double dim2 = 0; dim2 <= 1; dim2 += step) {
+           for (double dim3 = 0; dim3 <= 1; dim3 += step) {
+             DataVector row(3, 0.5);
+             row.set(0, dim3);
+             row.set(1, dim2);
+             row.set(2, dim1);
+             heatMapMatrix.appendRow(row);
+           }
+         }
+       }
+     }
+    } else {
+      for (double dim1 = 0; dim1 <= 1; dim1 += 0.25) {
+         for (double dim2 = 0; dim2 <= 1; dim2+= step) {
+           DataVector row(2, 0.5);
+           row.set(0, dim2);
+           row.set(1, dim1);
+           cutMatrix.appendRow(row);
+         }
+      }
+
+      for (double dim1 = 0; dim1 <= 1; dim1 += step) {
+        for (double dim2 = 0; dim2 <= 1; dim2 += step) {
+          DataVector row(2, 0.5);
+          row.set(0, dim1);
+          row.set(1, dim2);
+          heatMapMatrix.appendRow(row);
+        }
+      }
+    }
+  } else {
+    for (double dim1 = 0; dim1 <= 1; dim1+= step) {
+        DataVector row(1);
+        row.set(0, dim1);
+        cutMatrix.appendRow(row);
+     }
+ }
+
+
+}
 void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model) {
   std::cout << "Generating the linear cuts" << std::endl;
 
-  auto nDimensions  = model.getFitterConfiguration().getGridConfig().dim_;
-  DataMatrix cutMatrix(0, nDimensions);
-
+  auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
   if ( nDimensions >= 2 ) {
     std::string command("mkdir ");
     command.append(config.getGeneralConfig().currentDirectory);
@@ -162,13 +243,14 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model) {
     system(command.data());
 
     if (nDimensions >=3) {
-      getLinearCutsMore3D(cutMatrix, model);
+      getLinearCutsMore3D(model);
     } else {
-      getLinearCuts2D(cutMatrix, model);
+      getLinearCuts2D(model);
     }
   } else {
-    getLinearCuts1D(cutMatrix, model);
+    getLinearCuts1D(model);
   }
+
 }
 
 void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model) {
@@ -189,12 +271,12 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model) {
     system(command.data());
 
     if ( nDimensions >= 4 ) {
-      getHeatmapMore4D(heatMapMatrix, model);
+      getHeatmapMore4D(model);
     } else if ( nDimensions == 3 ) {
-      getHeatmap3D(heatMapMatrix, model);
+      getHeatmap3D(model);
     }
   } else {
-    getHeatmap2D(heatMapMatrix, model);
+    getHeatmap2D(model);
   }
 }
 
@@ -319,24 +401,9 @@ void VisualizerDensityEstimation::swapColumns(DataMatrix &matrix, size_t col1, s
   matrix.setColumn(col1, temp2);
 }
 
-void VisualizerDensityEstimation::getLinearCutsMore3D(DataMatrix &cutMatrix,
+void VisualizerDensityEstimation::getLinearCutsMore3D(
   ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory + "/LinearCuts/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1 += 0.25) {
-    for (double dim2 = 0; dim2 <= 1; dim2 += 0.25) {
-      for (double dim3=0; dim3 <= 1; dim3 += step) {
-        DataVector row(cutMatrix.getNcols(), 0.5);
-        row.set(2, dim2);
-        row.set(0, dim3);
-        row.set(1, dim1);
-        cutMatrix.appendRow(row);
-      }
-    }
-  }
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
@@ -374,21 +441,9 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(DataMatrix &cutMatrix,
   }
 }
 
-void VisualizerDensityEstimation::getLinearCuts2D(DataMatrix &cutMatrix,
+void VisualizerDensityEstimation::getLinearCuts2D(
   ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory + "/LinearCuts/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1 += 0.25) {
-    for (double dim2 = 0; dim2 <= 1; dim2+= step) {
-        DataVector row(2, 0.5);
-        row.set(0, dim2);
-        row.set(1, dim1);
-        cutMatrix.appendRow(row);
-     }
-  }
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
@@ -414,17 +469,8 @@ void VisualizerDensityEstimation::getLinearCuts2D(DataMatrix &cutMatrix,
   }
 }
 
-void VisualizerDensityEstimation::getLinearCuts1D(DataMatrix &cutMatrix, ModelFittingBase &model) {
+void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory+"/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1+=step) {
-    DataVector row(1, 0.5);
-    row.set(0, dim1);
-    cutMatrix.appendRow(row);
-  }
 
   DataMatrix cutResults(cutMatrix);
   DataVector evaluation(cutMatrix.getNrows());
@@ -439,28 +485,9 @@ void VisualizerDensityEstimation::getLinearCuts1D(DataMatrix &cutMatrix, ModelFi
   }
 }
 
-void VisualizerDensityEstimation::getHeatmapMore4D(DataMatrix &heatMapMatrix,
+void VisualizerDensityEstimation::getHeatmapMore4D(
 ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory+"/Heatmaps/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
-    for (double dim2 = 0; dim2 <= 1; dim2+=0.25) {
-      for (double dim3 = 0; dim3 <= 1; dim3+= step) {
-        for (double dim4 = 0; dim4 <= 1; dim4+= step) {
-        DataVector row(heatMapMatrix.getNcols(), 0.5);
-        row.set(0, dim3);
-        row.set(1, dim4);
-        row.set(2, dim1);
-        row.set(3, dim2);
-
-        heatMapMatrix.appendRow(row);
-        }
-      }
-    }
-  }
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
 
@@ -485,9 +512,7 @@ ModelFittingBase &model) {
       for (size_t combination = 0; combination < 3; combination++) {
         DataMatrix heatMapResults(heatMapMatrix);
         DataVector evaluation(heatMapMatrix.getNrows());
-
         model.evaluate(heatMapMatrix, evaluation);
-
         heatMapResults.appendCol(evaluation);
 
         if (iteration == 0) {
@@ -531,26 +556,13 @@ ModelFittingBase &model) {
   }
 }
 
-void VisualizerDensityEstimation::getHeatmap3D(DataMatrix &heatMapMatrix, ModelFittingBase &model) {
+void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory+"/Heatmaps/");
 
   // Dummy to reutilize the storejson method
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
   std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
-    for (double dim2 = 0; dim2 <= 1; dim2 += step) {
-      for (double dim3 = 0; dim3 <= 1; dim3 += step) {
-        DataVector row(3, 0.5);
-        row.set(0, dim3);
-        row.set(1, dim2);
-        row.set(2, dim1);
-        heatMapMatrix.appendRow(row);
-      }
-    }
-  }
 
   for (size_t combination = 0; combination < 3; combination++) {
     DataMatrix heatMapResults(heatMapMatrix);
@@ -578,20 +590,9 @@ void VisualizerDensityEstimation::getHeatmap3D(DataMatrix &heatMapMatrix, ModelF
   }
 }
 
-void VisualizerDensityEstimation::getHeatmap2D(DataMatrix &heatMapMatrix,
+void VisualizerDensityEstimation::getHeatmap2D(
   ModelFittingBase &model) {
   std::string outputDir(config.getGeneralConfig().currentDirectory+"/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-  for (double dim1 = 0; dim1 <= 1; dim1 += step) {
-    for (double dim2 = 0; dim2 <= 1; dim2 += step) {
-      DataVector row(2, 0.5);
-      row.set(0, dim1);
-      row.set(1, dim2);
-      heatMapMatrix.appendRow(row);
-    }
-  }
 
   DataMatrix heatMapResults(heatMapMatrix);
   DataVector evaluation(heatMapMatrix.getNrows());
@@ -661,7 +662,9 @@ void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFitting
 
 void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::vector<size_t> indexes,
 size_t &varDim, std::string filepath) {
+
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim));
+
 
   JSON jsonOutput;
   jsonOutput.addListAttr("data");
@@ -678,6 +681,7 @@ size_t &varDim, std::string filepath) {
 
   size_t totalGraphs = ((matrix.getNcols()==3)?5:25);
 
+
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
   for (unsigned int graphNumber=0; graphNumber < totalGraphs; graphNumber++) {
@@ -686,7 +690,7 @@ size_t &varDim, std::string filepath) {
     temp.copyFrom(matrix);
 
     unsigned int beginIndex = graphNumber*rowsPerGraph+1;
-
+   ;
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex + rowsPerGraph-1, matrix.getNcols());
 
     // Adding data trace
@@ -747,7 +751,6 @@ size_t &varDim, std::string filepath) {
 
     std::string dim1ValueText(std::to_string(firstRow.get(indexes.at(0))));
     dim1ValueText.erase(dim1ValueText.find_last_not_of('0') + 2, std::string::npos);
-
     dim1Text = "\"Dim " + dim1Text + "=" + dim1ValueText;
 
     std::string dim2Text = "";
@@ -823,6 +826,7 @@ void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::string f
 
 void VisualizerDensityEstimation::storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
 std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath) {
+
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim1));
 
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim2));
@@ -949,7 +953,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["data"][graphIndex].addIDAttr("legendgroup", (unsigned long int)1);
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
-    if (graphNumber == ((gridMatrix.getNcols()==3)?1:6)) {
+    if (graphNumber == ((gridMatrix.getNcols() == 3)?1:6)) {
            jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
            jsonOutput["data"][graphIndex].addIDAttr("name", "\"Grid\"");
     } else {
@@ -1019,14 +1023,13 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("xref", "\"paper\"");
     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("yref", "\"paper\"");
     jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("text", subplot_title);
-
   }
 
   jsonOutput["layout"].addDictAttr("legend");
   jsonOutput["layout"]["legend"].addIDAttr("x", -0.1);
   jsonOutput["layout"]["legend"].addIDAttr("y", 1.0);
 
-  std::cout << "Writing file " << filepath + ".json" << std::endl;
+  std::cout << "Writing file " << filepath+".json" << std::endl;
   jsonOutput.serialize(filepath+".json");
 }
 

@@ -49,13 +49,13 @@ class VisualizerDensityEstimation:public Visualizer {
 
   void storeGrid(ModelFittingBase &model);
 
-  void getLinearCutsMore3D(DataMatrix &matrix, ModelFittingBase &model);
-  void getLinearCuts1D(DataMatrix &matrix, ModelFittingBase &model);
-  void getLinearCuts2D(DataMatrix &matrix, ModelFittingBase &model);
+  void getLinearCutsMore3D(ModelFittingBase &model);
+  void getLinearCuts1D(ModelFittingBase &model);
+  void getLinearCuts2D(ModelFittingBase &model);
 
-  void getHeatmapMore4D(DataMatrix &matrix, ModelFittingBase &model);
-  void getHeatmap3D(DataMatrix &matrix, ModelFittingBase &model);
-  void getHeatmap2D(DataMatrix &matrix, ModelFittingBase &model);
+  void getHeatmapMore4D(ModelFittingBase &model);
+  void getHeatmap3D(ModelFittingBase &model);
+  void getHeatmap2D(ModelFittingBase &model);
 
 
   void translateColumns(DataMatrix &matrix, size_t maxColumns);
@@ -73,6 +73,22 @@ class VisualizerDensityEstimation:public Visualizer {
   void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
     std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath);
   void storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model, std::string filepath);
+
+  /**
+   * Method which builds the matrices used to generate the cuts and the
+   * heatmaps
+   */
+  void initializeMatrices(ModelFittingBase &model);
+
+   /**
+    * Variable to store the cut matrix to be evaluated
+    */
+   DataMatrix cutMatrix;
+
+   /**
+    * Variable to store the heatmap matrix to be evaluated
+    */
+   DataMatrix heatMapMatrix;
 };
 
 }  // namespace datadriven

@@ -559,15 +559,11 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
     // of the data source. If that's the case set the visualization number of batches
     // to the one of the data source.
     auto dataSourceConfig = static_cast<DictNode *>(&(*configFile)[dataSource]);
-    auto dataNumBatches = parseUInt(*dataSourceConfig, "numBatches",
-      defaults.numBatches, "dataSource");
 
     config.numBatches = parseUInt(*visualizationGeneralConfig, "numBatches",
       defaults.numBatches, "visualization");
 
-    if (config.numBatches > dataNumBatches) {
-      config.numBatches = dataNumBatches;
-    }
+
   } else {
     std::cout << "# Could not find specification of "
      "visualization general config. Falling Back to default values." << std::endl;

@@ -41,11 +41,11 @@ class VisualizerClassification:public VisualizerDensityEstimation {
  protected:
   void getHeatmapsClassification(ModelFittingBase &model);
 
-  void getHeatmapMore4DClassification(DataMatrix &heatMapMatrix,
-   ModelFittingBase &model);
+  void getHeatmapMore4DClassification(ModelFittingBase &model);
 
-  void getHeatmap2DClassification(DataMatrix &heatMapMatrix,
-     ModelFittingBase &model);
+  void getHeatmap2DClassification(ModelFittingBase &model);
+
+  void getHeatmap3DClassification(ModelFittingBase &model);
 
   void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
 
@@ -55,17 +55,30 @@ class VisualizerClassification:public VisualizerDensityEstimation {
   void storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
   std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath);
 
- private:
   /**
-   * Method which returns a vector with the values of all the classes used in the model
+   * Method which builds the matrices used to generate the cuts and the
+   * heatmaps
    */
-  void getClasses(DataVector &column, size_t numClasses, DataVector &classes);
+  void initializeMatrices(ModelFittingBase &model);
 
+
+ private:
   /**
    * List of colors to add to the grids per class in high dimensional cases
    */
   std::vector<std::string> colors = {"red", "darkviolet", "orange", "palegreen",
                     "plum", "purple", "chocolate", "darkcyan", "gold","tomato"};
+
+  /**
+   * Variable to store the heatmap matrix to be evaluated
+   */
+  DataMatrix classMatrix;
+
+  /**
+   * Vector which contains the all of the classes values in the model
+   */
+
+  DataVector classes;
 };
 
 }  // namespace datadriven
