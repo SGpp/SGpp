@@ -39,15 +39,15 @@ class VisualizerClassification:public VisualizerDensityEstimation {
      size_t fold, size_t batch) override;
 
  protected:
-  void getHeatmapsClassification(ModelFittingBase &model);
+  void getHeatmapsClassification(ModelFittingBase &model, std::string currentDirectory);
 
-  void getHeatmapMore4DClassification(ModelFittingBase &model);
+  void getHeatmapMore4DClassification(ModelFittingBase &model, std::string currentDirectory);
 
-  void getHeatmap2DClassification(ModelFittingBase &model);
+  void getHeatmap2DClassification(ModelFittingBase &model, std::string currentDirectory);
 
-  void getHeatmap3DClassification(ModelFittingBase &model);
+  void getHeatmap3DClassification(ModelFittingBase &model, std::string currentDirectory);
 
-  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
+  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model, std::string currentDirectory);
 
   void storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
   std::string filepath);

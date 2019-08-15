@@ -43,19 +43,19 @@ class VisualizerDensityEstimation:public Visualizer {
   void runTsne(ModelFittingBase &model, DataSource &dataSource,
     size_t fold, size_t batch) override;
 
-  void getHeatmap(ModelFittingBase &model);
+  void getHeatmap(ModelFittingBase &model, std::string currentDirectory);
 
-  void getLinearCuts(ModelFittingBase &model);
+  void getLinearCuts(ModelFittingBase &model, std::string currentDirectory);
 
-  void storeGrid(ModelFittingBase &model);
+  void storeGrid(ModelFittingBase &model, std::string currentDirectory);
 
-  void getLinearCutsMore3D(ModelFittingBase &model);
-  void getLinearCuts1D(ModelFittingBase &model);
-  void getLinearCuts2D(ModelFittingBase &model);
+  void getLinearCutsMore3D(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory);
 
-  void getHeatmapMore4D(ModelFittingBase &model);
-  void getHeatmap3D(ModelFittingBase &model);
-  void getHeatmap2D(ModelFittingBase &model);
+  void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory);
 
 
   void translateColumns(DataMatrix &matrix, size_t maxColumns);
@@ -65,7 +65,7 @@ class VisualizerDensityEstimation:public Visualizer {
   void updateIndexesHeatmap(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
   void swapColumns(DataMatrix &matrix, size_t col1, size_t col2);
 
-  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model);
+  void storeTsneJson(DataMatrix &matrix, ModelFittingBase &model, std::string currentDirectory);
 
   void storeCutJson(DataMatrix &matrix,
     std::vector<size_t> indexes, size_t &varDim, std::string filepath);

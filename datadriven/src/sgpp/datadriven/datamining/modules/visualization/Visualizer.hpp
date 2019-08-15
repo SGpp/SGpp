@@ -72,6 +72,11 @@ class Visualizer{
    * Resolution used in the graphs
    */
   size_t resolution;
+
+  /**
+   * Variable to store the current folder in which the visualizer is working on
+   */
+  std::string currentDirectory;
 };
 
 } // namespace datadriven

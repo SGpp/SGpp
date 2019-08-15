@@ -31,10 +31,10 @@ void Visualizer::createOutputDirectory(size_t fold, size_t batch) {
 
   std::cout << "Batch Number " << std::to_string(batch) << std::endl;
   if (config.getGeneralConfig().crossValidation) {
-  config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+    currentDirectory = config.getGeneralConfig().
     targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
   } else {
-  config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+    currentDirectory = config.getGeneralConfig().
     targetDirectory+"/Batch_" + std::to_string(batch);
   }
 
@@ -43,7 +43,7 @@ void Visualizer::createOutputDirectory(size_t fold, size_t batch) {
 
   std::string mkdir("mkdir --parents ");
 
-  mkdir.append(config.getGeneralConfig().currentDirectory);
+  mkdir.append(currentDirectory);
 
   int status = system(mkdir.data());
 

@@ -26,12 +26,6 @@ struct VisualizationGeneralConfig {
   std::string algorithm = "";
 
   /**
-  * The path to the file which will store the output of the visualization
-  * module
-  */
-  std::string currentDirectory = "";
-
-  /**
   * The filetype in which to store the output of the visualization module
   */
   VisualizationFileType targetFileType =  VisualizationFileType::json;
