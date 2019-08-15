@@ -39,9 +39,17 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
    originalData = dataSource.getAllSamples()->getData();
    resolution = pow(2,model.getFitterConfiguration().getGridConfig().level_+2);
   }
-
+  initializeMatrices(model);
   ModelFittingClassification* classificationModel = dynamic_cast<ModelFittingClassification*>(&model);
   auto models = classificationModel->getModels();
+  auto classIdx = classificationModel->getClassIdx();
+
+  classes.resizeZero(models->size());
+
+  for (auto const& x : classIdx)
+  {
+      classes.set(x.second, x.first);
+  }
 
   createOutputDirectory(fold, batch);
 
@@ -78,35 +86,91 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
           }
         }
      }
-    #pragma omp section
-    {
-      for(size_t index=0; index < models->size();index++) {
+   }
+    for(size_t index=0; index < models->size();index++) {
 
-       if (config.getGeneralConfig().crossValidation) {
-        config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
-                  targetDirectory+"/Fold_" + std::to_string(fold)
-                  + "/Batch_" + std::to_string(batch)
-                  +"/Model_" + std::to_string(index);
-        } else {
-         config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
-                   targetDirectory+"/Batch_" + std::to_string(batch)
-                   +"/Model_" + std::to_string(index);
+     if (config.getGeneralConfig().crossValidation) {
+      config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+                targetDirectory+"/Fold_" + std::to_string(fold)
+                + "/Batch_" + std::to_string(batch)
+                +"/Model_Class_" + std::to_string((int)classes.get(index));
+      } else {
+       config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
+                 targetDirectory+"/Batch_" + std::to_string(batch)
+                 +"/Model_Class_" + std::to_string((int)classes.get(index));
+      }
+
+      std::string mkdir("mkdir --parents ");
+
+      mkdir.append(config.getGeneralConfig().currentDirectory);
+
+      system(mkdir.data());
+
+      auto currentModel = &(models->at(index));
+      #pragma omp parallel sections
+      {
+        #pragma omp section
+        {
+         getLinearCuts(**currentModel);
         }
+        #pragma omp section
+        {
+         getHeatmap(**currentModel);
+        }
+      }
+     }
+ }
 
-        std::string mkdir("mkdir --parents ");
 
-        mkdir.append(config.getGeneralConfig().currentDirectory);
+void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
+  VisualizerDensityEstimation::initializeMatrices(model);
+    std::cout << "Resolution " << std::to_string(resolution) << std::endl;
+    double step = 1.0/resolution;
 
-        system(mkdir.data());
+    auto nDimensions = model.getDataset()->getDimension();
 
-        auto currentModel = &(models->at(index));
-        getLinearCuts(**currentModel);
-        getHeatmap(**currentModel);
+    classMatrix.resize(0, nDimensions);
+    if (nDimensions >=3) {
+      if (nDimensions >= 4) {
+        for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
+          for (double dim2 = 0; dim2 <= 1; dim2+=0.25) {
+            for (double dim3 = 0; dim3 <= 1; dim3+= step) {
+              for (double dim4 = 0; dim4 <= 1; dim4+= step) {
+              DataVector row(heatMapMatrix.getNcols(), 0.5);
+              row.set(0, dim3);
+              row.set(1, dim4);
+              row.set(2, dim1);
+              row.set(3, dim2);
+
+              classMatrix.appendRow(row);
+              }
+            }
+          }
+        }
+     } else {
+       for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
+         for (double dim2 = 0; dim2 <= 1; dim2 += step) {
+           for (double dim3 = 0; dim3 <= 1; dim3 += step) {
+             DataVector row(3, 0.5);
+             row.set(0, dim3);
+             row.set(1, dim2);
+             row.set(2, dim1);
+             classMatrix.appendRow(row);
+           }
+         }
+       }
+     }
+    } else {
+      for (double dim1 = 0; dim1 <= 1; dim1 += step) {
+        for (double dim2 = 0; dim2 <= 1; dim2 += step) {
+          DataVector row(2, 0.5);
+          row.set(0, dim1);
+          row.set(1, dim2);
+          classMatrix.appendRow(row);
+        }
       }
     }
-  }
 }
-
 
 void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model) {
   std::cout << "Generating the classification heatmaps" << std::endl;
@@ -117,41 +181,20 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
     std::cout << "Heatmap generation is not available for models of 1 dimension" <<std::endl;
     return;
   }
-
-  DataMatrix heatMapMatrix(0, nDimensions);
   if ( nDimensions >=3 ) {
     if ( nDimensions >= 4 ) {
-     getHeatmapMore4DClassification(heatMapMatrix, model);
-    } else if ( nDimensions == 3 ) {
-      getHeatmap3D(heatMapMatrix, model);
+     getHeatmapMore4DClassification(model);
+    } else {
+      getHeatmap3DClassification(model);
     }
   } else {
-   getHeatmap2DClassification(heatMapMatrix, model);
+   getHeatmap2DClassification(model);
   }
 }
-void VisualizerClassification::getHeatmapMore4DClassification(DataMatrix &heatMapMatrix,
+void VisualizerClassification::getHeatmapMore4DClassification(
 ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification"+
-    "/Heatmaps_Classification/");
-
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
-
-  for (double dim1 = 0; dim1 <= 1; dim1+=0.25) {
-    for (double dim2 = 0; dim2 <= 1; dim2+=0.25) {
-      for (double dim3 = 0; dim3 <= 1; dim3 = dim3+step) {
-        for (double dim4 = 0; dim4 <= 1; dim4 = dim4+step) {
-        DataVector row(heatMapMatrix.getNcols(), 0.5);
-        row.set(0, dim3);
-        row.set(1, dim4);
-        row.set(2, dim1);
-        row.set(3, dim2);
-
-        heatMapMatrix.appendRow(row);
-        }
-      }
-    }
-  }
+  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/"+
+    "/Heatmaps/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
 
@@ -174,10 +217,10 @@ ModelFittingBase &model) {
 
     for (size_t iteration = 0; iteration < 2; iteration++) {
       for (size_t combination = 0; combination < 3; combination++) {
-        DataMatrix heatMapResults(heatMapMatrix);
-        DataVector evaluation(heatMapMatrix.getNrows());
+        DataMatrix heatMapResults(classMatrix);
+        DataVector evaluation(classMatrix.getNrows());
 
-        model.evaluate(heatMapMatrix, evaluation);
+        model.evaluate(classMatrix, evaluation);
 
         heatMapResults.appendCol(evaluation);
 
@@ -194,7 +237,7 @@ ModelFittingBase &model) {
                        +std::to_string(variableColumnIndexes.at(0)+1)+"_"+
                        std::to_string(variableColumnIndexes.at(combination+1)+1));
           }
-          translateColumnsRight(heatMapMatrix, workingIndexes);
+          translateColumnsRight(classMatrix, workingIndexes);
         } else {
           if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
             CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
@@ -208,43 +251,68 @@ ModelFittingBase &model) {
              +std::to_string(variableColumnIndexes.at((combination < 2)?1:2)+1)+"_"+
              std::to_string(variableColumnIndexes.at((combination < 1)?2:3)+1));
           }
-          translateColumnsLeft(heatMapMatrix, workingIndexes);
+          translateColumnsLeft(classMatrix, workingIndexes);
         }
       }
 
       if (iteration == 0) {
-        translateColumnsRight(heatMapMatrix, variableColumnIndexes);
+        translateColumnsRight(classMatrix, variableColumnIndexes);
       }
     }
-    translateColumnsLeft(heatMapMatrix, variableColumnIndexes);
+    translateColumnsLeft(classMatrix, variableColumnIndexes);
 
-    updateIndexesHeatmap(variableColumnIndexes, heatMapMatrix);
+    updateIndexesHeatmap(variableColumnIndexes, classMatrix);
   }
 }
 
+void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model) {
+  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/");
 
-void VisualizerClassification::getHeatmap2DClassification(DataMatrix &heatMapMatrix,
-  ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/");
+  std::string command("mkdir "+outputDir+" --parents");
 
-  std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
+  system(command.data());
+  // Dummy to reutilize the storejson method
+  std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
-  std::cout << "Step size: " << step<<std::endl;
-  for (double dim1 = 0; dim1 <= 1; dim1 = dim1 + step) {
-    for (double dim2 = 0; dim2 <= 1; dim2 = dim2 + step) {
-      DataVector row(2, 0.5);
-      row.set(0, dim1);
-      row.set(1, dim2);
-      heatMapMatrix.appendRow(row);
-      // std::cout << row.toString() <<std::endl;
+  for (size_t combination = 0; combination < 3; combination++) {
+
+
+    DataMatrix heatMapResults(classMatrix);
+    DataVector evaluation(classMatrix.getNrows());
+
+    model.evaluate(classMatrix, evaluation);
+
+    heatMapResults.appendCol(evaluation);
+
+    translateColumns(classMatrix, classMatrix.getNcols());
+    if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+      CSVTools::writeMatrixToCSVFile(outputDir+"Heatmap_var_dimensions_"
+      +std::to_string(combination+1)
+      +"_"+((combination < 2)?std::to_string(combination+2):std::to_string(1)), heatMapResults);
+
+    } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+      storeHeatmapJsonClassification(heatMapResults,
+      model,
+      variableColumnIndexes,
+      variableColumnIndexes.at(combination),
+      variableColumnIndexes.at((combination < 2)?combination+1:0),
+      outputDir+"Heatmap_var_dimensions_"+std::to_string(combination+1)+"_"+
+      ((combination < 2)?std::to_string(combination+2):std::to_string(1)));
     }
   }
+}
+void VisualizerClassification::getHeatmap2DClassification(
+  ModelFittingBase &model) {
+  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/");
 
-  DataMatrix heatMapResults(heatMapMatrix);
-  DataVector evaluation(heatMapMatrix.getNrows());
+  std::string command("mkdir "+outputDir+" --parents");
 
-  model.evaluate(heatMapMatrix, evaluation);
+  system(command.data());
+
+  DataMatrix heatMapResults(classMatrix);
+  DataVector evaluation(classMatrix.getNrows());
+
+  model.evaluate(classMatrix, evaluation);
 
   heatMapResults.appendCol(evaluation);
 
@@ -288,10 +356,6 @@ void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBas
   DataVector zCol(matrix.getNrows());
 
   matrix.getColumn(2, zCol);
-
-  DataVector classes;
-
-  getClasses(zCol, models->size(), classes);
 
   jsonOutput["data"][0]["marker"].addIDAttr("color", zCol.toString());
 
@@ -339,7 +403,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
   jsonOutput.addDictAttr("layout");
   jsonOutput["layout"].addDictAttr("title");
 
-  if (matrix.getNcols() >= 4) {
+  if (matrix.getNcols() > 4) {
     jsonOutput["layout"].addIDAttr("height", "1500");
   }
   jsonOutput["layout"].addListAttr("annotations");
@@ -351,10 +415,6 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
   DataVector zCol(matrix.getNrows());
 
   matrix.getColumn(matrix.getNcols()-1, zCol);
-
-  DataVector classes;
-
-  getClasses(zCol, models->size(), classes);
 
   size_t totalGraphs = ((matrix.getNcols()==4)?5:25);
 
@@ -528,7 +588,6 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
         }
       }
 
-
       jsonOutput["data"].addDictValue();
 
       jsonOutput["data"][graphIndex].addIDAttr("type", "\"scatter\"");
@@ -593,17 +652,15 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
     // Adding titles to subplots
     std::string dim1Text(std::to_string(indexes.at(0)+1));
-
     std::string dim1ValueText(std::to_string(firstRow.get(indexes.at(0))));
     dim1ValueText.erase(dim1ValueText.find_last_not_of('0') + 2, std::string::npos);
-
     dim1Text = "\"Dim " +
     dim1Text + "=" + dim1ValueText;
 
     std::string dim2Text = "";
     std::string dim2ValueText = "\"";
 
-    if (matrix.getNcols() >= 4) {
+    if (matrix.getNcols() > 4) {
       dim2Text = std::to_string(indexes.at(1) + 1);
       dim2ValueText = std::to_string(firstRow.get(indexes.at(1)));
       dim2ValueText.erase(dim2ValueText.find_last_not_of('0') + 2, std::string::npos);
@@ -619,7 +676,8 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     (std::stod(jsonOutput["layout"][xAxisName]["domain"][0].get()) +
     std::stod(jsonOutput["layout"][xAxisName]["domain"][1].get()))/2);
 
-    if (matrix.getNcols() >= 4) {
+
+    if (matrix.getNcols() > 4) {
       jsonOutput["layout"]["annotations"][graphNumber].addIDAttr("y",
       (0.9-std::stod(jsonOutput["layout"][yAxisName]["domain"][0].get())));
     } else {
@@ -689,11 +747,6 @@ std::string filepath) {
   DataVector zCol(matrix.getNrows());
 
   matrix.getColumn(2, zCol);
-
-  DataVector classes;
-
-  getClasses(zCol, models->size(), classes);
-
 
   jsonOutput["data"][graphIndex].addIDAttr("z", zCol.toString());
   // jsonOutput["data"][0].addIDAttr("showlegend", false);
@@ -806,18 +859,6 @@ std::string filepath) {
   jsonOutput.serialize(filepath + ".json");
 }
 
-void VisualizerClassification::
-getClasses(DataVector &column, size_t numClasses, DataVector &classes) {
-  size_t index = 0;
-  while(classes.getSize() < numClasses) {
-    int classValue = std::round(column.get(index));
-
-     if (std::find(classes.begin(), classes.end(), classValue) == classes.end()) {
-       classes.append(classValue);
-     }
-     index++;
-  }
-}
 
 } // namespace datadriven
 } // namespace sgpp

@@ -96,7 +96,14 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* getModels();
 
+  /*
+   * obtain the index mapping for each label class
+   */
 
+  /**
+    * Index map for each class
+    */
+   std::map<double, size_t> getClassIdx();
 #ifdef USE_SCALAPACK
     /**
    * @returns the BLACS process grid
