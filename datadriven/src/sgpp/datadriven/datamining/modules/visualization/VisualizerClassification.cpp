@@ -53,13 +53,17 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
 
   createOutputDirectory(fold, batch);
 
+  std::string command("mkdir "+currentDirectory+"/Classification"+" --parents");
+
+  system(command.data());
+
   omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
 
   #pragma omp parallel sections
   {
     #pragma omp section
     {
-     getHeatmapsClassification(model);
+     getHeatmapsClassification(model, currentDirectory);
     }
     #pragma omp section
     {
@@ -72,53 +76,58 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
            model.evaluate(originalData, evaluation);
            tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
            if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
-             CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
+             CSVTools::writeMatrixToCSVFile(currentDirectory +
                "/tsneCompression", tsneCompressedData);
            } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
              if (config.getVisualizationParameters().targetDimension != 2) {
                std::cout << "A json output is only available for compressions in 2 dimensions"
                "Storing the CSV instead" << std::endl;
-               CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
+               CSVTools::writeMatrixToCSVFile(currentDirectory +
                  "/tsneCompression", tsneCompressedData);
              }
-               storeTsneJson(tsneCompressedData, model);
+               storeTsneJson(tsneCompressedData, model, currentDirectory);
              }
           }
         }
      }
-   }
-    for(size_t index=0; index < models->size();index++) {
+    #pragma omp section
+    {
+     #pragma omp parallel for schedule(dynamic)
+     for(size_t index=0; index < models->size();index++) {
 
-     if (config.getGeneralConfig().crossValidation) {
-      config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
-                targetDirectory+"/Fold_" + std::to_string(fold)
-                + "/Batch_" + std::to_string(batch)
-                +"/Model_Class_" + std::to_string((int)classes.get(index));
-      } else {
-       config.getGeneralConfig().currentDirectory = config.getGeneralConfig().
-                 targetDirectory+"/Batch_" + std::to_string(batch)
+      std::string currentDirectory;
+      if (config.getGeneralConfig().crossValidation) {
+        currentDirectory = config.getGeneralConfig().
+                 targetDirectory+"/Fold_" + std::to_string(fold)
+                 + "/Batch_" + std::to_string(batch)
                  +"/Model_Class_" + std::to_string((int)classes.get(index));
+       } else {
+        currentDirectory = config.getGeneralConfig().
+                  targetDirectory+"/Batch_" + std::to_string(batch)
+                  +"/Model_Class_" + std::to_string((int)classes.get(index));
+       }
+
+       std::string mkdir("mkdir --parents ");
+
+       mkdir.append(currentDirectory);
+
+       system(mkdir.data());
+
+       auto currentModel = &(models->at(index));
+       #pragma omp parallel sections
+       {
+         #pragma omp section
+         {
+          getLinearCuts(**currentModel, currentDirectory);
+         }
+         #pragma omp section
+         {
+          getHeatmap(**currentModel, currentDirectory);
+         }
+       }
       }
-
-      std::string mkdir("mkdir --parents ");
-
-      mkdir.append(config.getGeneralConfig().currentDirectory);
-
-      system(mkdir.data());
-
-      auto currentModel = &(models->at(index));
-      #pragma omp parallel sections
-      {
-        #pragma omp section
-        {
-         getLinearCuts(**currentModel);
-        }
-        #pragma omp section
-        {
-         getHeatmap(**currentModel);
-        }
-      }
-     }
+    }
+  }
  }
 
 
@@ -172,7 +181,8 @@ void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
     }
 }
 
-void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model) {
+void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model,
+  std::string currentDirectory) {
   std::cout << "Generating the classification heatmaps" << std::endl;
 
   auto nDimensions = model.getDataset()->getDimension();
@@ -183,17 +193,17 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
   }
   if ( nDimensions >=3 ) {
     if ( nDimensions >= 4 ) {
-     getHeatmapMore4DClassification(model);
+     getHeatmapMore4DClassification(model, currentDirectory);
     } else {
-      getHeatmap3DClassification(model);
+      getHeatmap3DClassification(model, currentDirectory);
     }
   } else {
-   getHeatmap2DClassification(model);
+   getHeatmap2DClassification(model, currentDirectory);
   }
 }
 void VisualizerClassification::getHeatmapMore4DClassification(
-ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/"+
+ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/Classification"+
     "/Heatmaps/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
@@ -265,12 +275,10 @@ ModelFittingBase &model) {
   }
 }
 
-void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/");
+void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model
+  ,std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/Classification/");
 
-  std::string command("mkdir "+outputDir+" --parents");
-
-  system(command.data());
   // Dummy to reutilize the storejson method
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
@@ -302,12 +310,8 @@ void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &mode
   }
 }
 void VisualizerClassification::getHeatmap2DClassification(
-  ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Classification/");
-
-  std::string command("mkdir "+outputDir+" --parents");
-
-  system(command.data());
+  ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/Classification/");
 
   DataMatrix heatMapResults(classMatrix);
   DataVector evaluation(classMatrix.getNrows());
@@ -324,7 +328,8 @@ void VisualizerClassification::getHeatmap2DClassification(
   }
 }
 
-void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model) {
+void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model
+  ,std::string currentDirectory) {
   JSON jsonOutput;
 
   ModelFittingClassification* classificationModel =
@@ -379,7 +384,7 @@ void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBas
   jsonOutput["layout"]["title"].addIDAttr("text", "\"TSNE Compression\"");
   jsonOutput["layout"]["title"].addIDAttr("x", 0.5);
 
-  jsonOutput.serialize(config.getGeneralConfig().currentDirectory + "/tsneCompression.json");
+  jsonOutput.serialize(currentDirectory + "/Classification/tsneCompression.json");
 }
 
 void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
@@ -394,6 +399,8 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
   auto models = classificationModel->getModels();
 
   size_t numberModels = models->size();
+
+  std::vector<bool> showLegendGroup(numberModels, true);
 
   double maxValue = matrix.max(matrix.getNcols()-1);
   double minValue = matrix.min(matrix.getNcols()-1);
@@ -564,7 +571,6 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     temp.getRow(0, firstRow);
 
     for(size_t i = 0; i < numberModels ; i++) {
-
       auto grid = models->at(i)->getGrid().clone();
 
       DataMatrix gridMatrix;
@@ -605,10 +611,11 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       jsonOutput["data"][graphIndex]["marker"].
            addIDAttr("color", "\""+colors.at(i)+"\"");
 
-      if (graphNumber == ((gridMatrix.getNcols()==3)?1:6)) {
+      if (showLegendGroup.at(i) && tempGrid.getNrows() > 0) {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
         jsonOutput["data"][graphIndex].addIDAttr("name", "\" Grid Class " +
           std::to_string((int)classes.at(i))+"\"");
+        showLegendGroup.at(i) = false;
       } else {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", false);
       }
@@ -704,8 +711,6 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
 void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
 std::string filepath) {
-
-
   ModelFittingClassification* classificationModel =
      dynamic_cast<ModelFittingClassification*>(&model);
 

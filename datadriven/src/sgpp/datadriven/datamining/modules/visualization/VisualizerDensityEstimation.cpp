@@ -48,12 +48,12 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   {
     #pragma omp section
     {
-    getLinearCuts(model);
+    getLinearCuts(model, currentDirectory);
     }
 
     #pragma omp section
     {
-    getHeatmap(model);
+    getHeatmap(model, currentDirectory);
     }
 
     #pragma omp section
@@ -67,16 +67,16 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
           model.evaluate(originalData, evaluation);
           tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
           if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
-            CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
+            CSVTools::writeMatrixToCSVFile(currentDirectory +
               "/tsneCompression", tsneCompressedData);
           } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
             if (config.getVisualizationParameters().targetDimension != 2) {
             std::cout << "A json output is only available for compressions in 2 dimensions"
             "Storing the CSV instead" << std::endl;
-            CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory +
+            CSVTools::writeMatrixToCSVFile(currentDirectory +
               "/tsneCompression", tsneCompressedData);
             }
-            storeTsneJson(tsneCompressedData, model);
+            storeTsneJson(tsneCompressedData, model, currentDirectory);
           }
         }
       }
@@ -85,13 +85,14 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
     #pragma omp section
     {
       if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
-        storeGrid(model);
+        storeGrid(model, currentDirectory);
       }
     }
   }
 }
 
-void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model) {
+void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model,
+  std::string currentDirectory) {
   ModelFittingBaseSingleGrid* gridModel = dynamic_cast<ModelFittingBaseSingleGrid*>(&model);
 
   auto grid = gridModel->getGrid().clone();
@@ -100,7 +101,7 @@ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model) {
 
   grid->getStorage().getCoordinateArrays(gridMatrix);
 
-  CSVTools::writeMatrixToCSVFile(config.getGeneralConfig().currentDirectory + "/grid", gridMatrix);
+  CSVTools::writeMatrixToCSVFile(currentDirectory + "/grid", gridMatrix);
 }
 
 void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
@@ -232,28 +233,30 @@ void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
 
 
 }
-void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model) {
+void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
+  std::string currentDirectory) {
   std::cout << "Generating the linear cuts" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
   if ( nDimensions >= 2 ) {
     std::string command("mkdir ");
-    command.append(config.getGeneralConfig().currentDirectory);
+    command.append(currentDirectory);
     command.append("/LinearCuts");
     system(command.data());
 
     if (nDimensions >=3) {
-      getLinearCutsMore3D(model);
+      getLinearCutsMore3D(model, currentDirectory);
     } else {
-      getLinearCuts2D(model);
+      getLinearCuts2D(model, currentDirectory);
     }
   } else {
-    getLinearCuts1D(model);
+    getLinearCuts1D(model, currentDirectory);
   }
 
 }
 
-void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model) {
+void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
+  std::string currentDirectory) {
   std::cout << "Generating the heatmaps" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
@@ -266,17 +269,17 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model) {
   DataMatrix heatMapMatrix(0, nDimensions);
   if ( nDimensions >=3 ) {
     std::string command("mkdir ");
-    command.append(config.getGeneralConfig().currentDirectory);
+    command.append(currentDirectory);
     command.append("/Heatmaps");
     system(command.data());
 
     if ( nDimensions >= 4 ) {
-      getHeatmapMore4D(model);
+      getHeatmapMore4D(model, currentDirectory);
     } else if ( nDimensions == 3 ) {
-      getHeatmap3D(model);
+      getHeatmap3D(model, currentDirectory);
     }
   } else {
-    getHeatmap2D(model);
+    getHeatmap2D(model, currentDirectory);
   }
 }
 
@@ -402,8 +405,8 @@ void VisualizerDensityEstimation::swapColumns(DataMatrix &matrix, size_t col1, s
 }
 
 void VisualizerDensityEstimation::getLinearCutsMore3D(
-  ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory + "/LinearCuts/");
+  ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory + "/LinearCuts/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
@@ -442,8 +445,8 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(
 }
 
 void VisualizerDensityEstimation::getLinearCuts2D(
-  ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory + "/LinearCuts/");
+  ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory + "/LinearCuts/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
@@ -469,8 +472,9 @@ void VisualizerDensityEstimation::getLinearCuts2D(
   }
 }
 
-void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/");
+void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model,
+  std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/");
 
   DataMatrix cutResults(cutMatrix);
   DataVector evaluation(cutMatrix.getNrows());
@@ -486,8 +490,8 @@ void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model) {
 }
 
 void VisualizerDensityEstimation::getHeatmapMore4D(
-ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Heatmaps/");
+ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/Heatmaps/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
 
@@ -556,8 +560,9 @@ ModelFittingBase &model) {
   }
 }
 
-void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/Heatmaps/");
+void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model,
+  std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/Heatmaps/");
 
   // Dummy to reutilize the storejson method
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
@@ -591,8 +596,8 @@ void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model) {
 }
 
 void VisualizerDensityEstimation::getHeatmap2D(
-  ModelFittingBase &model) {
-  std::string outputDir(config.getGeneralConfig().currentDirectory+"/");
+  ModelFittingBase &model, std::string currentDirectory) {
+  std::string outputDir(currentDirectory+"/");
 
   DataMatrix heatMapResults(heatMapMatrix);
   DataVector evaluation(heatMapMatrix.getNrows());
@@ -611,7 +616,8 @@ void VisualizerDensityEstimation::getHeatmap2D(
 
 
 
-void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model) {
+void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model,
+  std::string currentDirectory) {
   JSON jsonOutput;
 
   jsonOutput.addListAttr("data");
@@ -657,7 +663,7 @@ void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFitting
   jsonOutput["layout"]["title"].addIDAttr("text", "\"TSNE Compression\"");
   jsonOutput["layout"]["title"].addIDAttr("x", 0.5);
 
-  jsonOutput.serialize(config.getGeneralConfig().currentDirectory + "/tsneCompression.json");
+  jsonOutput.serialize(currentDirectory + "/tsneCompression.json");
 }
 
 void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::vector<size_t> indexes,
@@ -826,6 +832,7 @@ void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::string f
 
 void VisualizerDensityEstimation::storeHeatmapJson(DataMatrix &matrix, ModelFittingBase &model,
 std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath) {
+  bool showLegendGroup = true;
 
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim1));
 
@@ -953,9 +960,10 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["data"][graphIndex].addIDAttr("legendgroup", (unsigned long int)1);
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
-    if (graphNumber == ((gridMatrix.getNcols() == 3)?1:6)) {
+    if (showLegendGroup && tempGrid.getNrows() > 0) {
            jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
            jsonOutput["data"][graphIndex].addIDAttr("name", "\"Grid\"");
+           showLegendGroup = false;
     } else {
       jsonOutput["data"][graphIndex].addIDAttr("showlegend", false);
     }
