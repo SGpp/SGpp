@@ -48,21 +48,21 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   {
     #pragma omp section
     {
-    getLinearCuts(model, currentDirectory);
+      getLinearCuts(model, currentDirectory);
     }
 
     #pragma omp section
     {
-    getHeatmap(model, currentDirectory);
+      getHeatmap(model, currentDirectory);
     }
 
     #pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
-        if(fold == 0 && batch == 0) {
+        if (fold == 0 && batch == 0) {
           runTsne(model, dataSource, fold, batch);
         }
-        if (originalData.getNcols() > 1 ) {
+        if (originalData.getNcols() > 1) {
           DataVector evaluation(originalData.getNrows());
           model.evaluate(originalData, evaluation);
           tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
@@ -152,7 +152,6 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
 }
 
 void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
-
   auto nDimensions = model.getDataset()->getDimension();
 
   std::cout << "Resolution " << std::to_string(resolution) << std::endl;
@@ -161,7 +160,7 @@ void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
   cutMatrix.resize(0, nDimensions);
   heatMapMatrix.resize(0, nDimensions);
 
-  if (nDimensions >= 2 ) {
+  if (nDimensions >= 2) {
     if (nDimensions >=3) {
       for (double dim1 = 0; dim1 <= 1; dim1 += 0.25) {
         for (double dim2 = 0; dim2 <= 1; dim2 += 0.25) {
@@ -229,10 +228,9 @@ void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
         row.set(0, dim1);
         cutMatrix.appendRow(row);
      }
- }
-
-
+  }
 }
+
 void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
   std::string currentDirectory) {
   std::cout << "Generating the linear cuts" << std::endl;
@@ -252,7 +250,6 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
   } else {
     getLinearCuts1D(model, currentDirectory);
   }
-
 }
 
 void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
@@ -668,7 +665,6 @@ void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFitting
 
 void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::vector<size_t> indexes,
 size_t &varDim, std::string filepath) {
-
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim));
 
 
@@ -685,7 +681,7 @@ size_t &varDim, std::string filepath) {
   std::to_string(varDim + 1) + "\"");
   jsonOutput["layout"]["title"].addIDAttr("x", 0.5);
 
-  size_t totalGraphs = ((matrix.getNcols()==3)?5:25);
+  size_t totalGraphs = ((matrix.getNcols() == 3)?5:25);
 
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
@@ -696,7 +692,7 @@ size_t &varDim, std::string filepath) {
     temp.copyFrom(matrix);
 
     unsigned int beginIndex = graphNumber*rowsPerGraph+1;
-   ;
+
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex + rowsPerGraph-1, matrix.getNcols());
 
     // Adding data trace
@@ -864,7 +860,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
   unsigned int graphIndex = 0;
 
-  size_t totalGraphs = ((matrix.getNcols()==4)?5:25);
+  size_t totalGraphs = ((matrix.getNcols() == 4)?5:25);
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
@@ -924,9 +920,9 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     for (size_t index = 0; index < gridMatrix.getNrows(); index++) {
       DataVector row(gridMatrix.getNcols());
       gridMatrix.getRow(index, row);
-      if (gridMatrix.getNcols() >= 4 ) {
-        if (row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) &
-        row.get(indexes.at(1)) == firstRow.get(indexes.at(1))) {
+      if (gridMatrix.getNcols() >= 4) {
+        if (row.get(indexes.at(0)) == firstRow.get(indexes.at(0))&
+          row.get(indexes.at(1)) == firstRow.get(indexes.at(1))) {
           tempGrid.appendRow(row);
         }
       } else {
@@ -957,7 +953,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     tempGrid.getColumn(varDim2, yColGrid);
 
     jsonOutput["data"][graphIndex].addIDAttr("y", yColGrid.toString());
-    jsonOutput["data"][graphIndex].addIDAttr("legendgroup", (unsigned long int)1);
+    jsonOutput["data"][graphIndex].addIDAttr("legendgroup", (size_t)1);
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
     if (showLegendGroup && tempGrid.getNrows() > 0) {
