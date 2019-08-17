@@ -16,11 +16,12 @@
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
 #include <omp.h>
+#include <math.h>
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
-#include <math.h>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -35,20 +36,22 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     return;
   }
 
-  if(fold==0 && batch == 0) {
-   originalData = dataSource.getAllSamples()->getData();
-   resolution = pow(2,model.getFitterConfiguration().getGridConfig().level_+2);
+  if (fold == 0 && batch == 0) {
+    originalData = dataSource.getAllSamples()->getData();
+    resolution = pow(2, model.getFitterConfiguration().getGridConfig().level_+2);
   }
   initializeMatrices(model);
-  ModelFittingClassification* classificationModel = dynamic_cast<ModelFittingClassification*>(&model);
+
+  ModelFittingClassification* classificationModel =
+    dynamic_cast<ModelFittingClassification*>(&model);
+
   auto models = classificationModel->getModels();
   auto classIdx = classificationModel->getClassIdx();
 
   classes.resizeZero(models->size());
 
-  for (auto const& x : classIdx)
-  {
-      classes.set(x.second, x.first);
+  for (auto const& x : classIdx) {
+    classes.set(x.second, x.first);
   }
 
   createOutputDirectory(fold, batch);
@@ -63,72 +66,71 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
   {
     #pragma omp section
     {
-     getHeatmapsClassification(model, currentDirectory);
+      getHeatmapsClassification(model, currentDirectory);
     }
     #pragma omp section
     {
-       if (config.getGeneralConfig().algorithm == "tsne") {
-         if(fold == 0 && batch == 0) {
-           runTsne(model, dataSource, fold, batch);
-         }
-         if (originalData.getNcols() >= 1 ) {
-           DataVector evaluation(originalData.getNrows());
-           model.evaluate(originalData, evaluation);
-           tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
-           if ( config.getGeneralConfig().targetFileType == VisualizationFileType::CSV ) {
-             CSVTools::writeMatrixToCSVFile(currentDirectory +
-               "/tsneCompression", tsneCompressedData);
-           } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
-             if (config.getVisualizationParameters().targetDimension != 2) {
-               std::cout << "A json output is only available for compressions in 2 dimensions"
-               "Storing the CSV instead" << std::endl;
-               CSVTools::writeMatrixToCSVFile(currentDirectory +
-                 "/tsneCompression", tsneCompressedData);
-             }
-               storeTsneJson(tsneCompressedData, model, currentDirectory);
-             }
+      if (config.getGeneralConfig().algorithm == "tsne") {
+        if (fold == 0 && batch == 0) {
+          runTsne(model, dataSource, fold, batch);
+        }
+        if (originalData.getNcols() >= 1) {
+          DataVector evaluation(originalData.getNrows());
+          model.evaluate(originalData, evaluation);
+          tsneCompressedData.setColumn(tsneCompressedData.getNcols()-1, evaluation);
+          if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+            CSVTools::writeMatrixToCSVFile(currentDirectory +
+              "/tsneCompression", tsneCompressedData);
+          } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+            if (config.getVisualizationParameters().targetDimension != 2) {
+              std::cout << "A json output is only available for compressions in 2 dimensions"
+              "Storing the CSV instead" << std::endl;
+              CSVTools::writeMatrixToCSVFile(currentDirectory +
+                "/tsneCompression", tsneCompressedData);
+            }
+              storeTsneJson(tsneCompressedData, model, currentDirectory);
           }
         }
-     }
+      }
+    }
     #pragma omp section
     {
-     #pragma omp parallel for schedule(dynamic)
-     for(size_t index=0; index < models->size();index++) {
-
-      std::string currentDirectory;
-      if (config.getGeneralConfig().crossValidation) {
-        currentDirectory = config.getGeneralConfig().
-                 targetDirectory+"/Fold_" + std::to_string(fold)
-                 + "/Batch_" + std::to_string(batch)
-                 +"/Model_Class_" + std::to_string((int)classes.get(index));
-       } else {
-        currentDirectory = config.getGeneralConfig().
-                  targetDirectory+"/Batch_" + std::to_string(batch)
-                  +"/Model_Class_" + std::to_string((int)classes.get(index));
-       }
-
-       std::string mkdir("mkdir --parents ");
-
-       mkdir.append(currentDirectory);
-
-       system(mkdir.data());
-
-       auto currentModel = &(models->at(index));
-       #pragma omp parallel sections
-       {
-         #pragma omp section
-         {
-          getLinearCuts(**currentModel, currentDirectory);
+      #pragma omp parallel for schedule(dynamic)
+      for (size_t index=0; index < models->size(); index++) {
+        std::string currentDirectory;
+        if (config.getGeneralConfig().crossValidation) {
+          currentDirectory = config.getGeneralConfig().
+                   targetDirectory+"/Fold_" + std::to_string(fold)
+                   + "/Batch_" + std::to_string(batch)
+                   +"/Model_Class_" + std::to_string(static_cast<int>(classes.get(index)));
+         } else {
+           currentDirectory = config.getGeneralConfig().
+                    targetDirectory+"/Batch_" + std::to_string(batch)
+                    +"/Model_Class_" + std::to_string(static_cast<int>(classes.get(index)));
          }
-         #pragma omp section
-         {
-          getHeatmap(**currentModel, currentDirectory);
-         }
-       }
+
+        std::string mkdir("mkdir --parents ");
+
+        mkdir.append(currentDirectory);
+
+        system(mkdir.data());
+
+        auto currentModel = &(models->at(index));
+        #pragma omp parallel sections
+        {
+          #pragma omp section
+          {
+            getLinearCuts(**currentModel, currentDirectory);
+          }
+          #pragma omp section
+          {
+            getHeatmap(**currentModel, currentDirectory);
+          }
+        }
       }
     }
   }
- }
+}
 
 
 void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
@@ -198,7 +200,7 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
       getHeatmap3DClassification(model, currentDirectory);
     }
   } else {
-   getHeatmap2DClassification(model, currentDirectory);
+    getHeatmap2DClassification(model, currentDirectory);
   }
 }
 void VisualizerClassification::getHeatmapMore4DClassification(
@@ -275,16 +277,14 @@ ModelFittingBase &model, std::string currentDirectory) {
   }
 }
 
-void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model
-  ,std::string currentDirectory) {
+void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model,
+  std::string currentDirectory) {
   std::string outputDir(currentDirectory+"/Classification/");
 
   // Dummy to reutilize the storejson method
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
 
   for (size_t combination = 0; combination < 3; combination++) {
-
-
     DataMatrix heatMapResults(classMatrix);
     DataVector evaluation(classMatrix.getNrows());
 
@@ -323,13 +323,13 @@ void VisualizerClassification::getHeatmap2DClassification(
   if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
   CSVTools::writeMatrixToCSVFile(outputDir+"ClassificationModel", heatMapResults);
   } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
-   storeHeatmapJsonClassification(heatMapResults,
+    storeHeatmapJsonClassification(heatMapResults,
     model, outputDir+"ClassificationModel");
   }
 }
 
-void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model
-  ,std::string currentDirectory) {
+void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model,
+  std::string currentDirectory) {
   JSON jsonOutput;
 
   ModelFittingClassification* classificationModel =
@@ -387,8 +387,9 @@ void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBas
   jsonOutput.serialize(currentDirectory + "/Classification/tsneCompression.json");
 }
 
-void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
-std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filepath) {
+void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix,
+  ModelFittingBase &model, std::vector<size_t> indexes, size_t &varDim1,
+  size_t &varDim2, std::string filepath) {
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim1));
 
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim2));
@@ -423,7 +424,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
   matrix.getColumn(matrix.getNcols()-1, zCol);
 
-  size_t totalGraphs = ((matrix.getNcols()==4)?5:25);
+  size_t totalGraphs = ((matrix.getNcols() == 4)?5:25);
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
@@ -473,13 +474,12 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["data"][graphIndex].addIDAttr("zmax", maxValue);
     jsonOutput["data"][graphIndex].addIDAttr("colorscale", "\"Viridis\"");
 
-    if(graphNumber != 0 ) {
-     jsonOutput["data"][graphIndex].addIDAttr("showscale", false);
-    }
-    else{
-     jsonOutput["data"][graphIndex].addDictAttr("colorbar");
-     jsonOutput["data"][graphIndex]["colorbar"].addIDAttr("tickmode", "\"array\"");
-     jsonOutput["data"][graphIndex]["colorbar"].addIDAttr("tickvals", classes.toString());
+    if (graphNumber != 0) {
+      jsonOutput["data"][graphIndex].addIDAttr("showscale", false);
+    } else {
+      jsonOutput["data"][graphIndex].addDictAttr("colorbar");
+      jsonOutput["data"][graphIndex]["colorbar"].addIDAttr("tickmode", "\"array\"");
+      jsonOutput["data"][graphIndex]["colorbar"].addIDAttr("tickvals", classes.toString());
     }
 
     graphIndex++;
@@ -495,17 +495,16 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     evaluatedData.appendCol(evaluation);
 
     // Adding the data points
-    for(size_t i = 0; i < numberModels ; i++) {
+    for (size_t i = 0; i < numberModels ; i++) {
       DataMatrix tracePoints(0, evaluatedData.getNcols());
       for (size_t index = 0; index < evaluatedData.getNrows(); index++) {
-
         DataVector row(evaluatedData.getNcols());
         evaluatedData.getRow(index, row);
         if (row.get(row.getSize()-1) == classes.at(i)) {
           tracePoints.appendRow(row);
         }
-
       }
+
       jsonOutput["data"].addDictValue();
       jsonOutput["data"][graphIndex].addIDAttr("type", "\"scatter\"");
       jsonOutput["data"][graphIndex].addIDAttr("mode", "\"markers\"");
@@ -531,7 +530,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       jsonOutput["data"][graphIndex]["marker"].
       addIDAttr("symbol", "\"star-dot\"");
       jsonOutput["data"][graphIndex]["marker"].
-      addIDAttr("size", (long int)10);
+      addIDAttr("size", (size_t)10);
       jsonOutput["data"][graphIndex]["marker"].
       addDictAttr("line");
       jsonOutput["data"][graphIndex]["marker"]["line"].
@@ -559,7 +558,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       if (graphNumber == 0) {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
         jsonOutput["data"][graphIndex].addIDAttr("name", "\"Data Class  " +
-          std::to_string((int)classes.at(i))+"\"");
+          std::to_string(static_cast<int>(classes.at(i)))+"\"");
       } else {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", false);
       }
@@ -570,7 +569,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     DataVector firstRow(temp.getNcols());
     temp.getRow(0, firstRow);
 
-    for(size_t i = 0; i < numberModels ; i++) {
+    for (size_t i = 0; i < numberModels ; i++) {
       auto grid = models->at(i)->getGrid().clone();
 
       DataMatrix gridMatrix;
@@ -582,7 +581,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
         DataVector row(gridMatrix.getNcols());
         gridMatrix.getRow(index, row);
 
-        if (gridMatrix.getNcols() >= 4 ) {
+        if (gridMatrix.getNcols() >= 4) {
           if ((row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) &
           row.get(indexes.at(1)) == firstRow.get(indexes.at(1)))) {
             tempGrid.appendRow(row);
@@ -614,7 +613,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       if (showLegendGroup.at(i) && tempGrid.getNrows() > 0) {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
         jsonOutput["data"][graphIndex].addIDAttr("name", "\" Grid Class " +
-          std::to_string((int)classes.at(i))+"\"");
+          std::to_string(static_cast<int>(classes.at(i)))+"\"");
         showLegendGroup.at(i) = false;
       } else {
         jsonOutput["data"][graphIndex].addIDAttr("showlegend", false);
@@ -634,8 +633,8 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
       graphIndex++;
-
     }
+
     // Layout part of the graph
     std::string xAxisName("xaxis"+((graphNumber == 0)?"":std::to_string(graphNumber+1)));
     std::string yAxisName("yaxis"+((graphNumber == 0)?"":std::to_string(graphNumber+1)));
@@ -709,8 +708,8 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 }
 
 
-void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
-std::string filepath) {
+void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix,
+  ModelFittingBase &model, std::string filepath) {
   ModelFittingClassification* classificationModel =
      dynamic_cast<ModelFittingClassification*>(&model);
 
@@ -774,18 +773,16 @@ std::string filepath) {
 
   graphIndex++;
   // Adding the data points
-  for(size_t i = 0; i < classes.size() ; i++) {
-
+  for (size_t i = 0; i < classes.size() ; i++) {
     DataMatrix tracePoints(0, evaluatedData.getNcols());
     for (size_t index = 0; index < evaluatedData.getNrows(); index++) {
-
       DataVector row(evaluatedData.getNcols());
       evaluatedData.getRow(index, row);
       if (row.get(row.getSize()-1) == classes.at(i)) {
         tracePoints.appendRow(row);
       }
-
     }
+
     jsonOutput["data"].addDictValue();
     jsonOutput["data"][graphIndex].addIDAttr("type", "\"scatter\"");
     jsonOutput["data"][graphIndex].addIDAttr("mode", "\"markers\"");
@@ -804,7 +801,7 @@ std::string filepath) {
     jsonOutput["data"][graphIndex].addIDAttr("y", yData.toString());
     jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
     jsonOutput["data"][graphIndex].addIDAttr("name", "\"Data Class " +
-      std::to_string((int)classes.at(i))+"\"");
+      std::to_string(static_cast<int>(classes.at(i)))+"\"");
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y+z\"");
     DataVector zData(tracePoints.getNrows());
 
@@ -812,7 +809,7 @@ std::string filepath) {
 
     jsonOutput["data"][graphIndex].addDictAttr("marker");
     jsonOutput["data"][graphIndex]["marker"].addIDAttr("symbol", "\"star-dot\"");
-    jsonOutput["data"][graphIndex]["marker"].addIDAttr("size", (long int)10);
+    jsonOutput["data"][graphIndex]["marker"].addIDAttr("size", (size_t)10);
     jsonOutput["data"][graphIndex]["marker"].addDictAttr("line");
     jsonOutput["data"][graphIndex]["marker"]["line"].addIDAttr("color", "\"blue\"");
     jsonOutput["data"][graphIndex]["marker"]["line"].addIDAttr("width", 1.5);
@@ -825,7 +822,7 @@ std::string filepath) {
     graphIndex++;
   }
   // Adding the sparse grids
-  for(size_t i = 0; i < models->size() ; i++) {
+  for (size_t i = 0; i < models->size(); i++) {
     auto grid = models->at(i)->getGrid().clone();
 
     DataMatrix gridMatrix;
@@ -850,7 +847,7 @@ std::string filepath) {
     jsonOutput["data"][graphIndex].addIDAttr("y", yColGrid.toString());
     jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
     jsonOutput["data"][graphIndex].addIDAttr("name", "\"Grid Class " +
-      std::to_string((int)classes.at(i))+"\"");
+      std::to_string((size_t)classes.at(i))+"\"");
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
     graphIndex++;
@@ -864,6 +861,5 @@ std::string filepath) {
   jsonOutput.serialize(filepath + ".json");
 }
 
-
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp
