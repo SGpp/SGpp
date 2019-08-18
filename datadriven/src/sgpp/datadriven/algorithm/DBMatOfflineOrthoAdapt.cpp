@@ -110,15 +110,8 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
 
   // decomposed matrix: (lhs+lambda*I) = Q * T^{-1} * Q^t
   this->isDecomposed = true;
-<<<<<<< HEAD
-  auto end = std::chrono::high_resolution_clock::now();
-  std::cout << "Orthoadapt decomp took "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-                << "ms" << std::endl;
-=======
 #else
   throw base::not_implemented_exception("built without GSL");
->>>>>>> 6a0f70062d0bed7fcc10bd9c9136babfbf04af8d
 #endif /* USE_GSL */
 }
 
