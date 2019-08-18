@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractTreeStorageNode.hpp"
+#include <sgpp/combigrid/storage/tree/AbstractTreeStorageNode.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

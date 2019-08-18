@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "KernelSourceBuilderPruneGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/KernelSourceBuilderPruneGraph.hpp>
 
 namespace sgpp {
 namespace datadriven {

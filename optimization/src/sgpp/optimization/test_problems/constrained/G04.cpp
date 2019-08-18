@@ -32,6 +32,13 @@ double G04::getOptimalPointUndisplaced(base::DataVector& x) {
   return -30665.538671783201;
 }
 
+bool G04::isDisplacementFeasible() {
+  displacement[0] = 0.0;
+  displacement[1] = 0.0;
+  displacement[3] = 0.0;
+  return ConstrainedTestProblem::isDisplacementFeasible();
+}
+
 G04Objective::G04Objective() : TestScalarFunction(5) {}
 
 G04Objective::~G04Objective() {}
@@ -46,8 +53,8 @@ double G04Objective::evalUndisplaced(const base::DataVector& x) {
   return 5.3578547 * x3 * x3 + 0.8356891 * x1 * x5 + 37.293239 * x1 - 40792.141;
 }
 
-void G04Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G04Objective(*this));
+void G04Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G04Objective(*this));
 }
 
 G04InequalityConstraint::G04InequalityConstraint() : TestVectorFunction(5, 6) {}
@@ -69,8 +76,8 @@ void G04InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[5] = -9.300961 - 0.0047026 * x3 * x5 - 0.0012547 * x1 * x3 - 0.0019085 * x3 * x4 + 20.0;
 }
 
-void G04InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G04InequalityConstraint(*this));
+void G04InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G04InequalityConstraint(*this));
 }
 
 G04EqualityConstraint::G04EqualityConstraint() : TestVectorFunction(5, 0) {}
@@ -79,8 +86,8 @@ G04EqualityConstraint::~G04EqualityConstraint() {}
 
 void G04EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
 
-void G04EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G04EqualityConstraint(*this));
+void G04EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G04EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

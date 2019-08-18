@@ -32,6 +32,27 @@ for so_file in os.listdir("../../../lib/sgpp/"):
     modules.append(re.search(r"libsgpp(.*?)\.so", so_file).group(1))
 print(("Found compiled modules: " + str(modules)))
 
+# check for dependencies
+print("Building dependencies")
+sgpp_deps = ""
+pysgpp_deps = "libsgpp"
+if len(sys.argv) >= 2:
+    with open(sys.argv[1], 'r') as fin:
+        line = fin.readline()
+        while line:
+            sgpp_deps += (", " + line.strip())
+            print("\t" + line.strip())
+            line = fin.readline()
+    sgpp_deps = sgpp_deps.strip(" ,")
+    if len(sys.argv) >= 3:
+        with open(sys.argv[2], 'r') as fin:
+            line = fin.readline()
+            while line:
+                pysgpp_deps += (", " + line.strip())
+                print("\t" + line.strip())
+                line = fin.readline()
+        pysgpp_deps = pysgpp_deps.strip(" ,")
+
 # enter version information
 major_version = input("Enter major version: ")
 if major_version == "":
@@ -86,7 +107,7 @@ for module in modules:
 # copy meta-files
 os.makedirs(package_name + "/DEBIAN")
 control_template = jinja2_env.get_template('control_template')
-rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email)
+rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email, sgpp_deps=sgpp_deps)
 with open(package_name + "/DEBIAN/control", "w") as f:
     # dpkg-deb requires newline at the end of the file
     f.write(rendered + "\n")
@@ -122,7 +143,7 @@ copy_python.copy_python(package_name)
 # copy meta-files
 os.makedirs(os.path.join(package_name, "DEBIAN"))
 control_template = jinja2_env.get_template('control_python_template')
-rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email)
+rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email, pysgpp_deps=pysgpp_deps)
 with open(os.path.join(package_name, "DEBIAN/control"), "w") as f:
     # dpkg-deb requires newline at the end of the file
     f.write(rendered + "\n")

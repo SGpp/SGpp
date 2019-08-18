@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "LevelManager.hpp"
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 
 namespace sgpp {
 namespace combigrid {

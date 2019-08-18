@@ -24,7 +24,7 @@ if env["USE_GSL"]:
     additionalDependencies += ["gsl", "gslcblas"]
 if env["USE_CGAL"]:
   additionalDependencies += ["CGAL"]
-if env["USE_SCALAPACK"]:
+if (not env.GetOption("clean")) and env["USE_SCALAPACK"]:
     if env["SCALAPACK_VERSION"] == "netlib":
         additionalDependencies += ["scalapack"]
     elif env["SCALAPACK_VERSION"] == "mkl":
@@ -43,9 +43,6 @@ if env["USE_SCALAPACK"]:
     elif env["SCALAPACK_VERSION"] == "custom":
         additionalDependencies += [env["SCALAPACK_LIBRARY_NAME"]]
 
-if env["USE_PYTHON_EMBEDDING"]:
-  additionalDependencies += ["python3.6m"]
-
 performanceTestFlag = "COMPILE_BOOST_PERFORMANCE_TESTS"
 performanceTestRunFlag = "RUN_BOOST_PERFORMANCE_TESTS"
 
@@ -61,20 +58,26 @@ module.generatePythonDocstrings()
 
 if env["ARCH"] == "mic":
     module.buildExamples("examplesMIC")
+    module.runExamples("examplesMIC")
 else:
     module.buildExamples()
+    module.runExamples()
     module.buildExamples("examplesPipeline")
 if env["USE_OCL"]:
     module.buildExamples("examplesOCL",
                          additionalExampleDependencies=["boost_program_options",
                                                         "boost_filesystem",
                                                         "boost_system"])
+    module.runExamples("examplesOCL")
 if env.get("USE_MPI") and env["USE_OCL"]:
     module.buildExamples("examplesMPI")
+    module.runExamples("examplesMPI")
 if (env["ARCH"].lower() == "avx2"):
     module.buildExamples("examplesAVX")
+    module.runExamples("examplesAVX")
 if env["USE_HPX"]:
     module.buildExamples("examplesHPX")
+    module.runExamples("examplesHPX")
 
 
 module.runPythonTests()

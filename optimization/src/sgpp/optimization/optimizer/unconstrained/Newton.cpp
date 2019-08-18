@@ -5,24 +5,25 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
 
 #include <algorithm>
+#include <limits>
 #include <numeric>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
-               double beta, double gamma, double tolerance, double epsilon, double alpha1,
-               double alpha2, double p)
-    : UnconstrainedOptimizer(f, max_it_count),
+Newton::Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+               size_t max_it_count, double beta, double gamma, double tolerance, double epsilon,
+               double alpha1, double alpha2, double p)
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -30,15 +31,14 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       alpha1(alpha1),
       alpha2(alpha2),
       p(p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(defaultSleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
-Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, size_t max_it_count,
-               double beta, double gamma, double tolerance, double epsilon, double alpha1,
-               double alpha2, double p, const sle_solver::SLESolver& sleSolver)
-    : UnconstrainedOptimizer(f, max_it_count),
+Newton::Newton(const base::ScalarFunction& f, const base::ScalarFunctionHessian& fHessian,
+               size_t max_it_count, double beta, double gamma, double tolerance, double epsilon,
+               double alpha1, double alpha2, double p, const base::sle_solver::SLESolver& sleSolver)
+    : UnconstrainedOptimizer(f, nullptr, &fHessian, max_it_count),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
@@ -46,9 +46,8 @@ Newton::Newton(const ScalarFunction& f, const ScalarFunctionHessian& fHessian, s
       alpha1(alpha1),
       alpha2(alpha2),
       p(p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(sleSolver) {
-  fHessian.clone(this->fHessian);
 }
 
 Newton::Newton(const Newton& other)
@@ -60,25 +59,24 @@ Newton::Newton(const Newton& other)
       alpha1(other.alpha1),
       alpha2(other.alpha2),
       p(other.p),
-      defaultSleSolver(sle_solver::GaussianElimination()),
+      defaultSleSolver(base::sle_solver::GaussianElimination()),
       sleSolver(other.sleSolver) {
-  other.fHessian->clone(fHessian);
 }
 
 Newton::~Newton() {}
 
 void Newton::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Newton)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
 
   base::DataVector gradFx(d);
   base::DataMatrix hessianFx(d, d);
@@ -86,9 +84,11 @@ void Newton::optimize() {
   base::DataVector s(d);
   base::DataVector y(d);
 
-  FullSLE system(hessianFx);
+  base::FullSLE system(hessianFx);
   size_t k = 0;
-  const bool statusPrintingEnabled = Printer::getInstance().isStatusPrintingEnabled();
+  const bool statusPrintingEnabled = base::Printer::getInstance().isStatusPrintingEnabled();
+
+  const double BINDING_TOLERANCE = 1e-6;
 
   while (k < N) {
     // calculate gradient, Hessian and gradient norm
@@ -100,27 +100,46 @@ void Newton::optimize() {
       fHist.append(fx);
     }
 
-    const double gradFxNorm = gradFx.l2Norm();
-
-    // exit if norm small enough
-    if (gradFxNorm < tol) {
-      break;
-    }
-
     // RHS of linear system to be solved
     for (size_t t = 0; t < d; t++) {
+      // search direction (negated gradient)
       s[t] = -gradFx[t];
+
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (s[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (s[t] > 0.0))) {
+        // discard variable by setting RHS to zero
+        s[t] = 0.0;
+        gradFx[t] = 0.0;
+        // eliminate variable from linear system matrix
+        hessianFx(t, t) = 1.0;
+
+        for (size_t t2 = 0; t2 < d; t2++) {
+          if (t != t2) {
+            hessianFx(t, t2) = 0.0;
+            hessianFx(t2, t) = 0.0;
+          }
+        }
+      }
+    }
+
+    const double sNorm = s.l2Norm();
+
+    // exit if norm small enough
+    if (sNorm < tol) {
+      break;
     }
 
     // solve linear system with Hessian as system matrix
     if (statusPrintingEnabled) {
-      Printer::getInstance().disableStatusPrinting();
+      base::Printer::getInstance().disableStatusPrinting();
     }
 
     bool lsSolved = sleSolver.solve(system, s, dk);
 
     if (statusPrintingEnabled) {
-      Printer::getInstance().enableStatusPrinting();
+      base::Printer::getInstance().enableStatusPrinting();
     }
 
     // norm of solution
@@ -134,21 +153,18 @@ void Newton::optimize() {
         s[t] = dk[t] / dkNorm;
       }
     } else {
-      // restart method
-      // (negated normalized gradient as new search direction)
-      for (size_t t = 0; t < d; t++) {
-        s[t] = s[t] / gradFxNorm;
-      }
+      // restart method (negated normalized gradient as new search direction)
+      s.mult(1.0 / sNorm);
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
       // line search failed ==> exit
-      // (either a "real" error occured or the improvement
+      // (either a "real" error occurred or the improvement
       // achieved is too small)
       break;
     }
@@ -161,10 +177,8 @@ void Newton::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionHessian& Newton::getObjectiveHessian() const { return *fHessian; }
 
 double Newton::getBeta() const { return beta; }
 

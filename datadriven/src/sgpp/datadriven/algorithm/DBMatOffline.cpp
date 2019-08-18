@@ -30,6 +30,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 
 namespace sgpp {
 namespace datadriven {
@@ -45,7 +46,8 @@ using sgpp::base::operation_exception;
 using sgpp::base::OperationMatrix;
 using sgpp::base::RegularGridConfiguration;
 
-DBMatOffline::DBMatOffline() : lhsMatrix(), isConstructed(false), isDecomposed(false) {
+DBMatOffline::DBMatOffline()
+    : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse() {
   interactions = std::set<std::set<size_t>>();
 }
 
@@ -53,6 +55,7 @@ DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
     : lhsMatrix(rhs.lhsMatrix),
       isConstructed(rhs.isConstructed),
       isDecomposed(rhs.isDecomposed),
+      lhsInverse(rhs.lhsInverse),
       interactions(rhs.interactions) {}
 
 DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs) {
@@ -62,12 +65,13 @@ DBMatOffline& sgpp::datadriven::DBMatOffline::operator=(const DBMatOffline& rhs)
   lhsMatrix = rhs.lhsMatrix;
   isConstructed = rhs.isConstructed;
   isDecomposed = rhs.isDecomposed;
+  lhsInverse = rhs.lhsInverse;
   interactions = rhs.interactions;
   return *this;
 }
 
 DBMatOffline::DBMatOffline(const std::string& filepath)
-    : lhsMatrix(), isConstructed(true), isDecomposed(true) {
+    : lhsMatrix(), isConstructed(true), isDecomposed(true), lhsInverse() {
   // Parse the interactions
   parseInter(filepath, interactions);
 
@@ -81,6 +85,8 @@ DataMatrix& DBMatOffline::getDecomposedMatrix() {
     throw data_exception("Matrix was not decomposed yet");
   }
 }
+
+DataMatrix& DBMatOffline::getInverseMatrix() { return this->lhsInverse; }
 
 DataMatrixDistributed& DBMatOffline::getDecomposedMatrixDistributed() {
 #ifdef USE_SCALAPACK
@@ -167,8 +173,12 @@ void DBMatOffline::store(const std::string& fileName) {
   std::cout << "Stored " << lhsMatrix.getNrows() << "x" << lhsMatrix.getNcols() << " matrix"
             << std::endl;
 #else
-  throw base::not_implemented_exception("built withot GSL");
+  throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
+}
+
+void DBMatOffline::compute_inverse() {
+  throw sgpp::base::algorithm_exception("called ::compute_inverse from parent object");
 }
 
 void DBMatOffline::printMatrix() {
@@ -183,7 +193,7 @@ void DBMatOffline::printMatrix() {
 void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints) {
   size_t j_start = grid->getSize() - newPoints;
 
-  // todo: switch-case when adding support for other gridTypes
+  // note: switch-case when adding support for other gridTypes
   if (grid->getType() == sgpp::base::GridType::Linear) {
     auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
     opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);

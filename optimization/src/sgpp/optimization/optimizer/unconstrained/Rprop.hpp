@@ -8,8 +8,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -41,9 +41,9 @@ class Rprop : public UnconstrainedOptimizer {
    * @param stepSizeIncreaseFactor  step size increase factor
    * @param stepSizeDecreaseFactor  step size decrease factor
    */
-  Rprop(const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
-        size_t maxItCount = DEFAULT_N,
-        double tolerance = DEFAULT_TOLERANCE, double initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
+  Rprop(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+        size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
+        double initialStepSize = DEFAULT_INITIAL_STEP_SIZE,
         double stepSizeIncreaseFactor = DEFAULT_STEP_SIZE_INCREASE_FACTOR,
         double stepSizeDecreaseFactor = DEFAULT_STEP_SIZE_DECREASE_FACTOR);
 
@@ -60,11 +60,6 @@ class Rprop : public UnconstrainedOptimizer {
   ~Rprop() override;
 
   void optimize() override;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
 
   /**
    * @return tolerance
@@ -112,8 +107,6 @@ class Rprop : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// initial step size

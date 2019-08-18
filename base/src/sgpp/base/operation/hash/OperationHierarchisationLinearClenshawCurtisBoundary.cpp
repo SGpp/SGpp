@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationHierarchisationLinearClenshawCurtisBoundary.hpp"
+#include <sgpp/base/operation/hash/OperationHierarchisationLinearClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/algorithm/sweep.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "common/algorithm_sweep/DehierarchisationLinearClenshawCurtisBoundary.hpp"
-#include "common/algorithm_sweep/HierarchisationLinearClenshawCurtisBoundary.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationLinearClenshawCurtisBoundary.hpp>
+#include <sgpp/base/operation/hash/common/algorithm_sweep/HierarchisationLinearClenshawCurtisBoundary.hpp>
 
 namespace sgpp {
 namespace base {

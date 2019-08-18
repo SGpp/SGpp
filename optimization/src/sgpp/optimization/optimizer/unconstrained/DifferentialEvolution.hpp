@@ -44,7 +44,7 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
    * @param avgImprovementThreshold   stopping criterion parameter 2
    * @param maxDistanceThreshold      stopping criterion parameter 3
    */
-  DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
+  DifferentialEvolution(const base::ScalarFunction& f, size_t maxFcnEvalCount = DEFAULT_N,
                         size_t populationSize = 0,
                         double crossoverProbability = DEFAULT_CROSSOVER_PROBABILITY,
                         double scalingFactor = DEFAULT_SCALING_FACTOR,
@@ -67,14 +67,64 @@ class DifferentialEvolution : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return                  number of individuals
+   * @return number of individuals
    */
   size_t getPopulationSize() const;
 
   /**
-   * @param populationSize    number of individuals
+   * @param populationSize number of individuals
    */
   void setPopulationSize(size_t populationSize);
+
+  /**
+   * @return crossover probability
+   */
+  double getCrossoverProbability() const;
+
+  /**
+   * @param crossoverProbability crossover probability
+   */
+  void setCrossoverProbability(double crossoverProbability);
+
+  /**
+   * @return crossover scaling factor
+   */
+  double getScalingFactor() const;
+
+  /**
+   * @param scalingFactor crossover scaling factor
+   */
+  void setScalingFactor(double scalingFactor);
+
+  /**
+   * @return stopping criterion parameter 1
+   */
+  size_t getIdleGenerationsCount() const;
+
+  /**
+   * @param idleGenerationsCount stopping criterion parameter 1
+   */
+  void setIdleGenerationsCount(size_t idleGenerationsCount);
+
+  /**
+   * @return stopping criterion parameter 2
+   */
+  double getAvgImprovementThreshold() const;
+
+  /**
+   * @param avgImprovementThreshold stopping criterion parameter 2
+   */
+  void setAvgImprovementThreshold(double avgImprovementThreshold);
+
+  /**
+   * @return stopping criterion parameter 3
+   */
+  double getMaxDistanceThreshold() const;
+
+  /**
+   * @param maxDistanceThreshold stopping criterion parameter 3
+   */
+  void setMaxDistanceThreshold(double maxDistanceThreshold);
 
   /**
    * @param[out] clone pointer to cloned object

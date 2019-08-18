@@ -612,8 +612,8 @@ class HashGenerator {
 
       // loop over all current grid points
       for (size_t g = 0; g < gridSize; g++) {
-        level_t levelSum = 0;
-        level_t numberOfZeroLevels = 0;
+              level_t levelSum = 0;
+              level_t numberOfZeroLevels = 0;
         GridPoint idx(storage.getPoint(g));
         bool firstPoint = true;
 

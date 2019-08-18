@@ -11,7 +11,7 @@
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 
 #include <sgpp/globaldef.hpp>
-#include "../basis/LinearClenshawCurtisBasis.hpp"
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 
 namespace sgpp {
 namespace base {

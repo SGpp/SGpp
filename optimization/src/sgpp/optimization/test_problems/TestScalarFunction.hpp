@@ -6,11 +6,10 @@
 #ifndef SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP
 #define SGPP_OPTIMIZATION_TEST_PROBLEMS_TESTSCALARFUNCTION_HPP
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <cstddef>
-
 namespace sgpp {
 namespace optimization {
 namespace test_problems {
@@ -30,7 +29,7 @@ namespace test_problems {
  * Taking the average of results of multiple runs with different
  * displacements makes results more robust and significant.
  */
-class TestScalarFunction : public ScalarFunction {
+class TestScalarFunction : public base::ScalarFunction {
  public:
   /**
    * Constructor.

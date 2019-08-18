@@ -5,22 +5,23 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
+
+#include <limits>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-Rprop::Rprop(const ScalarFunction& f, const ScalarFunctionGradient& fGradient, size_t maxItCount,
-             double tolerance, double initialStepSize, double stepSizeIncreaseFactor,
-             double stepSizeDecreaseFactor)
-    : UnconstrainedOptimizer(f, maxItCount),
+Rprop::Rprop(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+             size_t maxItCount, double tolerance, double initialStepSize,
+             double stepSizeIncreaseFactor, double stepSizeDecreaseFactor)
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       initialAlpha(initialStepSize),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor) {
-  fGradient.clone(this->fGradient);
 }
 
 Rprop::Rprop(const Rprop& other)
@@ -29,18 +30,17 @@ Rprop::Rprop(const Rprop& other)
       initialAlpha(other.initialAlpha),
       rhoAlphaPlus(other.rhoAlphaPlus),
       rhoAlphaMinus(other.rhoAlphaMinus) {
-  other.fGradient->clone(fGradient);
 }
 
 Rprop::~Rprop() {}
 
 void Rprop::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (Rprop)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -106,8 +106,8 @@ void Rprop::optimize() {
     }
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     xHist.appendRow(x);
     fHist.append(fx);
@@ -132,10 +132,8 @@ void Rprop::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = f->eval(x);
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return *fGradient; }
 
 double Rprop::getTolerance() const { return theta; }
 

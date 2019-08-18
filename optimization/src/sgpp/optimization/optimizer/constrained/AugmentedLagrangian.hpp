@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_AUGMENTEDLAGRANGIAN_HPP
-#define SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_AUGMENTEDLAGRANGIAN_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -30,10 +29,33 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   /// default penalty start value
   static constexpr double DEFAULT_PENALTY_START_VALUE = 1.0;
   /// default penalty increase factor
-  static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.0;
+  static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 1.5;
 
   /**
-   * Constructor.
+   * Constructor with Nelder-Mead as optimization algorithm
+   * (gradient-free).
+   *
+   * @param f                     objective function
+   * @param g                     inequality constraint
+   * @param h                     equality constraint
+   * @param maxItCount            maximal number of function evaluations
+   * @param xTolerance            point tolerance
+   * @param constraintTolerance   constraint tolerance
+   * @param penaltyStartValue     penalty start value
+   * @param penaltyIncreaseFactor penalty increase factor
+   */
+  AugmentedLagrangian(const base::ScalarFunction& f,
+                      const base::VectorFunction& g,
+                      const base::VectorFunction& h,
+                      size_t maxItCount = DEFAULT_N,
+                      double xTolerance = DEFAULT_X_TOLERANCE,
+                      double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                      double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                      double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
+   * Constructor with adaptive gradient descent as optimization algorithm
+   * (gradient-based).
    *
    * @param f                     objective function
    * @param fGradient             objective function gradient
@@ -41,24 +63,48 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @param gGradient             inequality constraint gradient
    * @param h                     equality constraint
    * @param hGradient             equality constraint gradient
-   * @param maxItCount            maximal number of
-   *                              function evaluations
+   * @param maxItCount            maximal number of function evaluations
    * @param xTolerance            point tolerance
    * @param constraintTolerance   constraint tolerance
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  AugmentedLagrangian(const ScalarFunction& f,
-                      const ScalarFunctionGradient& fGradient,
-                      const VectorFunction& g,
-                      const VectorFunctionGradient& gGradient,
-                      const VectorFunction& h,
-                      const VectorFunctionGradient& hGradient,
+  AugmentedLagrangian(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+                      const base::VectorFunction& g, const base::VectorFunctionGradient& gGradient,
+                      const base::VectorFunction& h, const base::VectorFunctionGradient& hGradient,
+                      size_t maxItCount = DEFAULT_N, double xTolerance = DEFAULT_X_TOLERANCE,
+                      double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                      double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                      double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimization algorithm
+   * @param g                       inequality constraint
+   * @param gGradient               inequality constraint gradient
+   *                                (nullptr to omit)
+   * @param h                       equality constraint
+   * @param hGradient               equality constraint gradient
+   *                                (nullptr to omit)
+   * @param maxItCount              maximal number of function evaluations
+   * @param xTolerance              point tolerance
+   * @param constraintTolerance     constraint tolerance
+   * @param penaltyStartValue       penalty start value
+   * @param penaltyIncreaseFactor   penalty increase factor
+   */
+  AugmentedLagrangian(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                      const base::VectorFunction& g,
+                      const base::VectorFunctionGradient* gGradient,
+                      const base::VectorFunction& h,
+                      const base::VectorFunctionGradient* hGradient,
                       size_t maxItCount = DEFAULT_N,
                       double xTolerance = DEFAULT_X_TOLERANCE,
                       double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                       double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                       double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
   /**
    * Copy constructor.
    *
@@ -83,21 +129,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
    * @return feasible point in \f$[0, 1]^d\f$
    */
   base::DataVector findFeasiblePoint() const;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
-   * @return inequality constraint function gradient
-   */
-  VectorFunctionGradient& getInequalityConstraintGradient() const;
-
-  /**
-   * @return equality constraint function gradient
-   */
-  VectorFunctionGradient& getEqualityConstraintGradient() const;
 
   /**
    * @return point tolerance
@@ -158,12 +189,6 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
-  /// inequality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> gGradient;
-  /// equality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> hGradient;
   /// point tolerance
   double theta;
   /// constraint tolerance
@@ -180,5 +205,3 @@ class AugmentedLagrangian : public ConstrainedOptimizer {
 }  // namespace optimizer
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPTIMIZER_CONSTRAINED_AUGMENTEDLAGRANGIAN_HPP */

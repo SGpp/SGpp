@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "IterationPolicy.hpp"
+#include <sgpp/combigrid/storage/IterationPolicy.hpp>
 
 namespace sgpp {
 namespace combigrid {
