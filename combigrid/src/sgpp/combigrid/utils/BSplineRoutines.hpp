@@ -7,7 +7,12 @@
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
+#include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/combigrid/GeneralFunction.hpp>
 #include <sgpp/combigrid/common/GridConversion.hpp>
 #include <sgpp/combigrid/definitions.hpp>
@@ -18,11 +23,6 @@
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 #include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/optimization/function/scalar/InterpolantScalarFunction.hpp>
-#include <sgpp/optimization/sle/solver/Auto.hpp>
-#include <sgpp/optimization/sle/system/FullSLE.hpp>
-#include <sgpp/optimization/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/quadrature/sampling/NaiveSampleGenerator.hpp>
 
 #include <vector>

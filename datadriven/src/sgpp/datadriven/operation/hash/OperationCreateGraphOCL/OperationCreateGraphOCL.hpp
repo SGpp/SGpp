@@ -13,7 +13,7 @@
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <vector>
-#include "KernelCreateGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/KernelCreateGraph.hpp>
 
 namespace sgpp {
 namespace datadriven {

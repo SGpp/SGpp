@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
+#include <sgpp/base/tools/QueueLoadBalancerMutex.hpp>
 
 namespace sgpp {
 namespace datadriven {

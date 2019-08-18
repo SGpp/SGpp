@@ -6,7 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_AVERAGINGLEVELMANAGER_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_OPERATION_MULTIDIM_AVERAGINGLEVELMANAGER_HPP_
 
-#include "LevelManager.hpp"
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 
 namespace sgpp {
 namespace combigrid {

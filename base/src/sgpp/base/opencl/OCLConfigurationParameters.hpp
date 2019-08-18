@@ -9,8 +9,8 @@
 #include <map>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
 
 namespace sgpp {
 namespace base {

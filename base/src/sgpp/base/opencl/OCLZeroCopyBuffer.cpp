@@ -6,9 +6,9 @@
 #include <sstream>
 #include <cstring>
 
-#include "sgpp/base/opencl/OCLZeroCopyBuffer.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {

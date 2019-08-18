@@ -15,6 +15,7 @@
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/grid/hierarchy/AbstractPointHierarchy.hpp>
 #include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
+#include <sgpp/combigrid/operation/multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 #include <sgpp/combigrid/storage/AbstractCombigridStorage.hpp>
 #include <sgpp/combigrid/storage/AbstractMultiStorage.hpp>
@@ -27,8 +28,6 @@
 #include <cstddef>
 #include <memory>
 #include <vector>
-
-#include "multidim/fullgrid/AbstractFullGridEvaluationStrategy.hpp"
 
 namespace sgpp {
 namespace combigrid {

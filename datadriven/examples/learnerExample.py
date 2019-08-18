@@ -1,9 +1,16 @@
-from pysgpp.extensions.datadriven.learner import LearnerBuilder
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
-from pysgpp.extensions.datadriven.learner import Types
+
+try:
+    from pysgpp.extensions.datadriven.learner import LearnerBuilder
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+    from pysgpp.extensions.datadriven.learner import Types
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 numSamples = 20
 numDims = 2

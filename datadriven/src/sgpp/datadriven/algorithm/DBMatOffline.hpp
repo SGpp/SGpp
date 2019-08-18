@@ -92,6 +92,13 @@ class DBMatOffline {
   DataMatrix& getDecomposedMatrix();
 
   /**
+   * Get a reference to the inverse matrix
+   *
+   * @return inverse matrix
+   */
+  DataMatrix& getInverseMatrix();
+
+  /**
    * Get a reference to the distributed decomposed matrix. Throws if matrix has not yet been
    * decomposed. In order to return valid data, syncDistributedDecomposition() has to be called if
    * the decomposition was changed (after refinements).
@@ -142,6 +149,12 @@ class DBMatOffline {
    */
   void compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints);
 
+  /*
+   * explicitly computes the inverse of the decomposed offline matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  virtual void compute_inverse();
+
   /**
    * Serialize the DBMatOffline Object
    * @param fileName path where to store the file.
@@ -162,9 +175,10 @@ class DBMatOffline {
 
  protected:
   DBMatOffline();
-  DataMatrix lhsMatrix;  // stores the (decomposed) matrix
-  bool isConstructed;    // If the matrix was built
-  bool isDecomposed;     // If the matrix was decomposed
+  DataMatrix lhsMatrix;   // stores the (decomposed) matrix
+  bool isConstructed;     // If the matrix was built
+  bool isDecomposed;      // If the matrix was decomposed
+  DataMatrix lhsInverse;  // stores the explicitly computed inverse (only in SMW case)
 
   // distributed lhs, only initialized in ScaLAPACK version
   DataMatrixDistributed lhsDistributed;

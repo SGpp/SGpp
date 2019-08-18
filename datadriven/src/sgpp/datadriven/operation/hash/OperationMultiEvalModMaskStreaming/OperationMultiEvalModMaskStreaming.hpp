@@ -5,7 +5,9 @@
 
 #pragma once
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>

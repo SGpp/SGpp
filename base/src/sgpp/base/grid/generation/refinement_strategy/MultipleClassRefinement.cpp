@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "MultipleClassRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
 
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/Grid.hpp>

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "MultiIndexIterator.hpp"
+#include <sgpp/combigrid/common/MultiIndexIterator.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

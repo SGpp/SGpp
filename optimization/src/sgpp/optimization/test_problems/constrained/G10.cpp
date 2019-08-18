@@ -52,8 +52,8 @@ double G10Objective::evalUndisplaced(const base::DataVector& x) {
   return x1 + x2 + x3;
 }
 
-void G10Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G10Objective(*this));
+void G10Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G10Objective(*this));
 }
 
 G10InequalityConstraint::G10InequalityConstraint() : TestVectorFunction(8, 6) {}
@@ -78,8 +78,8 @@ void G10InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[5] = -x3 * x8 + 1250000.0 + x3 * x5 - 2500.0 * x5;
 }
 
-void G10InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G10InequalityConstraint(*this));
+void G10InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G10InequalityConstraint(*this));
 }
 
 G10EqualityConstraint::G10EqualityConstraint() : TestVectorFunction(8, 0) {}
@@ -88,8 +88,8 @@ G10EqualityConstraint::~G10EqualityConstraint() {}
 
 void G10EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
 
-void G10EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G10EqualityConstraint(*this));
+void G10EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G10EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

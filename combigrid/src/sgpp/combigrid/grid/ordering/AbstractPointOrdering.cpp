@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractPointOrdering.hpp"
+#include <sgpp/combigrid/grid/ordering/AbstractPointOrdering.hpp>
 
 namespace sgpp {
 namespace combigrid {

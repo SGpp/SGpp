@@ -7,21 +7,30 @@
 ## \page example_bSplines_py bSplines.py
 ## plots anisotropic full grids that form part of the combination technique
 
-from argparse import ArgumentParser
-from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
-from pysgpp.pysgpp_swig import DataVector, CombigridOperation,\
-    CombigridMultiOperation, CombigridTensorOperation
-import pysgpp
-import os
+try:
+    from argparse import ArgumentParser
+    from pysgpp.extensions.datadriven.uq.parameters.ParameterBuilder import ParameterBuilder
+    from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotFunction1d
+    from pysgpp.pysgpp_swig import DataVector, CombigridOperation,\
+        CombigridMultiOperation, CombigridTensorOperation
+    from pysgpp.extensions.datadriven.uq.dists import Uniform
+    from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
 
-import matplotlib.pyplot as plt
-import numpy as np
-from scipy.integrate import quad, dblquad
-from pysgpp.extensions.datadriven.uq.dists import Uniform
-from pysgpp.extensions.datadriven.uq.dists.Beta import Beta
-from numpy import square
+    import pysgpp
+    import os
+
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    from numpy import square
+    from scipy.integrate import quad, dblquad
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
+
 
 # calulate scalar product of basis functions
 #===============================================================================
