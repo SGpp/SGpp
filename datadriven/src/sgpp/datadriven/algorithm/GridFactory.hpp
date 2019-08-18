@@ -48,6 +48,10 @@ class GridFactory {
    */
   std::set<std::set<size_t>> getInteractions(sgpp::datadriven::GeometryConfiguration config) const;
 
+  void getBlockInteractions(std::set<std::set<size_t>>& interactions,
+                            sgpp::datadriven::GeometryConfiguration& geoConf,
+                            sgpp::datadriven::StencilConfiguration& stencilConf) const;
+
   /*
    * calculates hierachical parent interactions
    * @param vector of resolution
@@ -69,11 +73,11 @@ class GridFactory {
                            sgpp::datadriven::StencilConfiguration& stencilConf) const;
 
  private:
-  void addChildParentInteractionRecursive(
-      std::vector<double>& rescale, std::vector<int64_t>& childDim, size_t currentDimension,
+  void addChildParentInteraction(
+      std::vector<double>& ratio, size_t numberOfAxes, size_t currentAxis,
       std::vector<int64_t>& childPosition, std::vector<int64_t>& parentPosition,
       std::vector<size_t>& parentMultiplicators, std::vector<size_t>& childMultiplicators,
-      size_t parentOffset, size_t childOffset, std::set<std::set<size_t>>& res) const;
+      size_t parentOffset, size_t childOffset, std::set<std::set<size_t>>& interactions) const;
 
   /*
    * calculates the index of a given position. This method exspect a row wise data layout

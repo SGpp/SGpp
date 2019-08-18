@@ -23,6 +23,7 @@ enum class StencilType {
   DirectNeighbour,
   AllHierarchicalParent,
   NextHierarchicalParent,
+  Block,
   None
 };
 
@@ -40,6 +41,10 @@ struct StencilConfiguration {
    * -1 if no color channels available
    */
   int64_t colorIndex;
+  /*
+   * Blocklenght for Blockstencil
+   */
+  size_t blockLenght;
 };
 
 /*

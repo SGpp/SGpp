@@ -77,6 +77,8 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
       case sgpp::datadriven::StencilType::AllHierarchicalParent:
         getHierarchicalParents(interactions, config, stencil);
         break;
+      case sgpp::datadriven::StencilType::Block:
+        getBlockInteractions(interactions, config, stencil);
       case sgpp::datadriven::StencilType::None:
         break;
       default:
@@ -85,6 +87,37 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
     }
   }
   return interactions;
+}
+
+void sgpp::datadriven::GridFactory::getBlockInteractions(
+    std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geoConf,
+    sgpp::datadriven::StencilConfiguration& stencilConf) const {
+  auto blockLenght = stencilConf.blockLenght;
+  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(geoConf.dim);
+  auto offsetsPerLevel = getOffsetPerLevel(geoConf.dim, multiplicatorsPerLevel);
+  for (size_t i : stencilConf.applyOnLayers) {
+    auto dimensions = geoConf.dim.at(i).size();
+    auto offset = offsetsPerLevel.at(i);
+    auto position = std::vector<int64_t>(dimensions, 0);
+    while (!position.empty()) {
+      for (size_t j = 1; j < (size_t)2 << (blockLenght * dimensions); j++) {
+        std::set<size_t> tmp = std::set<size_t>();
+        for (size_t k = 0; k < blockLenght; k++) {
+          for (size_t l = 0; l < dimensions; l++) {
+            if (j & (size_t)1 << (k * dimensions + l) &&
+                static_cast<int64_t>(position.at(l) + k) < geoConf.dim.at(i).at(l)) {
+              position.at(l) += k;
+              tmp.insert(getDataIndex(dimensions, multiplicatorsPerLevel.at(i), position) + offset);
+              position.at(l) -= k;
+            }
+          }
+        }
+        interactions.insert(tmp);
+      }
+      getNextPosition(geoConf.dim.at(i), position, -1);
+    }
+    interactions.insert(std::set<size_t>());
+  }
 }
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getMultiplicatorsPerLevel(
@@ -125,21 +158,20 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
 
   for (size_t i : stencilConf.applyOnLayers) {
     for (size_t j = i + 1; j < geometryConf.dim.size(); j++) {
-      auto scale = std::vector<double>();
+      auto ratio = std::vector<double>();
       for (size_t k = 0; k < geometryConf.dim.at(i).size(); k++) {
-        scale.push_back(static_cast<double>(geometryConf.dim.at(j).at(k)) /
+        ratio.push_back(static_cast<double>(geometryConf.dim.at(j).at(k)) /
                         static_cast<double>(geometryConf.dim.at(i).at(k)));
       }
 
       auto position = std::vector<int64_t>(geometryConf.dim.at(j).size(), 0);
 
-      // Iterate over all cells and add its possible parents
+      // Iterate over all positions
       do {
         std::vector<int64_t> parentPosition = std::vector<int64_t>(position.size(), 0);
-        addChildParentInteractionRecursive(scale, geometryConf.dim.at(i), 0, position,
-                                           parentPosition, multiplicatorsPerLevel.at(j),
-                                           multiplicatorsPerLevel.at(i), offsetsPerLevel.at(j),
-                                           offsetsPerLevel.at(i), interactions);
+        addChildParentInteraction(ratio, geometryConf.dim.at(i).size(), 0, position, parentPosition,
+                                  multiplicatorsPerLevel.at(j), multiplicatorsPerLevel.at(i),
+                                  offsetsPerLevel.at(j), offsetsPerLevel.at(i), interactions);
 
         getNextPosition(geometryConf.dim.at(i), position, -1);
       } while (position.size() != 0);
@@ -154,6 +186,7 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
     addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel.at(i), interactions);
   }
 
+  // Add empty interaction
   interactions.insert(std::set<size_t>());
 }
 
@@ -169,28 +202,32 @@ void sgpp::datadriven::GridFactory::addOneDimensionalInteractions(
   }
 }
 
-void sgpp::datadriven::GridFactory::addChildParentInteractionRecursive(
-    std::vector<double>& rescale, std::vector<int64_t>& childDim, size_t currentDimension,
+void sgpp::datadriven::GridFactory::addChildParentInteraction(
+    std::vector<double>& ratio, size_t numberOfAxes, size_t currentAxis,
     std::vector<int64_t>& childPosition, std::vector<int64_t>& parentPosition,
     std::vector<size_t>& parentMultiplicators, std::vector<size_t>& childMultiplicators,
-    size_t parentOffset, size_t childOffset, std::set<std::set<size_t>>& res) const {
-  if (currentDimension < childDim.size()) {
-    size_t position = static_cast<size_t>(rescale.at(currentDimension) *
-                                          static_cast<double>(childPosition.at(currentDimension)));
-    double nextPosition =
-        rescale.at(currentDimension) * static_cast<double>(childPosition.at(currentDimension) + 1);
-    // iterate over all positions inbetween (neccesarry for increasing dimensions)
-    for (size_t i = position; static_cast<double>(i) < nextPosition; i++) {
-      parentPosition.at(currentDimension) = i;
-      addChildParentInteractionRecursive(rescale, childDim, currentDimension + 1, childPosition,
-                                         parentPosition, parentMultiplicators, childMultiplicators,
-                                         parentOffset, childOffset, res);
+    size_t parentOffset, size_t childOffset, std::set<std::set<size_t>>& interactions) const {
+  // Check if all axes has been set
+  if (currentAxis < numberOfAxes) {
+    // Calculate first and last parent on this axis
+    size_t begin = static_cast<size_t>(ratio.at(currentAxis) *
+                                       static_cast<double>(childPosition.at(currentAxis)));
+    double end = ratio.at(currentAxis) * static_cast<double>(childPosition.at(currentAxis) + 1);
+
+    // Iterate over all parents' positions
+    for (size_t i = begin; static_cast<double>(i) < end; i++) {
+      parentPosition.at(currentAxis) = i;
+      addChildParentInteraction(ratio, numberOfAxes, currentAxis + 1, childPosition, parentPosition,
+                                parentMultiplicators, childMultiplicators, parentOffset,
+                                childOffset, interactions);
     }
   } else {
-    auto tmp = std::set<size_t>();
-    tmp.insert(getDataIndex(childDim.size(), childMultiplicators, childPosition) + childOffset);
-    tmp.insert(getDataIndex(childDim.size(), parentMultiplicators, parentPosition) + parentOffset);
-    res.insert(tmp);
+    auto interaction = std::set<size_t>();
+    interaction.insert(getDataIndex(numberOfAxes, childMultiplicators, childPosition) +
+                       childOffset);
+    interaction.insert(getDataIndex(numberOfAxes, parentMultiplicators, parentPosition) +
+                       parentOffset);
+    interactions.insert(interaction);
   }
 }
 
@@ -218,8 +255,7 @@ void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>& dimens
       position.at(i)++;
       break;
     } else {
-      if (i == position.size() - 1)  // last element reached
-      {
+      if (i == position.size() - 1) {  // last element reached
         position.clear();
       } else {
         position.at(i) = 0;
@@ -234,7 +270,7 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
   std::vector<int64_t> position = std::vector<int64_t>(layerDim.size(), 0);
   while (position.size() != 0) {
     size_t colorChannels = layerDim.at(colorIndex);
-    for (size_t j = 1; j < ((size_t)1<<colorChannels); j++) {
+    for (size_t j = 1; j < ((size_t)1 << colorChannels); j++) {
       std::set<size_t> tmp = std::set<size_t>();
       for (size_t k = 0; k < colorChannels; k++) {
         if (j & (1 << k)) {
