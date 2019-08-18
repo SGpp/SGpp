@@ -25,22 +25,26 @@
 namespace sgpp {
 namespace datadriven {
 
-using base::DataVector;
-using base::GridType;
-using base::Grid;
-using base::GridPoint;
-using base::factory_exception;
-using base::GridGenerator;
-using base::GeneralGridConfiguration;
 using base::application_exception;
-using sgpp::solver::SLESolver;
-using sgpp::solver::SLESolverType;
-using sgpp::solver::ConjugateGradients;
+using base::DataVector;
+using base::factory_exception;
+using base::GeneralGridConfiguration;
+using base::Grid;
+using base::GridGenerator;
+using base::GridPoint;
+using base::GridType;
 using sgpp::solver::BiCGStab;
+using sgpp::solver::ConjugateGradients;
+using sgpp::solver::SLESolver;
 using sgpp::solver::SLESolverConfiguration;
+using sgpp::solver::SLESolverType;
 
 ModelFittingBase::ModelFittingBase()
-    : verboseSolver{true}, config{nullptr}, interactions{nullptr}, dataset{nullptr}, solver{nullptr} {}
+    : verboseSolver{true},
+      interactions{nullptr},
+      config{nullptr},
+      dataset{nullptr},
+      solver{nullptr} {}
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
@@ -68,13 +72,14 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
 
 std::set<std::set<size_t>> ModelFittingBase::getInteractions(
     const GeometryConfiguration &geometryConfig) {
-  if(!interactions){
+  if (!interactions) {
     if (geometryConfig.stencils.empty()) {
       // interaction with size 0
       interactions = std::make_unique<std::set<std::set<size_t>>>();
     } else {
       GridFactory gridFactory;
-      interactions = std::make_unique<std::set<std::set<size_t>>>(gridFactory.getInteractions(geometryConfig));
+      interactions =
+          std::make_unique<std::set<std::set<size_t>>>(gridFactory.getInteractions(geometryConfig));
     }
   }
   return *interactions;
