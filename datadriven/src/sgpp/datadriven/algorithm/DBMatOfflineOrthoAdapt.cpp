@@ -7,7 +7,6 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
-#include <chrono>
 #include <vector>
 
 namespace sgpp {
@@ -91,7 +90,6 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
     RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
-  auto begin = std::chrono::high_resolution_clock::now();
   size_t dim_a = lhsMatrix.getNrows();
   // allocating subdiagonal and diagonal vectors of T
   sgpp::base::DataVector diag(dim_a);

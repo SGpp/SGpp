@@ -29,6 +29,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <vector>
 
 namespace sgpp {

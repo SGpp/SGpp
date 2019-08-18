@@ -17,7 +17,6 @@
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
-#include <chrono>
 #include <iostream>
 
 namespace sgpp {
@@ -71,20 +70,8 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       fitter->update(*dataset);
 
       // Evaluate the score on the training and validation data
-      std::cout << "Scorer on training data took ";
-      auto begin = std::chrono::high_resolution_clock::now();
       double scoreTrain = scorer->test(*fitter, *dataset);
-      auto end = std::chrono::high_resolution_clock::now();
-      std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
-                << std::endl;
-
-      std::cout << "Scorer on test data took ";
-      begin = std::chrono::high_resolution_clock::now();
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
-      end = std::chrono::high_resolution_clock::now();
-      std::cout << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "ms"
-                << std::endl;
-      
 
       if (verbose) {
         std::ostringstream out;

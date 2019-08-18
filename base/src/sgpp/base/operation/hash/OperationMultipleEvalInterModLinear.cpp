@@ -11,6 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -35,7 +36,7 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
     GridStorage::grid_iterator working(storage);
     LinearModifiedBasis<unsigned int, unsigned int> basis;
     size_t dimensions = storage.getDimension();
-    
+
     #pragma omp for
     for (size_t j = 0; j < dataset.getNrows(); j++) {
       dataset.getRow(j, line);
@@ -159,7 +160,7 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
           }
 
           size_t index = 0;
-          for (size_t i:in) {
+          for (size_t i : in) {
             level_t lvl = static_cast<level_t> (2 + level[index]);
             index_t idx = static_cast<index_t>(std::min(1+2*
               floor(line[i] * static_cast<double>(1 << (lvl-1))),

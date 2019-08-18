@@ -642,19 +642,18 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
   }
 }
 
-std::vector<std::vector<int64_t>> DataMiningConfigParser::parseArrayOfIntArrays(DictNode &dict, const std::string &key,
-                                                           std::vector<std::vector<int64_t>> defaultValue,
-                                                           const std::string &parentNode) const {
+std::vector<std::vector<int64_t>> DataMiningConfigParser::parseArrayOfIntArrays(
+    DictNode &dict, const std::string &key, std::vector<std::vector<int64_t>> defaultValue,
+    const std::string &parentNode) const {
   if (dict.contains(key)) {
     try {
       std::vector<std::vector<int64_t>> array;
       for (size_t i = 0; i < dict[key].size(); ++i) {
         std::vector<int64_t> entry;
-        for (size_t j = 0; j < dict[key][i].size(); j++)
-        {
+        for (size_t j = 0; j < dict[key][i].size(); j++) {
           entry.push_back(dict[key][i][j].getInt());
         }
-        
+
         array.push_back(entry);
       }
       return array;
@@ -929,38 +928,34 @@ bool DataMiningConfigParser::getGeometryConfig(
     auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
     config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim, "geometryConfig");
-    
-    //check if global color available
+
+    // check if global color available
     int64_t colorIndexDefault = parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
     std::vector<size_t> layerDefault = std::vector<size_t>();
-    for (size_t i = 0; i < config.dim.size(); i++)
-    {
+    for (size_t i = 0; i < config.dim.size(); i++) {
       layerDefault.push_back(i);
     }
-    
 
     config.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
-    
 
-    if((*geometryConfig).contains("stencils"))
-    {
+    if ((*geometryConfig).contains("stencils")) {
       size_t nStencils = (*geometryConfig)["stencils"].size();
       for (size_t i = 0; i < nStencils; ++i) {
         StencilConfiguration stencil;
         auto stencilConfig = static_cast<DictNode *>(&(*geometryConfig)["stencils"][i]);
-        stencil.applyOnLayers = parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
+        stencil.applyOnLayers =
+            parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
         stencil.colorIndex = parseInt(*stencilConfig, "colorIndex", colorIndexDefault, "stencils");
-        stencil.stencilType = GeometryConfigurationParser::parseStencil((*geometryConfig)["stencils"][i]["stencil"].get());
-        if(stencil.stencilType == sgpp::datadriven::StencilType::Block){
+        stencil.stencilType = GeometryConfigurationParser::parseStencil(
+            (*geometryConfig)["stencils"][i]["stencil"].get());
+        if (stencil.stencilType == sgpp::datadriven::StencilType::Block) {
           stencil.blockLenght = parseInt(*stencilConfig, "blockLenght", 2, "stencils");
         } else {
           stencil.blockLenght = 0;
         }
         config.stencils.push_back(stencil);
       }
-    }
-    else
-    {
+    } else {
       config.stencils = defaults.stencils;
     }
   }

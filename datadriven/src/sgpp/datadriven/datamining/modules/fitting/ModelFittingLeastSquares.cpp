@@ -72,11 +72,10 @@ bool ModelFittingLeastSquares::refine() {
       // refine grid
       auto noPoints = grid->getSize();
       GeometryConfiguration geoConf = config->getGeometryConfig();
-      if(!geoConf.stencils.empty()){
+      if (!geoConf.stencils.empty()) {
         GridFactory gridFactory;
         grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf));
-      }
-      else{
+      } else {
         grid->getGenerator().refine(refinementFunctor);
       }
       if (grid->getSize() > noPoints) {

@@ -29,7 +29,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <limits>
 #include <fstream>
 #include <iostream>
 
@@ -96,7 +96,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
 }
 
 void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& results) {
-  if(models.size() == 0){
+  if (models.size() == 0) {
     std::string errorMessage = "Prediction impossible! No models were trained!";
     throw application_exception(errorMessage.c_str());
   }
@@ -125,22 +125,19 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 
   auto priors = getClassPriors();
   std::vector<DataVector> classResults(models.size());
-  for (auto& p:classIdx)
-  {
+  for (auto& p : classIdx) {
     size_t idx = p.second;
     DataVector results(samples.getNrows());
     models[idx]->evaluate(samples, results);
     results.mult(priors[idx]);
     classResults[idx] = results;
   }
-  for (size_t j = 0; j < samples.getNrows(); j++)
-  {
+  for (size_t j = 0; j < samples.getNrows(); j++) {
     double maxDensity = std::numeric_limits<double>::lowest();
     double prediction = 0.0;
-    for (auto& p : classIdx)
-    {
+    for (auto& p : classIdx) {
       size_t idx = p.second;
-      if(maxDensity < classResults.at(idx).at(j)){
+      if (maxDensity < classResults.at(idx).at(j)) {
         maxDensity = classResults.at(idx).at(j);
         prediction = p.first;
       }
@@ -152,18 +149,18 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
 std::vector<double> ModelFittingClassification::getClassPriors() const {
   auto& learnerConfig = this->config->getLearnerConfig();
   size_t numInstances = 0;
-  for (auto& p : classIdx)
-  {
+  for (auto& p : classIdx) {
     size_t idx = p.second;
     numInstances += classNumberInstances[idx];
   }
 
   std::vector<double> priors(models.size());
-  for (auto& p : classIdx){
+  for (auto& p : classIdx) {
     size_t idx = p.second;
-    if(learnerConfig.usePrior){
+    if (learnerConfig.usePrior) {
       // Prior is realtive frequency of instances of this class
-      priors[idx] = static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
+      priors[idx] =
+          static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
     } else {
       // Uniform prior
       priors[idx] = 1.0;
@@ -322,11 +319,10 @@ bool ModelFittingClassification::refine() {
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by the functor
           GeometryConfiguration geoConf = config->getGeometryConfig();
-          if(!geoConf.stencils.empty()){
+          if (!geoConf.stencils.empty()) {
             GridFactory gridFactory;
             grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf));
-          }
-          else{
+          } else {
             grids[idx]->getGenerator().refine(*func);
           }
         }

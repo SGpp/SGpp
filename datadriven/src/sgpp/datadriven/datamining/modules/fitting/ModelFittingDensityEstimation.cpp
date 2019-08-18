@@ -78,11 +78,10 @@ bool ModelFittingDensityEstimation::refine() {
         auto oldNoPoints = grid->getSize();
         std::cout << "Old number points " << oldNoPoints << std::endl;
         GeometryConfiguration geoConf = config->getGeometryConfig();
-        if(!geoConf.stencils.empty()){
+        if (!geoConf.stencils.empty()) {
           GridFactory gridFactory;
           grid->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf));
-        }
-        else{
+        } else {
           grid->getGenerator().refine(*func);
         }
         auto newNoPoints = grid->getSize();

@@ -153,9 +153,9 @@ class DataMiningConfigParser {
                                        std::vector<double> defaultValue,
                                        const std::string &parentNode) const;
 
-  std::vector<std::vector<int64_t>> parseArrayOfIntArrays(DictNode &dict, const std::string &key,
-                                                          std::vector<std::vector<int64_t>> defaultValue,
-                                                          const std::string &parentNode) const;
+  std::vector<std::vector<int64_t>> parseArrayOfIntArrays(
+      DictNode &dict, const std::string &key, std::vector<std::vector<int64_t>> defaultValue,
+      const std::string &parentNode) const;
 
   std::vector<size_t> parseUIntArray(DictNode &dict, const std::string &key,
                                      std::vector<size_t> defaultValue,
