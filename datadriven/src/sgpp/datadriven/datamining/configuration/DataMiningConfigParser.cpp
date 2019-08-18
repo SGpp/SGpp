@@ -951,6 +951,11 @@ bool DataMiningConfigParser::getGeometryConfig(
         stencil.applyOnLayers = parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
         stencil.colorIndex = parseInt(*stencilConfig, "colorIndex", colorIndexDefault, "stencils");
         stencil.stencilType = GeometryConfigurationParser::parseStencil((*geometryConfig)["stencils"][i]["stencil"].get());
+        if(stencil.stencilType == sgpp::datadriven::StencilType::Block){
+          stencil.blockLenght = parseInt(*stencilConfig, "blockLenght", 2, "stencils");
+        } else {
+          stencil.blockLenght = 0;
+        }
         config.stencils.push_back(stencil);
       }
     }
