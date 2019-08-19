@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationEvalModLinearClenshawCurtisNaive.hpp"
+#include <sgpp/base/operation/hash/OperationEvalModLinearClenshawCurtisNaive.hpp>
 
 namespace sgpp {
 namespace base {

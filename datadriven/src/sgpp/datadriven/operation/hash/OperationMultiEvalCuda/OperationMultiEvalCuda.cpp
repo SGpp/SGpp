@@ -3,18 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationMultiEvalCuda.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/OperationMultiEvalCuda.hpp>
 
 #include <stdint.h>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
-#include "MortonOrderKernel.hpp"
-#include "MultiEvalKernel.hpp"
-#include "basicCuda.hpp"
-#include "consts.hpp"
-#include "cudaHelper.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/MortonOrderKernel.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/MultiEvalKernel.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/basicCuda.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/consts.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/cudaHelper.hpp>
 
 namespace sgpp {
 namespace datadriven {

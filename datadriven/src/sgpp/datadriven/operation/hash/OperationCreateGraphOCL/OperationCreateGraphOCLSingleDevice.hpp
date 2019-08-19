@@ -17,8 +17,8 @@
 #include <vector>
 #include <string>
 
-#include "OperationCreateGraphOCL.hpp"
-#include "KernelCreateGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCL.hpp>
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/KernelCreateGraph.hpp>
 
 namespace sgpp {
 namespace datadriven {

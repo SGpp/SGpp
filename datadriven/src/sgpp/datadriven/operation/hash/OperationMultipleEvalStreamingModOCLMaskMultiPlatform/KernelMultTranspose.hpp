@@ -13,12 +13,12 @@
 #include <chrono>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "SourceBuilderMultTranspose.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/LinearLoadBalancerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/SourceBuilderMultTranspose.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -8,9 +8,9 @@
 #include <CL/cl.h>
 #include <vector>
 
-#include "sgpp/base/opencl/OCLDevice.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/base/opencl/OCLDevice.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {

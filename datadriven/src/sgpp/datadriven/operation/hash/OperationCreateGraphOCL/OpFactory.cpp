@@ -3,13 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OpFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "KernelCreateGraph.hpp"
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/KernelCreateGraph.hpp>
 namespace sgpp {
 namespace datadriven {
 

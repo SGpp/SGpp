@@ -7,13 +7,13 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <random>
-#include "../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {
