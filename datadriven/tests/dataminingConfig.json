@@ -43,7 +43,18 @@
 				[1,2],
 				[3,4]
 			],
-			"stencil": "DirectNeighbour"
+			"stencils": [
+				{
+					"stencil": "DirectNeighbour"
+				},
+				{
+					"stencil": "Block",
+					"blockLenght": 2,
+					"colorIndex": 1,
+					"applyOnLayers": [0]
+				}
+			],
+			"colorIndex": 0
 		},
 		"adaptivityConfig": {
 			"numRefinements": 0,

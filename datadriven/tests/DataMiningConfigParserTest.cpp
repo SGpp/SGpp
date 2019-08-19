@@ -12,6 +12,7 @@
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
@@ -21,6 +22,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
 #include <string>
 #include <vector>
 
@@ -65,7 +67,6 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.validationPortion = 0.1;
   defaults.randomSeed = 1337;
 
-
   defaults.testFilePath = "something/testFalse";
   defaults.testFileType = DataSourceFileType::NONE;
   defaults.testNumBatches = 1;
@@ -92,8 +93,7 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(),
-                    "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.testNumBatches, 2);
@@ -247,30 +247,30 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   defaults.dim = std::vector<std::vector<int64_t>>();
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
-  std::vector<std::vector<int64_t>> dim = std::vector<std::vector<int64_t>>();
-
-  std::vector<int64_t> tmp1 = std::vector<int64_t>();
-  tmp1.push_back(1);
-  tmp1.push_back(2);
-
-  std::vector<int64_t> tmp2 = std::vector<int64_t>();
-  tmp2.push_back(3);
-  tmp2.push_back(4);
-
-  dim.push_back(tmp1);
-  dim.push_back(tmp2);
+  std::vector<std::vector<int64_t>> dim = {{1, 2}, {3, 4}};
 
   hasConfig = parser.getGeometryConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
+
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
-  
+  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.size(), 2);
+  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.at(0), 0);
+  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.at(1), 1);
+  BOOST_CHECK_EQUAL(config.stencils.at(0).colorIndex, 0);
+
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(1).stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::Block));
+  BOOST_CHECK_EQUAL(config.stencils.at(1).applyOnLayers.size(), 1);
+  BOOST_CHECK_EQUAL(config.stencils.at(1).applyOnLayers.at(0), 0);
+  BOOST_CHECK_EQUAL(config.stencils.at(1).colorIndex, 1);
+  BOOST_CHECK_EQUAL(config.stencils.at(1).blockLenght, 2);
+
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
-  for (size_t i = 0; i < config.dim.size(); i++)
-  {
+  for (size_t i = 0; i < config.dim.size(); i++) {
     BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.at(i).begin(), config.dim.at(i).end(),
-                                  dim.at(i).begin(), dim.at(i).end());  
+                                  dim.at(i).begin(), dim.at(i).end());
   }
 }
 

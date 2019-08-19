@@ -11,7 +11,11 @@
     		},
 		"geometryConfig": {
 			"dim":[[1,1]],
-			"stencil": "DirectNeighbour"
+			"stencils": [
+				{
+					"stencil": "DirectNeighbour"
+				}
+			]
 		},
     		"regularizationConfig":{
 			"regularizationType": "Identity",
