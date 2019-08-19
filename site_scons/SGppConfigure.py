@@ -85,7 +85,8 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
     # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and
     # -q is the relevant flag to make it use integrated assembler
-    config.env.AppendUnique(CPPFLAGS=["-Wa,-q"])
+    if config.env["COMPILER"] == "gcc":
+      config.env.AppendUnique(CPPFLAGS=["-Wa,-q"])
     config.env.AppendUnique(CPPPATH="/usr/local/include")
     config.env.AppendUnique(LIBPATH="/usr/local/lib")
     config.env["SHLIBSUFFIX"] = ".dylib"
@@ -554,8 +555,8 @@ def configureClangCompiler(config):
   #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
   #     ensure you also compile with -fno-strict-aliasing"
 #   if not config.env["USE_HPX"]:
-  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(CPPFLAGS=["-fopenmp"])
+  config.env.Append(LINKFLAGS=["-fopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
