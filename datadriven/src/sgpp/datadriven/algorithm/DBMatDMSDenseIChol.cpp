@@ -85,7 +85,6 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
         auto tmp = 0.0;
-#pragma omp simd
         for (auto j = 0u; j < i; j++) {
           tmp += decompMatrix.get(i, j) * y.get(j);
         }
@@ -97,7 +96,6 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
 
 void DBMatDMSDenseIChol::updateProxyMatrixLambda(double lambdaUpdate) const {
   auto size = proxyMatrix.getNrows();
-#pragma omp simd
   for (auto i = 0u; i < size; i++) {
     auto value = proxyMatrix.get(i, i) + lambdaUpdate;
     proxyMatrix.set(i, i, value);
