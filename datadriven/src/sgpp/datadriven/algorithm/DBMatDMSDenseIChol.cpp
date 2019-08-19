@@ -58,7 +58,6 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& dec
       tmpVec.setAll(0.0);
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
-#pragma omp simd
         for (auto j = 0u; j < i; j++) {
           tmpVec[j] += decompMatrix.get(i, j) * alpha.get(i);
         }
@@ -85,6 +84,7 @@ void DBMatDMSDenseIChol::choleskyForwardSolve(const sgpp::base::DataMatrix& deco
 #pragma omp for schedule(guided) nowait
       for (auto i = 0u; i < size; i++) {
         auto tmp = 0.0;
+#pragma omp simd
         for (auto j = 0u; j < i; j++) {
           tmp += decompMatrix.get(i, j) * y.get(j);
         }
