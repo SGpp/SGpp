@@ -119,7 +119,7 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
    *
    * @param samples DataMatrix (nrows = number of samples, ncols = dimensionality)
    */
-  virtual void initialize(base::DataMatrix& samples);
+  void initialize(base::DataMatrix& samples) override;
 
   /**
    * This methods evaluates the sparse grid density at a single point

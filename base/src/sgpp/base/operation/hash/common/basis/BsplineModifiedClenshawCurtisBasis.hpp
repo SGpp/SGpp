@@ -180,7 +180,7 @@ class BsplineModifiedClenshawCurtisBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return degree; }
+  inline size_t getDegree() const override { return degree; }
 
   /**
    * @param l     level of basis function

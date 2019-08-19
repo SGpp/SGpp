@@ -230,7 +230,7 @@ class NakBsplineModifiedBasisDeriv2: public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
+  inline size_t getDegree() const override {
     return nakBsplineBasisDeriv2.getDegree();
   }
 
