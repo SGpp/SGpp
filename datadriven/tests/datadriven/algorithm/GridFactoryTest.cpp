@@ -5,8 +5,10 @@
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
+
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+
 #include <set>
 #include <vector>
 
@@ -20,7 +22,7 @@ BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
   geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
   s.colorIndex = -1;
-  s.applyOnLayers = {1,2,3};
+  s.applyOnLayers = {0, 1, 2};
   s.stencilType = sgpp::datadriven::StencilType::NextHierarchicalParent;
   geoConf.stencils = {s};
 
@@ -30,7 +32,6 @@ BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
       {11, 13}, {12, 13}, {0},     {1},     {2},     {3},     {4},     {5},     {6},
       {7},      {8},      {9},     {10},    {11},    {12},    {13},    {}};
 
-  
   auto result = grid.getInteractions(geoConf);
 
   BOOST_CHECK(result == expected);
@@ -43,7 +44,7 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
   geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
   s.colorIndex = -1;
-  s.applyOnLayers = {1};
+  s.applyOnLayers = {0};
   s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
   geoConf.stencils = {s};
 
@@ -54,20 +55,19 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
       {1},     {2},     {3},     {4},     {5},     {6},     {7},     {8},     {9},
       {10},    {11},    {12},    {13},    {}};
 
-  auto result =
-      grid.getInteractions(geoConf);
+  auto result = grid.getInteractions(geoConf);
 
   BOOST_CHECK(result == expected);
 }
 
-BOOST_AUTO_TEST_CASE(AllRecursiveHierarchicalParentStencil) {
+BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencil) {
   GridFactory grid;
-  
+
   sgpp::datadriven::GeometryConfiguration geoConf;
   geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
   s.colorIndex = -1;
-  s.applyOnLayers = {1,2,3};
+  s.applyOnLayers = {0, 1, 2};
   s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
   geoConf.stencils = {s};
 
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
   s.colorIndex = -1;
-  s.applyOnLayers = {1,2,3};
+  s.applyOnLayers = {0, 1, 2};
   s.stencilType = sgpp::datadriven::StencilType::DirectNeighbour;
   geoConf.stencils = {s};
 

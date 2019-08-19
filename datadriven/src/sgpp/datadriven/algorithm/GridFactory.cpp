@@ -175,6 +175,13 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
 
         getNextPosition(geometryConf.dim.at(i), position, -1);
       } while (position.size() != 0);
+
+      if (stencilConf.colorIndex != -1) {
+        addColorInteractions(geometryConf.dim.at(j), stencilConf.colorIndex, offsetsPerLevel.at(j),
+                             multiplicatorsPerLevel.at(j), interactions);
+      }
+      addOneDimensionalInteractions(geometryConf.dim.at(j), offsetsPerLevel.at(j), interactions);
+
       if (stencilConf.stencilType == StencilType::NextHierarchicalParent) {
         break;
       }
