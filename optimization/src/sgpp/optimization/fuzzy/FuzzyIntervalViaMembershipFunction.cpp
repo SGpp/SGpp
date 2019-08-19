@@ -23,8 +23,9 @@ FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
 FuzzyIntervalViaMembershipFunction::FuzzyIntervalViaMembershipFunction(
     const FuzzyIntervalViaMembershipFunction& other) :
         FuzzyIntervalViaMembershipFunction(
-            supportLowerBound, supportUpperBound, coreLowerBound, coreUpperBound,
-            numberOfIntegralSamples, binarySearchTolerance) {
+            other.supportLowerBound, other.supportUpperBound,
+            other.coreLowerBound, other.coreUpperBound,
+            other.numberOfIntegralSamples, other.binarySearchTolerance) {
 }
 
 FuzzyIntervalViaMembershipFunction::~FuzzyIntervalViaMembershipFunction() {
