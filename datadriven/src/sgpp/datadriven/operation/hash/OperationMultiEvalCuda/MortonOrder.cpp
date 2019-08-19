@@ -3,16 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "MortonOrder.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/MortonOrder.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <stdint.h>
 
-#include "MortonOrderKernel.hpp"
-#include "basicCuda.hpp"
-#include "cudaHelper.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/MortonOrderKernel.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/basicCuda.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/cudaHelper.hpp>
 
 ///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {

@@ -7,7 +7,7 @@
 #define MULTIEVALKERNEL_HPP
 
 #include <stdint.h>
-#include "basicCuda.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/basicCuda.hpp>
 
 ///@cond DOXY_IGNORE // NOLINT()
 namespace sgpp {

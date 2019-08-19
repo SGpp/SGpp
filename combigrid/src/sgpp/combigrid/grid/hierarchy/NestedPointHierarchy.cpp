@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "NestedPointHierarchy.hpp"
+#include <sgpp/combigrid/grid/hierarchy/NestedPointHierarchy.hpp>
 #include <vector>
 
 namespace sgpp {

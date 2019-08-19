@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/Auto.hpp>
+#include <sgpp/base/tools/sle/system/FullSLE.hpp>
 #include <sgpp/combigrid/grid/distribution/ClenshawCurtisDistribution.hpp>
 #include <sgpp/combigrid/grid/distribution/UniformPointDistribution.hpp>
 #include <sgpp/combigrid/grid/growth/ExponentialGrowthStrategy.hpp>
@@ -23,11 +26,8 @@
 #include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
 #include <sgpp/combigrid/utils/BSplineRoutines.hpp>
 #include <sgpp/combigrid/utils/CombigridBSplineBasis.hpp>
-#include <vector>
 
-#include "../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/solver/Auto.hpp"
-#include "../../../../../base/src/sgpp/base/tools/sle/system/FullSLE.hpp"
+#include <vector>
 
 typedef sgpp::combigrid::AveragingLevelManager StandardLevelManager;
 

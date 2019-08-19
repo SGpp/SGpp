@@ -8,8 +8,8 @@
 #include <CL/cl.h>
 #include <map>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
 
 namespace sgpp {
 namespace base {

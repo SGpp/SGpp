@@ -15,10 +15,10 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include "MortonOrder.hpp"
-#include "basicCuda.hpp"
-#include "consts.hpp"
-#include "cudaHelper.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/MortonOrder.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/basicCuda.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/consts.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalCuda/cudaHelper.hpp>
 
 namespace sgpp {
 namespace datadriven {

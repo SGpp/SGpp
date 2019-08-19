@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "BoundedSumMultiIndexIterator.hpp"
+#include <sgpp/combigrid/common/BoundedSumMultiIndexIterator.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

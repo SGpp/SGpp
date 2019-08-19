@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "ANOVAHashRefinement.hpp"
+#include <sgpp/base/grid/generation/hashmap/ANOVAHashRefinement.hpp>
 
 #include <sgpp/globaldef.hpp>
 

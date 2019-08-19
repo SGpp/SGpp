@@ -10,12 +10,12 @@
 #include <string>
 #include <limits>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/LinearLoadBalancer.hpp"
-#include "sgpp/base/opencl/OCLClonedBuffer.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "StreamingBSplineOCLKernelSourceBuilder.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/LinearLoadBalancer.hpp>
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLKernelSourceBuilder.hpp>
 
 namespace sgpp {
 namespace datadriven {
