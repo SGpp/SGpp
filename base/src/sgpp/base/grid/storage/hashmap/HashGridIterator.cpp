@@ -193,7 +193,7 @@ HashGridIterator::getGridDepth(size_t dim) {
       // the same level, to see, if there are adaptive refinements
       for (size_t i = cur_index + 2; i < (unsigned int) (1 << (depth));
            i = i + 2) {
-        this->set(dim, cur_level, *reinterpret_cast<unsigned int*>(&i));
+        this->set(dim, cur_level, static_cast<unsigned int>(i));
 
         // does this index exist?
         if (!storage.isInvalidSequenceNumber(this->seq())) {
