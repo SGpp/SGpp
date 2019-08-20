@@ -554,17 +554,17 @@ base::OperationMultipleEval* createOperationMultipleEval(
 datadriven::OperationMakePositive* createOperationMakePositive(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
-    bool generateConsistentGrid, bool verbose, sgpp::base::ScalarFunction* f) {
+    bool generateConsistentGrid, sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationMakePositive(candidateSearchAlgorithm, interpolationAlgorithm,
-                                               generateConsistentGrid, verbose, f);
+                                               generateConsistentGrid, f);
 }
 
 datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueRange(
     datadriven::MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm, bool verbose,
+    datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm,
     sgpp::base::ScalarFunction* f) {
   return new datadriven::OperationLimitFunctionValueRange(candidateSearchAlgorithm,
-                                                          interpolationAlgorithm, verbose, f);
+                                                          interpolationAlgorithm, f);
 }
 
 datadriven::OperationCovariance* createOperationCovariance(base::Grid& grid) {

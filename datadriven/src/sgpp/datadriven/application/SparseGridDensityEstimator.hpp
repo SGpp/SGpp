@@ -50,7 +50,6 @@ struct SGDEConfiguration {
   datadriven::MakePositiveCandidateSearchAlgorithm makePositive_candidateSearchAlgorithm_;
   datadriven::MakePositiveInterpolationAlgorithm makePositive_interpolationAlgorithm_;
   bool makePositive_generateConsistentGrid_;
-  bool makePositive_verbose_;
   bool unitIntegrand_;  // force unit integrand
 };
 

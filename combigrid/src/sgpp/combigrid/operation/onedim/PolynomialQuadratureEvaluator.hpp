@@ -25,7 +25,6 @@ class LagrangePolynom {
   std::vector<double> points;
   size_t point;
   std::vector<double> denominator;
-  bool computeDenominator = true;
 
  public:
   void initialize(size_t newPoint, std::vector<double> &newPoints) {
