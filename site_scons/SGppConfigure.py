@@ -549,12 +549,8 @@ def configureClangCompiler(config):
     Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
   allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
+  config.env.Append(CPPFLAGS=allWarnings)
 
-  # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
-  #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
-  #     ensure you also compile with -fno-strict-aliasing"
-#   if not config.env["USE_HPX"]:
   config.env.Append(CPPFLAGS=["-fopenmp"])
   config.env.Append(LINKFLAGS=["-fopenmp"])
 
