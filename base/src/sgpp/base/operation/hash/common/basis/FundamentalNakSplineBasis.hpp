@@ -841,7 +841,7 @@ class FundamentalNakSplineBasis: public Basis<LT, IT> {
   /**
    * @return      fundamental not-a-knot spline degree
    */
-  inline size_t getDegree() const {
+  inline size_t getDegree() const override {
     return nakBsplineBasis.getDegree();
   }
 
