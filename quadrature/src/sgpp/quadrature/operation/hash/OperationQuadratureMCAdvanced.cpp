@@ -98,7 +98,7 @@ double OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientda
   for (size_t i = 0; i < numberOfSamples; i++) {
     sgpp::base::DataVector dv(dimensions);
     dm.getRow(i, dv);
-    res += func(*reinterpret_cast<int*>(&dimensions), dv.getPointer(), clientdata);
+    res += func(static_cast<int>(dimensions), dv.getPointer(), clientdata);
   }
 
   // delete p;
@@ -125,7 +125,7 @@ double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clien
       point[d] = x;
     }
     res += pow(
-        func(*reinterpret_cast<int*>(&dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
+        func(static_cast<int>(dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
   delete[] p;
