@@ -227,7 +227,7 @@ double expUniformNakBspline(double const& x, size_t const& degree, size_t i,
         } else if (i == 3) {
           // l = 2, i = 3
           return -16.0 / 3.0 * (x - 1) * x * (2 * x - 1) * (4 * x - 1);
-        } else if (i == 4) {
+        } else {
           // l = 2, i = 4
           return 1.0 / 3.0 * x * (4 * x - 1) * (2 * x - 1) * (4 * x - 3);
         }
