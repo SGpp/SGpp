@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
   gridConfig.type_ = GridType::ModLinear;
   gridConfig.dim_ = dataSource->getNextSamples()->getDimension();
   auto& regularizationConfig = config.getRegularizationConfig();
-  regularizationConfig.lambda_ = 10e-1;
+  regularizationConfig.lambda_ = 1e0;
 
   /**
    * Based on our configuration, we then can create a fitter object.
