@@ -225,7 +225,8 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
+      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+                                                 refinementConfig.levelPenalize,
                                                  refinementConfig.precomputeEvaluations,
                                                  refinementConfig.threshold_);
     }
