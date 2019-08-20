@@ -75,10 +75,8 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
   switch (offlineObject.getDecompositionType()) {
     case (MatrixDecompositionType::Chol):
       return new DBMatDMSChol();
-      break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatDMSDenseIChol(densityEstimationConfig, grid, lambda, doCV);
-      break;
     case (MatrixDecompositionType::LU):
     case (MatrixDecompositionType::Eigen):
     case (MatrixDecompositionType::OrthoAdapt):

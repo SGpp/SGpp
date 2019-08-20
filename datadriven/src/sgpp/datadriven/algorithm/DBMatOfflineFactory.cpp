@@ -42,7 +42,6 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::LU):
 #ifdef USE_GSL
@@ -50,7 +49,6 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::Chol):
     case (MatrixDecompositionType::SMW_chol):
@@ -59,17 +57,14 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol();
-      break;
 
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_ortho):
 #ifdef USE_GSL
       return new DBMatOfflineOrthoAdapt();
-      break;
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
@@ -108,21 +103,16 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   switch (type) {
     case (MatrixDecompositionType::Eigen):
       return new DBMatOfflineEigen(fileName);
-      break;
     case (MatrixDecompositionType::LU):
       return new DBMatOfflineLU(fileName);
-      break;
     case (MatrixDecompositionType::Chol):
     case (MatrixDecompositionType::SMW_chol):
       return new DBMatOfflineChol(fileName);
-      break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
-      break;
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_ortho):
       return new DBMatOfflineOrthoAdapt(fileName);
-      break;
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");
       return nullptr;

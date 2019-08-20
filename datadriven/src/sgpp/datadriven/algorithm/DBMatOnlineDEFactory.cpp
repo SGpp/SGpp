@@ -36,7 +36,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
-      break;
 
     case MatrixDecompositionType::LU:
 #ifdef USE_GSL
@@ -44,12 +43,10 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
-      break;
 
     case MatrixDecompositionType::Chol:
     case MatrixDecompositionType::DenseIchol:
       return new DBMatOnlineDEChol(offline, grid, lambda, beta);
-      break;
 
     case MatrixDecompositionType::OrthoAdapt:
 #ifdef USE_GSL
@@ -57,7 +54,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif
-      break;
 
     case MatrixDecompositionType::SMW_chol:
     case MatrixDecompositionType::SMW_ortho:
