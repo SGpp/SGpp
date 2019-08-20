@@ -37,7 +37,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   explicit DBMatOfflineOrthoAdapt(const std::string& fileName);
 
-  DBMatOffline* clone();
+  DBMatOffline* clone() override;
 
   bool isRefineable() override;
 
@@ -52,7 +52,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
@@ -63,7 +63,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig);
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
@@ -94,7 +94,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    *
    * @param fileName path where to store the file
    */
-  void store(const std::string& fileName);
+  void store(const std::string& fileName) override;
 
   /**
    * Override to sync Q and Tinv

@@ -64,7 +64,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
@@ -72,7 +72,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 
@@ -82,7 +82,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * whatsoever)
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.

@@ -454,7 +454,7 @@ class NaturalBsplineBasis: public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const {
+  inline size_t getDegree() const override {
     return bsplineBasis.getDegree();
   }
 

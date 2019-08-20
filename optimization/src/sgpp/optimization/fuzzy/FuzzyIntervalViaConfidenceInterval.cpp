@@ -20,7 +20,8 @@ FuzzyIntervalViaConfidenceInterval::FuzzyIntervalViaConfidenceInterval(
 FuzzyIntervalViaConfidenceInterval::FuzzyIntervalViaConfidenceInterval(
     const FuzzyIntervalViaConfidenceInterval& other) :
         FuzzyIntervalViaConfidenceInterval(
-            supportLowerBound, supportUpperBound, numberOfIntegralSamples, binarySearchTolerance) {
+            other.supportLowerBound, other.supportUpperBound,
+            other.numberOfIntegralSamples, other.binarySearchTolerance) {
 }
 
 FuzzyIntervalViaConfidenceInterval::~FuzzyIntervalViaConfidenceInterval() {
