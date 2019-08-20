@@ -235,7 +235,7 @@ void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMat
         gnew.set(i, i, value);
       } else {
         decomFailed = true;
-        gnew.set(i, i, 10e-8);
+        gnew.set(i, i, 1e-7);
       }
     }
   }
