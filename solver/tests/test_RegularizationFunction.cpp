@@ -20,7 +20,7 @@ using sgpp::solver::RidgeFunction;
 
 BOOST_AUTO_TEST_SUITE(TestRegularizationFunction)
 
-const double eps = 10e-6;
+const double eps = 1e-5;
 const double stepsize = 1.0;
 const double lambda = 1.0;
 const auto testVec = DataVector(5, -2.0);
