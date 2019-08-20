@@ -65,7 +65,7 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
         "RegressionLearner::train: length of classes vector does not match to "
         "dataset!");
   }
-  auto solver = std::move(createSolver(classes.getSize()));
+  auto solver = createSolver(classes.getSize());
 
   if (solver.type == Solver::solverCategory::cg) {
     systemMatrix = createDMSystem(trainDataset);
@@ -218,11 +218,11 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
   using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
-      return Solver(std::move(std::make_unique<solver::ConjugateGradients>(
-          solverConfig.maxIterations_, solverConfig.eps_)));
+      return Solver(std::make_unique<solver::ConjugateGradients>(
+          solverConfig.maxIterations_, solverConfig.eps_));
     case SLESolverType::BiCGSTAB:
-      return Solver(std::move(
-          std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_)));
+      return Solver(
+          std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_));
     case SLESolverType::FISTA:
       return createSolverFista(n_rows);
     default:
