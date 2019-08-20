@@ -53,18 +53,6 @@ LearnerBaseSP::LearnerBaseSP(const std::string tGridFilename, const std::string 
       "implemented, yet!");
 }
 
-bool isVerbose_;
-/// is regression selected
-bool isRegression_;
-/// is the grid trained
-bool isTrained_;
-/// execution time
-double execTime_;
-/// number of executed Floating Point operations
-double GFlop_;
-/// number of transferred Gbytes
-double GByte_;
-
 LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe)
     : isVerbose_(copyMe.isVerbose_),
       isRegression_(copyMe.isRegression_),
