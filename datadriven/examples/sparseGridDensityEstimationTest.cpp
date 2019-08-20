@@ -157,7 +157,6 @@ int main(int argc, char** argv) {
       sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       sgpp::datadriven::MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
-  sgdeConfig.makePositive_verbose_ = true;
   sgdeConfig.unitIntegrand_ = true;
 
   /**
