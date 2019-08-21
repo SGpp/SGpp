@@ -13,6 +13,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -567,7 +568,7 @@ void DataMatrix::toFile(const std::string& fileName) const {
 
 double DataMatrix::min(size_t d) const {
   size_t n = nrows * ncols;
-  double min = INFINITY;
+  double min = std::numeric_limits<double>::infinity();
 
   for (size_t i = d; i < n; i += ncols) {
     if (min > (*this)[i]) {
@@ -580,7 +581,7 @@ double DataMatrix::min(size_t d) const {
 
 double DataMatrix::min() const {
   size_t n = nrows * ncols;
-  double min = INFINITY;
+  double min = std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < n; ++i) {
     if (min > (*this)[i]) {
@@ -593,7 +594,7 @@ double DataMatrix::min() const {
 
 double DataMatrix::max(size_t d) const {
   size_t n = nrows * ncols;
-  double max = -INFINITY;
+  double max = -std::numeric_limits<double>::infinity();
 
   for (size_t i = d; i < n; i += ncols) {
     if (max < (*this)[i]) {
@@ -606,7 +607,7 @@ double DataMatrix::max(size_t d) const {
 
 double DataMatrix::max() const {
   size_t n = nrows * ncols;
-  double max = -INFINITY;
+  double max = -std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < n; ++i) {
     if (max < (*this)[i]) {
@@ -625,8 +626,8 @@ void DataMatrix::minmax(size_t col, double* min, double* max) const {
   }
 
   // find min and max of column col
-  double min_t = INFINITY;
-  double max_t = -INFINITY;
+  double min_t = std::numeric_limits<double>::infinity();
+  double max_t = -std::numeric_limits<double>::infinity();
 
   for (size_t i = col; i < n; i += ncols) {
     if (min_t > (*this)[i]) {
@@ -645,8 +646,8 @@ void DataMatrix::minmax(size_t col, double* min, double* max) const {
 void DataMatrix::minmax(double* min, double* max) const {
   size_t n = nrows * ncols;
 
-  double min_t = INFINITY;
-  double max_t = -INFINITY;
+  double min_t = std::numeric_limits<double>::infinity();
+  double max_t = -std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < n; ++i) {
     if (min_t > (*this)[i]) {

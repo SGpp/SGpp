@@ -398,8 +398,8 @@ double LearnerSGDE::optimizeLambdaCV() {
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
     if (i % static_cast<size_t>(
-                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0f,
-                         static_cast<double>(1.0f))) ==
+                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0,
+                         static_cast<double>(1.0))) ==
         0) {
       if (!crossvalidationConfig.silent_) {
         std::cout << i + 1 << "/" << crossvalidationConfig.lambdaSteps_

@@ -357,7 +357,7 @@ double LearnerBaseSP::getAccuracy(const sgpp::base::DataVectorSP& classesCompute
     sgpp::base::DataVectorSP tmp(classesComputed);
     tmp.sub(classesReference);
     tmp.sqr();
-    result = tmp.sum();
+    result = static_cast<double>(tmp.sum());
     result /= static_cast<double>(tmp.getSize());
   } else {
     size_t correct = 0;
