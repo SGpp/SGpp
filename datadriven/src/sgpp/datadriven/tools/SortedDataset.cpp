@@ -159,7 +159,6 @@ void SortedDataset::setOrder(OrderType order) {
       break;
     case OrderType::External:
     case OrderType::Invalid:
-    default:
       break;
   }
 }

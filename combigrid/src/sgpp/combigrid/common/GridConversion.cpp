@@ -17,7 +17,6 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
     case GridConversionTypes::ALLSUBSPACES:
       return allStorageLevels(storage);
     case GridConversionTypes::COMPLETESUBSPACES:
-    default:
       return completeStorageLevels(storage);
   }
 }

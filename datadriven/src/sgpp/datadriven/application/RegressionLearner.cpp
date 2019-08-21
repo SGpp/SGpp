@@ -113,7 +113,6 @@ void RegressionLearner::fit(Solver& solver, base::DataVector& classes) {
       break;
     }
     case Solver::solverCategory::none:
-    default:
       throw base::application_exception("RegressionLearner::fit: Solver not supported!");
   }
 }
@@ -205,7 +204,6 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
     case RegularizationType::GroupLasso:
     case RegularizationType::Lasso:
     case RegularizationType::ElasticNet:
-    default:
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
@@ -225,9 +223,6 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
           std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_));
     case SLESolverType::FISTA:
       return createSolverFista(n_rows);
-    default:
-      throw base::application_exception(
-          "RegressionLearner::createSolver: An unsupported solver type was chosen!");
   }
 }
 
@@ -253,7 +248,6 @@ RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
     // The following methods are not supported by FISTA.
     case RegularizationType::Diagonal:
     case RegularizationType::Laplace:
-    default:
       throw base::application_exception(
           "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
   }

@@ -298,8 +298,6 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::FundamentalNakSplineBoundary:
         return Grid::createFundamentalNakSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      default:
-        throw generation_exception("Grid::createGrid - grid type not known");
     }
   }
 }
@@ -477,8 +475,6 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createFundamentalNakSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    default:
-      throw generation_exception("Grid::clone - grid type not known");
   }
   return newGrid;
 }
@@ -551,7 +547,6 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::FundamentalNakSplineBoundary;
     // no non-boundary treatment basis available for the following grids
     case GridType::ModBsplineClenshawCurtis:
-    default:
       throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
   }
 }

@@ -24,8 +24,6 @@ DataShufflingFunctor* DataShufflingFunctorFactory::buildDataShufflingFunctor(
     case DataSourceShufflingType::sequential : {
       return new DataShufflingFunctorSequential();
     }
-    default:
-      return nullptr;
   }
 }
 } /* namespace datadriven */
