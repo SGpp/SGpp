@@ -92,17 +92,13 @@ class ModelFittingClassification : public ModelFittingBase {
   void storeClassificator();
 
   /*
-   * obtain the density estimation models per each calss
+   * obtain the density estimation models per each class. To be used in VisualizerClassification
    */
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* getModels();
 
   /*
-   * obtain the index mapping for each label class
+   * obtain the index mapping for each label class. To be used in VisualizerClassification
    */
-
-  /**
-    * Index map for each class
-    */
    std::map<double, size_t> getClassIdx();
 #ifdef USE_SCALAPACK
     /**

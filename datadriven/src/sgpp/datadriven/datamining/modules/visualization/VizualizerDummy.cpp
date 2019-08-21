@@ -25,8 +25,7 @@ void VisualizerDummy::runVisualization(ModelFittingBase &model, DataSource &data
   return;
 }
 
-void VisualizerDummy::runTsne(ModelFittingBase &model, DataSource &dataSource,
-  size_t fold, size_t batch) {
+void VisualizerDummy::runTsne(ModelFittingBase &model) {
   return;
 }
 

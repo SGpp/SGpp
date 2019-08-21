@@ -32,14 +32,18 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   if (batch % config.getGeneralConfig().numBatches != 0) {
     return;
   }
-
+  // Creating the output directorz
   createOutputDirectory(fold, batch);
 
+  // If it's the first time executing obtaining the data from the datasource and
+  // assign the resolution
   if (fold == 0 && batch == 0) {
     originalData = dataSource.getAllSamples()->getData();
     resolution = pow(2, model.getFitterConfiguration().getGridConfig().level_+2);
     std::cout << "Initializing Matrices" << std::endl;
   }
+
+  // Initialize the heatmaps and linear cut matrices
   initializeMatrices(model);
 
   omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
@@ -59,9 +63,13 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
     #pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
+
+        // Just run tsne if it's the first time the visualization module is executed
         if (fold == 0 && batch == 0) {
-          runTsne(model, dataSource, fold, batch);
+          runTsne(model);
         }
+        // Evaluate the model on the original data and append the vector to the
+        // compressed data.
         if (originalData.getNcols() > 1) {
           DataVector evaluation(originalData.getNrows());
           model.evaluate(originalData, evaluation);
@@ -84,6 +92,7 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
 
     #pragma omp section
     {
+      // Just store the grid if the output is CSV.
       if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
         storeGrid(model, currentDirectory);
       }
@@ -104,8 +113,7 @@ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model,
   CSVTools::writeMatrixToCSVFile(currentDirectory + "/grid", gridMatrix);
 }
 
-void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
-  DataSource &dataSource, size_t fold, size_t batch) {
+void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
     if ( originalData.getNcols() == 1 ) {
       std::cout << "The tsne algorithm can only be applied if "
       "the dimension is greater than 1" << std::endl;
@@ -118,6 +126,7 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model,
     std::cout << "Rows: "<< std::to_string(N) << std::endl;
     std::cout << "Columns: " << std::to_string(D) << std::endl;
 
+    // For the weird case in which no data can be found TSNE won't run
     if (N == 0 || D == 0) {
       std::cout << "No data found. TSNE wo't run" << std::endl;
       return;
@@ -236,6 +245,9 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
   std::cout << "Generating the linear cuts" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
+
+  // Here it decide which method to execute based on the dimensionality of the
+  // model
   if ( nDimensions >= 2 ) {
     std::string command("mkdir ");
     command.append(currentDirectory);
@@ -257,6 +269,9 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
   std::cout << "Generating the heatmaps" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
+
+  // Here it decide which method to execute based on the dimensionality of the
+  // model
 
   if ( nDimensions == 1 ) {
     std::cout << "Heatmap generation is not available for models of 1 dimension" <<std::endl;
@@ -401,6 +416,12 @@ void VisualizerDensityEstimation::swapColumns(DataMatrix &matrix, size_t col1, s
   matrix.setColumn(col1, temp2);
 }
 
+// The algorithm used for the cuts is this:
+// 1° Evaluate the initial matrix
+// 2° Shift one position to the right based on the indexes to be used
+// 3° Store current evaluation
+// 4° Update the indexes
+// 5° Repeat until the last column index exceeds the number of dimensions
 void VisualizerDensityEstimation::getLinearCutsMore3D(
   ModelFittingBase &model, std::string currentDirectory) {
   std::string outputDir(currentDirectory + "/LinearCuts/");
@@ -441,6 +462,11 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(
   }
 }
 
+// The algorithm used for the cuts is this:
+// 1° Evaluate the initial matrix
+// 2° Shift one position to the right
+// 3° Store current evaluation
+// 4° Repeat until we have made D shifts
 void VisualizerDensityEstimation::getLinearCuts2D(
   ModelFittingBase &model, std::string currentDirectory) {
   std::string outputDir(currentDirectory + "/LinearCuts/");
@@ -486,6 +512,16 @@ void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model,
   }
 }
 
+// The algorithm used for the heatmaps is this:
+// 1° Evaluate the initial matrix
+// 2° Store current evaluation
+// 3° Shift to the right based on the column indexes
+// 4° Repeat steps 1 to 3 two more times
+// 5° Repeat the steps 1 to 4 but shifting to the left instead
+// 6° Shift to the right if its the first time you reach this step
+// 7° Shift to the left
+// 8° Update the indexes
+// 9° Repeat until the last column index exceeds the number of dimensions
 void VisualizerDensityEstimation::getHeatmapMore4D(
 ModelFittingBase &model, std::string currentDirectory) {
   std::string outputDir(currentDirectory+"/Heatmaps/");
@@ -557,6 +593,11 @@ ModelFittingBase &model, std::string currentDirectory) {
   }
 }
 
+// The algorithm used for the heatmaps is this:
+// 1° Evaluate the initial matrix
+// 2° Store current evaluation
+// 3° Shift to the right
+// 4° Repeat steps 1 to 3 two more times
 void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model,
   std::string currentDirectory) {
   std::string outputDir(currentDirectory+"/Heatmaps/");

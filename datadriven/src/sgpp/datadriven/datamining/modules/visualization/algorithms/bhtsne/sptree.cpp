@@ -30,6 +30,12 @@
  *
  */
 
+/**
+ * Code originally taken from https://lvdmaaten.github.io/tsne/
+ * It has been modified in order to be adapted to the SG++ datamining
+ * pipeline structure and has been parallelized
+ */
+
 #include "sptree.hpp"
 
 #include <math.h>

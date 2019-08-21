@@ -34,6 +34,12 @@
 /* This code was adopted with minor modifications from Steve Hanov's great tutorial
  * at http://stevehanov.ca/blog/index.php?id=130 */
 
+/**
+ * Code originally taken from https://lvdmaaten.github.io/tsne/
+ * It has been modified in order to be adapted to the SG++ datamining
+ * pipeline structure and has been parallelized
+ */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <algorithm>

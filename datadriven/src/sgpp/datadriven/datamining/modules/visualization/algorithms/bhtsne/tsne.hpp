@@ -30,6 +30,12 @@
  *
  */
 
+/**
+ * Code originally taken from https://lvdmaaten.github.io/tsne/
+ * It has been modified in order to be adapted to the SG++ datamining
+ * pipeline structure and has been parallelized
+ */
+
 #include <iostream>
 
 namespace sgpp {
@@ -38,8 +44,10 @@ namespace datadriven {
 static inline double sign(double x) { return (x == .0 ? .0 : (x < .0 ? -1.0 : 1.0)); }
 class TSNE {
  public:
+  /**
+   * Default constructor
+   */
   TSNE();
-
   void run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double perplexity,
     double theta, size_t rand_seed,
     bool skip_random_init, size_t max_iter = 1000,  size_t mom_switch_iter =250);
