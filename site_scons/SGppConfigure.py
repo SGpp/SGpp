@@ -548,7 +548,15 @@ def configureClangCompiler(config):
   if not config.CheckCompiler():
     Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
-  allWarnings = "-Wall -Wextra -Weverything -Wno-unused-parameter".split(" ")
+  allWarnings = [
+    "-Wall", "-Wextra", "-Weverything",
+    "-Wno-c++98-compat-local-type-template-args", "-Wno-c++98-compat-pedantic", "-Wno-deprecated",
+    "-Wno-documentation", "-Wno-documentation-deprecated-sync",
+    "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
+    "-Wno-global-constructors", "-Wno-missing-noreturn", "-Wno-missing-prototypes", "-Wno-padded",
+    "-Wno-shadow", "-Wno-sign-conversion", "-Wno-undef", "-Wno-unused-parameter",
+    "-Wno-weak-vtables",
+  ]
   config.env.Append(CPPFLAGS=allWarnings)
 
   config.env.Append(CPPFLAGS=["-fopenmp"])
