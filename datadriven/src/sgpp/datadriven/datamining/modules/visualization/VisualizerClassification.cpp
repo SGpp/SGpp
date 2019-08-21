@@ -72,7 +72,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
         if (fold == 0 && batch == 0) {
-          runTsne(model, dataSource, fold, batch);
+          runTsne(model);
         }
         if (originalData.getNcols() >= 1) {
           DataVector evaluation(originalData.getNrows());
@@ -95,6 +95,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     }
     #pragma omp section
     {
+      // Running the density estimation visualization for each model
       #pragma omp parallel for schedule(dynamic)
       for (size_t index=0; index < models->size(); index++) {
         std::string currentDirectory;
@@ -203,6 +204,17 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
     getHeatmap2DClassification(model, currentDirectory);
   }
 }
+
+// The algorithm used for the heatmaps is this:
+// 1° Evaluate the initial matrix
+// 2° Store current evaluation
+// 3° Shift to the right based on the column indexes
+// 4° Repeat steps 1 to 3 two more times
+// 5° Repeat the steps 1 to 4 but shifting to the left instead
+// 6° Shift to the right if its the first time you reach this step
+// 7° Shift to the left
+// 8° Update the indexes
+// 9° Repeat until the last column index exceeds the number of dimensions
 void VisualizerClassification::getHeatmapMore4DClassification(
 ModelFittingBase &model, std::string currentDirectory) {
   std::string outputDir(currentDirectory+"/Classification"+
@@ -277,6 +289,11 @@ ModelFittingBase &model, std::string currentDirectory) {
   }
 }
 
+// The algorithm used for the heatmaps is this:
+// 1° Evaluate the initial matrix
+// 2° Store current evaluation
+// 3° Shift to the right
+// 4° Repeat steps 1 to 3 two more times
 void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model,
   std::string currentDirectory) {
   std::string outputDir(currentDirectory+"/Classification/");

@@ -29,8 +29,12 @@
  * OF SUCH DAMAGE.
  *
  *
- *Modifications to this piece of software were done in order to adapt it to the structure
- *of the SGPP Datamining Pipeline and to add parallelization
+ */
+
+/**
+ * Code originally taken from https://lvdmaaten.github.io/tsne/
+ * It has been modified in order to be adapted to the SG++ datamining
+ * pipeline structure and has been parallelized
  */
 
 #include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>

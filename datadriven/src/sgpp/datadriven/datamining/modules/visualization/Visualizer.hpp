@@ -29,9 +29,13 @@ class Visualizer{
   */
   virtual ~Visualizer() = default;
 
- /**
-  * Method to execute the visualization step
-  */
+  /**
+   * Method to run the visualization process for a given batch and fold
+   * @param The model used to evaluate the visualization
+   * @param The datasource from where the data points are obtained
+   * @param fold The current fold being processed
+   * @param batch The current batch being processed
+   */
   virtual void runVisualization(ModelFittingBase &model, DataSource &dataSource,
     size_t fold, size_t batch) = 0;
 
@@ -43,14 +47,17 @@ class Visualizer{
 
 
  protected:
-  /**
-   * Method which runs the tsne compression algorithm
+  /*
+   * Method to run the tsne algorithm
+   * @model The model used to evaluate the compressed data
    */
-  virtual void runTsne(ModelFittingBase &model, DataSource &dataSource,
-      size_t fold, size_t batch) = 0;
+  virtual void runTsne(ModelFittingBase &model) = 0;
 
   /**
-   *
+   * Method to create the corresponding directory to store the visualization output
+   * files
+   * @param fold The current fold being processed
+   * @param batch The current batch being processed
    */
   void createOutputDirectory(size_t fold, size_t batch);
 
