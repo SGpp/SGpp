@@ -21,11 +21,13 @@ namespace solver {
  */
 class LassoFunction : public RegularizationFunction {
  public:
-    /**
+  /**
    * @brief LassoFunction
    * @param lambda controls the regularization strength.
    */
   explicit LassoFunction(double lambda) : lambda(lambda) {}
+
+  virtual ~LassoFunction() {}
 
   double eval(base::DataVector weights) override {
     weights.abs();
