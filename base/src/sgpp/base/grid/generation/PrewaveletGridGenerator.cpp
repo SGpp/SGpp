@@ -276,7 +276,6 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
   throw generation_exception(
     "PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel "
     "is not implemented");
-  return 0;
 }
 
 }  // namespace base

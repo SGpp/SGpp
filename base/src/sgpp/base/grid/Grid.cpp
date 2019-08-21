@@ -584,8 +584,6 @@ Grid* Grid::unserialize(std::istream& istr) {
 
     throw factory_exception(errMsg.c_str());
   }
-
-  return nullptr;
 }
 
 std::map<std::string, Grid::Factory>& Grid::typeMap() {
@@ -878,7 +876,6 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
  */
 Grid* Grid::nullFactory(std::istream&) {
   throw factory_exception("factory_exeception unserialize: unsupported gridtype");
-  return nullptr;
 }
 
 Grid::Grid(std::istream& istr) : storage(istr) {}
