@@ -1012,7 +1012,8 @@ void AlgorithmAdaBoostBase::doRefinement(base::DataVector& alpha_ada,
       else
         refineNumber = this->numOfAda;
     } else if (this->refineMode == 2) {
-      refineNumber = (size_t)(this->perOfAda * static_cast<double>(this->grid->getSize()));
+      refineNumber = static_cast<size_t>(
+          this->perOfAda * static_cast<double>(this->grid->getSize()));
 
       // force to refine at least one point
       if (refineNumber == 0)
@@ -1079,18 +1080,18 @@ size_t AlgorithmAdaBoostBase::getActualBL() {
 }
 
 size_t AlgorithmAdaBoostBase::getMeanGridPoint(size_t baselearner) {
-  size_t mean = (size_t)(this->sumGridPoint->get(baselearner - 1) /
+  size_t mean = static_cast<size_t>(this->sumGridPoint->get(baselearner - 1) /
       static_cast<double>(baselearner));
   return mean;
 }
 
 size_t AlgorithmAdaBoostBase::getMaxGridPoint(size_t baselearner) {
-  size_t max = (size_t)(this->maxGridPoint->get(baselearner - 1));
+  size_t max = static_cast<size_t>(this->maxGridPoint->get(baselearner - 1));
   return max;
 }
 
 size_t AlgorithmAdaBoostBase::getSumGridPoint(size_t baselearner) {
-  size_t sum = (size_t)(this->sumGridPoint->get(baselearner - 1));
+  size_t sum = static_cast<size_t>(this->sumGridPoint->get(baselearner - 1));
   return sum;
 }
 }  // namespace datadriven

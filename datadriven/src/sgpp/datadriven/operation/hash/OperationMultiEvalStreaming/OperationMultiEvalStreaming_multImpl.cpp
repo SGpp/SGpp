@@ -45,8 +45,10 @@ void OperationMultiEvalStreaming::multImpl(
 #endif
 
     for (size_t m = start_index_grid; m < end_index_grid;
-         m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
-      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
+         m += std::min<size_t>(static_cast<size_t>(getChunkGridPoints()),
+                               (end_index_grid - m))) {
+      size_t grid_inc = std::min<size_t>(
+          static_cast<size_t>(getChunkGridPoints()), (end_index_grid - m));
 
       uint64_t imask = 0x7FFFFFFFFFFFFFFF;
       double* fmask = reinterpret_cast<double*>(&imask);

@@ -141,15 +141,15 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
     return new datadriven::OperationTestLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new datadriven::OperationTestModBspline(&grid.getStorage(),
-                                                   ((base::ModBsplineGrid*)&grid)->getDegree());
+        dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new datadriven::OperationTestModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new datadriven::OperationTestPoly(&grid.getStorage(),
-                                             ((base::PolyGrid*)&grid)->getDegree());
+        dynamic_cast<base::PolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new datadriven::OperationTestModPoly(&grid.getStorage(),
-                                                ((base::ModPolyGrid*)&grid)->getDegree());
+        dynamic_cast<base::ModPolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return new datadriven::OperationTestModWavelet(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {

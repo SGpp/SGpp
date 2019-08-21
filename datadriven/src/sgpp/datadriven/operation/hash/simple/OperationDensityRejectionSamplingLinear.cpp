@@ -32,11 +32,11 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
   {
 #ifndef _WIN32
 #ifdef _OPENMP
-    unsigned int seedp = (unsigned int)(static_cast<double>(time(NULL)) *
-                                        static_cast<double>(omp_get_thread_num() + 1));
+    unsigned int seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) *
+                                                   static_cast<double>(omp_get_thread_num() + 1));
 #else
     unsigned int seedp =
-        (unsigned int)(static_cast<double>(time(NULL)) * static_cast<double>(1 + 1));
+        static_cast<unsigned int>(static_cast<double>(time(NULL)) * static_cast<double>(1 + 1));
 #endif
 #endif
 #pragma omp for
@@ -63,9 +63,9 @@ void OperationDensityRejectionSamplingLinear::doSampling(base::DataVector* alpha
   {
 #ifndef _WIN32
 #ifdef _OPENMP
-    unsigned int seedp = (unsigned int)(time(NULL)) * (omp_get_thread_num() + 1);
+    unsigned int seedp = static_cast<unsigned int>(time(NULL)) * (omp_get_thread_num() + 1);
 #else
-    unsigned int seedp = (unsigned int)(time(NULL)) * (1 + 1);
+    unsigned int seedp = static_cast<unsigned int>(time(NULL)) * (1 + 1);
 #endif
 #endif
     base::DataVector p(num_dims);

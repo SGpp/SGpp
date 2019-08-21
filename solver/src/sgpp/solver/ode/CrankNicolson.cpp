@@ -48,7 +48,7 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
               << ")";
 
       if (i < this->nMaxIterations - 1) {
-        myScreen->update((size_t)((static_cast<double>(i + 1) * 100.0) /
+        myScreen->update(static_cast<size_t>((static_cast<double>(i + 1) * 100.0) /
             static_cast<double>(this->nMaxIterations)),
                          soutput.str());
       } else {
