@@ -26,25 +26,25 @@ class generation_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit generation_exception(const char* msg) throw() : msg(msg) {
+  explicit generation_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standared Constructor
    */
-  generation_exception() throw() : msg(NULL) { }
+  generation_exception() noexcept : msg(NULL) { }
 
   /**
    * Destructor
    */
-  ~generation_exception() throw() override { }
+  ~generation_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {
