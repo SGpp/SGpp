@@ -15,6 +15,7 @@
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 
 #include <cstddef>
+#include <limits>
 
 namespace sgpp {
 namespace base {

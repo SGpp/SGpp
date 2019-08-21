@@ -292,6 +292,7 @@ class Stretching : public BoundingBox {
 
   // explicitly hide BoundingBox::unserialize methods to prevent -Woverloaded-virtual warnings
   using BoundingBox::unserialize;
+
  public:
   /**
    * Constructor for Stretching
