@@ -71,7 +71,6 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");
-      return nullptr;
   }
 }
 
@@ -115,7 +114,6 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
       return new DBMatOfflineOrthoAdapt(fileName);
     default:
       throw factory_exception("Trying to build offline object from unknown decomposition type");
-      return nullptr;
   }
 #else
   throw factory_exception("built withot GSL");
