@@ -592,7 +592,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
     for (size_t i = 0; i < trainData->getNrows(); i++) {
       // get next training sample x and its label y
       sgpp::base::DataVector x(dim);
-      trainData->getRow((size_t)i, x);
+      trainData->getRow(static_cast<size_t>(i), x);
       double y = trainLabels->get(i);
       int label = static_cast<int>(y);
 
@@ -754,7 +754,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
   } else {
     for (size_t i = 0; i < predictedLabels.getSize(); i++) {
       base::DataVector x(2);
-      testDataset.getRow((size_t)i, x);
+      testDataset.getRow(static_cast<size_t>(i), x);
       output << x[0] << ";" << x[1] << ";" << predictedLabels[i] << std::endl;
     }
     output.close();
@@ -870,8 +870,8 @@ void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predicte
   for (size_t i = 0; i < testData.getNrows(); i++) {
     // get next test sample x
     base::DataVector x(dim);
-    testData.getRow((size_t)i, x);
-    // predict label using Bayes’ Theorem
+    testData.getRow(static_cast<size_t>(i), x);
+    // predict label using Bayes' Theorem
     double max = std::numeric_limits<double>::max() * (-1);
     int predLabel = 0;
     // compute each density function for current test sample x

@@ -175,7 +175,7 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
                                                             size_t& curr_dim, unsigned int* seedp) {
   size_t dims = sampleVec->getSize();  // total dimensions
   unsigned int op_dim =
-      (curr_dim < dim_x) ? 0 : (unsigned int)dim_x;  // actual dim to be operated on
+      (curr_dim < dim_x) ? 0 : static_cast<unsigned int>(dim_x);  // actual dim to be operated on
 
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = NULL;
@@ -185,7 +185,7 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
-  op_dim = (curr_dim < dim_x) ? 0 : (unsigned int)dim_x;
+  op_dim = (curr_dim < dim_x) ? 0 : static_cast<unsigned int>(dim_x);
 
   /* Step 2: draw a sample in next dim */
   base::DataVector* sample = NULL;

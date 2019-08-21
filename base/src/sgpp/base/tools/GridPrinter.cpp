@@ -136,7 +136,7 @@ void GridPrinter::printGrid(DataVector& alpha, std::string tFilename, size_t Poi
         double inc_y = ((dimTwo.rightBoundary - dimTwo.leftBoundary) /
                         (static_cast<double>(PointsPerDimension) - 1.0));
 
-        size_t points = (size_t)PointsPerDimension;
+        size_t points = static_cast<size_t>(PointsPerDimension);
 
         for (size_t i = 0; i < points; i++) {
           for (size_t j = 0; j < points; j++) {
