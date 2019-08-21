@@ -29,7 +29,7 @@
             "errorConvergenceThreshold": 0.001
         },
         "regularizationConfig": {
-            "lambda": 10e-2
+            "lambda": 1e-1
         },
         "densityEstimationConfig": {
             "densityEstimationType": "decomposition",

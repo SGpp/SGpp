@@ -129,9 +129,9 @@ class ConstrainedOptimizer : public UnconstrainedOptimizer {
    * @param other optimizer to be copied
    */
   ConstrainedOptimizer(const ConstrainedOptimizer& other)
-      : ConstrainedOptimizer(*unconstrainedOptimizer,
+      : ConstrainedOptimizer(*other.unconstrainedOptimizer,
                              *other.g, other.gGradient.get(),
-                             *other.h, other.hGradient.get(), N) {
+                             *other.h, other.hGradient.get(), other.N) {
   }
 
   /**

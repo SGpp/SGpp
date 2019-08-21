@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(DistanceCalculation) {
       contpoint[k] = curconf.getCont(k);
     }
     double twostepdist = oldconf.getTotalDistance(contpoint, scales);
-    BOOST_CHECK_CLOSE(curdist, twostepdist, 10e-6);
+    BOOST_CHECK_CLOSE(curdist, twostepdist, 1e-5);
     oldconf = curconf;
   }
 }
@@ -312,8 +312,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
-    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 10e-6);
-    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 10e-6);
+    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
+    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
     // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
@@ -346,8 +346,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
-    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 10e-6);
-    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 10e-6);
+    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
+    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
     // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }

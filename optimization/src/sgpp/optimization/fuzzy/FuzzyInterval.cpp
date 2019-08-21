@@ -21,7 +21,9 @@ FuzzyInterval::FuzzyInterval(
 }
 
 FuzzyInterval::FuzzyInterval(const FuzzyInterval& other) :
-    FuzzyInterval(supportLowerBound, supportUpperBound, numberOfIntegralSamples) {
+    FuzzyInterval(other.supportLowerBound,
+                  other.supportUpperBound,
+                  other.numberOfIntegralSamples) {
 }
 
 FuzzyInterval::~FuzzyInterval() {

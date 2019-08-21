@@ -75,7 +75,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened.
@@ -83,7 +83,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (always returns true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   /**
    * Update the density estimation with new data.
@@ -98,7 +98,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
