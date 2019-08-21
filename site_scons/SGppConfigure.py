@@ -443,7 +443,7 @@ def configureGNUCompiler(config):
       -Wno-unused-parameter".split(" ")
 
   if not config.env['USE_HPX']:
-    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic', '-Wswitch-default'])
+    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic'])
   else:
     allWarnings.append(['-Wno-conversion', '-Wno-format-nonliteral'])
 
