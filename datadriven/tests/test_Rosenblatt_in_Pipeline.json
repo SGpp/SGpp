@@ -11,7 +11,7 @@
 			"rosenblattConfig": {
 				"numSamples": 100,
 				"gridLevel": 2,
-				"lambda": 10e-5,
+				"lambda": 1e-4,
 				"solverMaxIterations": 1000
 			}
 		}
@@ -50,19 +50,19 @@
 		},
 		"solverRefineConfig": {
 			"solverType": "CG",
-			"eps": 10e-15,
+			"eps": 1e-14,
 			"maxIterations": 100,
 			"threshold": 1
 		},
 		"solverFinalConfig": {
 			"solverType": "CG",
-			"eps": 10e-15,
+			"eps": 1e-14,
 			"maxIterations": 100,
 			"threshold": 1
 		},
 		"regularizationConfig": {
 			"regularizationType": "Identity",
-			"lambda": 10e-7,
+			"lambda": 1e-6,
 			"exponentBase":0.0,
 			"l1Ratio":0.0
 		}

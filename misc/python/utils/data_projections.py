@@ -22,8 +22,8 @@ def getminmax(filename, separator=None):
     """Computes min and max for each parameter"""
     fd = tools.gzOpen(filename, 'r')
 
-    mmax = [-10e10 for d in range(dim)]
-    mmin = [10e10 for d in range(dim)]
+    mmax = [-1e11 for d in range(dim)]
+    mmin = [1e11 for d in range(dim)]
     for line in fd.readlines():
         if "@" in line or len(line)==0:
             continue
