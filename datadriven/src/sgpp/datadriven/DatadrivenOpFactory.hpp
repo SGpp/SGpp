@@ -195,7 +195,6 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
  * @param generateConsistentGrid if set to true, all hierarchical ancestors are available in the
  * resulting grid
- * @param verbose verbosity
  * @param f function to be approximated (as an alternative to a sparse grid function)
  *
  * @return Pointer to the new OperationMakePositive object for the Grid grid
@@ -214,7 +213,6 @@ datadriven::OperationMakePositive* createOperationMakePositive(
  *
  * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
  * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
- * @param verbose verbosity
  * @param f function to be approximated (as an alternative to a sparse grid function)
  *
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
