@@ -43,6 +43,8 @@ class GroupLassoFunction : public RegularizationFunction {
   GroupLassoFunction(double lambda, sgpp::base::GridStorage* gridStorage)
       : lambda(lambda), gridStorage(gridStorage) {}
 
+  virtual ~GroupLassoFunction() {}
+
   double eval(sgpp::base::DataVector weights) override {
     if (lastWeightSize != weights.getSize()) {
       calculateGroupIndices(weights);

@@ -33,6 +33,8 @@ class ElasticNetFunction : public RegularizationFunction {
   ElasticNetFunction(double lambda, double l1Ratio)
       : lambda(lambda * l1Ratio), gamma(lambda * (1 - l1Ratio)), lasso(this->lambda) {}
 
+  virtual ~ElasticNetFunction() {}
+
   double eval(sgpp::base::DataVector weights) override {
     double l1 = 0.0;
     double l2 = 0.0;
