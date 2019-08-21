@@ -63,6 +63,8 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
       throw factory_exception("built without GSL");
 #endif
   }
+
+  throw factory_exception{"Unknown decomposition type."};
 }
 
 } /* namespace datadriven */

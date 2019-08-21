@@ -58,6 +58,8 @@ double FuzzyInterval::computeL1Norm(NormMode normMode) const {
       return norm / N;
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeL2Norm(NormMode normMode) const {
@@ -88,6 +90,8 @@ double FuzzyInterval::computeL2Norm(NormMode normMode) const {
       return std::sqrt(norm / N);
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
@@ -119,6 +123,8 @@ double FuzzyInterval::computeLinfNorm(NormMode normMode) const {
       return norm;
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMode) const {
@@ -157,6 +163,8 @@ double FuzzyInterval::computeL1Error(const FuzzyInterval& other, NormMode normMo
       return normLB / N + normUB / N;
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeL2Error(const FuzzyInterval& other, NormMode normMode) const {
@@ -196,6 +204,8 @@ double FuzzyInterval::computeL2Error(const FuzzyInterval& other, NormMode normMo
       return std::sqrt(normLB / N) + std::sqrt(normUB / N);
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeLinfError(const FuzzyInterval& other, NormMode normMode) const {
@@ -234,6 +244,8 @@ double FuzzyInterval::computeLinfError(const FuzzyInterval& other, NormMode norm
       return normLB + normUB;
     }
   }
+
+  throw std::invalid_argument("Unknown normMode.");
 }
 
 double FuzzyInterval::computeRelativeL1Error(

@@ -224,6 +224,9 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
     case SLESolverType::FISTA:
       return createSolverFista(n_rows);
   }
+
+  throw base::application_exception(
+      "RegressionLearner::createSolver: An unsupported solver type was chosen!");
 }
 
 RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
@@ -248,9 +251,11 @@ RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
     // The following methods are not supported by FISTA.
     case RegularizationType::Diagonal:
     case RegularizationType::Laplace:
-      throw base::application_exception(
-          "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
+      break;
   }
+
+  throw base::application_exception(
+      "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
 }
 
 }  // namespace datadriven

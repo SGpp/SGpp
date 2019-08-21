@@ -159,6 +159,8 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
   }
+
+  throw application_exception("Unknown density estimation type");
 }
 
 size_t ModelFittingClassification::labelToIdx(double label) {
@@ -231,6 +233,8 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
                                                 refinementConfig.threshold_);
     }
   }
+
+  return nullptr;
 }
 
 bool ModelFittingClassification::refine() {

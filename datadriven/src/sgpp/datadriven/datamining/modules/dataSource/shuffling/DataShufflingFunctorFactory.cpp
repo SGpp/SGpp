@@ -25,6 +25,8 @@ DataShufflingFunctor* DataShufflingFunctorFactory::buildDataShufflingFunctor(
       return new DataShufflingFunctorSequential();
     }
   }
+
+  return nullptr;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -230,6 +230,8 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
   }
+
+  throw base::application_exception("Unknown density estimation type");
 }
 
 void ModelFittingDensityEstimationCombi::addNewModel(
