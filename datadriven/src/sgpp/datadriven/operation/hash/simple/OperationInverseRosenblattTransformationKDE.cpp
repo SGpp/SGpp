@@ -70,7 +70,7 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(double sigmaFacto
   base::DataVector ylimits_1d(2);
 
   base::DataVector kern(nsamples);
-  kern.setAll(1.0f);
+  kern.setAll(1.0);
 
   std::unique_ptr<OperationRosenblattTransformationKDE> opRosen(
       op_factory::createOperationRosenblattTransformationKDE(*kde));

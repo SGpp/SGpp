@@ -15,6 +15,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
+#include <limits>
 #include <vector>
 #include <utility>
 
@@ -212,7 +213,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1, bool modified
 
       // rising at the beginning
       bool falling = false;
-      double fx = NAN;
+      double fx = std::numeric_limits<double>::quiet_NaN();
 
       for (size_t j = 0; j < 100; j++) {
         const double x = static_cast<double>(j) / 100.0;

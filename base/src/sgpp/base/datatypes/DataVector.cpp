@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <limits>
 #include <fstream>
 #include <sstream>
 #include <iomanip>
@@ -307,7 +308,7 @@ double DataVector::l2Norm() const {
 }
 
 double DataVector::min() const {
-  double min = INFINITY;
+  double min = std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < this->size(); i++) {
     if (min > (*this)[i]) {
@@ -319,7 +320,7 @@ double DataVector::min() const {
 }
 
 double DataVector::max() const {
-  double max = -INFINITY;
+  double max = -std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < this->size(); i++) {
     if (max < (*this)[i]) {
@@ -331,8 +332,8 @@ double DataVector::max() const {
 }
 
 void DataVector::minmax(double* min, double* max) const {
-  double min_t = INFINITY;
-  double max_t = -INFINITY;
+  double min_t = std::numeric_limits<double>::infinity();
+  double max_t = -std::numeric_limits<double>::infinity();
 
   for (size_t i = 0; i < this->size(); i++) {
     if (min_t > (*this)[i]) {

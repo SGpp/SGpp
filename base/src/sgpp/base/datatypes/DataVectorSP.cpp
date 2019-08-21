@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <cstdlib>
+#include <limits>
 
 
 namespace sgpp {
@@ -246,7 +247,7 @@ void DataVectorSP::componentwise_div(const DataVectorSP& vec) {
 }
 
 float DataVectorSP::dotProduct(const DataVectorSP& vec) const {
-  float sum = 0.0;
+  float sum = 0.0f;
 
   for (size_t i = 0; i < size; i++) {
     sum += data[i] * vec.data[i];
@@ -293,8 +294,8 @@ float DataVectorSP::maxNorm() const {
   float max = 0.0f;
 
   for (size_t i = 0; i < size; i++) {
-    if (max < static_cast<float>(fabs(data[i]))) {
-      max = static_cast<float>(fabs(data[i]));
+    if (max < std::abs(data[i])) {
+      max = std::abs(data[i]);
     }
   }
 
@@ -382,7 +383,7 @@ std::string DataVectorSP::toString() const {
 }
 
 float DataVectorSP::min() const {
-  float min = INFINITY;
+  float min = std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < size; i++) {
     if (min > data[i]) {
@@ -394,7 +395,7 @@ float DataVectorSP::min() const {
 }
 
 float DataVectorSP::max() const {
-  float max = -INFINITY;
+  float max = -std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < size; i++) {
     if (max < data[i]) {
@@ -406,8 +407,8 @@ float DataVectorSP::max() const {
 }
 
 void DataVectorSP::minmax(float* min, float* max) const {
-  float min_t = INFINITY;
-  float max_t = -INFINITY;
+  float min_t = std::numeric_limits<float>::infinity();
+  float max_t = -std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < size; i++) {
     if (min_t > data[i]) {
@@ -439,7 +440,7 @@ size_t DataVectorSP::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < size; i++) {
-    if (fabs(data[i]) > 0.0f) {
+    if (std::abs(data[i]) > 0.0f) {
       nonZero++;
     }
   }
