@@ -548,7 +548,7 @@ def configureClangCompiler(config):
   if not config.CheckCompiler():
     Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
-  allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
+  allWarnings = "-Wall -Wextra -Weverything -Wno-unused-parameter".split(" ")
   config.env.Append(CPPFLAGS=allWarnings)
 
   config.env.Append(CPPFLAGS=["-fopenmp"])
