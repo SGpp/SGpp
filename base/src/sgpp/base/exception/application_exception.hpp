@@ -26,25 +26,25 @@ class application_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit application_exception(const char* msg) throw() : msg(msg) {
+  explicit application_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standard Constructor
    */
-  application_exception() throw() : msg(NULL) { }
+  application_exception() noexcept : msg(NULL) { }
 
   /**
    * Destructor
    */
-  ~application_exception() throw() override { }
+  ~application_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

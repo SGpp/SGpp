@@ -25,25 +25,25 @@ class algorithm_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit algorithm_exception(const char* msg) throw() : msg(msg) {
+  explicit algorithm_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standard Constructor
    */
-  algorithm_exception() throw() : msg(NULL) { }
+  algorithm_exception() noexcept : msg(NULL) { }
 
   /**
    * Destructor
    */
-  ~algorithm_exception() throw() override { }
+  ~algorithm_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {
