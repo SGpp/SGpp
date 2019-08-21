@@ -54,7 +54,9 @@ class FullGridCallbackEvaluator : public AbstractFullGridEvaluationStrategy<V> {
    * @param callback This callback is called (with already locked mutex) from inside one of the
    * returned tasks when all tasks for the given level are completed and the level can be added.
    */
-  std::vector<ThreadPool::Task> getLevelTasks(MultiIndex const &level, ThreadPool::Task callback) {
+  std::vector<ThreadPool::Task> getLevelTasks(
+      MultiIndex const &level,
+      ThreadPool::Task callback) override {
     size_t numDimensions = this->pointHierarchies.size();
     MultiIndex multiBounds(numDimensions);
 

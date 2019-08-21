@@ -53,9 +53,9 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
       MultiFunction p_func = MultiFunction(constantFunction<base::DataVector const &, double>()));
   virtual ~CombigridTreeStorage();
 
-  virtual std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
+  std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
       MultiIndex const &level, MultiIndexIterator &iterator,
-      std::vector<bool> orderingConfiguration);
+      std::vector<bool> orderingConfiguration) override;
 
   std::shared_ptr<TreeStorage<double>> getStorage(const MultiIndex &level);
 
@@ -63,14 +63,14 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
    * Returns the number of entries (all level-index pairs) in the storage, which indicates the
    * number of function evaluations that have been done. Currently, this is an O(n) method.
    */
-  virtual size_t getNumEntries();
+  size_t getNumEntries() override;
 
-  virtual std::string serialize();
-  virtual void deserialize(std::string const &str);
+  std::string serialize() override;
+  void deserialize(std::string const &str) override;
 
-  virtual void set(MultiIndex const &level, MultiIndex const &index, double value);
+  void set(MultiIndex const &level, MultiIndex const &index, double value) override;
   double get(MultiIndex const &level, MultiIndex const &index) override;
-  virtual void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr);
+  void setMutex(std::shared_ptr<std::recursive_mutex> mutexPtr) override;
 };
 }  // namespace combigrid
 } /* namespace sgpp*/

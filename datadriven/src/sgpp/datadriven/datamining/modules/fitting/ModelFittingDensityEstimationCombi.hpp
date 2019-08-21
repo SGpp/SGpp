@@ -48,7 +48,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * SGDE approach.
    * @param newDataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& newDataset);
+  void fit(Dataset& newDataset) override;
 
   /**
    * Fit the grids to the given dataset by determining the surpluses of the initial grid by the
@@ -56,9 +56,9 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * density estimation whatsoever)
    * @param newDataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& newDataset);
+  void fit(DataMatrix& newDataset) override;
 
-  void update(Dataset& dataset);
+  void update(Dataset& dataset) override;
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
@@ -66,14 +66,14 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * whatsoever)
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
-  double evaluate(const DataVector& sample);
+  double evaluate(const DataVector& sample) override;
 
   /**
    * Evaluate the fitted density on a set of data points - requires a trained grid.
@@ -82,19 +82,19 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
-  void evaluate(DataMatrix& samples, DataVector& results);
+  void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
    * Refines the component with the biggest error
    * @return if a component was refined
    */
-  bool refine();
+  bool refine() override;
 
   /**
    * Currently not implemented for this class due to missing strategy for
    * dimensional adaptive refinement. Throws an application_exception.
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   /**
    * Resets the state of the entire model
@@ -124,7 +124,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    */
   CombiScheme scheme;
 
-  bool isRefinable();
+  bool isRefinable() override;
 
   /**
    * Creates a density estimation model that fits the model settings.
