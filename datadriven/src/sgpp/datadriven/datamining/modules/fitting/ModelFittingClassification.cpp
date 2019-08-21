@@ -158,10 +158,6 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
 #endif  // USE_SCALAPACK
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default: {
-      std::string errMsg = "Unknown density estimation type";
-      throw application_exception(errMsg.c_str());
-    }
   }
 }
 
@@ -234,8 +230,6 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
                                                 refinementConfig.threshold_);
     }
-    default:
-      return nullptr;
   }
 }
 

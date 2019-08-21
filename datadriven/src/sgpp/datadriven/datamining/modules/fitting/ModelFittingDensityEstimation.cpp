@@ -63,7 +63,6 @@ RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
           "for classification!";
       throw new application_exception(errorMessage.c_str());
     }
-    default: break;
   }
   return nullptr;
 }

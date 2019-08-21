@@ -112,10 +112,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
     case sgpp::quadrature::SamplerTypes::Halton:
       opQuad->useQuasiMonteCarloWithHaltonSequences();
       break;
-
-    default:
-      std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
-                << std::endl;
   }
 
   double resMC = opQuad->doQuadrature(alpha);

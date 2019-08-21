@@ -75,7 +75,6 @@ double ProbabilityDensityFunction1D::normalizeInput(double xValue) {
     case ProbabilityDensityFunctionType::BOUNDED_NORMAL:
     case ProbabilityDensityFunctionType::BOUNDED_LOGNORMAL:
     case ProbabilityDensityFunctionType::NORMAL:
-    default:
       double a = config.pdfParameters.lowerBound_;
       double b = config.pdfParameters.upperBound_;
       if (a == b) {

@@ -82,7 +82,6 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_chol):
     case (MatrixDecompositionType::SMW_ortho):
-    default:
       throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
   }
 }
