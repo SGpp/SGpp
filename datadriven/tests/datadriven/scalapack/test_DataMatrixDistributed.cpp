@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(testToVector) {
 
   if (localGrid->isProcessInGrid()) {
     for (size_t i = 0; i < testData.size(); i++) {
-      BOOST_CHECK_CLOSE(vector.get(i), testData[i], 10e-5);
+      BOOST_CHECK_CLOSE(vector.get(i), testData[i], 1e-4);
     }
   }
 }
