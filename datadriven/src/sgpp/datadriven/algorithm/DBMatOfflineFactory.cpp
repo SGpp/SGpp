@@ -69,6 +69,8 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
   }
+
+  throw factory_exception("Trying to build offline object from unknown decomposition type");
 }
 
 DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
@@ -110,8 +112,10 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
     case (MatrixDecompositionType::SMW_ortho):
       return new DBMatOfflineOrthoAdapt(fileName);
   }
+
+  throw factory_exception("Trying to build offline object from unknown decomposition type");
 #else
-  throw factory_exception("built withot GSL");
+  throw factory_exception("built without GSL");
 #endif /* USE_GSL */
 }
 

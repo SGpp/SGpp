@@ -185,6 +185,8 @@ double OrthogonalPolynomialBasis1D::normalizeInput(double xValue) {
       // [0, 1] -> [-1, 1] -> [-infty, +infty]
       return M_SQRT2 * (2.0 * xValue - 1.0);
   }
+
+  return xValue;
 }
 
 double OrthogonalPolynomialBasis1D::evaluate(size_t basisIndex, double xValue) {
@@ -250,6 +252,8 @@ size_t OrthogonalPolynomialBasis1D::numAdditionalQuadraturePoints() {
     case OrthogonalPolynomialBasisType::BOUNDED_NORMAL:
       return 10;
   }
+
+  return 5;
 }
 
 double OrthogonalPolynomialBasis1D::lowerBound() {

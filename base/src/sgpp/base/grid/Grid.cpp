@@ -300,6 +300,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
     }
   }
+
+  throw generation_exception("Grid::createGrid - grid type not known");
 }
 
 Grid* Grid::createGridOfEquivalentType(size_t numDims) {
@@ -547,8 +549,10 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::FundamentalNakSplineBoundary;
     // no non-boundary treatment basis available for the following grids
     case GridType::ModBsplineClenshawCurtis:
-      throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
+      break;
   }
+
+  throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
 }
 
 std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }

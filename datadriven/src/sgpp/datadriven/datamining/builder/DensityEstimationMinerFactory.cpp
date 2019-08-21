@@ -52,6 +52,8 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
       std::cout << "\nDECOMPOSITION\n";
       return new ModelFittingDensityEstimationOnOff(config);
   }
+
+  throw base::application_exception("Unknown density estimation type");
 }
 
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
