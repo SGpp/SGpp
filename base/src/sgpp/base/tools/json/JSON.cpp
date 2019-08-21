@@ -21,7 +21,7 @@ JSON::JSON(const std::string& fileName) : fileName(fileName) {
 
   try {
     file.open(fileName);
-  } catch (std::ifstream::failure& e) {
+  } catch (std::ifstream::failure&) {
     std::stringstream stream;
     stream << "json error: could not open file: " << fileName << std::endl;
     throw json_exception(stream.str());
@@ -30,7 +30,7 @@ JSON::JSON(const std::string& fileName) : fileName(fileName) {
   std::string content;
   try {
     content.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
-  } catch (std::ifstream::failure& e) {
+  } catch (std::ifstream::failure&) {
     std::stringstream stream;
     stream << "json error: could not successfully read file: " << fileName << std::endl;
     throw json_exception(stream.str());
