@@ -758,7 +758,7 @@ void MPIMethods::processIncomingMPICommands(PendingMPIRequest &pendingMPIRequest
       break;
     case WORKER_SHUTDOWN_SUCCESS:std::cout << "Worker has acknowledged shutdown" << std::endl;
       break;
-    case nullptr_COMMAND:std::cout << "Error: Incoming command has undefined command id" << std::endl;
+    case NULL_COMMAND:std::cout << "Error: Incoming command has undefined command id" << std::endl;
       throw sgpp::base::algorithm_exception("MPI_Packet with nullptr command received.");
     default:std::cout << "Error: MPI unknown command id: " << mpiPacket->commandID << std::endl;
       throw sgpp::base::algorithm_exception("MPI_Packet with unknown command received.");
