@@ -620,3 +620,11 @@ else:
     finalMessagePrinter.disable()
   elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
+
+# dirty fix for Debian bug #893740
+# (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=893740),
+# they seem to have reintroduced the Python-2-only syntax "dict.has_key"
+# (instead of "in") in SCons/Script/Main.py, line 1111,
+# occurs when cleaning, i.e., `scons -c`, while using Python 3.x for SCons
+if not hasattr(os.environ, "has_key"):
+  os.environ.has_key = (lambda x: x in os.environ)
