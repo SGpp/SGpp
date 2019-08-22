@@ -119,7 +119,7 @@ void DBMatDatabase::putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConf
 }
 
 bool DBMatDatabase::gridConfigurationMatches(json::DictNode *node,
-      sgpp::base:: GeneralGridConfiguration& gridConfig, size_t entry_num) {
+      sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num) {
   // Check if grid general type matches
   sgpp::base::GeneralGridType gridType;
   if (node->contains(keyGridType)) {
