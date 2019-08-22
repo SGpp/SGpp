@@ -549,7 +549,7 @@ def configureClangCompiler(config):
     Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
   allWarnings = [
-    "-Wall", "-Wextra", "-Weverything",
+    "-Wall", "-Wextra", "-Weverything", "-Wno-unknown-warning-option",
     "-Wno-c++98-compat-local-type-template-args", "-Wno-c++98-compat-pedantic", "-Wno-deprecated",
     "-Wno-documentation", "-Wno-documentation-deprecated-sync",
     "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
