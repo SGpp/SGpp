@@ -398,16 +398,16 @@ def checkJava(config):
 def configureGNUCompiler(config):
 
   if config.env["RUN_ON_HAZELHEN"]:
-    config.env["CC"] = 'CC'
-    config.env["CXX"] = 'CC'
+    if "CC" not in config.env.arguments: config.env["CC"] = "CC"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "CC"
     config.env.Append(CPPPATH = [os.environ['BOOST_ROOT'] + '/include'])
     config.env.Append(LIBPATH = [os.environ['BOOST_ROOT'] + '/lib'])
     config.env.Append(CPPFLAGS=["-dynamic"])
     config.env.Append(LINKFLAGS=["-dynamic"])
   if config.env["COMPILER"] == "openmpi":
-    config.env["CC"] = ("mpicc")
-    config.env["LINK"] = ("mpicxx")
-    config.env["CXX"] = ("mpicxx")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpicc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpicxx"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpicxx"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     if config.env["CC"]:
@@ -415,9 +415,9 @@ def configureGNUCompiler(config):
     if config.env["CXX"]:
       config.env.Append(CPPFLAGS=["-cxx=" + config.env["CXX"]])
       config.env.Append(LINKFLAGS=["-cxx=" + config.env["CXX"]])
-    config.env["CC"] = ("mpicc.mpich")
-    config.env["LINK"] = ("mpicxx.mpich")
-    config.env["CXX"] = ("mpicxx.mpich")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpicc.mpich"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpicxx.mpich"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpicxx.mpich"
     Helper.printInfo("Using mpich.")
 
   versionString = getOutput([config.env["CXX"], "-dumpversion"])
@@ -530,9 +530,9 @@ def configureGNUCompiler(config):
     config.env["SHLIBPREFIX"] = "lib"
 
 def configureClangCompiler(config):
-  config.env["CC"] = ("clang")
-  config.env["LINK"] = ("clang++")
-  config.env["CXX"] = ("clang++")
+  if "CC" not in config.env.arguments: config.env["CC"] = "clang"
+  if "LINK" not in config.env.arguments: config.env["LINK"] = "clang++"
+  if "CXX" not in config.env.arguments: config.env["CXX"] = "clang++"
 
   versionString = getOutput([config.env["CXX"], "--version"])
   try:
@@ -592,14 +592,14 @@ def configureIntelCompiler(config):
                                     "-ansi-alias", "-fp-speculation=safe",
                                     "-qno-offload"])
   if config.env["COMPILER"] == "intel.mpi":
-    config.env["CC"] = ("mpiicc")
-    config.env["LINK"] = ("mpiicpc")
-    config.env["CXX"] = ("mpiicpc")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpiicc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpiicpc"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpiicpc"
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
   else:
-    config.env["CC"] = ("icc")
-    config.env["LINK"] = ("icpc")
-    config.env["CXX"] = ("icpc")
+    if "CC" not in config.env.arguments: config.env["CC"] = "icc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "icpc"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "icpc"
 
   versionString = getOutput([config.env["CXX"], "-dumpversion"])
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))

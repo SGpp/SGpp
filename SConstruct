@@ -298,6 +298,11 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
+# save ARGUMENTS dict (unparsed command-line arguments) in env
+# in order to be able to tell, e.g., if the user has specified a custom value
+# for CXX or if the default ("g++" on Linux) has been used
+env.arguments = ARGUMENTS
+
 if not env.GetOption('clean'):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
