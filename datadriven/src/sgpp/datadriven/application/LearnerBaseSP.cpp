@@ -29,8 +29,8 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerBaseSP::LearnerBaseSP(const bool isRegression, const bool isVerbose)
-    : alpha_(NULL),
-      grid_(NULL),
+    : alpha_(nullptr),
+      grid_(nullptr),
       isVerbose_(isVerbose),
       isRegression_(isRegression),
       isTrained_(false),
@@ -40,8 +40,8 @@ LearnerBaseSP::LearnerBaseSP(const bool isRegression, const bool isVerbose)
 
 LearnerBaseSP::LearnerBaseSP(const std::string tGridFilename, const std::string tAlphaFilename,
                              const bool isRegression, const bool isVerbose)
-    : alpha_(NULL),
-      grid_(NULL),
+    : alpha_(nullptr),
+      grid_(nullptr),
       isVerbose_(isVerbose),
       isRegression_(isRegression),
       isTrained_(false),
@@ -67,9 +67,9 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe)
   this->execTime_ = 0.0;
 
   // safety, should not happen
-  if (alpha_ != NULL) delete alpha_;
+  if (alpha_ != nullptr) delete alpha_;
 
-  if (grid_ != NULL) delete grid_;
+  if (grid_ != nullptr) delete grid_;
 
   // can be solved better with a grid copy constructor
   grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize());
@@ -78,9 +78,9 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe)
 
 LearnerBaseSP::~LearnerBaseSP() {
   // if user does no cleaning
-  if (alpha_ != NULL) delete alpha_;
+  if (alpha_ != nullptr) delete alpha_;
 
-  if (grid_ != NULL) delete grid_;
+  if (grid_ != nullptr) delete grid_;
 }
 
 void LearnerBaseSP::InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig) {
@@ -91,7 +91,7 @@ void LearnerBaseSP::InitializeGrid(const sgpp::base::RegularGridConfiguration& G
   } else if (GridConfig.type_ == sgpp::base::GridType::Linear) {
     grid_ = new sgpp::base::LinearGrid(GridConfig.dim_);
   } else {
-    grid_ = NULL;
+    grid_ = nullptr;
     throw base::application_exception(
         "LearnerBaseSP::InitializeGrid: An unsupported grid type was "
         "chosen!");
@@ -149,23 +149,23 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
   double oldAcc = 0.0;
 
   // Construct Grid
-  if (alpha_ != NULL) delete alpha_;
+  if (alpha_ != nullptr) delete alpha_;
 
-  if (grid_ != NULL) delete grid_;
+  if (grid_ != nullptr) delete grid_;
 
   if (isTrained_ == true) isTrained_ = false;
 
   InitializeGrid(GridConfig);
 
   // check if grid was created
-  if (grid_ == NULL) return result;
+  if (grid_ == nullptr) return result;
 
   // create DMSystem
   sgpp::datadriven::DMSystemMatrixBaseSP* DMSystem =
       createDMSystem(trainDataset, lambdaRegularization);
 
   // check if System was created
-  if (DMSystem == NULL) return result;
+  if (DMSystem == nullptr) return result;
 
   sgpp::solver::SLESolverSP* myCG;
 

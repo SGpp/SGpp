@@ -32,7 +32,7 @@ class application_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  application_exception() noexcept : msg(NULL) { }
+  application_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

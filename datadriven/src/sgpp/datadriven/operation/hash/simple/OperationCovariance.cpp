@@ -74,7 +74,7 @@ void OperationCovariance::doQuadrature(base::DataVector& alpha, base::DataMatrix
   std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
       op_factory::createOperationDensityMargTo1D(grid));
 
-  base::Grid* marginalizedGrid = NULL;
+  base::Grid* marginalizedGrid = nullptr;
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
 
   for (size_t idim = 0; idim < ndim; idim++) {

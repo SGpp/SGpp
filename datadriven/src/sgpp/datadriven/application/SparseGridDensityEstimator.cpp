@@ -599,7 +599,7 @@ void SparseGridDensityEstimator::splitset(std::vector<std::shared_ptr<base::Data
 
   if (crossvalidationConfig.shuffle_) {
     if (crossvalidationConfig.seed_ == -1)
-      srand(static_cast<unsigned int>(time(0)));
+      srand(static_cast<unsigned int>(time(nullptr)));
     else
       srand(crossvalidationConfig.seed_);
 

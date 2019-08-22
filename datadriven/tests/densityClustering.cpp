@@ -428,7 +428,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
     BOOST_CHECK(graph_optimal_result[i] == graph[i]);
   }
   delete operation_graph;
-  operation_graph = NULL;
+  operation_graph = nullptr;
 
   std::cout << "Testing default knn graph kernel with select statements..." << std::endl;
   for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
   }
 
   delete operation_graph;
-  operation_graph = NULL;
+  operation_graph = nullptr;
 
   std::cout << "Testing default knn graph kernel with local memory..." << std::endl;
   for (std::string &platformName : (*parameters)["PLATFORMS"].keys()) {
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(KNNGraphOpenCL) {
     BOOST_CHECK(graph_optimal_result[i] == graph[i]);
   }
   delete operation_graph;
-  operation_graph = NULL;
+  operation_graph = nullptr;
 
   std::cout << "Testing default knn graph kernel with local memory and select statements..."
             << std::endl;

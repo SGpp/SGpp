@@ -20,7 +20,7 @@ UpDownFourOpDims::UpDownFourOpDims(sgpp::base::GridStorage* storage, double*****
 
 UpDownFourOpDims::UpDownFourOpDims(sgpp::base::GridStorage* storage)
     : storage(storage),
-      coefs(NULL),
+      coefs(nullptr),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()) {
   generateMap();
@@ -92,7 +92,7 @@ void UpDownFourOpDims::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVecto
               {
                 sgpp::base::DataVector beta(result.getSize());
 
-                if (this->coefs != NULL) {
+                if (this->coefs != nullptr) {
                   if (this->coefs[i][j][k][l] != 0.0) {
                     this->updown(alpha, beta, this->numAlgoDims_ - 1, i, j, k, l);
 

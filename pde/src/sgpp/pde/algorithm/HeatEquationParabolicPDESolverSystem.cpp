@@ -22,8 +22,8 @@ HeatEquationParabolicPDESolverSystem::HeatEquationParabolicPDESolverSystem(
   this->TimestepSize = TimestepSize;
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
-  this->InnerGrid = NULL;
-  this->alpha_inner = NULL;
+  this->InnerGrid = nullptr;
+  this->alpha_inner = nullptr;
 
   this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new sgpp::base::DirichletGridConverter();
@@ -52,11 +52,11 @@ HeatEquationParabolicPDESolverSystem::~HeatEquationParabolicPDESolverSystem() {
   delete this->BoundaryUpdate;
   delete this->GridConverter;
 
-  if (this->InnerGrid != NULL) {
+  if (this->InnerGrid != nullptr) {
     delete this->InnerGrid;
   }
 
-  if (this->alpha_inner != NULL) {
+  if (this->alpha_inner != nullptr) {
     delete this->alpha_inner;
   }
 

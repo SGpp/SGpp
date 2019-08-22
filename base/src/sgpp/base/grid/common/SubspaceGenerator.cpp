@@ -11,7 +11,7 @@ namespace base {
 
 SubspaceGenerator::SubspaceGenerator(unsigned int dim,
                                      unsigned int max_level) :
-  val_(NULL), dim_(dim), max_sum_(max_level + dim - 1) {
+  val_(nullptr), dim_(dim), max_sum_(max_level + dim - 1) {
   pointer_type root_subspace = new value_type(dim, 1);
   queue_value_type pair(root_subspace, 0);
   queue_.push(pair);

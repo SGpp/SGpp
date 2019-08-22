@@ -628,7 +628,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
     // read the bounding box
     // create a standard bounding box
     boundingBox = new BoundingBox(dimension);
-    stretching = NULL;
+    stretching = nullptr;
     bUseStretching = false;
     BoundingBox1D tempBound;
 

@@ -68,7 +68,7 @@ void OCLManagerMultiPlatform::buildKernel(
   for (OCLPlatformWrapper &platform : this->platforms) {
     // setting the program
     const char *kernel_src = program_src.c_str();
-    cl_program program = clCreateProgramWithSource(platform.context, 1, &kernel_src, NULL, &err);
+    cl_program program = clCreateProgramWithSource(platform.context, 1, &kernel_src, nullptr, &err);
 
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
@@ -93,15 +93,15 @@ void OCLManagerMultiPlatform::buildKernel(
     }
 
     // compiling the program
-    err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
+    err = clBuildProgram(program, 0, nullptr, build_opts.c_str(), nullptr, nullptr);
 
     if (err != CL_SUCCESS) {
       // get the build log
       size_t len;
-      clGetProgramBuildInfo(program, platform.deviceIds[0], CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
+      clGetProgramBuildInfo(program, platform.deviceIds[0], CL_PROGRAM_BUILD_LOG, 0, nullptr, &len);
       std::string buffer(len, '\0');
       clGetProgramBuildInfo(program, platform.deviceIds[0], CL_PROGRAM_BUILD_LOG, len, &buffer[0],
-                            NULL);
+                            nullptr);
       buffer = buffer.substr(0, buffer.find('\0'));
 
       if (verbose) {
@@ -140,7 +140,7 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
 
   // setting the program
   const char *kernelSourcePtr = source.c_str();
-  cl_program program = clCreateProgramWithSource(device->context, 1, &kernelSourcePtr, NULL, &err);
+  cl_program program = clCreateProgramWithSource(device->context, 1, &kernelSourcePtr, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
@@ -163,15 +163,15 @@ cl_kernel OCLManagerMultiPlatform::buildKernel(const std::string &source,
   }
 
   // compiling the program
-  err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
+  err = clBuildProgram(program, 0, nullptr, build_opts.c_str(), nullptr, nullptr);
 
   // collect the build log before throwing an exception if necessary
 
   // get the build log
   size_t len;
-  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
+  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, 0, nullptr, &len);
   std::string buffer(len, '\0');
-  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
+  clGetProgramBuildInfo(program, device->deviceId, CL_PROGRAM_BUILD_LOG, len, &buffer[0], nullptr);
   buffer = buffer.substr(0, buffer.find('\0'));
 
   if (verbose) {

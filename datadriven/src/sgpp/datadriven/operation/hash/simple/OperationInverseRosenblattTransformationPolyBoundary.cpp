@@ -90,8 +90,8 @@ void OperationInverseRosenblattTransformationPolyBoundary::doTransformation(
     base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points,
     size_t dim_start) {
   // 1. marginalize to dim_start
-  base::Grid* g1d = NULL;
-  base::DataVector* a1d = NULL;
+  base::Grid* g1d = nullptr;
+  base::DataVector* a1d = nullptr;
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
@@ -141,7 +141,7 @@ void OperationInverseRosenblattTransformationPolyBoundary::doTransformation_in_n
   size_t dims = cdfs1d->getSize();  // total dimensions
 
   /* Step 1: do conditional in current dim */
-  base::Grid* g_out = NULL;
+  base::Grid* g_out = nullptr;
   base::DataVector* a_out = new base::DataVector(1);
   op_factory::createOperationDensityConditional(*g_in)->doConditional(
       *a_in, g_out, *a_out, static_cast<unsigned int>(op_dim), coords1d->get(curr_dim));
@@ -155,8 +155,8 @@ void OperationInverseRosenblattTransformationPolyBoundary::doTransformation_in_n
 
   if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
-    base::Grid* g1d = NULL;
-    base::DataVector* a1d = NULL;
+    base::Grid* g1d = nullptr;
+    base::DataVector* a1d = nullptr;
     op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension

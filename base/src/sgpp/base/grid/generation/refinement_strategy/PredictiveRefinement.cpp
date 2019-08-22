@@ -170,7 +170,7 @@ void PredictiveRefinement::free_refine(GridStorage& storage,
   refineGridpointsCollection(storage, functor, collection);
   collection.clear();
 
-  if (addedPoints != 0) {
+  if (addedPoints != nullptr) {
     for (size_t i = sizeBeforeRefine; i < storage.getSize(); i++) {
       addedPoints->push_back(i);
     }

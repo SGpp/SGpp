@@ -48,7 +48,7 @@ class SubspaceRefinement: public RefinementDecorator {
   */
   void free_refine(GridStorage& storage,
                    RefinementFunctor& functor,
-                   std::vector<size_t>* addedPoints = 0) override;
+                   std::vector<size_t>* addedPoints = nullptr) override;
 
 
   /**

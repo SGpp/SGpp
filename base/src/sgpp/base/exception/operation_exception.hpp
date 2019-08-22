@@ -42,7 +42,7 @@ class operation_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  operation_exception() noexcept : msg(NULL) { }
+  operation_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

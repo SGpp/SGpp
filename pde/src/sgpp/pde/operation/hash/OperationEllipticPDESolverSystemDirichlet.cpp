@@ -24,7 +24,7 @@ OperationEllipticPDESolverSystemDirichlet::OperationEllipticPDESolverSystemDiric
 
   this->numGridpointsInner = this->InnerGrid->getSize();
 
-  this->alpha_inner = NULL;
+  this->alpha_inner = nullptr;
 }
 
 OperationEllipticPDESolverSystemDirichlet::~OperationEllipticPDESolverSystemDirichlet() {
@@ -41,7 +41,7 @@ void OperationEllipticPDESolverSystemDirichlet::mult(sgpp::base::DataVector& alp
 }
 
 sgpp::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS() {
-  if (this->InnerGrid != NULL) {
+  if (this->InnerGrid != nullptr) {
     sgpp::base::DataVector alpha_tmp_complete(*(this->rhs));
     sgpp::base::DataVector rhs_tmp_complete(*(this->rhs));
 
@@ -59,8 +59,8 @@ sgpp::base::DataVector* OperationEllipticPDESolverSystemDirichlet::generateRHS()
 }
 
 sgpp::base::DataVector* OperationEllipticPDESolverSystemDirichlet::getGridCoefficientsForCG() {
-  if (this->InnerGrid != NULL) {
-    if (this->alpha_inner != NULL) {
+  if (this->InnerGrid != nullptr) {
+    if (this->alpha_inner != nullptr) {
       delete this->alpha_inner;
     }
 

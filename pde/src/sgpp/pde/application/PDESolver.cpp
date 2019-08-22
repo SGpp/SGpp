@@ -68,8 +68,8 @@ void PDESolver::deleteGrid() {
   if (bGridConstructed) {
     delete myGrid;
     bGridConstructed = false;
-    myBoundingBox = NULL;
-    myGridStorage = NULL;
+    myBoundingBox = nullptr;
+    myGridStorage = nullptr;
   } else {
     throw sgpp::base::application_exception(
         "PDESolver::deleteGrid : The grid wasn't initialized before!");
@@ -80,8 +80,8 @@ void PDESolver::setGrid(const std::string& serializedGrid) {
   if (bGridConstructed) {
     delete myGrid;
     bGridConstructed = false;
-    myBoundingBox = NULL;
-    myGridStorage = NULL;
+    myBoundingBox = nullptr;
+    myGridStorage = nullptr;
   }
 
   myGrid = sgpp::base::Grid::unserialize(serializedGrid);

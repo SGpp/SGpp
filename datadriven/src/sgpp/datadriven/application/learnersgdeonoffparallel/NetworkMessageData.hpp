@@ -29,7 +29,7 @@ enum MPI_COMMAND_ID {
   /**
    * Used to identify packets where the command id has not been set
    */
-      NULL_COMMAND,
+      nullptr_COMMAND,
   /**
    * A packet that contains changes to the grid or the system matrix
    */

@@ -45,7 +45,7 @@ namespace DensityAVX {
 
  public:
   OperationDensityMultiplicationAVX(base::Grid& grid, double lambda) {
-    result = NULL;
+    result = nullptr;
     // Store grid into int array and add values until it is divisible through 128
     // (required for opencl comparison)
     actual_gridsize = grid.getSize();
@@ -109,7 +109,7 @@ namespace DensityAVX {
 
   /// Execute one matrix-vector multiplication with the density matrix
   virtual void mult(base::DataVector& alpha, base::DataVector& result) {
-    if (this->result == NULL)
+    if (this->result == nullptr)
       this->result = result.getPointer();
     else
       throw std::logic_error("Result pointer already bounded!");

@@ -104,10 +104,10 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage,
   for (size_t i = 0; i < remove_num; i++) {
     if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
-      if (removedPoints != 0) {
+      if (removedPoints != nullptr) {
         removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
       }
-      if (removedSeq != 0) {
+      if (removedSeq != nullptr) {
         removedSeq->push_back(removeCandidates[i].first);
       }
     }

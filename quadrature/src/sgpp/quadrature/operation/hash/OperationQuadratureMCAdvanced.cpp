@@ -32,18 +32,18 @@ OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(sgpp::base::Grid& g
 OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions,
                                                              size_t numberOfSamples,
                                                              std::uint64_t seed)
-    : grid(NULL), numberOfSamples(numberOfSamples), dimensions(dimensions), seed(seed) {
+    : grid(nullptr), numberOfSamples(numberOfSamples), dimensions(dimensions), seed(seed) {
   myGenerator = new sgpp::quadrature::NaiveSampleGenerator(dimensions, seed);
 }
 
 OperationQuadratureMCAdvanced::~OperationQuadratureMCAdvanced() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 }
 
 void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -52,7 +52,7 @@ void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
 
 void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
     std::vector<size_t>& strataPerDimension) {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -60,7 +60,7 @@ void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
 }
 
 void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -69,7 +69,7 @@ void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
 }
 
 void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
