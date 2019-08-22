@@ -75,7 +75,7 @@ class StepsizeControl : public ODESolver {
    * @param gamma damping factor
    */
   StepsizeControl(size_t imax, double timestepSize, double eps, double sc,
-                  sgpp::base::ScreenOutput* screen = NULL, double gamma = 0.5);
+                  sgpp::base::ScreenOutput* screen = nullptr, double gamma = 0.5);
 
   /**
    * Std-Destructor

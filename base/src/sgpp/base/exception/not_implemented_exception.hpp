@@ -28,7 +28,7 @@ class not_implemented_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  not_implemented_exception() noexcept : msg(NULL) {}
+  not_implemented_exception() noexcept : msg(nullptr) {}
 
   /**
    * Destructor

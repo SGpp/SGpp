@@ -118,7 +118,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
 
   System.getGridCoefficientsForSC(YkImEul);
 
-  rhs = NULL;
+  rhs = nullptr;
 
   for (size_t i = 0; i < maxIter && time < maxTimestep; i++) {
     YkAdBas.resize(System.getGridCoefficients()->getSize());
@@ -149,14 +149,14 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
       allIter += LinearSystemSolver.getNumberIterations();
 
       if (verbose == true) {
-        if (myScreen == NULL) {
+        if (myScreen == nullptr) {
           std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
                     << LinearSystemSolver.getNumberIterations()
                     << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
         }
       }
 
-      if (myScreen != NULL) {
+      if (myScreen != nullptr) {
         std::stringstream soutput;
 
         soutput << " Final residuum " << LinearSystemSolver.getResiduum() << "; with "
@@ -200,7 +200,7 @@ void StepsizeControl::solve(SLESolver& LinearSystemSolver,
   fileout.close();
 
   // write some empty lines to console
-  if (myScreen != NULL) {
+  if (myScreen != nullptr) {
     myScreen->writeEmptyLines(2);
   }
 }

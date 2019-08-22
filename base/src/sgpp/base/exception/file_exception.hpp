@@ -32,7 +32,7 @@ class file_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  file_exception() noexcept : msg(NULL) { }
+  file_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

@@ -15,8 +15,8 @@ LaplaceEnhancedUpBBLinear::LaplaceEnhancedUpBBLinear(sgpp::base::GridStorage* st
       boundingBox(storage->getBoundingBox()),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()),
-      ptr_source_(NULL),
-      ptr_result_(NULL),
+      ptr_source_(nullptr),
+      ptr_result_(nullptr),
       cur_algo_dim_(0),
       q_(0.0),
       t_(0.0)

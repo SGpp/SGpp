@@ -32,7 +32,7 @@ class tool_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  tool_exception() noexcept : msg(NULL) { }
+  tool_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

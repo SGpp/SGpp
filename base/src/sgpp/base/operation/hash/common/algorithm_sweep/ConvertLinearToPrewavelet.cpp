@@ -168,13 +168,9 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
     result[_seq] = _val - temp[1];
 
   delete[] temp;
-  temp = 0;
   delete[] r;
-  r = 0;
   delete[] gam;
-  gam = 0;
   delete[] u;
-  u = 0;
 }
 
 }  // namespace base

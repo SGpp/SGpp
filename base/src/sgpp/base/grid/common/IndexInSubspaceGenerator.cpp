@@ -12,7 +12,7 @@ namespace base {
 IndexInSubspaceGenerator::IndexInSubspaceGenerator(const value_type&
     level_vector) :
   level_vector(level_vector),
-  max_index_vector(level_vector.size()), val_(NULL), dim_(level_vector.size()) {
+  max_index_vector(level_vector.size()), val_(nullptr), dim_(level_vector.size()) {
   for (size_t d = 0; d < dim_; d++) {
     if (level_vector[d] > 0) {
       max_index_vector[d] = (2 << (level_vector[d] - 1)) - 1;

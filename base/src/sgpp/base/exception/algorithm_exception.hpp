@@ -31,7 +31,7 @@ class algorithm_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  algorithm_exception() noexcept : msg(NULL) { }
+  algorithm_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

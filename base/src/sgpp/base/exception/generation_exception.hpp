@@ -32,7 +32,7 @@ class generation_exception : public std::exception {
   /**
    * Standared Constructor
    */
-  generation_exception() noexcept : msg(NULL) { }
+  generation_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

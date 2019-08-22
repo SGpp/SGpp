@@ -144,7 +144,7 @@ class AbstractRefinement {
    */
   virtual void free_refine(GridStorage& storage,
                            RefinementFunctor& functor,
-                           std::vector<size_t>* addedPoints = 0) = 0;
+                           std::vector<size_t>* addedPoints = nullptr) = 0;
 
   /**
    * Computes and returns the number of grid points, which can be refined.

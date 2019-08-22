@@ -71,14 +71,14 @@ void Euler::solve(SLESolver& LinearSystemSolver,
     allIter += LinearSystemSolver.getNumberIterations();
 
     if (verbose == true) {
-      if (myScreen == NULL) {
+      if (myScreen == nullptr) {
         std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
                   << LinearSystemSolver.getNumberIterations()
                   << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
       }
     }
 
-    if (myScreen != NULL) {
+    if (myScreen != nullptr) {
       std::stringstream soutput;
       soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
               << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter
@@ -122,7 +122,7 @@ void Euler::solve(SLESolver& LinearSystemSolver,
   }
 
   // write some empty lines to console
-  if (myScreen != NULL) {
+  if (myScreen != nullptr) {
     myScreen->writeEmptyLines(2);
   }
 

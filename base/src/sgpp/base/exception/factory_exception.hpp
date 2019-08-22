@@ -32,7 +32,7 @@ class factory_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  factory_exception() noexcept : msg(NULL) { }
+  factory_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

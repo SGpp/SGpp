@@ -595,7 +595,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
  * This map takes a string, function pointer pair.
  */
 #ifdef _WIN32
-    tMap->insert(std::pair<std::string, Grid::Factory>("NULL", Grid::nullFactory));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nullptr", Grid::nullFactory));
     tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
@@ -665,7 +665,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::pair<std::string, Grid::Factory>("fundamentalNakSplineBoundary",
         FundamentalNakSplineBoundaryGrid::unserialize));
 #else
-    tMap->insert(std::make_pair("NULL", Grid::nullFactory));
+    tMap->insert(std::make_pair("nullptr", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
     tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
     tMap->insert(std::make_pair("linearL0Boundary", LinearL0BoundaryGrid::unserialize));

@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEvalInterModLinear)
 
 // zero alpha case -> evaluation must return alpha
 BOOST_AUTO_TEST_CASE(zeroAlpha) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10.*rand()/static_cast<double>(RAND_MAX));
   std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
 
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
 // when all coefficients have the same value the grid
 // should be symmetric in all dimensions
 BOOST_AUTO_TEST_CASE(symmetry) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
   std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
 
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(symmetry) {
 // check if the interaction evaluation returns
 // the same result as the regular one
 BOOST_AUTO_TEST_CASE(regularEvaluation) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
   std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
 

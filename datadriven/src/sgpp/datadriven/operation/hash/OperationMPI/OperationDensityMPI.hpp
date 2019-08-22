@@ -45,7 +45,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       : MPIWorkerBase("DensityMultiplicationWorker"),
         MPIWorkerGridBase("DensityMultiplicationWorker"),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
-    alpha = NULL;
+    alpha = nullptr;
     oldgridsize = 0;
     // Receive lambda
     MPI_Status stat;
@@ -71,7 +71,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       : MPIWorkerBase("DensityMultiplicationWorker"),
         MPIWorkerGridBase("DensityMultiplicationWorker", grid),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1) {
-    alpha = NULL;
+    alpha = nullptr;
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
@@ -83,7 +83,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       : MPIWorkerBase("DensityMultiplicationWorker"),
         MPIWorkerGridBase("DensityMultiplicationWorker", grid),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1, ocl_conf_filename) {
-    alpha = NULL;
+    alpha = nullptr;
     // Send lambda to slaves
     for (int dest = 1; dest < MPIEnviroment::get_sub_worker_count() + 1; dest++)
       MPI_Send(&lambda, 1, MPI_DOUBLE, dest, 1, sub_worker_comm);
@@ -119,7 +119,7 @@ class DensityWorker : public MPIWorkerGridBase, public MPIWorkerPackageBase<doub
       throw std::logic_error(errorString.str());
     }
     if (gridsize != oldgridsize) {
-      if (*alpha != NULL) delete[](*alpha);
+      if (*alpha != nullptr) delete[](*alpha);
       *alpha = new double[gridsize];
       oldgridsize = gridsize;
     }

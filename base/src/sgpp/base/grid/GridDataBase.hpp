@@ -164,7 +164,7 @@ class GridDataBase {
   }
 
   /**
-   * Get value for grid point from database. Return NULL if not existant.
+   * Get value for grid point from database. Return nullptr if not existant.
    * @param gi a grid point
    * @return value
    */

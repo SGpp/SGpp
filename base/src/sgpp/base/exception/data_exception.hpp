@@ -32,7 +32,7 @@ class data_exception : public std::exception {
   /**
    * Create default exception (constructor).
    */
-  data_exception() noexcept : msg(NULL) { }
+  data_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

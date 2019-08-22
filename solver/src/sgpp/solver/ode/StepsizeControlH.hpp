@@ -51,7 +51,7 @@ class StepsizeControlH : public StepsizeControl {
    * @param gamma damping factor
    */
   StepsizeControlH(std::string odesolver, size_t imax, double timestepSize, double eps,
-                   sgpp::base::ScreenOutput* screen = NULL, double gamma = 0.9);
+                   sgpp::base::ScreenOutput* screen = nullptr, double gamma = 0.9);
 
   /**
    * Std-Destructor

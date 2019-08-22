@@ -32,7 +32,7 @@ class solver_exception : public std::exception {
   /**
    * Standard Constructor
    */
-  solver_exception() noexcept : msg(NULL) { }
+  solver_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor

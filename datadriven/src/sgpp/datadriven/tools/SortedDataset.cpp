@@ -100,7 +100,7 @@ using SortedDatasetDetail::zorder;
 SortedDataset::SortedDataset() : Dataset() {
   ot = OrderType::None;
   perm.clear();
-  std::srand(static_cast<unsigned>(std::time(0)));
+  std::srand(static_cast<unsigned>(std::time(nullptr)));
 }
 
 /**
@@ -114,7 +114,7 @@ SortedDataset::SortedDataset(size_t numberInstances, size_t dimension)
   ot = OrderType::None;
   perm.resize(numberInstances);
   for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
-  std::srand(static_cast<unsigned>(std::time(0)));
+  std::srand(static_cast<unsigned>(std::time(nullptr)));
 }
 
 /**
@@ -124,7 +124,7 @@ SortedDataset::SortedDataset(const Dataset &src) : Dataset(src) {
   ot = OrderType::None;
   perm.resize(src.getNumberInstances());
   for (size_t i = 0; i < perm.size(); ++i) perm[i] = i;
-  std::srand(static_cast<unsigned>(std::time(0)));
+  std::srand(static_cast<unsigned>(std::time(nullptr)));
 }
 
 /** Sets the OrderType to OrderType::Invalid.
