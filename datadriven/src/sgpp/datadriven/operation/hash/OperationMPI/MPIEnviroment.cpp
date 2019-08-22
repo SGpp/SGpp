@@ -125,7 +125,7 @@ void MPIEnviroment::slave_mainloop(void) {
         std::cout << "Created input_comm on " << rank << std::endl;
       } else {
         MPI_Comm_create(MPI_COMM_WORLD, tmp_group, &tmp_comm);
-        if (tmp_comm != MPI_COMM_nullptr) {
+        if (tmp_comm != MPI_COMM_NULL) {
           std::cout << "ERROR - created unnecessary comm!" << std::endl;
         }
       }
@@ -232,7 +232,7 @@ void MPIEnviroment::init_communicator(base::OperationConfiguration conf) {
 
   std::cout << "Created comm on " << MPIEnviroment::get_node_rank() << "\n";
   MPI_Comm_create(MPI_COMM_WORLD, node_neighbors, &communicator);
-  if (communicator == MPI_COMM_nullptr) {
+  if (communicator == MPI_COMM_NULL) {
     throw std::logic_error("Comm on node could not be created! Check configuration file");
   }
 }
