@@ -79,7 +79,7 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
         xValues(other.xValues),
         doesNeedParameter(other.doesNeedParameter) {}
 
-  ~ArrayEvaluator() {}
+  ~ArrayEvaluator() override {}
 
   std::vector<FloatArrayVector> getBasisValues() override {
     if (!valuesComputed) {

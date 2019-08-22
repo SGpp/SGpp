@@ -44,12 +44,7 @@ class Scorer {
    */
   Scorer(Scorer&& rhs) = default;
 
-  /**
-   * Copy assign operator
-   * @param rhs const reference to the scorer object to copy from.
-   * @return rerefernce to this with updated values.
-   */
-  Scorer& operator=(const Scorer& rhs) = default;
+  Scorer& operator=(const Scorer& rhs) = delete;
 
   /**
    * Move assign operator

@@ -18,12 +18,13 @@ namespace solver {
  */
 class RegularizationFunction {
  public:
-    /**
+  virtual ~RegularizationFunction() {}
+  /**
    * @brief eval evaluates the regularization function for weights.
    * @param weights
    */
   virtual double eval(base::DataVector weights) = 0;
-    /**
+  /**
    * @brief prox evaluates the proximal operator for the function for weights.
    * @param weights
    * @param stepsize is the stepsize used for the proximal step

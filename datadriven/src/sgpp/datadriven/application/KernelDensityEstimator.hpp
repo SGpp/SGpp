@@ -41,7 +41,7 @@ class Kernel {
 
 class GaussianKernel : public Kernel {
  public:
-  virtual ~GaussianKernel();
+  ~GaussianKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -53,7 +53,7 @@ class GaussianKernel : public Kernel {
 
 class EpanechnikovKernel : public Kernel {
  public:
-  virtual ~EpanechnikovKernel();
+  ~EpanechnikovKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -80,7 +80,7 @@ class KernelDensityEstimator : public DensityEstimator {
                                       BandwidthOptimizationType::SILVERMANSRULE);
   KernelDensityEstimator(const KernelDensityEstimator& kde);
 
-  virtual ~KernelDensityEstimator();
+  ~KernelDensityEstimator() override;
 
   void initialize(base::DataMatrix& samples) override;
   void initialize(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);

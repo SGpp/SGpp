@@ -101,7 +101,6 @@ class AtanPeridynamicExample(object):
 #                                                     "sgde_makePositive": True,
 #                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
 #                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
-#                                                     "sgde_makePositive_verbose": False,
 #                                                     "sgde_unitIntegrand": True})
 
         return dist

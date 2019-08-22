@@ -46,7 +46,7 @@ bool solveInternal(void* numeric, const std::vector<sslong>& Ap, const std::vect
   x.setAll(0.0);
 
   sslong result = umfpack_dl_solve(UMFPACK_A, &Ap[0], &Ai[0], &Ax[0], x.getPointer(),
-                                   b.getPointer(), numeric, NULL, NULL);
+                                   b.getPointer(), numeric, nullptr, nullptr);
   return (result == UMFPACK_OK);
 }
 #endif /* USE_UMFPACK */
@@ -166,7 +166,7 @@ shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
 
     result = umfpack_dl_triplet_to_col(static_cast<sslong>(n), static_cast<sslong>(n),
                                        static_cast<sslong>(nnz), &TiArray[0], &TjArray[0], &Tx[0],
-                                       &Ap[0], &Ai[0], &Ax[0], NULL);
+                                       &Ap[0], &Ai[0], &Ax[0], nullptr);
 
     if (result != UMFPACK_OK) {
       Printer::getInstance().printStatusEnd(
@@ -184,7 +184,7 @@ shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
 
   // call umfpack_dl_symbolic
   result = umfpack_dl_symbolic(static_cast<sslong>(n), static_cast<sslong>(n), &Ap[0], &Ai[0],
-                               &Ax[0], &symbolic, NULL, NULL);
+                               &Ax[0], &symbolic, nullptr, nullptr);
 
   if (result != UMFPACK_OK) {
     Printer::getInstance().printStatusEnd(
@@ -198,7 +198,7 @@ shared(system, Ti, Tj, Tx, nnz, rowsDone) default(none)
   Printer::getInstance().printStatusUpdate("step 3: umfpack_dl_numeric");
 
   // call umfpack_dl_numeric
-  result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0], symbolic, &numeric, NULL, NULL);
+  result = umfpack_dl_numeric(&Ap[0], &Ai[0], &Ax[0], symbolic, &numeric, nullptr, nullptr);
 
   if (result != UMFPACK_OK) {
     Printer::getInstance().printStatusEnd(

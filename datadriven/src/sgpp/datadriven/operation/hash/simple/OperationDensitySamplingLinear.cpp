@@ -37,13 +37,13 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
     if (dim_start == num_dims - 1) size += num_samples % num_dims;
 
     // 1. marginalize to dim_start
-    base::Grid* g1d = NULL;
-    base::DataVector* a1d = NULL;
+    base::Grid* g1d = nullptr;
+    base::DataVector* a1d = nullptr;
     op_factory::createOperationDensityMargTo1D(*this->grid)->margToDimX(alpha, g1d, a1d, dim_start);
 
     // 2. 1D sampling on dim_start
-    base::DataVector* samples_start = NULL;
-    unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
+    base::DataVector* samples_start = nullptr;
+    unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(nullptr)) * 0.0001);
     op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
         a1d, size, samples_start, &tseedp);
     delete g1d;
@@ -66,10 +66,10 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #endif
 #ifdef _OPENMP
         seedp =
-            static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+            static_cast<unsigned int>(static_cast<double>(time(nullptr)) * a +
                                       static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-        seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+        seedp = static_cast<unsigned int>(static_cast<double>(time(nullptr)) * a +
                                           static_cast<double>((1 + 1) * 1000 * b));
 #endif
       }
@@ -102,13 +102,13 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
   samples = new base::DataMatrix(num_samples, num_dims);
 
   // 1. marginalize to dim_x
-  base::Grid* g1d = NULL;
-  base::DataVector* a1d = NULL;
+  base::Grid* g1d = nullptr;
+  base::DataVector* a1d = nullptr;
   op_factory::createOperationDensityMargTo1D(*this->grid)->margToDimX(alpha, g1d, a1d, dim_x);
 
   // 2. 1D sampling on dim_start
-  base::DataVector* samples_start = NULL;
-  unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * 0.0001);
+  base::DataVector* samples_start = nullptr;
+  unsigned int tseedp = static_cast<unsigned int>(static_cast<double>(time(nullptr)) * 0.0001);
   op_factory::createOperationDensitySampling1D(*g1d)->doSampling1D(
       a1d, num_samples, samples_start, &tseedp);
   delete g1d;
@@ -131,10 +131,10 @@ void OperationDensitySamplingLinear::doSampling(base::DataVector* alpha, base::D
 #endif
 #ifdef _OPENMP
       seedp =
-          static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+          static_cast<unsigned int>(static_cast<double>(time(nullptr)) * a +
                                     static_cast<double>((omp_get_thread_num() + 1) * 1000 * b));
 #else
-      seedp = static_cast<unsigned int>(static_cast<double>(time(NULL)) * a +
+      seedp = static_cast<unsigned int>(static_cast<double>(time(nullptr)) * a +
                                         static_cast<double>((1 + 1) * 1000 * b));
 #endif
     }
@@ -175,25 +175,25 @@ void OperationDensitySamplingLinear::doSampling_in_next_dim(base::Grid* g_in,
                                                             size_t& curr_dim, unsigned int* seedp) {
   size_t dims = sampleVec->getSize();  // total dimensions
   unsigned int op_dim =
-      (curr_dim < dim_x) ? 0 : (unsigned int)dim_x;  // actual dim to be operated on
+      (curr_dim < dim_x) ? 0 : static_cast<unsigned int>(dim_x);  // actual dim to be operated on
 
   /* Step 1: do conditional in current dim */
-  base::Grid* g_out = NULL;
+  base::Grid* g_out = nullptr;
   base::DataVector* a_out = new base::DataVector(1);
   op_factory::createOperationDensityConditional(*g_in)->doConditional(
       *a_in, g_out, *a_out, op_dim, sampleVec->get(curr_dim));
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
-  op_dim = (curr_dim < dim_x) ? 0 : (unsigned int)dim_x;
+  op_dim = (curr_dim < dim_x) ? 0 : static_cast<unsigned int>(dim_x);
 
   /* Step 2: draw a sample in next dim */
-  base::DataVector* sample = NULL;
+  base::DataVector* sample = nullptr;
 
   if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
-    base::Grid* g1d = NULL;
-    base::DataVector* a1d = NULL;
+    base::Grid* g1d = nullptr;
+    base::DataVector* a1d = nullptr;
     op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension

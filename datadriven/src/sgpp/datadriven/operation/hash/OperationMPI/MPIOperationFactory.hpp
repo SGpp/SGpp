@@ -30,7 +30,7 @@ MPIWorkerBase* create_mpi_operation(int masternode,
   if (std::strcmp(classname, "PrunedGraphCreationWorker") == 0)  {
     return new PrunedGraphCreationWorker();
   }
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace clusteringmpi

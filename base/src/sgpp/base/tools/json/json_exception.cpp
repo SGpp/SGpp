@@ -26,7 +26,7 @@ json_exception::json_exception(const std::string& message) {
   this->message = messageStream.str();
 }
 
-const char* json_exception::what() const throw() {
+const char* json_exception::what() const noexcept {
   return this->message.c_str();
 }
 

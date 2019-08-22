@@ -18,7 +18,7 @@ UpDownTwoOpDims::UpDownTwoOpDims(sgpp::base::GridStorage* storage, sgpp::base::D
 
 UpDownTwoOpDims::UpDownTwoOpDims(sgpp::base::GridStorage* storage)
     : storage(storage),
-      coefs(NULL),
+      coefs(nullptr),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()) {}
 
@@ -39,7 +39,7 @@ void UpDownTwoOpDims::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector
             {
               sgpp::base::DataVector beta(result.getSize());
 
-              if (this->coefs != NULL) {
+              if (this->coefs != nullptr) {
                 if (this->coefs->get(i, j) != 0.0) {
                   this->updown(alpha, beta, this->numAlgoDims_ - 1, i, j);
 
@@ -70,7 +70,7 @@ void UpDownTwoOpDims::multParallelBuildingBlock(sgpp::base::DataVector& alpha,
 
   // use the operator's symmetry
   if (operationDimTwo <= operationDimOne) {
-    if (this->coefs != NULL) {
+    if (this->coefs != nullptr) {
       if (this->coefs->get(operationDimOne, operationDimTwo) != 0.0) {
         this->updown(alpha, beta, this->numAlgoDims_ - 1, operationDimOne, operationDimTwo);
         result.axpy(this->coefs->get(operationDimOne, operationDimTwo), beta);

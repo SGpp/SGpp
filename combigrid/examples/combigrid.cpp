@@ -46,7 +46,7 @@ double f(sgpp::base::DataVector const &x) {
 static const sgpp::combigrid::MultiFunction func(f);
 
 // Let's use a 3D-function.
-size_t d = 3;
+const size_t d = 3;
 
 /**
  * @section combigrid_example_1 Example 1: Leja quadrature with linear growth of grid points

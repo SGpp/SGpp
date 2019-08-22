@@ -47,7 +47,7 @@ void RandomNumberGenerator::getGaussianRV(DataVector& vector, double mean, doubl
 
 RandomNumberGenerator::SeedType RandomNumberGenerator::getSeed() const { return seed; }
 
-void RandomNumberGenerator::setSeed() { setSeed(static_cast<SeedType>(std::time(0))); }
+void RandomNumberGenerator::setSeed() { setSeed(static_cast<SeedType>(std::time(nullptr))); }
 
 void RandomNumberGenerator::setSeed(RandomNumberGenerator::SeedType seed) {
   this->seed = seed;

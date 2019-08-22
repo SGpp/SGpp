@@ -38,7 +38,7 @@ class StepsizeControlBDF : public VarTimestep {
    * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
   StepsizeControlBDF(size_t nTimesteps, double timestepSize, double eps,
-                     sgpp::base::ScreenOutput* screen = NULL);
+                     sgpp::base::ScreenOutput* screen = nullptr);
 
   /**
    * Std-Destructor

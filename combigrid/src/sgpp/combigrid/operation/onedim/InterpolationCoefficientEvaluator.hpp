@@ -28,7 +28,7 @@ class InterpolationCoefficientEvaluator : public AbstractLinearEvaluator<FloatTe
   InterpolationCoefficientEvaluator();
   explicit InterpolationCoefficientEvaluator(
       std::shared_ptr<AbstractInfiniteFunctionBasis1D> functionBasis);
-  virtual ~InterpolationCoefficientEvaluator();
+  ~InterpolationCoefficientEvaluator() override;
   InterpolationCoefficientEvaluator(InterpolationCoefficientEvaluator const &other);
 
   std::vector<FloatTensorVector> getBasisValues() override { return basisValues; }

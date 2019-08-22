@@ -21,7 +21,7 @@ Learner::Learner(sgpp::datadriven::RegularizationType& regularization, const boo
                  const bool verbose)
     : LearnerBase(isRegression, verbose),
       CMode(regularization)
-//, C_(NULL)
+//, C_(nullptr)
 {}
 
 // Learner::Learner(const std::string tGridFilename, const std::string tAlphaFilename,
@@ -29,20 +29,20 @@ Learner::Learner(sgpp::datadriven::RegularizationType& regularization, const boo
 //                 const bool verbose)
 //    : LearnerBase(tGridFilename, tAlphaFilename, isRegression, verbose),
 //      CMode_(regularization)
-//// ,C_(NULL)
+//// ,C_(nullptr)
 //{}
 
 Learner::~Learner() {
-  //  if (C_ != NULL) delete C_;
+  //  if (C_ != nullptr) delete C_;
 }
 
 std::unique_ptr<sgpp::datadriven::DMSystemMatrixBase> Learner::createDMSystem(
     sgpp::base::DataMatrix& trainDataset, double lambda) {
   std::shared_ptr<sgpp::base::OperationMatrix> C;
-  if (this->grid == NULL) return NULL;
+  if (this->grid == nullptr) return nullptr;
 
   // Clean up, if needed
-  //  if (C_ != NULL) delete C_;
+  //  if (C_ != nullptr) delete C_;
 
   if (this->CMode == datadriven::RegularizationType::Laplace) {
     C.reset(sgpp::op_factory::createOperationLaplace(*this->grid));

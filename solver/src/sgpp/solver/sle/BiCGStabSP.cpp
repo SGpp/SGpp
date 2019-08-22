@@ -67,7 +67,7 @@ void BiCGStabSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::
 
     sigma = s.dotProduct(rZero);
 
-    if (fabs(sigma) == 0.0f) {
+    if (std::abs(sigma) == 0.0f) {
       break;
     }
 

@@ -136,7 +136,6 @@ void DBMatOffline::store(const std::string& fileName) {
 #ifdef USE_GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix not decomposed yet");
-    return;
   }
 
   // Write configuration

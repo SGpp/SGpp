@@ -172,7 +172,7 @@ sgpp::base::DataVector* OperationParabolicPDESolverSystemFreeBoundaries::generat
   // Now we have the right hand side, lets apply the riskfree rate for the next timestep
   this->startTimestep();
 
-  if (this->rhs != NULL) {
+  if (this->rhs != nullptr) {
     delete this->rhs;
   }
 

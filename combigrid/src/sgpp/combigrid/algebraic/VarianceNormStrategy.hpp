@@ -37,7 +37,7 @@ class VarianceNormStrategy : public NormStrategy<FloatTensorVector> {
                        bool isOrthogonal,
                        sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  virtual ~VarianceNormStrategy();
+  ~VarianceNormStrategy() override;
 
   /**
    * computes the variance of the given tensor vector

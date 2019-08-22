@@ -71,7 +71,7 @@ class OrthogonalPolynomialBasis1DConfiguration : public json::JSON {
 class OrthogonalPolynomialBasis1D : public AbstractInfiniteFunctionBasis1D {
  public:
   explicit OrthogonalPolynomialBasis1D(OrthogonalPolynomialBasis1DConfiguration& config);
-  virtual ~OrthogonalPolynomialBasis1D();
+  ~OrthogonalPolynomialBasis1D() override;
 
   double evaluate(size_t basisIndex, double xValue) override;
   double pdf(double xValue);

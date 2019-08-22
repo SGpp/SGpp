@@ -60,7 +60,7 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
 
   // loop over stages
   for (size_t q = 0; q < config.getStages().size(); q++) {
-    size_t nRuns = (size_t) config.getStages()[q];
+    size_t nRuns = static_cast<size_t>(config.getStages()[q]);
     std::vector<ModelFittingBase*> fitters(nRuns);
     DataVector scores(nRuns);
     DataVector transformedScores(nRuns);
