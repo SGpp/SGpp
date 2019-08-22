@@ -32,7 +32,7 @@
 #undef aligned_free
 #define POSIX_MEMALIGN
 #define aligned_malloc(p, size, alignment) \
-  int success = posix_memalign(&p, SGPPMEMALIGNMENT, size);
+  int success = posix_memalign(&p, SGPPMEMALIGNMENT, size)
 #define aligned_free(addr) free(addr)
 #endif /* _WIN32 */
 
