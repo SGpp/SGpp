@@ -32,7 +32,7 @@ class SquareRootGridGenerator : public GridGenerator {
   /**
    * Destructor
    */
-  virtual ~SquareRootGridGenerator();
+  ~SquareRootGridGenerator() override;
 
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;

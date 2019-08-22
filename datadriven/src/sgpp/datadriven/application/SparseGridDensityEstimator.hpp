@@ -110,7 +110,7 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
 
   SparseGridDensityEstimator(const SparseGridDensityEstimator& learnerSGDE);
 
-  virtual ~SparseGridDensityEstimator();
+  ~SparseGridDensityEstimator() override;
 
   /**
    * Estimate a sparse grid density based on the given data set and

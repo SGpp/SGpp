@@ -71,7 +71,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
 
   LearnerSGDE(const LearnerSGDE& learnerSGDE);
 
-  virtual ~LearnerSGDE();
+  ~LearnerSGDE() override;
 
   /**
    * Create grid and perform cross-validation if enabled.

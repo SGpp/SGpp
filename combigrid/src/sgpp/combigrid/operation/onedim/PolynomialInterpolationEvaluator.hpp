@@ -31,7 +31,7 @@ class PolynomialInterpolationEvaluator : public AbstractLinearEvaluator<FloatSca
 
  public:
   PolynomialInterpolationEvaluator();
-  virtual ~PolynomialInterpolationEvaluator();
+  ~PolynomialInterpolationEvaluator() override;
   PolynomialInterpolationEvaluator(PolynomialInterpolationEvaluator const &other);
 
   std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }

@@ -33,7 +33,7 @@ class OperationMakePositiveInterpolationAlgorithm {
 class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolationAlgorithm {
  public:
   OperationMakePositiveSetToZero();
-  virtual ~OperationMakePositiveSetToZero();
+  ~OperationMakePositiveSetToZero() override;
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
                                        std::vector<size_t>& addedGridPoints,
@@ -63,7 +63,7 @@ class OperationMakePositiveInterpolateFunction
     : public OperationMakePositiveInterpolationAlgorithm {
  public:
   explicit OperationMakePositiveInterpolateFunction(base::ScalarFunction* f);
-  virtual ~OperationMakePositiveInterpolateFunction();
+  ~OperationMakePositiveInterpolateFunction() override;
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
                                        std::vector<size_t>& addedGridPoints,

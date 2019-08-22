@@ -90,7 +90,7 @@ class BSplineScalarProductEvaluator : public AbstractLinearEvaluator<FloatArrayV
                                 double a = 0, double b = 1, bool normalizeWeights = true,
                                 size_t numAdditionalPoints = 0);
   BSplineScalarProductEvaluator(BSplineScalarProductEvaluator const &other);
-  virtual ~BSplineScalarProductEvaluator();
+  ~BSplineScalarProductEvaluator() override;
 
   std::vector<FloatArrayVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

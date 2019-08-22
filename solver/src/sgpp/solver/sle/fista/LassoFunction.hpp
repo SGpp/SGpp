@@ -27,7 +27,7 @@ class LassoFunction : public RegularizationFunction {
    */
   explicit LassoFunction(double lambda) : lambda(lambda) {}
 
-  virtual ~LassoFunction() {}
+  ~LassoFunction() override {}
 
   double eval(base::DataVector weights) override {
     weights.abs();
