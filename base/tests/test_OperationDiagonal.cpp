@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(testOperationDiagonal) {
   const auto size = gridStorage.getSize();
   auto testVec = sgpp::base::DataVector(size, 1.0);
   auto resultVec = sgpp::base::DataVector(size);
-  const auto shouldVec = std::array<double, 5>{1, 4.0, 4.0, 4.0, 4.0};
+  const auto shouldVec = std::array<double, 5>{{1, 4.0, 4.0, 4.0, 4.0}};
 
   opDiag->mult(testVec, resultVec);
 

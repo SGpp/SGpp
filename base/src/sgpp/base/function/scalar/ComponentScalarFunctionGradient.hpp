@@ -11,8 +11,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -50,13 +52,15 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
       :
 
         ScalarFunctionGradient((defaultValues.size() > 0)
-                                   ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                   ? std::count(defaultValues.begin(), defaultValues.end(),
+                                       std::numeric_limits<double>::quiet_NaN())
                                    : fGradient.getNumberOfParameters()),
         fGradientScalar(&fGradient),
         fGradientVector(nullptr),
         dF(fGradient.getNumberOfParameters()),
         k(0),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(dF),
         tmpMat(0, 0) {
@@ -83,13 +87,15 @@ class ComponentScalarFunctionGradient : public ScalarFunctionGradient {
       :
 
         ScalarFunctionGradient((defaultValues.size() > 0)
-                                   ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                   ? std::count(defaultValues.begin(), defaultValues.end(),
+                                       std::numeric_limits<double>::quiet_NaN())
                                    : fGradient.getNumberOfParameters()),
         fGradientScalar(nullptr),
         fGradientVector(&fGradient),
         dF(fGradient.getNumberOfParameters()),
         k(k),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(fGradient.getNumberOfComponents()),
         tmpMat(fGradient.getNumberOfComponents(), dF) {

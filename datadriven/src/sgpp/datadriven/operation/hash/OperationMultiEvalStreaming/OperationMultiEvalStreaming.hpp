@@ -39,7 +39,7 @@ class OperationMultiEvalStreaming : public base::OperationMultipleEval {
  public:
   OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset);
 
-  ~OperationMultiEvalStreaming();
+  ~OperationMultiEvalStreaming() override;
 
   size_t getChunkGridPoints();
 

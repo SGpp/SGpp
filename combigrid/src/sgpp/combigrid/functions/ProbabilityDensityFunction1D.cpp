@@ -75,15 +75,16 @@ double ProbabilityDensityFunction1D::normalizeInput(double xValue) {
     case ProbabilityDensityFunctionType::BOUNDED_NORMAL:
     case ProbabilityDensityFunctionType::BOUNDED_LOGNORMAL:
     case ProbabilityDensityFunctionType::NORMAL:
-    default:
-      double a = config.pdfParameters.lowerBound_;
-      double b = config.pdfParameters.upperBound_;
-      if (a == b) {
-        std::cerr << "ProbabilityDensityFunction1D: lower and upper bound cannot be identical!"
-                  << std::endl;
-      }
-      return a + (b - a) * xValue;
+      break;
   }
+
+  double a = config.pdfParameters.lowerBound_;
+  double b = config.pdfParameters.upperBound_;
+  if (a == b) {
+    std::cerr << "ProbabilityDensityFunction1D: lower and upper bound cannot be identical!"
+              << std::endl;
+  }
+  return a + (b - a) * xValue;
 }
 
 ProbabilityDensityFunction1D::ProbabilityDensityFunction1D(

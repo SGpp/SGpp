@@ -108,7 +108,7 @@ void ScreenOutput::writeHelp(std::string helpText) {
 
 void ScreenOutput::writeStartSolve(std::string text) {
   std::string line;
-  size_t line_length = (size_t)text.length();
+  size_t line_length = static_cast<size_t>(text.length());
 
   while (line_length > 0) {
     line.append("-");

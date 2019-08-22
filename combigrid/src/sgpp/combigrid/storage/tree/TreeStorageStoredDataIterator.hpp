@@ -70,21 +70,21 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
     internalIndex[d] = firstValue;
     size_t dim = d + 1;
     if (dim < numInternalDimensions) {
-      internalNodes[dim] =
-          (InternalTreeStorageNode<T> *)internalNodes[d]->children[firstValue].get();
+      internalNodes[dim] = dynamic_cast<InternalTreeStorageNode<T>*>(
+          internalNodes[d]->children[firstValue].get());
 
       ++dim;
       while (dim < numInternalDimensions) {
-        internalNodes[dim] =
-            (InternalTreeStorageNode<T> *)internalNodes[dim - 1]->children[0].get();
+        internalNodes[dim] = dynamic_cast<InternalTreeStorageNode<T>*>(
+            internalNodes[dim - 1]->children[0].get());
         ++dim;
       }
 
       firstValue = 0;
     }
 
-    lowestNode =
-        (LowestTreeStorageNode<T> *)internalNodes[lastInternalDim]->children[firstValue].get();
+    lowestNode = dynamic_cast<LowestTreeStorageNode<T>*>(
+        internalNodes[lastInternalDim]->children[firstValue].get());
 
     return static_cast<int>(numInternalDimensions - d);
   }
@@ -99,7 +99,7 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
     auto current = root;
 
     for (; numDimensions >= 2; --numDimensions) {
-      auto internal = (InternalTreeStorageNode<T> *)current;
+      auto internal = dynamic_cast<InternalTreeStorageNode<T>*>(current);
 
       if (internal->children.size() == 0) {
         // the storage is empty
@@ -110,7 +110,7 @@ class TreeStorageStoredDataIterator : public AbstractMultiStorageIterator<T> {
       internalNodes.push_back(internal);
       current = internal->children[0].get();
     }
-    lowestNode = (LowestTreeStorageNode<T> *)current;
+    lowestNode = dynamic_cast<LowestTreeStorageNode<T>*>(current);
 
     // valid = lowestNode->elements.size() > 0;
     if (lowestNode->elements.size() == 0) {

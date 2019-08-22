@@ -30,7 +30,7 @@ OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatri
   _ordered = true;
   if (zorder->isIdentity()) {
     delete zorder;
-    zorder = NULL;
+    zorder = nullptr;
   }
   prepare();
 }
@@ -45,11 +45,11 @@ OperationMultiEvalCuda::OperationMultiEvalCuda(base::Grid& grid, base::DataMatri
     _ordered = true;
     if (zorder->isIdentity()) {
       delete zorder;
-      zorder = NULL;
+      zorder = nullptr;
     }
   } else {
     _ordered = false;
-    zorder = NULL;
+    zorder = nullptr;
   }
   prepare();
 }

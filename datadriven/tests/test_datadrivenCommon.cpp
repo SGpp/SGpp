@@ -41,7 +41,7 @@ using sgpp::base::OCLOperationConfiguration;
 std::string uncompressFile(std::string fileName) {
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
 
-  if (inFileZ == NULL) {
+  if (inFileZ == nullptr) {
     std::cout << "Error: Failed to gzopen file " << fileName << std::endl;
     exit(0);
   }

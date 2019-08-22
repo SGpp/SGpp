@@ -42,7 +42,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
 
   double* temp_current = new double[(1 << (l - 1)) - 1];
 
-  for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
+  for (i = 0; i < static_cast<unsigned int>(1 << (l - 1)) - 1; i++) {
     _seql = _seqr;
     _vall = _valr;
     index.set(dim, l, 2 * i + 3);
@@ -77,7 +77,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
           0.1 * h * (-temp_current[i + 1] + 2 * temp_current[i + 2] - temp_current[i + 3]) +
           0.1 * h * (-temp_current[i - 1] + 2 * temp_current[i - 2]);
 
-    for (i = 4; i < (unsigned int)(1 << l) - 4; i = i + 2) {
+    for (i = 4; i < static_cast<unsigned int>(1 << l) - 4; i = i + 2) {
       index.set(dim, l, i + 1);
       _seq = index.seq();
 
@@ -116,7 +116,7 @@ void LaplaceUpGradientPrewavelet::operator()(sgpp::base::DataVector& source,
     _seqr = index.seq();
     _valr = storage->isInvalidSequenceNumber(_seqr) ? 0.0 : source[_seqr];
 
-    for (i = 0; i < (unsigned int)(1 << (l - 1)) - 1; i++) {
+    for (i = 0; i < static_cast<unsigned int>(1 << (l - 1)) - 1; i++) {
       _seql = _seqr;
       _vall = _valr;
       index.set(dim, l, 2 * i + 3);

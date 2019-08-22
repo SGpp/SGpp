@@ -37,7 +37,7 @@ class HashRefinement: public AbstractRefinement {
    */
   void free_refine(GridStorage& storage,
                    RefinementFunctor& functor,
-                   std::vector<size_t>* addedPoints = 0) override;
+                   std::vector<size_t>* addedPoints = nullptr) override;
 
 
   /**
@@ -58,7 +58,7 @@ class HashRefinement: public AbstractRefinement {
   void refineGridpoint1D(GridStorage& storage, GridPoint& point, size_t d) override;
   void refineGridpoint1D(GridStorage& storage, size_t seq, size_t d) override;
 
-  virtual ~HashRefinement() {}
+  ~HashRefinement() override {}
 
 
  protected:

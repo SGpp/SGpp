@@ -11,8 +11,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -57,13 +59,15 @@ class ComponentScalarFunction : public ScalarFunction {
       :
 
         ScalarFunction((defaultValues.size() > 0)
-                           ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                           ? std::count(defaultValues.begin(), defaultValues.end(),
+                               std::numeric_limits<double>::quiet_NaN())
                            : f.getNumberOfParameters()),
         fScalar(&f),
         fVector(nullptr),
         dF(f.getNumberOfParameters()),
         k(0),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(0) {
     initialize();
@@ -89,13 +93,15 @@ class ComponentScalarFunction : public ScalarFunction {
       :
 
         ScalarFunction((defaultValues.size() > 0)
-                           ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                           ? std::count(defaultValues.begin(), defaultValues.end(),
+                               std::numeric_limits<double>::quiet_NaN())
                            : f.getNumberOfParameters()),
         fScalar(nullptr),
         fVector(&f),
         dF(f.getNumberOfParameters()),
         k(k),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(f.getNumberOfComponents()) {
     initialize();

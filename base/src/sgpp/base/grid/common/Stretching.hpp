@@ -290,6 +290,9 @@ class Stretching : public BoundingBox {
   void calculateNeighborSpecs(level_t level, index_t index, level_t& leftLevel,
                               index_t& leftIndex, level_t& rightLevel, index_t& rightIndex) const;
 
+  // explicitly hide BoundingBox::unserialize methods to prevent -Woverloaded-virtual warnings
+  using BoundingBox::unserialize;
+
  public:
   /**
    * Constructor for Stretching

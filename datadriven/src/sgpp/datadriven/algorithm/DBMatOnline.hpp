@@ -31,7 +31,7 @@ class DBMatOnline {
   DBMatOnline(DBMatOnline&& rhs) = default;
 
   DBMatOnline& operator=(const DBMatOnline& rhs) = delete;
-  DBMatOnline& operator=(DBMatOnline&& rhs) = default;
+  DBMatOnline& operator=(DBMatOnline&& rhs) = delete;
   /**
    * Destructor
    */

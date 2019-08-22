@@ -70,7 +70,7 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(double sigmaFacto
   base::DataVector ylimits_1d(2);
 
   base::DataVector kern(nsamples);
-  kern.setAll(1.0f);
+  kern.setAll(1.0);
 
   std::unique_ptr<OperationRosenblattTransformationKDE> opRosen(
       op_factory::createOperationRosenblattTransformationKDE(*kde));
@@ -234,7 +234,7 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    size_t dims = cdfs1d->getSize();  // total dimensions
 //
 //    /* Step 1: do conditional in current dim */
-//    Grid* g_out = NULL;
+//    Grid* g_out = nullptr;
 //    DataVector* a_out = new DataVector(1);
 //    OperationDensityConditional* cond =
 //            op_factory::createOperationDensityConditional(*g_in);
@@ -251,8 +251,8 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
 //    if (g_out->getDimension() > 1) {
 //
 //        // Marginalize to next dimension
-//        Grid* g1d = NULL;
-//        DataVector* a1d = NULL;
+//        Grid* g1d = nullptr;
+//        DataVector* a1d = nullptr;
 //        OperationDensityMargTo1D* marg1d =
 //                op_factory::createOperationDensityMargTo1D(*g_out);
 //        marg1d->margToDimX(a_out, g1d, a1d, op_dim);

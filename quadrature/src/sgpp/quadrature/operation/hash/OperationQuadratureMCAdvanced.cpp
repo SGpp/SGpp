@@ -32,18 +32,18 @@ OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(sgpp::base::Grid& g
 OperationQuadratureMCAdvanced::OperationQuadratureMCAdvanced(size_t dimensions,
                                                              size_t numberOfSamples,
                                                              std::uint64_t seed)
-    : grid(NULL), numberOfSamples(numberOfSamples), dimensions(dimensions), seed(seed) {
+    : grid(nullptr), numberOfSamples(numberOfSamples), dimensions(dimensions), seed(seed) {
   myGenerator = new sgpp::quadrature::NaiveSampleGenerator(dimensions, seed);
 }
 
 OperationQuadratureMCAdvanced::~OperationQuadratureMCAdvanced() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 }
 
 void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -52,7 +52,7 @@ void OperationQuadratureMCAdvanced::useNaiveMonteCarlo() {
 
 void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
     std::vector<size_t>& strataPerDimension) {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -60,7 +60,7 @@ void OperationQuadratureMCAdvanced::useStratifiedMonteCarlo(
 }
 
 void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -69,7 +69,7 @@ void OperationQuadratureMCAdvanced::useLatinHypercubeMonteCarlo() {
 }
 
 void OperationQuadratureMCAdvanced::useQuasiMonteCarloWithHaltonSequences() {
-  if (myGenerator != NULL) {
+  if (myGenerator != nullptr) {
     delete myGenerator;
   }
 
@@ -98,7 +98,7 @@ double OperationQuadratureMCAdvanced::doQuadratureFunc(FUNC func, void* clientda
   for (size_t i = 0; i < numberOfSamples; i++) {
     sgpp::base::DataVector dv(dimensions);
     dm.getRow(i, dv);
-    res += func(*reinterpret_cast<int*>(&dimensions), dv.getPointer(), clientdata);
+    res += func(static_cast<int>(dimensions), dv.getPointer(), clientdata);
   }
 
   // delete p;
@@ -125,7 +125,7 @@ double OperationQuadratureMCAdvanced::doQuadratureL2Error(FUNC func, void* clien
       point[d] = x;
     }
     res += pow(
-        func(*reinterpret_cast<int*>(&dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
+        func(static_cast<int>(dimensions), p, clientdata) - opEval->eval(alpha, point), 2);
   }
 
   delete[] p;

@@ -22,9 +22,9 @@
 using sgpp::base::DataVector;
 using sgpp::combigrid::ThreadPool;
 
-int counter = 0;
-std::vector<int> data;
-std::recursive_mutex dataMutex;
+static int counter = 0;
+static std::vector<int> data;
+static std::recursive_mutex dataMutex;
 
 void idleCallback(ThreadPool &tp) {
   if (counter < 100) {

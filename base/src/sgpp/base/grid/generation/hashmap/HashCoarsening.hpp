@@ -53,8 +53,8 @@ class HashCoarsening {
                                DataVector& alpha,
                                size_t numFirstPoints,
                                size_t minIndexConsidered = 0,
-                               std::vector<HashGridPoint>* removedPoints = 0,
-                               std::vector<size_t>* removedSeq = 0);
+                               std::vector<HashGridPoint>* removedPoints = nullptr,
+                               std::vector<size_t>* removedSeq = nullptr);
 
   /**
    * Performs coarsening on grid. It's possible to remove a certain number
@@ -80,8 +80,8 @@ class HashCoarsening {
   void free_coarsen(GridStorage& storage,
                     CoarseningFunctor& functor,
                     DataVector& alpha,
-                    std::vector<HashGridPoint>* removedPoints = 0,
-                    std::vector<size_t>* removedSeq = 0);
+                    std::vector<HashGridPoint>* removedPoints = nullptr,
+                    std::vector<size_t>* removedSeq = nullptr);
 
   /**
    * Calculates the number of points, which can be refined

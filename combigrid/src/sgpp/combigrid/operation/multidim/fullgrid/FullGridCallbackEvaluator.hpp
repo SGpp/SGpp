@@ -45,7 +45,7 @@ class FullGridCallbackEvaluator : public AbstractFullGridEvaluationStrategy<V> {
       : AbstractFullGridEvaluationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies,
                                               summationStrategyType) {}
 
-  virtual ~FullGridCallbackEvaluator() {}
+  ~FullGridCallbackEvaluator() override {}
 
   /**
    * @return a vector of tasks which can be precomputed in parallel to make the (serialized)

@@ -195,7 +195,6 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
  * @param generateConsistentGrid if set to true, all hierarchical ancestors are available in the
  * resulting grid
- * @param verbose verbosity
  * @param f function to be approximated (as an alternative to a sparse grid function)
  *
  * @return Pointer to the new OperationMakePositive object for the Grid grid
@@ -205,8 +204,7 @@ datadriven::OperationMakePositive* createOperationMakePositive(
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool generateConsistentGrid = true, bool verbose = false,
-    sgpp::base::ScalarFunction* f = nullptr);
+    bool generateConsistentGrid = true, sgpp::base::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationLimitFunctionValueRange for an arbitrary function f or some
@@ -215,7 +213,6 @@ datadriven::OperationMakePositive* createOperationMakePositive(
  *
  * @param candidateSearchAlgorithm defines algorithm for candidate set enumeration
  * @param interpolationAlgorithm defines algorithm for coefficient estimation of extension set
- * @param verbose verbosity
  * @param f function to be approximated (as an alternative to a sparse grid function)
  *
  * @return Pointer to the new OperationLimitFunctionValueRange object for the Grid grid
@@ -225,7 +222,7 @@ datadriven::OperationLimitFunctionValueRange* createOperationLimitFunctionValueR
         datadriven::MakePositiveCandidateSearchAlgorithm::Intersections,
     datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
         datadriven::MakePositiveInterpolationAlgorithm::SetToZero,
-    bool verbose = false, sgpp::base::ScalarFunction* f = nullptr);
+    sgpp::base::ScalarFunction* f = nullptr);
 
 /**
  * Factory method, returning an OperationCovariance for the grid at hand.

@@ -25,8 +25,6 @@ using sgpp::base::DataMatrix;
 
 BOOST_AUTO_TEST_SUITE(TestFista)
 
-const double eps = 1e-3;
-
 BOOST_AUTO_TEST_CASE(testFista) {
   const size_t dim = 2;
   const size_t level = 4;

@@ -55,7 +55,7 @@ class FullGridOptimizedPCESummationStrategy : public AbstractFullGridSummationSt
     }
   }
 
-  virtual ~FullGridOptimizedPCESummationStrategy() {}
+  ~FullGridOptimizedPCESummationStrategy() override {}
 
   V eval(MultiIndex const &level) override {
 #ifdef USE_EIGEN

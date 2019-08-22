@@ -23,7 +23,7 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
                           sgpp::solver::OperationParabolicPDESolverSystem& System,
                           bool bIdentifyLastStep, bool verbose) {
   size_t allIter = 0;
-  sgpp::base::DataVector* rhs = NULL;
+  sgpp::base::DataVector* rhs = nullptr;
 
   for (size_t i = 0; i < this->nMaxIterations; i++) {
     // generate right hand side
@@ -34,21 +34,21 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
     allIter += LinearSystemSolver.getNumberIterations();
 
     if (verbose == true) {
-      if (myScreen == NULL) {
+      if (myScreen == nullptr) {
         std::cout << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
                   << LinearSystemSolver.getNumberIterations()
                   << " Iterations (Total Iter.: " << allIter << ")" << std::endl;
       }
     }
 
-    if (myScreen != NULL) {
+    if (myScreen != nullptr) {
       std::stringstream soutput;
       soutput << "Final residuum " << LinearSystemSolver.getResiduum() << "; with "
               << LinearSystemSolver.getNumberIterations() << " Iterations (Total Iter.: " << allIter
               << ")";
 
       if (i < this->nMaxIterations - 1) {
-        myScreen->update((size_t)((static_cast<double>(i + 1) * 100.0) /
+        myScreen->update(static_cast<size_t>((static_cast<double>(i + 1) * 100.0) /
             static_cast<double>(this->nMaxIterations)),
                          soutput.str());
       } else {
@@ -71,7 +71,7 @@ void CrankNicolson::solve(SLESolver& LinearSystemSolver,
   }
 
   // write some empty lines to console
-  if (myScreen != NULL) {
+  if (myScreen != nullptr) {
     myScreen->writeEmptyLines(2);
   }
 

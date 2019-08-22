@@ -29,7 +29,7 @@ class PolynomialStochasticCollocation : public CombigridSurrogateModel {
  public:
   explicit PolynomialStochasticCollocation(
       sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
-  virtual ~PolynomialStochasticCollocation();
+  ~PolynomialStochasticCollocation() override;
 
   double eval(sgpp::base::DataVector& x) override;
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) override;
