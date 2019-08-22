@@ -65,7 +65,7 @@ double FirstMomentNormStrategy::quad(MultiIndex i, GaussLegendreQuadrature& quad
     size_t incrementQuadraturePoints = basisFunction->numAdditionalQuadraturePoints();
     size_t numGaussPoints = (degree_i + 2) / 2;
 
-    auto func = [&basisFunction, &degree_i, &idim, &weightFunction](double x_unit, double x_prob) {
+    auto func = [&basisFunction, &degree_i, &weightFunction](double x_unit, double x_prob) {
       return basisFunction->evaluate(degree_i, x_unit) * weightFunction(x_unit);
     };
 
