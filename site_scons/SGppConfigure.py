@@ -551,11 +551,11 @@ def configureClangCompiler(config):
   allWarnings = [
     "-Wall", "-Wextra", "-Weverything", "-Wno-unknown-warning-option",
     "-Wno-c++98-compat-local-type-template-args", "-Wno-c++98-compat-pedantic", "-Wno-deprecated",
-    "-Wno-documentation", "-Wno-documentation-deprecated-sync",
+    "-Wno-disabled-macro-expansion", "-Wno-documentation", "-Wno-documentation-deprecated-sync",
     "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
     "-Wno-global-constructors", "-Wno-missing-noreturn", "-Wno-missing-prototypes", "-Wno-padded",
-    "-Wno-shadow", "-Wno-sign-conversion", "-Wno-undef", "-Wno-unused-parameter",
-    "-Wno-weak-vtables",
+    "-Wno-shadow", "-Wno-shadow-field", "-Wno-sign-conversion", "-Wno-undef",
+    "-Wno-unused-parameter", "-Wno-weak-vtables",
   ]
   config.env.Append(CPPFLAGS=allWarnings)
 
