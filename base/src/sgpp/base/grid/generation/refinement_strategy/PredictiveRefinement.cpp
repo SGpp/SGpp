@@ -130,8 +130,6 @@ void PredictiveRefinement::collectRefinablePoints(
 void PredictiveRefinement::refineGridpointsCollection(
   GridStorage& storage, RefinementFunctor& functor,
   AbstractRefinement::refinement_container_type& collection) {
-  PredictiveRefinementIndicator::value_type max_value;
-
   // now refine all grid points which satisfy the refinement criteria
   double threshold = functor.getRefinementThreshold();
   refinement_key_type* key;
