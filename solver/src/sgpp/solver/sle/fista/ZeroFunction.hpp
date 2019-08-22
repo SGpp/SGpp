@@ -18,7 +18,7 @@ namespace solver {
  */
 class ZeroFunction : public RegularizationFunction {
  public:
-  virtual ~ZeroFunction() {}
+  ~ZeroFunction() override {}
   double eval(base::DataVector weights) override { return 0.0; }
 
   base::DataVector prox(const base::DataVector& weights, double stepsize) override {

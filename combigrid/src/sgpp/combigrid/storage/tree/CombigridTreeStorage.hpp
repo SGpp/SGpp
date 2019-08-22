@@ -51,7 +51,7 @@ class CombigridTreeStorage : public AbstractCombigridStorage {
       std::vector<std::shared_ptr<AbstractPointHierarchy>> const &p_pointHierarchies,
       bool exploitNesting = true,
       MultiFunction p_func = MultiFunction(constantFunction<base::DataVector const &, double>()));
-  virtual ~CombigridTreeStorage();
+  ~CombigridTreeStorage() override;
 
   std::shared_ptr<AbstractMultiStorageIterator<double>> getGuidedIterator(
       MultiIndex const &level, MultiIndexIterator &iterator,

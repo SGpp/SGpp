@@ -88,7 +88,7 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
   PolynomialQuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function,
                                 bool normalizeWeights = true, size_t numAdditionalPoints = 10);
   PolynomialQuadratureEvaluator(PolynomialQuadratureEvaluator const &other);
-  virtual ~PolynomialQuadratureEvaluator();
+  ~PolynomialQuadratureEvaluator() override;
 
   std::vector<FloatScalarVector> getBasisValues() override { return weights; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

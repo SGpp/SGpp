@@ -39,7 +39,7 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   DBMatOfflineLU& operator=(DBMatOfflineLU&& rhs) = default;
 
-  virtual ~DBMatOfflineLU() = default;
+  ~DBMatOfflineLU() override = default;
 
   DBMatOffline* clone() override;
 

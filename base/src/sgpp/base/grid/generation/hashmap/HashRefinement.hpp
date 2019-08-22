@@ -58,7 +58,7 @@ class HashRefinement: public AbstractRefinement {
   void refineGridpoint1D(GridStorage& storage, GridPoint& point, size_t d) override;
   void refineGridpoint1D(GridStorage& storage, size_t seq, size_t d) override;
 
-  virtual ~HashRefinement() {}
+  ~HashRefinement() override {}
 
 
  protected:

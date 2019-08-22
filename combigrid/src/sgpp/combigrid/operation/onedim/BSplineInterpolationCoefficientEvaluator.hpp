@@ -29,7 +29,7 @@ class BSplineInterpolationCoefficientEvaluator : public AbstractLinearEvaluator<
   BSplineInterpolationCoefficientEvaluator();
   explicit BSplineInterpolationCoefficientEvaluator(size_t degree);
 
-  virtual ~BSplineInterpolationCoefficientEvaluator();
+  ~BSplineInterpolationCoefficientEvaluator() override;
   BSplineInterpolationCoefficientEvaluator(BSplineInterpolationCoefficientEvaluator const &other);
 
   std::vector<FloatTensorVector> getBasisValues() override { return basisValues; }

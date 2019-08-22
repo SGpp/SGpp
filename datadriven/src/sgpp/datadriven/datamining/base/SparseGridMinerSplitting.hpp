@@ -67,7 +67,7 @@ class SparseGridMinerSplitting : public SparseGridMiner {
   /**
    * Default destructor.
    */
-  ~SparseGridMinerSplitting() = default;
+  ~SparseGridMinerSplitting() override = default;
 
   /**
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,

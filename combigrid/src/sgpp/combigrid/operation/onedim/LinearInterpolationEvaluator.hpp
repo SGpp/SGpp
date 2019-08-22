@@ -29,7 +29,7 @@ class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarV
 
  public:
   LinearInterpolationEvaluator();
-  virtual ~LinearInterpolationEvaluator();
+  ~LinearInterpolationEvaluator() override;
   LinearInterpolationEvaluator(LinearInterpolationEvaluator const &other);
 
   std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }

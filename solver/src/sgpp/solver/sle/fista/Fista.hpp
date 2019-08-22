@@ -38,7 +38,7 @@ class Fista : public FistaBase {
    * @param g is the regularization function.
    */
   explicit Fista(F g) : g(g) {}
-  virtual ~Fista() {}
+  ~Fista() override {}
   /**
    * @brief solve solves the problem.
    * @param op
