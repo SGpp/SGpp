@@ -91,6 +91,10 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
   this->q_ortho_matrix_.resizeQuadratic(dim_a);
   this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
 }
+ 
+void DBMatOfflineOrthoAdapt::permutateMatrix(std::vector<int> desiredLevelVector) {
+  
+}
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix(
     RegularizationConfiguration& regularizationConfig,

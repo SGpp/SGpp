@@ -46,6 +46,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 
+  void permutateMatrix(std::vector<int> desiredLevelVector) override;
+
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
    * (lhs + lambda*I)^{-1} = Q * (T + lambda*I)^{-1} * Q^t = Q * T_inv * Q^t

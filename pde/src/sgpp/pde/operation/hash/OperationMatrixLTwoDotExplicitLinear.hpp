@@ -66,7 +66,7 @@ class OperationMatrixLTwoDotExplicitLinear : public sgpp::base::OperationMatrix 
    * @param j_start start index for column iteration
    * @param j_end end index for column iteration
    */
-  inline void buildMatrixWithBounds(sgpp::base::DataMatrix* mat, sgpp::base::Grid* grid,
+  inline void  buildMatrixWithBounds(sgpp::base::DataMatrix* mat, sgpp::base::Grid* grid,
                                     size_t i_start = 0, size_t i_end = 0, size_t j_start = 0,
                                     size_t j_end = 0) {
     size_t gridSize = grid->getSize();

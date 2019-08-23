@@ -1,3 +1,16 @@
 {
-   "database": [ ]
+   "database": [{
+         "gridConfiguration": {
+            "type": "regular",
+            "dimension": 2,
+            "level": 5
+         },
+         "regularizationConfiguration": {
+            "lambda": 0.01
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "Chol"
+         },
+         "filepath": "tmp"
+      }]
 }

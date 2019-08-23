@@ -130,6 +130,11 @@ class DBMatOffline {
                                DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
+   * Permutates the matrix, if possible, to fit the desired level vector.
+   */
+  virtual void permutateMatrix(std::vector<int> desiredLevelVector) = 0;
+
+  /**
    * Prints the matrix onto standard output
    */
   void printMatrix();

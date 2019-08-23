@@ -41,6 +41,11 @@ class DBMatDatabase{
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
+  bool hasBaseDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
+      sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);    
+
   /**
    * Scans the entire database and finds the first entry that matches the configurations.
    * @param gridConfig the grid configuration the matrix must match
@@ -103,7 +108,8 @@ class DBMatDatabase{
   int entryIndexByConfiguration(sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, 
+      bool findBaseConfig = false);
 
   /**
    * Checks weather the grid configuration of a json dict node representing a database entry root
@@ -115,6 +121,8 @@ class DBMatDatabase{
    */
   bool gridConfigurationMatches(json::DictNode *node,
       sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num);
+
+  bool baseGridConfigurationMatches(json::DictNode *node, sgpp::base::CombiGridConfiguration& gridConfig, size_t entry_num);
 
   /**
    * Checks weather the regularization configuration of a json dict node representing a
