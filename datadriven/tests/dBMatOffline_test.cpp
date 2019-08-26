@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 
 
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrixQ.getSize(), newMatrixQ.getSize());
 
   for (size_t i = 0; i < newMatrixQ.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrixQ[i], oldMatrixQ[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrixQ[i], oldMatrixQ[i], 1e-4);
   }
 
   // t_tridiag_inv
@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrixTinv.getSize(), newMatrixTinv.getSize());
 
   for (size_t i = 0; i < newMatrixTinv.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrixTinv[i], oldMatrixTinv[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrixTinv[i], oldMatrixTinv[i], 1e-4);
   }
 }
 
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 

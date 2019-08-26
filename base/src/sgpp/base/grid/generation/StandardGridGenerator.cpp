@@ -115,7 +115,6 @@ size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLev
   throw generation_exception(
       "StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel "
       "is not implemented");
-  return 0;
 }
 
 }  // namespace base

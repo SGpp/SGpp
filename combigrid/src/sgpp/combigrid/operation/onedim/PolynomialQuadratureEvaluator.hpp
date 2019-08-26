@@ -25,7 +25,6 @@ class LagrangePolynom {
   std::vector<double> points;
   size_t point;
   std::vector<double> denominator;
-  bool computeDenominator = true;
 
  public:
   void initialize(size_t newPoint, std::vector<double> &newPoints) {
@@ -89,7 +88,7 @@ class PolynomialQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalar
   PolynomialQuadratureEvaluator(sgpp::combigrid::SingleFunction weight_function,
                                 bool normalizeWeights = true, size_t numAdditionalPoints = 10);
   PolynomialQuadratureEvaluator(PolynomialQuadratureEvaluator const &other);
-  virtual ~PolynomialQuadratureEvaluator();
+  ~PolynomialQuadratureEvaluator() override;
 
   std::vector<FloatScalarVector> getBasisValues() override { return weights; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(decomp_identity) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], B[i], 1e-4);
   }
 }
 
@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], results[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], results[i], 1e-4);
   }
 }
 
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], results[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], results[i], 1e-4);
   }
   omp_set_num_threads(numThreads);
 }

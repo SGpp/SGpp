@@ -73,7 +73,7 @@ int main() {
     sgpp::base::GridPoint& gp = gridStorage.getPoint(i);
     p[0] = gp.getStandardCoordinate(0);
     p[1] = gp.getStandardCoordinate(1);
-    alpha[i] = f(2, p, NULL);
+    alpha[i] = f(2, p, nullptr);
   }
 
   std::unique_ptr<OperationHierarchisation>(sgpp::op_factory::createOperationHierarchisation(*grid))
@@ -97,11 +97,11 @@ int main() {
   std::cout << "Monte Carlo value:     " << res << std::endl;
 
   // Monte Carlo quadrature of a function
-  res = opMC.doQuadratureFunc(f, NULL);
+  res = opMC.doQuadratureFunc(f, nullptr);
   std::cout << "MC value:              " << res << std::endl;
 
   // Monte Carlo quadrature of error
-  res = opMC.doQuadratureL2Error(f, NULL, alpha);
+  res = opMC.doQuadratureL2Error(f, nullptr, alpha);
   std::cout << "MC L2-error:           " << res << std::endl;
 }  // end of main
 

@@ -52,8 +52,6 @@ std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
   }
   throw base::application_exception("Decomposition reports refineable but does not "
                                             "override updateSystemMatrixDecomposition()");
-  std::vector<size_t> return_vector = {};
-  return return_vector;
 }
 
 

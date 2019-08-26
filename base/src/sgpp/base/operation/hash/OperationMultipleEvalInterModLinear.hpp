@@ -51,7 +51,7 @@ class OperationMultipleEvalInterModLinear : public OperationMultipleEval {
   void multTranspose(DataVector& source, DataVector& result) override;
 
 
-  double getDuration() { return 0.0; }
+  double getDuration() override { return 0.0; }
 
 
  protected:

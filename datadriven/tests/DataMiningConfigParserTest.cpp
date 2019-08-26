@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
 
   SLESolverConfiguration defaults;
   defaults.type_ = SLESolverType::BiCGSTAB;
-  defaults.eps_ = 10e-5;
+  defaults.eps_ = 1e-4;
   defaults.maxIterations_ = 42;
   defaults.threshold_ = 1;
   SLESolverConfiguration config;
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(SLESolverType::CG));
-  BOOST_CHECK_CLOSE(config.eps_, 10e-15, tolerance);
+  BOOST_CHECK_CLOSE(config.eps_, 1e-14, tolerance);
   BOOST_CHECK_EQUAL(config.maxIterations_, 100);
   BOOST_CHECK_EQUAL(config.threshold_, 1);
 }
@@ -203,7 +203,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverFinalConfig) {
 
   SLESolverConfiguration defaults;
   defaults.type_ = SLESolverType::BiCGSTAB;
-  defaults.eps_ = 10e-5;
+  defaults.eps_ = 1e-4;
   defaults.maxIterations_ = 42;
   defaults.threshold_ = 1;
   SLESolverConfiguration config;
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverFinalConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(SLESolverType::CG));
-  BOOST_CHECK_CLOSE(config.eps_, 10e-15, tolerance);
+  BOOST_CHECK_CLOSE(config.eps_, 1e-14, tolerance);
   BOOST_CHECK_EQUAL(config.maxIterations_, 100);
   BOOST_CHECK_EQUAL(config.threshold_, 1);
 }
@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(RegularizationType::Identity));
-  BOOST_CHECK_CLOSE(config.lambda_, 10e-7, tolerance);
+  BOOST_CHECK_CLOSE(config.lambda_, 1e-6, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
 }

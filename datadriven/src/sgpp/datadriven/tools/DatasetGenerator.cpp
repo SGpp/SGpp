@@ -39,7 +39,7 @@ void Friedman1Generator::createData(size_t offset, size_t size,
                                     base::DataMatrix& trData, base::DataVector& classes) {
   trData.resize(size);
   classes.resize(size);
-  srand((unsigned int)(offset));
+  srand(static_cast<unsigned int>(offset));
 
   for (size_t i = 0; i < size; i++) {
     for (size_t j = 0; j < 10; j++) {
@@ -64,7 +64,7 @@ void Friedman2Generator::createData(size_t offset, size_t size,
                                     base::DataMatrix& trData, base::DataVector& classes) {
   trData.resize(size);
   classes.resize(size);
-  srand((unsigned int)(offset));
+  srand(static_cast<unsigned int>(offset));
 
   for (size_t i = 0; i < size; i++) {
     trData.set(i, 0, uniform(0.0, 100.0));
@@ -90,7 +90,7 @@ void Friedman3Generator::createData(size_t offset, size_t size,
                                     base::DataMatrix& trData, base::DataVector& classes) {
   trData.resize(size);
   classes.resize(size);
-  srand((unsigned int)(offset));
+  srand(static_cast<unsigned int>(offset));
 
   for (size_t i = 0; i < size; i++) {
     trData.set(i, 0, uniform(0.0, 100.0));

@@ -92,8 +92,6 @@ void KernelDensityEstimator::initializeKernel(KernelType kernelType) {
     case KernelType::EPANECHNIKOV:
       kernel.reset(new EpanechnikovKernel());
       break;
-    default:
-      break;
   }
 }
 
@@ -383,8 +381,6 @@ void KernelDensityEstimator::computeAndSetOptKDEbdwth() {
       break;
     case BandwidthOptimizationType::MAXIMUMLIKELIHOOD:
       MaximumLikelihoodCrossValidation::optimizeBandwidths(this, sigma);
-      break;
-    default:
       break;
   }
 

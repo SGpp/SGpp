@@ -461,7 +461,7 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
 base::OperationConvert* createOperationConvert(base::Grid& grid) {
   if (grid.getType() == base::GridType::Prewavelet) {
     return new base::OperationConvertPrewavelet(grid.getStorage(),
-                                                ((base::PrewaveletGrid*)&grid)->getShadowStorage());
+        dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage());
   } else {
     throw base::factory_exception("createOperationConvert is not implemented for this grid type.");
   }

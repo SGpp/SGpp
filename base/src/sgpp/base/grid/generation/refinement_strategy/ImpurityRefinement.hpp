@@ -56,7 +56,7 @@ class ImpurityRefinement : public virtual RefinementDecorator {
   using RefinementDecorator::free_refine;
 
   explicit ImpurityRefinement(AbstractRefinement* refinement)
-      : RefinementDecorator(refinement), iThreshold_(0.0) {}
+      : RefinementDecorator(refinement) {}
 
   /**
    * Refines a grid according to the impurity refinement indicator provided.
@@ -124,9 +124,6 @@ class ImpurityRefinement : public virtual RefinementDecorator {
       AbstractRefinement::refinement_list_type current_value_list,
       size_t refinementsNum,
       AbstractRefinement::refinement_container_type& collection);
-
- private:
-  double iThreshold_;
 };
 
 }  // namespace base

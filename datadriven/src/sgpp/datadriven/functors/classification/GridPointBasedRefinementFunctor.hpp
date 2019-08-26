@@ -49,7 +49,7 @@ class GridPointBasedRefinementFunctor : public MultiGridRefinementFunctor {
   double start() const override;
   size_t getRefinementsNum() const override;
   double getRefinementThreshold() const override;
-  virtual ~GridPointBasedRefinementFunctor() {}
+  ~GridPointBasedRefinementFunctor() override {}
 
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;

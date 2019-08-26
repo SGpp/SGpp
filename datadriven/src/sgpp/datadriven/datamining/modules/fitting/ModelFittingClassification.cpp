@@ -194,11 +194,9 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
 #endif  // USE_SCALAPACK
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default: {
-      std::string errMsg = "Unknown density estimation type";
-      throw application_exception(errMsg.c_str());
-    }
   }
+
+  throw application_exception("Unknown density estimation type");
 }
 
 size_t ModelFittingClassification::labelToIdx(double label) {
@@ -261,7 +259,8 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
+      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+                                                 refinementConfig.levelPenalize,
                                                  refinementConfig.precomputeEvaluations,
                                                  refinementConfig.threshold_);
     }
@@ -269,9 +268,9 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
                                                 refinementConfig.threshold_);
     }
-    default:
-      return nullptr;
   }
+
+  return nullptr;
 }
 
 bool ModelFittingClassification::refine() {

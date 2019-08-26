@@ -139,7 +139,7 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   std::unique_ptr<sgpp::datadriven::OperationMakePositive> opMakePositive(
       sgpp::op_factory::createOperationMakePositive(candidateSearchAlgorithm,
                                                     MakePositiveInterpolationAlgorithm::SetToZero,
-                                                    generateConsistentGrid, verbose));
+                                                    generateConsistentGrid));
   std::unique_ptr<Grid> positiveGrid(grid.clone());
   DataVector positiveAlpha(alpha);
   opMakePositive->makePositive(*positiveGrid, positiveAlpha);

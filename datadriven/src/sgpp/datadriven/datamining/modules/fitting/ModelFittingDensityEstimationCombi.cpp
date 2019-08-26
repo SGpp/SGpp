@@ -229,8 +229,9 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
     case DensityEstimationType::Decomposition: {
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default: { throw base::application_exception("Unknown density estimation type"); }
   }
+
+  throw base::application_exception("Unknown density estimation type");
 }
 
 void ModelFittingDensityEstimationCombi::addNewModel(

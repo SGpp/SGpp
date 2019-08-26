@@ -317,7 +317,7 @@ class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
   /**
    * @return      Spline degree
    */
-  inline size_t getDegree() const {
+  inline size_t getDegree() const override {
     return degree;
   }
 

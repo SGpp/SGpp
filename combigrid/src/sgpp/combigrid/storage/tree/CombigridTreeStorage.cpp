@@ -55,7 +55,7 @@ class CombigridTreeStorageImpl {
       // capture level by copy because the reference might not be valid anymore at the time the
       // lambda is called
       return std::make_shared<TreeStorage<double>>(
-          pointHierarchies.size(), [innerLambda, level, this](MultiIndex const &index) -> double {
+          pointHierarchies.size(), [innerLambda, level](MultiIndex const &index) -> double {
             return innerLambda(index, level);
           });
     };
@@ -64,7 +64,7 @@ class CombigridTreeStorageImpl {
 
     for (auto it = storage->getStoredDataIterator(); it->isValid(); it->moveToNext()) {
       auto level = it->getMultiIndex();
-      it->value()->setFunc([innerLambda, level, this](MultiIndex const &index) -> double {
+      it->value()->setFunc([innerLambda, level](MultiIndex const &index) -> double {
         return innerLambda(index, level);
       });
     }

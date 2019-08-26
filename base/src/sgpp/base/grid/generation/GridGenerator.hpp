@@ -123,7 +123,7 @@ class GridGenerator {
    * @param func reference to refinement functor
    * @param addedPoints pointer to vector to add newly created grid points to
    */
-  virtual void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) = 0;
+  virtual void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) = 0;
 
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.

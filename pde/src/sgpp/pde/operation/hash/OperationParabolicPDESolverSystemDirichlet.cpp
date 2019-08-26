@@ -433,7 +433,7 @@ sgpp::base::DataVector* OperationParabolicPDESolverSystemDirichlet::generateRHS(
 
   rhs_complete.sub(result_complete);
 
-  if (this->rhs != NULL) {
+  if (this->rhs != nullptr) {
     delete this->rhs;
   }
 

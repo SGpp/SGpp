@@ -83,7 +83,7 @@ class BSplineQuadratureEvaluator : public AbstractLinearEvaluator<FloatScalarVec
                              bool normalizeWeights = true);
 
   BSplineQuadratureEvaluator(BSplineQuadratureEvaluator const &other);
-  virtual ~BSplineQuadratureEvaluator();
+  ~BSplineQuadratureEvaluator() override;
 
   std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

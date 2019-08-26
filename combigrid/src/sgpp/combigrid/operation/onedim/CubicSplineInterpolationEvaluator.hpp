@@ -17,7 +17,7 @@ namespace combigrid {
 class CubicSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarVector> {
  public:
   CubicSplineInterpolationEvaluator();
-  virtual ~CubicSplineInterpolationEvaluator();
+  ~CubicSplineInterpolationEvaluator() override;
   CubicSplineInterpolationEvaluator(CubicSplineInterpolationEvaluator const &other);
 
   std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }

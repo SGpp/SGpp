@@ -26,25 +26,25 @@ class data_exception : public std::exception {
    *
    * @param msg The exception message
    */
-  explicit data_exception(const char* msg) throw() : msg(msg) {
+  explicit data_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Create default exception (constructor).
    */
-  data_exception() throw() : msg(NULL) { }
+  data_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor
    */
-  ~data_exception() throw() override { }
+  ~data_exception() noexcept override { }
 
   /**
    * Return message of exception object.
    *
    * @return Returns the message specified in the constructor, otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

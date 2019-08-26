@@ -80,7 +80,6 @@ class RegressionLearner {
           first.solverFista.swap(second.solverFista);
           break;
         case solverCategory::none:
-        default:
           // Do nothing.
           break;
       }
@@ -103,7 +102,6 @@ class RegressionLearner {
           solverFista.~unique_ptr<sgpp::solver::FistaBase>();
           break;
         case solverCategory::none:
-        default:
           // do nothing
           break;
       }

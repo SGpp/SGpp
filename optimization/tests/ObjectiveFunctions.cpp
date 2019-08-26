@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <limits>
+
 #include "ObjectiveFunctions.hpp"
 
 ExampleFunction::ExampleFunction() : ScalarFunction(2) {
@@ -17,7 +19,7 @@ double ExampleFunction::eval(const sgpp::base::DataVector& x) {
       (x[1] >= 0.0) && (x[1] <= 1.0)) {
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   } else {
-    return INFINITY;
+    return std::numeric_limits<double>::infinity();
   }
 }
 
@@ -39,7 +41,7 @@ double ExampleGradient::eval(const sgpp::base::DataVector& x,
     gradient[1] = 7.0 * std::cos(7.0 * x[1]);
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   } else {
-    return INFINITY;
+    return std::numeric_limits<double>::infinity();
   }
 }
 
@@ -67,7 +69,7 @@ double ExampleHessian::eval(const sgpp::base::DataVector& x,
     hessian(1, 1) = -49.0 * std::sin(7.0 * x[1]);
     return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
   } else {
-    return INFINITY;
+    return std::numeric_limits<double>::infinity();
   }
 }
 
@@ -90,7 +92,7 @@ double SphereGradient::eval(const sgpp::base::DataVector& x,
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
-      return INFINITY;
+      return std::numeric_limits<double>::infinity();
     }
 
     const double xt = 10.0 * x[t] - 1.0;
@@ -119,7 +121,7 @@ double SphereHessian::eval(const sgpp::base::DataVector& x,
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
-      return INFINITY;
+      return std::numeric_limits<double>::infinity();
     }
 
     const double xt = 10.0 * x[t] - 1.0;
@@ -159,7 +161,7 @@ void DeformedLinearPhiFunction::eval(const sgpp::base::DataVector& x,
                                      sgpp::base::DataVector& value) {
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
-      value.setAll(INFINITY);
+      value.setAll(std::numeric_limits<double>::infinity());
       return;
     }
 
@@ -191,8 +193,8 @@ void DeformedLinearPhiGradient::eval(const sgpp::base::DataVector& x,
                                      sgpp::base::DataMatrix& gradient) {
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
-      value.setAll(INFINITY);
-      gradient.setAll(NAN);
+      value.setAll(std::numeric_limits<double>::infinity());
+      gradient.setAll(std::numeric_limits<double>::quiet_NaN());
       return;
     }
 
@@ -226,7 +228,7 @@ double G3ObjectiveFunction::eval(const sgpp::base::DataVector& x) {
     if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       fx *= x[t];
     } else {
-      return INFINITY;
+      return std::numeric_limits<double>::infinity();
     }
   }
 
@@ -253,7 +255,7 @@ double G3ObjectiveGradient::eval(const sgpp::base::DataVector& x,
 
   for (size_t t = 0; t < d; t++) {
     if ((x[t] < 0.0) || (x[t] > 1.0)) {
-      return INFINITY;
+      return std::numeric_limits<double>::infinity();
     }
 
     for (size_t t2 = 0; t2 < d; t2++) {
@@ -290,7 +292,7 @@ void G3ConstraintFunction::eval(const sgpp::base::DataVector& x,
     if ((x[t] >= 0.0) && (x[t] <= 1.0)) {
       gx += x[t] * x[t];
     } else {
-      value[0] = INFINITY;
+      value[0] = std::numeric_limits<double>::infinity();
       return;
     }
   }
@@ -320,7 +322,7 @@ void G3ConstraintGradient::eval(const sgpp::base::DataVector& x,
       gx += x[t] * x[t];
       gradient(0, t) = 2.0 * x[t];
     } else {
-      value[0] = INFINITY;
+      value[0] = std::numeric_limits<double>::infinity();
       return;
     }
   }
@@ -351,7 +353,7 @@ double G8ObjectiveFunction::eval(const sgpp::base::DataVector& x) {
                              std::sin(2.0 * M_PI * x1) / (std::pow(x0, 3.0) * (x0 + x1));
     return fx;
   } else {
-    return INFINITY;
+    return std::numeric_limits<double>::infinity();
   }
 }
 
@@ -392,7 +394,7 @@ double G8ObjectiveGradient::eval(const sgpp::base::DataVector& x,
     gradient[1] *= -10.0;
     return fx;
   } else {
-    return INFINITY;
+    return std::numeric_limits<double>::infinity();
   }
 }
 
@@ -419,8 +421,8 @@ void G8ConstraintFunction::eval(const sgpp::base::DataVector& x,
     value[0] = std::pow(x0, 2.0) - x1 + 1.0;
     value[1] = 1.0 - x0 + std::pow(x1 - 4.0, 2.0);
   } else {
-    value[0] = INFINITY;
-    value[1] = INFINITY;
+    value[0] = std::numeric_limits<double>::infinity();
+    value[1] = std::numeric_limits<double>::infinity();
     return;
   }
 }
@@ -450,8 +452,8 @@ void G8ConstraintGradient::eval(const sgpp::base::DataVector& x,
     gradient(1, 0) = -1.0 * 10.0;
     gradient(1, 1) = 2.0 * (x1 - 4.0) * 10.0;
   } else {
-    value[0] = INFINITY;
-    value[1] = INFINITY;
+    value[0] = std::numeric_limits<double>::infinity();
+    value[1] = std::numeric_limits<double>::infinity();
     return;
   }
 }

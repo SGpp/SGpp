@@ -45,7 +45,7 @@ class OperationHierarchisationPrewavelet: public OperationHierarchisation {
   /**
    * Destructor
    */
-  virtual ~OperationHierarchisationPrewavelet() {
+  ~OperationHierarchisationPrewavelet() override {
   }
 
   void doHierarchisation(DataVector& node_values) override;

@@ -14,6 +14,7 @@ namespace solver {
 
 class FistaBase {
  public:
+  virtual ~FistaBase() {}
   virtual void solve(base::OperationMultipleEval& op, base::DataVector& weights,
                      const base::DataVector& classes, size_t maxIt, double treshold,
                      double L = 0.5) = 0;

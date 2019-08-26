@@ -305,8 +305,10 @@ BOOST_AUTO_TEST_CASE(testFreeRefine2d) {
 
   HashGridPoint *point = new HashGridPoint(2);
   for (size_t i = 0; i < 27; i++) {
-      point->set(0, (unsigned int) gridPoints.get(i, 0), (unsigned int) gridPoints.get(i, 2));
-      point->set(1, (unsigned int) gridPoints.get(i, 1), (unsigned int) gridPoints.get(i, 3));
+      point->set(0, static_cast<unsigned int>(gridPoints.get(i, 0)),
+          static_cast<unsigned int>(gridPoints.get(i, 2)));
+      point->set(1, static_cast<unsigned int>(gridPoints.get(i, 1)),
+          static_cast<unsigned int>(gridPoints.get(i, 3)));
       BOOST_CHECK(gridStorage.isContaining(*point));
   }
   delete point;

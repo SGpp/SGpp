@@ -23,7 +23,7 @@ class OperationDensityMarginalizeLinear : public OperationDensityMarginalize {
  public:
   explicit OperationDensityMarginalizeLinear(base::Grid* grid)
       : OperationDensityMarginalize(grid) {}
-  virtual ~OperationDensityMarginalizeLinear() {}
+  ~OperationDensityMarginalizeLinear() override {}
 
   /**
    * Marginalizes (Density) Functions
