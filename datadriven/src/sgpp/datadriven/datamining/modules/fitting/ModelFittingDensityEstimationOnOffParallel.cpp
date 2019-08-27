@@ -184,7 +184,7 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
   }
 
   // in case of SMW decomposition type, refinement is distributed/parallelized also with special
-  // handling, therefore has to be passed additional parameters of parallelcondig
+  // handling, therefore has to be passed additional parameters of parallelconfig
   sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
