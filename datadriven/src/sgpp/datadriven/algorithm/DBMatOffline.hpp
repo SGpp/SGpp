@@ -151,6 +151,18 @@ class DBMatOffline {
                                DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                                       DensityEstimationConfiguration& densityEstimationConfig,
+                                       std::shared_ptr<BlacsProcessGrid> processGrid,
+                                       const ParallelConfiguration& parallelConfig);
+
+  /**
    * Prints the matrix onto standard output
    */
   void printMatrix();
@@ -165,9 +177,16 @@ class DBMatOffline {
 
   /*
    * explicitly computes the inverse of the decomposed offline matrix
-   * @param inv the matrix to store the computed inverse
    */
   virtual void compute_inverse();
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                        const ParallelConfiguration& parallelConfig);
 
   /**
    * Serialize the DBMatOffline Object

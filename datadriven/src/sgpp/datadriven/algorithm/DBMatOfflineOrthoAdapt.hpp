@@ -63,7 +63,19 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig);
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
+
+  /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                               DensityEstimationConfiguration& densityEstimationConfig,
+                               std::shared_ptr<BlacsProcessGrid> processGrid,
+                               const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
@@ -109,6 +121,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param inv the matrix to store the computed inverse
    */
   void compute_inverse() override;
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                const ParallelConfiguration& parallelConfig) override;
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 

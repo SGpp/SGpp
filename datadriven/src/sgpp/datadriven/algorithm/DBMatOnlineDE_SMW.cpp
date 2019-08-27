@@ -129,8 +129,9 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     // refine/coarsen matrix X for smw formula
     DataMatrix X(grid.getSize(), numAddedGridPoints);
     compute_L2_refine_matrix(X, grid, numAddedGridPoints, lambda);
+    std::cout << "computed L2_refine_matrix" << std::endl;
     DataMatrixDistributed XDistributed = DataMatrixDistributed::fromSharedData(
-        X.data(), processGrid, X.getNrows(), X.getNcols(), parallelConfig.rowBlockSize_,
+        X.getPointer(), processGrid, X.getNrows(), X.getNcols(), parallelConfig.rowBlockSize_,
         parallelConfig.columnBlockSize_);
     this->smw_adapt_parallel(XDistributed, numAddedGridPoints, true, processGrid, parallelConfig);
   }
@@ -368,6 +369,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
                                            const ParallelConfiguration& parallelConfig,
                                            std::vector<size_t> coarsenIndices) {
 #ifdef USE_GSL
+  std::cout << "entered smw_adapt_parallel" << std::endl;
   // dimension of offline's lhs matrix and its inverse
   size_t offMatrixSize = this->offlineObject.getGridSize();
 
@@ -392,9 +394,19 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
     this->syncDistributedDecomposition(processGrid, parallelConfig);
     for (size_t i = oldSize; i < newSize; i++) {
       this->b_adapt_matrix_distributed_.set(i, i, 1.0);
+      this->b_adapt_matrix_.set(i, i, 1.0);
     }
   }
 
+  std::cout << "CHECK matrices before smw formula" << std::endl;
+  std::cout << "old size = " << oldSize << std::endl;
+  std::cout << "offline lhs distri inverse = "
+            << offlineObject.getDecomposedInverseDistributed().getGlobalRows() << "x"
+            << offlineObject.getDecomposedInverseDistributed().getGlobalCols() << std::endl;
+  std::cout << "online B distri = " << b_adapt_matrix_distributed_.getGlobalRows() << "x"
+            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
+  std::cout << "L2_refine matrix X = " << X.getGlobalRows() << "x" << X.getGlobalCols()
+            << std::endl;
   /************************************************************
    * BEGIN OF SHERMAN-MORRISON-WOODBURRY
    *
@@ -422,10 +434,10 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // A^-1 + B (calculate in size of A^-1, store in size of B)
   DataMatrixDistributed* AB =
-      new DataMatrixDistributed(this->b_adapt_matrix_distributed_.getLocalPointer(), processGrid,
-                                this->b_adapt_matrix_distributed_.getGlobalRows(),
-                                this->b_adapt_matrix_distributed_.getGlobalCols(),
+      new DataMatrixDistributed(this->b_adapt_matrix_.getPointer(), processGrid,
+                                this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
   // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
   // notice, that to start from 0, passed argument is 1, because fortran
   sgpp::datadriven::pdgeadd_(
@@ -482,6 +494,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
   DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AXINVEtA, false, 1.0, 1.0);
+  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
 
   free(AB);
   free(AX);
@@ -503,9 +516,8 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // A^-1 + B~ (calculate in size of A^-1, store in size of B)
   DataMatrixDistributed* ABtilde =
-      new DataMatrixDistributed(this->b_adapt_matrix_distributed_.getLocalPointer(), processGrid,
-                                this->b_adapt_matrix_distributed_.getGlobalRows(),
-                                this->b_adapt_matrix_distributed_.getGlobalCols(),
+      new DataMatrixDistributed(this->b_adapt_matrix_.getPointer(), processGrid,
+                                this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
   // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
   // notice, that to start from 0, passed argument is 1, because fortran
@@ -564,16 +576,20 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   free(INV2);
   free(AEINV);
   free(AEINVXtA);
+
   /*****
    *
    * END OF SHERMAN-MORRISON-WOODBURRY
    *
    *****/
+  std::cout << "Bdistri (before syncing in smw_adapt) = "
+            << b_adapt_matrix_distributed_.getGlobalRows() << "x"
+            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
 
   // If points were coarsened the b_adapt_matrix will now have empty rows and columns
   // on the indices of the coarsened points. In the following algorithm, the symmetry
   // of b_adapt_matrix_ is used to glue the blocks together again.
-  this->b_adapt_matrix_ = this->b_adapt_matrix_distributed_.toLocalDataMatrix();
+  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
   if (!refine) {
     std::sort(coarsenIndices.begin(), coarsenIndices.end());
     size_t vi = 1;  // skips points
@@ -613,9 +629,13 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
     this->current_refine_index += adaptSteps;
   }
 
+  this->syncDistributedDecomposition(processGrid, parallelConfig);
+
   // determine, if any refined information now is contained in matrix b_adapt
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
 
+  std::cout << "Bdistri (end of smw_adapt) = " << b_adapt_matrix_distributed_.getGlobalRows() << "x"
+            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
   return;
 #endif /* USE_GSL */
 }
@@ -629,7 +649,7 @@ void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size
         "In DBMatOnlineDE_SMW::compute_L2_refine_matrix:\n"
         "The passed matrix container doesn't have the correct size.\n");
   }
-
+  std::cout << "entered compute_L2_refine_matrix" << std::endl;
   this->offlineObject.compute_L2_refine_vectors(&X, &grid, newPoints);
 
   // add lambda to diagonal elements

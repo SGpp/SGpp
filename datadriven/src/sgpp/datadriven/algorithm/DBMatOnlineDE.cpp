@@ -241,6 +241,7 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
     distributedVectorsInitialized = true;
   }
+  std::cout << "entered computeDensityFunctionParallel" << std::endl;
 
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
@@ -279,6 +280,12 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     size_t bSize = use_B_size ? B_size : lhsMatrix.getNcols();
 
     DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
+
+    std::cout << "B_distri.size = " << this_SMW_pointer->getBDistributed().getGlobalCols()
+              << std::endl;
+    std::cout << "b.size = " << b.getGlobalRows() << std::endl;
+    std::cout << "system.size = " << grid.getSize() << std::endl;
+
     if (b.getGlobalRows() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunctionParallel: b doesn't match size of system "
