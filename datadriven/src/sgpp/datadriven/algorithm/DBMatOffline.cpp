@@ -102,7 +102,7 @@ DataMatrixDistributed& DBMatOffline::getDecomposedMatrixDistributed() {
 DataMatrixDistributed& DBMatOffline::getDecomposedInverseDistributed() {
 #ifdef USE_SCALAPACK
   if (isDecomposed) {
-    return lhsDistributedInverse;
+    return this->lhsDistributedInverse;
   } else {
     throw sgpp::base::algorithm_exception(
         "In DBMatOffline::getDecomposedInverseDistributed:\nlhsMatrix wasn't even decomposed yet.");
@@ -207,8 +207,25 @@ void DBMatOffline::store(const std::string& fileName) {
 #endif /* USE_GSL */
 }
 
+void DBMatOffline::decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                                           DensityEstimationConfiguration& densityEstimationConfig,
+                                           std::shared_ptr<BlacsProcessGrid> processGrid,
+                                           const ParallelConfiguration& parallelConfig) {
+  throw sgpp::base::algorithm_exception(
+      "called ::decomposeMatrixParallel from parent object,\nmeaning decomposition type is not "
+      "supported");
+}
+
 void DBMatOffline::compute_inverse() {
-  throw sgpp::base::algorithm_exception("called ::compute_inverse from parent object");
+  throw sgpp::base::algorithm_exception(
+      "called ::compute_inverse from parent object,\nmeaning decomposition type is not supported");
+}
+
+void DBMatOffline::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig) {
+  throw sgpp::base::algorithm_exception(
+      "called ::compute_inverse_parallel from parent object,\nmeaning decomposition type is not "
+      "supported");
 }
 
 void DBMatOffline::printMatrix() {

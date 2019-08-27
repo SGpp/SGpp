@@ -124,12 +124,28 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
     offline = DBMatOfflineFactory::buildOfflineObject(
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
-    offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+
+    // sync lhs matrix, currently done by later calling routines implicitly
 
     // in case of SMW decomposition type, the inverse of the matrix needs to be computed explicitly
+    // and parallel version of functions can be used
     if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      // non-parallel version
+      //
+      offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
       offline->compute_inverse();
+      offline->syncDistributedInverse(processGrid, parallelConfig);
+      //
+
+      // parallel version
+      // offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig,
+      // processGrid,
+      //                                 parallelConfig);
+      // offline->compute_inverse_parallel(processGrid, parallelConfig);
+      //
+    } else {
+      offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     }
   }
 
@@ -151,6 +167,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getDensityEstimationConfig(),
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
+  std::cout << "computed densityFunctionParallel" << std::endl;
   online->setBeta(this->config->getLearnerConfig().beta);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();

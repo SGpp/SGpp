@@ -60,8 +60,15 @@ void pdgetri_(const size_t &n, double *a, const size_t &ia, const size_t &ja, co
               const int &info);
 
 // tridiagonal decomposition (symmetric hessenberg-decomposition)
-int pdsytrd_(int matrix_layout, char uplo, int n, double *a, int lda, double *d, double *e,
-             double *tau);
+void pdsytrd_(const char *uplo, const size_t &n, double *a, const size_t &ia, const size_t &ja,
+              const int *desca, double *d, double *e, double *tau, double *work, const int &lwork,
+              const int &info);
+
+// application of Q (obtained by tridiagonal decomposition)
+void pdormtr_(const char *side, const char *uplo, const char *trans, const size_t &m,
+              const size_t &n, const double *a, const size_t &ia, const size_t &ja,
+              const int *desca, const double *tau, double *c, const size_t &ic, const size_t &jc,
+              const int *descc, double *work, const int &lwork, const int &info);
 
 // linear equations
 
