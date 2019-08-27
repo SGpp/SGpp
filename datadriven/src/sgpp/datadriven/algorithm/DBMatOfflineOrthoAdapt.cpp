@@ -115,6 +115,9 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& di
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
+  if (dim_a <= 1) {
+    return;
+  }
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
   gsl_matrix_view gsl_lhs = gsl_matrix_view_array(lhsMatrix.getPointer(), dim_a, dim_a);
   gsl_matrix_view gsl_q = gsl_matrix_view_array(q_ortho_matrix_.getPointer(), dim_a, dim_a);
@@ -136,6 +139,9 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& di
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
+  if (dim_a <= 1) {
+    return;
+  }
   gsl_vector* e = gsl_vector_calloc(diag.getSize());  // calloc sets all values to zero
   gsl_vector* x = gsl_vector_alloc(diag.getSize());   // target of solving
 

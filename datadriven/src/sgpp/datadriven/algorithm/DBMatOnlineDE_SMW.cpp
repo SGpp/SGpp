@@ -113,7 +113,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     }
 
     if (!coarsen_points.empty()) {
-      // todo(dima): optimize size of matrix X when coarsening
+      // todo(): optimize size of matrix X when coarsening
       // break-even point, k times single point VS. k points at once
       DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
@@ -212,7 +212,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   }
 
   // create E
-  // todo(dima): replace operations done with E/E^t by matrix_subviews
+  // todo(): replace operations done with E/E^t by matrix_subviews
   DataMatrix E(X.getNrows(), X.getNcols(), 0.0);
   for (size_t k = E.getNrows() - E.getNcols(); k < E.getNrows(); k++) {
     E.set(k, k - E.getNrows() + E.getNcols(), 1.0);
@@ -367,7 +367,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
                                            std::shared_ptr<BlacsProcessGrid> processGrid,
                                            const ParallelConfiguration& parallelConfig,
                                            std::vector<size_t> coarsenIndices) {
-  std::cout << "DBMatOnlineDE_SMW::smw_adapt_parallel not implemented yet" << std::endl;
+  std::cout << "DBMatOnlineDE_SMW::smw_adapt_parallel entered" << std::endl;
 #ifdef USE_GSL
   // dimension of offline's lhs matrix and its inverse
   size_t offMatrixSize = this->offlineObject.getGridSize();
@@ -388,6 +388,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // allocate additional space for b_adapt_matrix_ and fill new diagonal entries with ones
   // note: only done in refining! Coarsening will resize at the end of function
   if (refine) {
+    this->b_adapt_matrix_.resize(newSize, newSize);
     this->b_adapt_matrix_distributed_.resize(newSize, newSize);
     this->syncDistributedDecomposition(processGrid, parallelConfig);
     for (size_t i = oldSize; i < newSize; i++) {
@@ -417,12 +418,12 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
     X.set(k, k - X.getGlobalRows() + X.getGlobalCols(), val);
   }
 
-  // create E
-  DataMatrixDistributed* E =
-      new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
+  // create E^t
+  DataMatrixDistributed* Et =
+      new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalRows(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  for (size_t k = E->getGlobalRows() - E->getGlobalCols(); k < E->getGlobalRows(); k++) {
-    E->set(k, k - E->getGlobalRows() + E->getGlobalCols(), 1.0);
+  for (size_t k = Et->getGlobalCols() - Et->getGlobalRows(); k < Et->getGlobalCols(); k++) {
+    Et->set(k - Et->getGlobalCols() + Et->getGlobalRows(), k, 1.0);
   }
 
   // A^-1 + B (calculate in size of A^-1, store in size of B)
@@ -432,11 +433,12 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
                                 this->b_adapt_matrix_distributed_.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
   // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
+  // notice, that to start from 0, passed argument is 1, because fortran
   sgpp::datadriven::pdgeadd_(
       "N", offMatrixSize, offMatrixSize, 1.0,
-      this->offlineObject.getDecomposedInverseDistributed().getLocalPointer(), 0, 0,
+      this->offlineObject.getDecomposedInverseDistributed().getLocalPointer(), 1, 1,
       this->offlineObject.getDecomposedInverseDistributed().getDescriptor(), 1.0,
-      AB->getLocalPointer(), 0, 0, AB->getDescriptor());
+      AB->getLocalPointer(), 1, 1, AB->getDescriptor());
 
   // (A^-1 + B) * X
   DataMatrixDistributed* AX =
@@ -445,84 +447,98 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   DataMatrixDistributed::mult(*AB, X, *AX);
 
   // E^t * (A^-1 + B)
-  DataMatrixDistributed* EA =
+  DataMatrixDistributed* EtA =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalRows(),
-                                parallelConfig.columnBlockSize_, parallelConfig.rowBlockSize_);
-  DataMatrixDistributed::mult(*E, *AB, *EA, true);
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  DataMatrixDistributed::mult(*Et, *AB, *EtA);
 
   // I + E^t * (A^-1 + B) * X
-  DataMatrixDistributed* TO_INV =
+  DataMatrixDistributed* INV =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  for (size_t i = 0; i < TO_INV->getGlobalCols(); i++) {
-    TO_INV->set(i, i, 1.0);
+  for (size_t i = 0; i < INV->getGlobalCols(); i++) {
+    INV->set(i, i, 1.0);
   }
-  DataMatrixDistributed::mult(*E, *AX, *TO_INV, true, false, 1.0, 1.0);
+  DataMatrixDistributed::mult(*Et, *AX, *INV, false, false, 1.0, 1.0);
 
   // (I + E^t * (A^-1 + B) * X)^-1
-
-
-  gsl_permutation* P = gsl_permutation_alloc(X.getNcols());
-  int* signum = new int[X.getNcols()];
-  gsl_linalg_LU_decomp(TO_INV, P, signum);
-  gsl_matrix* INV = gsl_matrix_alloc(X.getNcols(), X.getNcols());
-  gsl_linalg_LU_invert(TO_INV, P, INV);
+  // Note: this is an explicit inversion, but the inverted matrix is of size kxk, where k denotes
+  // the refined points. In general, k is much smaller than total new matrix size, and therefore
+  // the inversion should not take much time, compared to whole process of refinement
+  int info;
+  size_t inv_dim = X.getGlobalCols();
+  int* ipiv = new int[X.getGlobalCols()];
+  pdgetrf_(inv_dim, inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, info);
+  double* work = new double[inv_dim];
+  int* iwork = new int[inv_dim];
+  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, -1, iwork, -1,
+           info);
 
   // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1
-  gsl_matrix* AXINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AX, INV, 0.0, AXINV);
+  DataMatrixDistributed* AXINV =
+      new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
+  DataMatrixDistributed::mult(*AX, *INV, *AXINV);
 
   // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
-  gsl_matrix* AXINVEA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AXINV, EA, 0.0, AXINVEA);
+  DataMatrixDistributed* AXINVEtA =
+      new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalRows(),
+                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
+  DataMatrixDistributed::mult(*AXINV, *EtA, *AXINVEtA);
 
   // B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
-  // effectively stores final values of Phase 1 in b_adapt_matrix_
-  gsl_matrix_sub(&b_adapt_full_view.matrix, AXINVEA);
+  DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AXINVEtA, false, 1.0, 1.0);
+  /*
 
+Calculates sub(C):=beta*sub(C) - alpha*op(sub(A))
+
+                    // effectively stores final values of Phase 1 in b_adapt_matrix_
+                    gsl_matrix_sub(&b_adapt_full_view.matrix, AXINVEA);
+                  */
   /************************************************************
    *
    * Phase 2: B = B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
    *
    ************************************************************/
+  /*
+    // A^-1 + B~ (calculate in size of A^-1, store in size of B~)
+    DataMatrix ABtilde(this->b_adapt_matrix_);
+    gsl_matrix_view ABtilde_view = gsl_matrix_view_array(
+        ABtilde.getPointer(), this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols());
+    gsl_matrix_view ABtilde_sub_view =
+        gsl_matrix_submatrix(&ABtilde_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
+    gsl_matrix_add(&ABtilde_sub_view.matrix, &A_inv_view.matrix);
 
-  // A^-1 + B~ (calculate in size of A^-1, store in size of B~)
-  DataMatrix ABtilde(this->b_adapt_matrix_);
-  gsl_matrix_view ABtilde_view = gsl_matrix_view_array(
-      ABtilde.getPointer(), this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols());
-  gsl_matrix_view ABtilde_sub_view =
-      gsl_matrix_submatrix(&ABtilde_view.matrix, 0, 0, offMatrixSize, offMatrixSize);
-  gsl_matrix_add(&ABtilde_sub_view.matrix, &A_inv_view.matrix);
+    // (A^-1 + B~) * E    und    X^t*(A+B)
+    gsl_matrix* AE = gsl_matrix_alloc(X.getNrows(), X.getNcols());
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &ABtilde_view.matrix, &E_view.matrix, 0.0, AE);
 
-  // (A^-1 + B~) * E    und    X^t*(A+B)
-  gsl_matrix* AE = gsl_matrix_alloc(X.getNrows(), X.getNcols());
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, &ABtilde_view.matrix, &E_view.matrix, 0.0, AE);
+    // X^t * (A^-1 + B~)
+    gsl_matrix* XA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
+    gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, &ABtilde_view.matrix, 0.0, XA);
 
-  // X^t * (A^-1 + B~)
-  gsl_matrix* XA = gsl_matrix_alloc(X.getNcols(), X.getNrows());
-  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, &ABtilde_view.matrix, 0.0, XA);
+    // I + X^t * (A^-1 + B) * E
+    gsl_matrix_set_identity(TO_INV);
+    gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, AE, 1.0, TO_INV);
 
-  // I + X^t * (A^-1 + B) * E
-  gsl_matrix_set_identity(TO_INV);
-  gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, &X_view.matrix, AE, 1.0, TO_INV);
+    // (I + X^t * (A^-1 + B) * E)^-1
+    gsl_permutation* Ptilde = gsl_permutation_alloc(X.getNcols());
+    int* signumtilde = new int[X.getNcols()];
+    gsl_linalg_LU_decomp(TO_INV, Ptilde, signumtilde);
+    gsl_linalg_LU_invert(TO_INV, Ptilde, INV);
 
-  // (I + X^t * (A^-1 + B) * E)^-1
-  gsl_permutation* Ptilde = gsl_permutation_alloc(X.getNcols());
-  int* signumtilde = new int[X.getNcols()];
-  gsl_linalg_LU_decomp(TO_INV, Ptilde, signumtilde);
-  gsl_linalg_LU_invert(TO_INV, Ptilde, INV);
+    // (A^-1 + B) E (I + X^t * (A^-1 + B) * E)^-1
+    gsl_matrix* AEINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AE, INV, 0.0, AEINV);
 
-  // (A^-1 + B) E (I + X^t * (A^-1 + B) * E)^-1
-  gsl_matrix* AEINV = gsl_matrix_alloc(X.getNrows(), X.getNcols());
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AE, INV, 0.0, AEINV);
+    // (A^-1 + B) E (I + X^t (A^-1 + B) E)^-1 X^t (A^-1 + B)
+    gsl_matrix* AEINVXA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
+    gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AEINV, XA, 0.0, AEINVXA);
 
-  // (A^-1 + B) E (I + X^t (A^-1 + B) E)^-1 X^t (A^-1 + B)
-  gsl_matrix* AEINVXA = gsl_matrix_alloc(X.getNrows(), X.getNrows());
-  gsl_blas_dgemm(CblasNoTrans, CblasNoTrans, 1.0, AEINV, XA, 0.0, AEINVXA);
-
-  // B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
-  // effectively stores final values of Phase 2 in b_adapt_matrix_
-  gsl_matrix_sub(&b_adapt_full_view.matrix, AEINVXA);
+    // B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
+    // effectively stores final values of Phase 2 in b_adapt_matrix_
+    gsl_matrix_sub(&b_adapt_full_view.matrix, AEINVXA);*/
 
   /*****
    *
@@ -575,6 +591,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // determine, if any refined information now is contained in matrix b_adapt
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
 
+  // throw sgpp::base::algorithm_exception("BRUH!!!");
   return;
 #endif /* USE_GSL */
 }
