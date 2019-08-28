@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(testNewtonOptimizer) {
 
 BOOST_AUTO_TEST_CASE(testMixedOptimizer) {
   double minValue = M_PI / 2.0;
-  sgpp::combigrid::SingleFunction f([minValue](double x) { return -sin(x); });
+  sgpp::combigrid::SingleFunction f([](double x) { return -sin(x); });
 
   sgpp::combigrid::MixedOptimizer opt(f);
 

@@ -50,7 +50,7 @@ class VarTimestep : public StepsizeControl {
    * @param gamma damping factor
    */
   VarTimestep(std::string pred, std::string corr, size_t imax, double timestepSize, double eps,
-              sgpp::base::ScreenOutput* screen = NULL, double gamma = -1);
+              sgpp::base::ScreenOutput* screen = nullptr, double gamma = -1);
 
   /**
    * Std-Destructor

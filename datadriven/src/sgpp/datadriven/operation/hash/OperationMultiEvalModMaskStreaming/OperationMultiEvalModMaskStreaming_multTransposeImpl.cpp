@@ -42,8 +42,10 @@ void OperationMultiEvalModMaskStreaming::multTransposeImpl(
 #if defined(__SSE3__) && !defined(__AVX__) && !defined(__MIC__) && !defined(__AVX512F__)
 
   for (size_t k = start_index_grid; k < end_index_grid;
-       k += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k))) {
-    size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - k));
+       k += std::min<size_t>(static_cast<size_t>(getChunkGridPoints()),
+                             (end_index_grid - k))) {
+    size_t grid_inc = std::min<size_t>(
+        static_cast<size_t>(getChunkGridPoints()), (end_index_grid - k));
 
     for (size_t i = start_index_data; i < end_index_data; i += 12) {
       for (size_t j = k; j < k + grid_inc; j++) {

@@ -41,7 +41,7 @@ class Euler : public ODESolver {
    * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
   Euler(std::string Mode, size_t imax, double timestepSize, bool generateAnimation = false,
-        sgpp::base::ScreenOutput* screen = NULL);
+        sgpp::base::ScreenOutput* screen = nullptr);
 
   /**
    * Std-Destructor

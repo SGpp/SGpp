@@ -102,7 +102,7 @@ class PolynomialScalarProductEvaluator : public AbstractLinearEvaluator<FloatArr
       std::shared_ptr<sgpp::combigrid::OrthogonalPolynomialBasis1D> orthogBasis);
 
   PolynomialScalarProductEvaluator(PolynomialScalarProductEvaluator const &other);
-  virtual ~PolynomialScalarProductEvaluator();
+  ~PolynomialScalarProductEvaluator() override;
 
   std::vector<FloatArrayVector> getBasisValues() override { return basisValues; }
   std::vector<double> getBasisCoefficients() override { return basisCoefficients; }

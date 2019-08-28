@@ -298,10 +298,10 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
       case GridType::FundamentalNakSplineBoundary:
         return Grid::createFundamentalNakSplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
-      default:
-        throw generation_exception("Grid::createGrid - grid type not known");
     }
   }
+
+  throw generation_exception("Grid::createGrid - grid type not known");
 }
 
 Grid* Grid::createGridOfEquivalentType(size_t numDims) {
@@ -477,8 +477,6 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
           dynamic_cast<BoundaryGridGenerator*>(&this->getGenerator())->getBoundaryLevel();
       newGrid = Grid::createFundamentalNakSplineBoundaryGrid(numDims, degree, boundaryLevel);
       break;
-    default:
-      throw generation_exception("Grid::clone - grid type not known");
   }
   return newGrid;
 }
@@ -551,9 +549,10 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::FundamentalNakSplineBoundary;
     // no non-boundary treatment basis available for the following grids
     case GridType::ModBsplineClenshawCurtis:
-    default:
-      throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
+      break;
   }
+
+  throw generation_exception("Grid::getZeroBoundaryType - no conversion known");
 }
 
 std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
@@ -584,8 +583,6 @@ Grid* Grid::unserialize(std::istream& istr) {
 
     throw factory_exception(errMsg.c_str());
   }
-
-  return nullptr;
 }
 
 std::map<std::string, Grid::Factory>& Grid::typeMap() {
@@ -598,7 +595,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
  * This map takes a string, function pointer pair.
  */
 #ifdef _WIN32
-    tMap->insert(std::pair<std::string, Grid::Factory>("NULL", Grid::nullFactory));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nullptr", Grid::nullFactory));
     tMap->insert(std::pair<std::string, Grid::Factory>("linear", LinearGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("linearStretched", LinearStretchedGrid::unserialize));
@@ -668,7 +665,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::pair<std::string, Grid::Factory>("fundamentalNakSplineBoundary",
         FundamentalNakSplineBoundaryGrid::unserialize));
 #else
-    tMap->insert(std::make_pair("NULL", Grid::nullFactory));
+    tMap->insert(std::make_pair("nullptr", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
     tMap->insert(std::make_pair("linearStretched", LinearStretchedGrid::unserialize));
     tMap->insert(std::make_pair("linearL0Boundary", LinearL0BoundaryGrid::unserialize));
@@ -878,7 +875,6 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
  */
 Grid* Grid::nullFactory(std::istream&) {
   throw factory_exception("factory_exeception unserialize: unsupported gridtype");
-  return nullptr;
 }
 
 Grid::Grid(std::istream& istr) : storage(istr) {}

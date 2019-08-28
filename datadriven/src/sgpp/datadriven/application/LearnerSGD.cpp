@@ -310,7 +310,7 @@ void LearnerSGD::storeResults(base::DataMatrix& testDataset) {
   } else {
     for (size_t i = 0; i < predictedLabels.getSize(); i++) {
       base::DataVector x(2);
-      testDataset.getRow((size_t)i, x);
+      testDataset.getRow(static_cast<size_t>(i), x);
       output << x[0] << ";" << x[1] << ";" << predictedLabels[i] << std::endl;
     }
     output.close();

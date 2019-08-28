@@ -14,7 +14,9 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 
 #include <cstring>
+#include <limits>
 #include <memory>
+
 namespace sgpp {
 namespace base {
 
@@ -61,7 +63,7 @@ class InterpolantScalarFunction : public ScalarFunction {
   inline double eval(const DataVector& x) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 

@@ -15,6 +15,7 @@
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 
 #include <cstddef>
+#include <limits>
 
 namespace sgpp {
 namespace base {
@@ -59,7 +60,7 @@ class InterpolantVectorFunctionGradient : public VectorFunctionGradient {
                    DataMatrix& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        value.setAll(INFINITY);
+        value.setAll(std::numeric_limits<double>::infinity());
         return;
       }
     }

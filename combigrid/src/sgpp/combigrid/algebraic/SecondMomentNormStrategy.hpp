@@ -39,7 +39,7 @@ class SecondMomentNormStrategy : public NormStrategy<FloatTensorVector> {
                            bool isOrthogonal,
                            sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  virtual ~SecondMomentNormStrategy();
+  ~SecondMomentNormStrategy() override;
 
   /**
    * computes the second moment of the given tensor vector

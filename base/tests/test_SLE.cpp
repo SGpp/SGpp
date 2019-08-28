@@ -21,6 +21,7 @@
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 
 #include <cmath>
+#include <limits>
 #include <vector>
 
 using sgpp::base::CloneableSLE;
@@ -46,7 +47,7 @@ class ExampleFunctionSLE : public ScalarFunction {
     if ((x[0] >= 0.0) && (x[0] <= 1.0) && (x[1] >= 0.0) && (x[1] <= 1.0)) {
       return std::sin(8.0 * x[0]) + std::sin(7.0 * x[1]);
     } else {
-      return INFINITY;
+      return std::numeric_limits<double>::infinity();
     }
   }
   void clone(std::unique_ptr<ScalarFunction>& clone) const override {

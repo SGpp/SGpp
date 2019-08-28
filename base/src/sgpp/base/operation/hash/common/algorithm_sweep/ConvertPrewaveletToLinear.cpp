@@ -35,8 +35,8 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
   size_t _seq;
   size_t _seq_temp;
   double _val = 0.0;
-  double* temp_current = 0;
-  double* temp_old = 0;
+  double* temp_current = nullptr;
+  double* temp_old = nullptr;
 
 
   index.get(dim, init_level, init_index);
@@ -140,9 +140,7 @@ void ConvertPrewaveletToLinear::operator()(DataVector& source,
   result[_seq] = source[_seq] + temp_current[2];
 
   delete[] temp_old;
-  temp_old = 0;
   delete[] temp_current;
-  temp_current = 0;
 }
 
 }  // namespace base

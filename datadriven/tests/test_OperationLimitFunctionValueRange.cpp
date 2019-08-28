@@ -122,7 +122,7 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
   // force the function to be positive
   std::unique_ptr<sgpp::datadriven::OperationLimitFunctionValueRange> opLimit(
       sgpp::op_factory::createOperationLimitFunctionValueRange(
-          candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero, verbose));
+          candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero));
 
   std::unique_ptr<Grid> limitedGrid(grid.clone());
   DataVector limitedAlpha(alpha);

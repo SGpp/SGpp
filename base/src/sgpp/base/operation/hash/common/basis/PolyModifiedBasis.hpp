@@ -47,11 +47,11 @@ class PolyModifiedBasis : public Basis<LT, IT> {
 
   double eval(LT level, IT index, double p) override {
     // spacing on current level
-    double h = 1.0f / static_cast<double>(1 << level);
+    double h = 1.0 / static_cast<double>(1 << level);
 
     // check if p is out of bounds
     if ((p < h * static_cast<double>(index - 1)) || (p > h * static_cast<double>(index + 1))) {
-      return 0.0f;
+      return 0.0;
     } else {
       return evalBasis(level, index, p);
     }

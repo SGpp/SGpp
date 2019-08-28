@@ -176,7 +176,7 @@ class KernelPruneGraph {
       globalworkrange[0] = chunksize;
     }
     err = clEnqueueNDRangeKernel(device->commandQueue, this->kernel, 1, 0, globalworkrange,
-                                 NULL, 0, nullptr, &clTiming);
+                                 nullptr, 0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;
       errorString << "OCL Error: Failed to enqueue kernel command! Error code: " << err

@@ -68,7 +68,7 @@ class SparseGridMinerCrossValidation : public SparseGridMiner {
   /**
    * Default destructor.
    */
-  ~SparseGridMinerCrossValidation() = default;
+  ~SparseGridMinerCrossValidation() override = default;
 
   /**
    * Perform Learning cycle: Get samples from data source and based on the scoring procedure,

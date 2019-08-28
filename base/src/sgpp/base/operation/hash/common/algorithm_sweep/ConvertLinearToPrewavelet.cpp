@@ -68,7 +68,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
     // normal treatment for the middle
     if (level > 2) {
       for (index_type ind = 3; ind
-           < (unsigned int) ((1 << level) - 1); ind = ind + 2) {
+           < static_cast<unsigned int>((1 << level) - 1); ind = ind + 2) {
         index.set(dim, level, ind);
         _seq = index.seq();
         _val = storage.isInvalidSequenceNumber(_seq) ? 0.0 : result[_seq];
@@ -139,7 +139,7 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
 
     // create new temp valuesand the normal start.
     // Please note, this is done in that strange
-    for (index_type ind = 1; ind < (unsigned int) ((1 << level) - 2); ind
+    for (index_type ind = 1; ind < static_cast<unsigned int>((1 << level) - 2); ind
          = ind + 2) {
       index.set(dim, level, ind);
       _seq = index.seq();
@@ -168,13 +168,9 @@ void ConvertLinearToPrewavelet::operator()(DataVector& source,
     result[_seq] = _val - temp[1];
 
   delete[] temp;
-  temp = 0;
   delete[] r;
-  r = 0;
   delete[] gam;
-  gam = 0;
   delete[] u;
-  u = 0;
 }
 
 }  // namespace base

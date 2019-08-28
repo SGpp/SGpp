@@ -25,7 +25,7 @@ class OperationLimitFunctionValueRange {
           MakePositiveCandidateSearchAlgorithm::Intersections,
       datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
           MakePositiveInterpolationAlgorithm::SetToZero,
-      bool verbose = false, sgpp::base::ScalarFunction* f = nullptr);
+      sgpp::base::ScalarFunction* f = nullptr);
 
   virtual ~OperationLimitFunctionValueRange();
 
@@ -69,8 +69,6 @@ class OperationLimitFunctionValueRange {
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   std::unique_ptr<datadriven::OperationMakePositive> opPositive;
-
-  bool verbose;
 };
 
 } /* namespace datadriven */

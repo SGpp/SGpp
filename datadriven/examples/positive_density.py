@@ -1265,7 +1265,6 @@ if __name__ == "__main__":
                                                      "sgde_makePositive_candidateSearchAlgorithm": "intersections",
                                                      "sgde_makePositive_interpolationAlgorithm": "interpolateBoundaries1d",
                                                      "sgde_makePositive_generateConsistentGrid": False,
-                                                     "sgde_makePositive_verbose": False,
                                                      "sgde_unitIntegrand": False}, bounds=U.getBounds())
     nodalValues = dehierarchize(dist_sgde.grid, dist_sgde.alpha)
     print("is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",

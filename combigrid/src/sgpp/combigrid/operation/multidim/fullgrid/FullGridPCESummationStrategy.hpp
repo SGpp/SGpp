@@ -45,7 +45,7 @@ class FullGridPCESummationStrategy : public AbstractFullGridSummationStrategy<V>
     }
   }
 
-  virtual ~FullGridPCESummationStrategy() {}
+  ~FullGridPCESummationStrategy() override {}
 
   V eval(MultiIndex const &level) override {
     size_t numDimensions = this->pointHierarchies.size();

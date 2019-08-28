@@ -25,7 +25,7 @@ class BsplineStochasticCollocation : public CombigridSurrogateModel {
  public:
   explicit BsplineStochasticCollocation(
       sgpp::combigrid::CombigridSurrogateModelConfiguration& config);
-  virtual ~BsplineStochasticCollocation();
+  ~BsplineStochasticCollocation() override;
 
   void eval(sgpp::base::DataMatrix& xs, sgpp::base::DataVector& res) override;
   double eval(sgpp::base::DataVector& x) override;

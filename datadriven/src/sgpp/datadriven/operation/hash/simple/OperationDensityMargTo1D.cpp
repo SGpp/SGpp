@@ -80,7 +80,7 @@ void OperationDensityMargTo1D::marg_next_dim(base::Grid* g_in, base::DataVector*
                                              base::Grid*& g_out, base::DataVector*& a_out,
                                              std::vector<size_t> margDims, size_t ix) {
   unsigned int op_dim = static_cast<unsigned int>(margDims[ix]);
-  base::Grid* g_tmp = NULL;
+  base::Grid* g_tmp = nullptr;
   base::DataVector* a_tmp = new base::DataVector(1);
   op_factory::createOperationDensityMarginalize(*g_in)->doMarginalize(*a_in, g_tmp, *a_tmp, op_dim);
 

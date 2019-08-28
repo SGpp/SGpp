@@ -94,7 +94,6 @@ class MultipleClassPoint{
         std::vector<std::tuple<double, size_t, bool>> getTopClasses(double percent) const;
 
  private:
-    int classes;
     // tuple: density, classId, points exits in class
     std::vector<std::tuple<double, size_t, bool>> classById;
     std::vector<std::tuple<double, size_t, bool>> classByDensity;

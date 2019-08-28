@@ -57,7 +57,7 @@ class StepsizeControlEJ : public StepsizeControl {
    * @param gamma used damping factor, default is 0.5
    */
   StepsizeControlEJ(std::string odesolver, size_t nTimesteps, double timestepSize, double eps,
-                    double sc, sgpp::base::ScreenOutput* screen = NULL, double gamma = 0.5);
+                    double sc, sgpp::base::ScreenOutput* screen = nullptr, double gamma = 0.5);
 
   /**
    * Std-Destructor

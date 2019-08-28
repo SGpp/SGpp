@@ -39,7 +39,6 @@ int main(int argc, char **argv) {
       if (argc != 2) {
         std::cout << "No or bad path given, aborting\n";
         exit(1);
-        return std::string{};
       } else {
         return std::string{argv[1]};
       }

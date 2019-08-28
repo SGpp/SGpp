@@ -87,7 +87,6 @@ double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return waveletModifiedBasis->evalDx(l, i, x);
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("Invalid basis."));
-    return NAN;
   }
 }
 
@@ -170,6 +169,5 @@ double basisEvalDxDx(sgpp::base::SBasis& basis, sgpp::base::level_t l,
     return waveletModifiedBasis->evalDxDx(l, i, x);
   } else {
     BOOST_THROW_EXCEPTION(std::runtime_error("Invalid basis."));
-    return NAN;
   }
 }

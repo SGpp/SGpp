@@ -35,7 +35,7 @@ class RefinementMonitorConvergence : public RefinementMonitor {
   /**
    * Destructor.
    */
-  virtual ~RefinementMonitorConvergence();
+  ~RefinementMonitorConvergence() override;
 
   /**
    * Stores the current error values in the buffer. If the buffer

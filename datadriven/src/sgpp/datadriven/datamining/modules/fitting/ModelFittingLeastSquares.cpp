@@ -88,7 +88,6 @@ bool ModelFittingLeastSquares::refine() {
   } else {
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
-    return false;
   }
 }
 

@@ -13,6 +13,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace base {
 
@@ -53,7 +55,7 @@ class InterpolantScalarFunctionGradient : public ScalarFunctionGradient {
   inline double eval(const DataVector& x, DataVector& gradient) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 
