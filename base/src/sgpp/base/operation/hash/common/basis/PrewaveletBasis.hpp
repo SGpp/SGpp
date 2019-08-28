@@ -93,7 +93,7 @@ class PrewaveletBasis : public Basis<LT, IT> {
         return border_stamp[ab - 1] * evalNormalHat(level, ab, p) +
                border_stamp[ab] * evalNormalHat(level, ab + 1, p);
       }
-    } else if ((unsigned int)(1 << level) - 1 == index) {  // right border
+    } else if (static_cast<unsigned int>(1 << level) - 1 == index) {  // right border
       // Index of the affected hatbasis. The affected bases are ab and ab + 1
       int ab = static_cast<int>(floor(p * static_cast<double>(1 << level)));
 

@@ -99,6 +99,8 @@ struct GeneralGridConfiguration {
   std::string filename_;
   /// subgrid selection value t
   double t_ = 0.0;
+  /// virtual destructor, since GeneralGridConfiguration is used as base class
+  virtual ~GeneralGridConfiguration() {}
 };
 
 /**
@@ -106,6 +108,7 @@ struct GeneralGridConfiguration {
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
   RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
+  ~RegularGridConfiguration() override {}
 };
 
 /**
@@ -118,6 +121,7 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
     generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;
   }
+  ~CombiGridConfiguration() override {}
 };
 
 /**

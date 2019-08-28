@@ -21,7 +21,7 @@ class json_exception: public std::exception {
 
   explicit json_exception(const std::string& message);
 
-  const char* what() const throw() override;
+  const char* what() const noexcept override;
 };
 
 }  // namespace json

@@ -54,7 +54,7 @@ class ZeroCrossingRefinementFunctor : public MultiGridRefinementFunctor {
   double start() const override;
   size_t getRefinementsNum() const override;
   double getRefinementThreshold() const override;
-  virtual ~ZeroCrossingRefinementFunctor() {}
+  ~ZeroCrossingRefinementFunctor() override {}
 
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;

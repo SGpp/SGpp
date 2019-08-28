@@ -42,7 +42,7 @@ class DowndPhidPhiBBIterativeLinearStretchedBoundary {
   /**
    * Destructor
    */
-  ~DowndPhidPhiBBIterativeLinearStretchedBoundary();
+  virtual ~DowndPhidPhiBBIterativeLinearStretchedBoundary();
 
   /**
    * This operations performs the calculation of Down in the direction of dimension <i>dim</i>

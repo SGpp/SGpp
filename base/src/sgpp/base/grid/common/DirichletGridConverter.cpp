@@ -20,7 +20,7 @@ namespace sgpp {
 namespace base {
 
 DirichletGridConverter::DirichletGridConverter() : numTotalGridPoints(0),
-  numInnerGridPoints(0), conCoefArray(NULL), bFirstTime(true) {
+  numInnerGridPoints(0), conCoefArray(nullptr), bFirstTime(true) {
 }
 
 DirichletGridConverter::~DirichletGridConverter() {

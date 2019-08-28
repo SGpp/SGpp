@@ -56,7 +56,7 @@ class ForwardSelectorRefinement : public virtual RefinementDecorator {
   using RefinementDecorator::free_refine;
 
   explicit ForwardSelectorRefinement(AbstractRefinement* refinement)
-      : RefinementDecorator(refinement), iThreshold_(0.0) {}
+      : RefinementDecorator(refinement) {}
 
   /**
    * Refines a grid according to the ForwardSelectorRefinementIndicator
@@ -129,9 +129,6 @@ class ForwardSelectorRefinement : public virtual RefinementDecorator {
       AbstractRefinement::refinement_list_type current_value_list,
       size_t refinementsNum,
       AbstractRefinement::refinement_container_type& collection);
-
- private:
-  double iThreshold_;
 };
 
 }  // namespace base

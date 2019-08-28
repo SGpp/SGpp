@@ -19,7 +19,7 @@ UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage,
 
 UpDownOneOpDimEnhanced::UpDownOneOpDimEnhanced(sgpp::base::GridStorage* storage)
     : storage(storage),
-      coefs(NULL),
+      coefs(nullptr),
       algoDims(storage->getAlgorithmicDimensions()),
       numAlgoDims_(storage->getAlgorithmicDimensions().size()) {}
 
@@ -38,7 +38,7 @@ void UpDownOneOpDimEnhanced::mult(sgpp::base::DataVector& alpha, sgpp::base::Dat
     { this->updown(maAlpha, beta, this->numAlgoDims_ - 1); }
   }
 
-  if (coefs == NULL) {
+  if (coefs == nullptr) {
     beta.addReduce(result);
   } else {
     beta.addReduce(result, *coefs, 0);
@@ -55,7 +55,7 @@ void UpDownOneOpDimEnhanced::multParallelBuildingBlock(sgpp::base::DataVector& a
 
   this->updown(maAlpha, beta, this->numAlgoDims_ - 1);
 
-  if (coefs == NULL) {
+  if (coefs == nullptr) {
     beta.addReduce(result);
   } else {
     beta.addReduce(result, *coefs, 0);

@@ -48,7 +48,7 @@ class FileSampleDecorator : public FileSampleProvider {
 
   FileSampleDecorator &operator=(FileSampleDecorator &&rhs) = default;
 
-  ~FileSampleDecorator() = default;
+  ~FileSampleDecorator() override = default;
 
   Dataset *getNextSamples(size_t howMany) override;
 

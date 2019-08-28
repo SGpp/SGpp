@@ -72,10 +72,6 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
           std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidatesJoin>(
               candidateSearchMaxLevel);
       break;
-    default:
-      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(
-          candidateSearchMaxLevel);
-      break;
   }
   candidateSearch->setVerbose(verbose);
 
@@ -93,9 +89,6 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
       break;
     case MakePositiveInterpolationAlgorithm::InterpolateFunction:
       interpolation = std::make_shared<datadriven::OperationMakePositiveInterpolateFunction>(f);
-      break;
-    default:
-      interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
   }
 

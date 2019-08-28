@@ -56,7 +56,7 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
   double start() const override;
   size_t getRefinementsNum() const override;
   double getRefinementThreshold() const override;
-  virtual ~DataBasedRefinementFunctor() {}
+  ~DataBasedRefinementFunctor() override {}
 
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;

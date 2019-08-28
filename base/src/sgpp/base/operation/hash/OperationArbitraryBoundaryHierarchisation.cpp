@@ -66,10 +66,10 @@ OperationMultipleEval* OperationArbitraryBoundaryHierarchisation::createOperatio
   OperationMultipleEval* opEval;
   try {
     opEval = op_factory::createOperationMultipleEval(grid, coordinates);
-  } catch (base::factory_exception& e1) {
+  } catch (base::factory_exception&) {
     try {
       opEval = op_factory::createOperationMultipleEvalNaive(grid, coordinates);
-    } catch (base::factory_exception& e2) {
+    } catch (base::factory_exception&) {
       throw;
     }
   }

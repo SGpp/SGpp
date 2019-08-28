@@ -626,10 +626,10 @@ std::string DataMiningConfigParser::parseString(DictNode &dict, const std::strin
   if (dict.contains(key)) {
     try {
       return dict[key].get();
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       try {
         return dict[key]["value"].get();
-      } catch (json_exception &e) {
+      } catch (json_exception&) {
         std::string errorMsg = "# Failed to parse string " + parentDict + "[" + key +
                                "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
@@ -648,7 +648,7 @@ double DataMiningConfigParser::parseDouble(DictNode &dict, const std::string &ke
   if (dict.contains(key)) {
     try {
       return dict[key].getDouble();
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       try {
         if (dict[key].contains("logscale")) {
           if (dict[key]["logscale"].getBool()) {
@@ -656,7 +656,7 @@ double DataMiningConfigParser::parseDouble(DictNode &dict, const std::string &ke
           }
         }
         return dict[key]["value"].getDouble();
-      } catch (json_exception &e) {
+      } catch (json_exception&) {
         std::string errorMsg = "# Failed to parse double " + parentDict + "[" + key +
                                "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
@@ -674,10 +674,10 @@ size_t DataMiningConfigParser::parseUInt(DictNode &dict, const std::string &key,
   if (dict.contains(key)) {
     try {
       return dict[key].getUInt();
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       try {
         return dict[key]["value"].getUInt();
-      } catch (json_exception &e) {
+      } catch (json_exception&) {
         std::string errorMsg = "# Failed to parse unsigned integer " + parentDict + "[" + key +
                                "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
@@ -695,7 +695,7 @@ bool DataMiningConfigParser::parseBool(DictNode &dict, const std::string &key, b
   if (dict.contains(key)) {
     try {
       return dict[key].getBool();
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       std::string errorMsg = "# Failed to parse bool " + parentNode + "[" + key + "] from string" +
                              dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
@@ -713,10 +713,10 @@ int64_t DataMiningConfigParser::parseInt(DictNode &dict, const std::string &key,
   if (dict.contains(key)) {
     try {
       return dict[key].getInt();
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       try {
         return dict[key]["value"].getInt();
-      } catch (json_exception &e) {
+      } catch (json_exception&) {
         std::string errorMsg = "# Failed to parse integer " + parentNode + "[" + key +
                                "] from string";  // + dict[key].get() + ".";
         throw data_exception(errorMsg.c_str());
@@ -739,7 +739,7 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
         array.push_back(dict[key][i].getInt());
       }
       return array;
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       std::string errorMsg = "# Failed to parse integer array" + parentNode + "[" + key +
                              "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
@@ -762,7 +762,7 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, con
         array.push_back(dict[key][i].getDouble());
       }
       return array;
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       std::string errorMsg = "# Failed to parse double array" + parentNode + "[" + key +
                              "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
@@ -785,7 +785,7 @@ std::vector<size_t> DataMiningConfigParser::parseUIntArray(DictNode &dict, const
         array.push_back(dict[key][i].getUInt());
       }
       return array;
-    } catch (json_exception &e) {
+    } catch (json_exception&) {
       std::string errorMsg = "# Failed to parse uint array" + parentNode + "[" + key +
                              "] from string" + dict[key].get() + ".";
       throw data_exception(errorMsg.c_str());
@@ -826,7 +826,7 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
         dispar["level"] = DiscreteParameter("level", static_cast<int>(min), static_cast<int>(max));
       }
     }
-  } catch (json_exception &e) {
+  } catch (json_exception&) {
   }
   try {
     if ((*configFile)[fitter]["gridConfig"]["gridType"]["optimize"].getBool()) {
@@ -840,7 +840,7 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
             DiscreteParameter("basisFunction", 0, static_cast<int>(nOptions - 1));
       }
     }
-  } catch (json_exception &e) {
+  } catch (json_exception&) {
   }
   try {
     if ((*configFile)[fitter]["adaptivityConfig"]["noPoints"]["optimize"].getBool()) {
@@ -851,7 +851,7 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
             DiscreteParameter("noPoints", static_cast<int>(min), static_cast<int>(max));
       }
     }
-  } catch (json_exception &e) {
+  } catch (json_exception&) {
   }
   try {
     if ((*configFile)[fitter]["adaptivityConfig"]["threshold"]["optimize"].getBool()) {
@@ -864,7 +864,7 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
             ContinuousParameter(static_cast<size_t>(bits), "threshold", min, max, logscale);
       }
     }
-  } catch (json_exception &e) {
+  } catch (json_exception&) {
   }
   try {
     if ((*configFile)[fitter]["regularizationConfig"]["lambda"]["optimize"].getBool()) {
@@ -877,7 +877,7 @@ void DataMiningConfigParser::getHyperparameters(std::map<std::string, Continuous
             ContinuousParameter(static_cast<size_t>(bits), "lambda", min, max, logscale);
       }
     }
-  } catch (json_exception &e) {
+  } catch (json_exception&) {
   }
 }
 

@@ -120,9 +120,7 @@ class SGDEdist(EstimatedDist):
 #         config["sgde_makePositive_candidateSearchAlgorithm"] = "intersections"
 #         config["sgde_makePositive_interpolationAlgorithm"] = "setToZero"
 #         config["sgde_makePositive_generateConsistentGrid"] = True
-#         config["sgde_makePositive_verbose"] = True
 #         config["sgde_unitIntegrand"] = True
-#         config["sgde_makePositive_verbose"] = True
         if grid is not None:
             # serialize grid and add it to config
             grid_str = grid.serialize()

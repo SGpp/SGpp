@@ -52,7 +52,7 @@ class LinearModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 
     // check if p is out of bounds
     if ((p < xleft) || (p > xright)) {
-      return 0.0f;
+      return 0.0;
     } else {
       return evalBasis(level, index, p);
     }

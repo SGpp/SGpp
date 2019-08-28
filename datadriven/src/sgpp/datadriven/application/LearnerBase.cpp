@@ -141,8 +141,8 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   double oldAcc = 0.0;
 
   // Construct Grid
-  //  if (alpha_ != NULL) delete alpha_;
-  //  if (grid_ != NULL) delete grid_;
+  //  if (alpha_ != nullptr) delete alpha_;
+  //  if (grid_ != nullptr) delete grid_;
 
   if (isTrained == true) isTrained = false;
 

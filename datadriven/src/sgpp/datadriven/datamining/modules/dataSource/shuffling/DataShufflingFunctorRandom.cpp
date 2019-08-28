@@ -21,7 +21,7 @@ namespace datadriven {
 DataShufflingFunctorRandom::DataShufflingFunctorRandom(int64_t seed) :
     numSamples{0}, bitShift{0}, bitMask{0}, seed{seed} {
   if (this->seed == -1) {
-    srand(static_cast<unsigned int>(time(NULL)));
+    srand(static_cast<unsigned int>(time(nullptr)));
     this->seed = std::rand();
   }
   std::cout << "Seed for random shuffling functor: " << (this->seed) << std::endl;

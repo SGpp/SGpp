@@ -232,9 +232,7 @@ void LaplaceDownGradientPrewavelet::operator()(sgpp::base::DataVector& source,
 
   index.set(dim, l_old, i_old);
   delete[] temp_current;
-  temp_current = 0;
   delete[] temp_old;
-  temp_old = 0;
 }
 }  // namespace pde
 }  // namespace sgpp

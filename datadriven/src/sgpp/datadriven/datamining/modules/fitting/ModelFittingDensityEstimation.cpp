@@ -63,7 +63,6 @@ RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
           "for classification!";
       throw new application_exception(errorMessage.c_str());
     }
-    default: break;
   }
   return nullptr;
 }
@@ -92,7 +91,6 @@ bool ModelFittingDensityEstimation::refine() {
       } else {
         throw application_exception(
             "ModelFittingDensityEstimation: No refinement functor could be created!");
-        return false;
       }
     } else {
       return false;
@@ -101,9 +99,7 @@ bool ModelFittingDensityEstimation::refine() {
   } else {
     throw application_exception(
         "ModelFittingDensityEstimation: Can't refine before initial grid is created");
-    return false;
   }
-  return false;
 }
 
 }  // namespace datadriven

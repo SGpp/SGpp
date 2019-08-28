@@ -253,21 +253,19 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt, the current size is not lhs size, but B size
-    bool use_B_size = false;
+    size_t bSize = lhsMatrix.getNcols();
     sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
     if (densityEstimationConfig.decomposition_ ==
         sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
       thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
       if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
-        use_B_size = true;
+        bSize = thisOrthoAdaptPtr->getB().getNcols();
       }
     }
 
     // Compute right hand side of the equation:
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
-
-    size_t bSize = use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols();
 
     DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
     if (b.getGlobalRows() != grid.getSize()) {

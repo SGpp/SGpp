@@ -73,10 +73,6 @@ class AbstractFullGridEvaluationStrategy : public AbstractFullGridEvaluator<V> {
         summationStrategy = std::make_shared<FullGridOptimizedPCESummationStrategy<V>>(
             storage, evaluatorPrototypes, pointHierarchies);
         break;
-      default:
-        std::cerr << "AbstractFullGridEvaluationStrategy: summation strategy is not registered. Do "
-                     "it here!"
-                  << std::endl;
     }
   }
 

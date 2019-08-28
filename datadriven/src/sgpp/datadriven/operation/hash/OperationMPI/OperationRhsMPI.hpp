@@ -23,7 +23,7 @@ class DensityRhsWorker : public MPIWorkerGridBase,
   base::DataMatrix *data_matrix;
 
   void receive_and_send_initial_data(void) {
-    if (data_matrix != NULL) delete data_matrix;
+    if (data_matrix != nullptr) delete data_matrix;
     data_matrix = new base::DataMatrix(dataset, dataset_size / dimensions, dimensions);
     if (opencl_node) op->initialize_dataset(*data_matrix);
   }
@@ -50,14 +50,14 @@ class DensityRhsWorker : public MPIWorkerGridBase,
           gridpoints, complete_gridsize / (2 * grid_dimensions), grid_dimensions, 0.0, parameters,
           opencl_platform, opencl_device);
     }
-    data_matrix = NULL;
+    data_matrix = nullptr;
   }
   DensityRhsWorker(base::Grid &grid, sgpp::base::DataMatrix &data, std::string ocl_config_file)
       : MPIWorkerBase("DensityRHSWorker"),
         MPIWorkerGridBase("DensityRHSWorker", grid),
         MPIWorkerGraphBase("DensityRHSWorker", data, 0),
         MPIWorkerPackageBase("DensityMultiplicationWorker", 1, ocl_config_file) {
-    data_matrix = NULL;
+    data_matrix = nullptr;
   }
   virtual ~DensityRhsWorker(void) {
     if (opencl_node) delete op;

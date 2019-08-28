@@ -86,9 +86,9 @@ void DehierarchisationPolyBoundary::rec(DataVector& source, DataVector& result,
     index.up(dim);
 
     if (cur_lev == 0) {
-      coeffs[cur_ind] = 0.0f;
+      coeffs[cur_ind] = 0.0;
     } else {
-      coeffs[cur_lev + 1] = 0.0f;
+      coeffs[cur_lev + 1] = 0.0;
     }
   }
 }

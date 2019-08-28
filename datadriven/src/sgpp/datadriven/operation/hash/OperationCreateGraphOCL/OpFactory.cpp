@@ -36,7 +36,7 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConf
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
     double *dataset, size_t dataset_size, size_t k, size_t dimensions,
@@ -57,7 +57,7 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConf
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 
 DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
@@ -83,7 +83,7 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConf
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConfigured(
     base::DataMatrix &dataset, size_t k, size_t dimensions, std::string opencl_conf) {
@@ -130,7 +130,7 @@ DensityOCLMultiPlatform::OperationCreateGraphOCL *createNearestNeighborGraphConf
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 }  // namespace datadriven
 }  // namespace sgpp

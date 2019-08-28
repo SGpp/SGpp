@@ -91,7 +91,7 @@ int main() {
   sgpp::base::DataVector row(dataTrain.getNcols());
   for (size_t i = 0; i < dataTrain.getNrows(); i++) {
     dataTrain.getRow(i, row);
-    dataCl.at((size_t)targetTrain.get(i)).appendRow(row);
+    dataCl.at(static_cast<size_t>(targetTrain.get(i))).appendRow(row);
   }
 
   /**
