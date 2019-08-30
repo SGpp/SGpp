@@ -55,7 +55,7 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
   /**
    * Destructor
    */
-  virtual ~LearnerLeastSquaresIdentity();
+  ~LearnerLeastSquaresIdentity() override;
 
   void predict(sgpp::base::DataMatrix& testDataset,
                sgpp::base::DataVector& classesComputed) override;

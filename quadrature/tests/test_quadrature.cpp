@@ -43,7 +43,7 @@ using sgpp::quadrature::SampleGenerator;
 using sgpp::quadrature::StratifiedSampleGenerator;
 
 double f(DataVector x) {
-  double res = 1.0f;
+  double res = 1.0;
 
   for (size_t i = 0; i < x.getSize(); i++) {
     res *= 4 * (1 - x[i]) * x[i];
@@ -55,7 +55,7 @@ double f(DataVector x) {
 void testSampler(SampleGenerator& sampler, size_t dim, size_t numSamples, double analyticResult,
                  double tol) {
   DataVector sample = DataVector(dim);
-  double sum = 0.0f;
+  double sum = 0.0;
 
   for (size_t i = 0; i < numSamples; i++) {
     sampler.getSample(sample);
@@ -112,10 +112,6 @@ void testOperationQuadratureMCAdvanced(Grid& grid, DataVector& alpha,
     case sgpp::quadrature::SamplerTypes::Halton:
       opQuad->useQuasiMonteCarloWithHaltonSequences();
       break;
-
-    default:
-      std::cout << "test_quadrature::testOperationQuadratureMCAdvanced : sampler type not available"
-                << std::endl;
   }
 
   double resMC = opQuad->doQuadrature(alpha);
@@ -133,7 +129,7 @@ BOOST_AUTO_TEST_CASE(testOperationMCAdvanced) {
   grid->getGenerator().regular(1);
 
   DataVector alpha(1);
-  alpha[0] = 1.0f;
+  alpha[0] = 1.0;
 
   std::unique_ptr<sgpp::base::OperationQuadrature> opQuad(
       sgpp::op_factory::createOperationQuadrature(*grid));

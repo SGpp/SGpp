@@ -77,7 +77,7 @@ public class example_learnerSGDE {
     //java.lang.System.load("/path/to/SGpp/trunk/lib/jsgpp/libjsgpp.so");
     sgpp.LoadJSGPPLib.loadJSGPPLib();
 
-    String filename = "../datasets/friedman_4d_2000.arff";
+    String filename = "../datasets/friedman/friedman_4d_2000.arff";
 
     System.out.println("# loading file: " + filename);
     DataMatrix samples = readARFF(filename);

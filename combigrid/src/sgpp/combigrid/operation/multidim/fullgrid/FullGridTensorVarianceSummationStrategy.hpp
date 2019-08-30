@@ -49,7 +49,7 @@ class FullGridTensorVarianceSummationStrategy : public AbstractFullGridSummation
       : AbstractFullGridSummationStrategy<V>(storage, scalarProductEvaluatorPrototypes,
                                              pointHierarchies) {}
 
-  ~FullGridTensorVarianceSummationStrategy() {}
+  ~FullGridTensorVarianceSummationStrategy() override {}
 
   V eval(MultiIndex const &level) override {
     size_t numDimensions = level.size();

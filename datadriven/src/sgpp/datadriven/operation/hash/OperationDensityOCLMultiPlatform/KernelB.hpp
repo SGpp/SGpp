@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "KernelSourceBuilderB.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelSourceBuilderB.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -184,7 +184,7 @@ class KernelDensityB {
     if (verbose)
       std::cout << "Starting the kernel with " << globalworkrange[0] << " workitems" << std::endl;
 
-    err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange, NULL,
+    err = clEnqueueNDRangeKernel(device->commandQueue, this->kernelB, 1, 0, globalworkrange, nullptr,
                                  0, nullptr, &clTiming);
     if (err != CL_SUCCESS) {
       std::stringstream errorString;

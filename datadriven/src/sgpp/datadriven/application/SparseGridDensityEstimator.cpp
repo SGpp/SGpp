@@ -142,8 +142,6 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
         throw sgpp::base::application_exception("interpolation algorithm is unknown");
       }
     }
-    if (this->contains("sgde_makePositive_verbose"))
-      sgdeConfig.makePositive_verbose_ = (*this)["sgde_makePositive_verbose"].getBool();
     if (this->contains("sgde_makePositive_generateConsistentGrid"))
       sgdeConfig.makePositive_generateConsistentGrid_ =
           (*this)["sgde_makePositive_generateConsistentGrid"].getBool();
@@ -195,7 +193,6 @@ void SparseGridDensityEstimatorConfiguration::initConfig() {
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       datadriven::MakePositiveInterpolationAlgorithm::SetToZero;
   sgdeConfig.makePositive_generateConsistentGrid_ = true;
-  sgdeConfig.makePositive_verbose_ = false;
 
   sgdeConfig.unitIntegrand_ = false;
 }
@@ -305,8 +302,7 @@ void SparseGridDensityEstimator::initialize(base::DataMatrix& psamples) {
   if (sgdeConfig.makePositive_) {
     op_factory::createOperationMakePositive(sgdeConfig.makePositive_candidateSearchAlgorithm_,
                                             sgdeConfig.makePositive_interpolationAlgorithm_,
-                                            sgdeConfig.makePositive_generateConsistentGrid_,
-                                            sgdeConfig.makePositive_verbose_)
+                                            sgdeConfig.makePositive_generateConsistentGrid_)
         ->makePositive(*grid, *alpha, true);
   }
 
@@ -412,8 +408,8 @@ double SparseGridDensityEstimator::optimizeLambdaCV() {
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
     if (i % static_cast<size_t>(
-                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0f,
-                         static_cast<double>(1.0f))) ==
+                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0,
+                         static_cast<double>(1.0))) ==
         0) {
       if (!crossvalidationConfig.silent_) {
         std::cout << i + 1 << "/" << crossvalidationConfig.lambdaSteps_
@@ -603,7 +599,7 @@ void SparseGridDensityEstimator::splitset(std::vector<std::shared_ptr<base::Data
 
   if (crossvalidationConfig.shuffle_) {
     if (crossvalidationConfig.seed_ == -1)
-      srand(static_cast<unsigned int>(time(0)));
+      srand(static_cast<unsigned int>(time(nullptr)));
     else
       srand(crossvalidationConfig.seed_);
 

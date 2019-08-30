@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AdaptiveRefinementStrategy.hpp"
+#include <sgpp/combigrid/operation/multidim/AdaptiveRefinementStrategy.hpp>
 
 #include <stdexcept>
 #include <cmath>

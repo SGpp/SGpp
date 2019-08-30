@@ -39,7 +39,7 @@ class FirstMomentNormStrategy : public NormStrategy<FloatTensorVector> {
                           bool isOrthogonal,
                           sgpp::base::DataVector const& bounds = sgpp::base::DataVector(0));
 
-  virtual ~FirstMomentNormStrategy();
+  ~FirstMomentNormStrategy() override;
 
   /**
    * computes the first moment of the given tensor vector

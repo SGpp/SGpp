@@ -8,8 +8,8 @@
 #include <typeinfo>
 #include <algorithm>
 #include <vector>
-#include "OperationMPI.hpp"
-#include "MPIEnviroment.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
 
 namespace sgpp {
 namespace datadriven {

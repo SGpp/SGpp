@@ -33,7 +33,7 @@ class AdamsBashforth : public ODESolver {
    * @param timestepSize the size of one timestep
    * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
-  AdamsBashforth(size_t imax, double timestepSize, sgpp::base::ScreenOutput* screen = NULL);
+  AdamsBashforth(size_t imax, double timestepSize, sgpp::base::ScreenOutput* screen = nullptr);
 
   /**
    * Std-Destructor

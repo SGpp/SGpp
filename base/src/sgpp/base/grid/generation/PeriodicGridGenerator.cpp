@@ -51,7 +51,6 @@ void PeriodicGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>*
 size_t PeriodicGridGenerator::getNumberOfRefinablePoints() {
   throw generation_exception(
     "PeriodicGridGenerator::getNumberOfRefinablePoints is not implemented");
-  return 0;
 }
 
 void PeriodicGridGenerator::cliques(size_t level, size_t clique_size) {
@@ -80,7 +79,6 @@ void PeriodicGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
 size_t PeriodicGridGenerator::getNumberOfRemovablePoints() {
   throw generation_exception(
     "PeriodicGridGenerator::getNumberOfRemovablePoints is not implemented");
-  return 0;
 }
 
 void PeriodicGridGenerator::refineMaxLevel(RefinementFunctor& func,
@@ -94,7 +92,6 @@ size_t PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel(
   throw generation_exception(
     "PeriodicGridGenerator::getNumberOfRefinablePointsToMaxLevel "
     "is not implemented");
-  return 0;
 }
 
 }  // namespace base

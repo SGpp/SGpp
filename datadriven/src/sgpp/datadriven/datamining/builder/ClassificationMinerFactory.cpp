@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ClassificationFitterFactory.hpp>
 
 #include <string>
 
@@ -31,10 +32,9 @@ ModelFittingBase* ClassificationMinerFactory::createFitter(
   return new ModelFittingClassification(config);
 }
 
-// TODO(dominik/eric): make classification fitter factory and set up all hyperparameters
 FitterFactory *ClassificationMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
-  return nullptr;
+  return new ClassificationFitterFactory(parser);
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

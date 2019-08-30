@@ -9,11 +9,10 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
-#include <cstddef>
 #include <cmath>
-
+#include <cstddef>
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -51,7 +50,7 @@ namespace optimizer {
  * @return                    whether the new point reaches an acceptable
  *                            improvement
  */
-inline bool lineSearchArmijo(ScalarFunction& f, double beta, double gamma, double tol,
+inline bool lineSearchArmijo(base::ScalarFunction& f, double beta, double gamma, double tol,
                              double eps, const base::DataVector& x, double fx,
                              base::DataVector& gradFx, const base::DataVector& s,
                              base::DataVector& y, size_t& evalCounter) {

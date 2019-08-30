@@ -38,8 +38,8 @@ class GaussHermiteQuadRule1D : public QuadRule1D {
    * to
    */
   void getLevelPointsAndWeightsNormalized(size_t level, base::DataVector& coordinates,
-                                          base::DataVector& weights, double mean = 0.0f,
-                                          double stdd = 1.0f);
+                                          base::DataVector& weights, double mean = 0.0,
+                                          double stdd = 1.0);
 
   static GaussHermiteQuadRule1D& getInstance();
 };

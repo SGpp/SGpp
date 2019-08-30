@@ -11,12 +11,12 @@
 #include <string>
 #include <vector>
 
-#include "SourceBuilderMult.hpp"
-#include "sgpp/base/opencl/OCLBufferWrapperSD.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/SourceBuilderMult.hpp>
+#include <sgpp/base/opencl/OCLBufferWrapperSD.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/tools/QueueLoadBalancerMutex.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {

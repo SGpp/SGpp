@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "NakBsplineBoundaryCombigridGrid.hpp"
+#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>

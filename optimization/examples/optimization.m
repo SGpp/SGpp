@@ -1,4 +1,4 @@
-%% \page example_optimization_m optimization.m
+%% \page example_optimization_m Optimization Example (MATLAB)
 %%
 %% On this page, we look at an example application of the sgpp::optimization module.
 %% Versions of the example are given in all languages
@@ -43,7 +43,7 @@ sgpp.omp_set_num_threads(1);
 
 fprintf('sgpp::optimization example program started.\n\n');
 % increase output verbosity
-printer = sgpp.OptPrinter.getInstance();
+printer = sgpp.Printer.getInstance();
 printer.setVerbosity(2);
 printLine = @() fprintf([repmat('-', 1, 80) '\n']);
 
@@ -80,8 +80,8 @@ printLine();
 fprintf('Hierarchizing...\n\n');
 functionValues = gridGen.getFunctionValues();
 coeffs = sgpp.DataVector(functionValues.getSize());
-hierSLE = sgpp.OptHierarchisationSLE(grid);
-sleSolver = sgpp.OptAutoSLESolver();
+hierSLE = sgpp.HierarchisationSLE(grid);
+sleSolver = sgpp.AutoSLESolver();
 
 % solve linear system
 if ~sleSolver.solve(hierSLE, functionValues, coeffs)
@@ -94,8 +94,8 @@ end
 %% sgpp::optimization::optimizer.
 printLine();
 fprintf('Optimizing smooth interpolant...\n\n');
-ft = sgpp.OptInterpolantScalarFunction(grid, coeffs);
-ftGradient = sgpp.OptInterpolantScalarFunctionGradient(grid, coeffs);
+ft = sgpp.InterpolantScalarFunction(grid, coeffs);
+ftGradient = sgpp.InterpolantScalarFunctionGradient(grid, coeffs);
 gradientDescent = sgpp.OptGradientDescent(ft, ftGradient);
 x0 = sgpp.DataVector(d);
 

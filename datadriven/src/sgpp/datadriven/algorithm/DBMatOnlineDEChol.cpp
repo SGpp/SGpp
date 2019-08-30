@@ -75,18 +75,17 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
   switch (offlineObject.getDecompositionType()) {
     case (MatrixDecompositionType::Chol):
       return new DBMatDMSChol();
-      break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatDMSDenseIChol(densityEstimationConfig, grid, lambda, doCV);
-      break;
     case (MatrixDecompositionType::LU):
     case (MatrixDecompositionType::Eigen):
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_chol):
     case (MatrixDecompositionType::SMW_ortho):
-    default:
-      throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
+      break;
   }
+
+  throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
 }
 
 std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(

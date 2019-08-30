@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d.componentwise_div(d2);
   for (int i = 0; i < nrows; ++i) {
     for (int j = 0; j < ncols; ++j) {
-      BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j) * (1.0 / d2.get(i, j)), tol);
+      BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j) * (1.0f / d2.get(i, j)), tol);
     }
   }
 

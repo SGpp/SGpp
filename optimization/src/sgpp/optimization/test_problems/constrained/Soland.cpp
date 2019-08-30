@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/vector/EmptyVectorFunction.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/optimization/test_problems/constrained/Soland.hpp>
-#include <sgpp/optimization/function/vector/EmptyVectorFunction.hpp>
 
 #include <cmath>
-
 namespace sgpp {
 namespace optimization {
 namespace test_problems {
@@ -41,8 +40,8 @@ double SolandObjective::evalUndisplaced(const base::DataVector& x) {
   return -12.0 * x1 - 7.0 * x2 + x2 * x2;
 }
 
-void SolandObjective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new SolandObjective(*this));
+void SolandObjective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new SolandObjective(*this));
 }
 
 SolandInequalityConstraint::SolandInequalityConstraint() : TestVectorFunction(2, 0) {}
@@ -52,8 +51,8 @@ SolandInequalityConstraint::~SolandInequalityConstraint() {}
 void SolandInequalityConstraint::evalUndisplaced(const base::DataVector& x,
                                                  base::DataVector& value) {}
 
-void SolandInequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new SolandInequalityConstraint(*this));
+void SolandInequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new SolandInequalityConstraint(*this));
 }
 
 SolandEqualityConstraint::SolandEqualityConstraint() : TestVectorFunction(2, 1) {}
@@ -67,8 +66,8 @@ void SolandEqualityConstraint::evalUndisplaced(const base::DataVector& x, base::
   value[0] = -2.0 * std::pow(x1, 4.0) + 2.0 - x2;
 }
 
-void SolandEqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new SolandEqualityConstraint(*this));
+void SolandEqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new SolandEqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

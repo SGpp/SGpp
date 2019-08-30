@@ -17,9 +17,10 @@ std::shared_ptr<TreeStorage<uint8_t>> convertHierarchicalSparseGridToCombigrid(
     case GridConversionTypes::ALLSUBSPACES:
       return allStorageLevels(storage);
     case GridConversionTypes::COMPLETESUBSPACES:
-    default:
       return completeStorageLevels(storage);
   }
+
+  return completeStorageLevels(storage);
 }
 
 void convertCombigridToHierarchicalSparseGrid(std::shared_ptr<TreeStorage<uint8_t>> levelStructure,
@@ -240,9 +241,9 @@ sgpp::base::DataVector calculateInterpolationCoefficientsForConvertedExpUniformB
   combigridInterpolationOperation->getLevelManager()->addLevelsFromStructure(levelStructure);
   sgpp::base::DataVector f_values = combigridInterpolationOperation->getResult();
 
-  sgpp::optimization::Printer::getInstance().setVerbosity(-1);
-  sgpp::optimization::HierarchisationSLE hierSLE(*grid);
-  sgpp::optimization::sle_solver::Auto sleSolver;
+  sgpp::base::Printer::getInstance().setVerbosity(-1);
+  sgpp::base::HierarchisationSLE hierSLE(*grid);
+  sgpp::base::sle_solver::Auto sleSolver;
   sgpp::base::DataVector alpha(grid->getSize());
   if (!sleSolver.solve(hierSLE, f_values, alpha)) {
     std::cout << "Solving failed!" << std::endl;

@@ -86,14 +86,14 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
     size_t lastDim = numDimensions - 1;
     auto current = root;
     for (size_t d = 0; d < lastDim; ++d) {
-      auto internal = (InternalTreeStorageNode<T> *)current;
+      auto internal = dynamic_cast<InternalTreeStorageNode<T>*>(current);
       internalNodes.push_back(internal);
       size_t currentIndex = this->policy.value(d, 0);
       CGLOG("TreeStorageGuidedIterator(): currentIndex == " << currentIndex);
       permutedIndex[d] = currentIndex;
       current = getChild(internal, d, currentIndex);
     }
-    lowestNode = (LowestTreeStorageNode<T> *)current;
+    lowestNode = dynamic_cast<LowestTreeStorageNode<T>*>(current);
   }
 
   virtual ~TreeStorageGuidedIterator() {}
@@ -130,22 +130,23 @@ class TreeStorageGuidedIterator : public AbstractMultiStorageIterator<T> {
     permutedIndex[d] = nextValue;
 
     if (dim < numInternalDimensions) {
-      internalNodes[dim] = (InternalTreeStorageNode<T> *)getChild(internalNodes[d], d, nextValue);
+      internalNodes[dim] = dynamic_cast<InternalTreeStorageNode<T>*>(
+          getChild(internalNodes[d], d, nextValue));
       nextValue = policy.resetAndGetValue(dim, 0);
       permutedIndex[dim] = nextValue;
 
       ++dim;
       while (dim < numInternalDimensions) {
-        internalNodes[dim] =
-            (InternalTreeStorageNode<T> *)getChild(internalNodes[dim - 1], dim - 1, nextValue);
+        internalNodes[dim] = dynamic_cast<InternalTreeStorageNode<T>*>(
+            getChild(internalNodes[dim - 1], dim - 1, nextValue));
         nextValue = policy.resetAndGetValue(dim, 0);
         permutedIndex[dim] = nextValue;
 
         ++dim;
       }
     }
-    lowestNode = (LowestTreeStorageNode<T> *)getChild(internalNodes[lastInternalDim],
-                                                      lastInternalDim, nextValue);
+    lowestNode = dynamic_cast<LowestTreeStorageNode<T>*>(
+        getChild(internalNodes[lastInternalDim], lastInternalDim, nextValue));
 
     return h;
   }

@@ -40,8 +40,8 @@ double G06Objective::evalUndisplaced(const base::DataVector& x) {
   return std::pow(x1 - 10.0, 3.0) + std::pow(x2 - 20.0, 3.0);
 }
 
-void G06Objective::clone(std::unique_ptr<ScalarFunction>& clone) const {
-  clone = std::unique_ptr<ScalarFunction>(new G06Objective(*this));
+void G06Objective::clone(std::unique_ptr<base::ScalarFunction>& clone) const {
+  clone = std::unique_ptr<base::ScalarFunction>(new G06Objective(*this));
 }
 
 G06InequalityConstraint::G06InequalityConstraint() : TestVectorFunction(2, 2) {}
@@ -56,8 +56,8 @@ void G06InequalityConstraint::evalUndisplaced(const base::DataVector& x, base::D
   value[1] = std::pow(x1 - 6.0, 2.0) + std::pow(x2 - 5.0, 2.0) - 82.81;
 }
 
-void G06InequalityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G06InequalityConstraint(*this));
+void G06InequalityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G06InequalityConstraint(*this));
 }
 
 G06EqualityConstraint::G06EqualityConstraint() : TestVectorFunction(2, 0) {}
@@ -66,8 +66,8 @@ G06EqualityConstraint::~G06EqualityConstraint() {}
 
 void G06EqualityConstraint::evalUndisplaced(const base::DataVector& x, base::DataVector& value) {}
 
-void G06EqualityConstraint::clone(std::unique_ptr<VectorFunction>& clone) const {
-  clone = std::unique_ptr<VectorFunction>(new G06EqualityConstraint(*this));
+void G06EqualityConstraint::clone(std::unique_ptr<base::VectorFunction>& clone) const {
+  clone = std::unique_ptr<base::VectorFunction>(new G06EqualityConstraint(*this));
 }
 }  // namespace test_problems
 }  // namespace optimization

@@ -122,6 +122,8 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
 
   // decomposed matrix now consists of Q, T^-1, with: (lhs+lambda*I)^-1 = Q * T^-1 * Q^t
   this->isDecomposed = true;
+#else
+  throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
 }
 

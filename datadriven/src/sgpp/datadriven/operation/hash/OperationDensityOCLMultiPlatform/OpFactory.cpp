@@ -9,7 +9,7 @@
 #include <sgpp/globaldef.hpp>
 #include <string>
 
-#include "OperationDensityOCLMultiPlatform.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCLMultiPlatform.hpp>
 namespace sgpp {
 namespace datadriven {
 DensityOCLMultiPlatform::OperationDensity*
@@ -36,7 +36,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
@@ -64,7 +64,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
@@ -92,7 +92,7 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t dimension,
@@ -118,7 +118,7 @@ createDensityOCLMultiPlatformConfigured(int *gridpoints, size_t gridsize, size_t
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationDensity*
 createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
@@ -168,7 +168,7 @@ createDensityOCLMultiPlatformConfigured(base::Grid& grid, size_t dimension,
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 }  // namespace datadriven
 }  // namespace sgpp

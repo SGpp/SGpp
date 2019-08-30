@@ -69,8 +69,12 @@ void OperationMultiEvalModMaskStreaming::getOpenMPPartitionSegment(size_t start,
                                                                    size_t* segmentStart,
                                                                    size_t* segmentEnd,
                                                                    size_t blocksize) {
-  size_t threadCount = omp_get_num_threads();
-  size_t myThreadNum = omp_get_thread_num();
+  size_t threadCount = 1;
+  size_t myThreadNum = 0;
+#ifdef _OPENMP
+  threadCount = omp_get_num_threads();
+  myThreadNum = omp_get_thread_num();
+#endif
   getPartitionSegment(start, end, threadCount, myThreadNum, segmentStart, segmentEnd, blocksize);
 }
 
@@ -186,6 +190,11 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
   this->mask = std::vector<double>(gridSize * dims);
   this->offset = std::vector<double>(gridSize * dims);
 
+  union IntMask {
+    double d;
+    uint64_t ui;
+  } intMask;
+
   for (size_t i = 0; i < this->storage->getSize(); i++) {
     for (size_t dim = 0; dim < dims; dim++) {
       storage->getPoint(i).get(dim, curLevel, curIndex);
@@ -194,8 +203,8 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
         this->level[i * dims + dim] = 0.0;
         this->index[i * dims + dim] = 0.0;
 
-        uint64_t intmask = 0x0000000000000000;
-        this->mask[i * dims + dim] = *reinterpret_cast<double*>(&intmask);
+        intMask.ui = 0x0000000000000000;
+        this->mask[i * dims + dim] = intMask.d;
 
         this->offset[i * dims + dim] = 1.0;
       } else if (curIndex == 1) {
@@ -203,8 +212,8 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
             static_cast<double>(-1.0) * static_cast<double>(1 << curLevel);
         this->index[i * dims + dim] = 0.0;
 
-        uint64_t intmask = 0x0000000000000000;
-        this->mask[i * dims + dim] = *reinterpret_cast<double*>(&intmask);
+        intMask.ui = 0x0000000000000000;
+        this->mask[i * dims + dim] = intMask.d;
 
         this->offset[i * dims + dim] = 2.0;
       } else if (curIndex ==
@@ -212,16 +221,16 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
         this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
         this->index[i * dims + dim] = static_cast<double>(curIndex);
 
-        uint64_t intmask = 0x0000000000000000;
-        this->mask[i * dims + dim] = *reinterpret_cast<double*>(&intmask);
+        intMask.ui = 0x0000000000000000;
+        this->mask[i * dims + dim] = intMask.d;
 
         this->offset[i * dims + dim] = 1.0;
       } else {
         this->level[i * dims + dim] = static_cast<double>(1 << curLevel);
         this->index[i * dims + dim] = static_cast<double>(curIndex);
 
-        uint64_t intmask = 0x8000000000000000;
-        this->mask[i * dims + dim] = *reinterpret_cast<double*>(&intmask);
+        intMask.ui = 0x8000000000000000;
+        this->mask[i * dims + dim] = intMask.d;
 
         this->offset[i * dims + dim] = 1.0;
       }
@@ -233,8 +242,8 @@ void OperationMultiEvalModMaskStreaming::recalculateLevelIndexMask() {
       this->level[i * dims + dim] = 0;
       this->index[i * dims + dim] = 0;
 
-      uint64_t intmask = 0x0000000000000000;
-      this->mask[i * dims + dim] = *reinterpret_cast<double*>(&intmask);
+      intMask.ui = 0x0000000000000000;
+      this->mask[i * dims + dim] = intMask.d;
 
       this->offset[i * dims + dim] = 1.0;
     }

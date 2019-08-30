@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_optimization_java optimization.java
+ * \page example_optimization_java Optimization Example (Java)
  *
  * On this page, we look at an example application of the sgpp::optimization module.
  * Versions of the example are given in all languages
@@ -17,7 +17,7 @@
  *
  * The example uses the following external class (stored in <tt>ExampleFunction.java</tt>).
  * The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
- * is called <i>objective function</i> and has to derive from sgpp.OptScalarFunction.
+ * is called <i>objective function</i> and has to derive from sgpp.ScalarFunction.
  * In the constructor, we give the dimensionality of the domain
  * (in this case \f$d = 2\f$).
  * The eval method evaluates the objective function and returns the function
@@ -49,7 +49,7 @@ public class optimization {
 
     System.out.println("sgpp::optimization example program started.\n");
     // increase verbosity of the output
-    sgpp.OptPrinter.getInstance().setVerbosity(2);
+    sgpp.Printer.getInstance().setVerbosity(2);
 
     /**
      * Here, we define some parameters: objective function, dimensionality,
@@ -94,8 +94,8 @@ public class optimization {
     System.out.println("Hierarchizing...\n");
     final sgpp.DataVector functionValues = gridGen.getFunctionValues();
     sgpp.DataVector coeffs = new sgpp.DataVector(functionValues.getSize());
-    sgpp.OptHierarchisationSLE hierSLE = new sgpp.OptHierarchisationSLE(grid);
-    sgpp.OptAutoSLESolver sleSolver = new sgpp.OptAutoSLESolver();
+    sgpp.HierarchisationSLE hierSLE = new sgpp.HierarchisationSLE(grid);
+    sgpp.AutoSLESolver sleSolver = new sgpp.AutoSLESolver();
 
     // solve linear system
     if (!sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs)) {
@@ -111,10 +111,10 @@ public class optimization {
      */
     printLine();
     System.out.println("Optimizing smooth interpolant...\n");
-    sgpp.OptInterpolantScalarFunction ft =
-        new sgpp.OptInterpolantScalarFunction(grid, coeffs);
-    sgpp.OptInterpolantScalarFunctionGradient ftGradient =
-        new sgpp.OptInterpolantScalarFunctionGradient(grid, coeffs);
+    sgpp.InterpolantScalarFunction ft =
+        new sgpp.InterpolantScalarFunction(grid, coeffs);
+    sgpp.InterpolantScalarFunctionGradient ftGradient =
+        new sgpp.InterpolantScalarFunctionGradient(grid, coeffs);
     sgpp.OptGradientDescent gradientDescent =
         new sgpp.OptGradientDescent(ft, ftGradient);
     sgpp.DataVector x0 = new sgpp.DataVector(d);

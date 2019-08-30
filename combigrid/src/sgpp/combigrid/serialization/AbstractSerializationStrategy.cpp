@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractSerializationStrategy.hpp"
+#include <sgpp/combigrid/serialization/AbstractSerializationStrategy.hpp>
 
 namespace sgpp {
 namespace combigrid {} /* namespace combigrid */

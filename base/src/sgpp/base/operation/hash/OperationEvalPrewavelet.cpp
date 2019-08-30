@@ -55,7 +55,7 @@ double OperationEvalPrewavelet::integrate(const DataVector& alpha) {
       index_t index;
       storage[i].get(d, level, index);
 
-      if (index != 1 && index != (unsigned int)((1 << level) - 1)) {
+      if (index != 1 && index != static_cast<unsigned int>((1 << level) - 1)) {
         temp_result = 0.0;
         break;
       } else if (level == 1) {

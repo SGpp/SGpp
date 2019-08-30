@@ -13,12 +13,12 @@
 #include <vector>
 #include <string>
 
-#include "LocalityMultiplier.hpp"
-#include "OperationMultiEvalHPX.hpp"
-#include "sgpp/base/exception/not_implemented_exception.hpp"
-#include "sgpp/base/tools/QueueLoadBalancerMutex.hpp"
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
-#include "sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/LocalityMultiplier.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalHPX/OperationMultiEvalHPX.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/tools/QueueLoadBalancerMutex.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {

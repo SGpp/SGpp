@@ -35,7 +35,7 @@ class RefinementMonitorPeriodic : public RefinementMonitor {
   /**
    * Destructor.
    */
-  virtual ~RefinementMonitorPeriodic();
+  ~RefinementMonitorPeriodic() override;
 
   /**
    * Pushes a new iteration to the monitors state.

@@ -7,8 +7,8 @@
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include "Configuration.hpp"
-#include "OperationMultiEvalStreamingModOCLOpt.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLOpt/Configuration.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperationMultiEvalStreamingModOCLOpt.hpp>
 
 namespace sgpp {
 namespace datadriven {

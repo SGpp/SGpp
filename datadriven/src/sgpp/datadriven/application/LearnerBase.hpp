@@ -5,17 +5,17 @@
 
 #pragma once
 
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
+#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <utility>
 #include <string>
 #include <vector>
-
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/solver/SLESolver.hpp"
-#include "sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
-#include "sgpp/datadriven/tools/TypesDatadriven.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {

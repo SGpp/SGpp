@@ -42,7 +42,7 @@ class UpdPhidPhiBBIterativeLinearStretchedBoundary {
   /**
    * Destructor
    */
-  ~UpdPhidPhiBBIterativeLinearStretchedBoundary();
+  virtual ~UpdPhidPhiBBIterativeLinearStretchedBoundary();
 
   /**
    * This operations performs the calculation of Up in the direction of dimension <i>dim</i>

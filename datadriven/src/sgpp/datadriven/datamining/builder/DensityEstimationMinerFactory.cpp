@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
@@ -27,8 +28,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 
 #include <string>
-
-#include "../modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -52,8 +51,9 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     case (DensityEstimationType::Decomposition):
       std::cout << "\nDECOMPOSITION\n";
       return new ModelFittingDensityEstimationOnOff(config);
-    default: { throw base::application_exception("Unknown density estimation type"); }
   }
+
+  throw base::application_exception("Unknown density estimation type");
 }
 
 HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {

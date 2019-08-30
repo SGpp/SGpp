@@ -9,8 +9,8 @@
 #include <map>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/tools/OperationConfiguration.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/OperationConfiguration.hpp>
 
 #if USE_OCL == 0
 #error "OCL is not enabled"

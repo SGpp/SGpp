@@ -34,8 +34,6 @@ import sys
 import math
 
 from pysgpp import *
-import matplotlib.pyplot as plotter
-from mpl_toolkits.mplot3d import Axes3D
 
 
 

@@ -26,7 +26,7 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include "../../algorithm/RefinementMonitorConvergence.hpp"
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 
 namespace sgpp {

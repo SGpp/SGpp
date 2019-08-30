@@ -22,7 +22,7 @@ class BSplineInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalar
  public:
   BSplineInterpolationEvaluator();
   explicit BSplineInterpolationEvaluator(size_t degree);
-  virtual ~BSplineInterpolationEvaluator();
+  ~BSplineInterpolationEvaluator() override;
   BSplineInterpolationEvaluator(BSplineInterpolationEvaluator const &other);
 
   std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }

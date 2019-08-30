@@ -119,7 +119,7 @@ class OperationMakePositiveFindIntersectionCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
   explicit OperationMakePositiveFindIntersectionCandidates(size_t maxLevel);
-  virtual ~OperationMakePositiveFindIntersectionCandidates();
+  ~OperationMakePositiveFindIntersectionCandidates() override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
@@ -158,7 +158,7 @@ class OperationMakePositiveFindIntersectionCandidatesJoin
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
   explicit OperationMakePositiveFindIntersectionCandidatesJoin(size_t maxLevel);
-  virtual ~OperationMakePositiveFindIntersectionCandidatesJoin();
+  ~OperationMakePositiveFindIntersectionCandidatesJoin() override;
 
  protected:
   void findIntersections(
@@ -173,7 +173,7 @@ class OperationMakePositiveLoadFullGridCandidates
     : public OperationMakePositiveCandidateSetAlgorithm {
  public:
   explicit OperationMakePositiveLoadFullGridCandidates(size_t maxLevel);
-  virtual ~OperationMakePositiveLoadFullGridCandidates();
+  ~OperationMakePositiveLoadFullGridCandidates() override;
 
   void nextCandidates(base::Grid& grid, base::DataVector& alpha, size_t levelSum,
                       std::vector<std::shared_ptr<base::HashGridPoint>>& candidates) override;
@@ -193,7 +193,7 @@ class OperationMakePositiveHybridFindIntersectionCandidates
     : public OperationMakePositiveFindIntersectionCandidates {
  public:
   explicit OperationMakePositiveHybridFindIntersectionCandidates(size_t maxLevel);
-  virtual ~OperationMakePositiveHybridFindIntersectionCandidates();
+  ~OperationMakePositiveHybridFindIntersectionCandidates() override;
 
   void findIntersections(
       base::Grid& grid, base::DataVector& alpha, size_t levelSum,
