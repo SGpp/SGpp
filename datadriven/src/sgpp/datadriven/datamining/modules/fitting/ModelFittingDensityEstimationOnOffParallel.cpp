@@ -119,41 +119,40 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   }
 
   // Build and decompose offline object if not loaded from database
-  bool offline_inverted = false;  // SMW_ortho and SMW_chol flag
   if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
     offline = DBMatOfflineFactory::buildOfflineObject(
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
 
-    // in case of SMW decomposition type, the inverse of the matrix needs to be computed explicitly
-    // and parallel version of functions can be used
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+    // add supported parallel version of offline decompositions here
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::OrthoAdapt ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::Chol ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      // Note: do NOT compute the explicit inverse here for SMW_ decompositions, as regularization
+      // needs to be done first
       offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig, processGrid,
                                        parallelConfig);
-      offline->compute_inverse_parallel(processGrid, parallelConfig);
-      offline_inverted = true;
     } else {
       offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
-      offline_inverted = true;
     }
   }
 
   alphaDistributed =
       DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
+  // todo(dima): parallel version of regularization here
+
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
   online->syncDistributedDecomposition(processGrid, parallelConfig);
 
-  // in case of SMW decomposition type, the inverse of the matrix needs to be synced also
+  // in case of SMW decomposition type, the inverse of the matrix needs to be computed also
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-    if (!offline_inverted) {
-      online->getOfflineObject().compute_inverse_parallel(processGrid, parallelConfig);
-    }
+    offline->compute_inverse_parallel(processGrid, parallelConfig);
   }
 
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,

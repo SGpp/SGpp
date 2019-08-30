@@ -16,6 +16,9 @@ enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, 
 struct RegularizationConfiguration {
   RegularizationType type_;
   double lambda_;
+  double lamda_start_;
+  double lambda_end_;
+  double lambda_steps_;
   double l1Ratio_;
   double exponentBase_;
 };
