@@ -133,16 +133,15 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       // non-parallel version
       //
-      offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
-      offline->compute_inverse();
-      offline->syncDistributedInverse(processGrid, parallelConfig);
+      // offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+      // offline->compute_inverse();
+      // offline->syncDistributedInverse(processGrid, parallelConfig);
       //
 
       // parallel version
-      // offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig,
-      // processGrid,
-      //                                 parallelConfig);
-      // offline->compute_inverse_parallel(processGrid, parallelConfig);
+      offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig, processGrid,
+                                       parallelConfig);
+      offline->compute_inverse_parallel(processGrid, parallelConfig);
       //
     } else {
       offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
@@ -167,7 +166,6 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getDensityEstimationConfig(),
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
-  std::cout << "computed densityFunctionParallel" << std::endl;
   online->setBeta(this->config->getLearnerConfig().beta);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();

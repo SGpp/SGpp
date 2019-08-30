@@ -100,6 +100,8 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
   }
   size_t dim_a = lhsMatrix.getNrows();
   if (dim_a <= 1) {
+    this->q_ortho_matrix_.set(0, 0, 1.0);
+    this->t_tridiag_inv_matrix_.set(0, 0, 1.0 / this->lhsMatrix.get(0, 0));
     isDecomposed = true;
     return;
   }
@@ -132,45 +134,59 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
     throw sgpp::base::algorithm_exception(
         "in DBMatOfflineOrthoAdapt::decomposeMatrix: \nmatrix not built yet.");
   }
-  size_t dim_a = lhsMatrix.getNrows();
-  if (dim_a <= 1) {
-    isDecomposed = true;
-    return;
-  }
-  // allocating subdiagonal and diagonal vectors of T
-  sgpp::datadriven::DataVectorDistributed* diag = new sgpp::datadriven::DataVectorDistributed(
-      processGrid, dim_a, parallelConfig.rowBlockSize_, 0.0);
-  sgpp::datadriven::DataVectorDistributed* subdiag = new sgpp::datadriven::DataVectorDistributed(
-      processGrid, dim_a, parallelConfig.rowBlockSize_, 0.0);
-  sgpp::datadriven::DataVectorDistributed* tau = new sgpp::datadriven::DataVectorDistributed(
-      processGrid, dim_a, parallelConfig.rowBlockSize_, 0.0);
 
   // syncing lhs distributed matrix
   this->lhsDistributed = DataMatrixDistributed::fromSharedData(
-      this->lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
+      this->lhsMatrix.getPointer(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
       parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
-  double* work = new double[dim_a];
-  int lwork = -1;
-  int info;
-  // pdsytrd_ amounts to hessenberg_decomposition of non-parallel version
-  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), diag->getLocalPointer(),
-           subdiag->getLocalPointer(), tau->getLocalPointer(), work, lwork, info);
+  size_t dim_a = lhsMatrix.getNrows();
+  if (dim_a <= 1) {
+    this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+        this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
+        this->q_ortho_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+        parallelConfig.columnBlockSize_);
+    this->q_ortho_matrix_distributed_.set(0, 0, 1.0);
+    this->t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+        this->t_tridiag_inv_matrix_.getPointer(), processGrid,
+        this->t_tridiag_inv_matrix_.getNrows(), this->t_tridiag_inv_matrix_.getNcols(),
+        parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+    this->t_tridiag_inv_matrix_distributed_.set(0, 0, 1.0 / this->lhsMatrix.get(0, 0));
+    isDecomposed = true;
+    return;
+  }
 
-  // inverting middle matrix: T => (T + lambda*I)^-1
+  // allocating subdiagonal and diagonal vectors of T
   sgpp::base::DataVector d(dim_a);
   sgpp::base::DataVector sd(dim_a - 1);
-  diag->toLocalDataVector(d);
-  subdiag->toLocalDataVector(sd);
+  sgpp::base::DataVector tau(dim_a);
+
+  for (size_t i = 0; i < tau.size(); i++) {
+    tau.set(i, 1.1);
+  }
+  int lwork = -1;
+  double* work = new double[1];
+  int info;
+  // ask pdsytrd_ how much workspace it needs
+  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+           work, lwork, info);
+  lwork = work[0];
+  work = new double[lwork];
+  // pdsytrd_ amounts to hessenberg_decomposition of non-parallel version
+  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+           work, lwork, info);
+  free(work);
+
+  // inverting middle matrix with added lambda: T <~ (T + lambda*I)^-1
   for (size_t i = 0; i < dim_a; i++) {
     d.set(i, d.get(i) + regularizationConfig.lambda_);
   }
-  std::cout << "size of diag = " << d.getSize() << std::endl;
-  std::cout << "size of rhs = " << dim_a << std::endl;
+
   this->invert_symmetric_tridiag(d, sd);
   this->t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
-      this->t_tridiag_inv_matrix_.data(), processGrid, this->t_tridiag_inv_matrix_.getNrows(),
+      this->t_tridiag_inv_matrix_.getPointer(), processGrid, this->t_tridiag_inv_matrix_.getNrows(),
       this->t_tridiag_inv_matrix_.getNcols(), parallelConfig.rowBlockSize_,
       parallelConfig.columnBlockSize_);
 
@@ -180,17 +196,28 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
     this->q_ortho_matrix_.set(i, i, 1.0);
   }
   this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
-      this->q_ortho_matrix_.data(), processGrid, this->q_ortho_matrix_.getNrows(),
+      this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
       this->q_ortho_matrix_.getNcols(), parallelConfig.rowBlockSize_,
       parallelConfig.columnBlockSize_);
-  // pdormtr_ is used on Q (=identity) to obtain Q by overwriting Id*Q into it
-  std::cout << "obtaining explicit Q" << std::endl;
+  // ask pdormtr_ how much workspace it needs
+  double* work2 = new double[1];
+  lwork = -1;
   pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), tau->getLocalPointer(),
+           this->lhsDistributed.getDescriptor(), tau.getPointer(),
            this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
-           this->q_ortho_matrix_distributed_.getDescriptor(), work, lwork, info);
+           this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
+  lwork = work2[0];
+  work2 = new double[lwork];
+  // pdormtr_ is used on Q (=identity) to obtain Q by overwriting Id*Q into it
+  pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), tau.getPointer(),
+           this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
+           this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
+  free(work2);
+  // sync non-distributed matrices
+  q_ortho_matrix_distributed_.toLocalDataMatrix(q_ortho_matrix_);
+  t_tridiag_inv_matrix_distributed_.toLocalDataMatrix(t_tridiag_inv_matrix_);
 
-  free(work);
   this->isDecomposed = true;
 #endif /* USE_SCALAPACK */
 }
@@ -326,31 +353,33 @@ void DBMatOfflineOrthoAdapt::compute_inverse_parallel(std::shared_ptr<BlacsProce
         "in DBMatOfflineOrthoAdapt::compute_inverse_parallel:\noffline matrix not decomposed "
         "yet.\n");
   }
-  std::cout << "entered compute inverse parallel" << std::endl;
   size_t dim_a = this->lhsDistributed.getGlobalRows();
+
+  if (dim_a <= 1) {
+  }
 
   DataMatrixDistributed* QT = new DataMatrixDistributed(
       processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
   DataMatrixDistributed* INV = new DataMatrixDistributed(
       processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
+  // Note: Because "L", a.k.a. lower triangular storage mode, was chosen on decomposition with
+  // pdsytrd_, the Q is altered to Q^t, i.e. A = Q^t * T * Q, and also A^-1 = Q^t * T^-1 * Q
   DataMatrixDistributed::mult(this->q_ortho_matrix_distributed_,
-                              this->t_tridiag_inv_matrix_distributed_, *QT);
-  DataMatrixDistributed::mult(*QT, this->q_ortho_matrix_distributed_, *INV, false, true);
+                              this->t_tridiag_inv_matrix_distributed_, *QT, true, false);
+  DataMatrixDistributed::mult(*QT, this->q_ortho_matrix_distributed_, *INV, false, false);
 
   // writing computed inverse into member and syncing both distri and non-distri matrices
-  this->lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
-      INV->getLocalPointer(), processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_,
-      parallelConfig.columnBlockSize_);
   this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+  INV->toLocalDataMatrix(this->lhsInverse);
+  this->lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
+      this->lhsInverse.getPointer(), processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
   this->lhsDistributedInverse.toLocalDataMatrix(this->lhsInverse);
-
-  std::cout << "\n\nTESTESTESTESTEST inv_distri * lhs_distri = Id ?" << std::endl;
   this->lhsDistributed = DataMatrixDistributed::fromSharedData(
       this->lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
       parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
-  DataMatrixDistributed::mult(lhsDistributed, lhsDistributedInverse, *INV);
-  INV->printMatrix();
+
   free(QT);
   free(INV);
   return;

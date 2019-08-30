@@ -27,6 +27,36 @@
 namespace sgpp {
 namespace datadriven {
 
+void printMatrix(DataMatrix& A) {
+  for (size_t i = 0; i < A.getNrows(); i++) {
+    for (size_t j = 0; j < A.getNcols(); j++) {
+      std::cout << A.get(i, j) << "  ";
+    }
+    std::cout << "" << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+void printMatrix(gsl_matrix* A) {
+  for (size_t i = 0; i < A->size1; i++) {
+    for (size_t j = 0; j < A->size2; j++) {
+      std::cout << A->data[i * A->size2 + j] << "  ";
+    }
+    std::cout << "" << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+void printMatrix(DataMatrixDistributed& A) {
+  for (size_t i = 0; i < A.getGlobalRows(); i++) {
+    for (size_t j = 0; j < A.getGlobalCols(); j++) {
+      std::cout << A.get(i, j) << "  ";
+    }
+    std::cout << "" << std::endl;
+  }
+  std::cout << std::endl;
+}
+
 DBMatOnlineDE_SMW::DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
   if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::OrthoAdapt &&
@@ -69,7 +99,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     }
 
     if (!coarsen_points.empty()) {
-      // todo(dima): optimize size of matrix X when coarsening
+      // todo(): optimize size of matrix X when coarsening
       // break-even point, k times single point VS. k points at once
       DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
@@ -114,7 +144,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
 
     if (!coarsen_points.empty()) {
       // todo(): optimize size of matrix X when coarsening
-      // break-even point, k times single point VS. k points at once
+      // break-even point, k times single point VS. k points at once?
       DataMatrix X(grid.getSize(), this->current_refine_index, 0.0);
       compute_L2_coarsen_matrix(X, grid, coarsen_points);
       DataMatrixDistributed XDistributed = DataMatrixDistributed::fromSharedData(
@@ -129,7 +159,6 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     // refine/coarsen matrix X for smw formula
     DataMatrix X(grid.getSize(), numAddedGridPoints);
     compute_L2_refine_matrix(X, grid, numAddedGridPoints, lambda);
-    std::cout << "computed L2_refine_matrix" << std::endl;
     DataMatrixDistributed XDistributed = DataMatrixDistributed::fromSharedData(
         X.getPointer(), processGrid, X.getNrows(), X.getNcols(), parallelConfig.rowBlockSize_,
         parallelConfig.columnBlockSize_);
@@ -213,7 +242,7 @@ void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
   }
 
   // create E
-  // todo(): replace operations done with E/E^t by matrix_subviews
+  // todo(): maybe replace operations done with E/E^t by matrix_subviews for better performance?
   DataMatrix E(X.getNrows(), X.getNcols(), 0.0);
   for (size_t k = E.getNrows() - E.getNcols(); k < E.getNrows(); k++) {
     E.set(k, k - E.getNrows() + E.getNcols(), 1.0);
@@ -369,7 +398,6 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
                                            const ParallelConfiguration& parallelConfig,
                                            std::vector<size_t> coarsenIndices) {
 #ifdef USE_GSL
-  std::cout << "entered smw_adapt_parallel" << std::endl;
   // dimension of offline's lhs matrix and its inverse
   size_t offMatrixSize = this->offlineObject.getGridSize();
 
@@ -389,24 +417,14 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // allocate additional space for b_adapt_matrix_ and fill new diagonal entries with ones
   // note: only done in refining! Coarsening will resize at the end of function
   if (refine) {
-    this->b_adapt_matrix_.resize(newSize, newSize);
-    this->b_adapt_matrix_distributed_.resize(newSize, newSize);
-    this->syncDistributedDecomposition(processGrid, parallelConfig);
+    this->b_adapt_matrix_.resizeQuadratic(newSize);
     for (size_t i = oldSize; i < newSize; i++) {
-      this->b_adapt_matrix_distributed_.set(i, i, 1.0);
       this->b_adapt_matrix_.set(i, i, 1.0);
     }
   }
 
-  std::cout << "CHECK matrices before smw formula" << std::endl;
-  std::cout << "old size = " << oldSize << std::endl;
-  std::cout << "offline lhs distri inverse = "
-            << offlineObject.getDecomposedInverseDistributed().getGlobalRows() << "x"
-            << offlineObject.getDecomposedInverseDistributed().getGlobalCols() << std::endl;
-  std::cout << "online B distri = " << b_adapt_matrix_distributed_.getGlobalRows() << "x"
-            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
-  std::cout << "L2_refine matrix X = " << X.getGlobalRows() << "x" << X.getGlobalCols()
-            << std::endl;
+  this->syncDistributedDecomposition(processGrid, parallelConfig);
+
   /************************************************************
    * BEGIN OF SHERMAN-MORRISON-WOODBURRY
    *
@@ -469,16 +487,29 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // (I + E^t * (A^-1 + B) * X)^-1
   // Note: this is an explicit inversion, but the inverted matrix is of size kxk, where k denotes
-  // the refined points. In general, k is much smaller than total new matrix size, and therefore
-  // the inversion should not take much time, compared to whole process of refinement
+  // the amount of refined points. In general, k is much smaller than total new matrix size, and
+  // therefore the inversion should not take much time, compared to whole process of refinement
   int info;
   size_t inv_dim = X.getGlobalCols();
-  int* ipiv = new int[X.getGlobalCols()];
+  int* ipiv = new int[inv_dim];
+
+  // LU-decomposing
   pdgetrf_(inv_dim, inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, info);
-  double* work = new double[inv_dim];
-  int* iwork = new int[inv_dim];
-  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, -1, iwork, -1,
-           info);
+
+  int lwork = -1;
+  double* work = new double[1];
+  int liwork = -1;
+  int* iwork = new int[1];
+  // ask pdgetri_ how much workspace it needs
+  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, lwork, iwork,
+           liwork, info);
+  lwork = work[0];
+  liwork = iwork[0];
+  work = new double[lwork];
+  iwork = new int[liwork];
+  // inverting with pdgetri_
+  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, lwork, iwork,
+           liwork, info);
 
   // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1
   DataMatrixDistributed* AXINV =
@@ -550,9 +581,24 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // (I + X^t * (A^-1 + B~) * E)^-1
   // Note: explicit inversion, see note above in phase 1 of smw
+
+  // LU-decomposing
   pdgetrf_(inv_dim, inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, info);
-  pdgetri_(inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, work, -1, iwork, -1,
-           info);
+
+  lwork = -1;
+  work = new double[1];
+  liwork = -1;
+  iwork = new int[1];
+  // ask pdgetri_ how much workspace it needs
+  pdgetri_(inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, work, lwork, iwork,
+           liwork, info);
+  lwork = work[0];
+  liwork = iwork[0];
+  work = new double[lwork];
+  iwork = new int[liwork];
+  // inverting with pdgetri_
+  pdgetri_(inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, work, lwork, iwork,
+           liwork, info);
 
   // (A^-1 + B~) E (I + X^t * (A^-1 + B~) * E)^-1
   DataMatrixDistributed* AEINV =
@@ -582,14 +628,12 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
    * END OF SHERMAN-MORRISON-WOODBURRY
    *
    *****/
-  std::cout << "Bdistri (before syncing in smw_adapt) = "
-            << b_adapt_matrix_distributed_.getGlobalRows() << "x"
-            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
+
+  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
 
   // If points were coarsened the b_adapt_matrix will now have empty rows and columns
   // on the indices of the coarsened points. In the following algorithm, the symmetry
   // of b_adapt_matrix_ is used to glue the blocks together again.
-  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
   if (!refine) {
     std::sort(coarsenIndices.begin(), coarsenIndices.end());
     size_t vi = 1;  // skips points
@@ -634,8 +678,6 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // determine, if any refined information now is contained in matrix b_adapt
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
 
-  std::cout << "Bdistri (end of smw_adapt) = " << b_adapt_matrix_distributed_.getGlobalRows() << "x"
-            << b_adapt_matrix_distributed_.getGlobalCols() << std::endl;
   return;
 #endif /* USE_GSL */
 }
@@ -649,7 +691,6 @@ void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size
         "In DBMatOnlineDE_SMW::compute_L2_refine_matrix:\n"
         "The passed matrix container doesn't have the correct size.\n");
   }
-  std::cout << "entered compute_L2_refine_matrix" << std::endl;
   this->offlineObject.compute_L2_refine_vectors(&X, &grid, newPoints);
 
   // add lambda to diagonal elements
