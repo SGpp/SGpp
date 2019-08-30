@@ -59,12 +59,20 @@ void pdgetri_(const size_t &n, double *a, const size_t &ia, const size_t &ja, co
               const int *ipiv, double *work, const int &lwork, int *iwork, const int &liwork,
               const int &info);
 
+// Cholesky-decomposition
+void pdpotrf_(const char *uplo, const size_t &n, double *a, const size_t &ia, const size_t &ja,
+              const int *desca, const int &info);
+
+// inverting Cholesky-decomposed matrix
+void pdpotri_(const char *uplo, const size_t &n, double *a, const size_t &ia, const size_t &ja,
+              const int *desca, const int &info);
+
 // tridiagonal decomposition (symmetric hessenberg-decomposition)
 void pdsytrd_(const char *uplo, const size_t &n, double *a, const size_t &ia, const size_t &ja,
               const int *desca, double *d, double *e, double *tau, double *work, const int &lwork,
               const int &info);
 
-// application of Q (obtained by tridiagonal decomposition)
+// application of Q (obtained by tridiagonal decomposition), e.g. obtain Q by pdormtr_(Id) = Q
 void pdormtr_(const char *side, const char *uplo, const char *trans, const size_t &m,
               const size_t &n, const double *a, const size_t &ia, const size_t &ja,
               const int *desca, const double *tau, double *c, const size_t &ic, const size_t &jc,

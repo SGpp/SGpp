@@ -51,6 +51,18 @@ class DBMatOfflineChol : public DBMatOfflineGE {
                        DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                               DensityEstimationConfiguration& densityEstimationConfig,
+                               std::shared_ptr<BlacsProcessGrid> processGrid,
+                               const ParallelConfiguration& parallelConfig) override;
+
+  /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
    * and refined (newPoints) gridPoints
    *
@@ -71,6 +83,14 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param inv the matrix to store the computed inverse
    */
   void compute_inverse() override;
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                const ParallelConfiguration& parallelConfig) override;
 
  protected:
   /**
