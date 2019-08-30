@@ -58,7 +58,7 @@ class IndexInSubspaceGenerator {
   class iterator
     : std::iterator<std::forward_iterator_tag, value_type> {
    public:
-    explicit iterator(IndexInSubspaceGenerator* p = 0) : ptr_(p) {}
+    explicit iterator(IndexInSubspaceGenerator* p = nullptr) : ptr_(p) {}
     // implicit copy constructor, copy assignment and destructor
 
     reference operator* () {
@@ -69,7 +69,7 @@ class IndexInSubspaceGenerator {
       if (!ptr_->queue_.empty()) {
         ptr_ = ptr_->next_();
       } else {
-        ptr_ = NULL;
+        ptr_ = nullptr;
       }
 
       return *this;
@@ -107,7 +107,7 @@ class IndexInSubspaceGenerator {
    * @return iterator to the end
    */
   iterator end()   {
-    return iterator(NULL);
+    return iterator(nullptr);
   }
 
  private:

@@ -51,7 +51,7 @@ class RefinementDecorator: public AbstractRefinement {
    * @param addedPoints pointer to vector to append newly created grid points to
    */
   virtual void free_refine(GridStorage& storage, RefinementFunctor& functor,
-                           std::vector<size_t>* addedPoints = 0);
+                           std::vector<size_t>* addedPoints = nullptr);
 
 
   /**

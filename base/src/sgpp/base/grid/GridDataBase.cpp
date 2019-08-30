@@ -186,7 +186,7 @@ void GridDataBase::save(std::string filename, char ftype) {
         fout.write(reinterpret_cast<char*>(&ind), sizeof(ind));
       }
 
-      fout.write((const char*) & (git->second), sizeof(git->second));
+      fout.write(reinterpret_cast<const char*>(&(git->second)), sizeof(git->second));
     }
   }
 

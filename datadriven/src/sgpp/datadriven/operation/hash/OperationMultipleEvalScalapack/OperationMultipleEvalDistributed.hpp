@@ -76,14 +76,14 @@ class OperationMultipleEvalDistributed : public sgpp::base::OperationMultipleEva
   /**
    * Not implemented in distributed version.
    */
-  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override {
     throw sgpp::base::not_implemented_exception("only distributed version of mult implemented");
   }
 
   /**
    * Not implemented in distributed version.
    */
-  virtual void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) {
+  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override {
     throw sgpp::base::not_implemented_exception("only distributed version of mult implemented");
   }
 };

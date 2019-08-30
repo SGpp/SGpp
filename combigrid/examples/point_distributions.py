@@ -10,10 +10,16 @@
 
 ## @image html point_distributions.png ""
 
-import numpy as np
-import matplotlib.pyplot as plt
+try:
+    import numpy as np
+    import matplotlib.pyplot as plt
 
-import pysgpp
+    import pysgpp
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 n_points = 13
 y_range = np.ones([1, n_points])

@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -31,7 +31,26 @@ class LogBarrier : public ConstrainedOptimizer {
   static constexpr double DEFAULT_BARRIER_DECREASE_FACTOR = 0.5;
 
   /**
-   * Constructor.
+   * Constructor with Nelder-Mead as optimization algorithm
+   * (gradient-free).
+   *
+   * @param f                     objective function
+   * @param g                     inequality constraint
+   * @param maxItCount            maximal number of function evaluations
+   * @param tolerance             tolerance
+   * @param barrierStartValue     barrier start value
+   * @param barrierDecreaseFactor barrier decrease factor
+   */
+  LogBarrier(const base::ScalarFunction& f,
+             const base::VectorFunction& g,
+             size_t maxItCount = DEFAULT_N,
+             double tolerance = DEFAULT_TOLERANCE,
+             double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
+             double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
+  /**
+   * Constructor with adaptive gradient descent as optimization algorithm
+   * (gradient-based).
    *
    * @param f                     objective function
    * @param fGradient             objective function gradient
@@ -43,14 +62,33 @@ class LogBarrier : public ConstrainedOptimizer {
    * @param barrierStartValue     barrier start value
    * @param barrierDecreaseFactor barrier decrease factor
    */
-  LogBarrier(const ScalarFunction& f,
-             const ScalarFunctionGradient& fGradient,
-             const VectorFunction& g,
-             const VectorFunctionGradient& gGradient,
+  LogBarrier(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+             const base::VectorFunction& g, const base::VectorFunctionGradient& gGradient,
+             size_t maxItCount = DEFAULT_N, double tolerance = DEFAULT_TOLERANCE,
+             double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
+             double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimization algorithm
+   * @param g                       inequality constraint
+   * @param gGradient               inequality constraint gradient
+   *                                (nullptr to omit)
+   * @param maxItCount              maximal number of function evaluations
+   * @param tolerance               tolerance
+   * @param barrierStartValue       barrier start value
+   * @param barrierDecreaseFactor   barrier decrease factor
+   */
+  LogBarrier(const UnconstrainedOptimizer& unconstrainedOptimizer,
+             const base::VectorFunction& g,
+             const base::VectorFunctionGradient* gGradient,
              size_t maxItCount = DEFAULT_N,
              double tolerance = DEFAULT_TOLERANCE,
              double barrierStartValue = DEFAULT_BARRIER_START_VALUE,
              double barrierDecreaseFactor = DEFAULT_BARRIER_DECREASE_FACTOR);
+
   /**
    * Copy constructor.
    *
@@ -64,16 +102,6 @@ class LogBarrier : public ConstrainedOptimizer {
   ~LogBarrier() override;
 
   void optimize() override;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
-   * @return inequality constraint function gradient
-   */
-  VectorFunctionGradient& getInequalityConstraintGradient() const;
 
   /**
    * @return tolerance
@@ -124,10 +152,6 @@ class LogBarrier : public ConstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
-  /// inequality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> gGradient;
   /// tolerance
   double theta;
   /// barrier start value

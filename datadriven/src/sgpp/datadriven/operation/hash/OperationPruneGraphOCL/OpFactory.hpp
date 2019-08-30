@@ -7,7 +7,7 @@
 
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OperationPruneGraphOCLMultiPlatform.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OperationPruneGraphOCLMultiPlatform.hpp>
 namespace sgpp {
 namespace datadriven {
 

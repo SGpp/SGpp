@@ -25,8 +25,6 @@ using sgpp::base::DataMatrix;
 
 BOOST_AUTO_TEST_SUITE(TestFista)
 
-const double eps = 10e-4;
-
 BOOST_AUTO_TEST_CASE(testFista) {
   const size_t dim = 2;
   const size_t level = 4;
@@ -46,9 +44,9 @@ BOOST_AUTO_TEST_CASE(testFista) {
   auto grid = sgpp::base::Grid::createModLinearGrid(dim);
   grid->getGenerator().regular(level);
 
-  double lambda = 10e-4;
+  double lambda = 1e-3;
   const size_t maxIt = 2000;
-  const double treshold = 10e-10;
+  const double treshold = 1e-9;
 
   auto ridge = sgpp::solver::RidgeFunction(lambda);
   auto solver = sgpp::solver::Fista<decltype(ridge)>(ridge);

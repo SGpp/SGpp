@@ -6,13 +6,13 @@
 #include <string>
 #include <vector>
 
-#include "MPIEnviroment.hpp"
-#include "MPIOperationFactory.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/MPIOperationFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {
 namespace clusteringmpi {
-MPIEnviroment *MPIEnviroment::singleton_instance = NULL;
+MPIEnviroment *MPIEnviroment::singleton_instance = nullptr;
 
 MPIEnviroment::MPIEnviroment(int argc, char *argv[], bool verbose)
     : numTasks(0), rank(0), verbose(verbose), initialized(false), initialized_worker_counter(0) {
@@ -55,7 +55,7 @@ void MPIEnviroment::slave_mainloop(void) {
     } else if (message[0] == -1) {
       std::cout << "Node " << rank << " received cleanup signal..." << std::endl;
       for (auto p : slave_ops) {
-        if (p != NULL) delete p;
+        if (p != nullptr) delete p;
       }
       // Send the order to terminate all slaves processes!
       for (int i = 1; i < worker_count + 1; i++) {
@@ -95,7 +95,7 @@ void MPIEnviroment::slave_mainloop(void) {
       MPI_Recv(message, messagesize, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG, input_communicator,
                &stat);
       delete slave_ops[message[0] - 10];
-      slave_ops[message[0] - 10] = NULL;
+      slave_ops[message[0] - 10] = nullptr;
       if (verbose) {
         std::cout << "Node " << rank << ": Deleted slave operation with ID: " << message[0] - 10
                   << "" << std::endl;
@@ -170,7 +170,7 @@ void MPIEnviroment::slave_mainloop(void) {
         std::cout << "Node " << rank << ": Starting slave operation "
                   << " with index " << message[0] << std::endl;
       }
-      if (slave_ops[message[0] - 10] == NULL)
+      if (slave_ops[message[0] - 10] == nullptr)
         throw std::logic_error("Trying to run an non existing slave operation!");
       slave_ops[message[0] - 10]->start_sub_workers();
       slave_ops[message[0] - 10]->start_worker_main();
@@ -279,7 +279,7 @@ void MPIEnviroment::init_worker(int workerid, int source) {
 }
 
 void MPIEnviroment::init(int argc, char *argv[], bool verbose) {
-  if (singleton_instance == NULL) {
+  if (singleton_instance == nullptr) {
     singleton_instance = new MPIEnviroment(argc, argv, verbose);
     if (singleton_instance->rank != 0) singleton_instance->slave_mainloop();
   } else {
@@ -288,7 +288,7 @@ void MPIEnviroment::init(int argc, char *argv[], bool verbose) {
 }
 
 void MPIEnviroment::connect_nodes(base::OperationConfiguration conf) {
-  if (singleton_instance != NULL) {
+  if (singleton_instance != nullptr) {
     if (singleton_instance->rank == 0) {
       singleton_instance->init_communicator(conf);
       singleton_instance->init_worker(0, 0);
@@ -308,7 +308,7 @@ void MPIEnviroment::connect_nodes(base::OperationConfiguration conf) {
   }
 }
 void MPIEnviroment::release(void) {
-  if (singleton_instance != NULL) {
+  if (singleton_instance != nullptr) {
     std::cout << "Beginning cleanup..." << std::endl;
     int message[1];
     // Send the order to terminate all slaves processes!
@@ -325,14 +325,14 @@ void MPIEnviroment::release(void) {
 }
 
 int MPIEnviroment::get_node_rank(void) {
-  if (singleton_instance != NULL)
+  if (singleton_instance != nullptr)
     return singleton_instance->rank;
   else
     throw std::logic_error("Singleton class \"MPIEnviroment\" not yet initialized!");
 }
 
 int MPIEnviroment::get_node_count(void) {
-  if (singleton_instance != NULL)
+  if (singleton_instance != nullptr)
     return singleton_instance->numTasks;
   else
     throw std::logic_error("Singleton class \"MPIEnviroment\" not yet initialized!");

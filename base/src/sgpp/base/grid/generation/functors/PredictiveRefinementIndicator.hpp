@@ -64,7 +64,7 @@ class PredictiveRefinementIndicator: public RefinementFunctor {
   /**
    * Destructor
    */
-  virtual ~PredictiveRefinementIndicator() {}
+  ~PredictiveRefinementIndicator() override {}
 
 
   /**

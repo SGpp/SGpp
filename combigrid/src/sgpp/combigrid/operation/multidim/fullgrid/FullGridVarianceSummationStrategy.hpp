@@ -61,7 +61,7 @@ class FullGridVarianceSummationStrategy : public AbstractFullGridSummationStrate
     //  }
   }
 
-  ~FullGridVarianceSummationStrategy() {}
+  ~FullGridVarianceSummationStrategy() override {}
 
   /**
    * Calculates the variance by calculating the mean via B spline Quadrature and the mean of f^2 via

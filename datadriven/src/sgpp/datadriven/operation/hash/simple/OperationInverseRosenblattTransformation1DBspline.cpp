@@ -10,12 +10,14 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/HermiteBasis.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBspline.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -264,13 +266,13 @@ double OperationInverseRosenblattTransformation1DBspline::doTransformation1D(
     base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
   // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
-      const base::DataVector& x) -> double {
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };
-  optimization::Printer::getInstance().disableStatusPrinting();
-  optimization::WrapperScalarFunction f(1, optFunc);
+  base::Printer::getInstance().disableStatusPrinting();
+  base::WrapperScalarFunction f(1, optFunc);
   optimization::optimizer::NelderMead nelderMead(f);
   nelderMead.optimize();
   return nelderMead.getOptimalPoint()[0];

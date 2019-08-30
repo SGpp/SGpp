@@ -8,10 +8,9 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/optimization/tools/FileIO.hpp>
 
-#include <iostream>
 #include <stdexcept>
 #include <string>
-#include <vector>  // namespace
+#include <vector>
 
 namespace sgpp {
 namespace optimization {

@@ -1,0 +1,48 @@
+{
+    "dataSource": {
+        "filePath": "../datasets/DR5/DR5_train.arff",
+        "hasTargets": true,
+        "validationPortion": 0.5,
+        "readinCutoff": 4000,
+        "readinColumns": [2, 0, 1]
+    },
+    "scorer": {
+            "metric": "mse"
+    },
+    "fitter": {
+        "type": "regressionLeastSquares",
+        "gridConfig": {
+            "gridType": "linear",
+            "level": 3
+        },
+        "adaptivityConfig": {
+            "numRefinements": 5,
+            "threshold": 0.001,
+            "noPoints": 10,
+            "refinementIndicator": "surplus",
+            "errorBasedRefinement": false,
+            "refinementPeriod": 500
+        },
+        "crossValidation": {
+            "enable": true,
+            "kFold": 2,
+            "lambda": 1e-3,
+            "lambdaStart": 1e-4,
+            "lambdaEnd": 1e-2,
+            "lambdaSteps": 1e-3
+        },
+        "solverRefineConfig": {
+            "eps": 1e-14,
+            "maxIterations": 100,
+            "threshold": 1
+        },
+        "solverFinalConfig": {
+            "eps": 1e-14,
+            "maxIterations": 100,
+            "threshold": 1
+        },
+        "regularizationConfig": {
+            "lambda": 1e-6
+        }
+    }
+}

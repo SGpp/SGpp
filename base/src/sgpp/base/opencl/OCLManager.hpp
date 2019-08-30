@@ -11,8 +11,8 @@
 #include <CL/cl.h>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace sgpp {
 namespace base {

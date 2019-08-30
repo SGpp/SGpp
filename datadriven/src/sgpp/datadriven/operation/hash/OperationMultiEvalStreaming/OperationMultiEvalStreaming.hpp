@@ -5,12 +5,14 @@
 
 #pragma once
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/SGppStopwatch.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/globaldef.hpp>
 
 #ifndef STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH
 // #define STREAMING_LINEAR_MIC_AVX512_UNROLLING_WIDTH 24
@@ -37,7 +39,7 @@ class OperationMultiEvalStreaming : public base::OperationMultipleEval {
  public:
   OperationMultiEvalStreaming(base::Grid& grid, base::DataMatrix& dataset);
 
-  ~OperationMultiEvalStreaming();
+  ~OperationMultiEvalStreaming() override;
 
   size_t getChunkGridPoints();
 

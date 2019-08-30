@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 #include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
@@ -12,8 +13,6 @@
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <map>
@@ -92,8 +91,6 @@ void KernelDensityEstimator::initializeKernel(KernelType kernelType) {
       break;
     case KernelType::EPANECHNIKOV:
       kernel.reset(new EpanechnikovKernel());
-      break;
-    default:
       break;
   }
 }
@@ -385,8 +382,6 @@ void KernelDensityEstimator::computeAndSetOptKDEbdwth() {
     case BandwidthOptimizationType::MAXIMUMLIKELIHOOD:
       MaximumLikelihoodCrossValidation::optimizeBandwidths(this, sigma);
       break;
-    default:
-      break;
   }
 
   // set the current bandwidth
@@ -609,7 +604,7 @@ void ScottsRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataVecto
 
 KDEMaximumLikelihoodCrossValidation::KDEMaximumLikelihoodCrossValidation(
     KernelDensityEstimator& kde, size_t kfold, std::uint64_t seedValue)
-    : sgpp::optimization::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
+    : sgpp::base::ScalarFunction(kde.getDim()), kde(kde), strain(kfold), stest(kfold) {
   // split the data set
   auto samples = kde.getSamples();
   size_t numSamples = samples->getNrows();

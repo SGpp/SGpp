@@ -9,7 +9,7 @@
  *      Author: Michael Lettrich
  */
 
-#include "DataSourceBuilder.hpp"
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
@@ -165,7 +165,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
-    } catch (data_exception& e) {
+    } catch (data_exception&) {
       // wasn't found
       withFileType(DataSourceFileType::NONE);
     }

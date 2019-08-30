@@ -15,6 +15,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
+#include <limits>
 #include <vector>
 #include <utility>
 
@@ -212,7 +213,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1, bool modified
 
       // rising at the beginning
       bool falling = false;
-      double fx = NAN;
+      double fx = std::numeric_limits<double>::quiet_NaN();
 
       for (size_t j = 0; j < 100; j++) {
         const double x = static_cast<double>(j) / 100.0;
@@ -234,7 +235,7 @@ void bsplinePropertiesTest(SBasis& basis, level_t start_level = 1, bool modified
   }
 }
 
-void fundamentalSplineTest(SBasis& basis, bool modified = false) {
+void fundamentalSplineTest(SBasis& basis, bool modified = false, bool nak = false) {
   const level_t startLevel = 1;
   const double tol = 1e-10;
 
@@ -243,8 +244,21 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
 
     for (index_t i = 1; i < hInv; i += 2) {
       // test bounds
-      const double upperBound = (((!modified) || ((i > 1) && (i < hInv - 1))) ? 1.0 : 2.3);
-      boundTest(basis, l, i, -0.3, upperBound + tol);
+      double lowerBound;
+      double upperBound;
+
+      if (modified) {
+        lowerBound = -0.3;
+        upperBound = (((i > 1) && (i < hInv - 1)) ? 1.0 : 2.3);
+      } else if (nak) {
+        lowerBound = -0.5;
+        upperBound = 1.4;
+      } else {
+        lowerBound = -0.3;
+        upperBound = 1.0;
+      }
+
+      boundTest(basis, l, i, lowerBound - tol, upperBound + tol);
 
       for (index_t i2 = 0; i2 <= hInv; i2++) {
         // test Lagrange property
@@ -270,6 +284,26 @@ void fundamentalSplineTest(SBasis& basis, bool modified = false) {
               BOOST_CHECK_LE(fx, 1e-10);
             }
           }
+        }
+      }
+    }
+  }
+}
+
+void weaklyFundamentalSplineTest(SBasis& basis, bool modified = false) {
+  const level_t startLevel = 1;
+
+  for (level_t l = startLevel; l < 6; l++) {
+    const index_t hInv = static_cast<index_t>(1) << l;
+
+    for (index_t i = 1; i < hInv; i += 2) {
+      for (index_t i2 = 0; i2 <= hInv; i2 += 2) {
+        // test Lagrange property
+        if ((!modified) || ((i > 1) && (i < hInv - 1)) || ((i2 > 0) && (i2 < hInv))) {
+          const double x = static_cast<double>(i2) / static_cast<double>(hInv);
+          const double fx = basis.eval(l, i, x);
+
+          BOOST_CHECK_SMALL(fx - ((i == i2) ? 1.0 : 0.0), 1e-10);
         }
       }
     }
@@ -374,6 +408,17 @@ BOOST_AUTO_TEST_CASE(TestBsplineClenshawCurtisModifiedBasis) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(TestFundamentalNakSplineBasis) {
+  // Test fundamental not-a-knot spline basis.
+  const size_t pMax = 5;
+
+  for (size_t p = 1; p <= pMax; p++) {
+    sgpp::base::SFundamentalNakSplineBase basis(p);
+    fundamentalSplineTest(basis, false, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(TestFundamentalSplineBasis) {
   // Test fundamental spline basis.
   const size_t pMax = 11;
@@ -395,6 +440,49 @@ BOOST_AUTO_TEST_CASE(TestFundamentalSplineModifiedBasis) {
   for (size_t p = 1; p <= pMax; p++) {
     sgpp::base::SFundamentalSplineModifiedBase basis(p);
     fundamentalSplineTest(basis, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalNakSplineBasis) {
+  // Test weakly fundamental not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SWeaklyFundamentalNakSplineBase basis(p);
+    weaklyFundamentalSplineTest(basis);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalNakSplineModifiedBasis) {
+  // Test modified weakly fundamental not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SWeaklyFundamentalNakSplineModifiedBase basis(p);
+    weaklyFundamentalSplineTest(basis, true);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestWeaklyFundamentalSplineBasis) {
+  // Test weakly fundamental spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SWeaklyFundamentalSplineBase basis(p);
+    weaklyFundamentalSplineTest(basis);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestNakBsplineBasis) {
+  // Test not-a-knot B-spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SNakBsplineBase basis(p);
+    derivativesTest(basis, basis.getDegree() - 1);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(TestNakBsplineModifiedBasis) {
+  // Test modified weakly fundamental not-a-knot spline basis.
+  for (size_t p = 1; p <= 7; p++) {
+    sgpp::base::SNakBsplineModifiedBase basis(p);
     derivativesTest(basis, basis.getDegree() - 1);
   }
 }

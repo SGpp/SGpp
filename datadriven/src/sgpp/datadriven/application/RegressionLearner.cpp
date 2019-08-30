@@ -65,7 +65,7 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
         "RegressionLearner::train: length of classes vector does not match to "
         "dataset!");
   }
-  auto solver = std::move(createSolver(classes.getSize()));
+  auto solver = createSolver(classes.getSize());
 
   if (solver.type == Solver::solverCategory::cg) {
     systemMatrix = createDMSystem(trainDataset);
@@ -113,7 +113,6 @@ void RegressionLearner::fit(Solver& solver, base::DataVector& classes) {
       break;
     }
     case Solver::solverCategory::none:
-    default:
       throw base::application_exception("RegressionLearner::fit: Solver not supported!");
   }
 }
@@ -205,7 +204,6 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
     case RegularizationType::GroupLasso:
     case RegularizationType::Lasso:
     case RegularizationType::ElasticNet:
-    default:
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }
@@ -218,17 +216,17 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
   using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
-      return Solver(std::move(std::make_unique<solver::ConjugateGradients>(
-          solverConfig.maxIterations_, solverConfig.eps_)));
+      return Solver(std::make_unique<solver::ConjugateGradients>(
+          solverConfig.maxIterations_, solverConfig.eps_));
     case SLESolverType::BiCGSTAB:
-      return Solver(std::move(
-          std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_)));
+      return Solver(
+          std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_));
     case SLESolverType::FISTA:
       return createSolverFista(n_rows);
-    default:
-      throw base::application_exception(
-          "RegressionLearner::createSolver: An unsupported solver type was chosen!");
   }
+
+  throw base::application_exception(
+      "RegressionLearner::createSolver: An unsupported solver type was chosen!");
 }
 
 RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
@@ -253,10 +251,11 @@ RegressionLearner::Solver RegressionLearner::createSolverFista(size_t n_rows) {
     // The following methods are not supported by FISTA.
     case RegularizationType::Diagonal:
     case RegularizationType::Laplace:
-    default:
-      throw base::application_exception(
-          "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
+      break;
   }
+
+  throw base::application_exception(
+      "RegressionLearner::createSolverFista: Regularization type not supported by FISTA!");
 }
 
 }  // namespace datadriven

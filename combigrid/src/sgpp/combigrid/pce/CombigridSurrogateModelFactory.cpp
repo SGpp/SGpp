@@ -22,10 +22,10 @@ std::shared_ptr<CombigridSurrogateModel> createCombigridSurrogateModel(
       return std::make_shared<PolynomialStochasticCollocation>(config);
     case CombigridSurrogateModelsType::BSPLINE_STOCHASTIC_COLLOCATION:
       return std::make_shared<PolynomialChaosExpansion>(config);
-    default:
-      throw sgpp::base::application_exception(
-          "createCombigridSurrogateModel: surrogate model type is unknown.");
   }
+
+  throw sgpp::base::application_exception(
+      "createCombigridSurrogateModel: surrogate model type is unknown.");
 }
 
 } /* namespace combigrid */

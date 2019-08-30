@@ -5,9 +5,9 @@
 
 #include <sstream>
 
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {

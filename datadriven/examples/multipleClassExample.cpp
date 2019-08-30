@@ -47,7 +47,7 @@ int main() {
    * Allows to have an overview over set parameter.
    */
   // Parameter of data set
-  std::string filepath = "../datasets/";
+  std::string filepath = "../datasets/multipleClasses/";
   std::string filename = "multipleClassesTest.arff";
   // classes in ARFF are in [0,(classes-1)]
   size_t classes = 4;
@@ -91,7 +91,7 @@ int main() {
   sgpp::base::DataVector row(dataTrain.getNcols());
   for (size_t i = 0; i < dataTrain.getNrows(); i++) {
     dataTrain.getRow(i, row);
-    dataCl.at((size_t)targetTrain.get(i)).appendRow(row);
+    dataCl.at(static_cast<size_t>(targetTrain.get(i))).appendRow(row);
   }
 
   /**

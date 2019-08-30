@@ -1,0 +1,43 @@
+{
+    "dataSource": {
+        "filePath": "../datasets/funnyChess/funnychess.arff",
+        "hasTargets" : true,
+        "batchSize" : 0,
+        "validationPortion" : 0.5,
+        "epochs" : 60,
+        "shuffling" : "random",
+        "randomSeed" : 41
+    },
+    "scorer": {
+        "metric": "accuracy"
+    },
+    "fitter": {
+        "type": "classification",
+        "gridConfig": {
+            "generalGridType": "component",
+            "gridType": "linear",
+            "level": 3
+        },
+        "adaptivityConfig": {
+            "numRefinements": 60,
+            "threshold": 0.001,
+            "noPoints": 10,
+            "refinementIndicator" : "dataBased",
+            "errorBasedRefinement" : true,
+            "errorMinInterval" : 1,
+            "errorBufferSize" : 2,
+            "errorConvergenceThreshold" : 0.001
+        },
+        "regularizationConfig": {
+            "lambda": 1e-2
+        },
+        "densityEstimationConfig" : {
+            "densityEstimationType" : "decomposition",
+            "matrixDecompositionType" : "chol"
+        },
+        "learner" : {
+            "usePrior" : true,
+            "beta" : 1.0
+        }
+    }
+}

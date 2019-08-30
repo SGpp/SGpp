@@ -10,7 +10,7 @@
  *     Author: Michael Lettrich
  */
 
-#include "SLESolverTypeParser.hpp"
+#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <algorithm>

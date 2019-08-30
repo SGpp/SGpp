@@ -15,7 +15,7 @@
 // Caution: Subspace-skipping is disabled by default for this kernel
 //////////////////////////////////////////////////////////////////////
 
-#include "omp.h"
+#include <omp.h>
 
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/AbstractOperationMultipleEvalSubspace.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimpleParameters.hpp>
@@ -37,7 +37,7 @@ class OperationMultipleEvalSubspaceSimple : public AbstractOperationMultipleEval
   size_t dim = -1;
   size_t maxLevel = 0;
 
-  size_t* allSubspaces = NULL;
+  size_t* allSubspaces = nullptr;
   size_t subspaceCount = -1;
   size_t subspaceSize = -1;
 

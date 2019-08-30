@@ -7,9 +7,8 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
-
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -42,7 +41,7 @@ class Kernel {
 
 class GaussianKernel : public Kernel {
  public:
-  virtual ~GaussianKernel();
+  ~GaussianKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -54,7 +53,7 @@ class GaussianKernel : public Kernel {
 
 class EpanechnikovKernel : public Kernel {
  public:
-  virtual ~EpanechnikovKernel();
+  ~EpanechnikovKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -81,7 +80,7 @@ class KernelDensityEstimator : public DensityEstimator {
                                       BandwidthOptimizationType::SILVERMANSRULE);
   KernelDensityEstimator(const KernelDensityEstimator& kde);
 
-  virtual ~KernelDensityEstimator();
+  ~KernelDensityEstimator() override;
 
   void initialize(base::DataMatrix& samples) override;
   void initialize(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);
@@ -145,7 +144,7 @@ class KernelDensityEstimator : public DensityEstimator {
 };
 
 // --------------------------------------------------------------------------------
-class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFunction {
+class KDEMaximumLikelihoodCrossValidation : public sgpp::base::ScalarFunction {
  public:
   /**
    * Constructor.
@@ -159,8 +158,8 @@ class KDEMaximumLikelihoodCrossValidation : public sgpp::optimization::ScalarFun
   /**
    * @param[out] clone pointer to cloned object
    */
-  virtual void clone(std::unique_ptr<sgpp::optimization::ScalarFunction>& clone) const {
-    clone = std::unique_ptr<sgpp::optimization::ScalarFunction>(
+  virtual void clone(std::unique_ptr<sgpp::base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::base::ScalarFunction>(
         new KDEMaximumLikelihoodCrossValidation(*this));
   }
 

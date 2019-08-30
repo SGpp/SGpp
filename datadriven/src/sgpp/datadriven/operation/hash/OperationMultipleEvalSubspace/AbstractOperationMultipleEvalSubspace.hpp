@@ -28,7 +28,7 @@ class AbstractOperationMultipleEvalSubspace : public base::OperationMultipleEval
   AbstractOperationMultipleEvalSubspace(base::Grid& grid, base::DataMatrix& dataset)
       : base::OperationMultipleEval(grid, dataset), storage(&grid.getStorage()), duration(-1.0) {}
 
-  ~AbstractOperationMultipleEvalSubspace() {}
+  ~AbstractOperationMultipleEvalSubspace() override {}
 
   virtual void multImpl(base::DataVector& alpha, base::DataVector& result,
                         const size_t start_index_data, const size_t end_index_data) = 0;
