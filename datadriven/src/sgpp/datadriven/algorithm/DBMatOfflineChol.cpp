@@ -84,6 +84,38 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
 #endif /*USE_GSL*/
 }
 
+void DBMatOfflineChol::decomposeMatrixParallel(
+    RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+
+  if (!isConstructed) {
+    throw algorithm_exception(
+        "In DBMatOfflineChol::decomposeMatrixParallel:\nMatrix has to be constructed before it can "
+        "be decomposed.");
+  }
+  size_t n = lhsMatrix.getNrows();
+
+  // initialize lhs distributed matrix
+  this->lhsDistributed = DataMatrixDistributed::fromSharedData(
+      this->lhsMatrix.getPointer(), processGrid, n, n, parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
+
+  // cholesky decomposition
+  int info;
+  pdpotrf_("L", n, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), info);
+
+  // sync non-distri and distri matrices
+  this->lhsDistributed.toLocalDataMatrix(this->lhsMatrix);
+
+  this->isDecomposed = true;
+
+  return;
+#endif /* USE_SCALAPACK */
+}
+
 void DBMatOfflineChol::compute_inverse() {
 #ifdef USE_GSL
   if (!isDecomposed) {
@@ -107,6 +139,34 @@ void DBMatOfflineChol::compute_inverse() {
   throw algorithm_exception("build without GSL");
 #endif /*USE_GSL*/
 }
+
+void DBMatOfflineChol::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                                const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineChol::compute_inverse_parallel:\noffline matrix not decomposed yet.\n");
+  }
+  size_t n = this->lhsMatrix.getNrows();
+
+  // initializing distributed inverse matrix from lhs matrix
+  this->lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
+      this->lhsMatrix.getPointer(), processGrid, this->lhsMatrix.getNrows(),
+      this->lhsMatrix.getNcols(), parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  // inverting cholesky-decomposed matrix
+  int info;
+  pdpotri_("L", n, this->lhsDistributedInverse.getLocalPointer(), 1, 1,
+           this->lhsDistributedInverse.getDescriptor(), info);
+
+  // syncing non-distri and distri inverse matrices
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+  this->lhsDistributedInverse.toLocalDataMatrix(this->lhsInverse);
+
+  return;
+#endif /* USE_SCALAPACK */
+}
+
 void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
                                             size_t newPoints, std::list<size_t> deletedPoints,
                                             double lambda) {

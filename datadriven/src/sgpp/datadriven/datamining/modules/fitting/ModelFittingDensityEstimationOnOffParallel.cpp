@@ -119,32 +119,24 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   }
 
   // Build and decompose offline object if not loaded from database
+  bool offline_inverted = false;  // SMW_ortho and SMW_chol flag
   if (offline == nullptr) {
     // Build offline object by factory, build matrix and decompose
     offline = DBMatOfflineFactory::buildOfflineObject(
         gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
     offline->buildMatrix(grid.get(), regularizationConfig);
 
-    // sync lhs matrix, currently done by later calling routines implicitly
-
     // in case of SMW decomposition type, the inverse of the matrix needs to be computed explicitly
     // and parallel version of functions can be used
     if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-      // non-parallel version
-      //
-      // offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
-      // offline->compute_inverse();
-      // offline->syncDistributedInverse(processGrid, parallelConfig);
-      //
-
-      // parallel version
       offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig, processGrid,
                                        parallelConfig);
       offline->compute_inverse_parallel(processGrid, parallelConfig);
-      //
+      offline_inverted = true;
     } else {
       offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+      offline_inverted = true;
     }
   }
 
@@ -159,7 +151,9 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   // in case of SMW decomposition type, the inverse of the matrix needs to be synced also
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-    online->getOfflineObject().syncDistributedInverse(processGrid, parallelConfig);
+    if (!offline_inverted) {
+      online->getOfflineObject().compute_inverse_parallel(processGrid, parallelConfig);
+    }
   }
 
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
