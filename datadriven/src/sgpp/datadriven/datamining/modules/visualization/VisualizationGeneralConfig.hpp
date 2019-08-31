@@ -20,6 +20,12 @@ enum class VisualizationFileType {CSV,json};
 
 struct VisualizationGeneralConfig {
 
+ /**
+  * Variable to determine if its executes visualization Module or not
+  */
+
+  bool execute = false;
+
   /**
   * The name of the algorithm to use in the visualization Module
   */

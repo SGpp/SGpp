@@ -29,7 +29,8 @@ VisualizerDensityEstimation::VisualizerDensityEstimation(VisualizerConfiguration
 
 void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
-  if (batch % config.getGeneralConfig().numBatches != 0) {
+  if (batch % config.getGeneralConfig().numBatches != 0 or
+    !config.getGeneralConfig().execute) {
     return;
   }
   // Creating the output directorz
