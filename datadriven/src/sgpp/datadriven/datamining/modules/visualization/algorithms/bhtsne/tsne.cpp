@@ -537,7 +537,8 @@ void TSNE::computeGaussianPerplexity(double* X, int N, int D, unsigned int** _ro
     }
 
     // Build ball tree on data set
-    VpTree<DataPoint, euclidean_distance>* tree = new VpTree<DataPoint, euclidean_distance>();
+    VpTree<DataPoint, DataPoint::euclidean_distance>* tree =
+      new VpTree<DataPoint, DataPoint::euclidean_distance>();
     std::vector<DataPoint> obj_X(N, DataPoint(D, -1, X));
 
     #pragma omp parallel for schedule(dynamic)
