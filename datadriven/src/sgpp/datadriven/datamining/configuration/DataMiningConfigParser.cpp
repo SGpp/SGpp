@@ -532,6 +532,14 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
 bool DataMiningConfigParser::getVisualizationGeneralConfig(
   VisualizationGeneralConfig &config, const VisualizationGeneralConfig &defaults) const {
+
+  bool hasVisualization = hasVisualizationConfig();
+
+  if (!hasVisualization) {
+    config.execute = false;
+  } else {
+    config.execute = true;
+  }
   bool hasGeneralConfig = hasVisualizationGeneralConfig();
 
   if (hasGeneralConfig) {
