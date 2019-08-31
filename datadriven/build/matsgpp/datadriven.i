@@ -171,6 +171,12 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/sptree.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/vptree.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp"
 
 
 %ignore  sgpp::datadriven::Metric::operator=(Metric&&);

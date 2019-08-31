@@ -186,6 +186,20 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
+
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/sptree.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/vptree.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
+
+
+
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
