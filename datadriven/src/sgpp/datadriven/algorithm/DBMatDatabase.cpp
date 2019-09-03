@@ -99,7 +99,16 @@ void DBMatDatabase::putDataMatrix(
     gridConfigEntry.addTextAttr(
         keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(gridConfig.generalType_));
     gridConfigEntry.addIDAttr(keyGridDimension, (uint64_t)gridConfig.dim_);
-    gridConfigEntry.addIDAttr(keyGridLevel, (int64_t)gridConfig.level_);
+    if(gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid){
+      sgpp::base::CombiGridConfiguration& componentGridConfig = (sgpp::base::CombiGridConfiguration&) gridConfig;
+      json::ListNode& level = (json::ListNode&) gridConfigEntry.addListAttr(keyGridLevel);
+      for (size_t i = 0; i < componentGridConfig.levels.size(); i ++){
+        level.addIdValue(componentGridConfig.levels[i]);
+      }
+    }
+    else {
+      gridConfigEntry.addIDAttr(keyGridLevel, (int64_t)gridConfig.level_);
+    }
     // Add a regularization configuration entry
     json::DictNode& regularizationConfigEntry =
         (json::DictNode&)(entry.addDictAttr(keyRegularizationConfiguration));
@@ -299,7 +308,7 @@ int DBMatDatabase::entryIndexByConfiguration(
     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    bool findBaseConfig = false) {
+    bool findBaseConfig) {
   if (findBaseConfig && (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)) {
     throw "Base matrices can only be found for anisotrophic grids.";
   }
