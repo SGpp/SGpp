@@ -171,7 +171,7 @@ vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written
                                          "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
-vars.Add(BoolVariable("RUN_CPPLINT",
+vars.Add(BoolVariable("CHECK_STYLE",
                       "Check compliance to Google's style guide using cpplint", True))
 vars.Add(BoolVariable("RUN_CPP_EXAMPLES", "Run all C++ examples", False))
 vars.Add(BoolVariable("RUN_PYTHON_EXAMPLES", "Run all Python examples", False))

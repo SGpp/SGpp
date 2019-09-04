@@ -264,7 +264,7 @@ class Module(object):
   def checkStyle(self):
     """Run the style checks.
     """
-    if env['RUN_CPPLINT']:
+    if env["CHECK_STYLE"]:
       # run the style checker on all source and header files
       for path in self.cpps + self.hpps:
         checkStyleCommand = env.Command(path + ".lint", path, checkStyleAction)
