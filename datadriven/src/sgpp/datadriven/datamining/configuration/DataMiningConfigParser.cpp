@@ -532,7 +532,6 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
 bool DataMiningConfigParser::getVisualizationGeneralConfig(
   VisualizationGeneralConfig &config, const VisualizationGeneralConfig &defaults) const {
-
   bool hasVisualization = hasVisualizationConfig();
 
   if (!hasVisualization) {
@@ -563,15 +562,8 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
       config.targetFileType = defaults.targetFileType;
     }
 
-    // Checks if the specified number of batches for visualization exceeds the one
-    // of the data source. If that's the case set the visualization number of batches
-    // to the one of the data source.
-    auto dataSourceConfig = static_cast<DictNode *>(&(*configFile)[dataSource]);
-
     config.numBatches = parseUInt(*visualizationGeneralConfig, "numBatches",
       defaults.numBatches, "visualization");
-
-
   } else {
     std::cout << "# Could not find specification of "
      "visualization general config. Falling Back to default values." << std::endl;
@@ -582,13 +574,12 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
   bool hasFitterCrossvalidationConfig =
      hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
   if (hasFitterCrossvalidationConfig) {
-     auto crossvalidationConfig = static_cast<DictNode *>(&(*configFile)[fitter]
+    auto crossvalidationConfig = static_cast<DictNode *>(&(*configFile)[fitter]
                                                                          ["crossValidation"]);
-     config.crossValidation = parseBool(*crossvalidationConfig, "enable",
-       defaults.crossValidation, "crossValidation");
-   }
-   else {
-     config.crossValidation = false;
+    config.crossValidation = parseBool(*crossvalidationConfig, "enable",
+      defaults.crossValidation, "crossValidation");
+  } else {
+    config.crossValidation = false;
   }
   return hasGeneralConfig;
 }

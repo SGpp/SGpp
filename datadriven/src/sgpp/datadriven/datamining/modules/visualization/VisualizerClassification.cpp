@@ -32,14 +32,15 @@ VisualizerClassification::VisualizerClassification(VisualizerConfiguration confi
 
 void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
-  if (batch % config.getGeneralConfig().numBatches != 0 or
+  if (batch % config.getGeneralConfig().numBatches != 0 ||
     !config.getGeneralConfig().execute) {
     return;
   }
 
   if (fold == 0 && batch == 0) {
     originalData = dataSource.getAllSamples()->getData();
-    resolution = pow(2, model.getFitterConfiguration().getGridConfig().level_+2);
+    resolution = static_cast<size_t>(pow(2,
+      model.getFitterConfiguration().getGridConfig().level_+2));
   }
   initializeMatrices(model);
 
@@ -350,13 +351,6 @@ void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBas
   std::string currentDirectory) {
   JSON jsonOutput;
 
-  ModelFittingClassification* classificationModel =
-    dynamic_cast<ModelFittingClassification*>(&model);
-
-  auto models = classificationModel->getModels();
-
-  size_t numberModels = models->size();
-
   jsonOutput.addListAttr("data");
 
   jsonOutput["data"].addDictValue();
@@ -452,7 +446,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
     DataMatrix temp(matrix.getNrows(), matrix.getNcols());
     temp.copyFrom(matrix);
 
-    unsigned int beginIndex = graphNumber*rowsPerGraph+1;
+    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex+rowsPerGraph-1, matrix.getNcols());
 
@@ -548,7 +542,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
       jsonOutput["data"][graphIndex]["marker"].
       addIDAttr("symbol", "\"star-dot\"");
       jsonOutput["data"][graphIndex]["marker"].
-      addIDAttr("size", (size_t)10);
+      addIDAttr("size", static_cast<size_t>(10));
       jsonOutput["data"][graphIndex]["marker"].
       addDictAttr("line");
       jsonOutput["data"][graphIndex]["marker"]["line"].
@@ -600,8 +594,8 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
         gridMatrix.getRow(index, row);
 
         if (gridMatrix.getNcols() >= 4) {
-          if ((row.get(indexes.at(0)) == firstRow.get(indexes.at(0)) &
-          row.get(indexes.at(1)) == firstRow.get(indexes.at(1)))) {
+          if (((row.get(indexes.at(0)) == firstRow.get(indexes.at(0))) &
+          (row.get(indexes.at(1)) == firstRow.get(indexes.at(1))))) {
             tempGrid.appendRow(row);
           }
         } else {
@@ -733,8 +727,6 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
   auto models = classificationModel->getModels();
 
-  auto numberModels = models->size();
-
   unsigned int graphIndex = 0;
 
   JSON jsonOutput;
@@ -827,7 +819,8 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
     jsonOutput["data"][graphIndex].addDictAttr("marker");
     jsonOutput["data"][graphIndex]["marker"].addIDAttr("symbol", "\"star-dot\"");
-    jsonOutput["data"][graphIndex]["marker"].addIDAttr("size", (size_t)10);
+    jsonOutput["data"][graphIndex]["marker"].addIDAttr("size",
+      static_cast<size_t>(10));
     jsonOutput["data"][graphIndex]["marker"].addDictAttr("line");
     jsonOutput["data"][graphIndex]["marker"]["line"].addIDAttr("color", "\"blue\"");
     jsonOutput["data"][graphIndex]["marker"]["line"].addIDAttr("width", 1.5);
@@ -865,7 +858,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
     jsonOutput["data"][graphIndex].addIDAttr("y", yColGrid.toString());
     jsonOutput["data"][graphIndex].addIDAttr("showlegend", true);
     jsonOutput["data"][graphIndex].addIDAttr("name", "\"Grid Class " +
-      std::to_string((size_t)classes.at(i))+"\"");
+      std::to_string(static_cast<int>(classes.at(i)))+"\"");
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
     graphIndex++;
