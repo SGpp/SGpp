@@ -29,7 +29,7 @@ VisualizerDensityEstimation::VisualizerDensityEstimation(VisualizerConfiguration
 
 void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
-  if (batch % config.getGeneralConfig().numBatches != 0 or
+  if (batch % config.getGeneralConfig().numBatches != 0 ||
     !config.getGeneralConfig().execute) {
     return;
   }
@@ -40,7 +40,8 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   // assign the resolution
   if (fold == 0 && batch == 0) {
     originalData = dataSource.getAllSamples()->getData();
-    resolution = pow(2, model.getFitterConfiguration().getGridConfig().level_+2);
+    resolution = static_cast<size_t>(pow(2,
+      model.getFitterConfiguration().getGridConfig().level_+2));
     std::cout << "Initializing Matrices" << std::endl;
   }
 
@@ -64,7 +65,6 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
     #pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
-
         // Just run tsne if it's the first time the visualization module is executed
         if (fold == 0 && batch == 0) {
           runTsne(model);
@@ -733,7 +733,7 @@ size_t &varDim, std::string filepath) {
 
     temp.copyFrom(matrix);
 
-    unsigned int beginIndex = graphNumber*rowsPerGraph+1;
+    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex + rowsPerGraph-1, matrix.getNcols());
 
@@ -911,7 +911,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
     temp.copyFrom(matrix);
 
-    unsigned int beginIndex = graphNumber*rowsPerGraph+1;
+    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex+rowsPerGraph-1, matrix.getNcols());
 
@@ -995,7 +995,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     tempGrid.getColumn(varDim2, yColGrid);
 
     jsonOutput["data"][graphIndex].addIDAttr("y", yColGrid.toString());
-    jsonOutput["data"][graphIndex].addIDAttr("legendgroup", (size_t)1);
+    jsonOutput["data"][graphIndex].addIDAttr("legendgroup", static_cast<size_t>(1));
     jsonOutput["data"][graphIndex].addIDAttr("hoverinfo", "\"x+y\"");
 
     if (showLegendGroup && tempGrid.getNrows() > 0) {
