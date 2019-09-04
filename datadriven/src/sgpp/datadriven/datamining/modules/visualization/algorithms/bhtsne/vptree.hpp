@@ -54,7 +54,7 @@ namespace sgpp {
 namespace datadriven {
 
 class DataPoint {
- size_t _ind;
+  size_t _ind;
 
  public:
   double* _x;

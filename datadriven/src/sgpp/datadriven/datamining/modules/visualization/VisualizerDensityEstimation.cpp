@@ -748,12 +748,12 @@ size_t &varDim, std::string filepath) {
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
-  for (unsigned int graphNumber=0; graphNumber < totalGraphs; graphNumber++) {
+  for (size_t graphNumber=0; graphNumber < totalGraphs; graphNumber++) {
     DataMatrix temp(matrix.getNrows(), matrix.getNcols());
 
     temp.copyFrom(matrix);
 
-    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
+    size_t beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex + rowsPerGraph-1, matrix.getNcols());
 
@@ -793,8 +793,10 @@ size_t &varDim, std::string filepath) {
     jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\""+yAxis+"\"");
     jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
     jsonOutput["layout"][xAxisName].addListAttr("domain");
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      static_cast<double>(graphNumber%5));
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      (static_cast<double>(graphNumber%5)+1)-0.05);
 
     jsonOutput["layout"].addDictAttr(yAxisName);
     jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
@@ -802,8 +804,10 @@ size_t &varDim, std::string filepath) {
 
     if (matrix.getNcols() > 3) {
       jsonOutput["layout"][yAxisName].addListAttr("domain");
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        (static_cast<double>(graphNumber)/5));
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        ((static_cast<double>(graphNumber)/5)+1)-0.1);
     }
 
     // Adding titles to subplots
@@ -926,12 +930,12 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
-  for (unsigned int graphNumber = 0; graphNumber < totalGraphs; graphNumber++) {
+  for (size_t graphNumber = 0; graphNumber < totalGraphs; graphNumber++) {
     DataMatrix temp(matrix.getNrows(), matrix.getNcols());
 
     temp.copyFrom(matrix);
 
-    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
+    size_t beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex+rowsPerGraph-1, matrix.getNcols());
 
@@ -1035,8 +1039,10 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\"" + yAxis + "\"");
     jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
     jsonOutput["layout"][xAxisName].addListAttr("domain");
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      static_cast<double>(graphNumber%5));
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      (static_cast<double>(graphNumber%5)+1)-0.05);
 
     jsonOutput["layout"].addDictAttr(yAxisName);
     jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
@@ -1044,8 +1050,10 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
 
     if (gridMatrix.getNcols() >= 4) {
       jsonOutput["layout"][yAxisName].addListAttr("domain");
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        (static_cast<double>(graphNumber)/5));
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        ((static_cast<double>(graphNumber)/5)+1)-0.1);
     }
 
     // Adding titles to subplots

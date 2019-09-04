@@ -16,14 +16,12 @@
 
 namespace sgpp {
 namespace datadriven {
-enum class VisualizationFileType {CSV,json};
+enum class VisualizationFileType {CSV, json};
 
 struct VisualizationGeneralConfig {
-
- /**
-  * Variable to determine if its executes visualization Module or not
-  */
-
+  /**
+   * Variable to determine if its executes visualization Module or not
+   */
   bool execute = false;
 
   /**
@@ -54,6 +52,5 @@ struct VisualizationGeneralConfig {
   */
   std::string targetDirectory = "";
 };
-
-}// namespace datadriven
-}// namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

@@ -50,7 +50,7 @@ class TSNE {
   TSNE();
   void run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double perplexity,
     double theta, size_t rand_seed,
-    bool skip_random_init, size_t max_iter = 1000,  size_t mom_switch_iter =250);
+    bool skip_random_init, size_t max_iter = 1000,  size_t mom_switch_iter = 250);
 
  private:
   void computeGradient(double* P, size_t* inp_row_P, size_t* inp_col_P,

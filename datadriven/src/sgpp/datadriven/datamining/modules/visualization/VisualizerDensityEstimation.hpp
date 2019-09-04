@@ -25,7 +25,6 @@ namespace datadriven {
 
 class VisualizerDensityEstimation:public Visualizer {
  public:
-
   VisualizerDensityEstimation()= default;
   /**
    * Constructor given a configuration
@@ -231,15 +230,15 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void initializeMatrices(ModelFittingBase &model);
 
-   /**
-    * Variable to store the cut matrix to be evaluated
-    */
-   DataMatrix cutMatrix;
+  /**
+   * Variable to store the cut matrix to be evaluated
+   */
+  DataMatrix cutMatrix;
 
-   /**
-    * Variable to store the heatmap matrix to be evaluated
-    */
-   DataMatrix heatMapMatrix;
+  /**
+   * Variable to store the heatmap matrix to be evaluated
+   */
+  DataMatrix heatMapMatrix;
 };
 
 }  // namespace datadriven

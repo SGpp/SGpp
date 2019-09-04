@@ -103,7 +103,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * List of colors to add to the grids per class in high dimensional cases
    */
   std::vector<std::string> colors = {"red", "darkviolet", "orange", "palegreen",
-                    "plum", "purple", "chocolate", "darkcyan", "gold","tomato"};
+                    "plum", "purple", "chocolate", "darkcyan", "gold", "tomato"};
 
   /**
    * Variable to store the classification heatmap matrix to be evaluated

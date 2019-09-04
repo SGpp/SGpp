@@ -28,7 +28,6 @@ const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const {
 }
 
 void Visualizer::createOutputDirectory(size_t fold, size_t batch) {
-
   std::cout << "Batch Number " << std::to_string(batch) << std::endl;
   if (config.getGeneralConfig().crossValidation) {
     currentDirectory = config.getGeneralConfig().

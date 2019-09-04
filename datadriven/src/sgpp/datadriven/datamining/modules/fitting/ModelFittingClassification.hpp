@@ -86,20 +86,20 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   void reset() override;
 
-  /*
+  /**
    * store Fitter into text file in folder /datadriven/classificator/
    */
   void storeClassificator();
 
-  /*
+  /**
    * obtain the density estimation models per each class. To be used in VisualizerClassification
    */
   std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* getModels();
 
-  /*
+  /**
    * obtain the index mapping for each label class. To be used in VisualizerClassification
    */
-   std::map<double, size_t> getClassIdx();
+  std::map<double, size_t> getClassIdx();
 #ifdef USE_SCALAPACK
     /**
    * @returns the BLACS process grid
