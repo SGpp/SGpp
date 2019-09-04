@@ -106,7 +106,7 @@ bool Cell::containsPoint(double point[]) {
 // Default constructor for SPTree -- build tree, too!
 SPTree::SPTree(size_t D, double* inp_data, size_t N) {
   // Compute mean, width, and height of current map (boundaries of SPTree)
-  int nD = 0;
+  size_t nD = 0;
   double* mean_Y = reinterpret_cast<double*>(calloc(D,  sizeof(double)));
   double*  min_Y = reinterpret_cast<double*>(malloc(D * sizeof(double)));
   for (size_t d = 0; d < D; d++) {
@@ -393,7 +393,8 @@ size_t SPTree::getDepth() {
   }
   size_t depth = 0;
   for (size_t i = 0; i < no_children; i++) {
-    depth = static_cast<size_t>(fmax(depth, children[i]->getDepth()));
+    depth = static_cast<size_t>(fmax(static_cast<double>(depth),
+      static_cast<double>(children[i]->getDepth())));
   }
   return 1 + depth;
 }
@@ -427,7 +428,7 @@ void SPTree::computeNonEdgeForces(size_t point_index, double theta,
   if (is_leaf || max_width / sqrt(D) < theta) {
       // Compute and add t-SNE force between point and current node
       D = 1.0 / (1.0 + D);
-      double mult = cum_size * D;
+      double mult = static_cast<double>(cum_size) * static_cast<double>(D);
       *sum_Q += mult;
       mult *= D;
       for (size_t d = 0; d < dimension; d++) {
