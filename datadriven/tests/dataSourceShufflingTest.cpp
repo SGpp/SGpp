@@ -1,14 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- * DBMatOfflineDatabaseTest.cpp
- *
- * dataSourceShufflingTest.cpp
- *
- *  Created on: Jul 24, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>

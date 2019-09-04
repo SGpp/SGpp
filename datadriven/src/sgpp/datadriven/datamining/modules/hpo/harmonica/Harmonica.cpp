@@ -1,13 +1,8 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Harmonica.cpp
- *
- *  Created on: Feb 2, 2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
