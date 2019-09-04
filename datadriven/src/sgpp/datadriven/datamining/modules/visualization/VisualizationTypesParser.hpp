@@ -24,8 +24,7 @@ namespace datadriven {
  * #sgpp::datadriven::VisualizationLibraries
  */
 class VisualizationTypesParser {
-
-public:
+ public:
   /**
    * Convert strings to values #sgpp::datadriven::VisualizationFileTypes. Throws if there is no valid
    * representation
@@ -53,7 +52,6 @@ public:
    * string representation.
    */
   static const FileTypeMap_t fileTypeMap;
-
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

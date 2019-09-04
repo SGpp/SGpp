@@ -19,18 +19,17 @@
 
 namespace sgpp {
 namespace datadriven {
-class VisualizerDummy:public Visualizer{
-
-public:
+class VisualizerDummy:public Visualizer {
+ public:
   /**
    * Default constructor
    */
-  VisualizerDummy()=default;
+  VisualizerDummy() = default;
 
   /**
    * Default destructor
    */
-  ~VisualizerDummy()=default;
+  ~VisualizerDummy() = default;
   /**
    * Method to run the visualization process for a given batch and fold
    * @param model The model used to evaluate the visualization
@@ -41,9 +40,9 @@ public:
   void runVisualization(ModelFittingBase &model,  DataSource &dataSource,
     size_t fold, size_t batch) override;
 
-protected:
- void runTsne(ModelFittingBase &model) override;
+ protected:
+  void runTsne(ModelFittingBase &model) override;
 };
 
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

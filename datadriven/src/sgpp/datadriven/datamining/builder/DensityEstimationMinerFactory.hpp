@@ -56,8 +56,6 @@ class DensityEstimationMinerFactory : public MinerFactory {
    * @return the scorer instance
    */
   Visualizer* createVisualizer(const DataMiningConfigParser& parser) const override;
-
-
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

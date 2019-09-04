@@ -23,7 +23,6 @@ namespace sgpp {
 namespace datadriven {
 
 class VisualizerConfiguration{
-
  public:
   /**
    * Default Constructor
@@ -33,7 +32,7 @@ class VisualizerConfiguration{
   /**
    * Default Constructor
    */
- ~VisualizerConfiguration() = default;
+  ~VisualizerConfiguration() = default;
 
   /**
    * set default values for all members based on the desired scenario.
@@ -69,5 +68,5 @@ class VisualizerConfiguration{
   VisualizationParameters visualizationParameters;
 };
 
-}//namespace datadriven
-}//namespace readParams
+}  // namespace datadriven
+}  // namespace sgpp

@@ -16,14 +16,14 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 
+#include "string"
+
 namespace sgpp {
 namespace datadriven {
 
 class Visualizer{
-
  public:
-
- Visualizer();
+  Visualizer();
  /**
   * Virtual destructor
   */
@@ -86,5 +86,5 @@ class Visualizer{
   std::string currentDirectory;
 };
 
-} // namespace datadriven
-} // namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

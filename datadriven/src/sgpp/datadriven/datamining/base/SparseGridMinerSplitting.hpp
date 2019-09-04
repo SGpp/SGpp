@@ -27,7 +27,6 @@ namespace datadriven {
  */
 class SparseGridMinerSplitting : public SparseGridMiner {
  public:
-
   /**
    * Constructor
    * @param dataSource configured instance of data source object, that will provide samples to learn

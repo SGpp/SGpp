@@ -151,6 +151,7 @@ class ModelFittingBase {
   // void storeClassificator();
 
   Dataset* getDataset();
+
  protected:
   /**
    * Factory member function that generates a grid from configuration.

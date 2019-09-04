@@ -32,8 +32,6 @@ namespace datadriven {
  */
 class SparseGridMiner {
  public:
-
-
   /**
    * Constructor
    * @param fitter configured instance of fitter object that generalize the model. The miner
@@ -134,7 +132,6 @@ class SparseGridMiner {
   * an input of graphic libraries to visualize the models
   */
   std::unique_ptr<Visualizer> visualizer;
-
 };
 }  // namespace datadriven
 }  // namespace sgpp

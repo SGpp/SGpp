@@ -452,13 +452,13 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
   size_t rowsPerGraph = matrix.getNrows()/totalGraphs;
 
-  unsigned int graphIndex = 0;
+  size_t graphIndex = 0;
 
-  for (unsigned int graphNumber = 0; graphNumber < totalGraphs; graphNumber++) {
+  for (size_t graphNumber = 0; graphNumber < totalGraphs; graphNumber++) {
     DataMatrix temp(matrix.getNrows(), matrix.getNcols());
     temp.copyFrom(matrix);
 
-    unsigned long beginIndex = graphNumber*rowsPerGraph+1;
+    size_t beginIndex = graphNumber*rowsPerGraph+1;
 
     temp.resizeToSubMatrix(beginIndex, 1, beginIndex+rowsPerGraph-1, matrix.getNcols());
 
@@ -666,8 +666,10 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
     jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\"" + yAxis + "\"");
     jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
     jsonOutput["layout"][xAxisName].addListAttr("domain");
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*(graphNumber%5));
-    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*((graphNumber%5)+1)-0.05);
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      static_cast<double>(graphNumber%5));
+    jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
+      (static_cast<double>(graphNumber%5)+1)-0.05);
 
 
     jsonOutput["layout"].addDictAttr(yAxisName);
@@ -676,8 +678,10 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
     if (matrix.getNcols() > 4) {
       jsonOutput["layout"][yAxisName].addListAttr("domain");
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*(graphNumber/5));
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*((graphNumber/5)+1)-0.1);
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        static_cast<double>(graphNumber/5));
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        (static_cast<double>(graphNumber/5)+1)-0.1);
     }
 
     // Adding titles to subplots

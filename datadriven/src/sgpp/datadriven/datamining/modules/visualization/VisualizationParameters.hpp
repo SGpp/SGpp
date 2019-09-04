@@ -18,38 +18,37 @@ namespace sgpp {
 namespace datadriven {
 
 struct VisualizationParameters {
- /**
-  * The perplexity to use in case tsne is the selected algorithm
-  */
- double perplexity = 30;
+  /**
+   * The perplexity to use in case tsne is the selected algorithm
+   */
+  double perplexity = 30;
 
- /**
-  * The theta parameter to use in case tsne is the selected algorithm
-  */
- double theta = 0.5;
+  /**
+   * The theta parameter to use in case tsne is the selected algorithm
+   */
+  double theta = 0.5;
 
- /*
-  * The random seed to initialize the selected algorithm
-  */
- size_t seed = 100;
+  /*
+   * The random seed to initialize the selected algorithm
+   */
+  size_t seed = 100;
 
- /*
-  * The maximum number of iteration to run on the gradient descent of a selected
-  * algorithm
-  */
- size_t maxNumberIterations = 1000;
+  /*
+   * The maximum number of iteration to run on the gradient descent of a selected
+   * algorithm
+   */
+  size_t maxNumberIterations = 1000;
 
- /*
-  * The dimentionality to which we want to reduce the data for visualization
-  * purposes
-  */
- size_t targetDimension = 2;
+  /*
+   * The dimentionality to which we want to reduce the data for visualization
+   * purposes
+   */
+  size_t targetDimension = 2;
 
- /*
-  * Number of cores to run the algorithm in parallel
-  */
- size_t numberCores = 1;
+  /*
+   * Number of cores to run the algorithm in parallel
+   */
+  size_t numberCores = 1;
 };
-
-}// namspace datadriven
-}// namespace sgpp
+}  // namespace datadriven
+}  // namespace sgpp

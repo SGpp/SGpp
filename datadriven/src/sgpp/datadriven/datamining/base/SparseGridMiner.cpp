@@ -29,7 +29,7 @@ ModelFittingBase* SparseGridMiner::getModel() { return &(*fitter); }
 
 void SparseGridMiner::setModel(ModelFittingBase* model) { fitter.reset(model); }
 
-Visualizer* SparseGridMiner::getVisualizer(){ return &(*visualizer); }
+Visualizer* SparseGridMiner::getVisualizer() { return &(*visualizer); }
 
 void SparseGridMiner::print(std::ostringstream& messageStream) { print(messageStream.str()); }
 
