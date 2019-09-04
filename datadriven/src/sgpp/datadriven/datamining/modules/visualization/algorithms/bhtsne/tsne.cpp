@@ -74,7 +74,7 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
   bool exact = (theta == .0) ? true : false;
 
   // Set learning parameters
-  float total_time = .0;
+  double total_time = .0;
   clock_t start, end;
   double momentum = .5, final_momentum = .8;
   double eta = 200.0;
@@ -115,7 +115,6 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
   if (exact) {
     // Compute similarities
     printf("Exact?");
-    P = reinterpret_cast<double*> (malloc(N * N * sizeof(double)));
     if (P == NULL) { printf("Memory allocation failed!\n"); exit(1); }
     computeGaussianPerplexity(X, N, D, P, perplexity);
 
@@ -217,6 +216,8 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
       momentum = final_momentum;
     }
 
+    double run_time =  (static_cast<double>(end) - static_cast<double>(start)) /
+              static_cast<double>(CLOCKS_PER_SEC);
     // Print out progress
     if (iter > 0 && (iter % 50 == 0 || iter == max_iter - 1)) {
       end = clock();
@@ -230,14 +231,14 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
       if (iter == 0) {
           printf("Iteration %zu: error is %f\n", iter + 1, C);
       } else {
-        total_time += static_cast<float> ((end - start) / CLOCKS_PER_SEC);
         printf("Iteration %zu: error is %f (50 iterations in %4.2f seconds)\n",
-          iter, C, static_cast<float> ((end - start) / CLOCKS_PER_SEC));
+          iter, C, run_time);
       }
       start = clock();
     }
   }
-  end = clock(); total_time += static_cast<float> ((end - start) / CLOCKS_PER_SEC);
+  end = clock();
+  total_time += static_cast<double> ((end - start) / CLOCKS_PER_SEC);
 
   // Clean up memory
   free(dY);
@@ -333,7 +334,7 @@ void TSNE::computeExactGradient(double* P, double* Y, size_t N, size_t D, double
   size_t nD = 0;
   #pragma omp parallel for schedule(dynamic)
   for (size_t n = 0; n < N; n++) {
-   size_t mD = 0;
+    size_t mD = 0;
     for (size_t m = 0; m < N; m++) {
       if (n != m) {
         double mult = (P[nN + m] - (Q[nN + m] / sum_Q)) * Q[nN + m];
@@ -386,7 +387,8 @@ double TSNE::evaluateError(double* P, double* Y, size_t N, size_t D) {
   // Sum t-SNE error
   double C = .0;
   for (size_t n = 0; n < N * N; n++) {
-    C += P[n] * log((P[n] + FLT_MIN) / (Q[n] + FLT_MIN));
+    C += static_cast<double>(P[n] * log(P[n] + FLT_MIN)) /
+      static_cast<double>(Q[n] + FLT_MIN);
   }
 
   // Clean up memory
@@ -419,7 +421,8 @@ double TSNE::evaluateError(size_t* row_P, size_t* col_P,
       for (size_t d = 0; d < D; d++) buff[d] -= Y[ind2 + d];
       for (size_t d = 0; d < D; d++) Q += buff[d] * buff[d];
       Q = (1.0 / (1.0 + Q)) / sum_Q;
-      C += val_P[i] * log((val_P[i] + FLT_MIN) / (Q + FLT_MIN));
+      C += static_cast<double>(val_P[i] * log((val_P[i] + FLT_MIN)) /
+        static_cast<double>((Q + FLT_MIN)));
     }
   }
   // Clean up memory
@@ -448,7 +451,7 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D,
     double min_beta = -DBL_MAX;
     double max_beta =  DBL_MAX;
     double tol = 1e-5;
-    double sum_P;
+    double sum_P = DBL_MIN;
 
     // Iterate until we found a good perplexity
     size_t iter = 0;
@@ -460,7 +463,6 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D,
       P[nN + n] = DBL_MIN;
 
       // Compute entropy of current row
-      sum_P = DBL_MIN;
       for (size_t m = 0; m < N; m++) {
         sum_P += P[nN + m];
       }
@@ -514,8 +516,8 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D, size_t** _ro
     }
 
     // Allocate the memory we need
-    *_row_P = (size_t*) malloc((N + 1) * sizeof(size_t));
-    *_col_P = (size_t*) calloc(N * K, sizeof(size_t));
+    *_row_P = reinterpret_cast<size_t*> (malloc((N + 1) * sizeof(size_t)));
+    *_col_P = reinterpret_cast<size_t*> (calloc(N * K, sizeof(size_t)));
     *_val_P = reinterpret_cast<double*> (calloc(N * K, sizeof(double)));
     if (*_row_P == NULL || *_col_P == NULL || *_val_P == NULL) {
       printf("Memory allocation failed!\n"); exit(1);
@@ -614,7 +616,7 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D, size_t** _ro
       #pragma omp parallel for schedule(dynamic)
       for (size_t m = 0; m < K; m++) {
         cur_P[m] /= sum_P;
-        col_P[row_P[n] + m] = (size_t) indices[m + 1].index();
+        col_P[row_P[n] + m] = static_cast<size_t> (indices[m + 1].index());
         val_P[row_P[n] + m] = cur_P[m];
       }
     }
@@ -662,8 +664,8 @@ void TSNE::symmetrizeMatrix(size_t** _row_P, size_t** _col_P,
   }
 
   // Allocate memory for symmetrized matrix
-  size_t* sym_row_P = (size_t*) malloc((N + 1) * sizeof(size_t));
-  size_t* sym_col_P = (size_t*) malloc(no_elem * sizeof(size_t));
+  size_t* sym_row_P = reinterpret_cast<size_t*> (malloc((N + 1) * sizeof(size_t)));
+  size_t* sym_col_P = reinterpret_cast<size_t*> (malloc(no_elem * sizeof(size_t)));
   double* sym_val_P = reinterpret_cast<double*> (malloc(no_elem * sizeof(double)));
 
   if (sym_row_P == NULL || sym_col_P == NULL || sym_val_P == NULL) {
@@ -674,7 +676,7 @@ void TSNE::symmetrizeMatrix(size_t** _row_P, size_t** _col_P,
   // Construct new row indices for symmetric matrix
   sym_row_P[0] = 0;
   for (size_t n = 0; n < N; n++) {
-    sym_row_P[n + 1] = sym_row_P[n] + (size_t) row_counts[n];
+    sym_row_P[n + 1] = sym_row_P[n] + static_cast<size_t> (row_counts[n]);
   }
 
   // Fill the result matrix

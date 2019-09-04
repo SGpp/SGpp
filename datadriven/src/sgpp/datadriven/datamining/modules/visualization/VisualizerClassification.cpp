@@ -60,7 +60,13 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
 
   std::string command("mkdir "+currentDirectory+"/Classification"+" --parents");
 
-  system(command.data());
+  int result = system(command.data());
+
+  if (result) {
+    std::cout << currentDirectory+"/Classification" << " succesfully created";
+  } else {
+    std::cout << currentDirectory+"/Classification" << " already exists";
+  }
 
   omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
 
@@ -139,7 +145,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
 void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
   VisualizerDensityEstimation::initializeMatrices(model);
     std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-    double step = 1.0/resolution;
+    double step = 1.0/static_cast<double>(resolution);
 
     auto nDimensions = model.getDataset()->getDimension();
 
@@ -235,7 +241,13 @@ ModelFittingBase &model, std::string currentDirectory) {
 
     std::string command("mkdir "+subfolder+" --parents");
 
-    system(command.data());
+    int result = system(command.data());
+
+    if (result) {
+      std::cout << subfolder << " succesfully created";
+    } else {
+      std::cout << subfolder << " already exists";
+    }
 
 
     std::copy(variableColumnIndexes.begin()+1, variableColumnIndexes.end(),

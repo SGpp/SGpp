@@ -33,8 +33,8 @@ public:
   ~VisualizerDummy()=default;
   /**
    * Method to run the visualization process for a given batch and fold
-   * @param The model used to evaluate the visualization
-   * @param The datasource from where the data points are obtained
+   * @param model The model used to evaluate the visualization
+   * @param dataSource The datasource from where the data points are obtained
    * @param fold The current fold being processed
    * @param batch The current batch being processed
    */
