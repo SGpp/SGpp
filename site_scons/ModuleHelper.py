@@ -267,5 +267,5 @@ class Module(object):
     if env['RUN_CPPLINT']:
       # run the style checker on all source and header files
       for path in self.cpps + self.hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(self.lib, lintCommand)
+        checkStyleCommand = env.Command(path + ".lint", path, checkStyleAction)
+        env.Depends(self.lib, checkStyleCommand)
