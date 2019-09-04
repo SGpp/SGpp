@@ -29,7 +29,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
 
   /**
    * Constructor given a configuration
-   * @param config. The VisualizerConfiguration object which contains
+   * @param config The VisualizerConfiguration object which contains
    * the configuration to run the visualization module
    */
   explicit VisualizerClassification(VisualizerConfiguration config);
@@ -37,8 +37,8 @@ class VisualizerClassification:public VisualizerDensityEstimation {
   ~VisualizerClassification() = default;
   /**
    * Method to run the visualization process for a given batch and fold
-   * @param The model used to evaluate the visualization
-   * @param The datasource from where the data points are obtained
+   * @param model The model used to evaluate the visualization
+   * @param dataSource The datasource from where the data points are obtained
    * @param fold The current fold being processed
    * @param batch The current batch being processed
    */
@@ -70,11 +70,6 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * heatmaps for models of 3 or more dimensions
    * @param matrix Matrix with the content to be stored
    * @param model The model used when evaluating the heatmaps
-   * @param indexes Vectors containing the dimensions used when generating these heatmaps
-   * @param varDim1 The first dimension number varying and whose evaluation
-   * is shown in the model
-   * @param varDim2 The second dimension number varying and whose evaluation
-   * is shown in the model
    * @param filepath The current directory to store the json file
    */
   void storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,
@@ -85,6 +80,11 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * plotly library the output of the classification heatmaps for models of 2 dimensions
    * @param matrix Matrix with the content to be stored
    * @param model The model used when evaluating the heatmaps
+   * @param indexes Vectors containing the dimensions used when generating these heatmaps
+   * @param varDim1 The first dimension number varying and whose evaluation
+   * is shown in the model
+   * @param varDim2 The second dimension number varying and whose evaluation
+   * is shown in the model
    * @param filepath The current directory to store the json file
    */
   void storeHeatmapJsonClassification(DataMatrix &matrix, ModelFittingBase &model,

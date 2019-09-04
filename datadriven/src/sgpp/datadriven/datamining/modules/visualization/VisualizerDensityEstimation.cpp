@@ -165,7 +165,7 @@ void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
   auto nDimensions = model.getDataset()->getDimension();
 
   std::cout << "Resolution " << std::to_string(resolution) << std::endl;
-  double step = 1.0/resolution;
+  double step = 1.0/static_cast<double>(resolution);
 
   cutMatrix.resize(0, nDimensions);
   heatMapMatrix.resize(0, nDimensions);
@@ -253,7 +253,12 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
     std::string command("mkdir ");
     command.append(currentDirectory);
     command.append("/LinearCuts");
-    system(command.data());
+    int result = system(command.data());
+    if (result) {
+      std::cout << currentDirectory+"/LinearCuts" << " succesfully created";
+    } else {
+      std::cout << currentDirectory+"/LinearCuts" << " already exists";
+    }
 
     if (nDimensions >=3) {
       getLinearCutsMore3D(model, currentDirectory);
@@ -284,7 +289,12 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
     std::string command("mkdir ");
     command.append(currentDirectory);
     command.append("/Heatmaps");
-    system(command.data());
+    int result = system(command.data());
+    if (result) {
+      std::cout << currentDirectory+"/Heatmaps" << " succesfully created";
+    } else {
+      std::cout << currentDirectory+"/Heatmpas" << " already exists";
+    }
 
     if ( nDimensions >= 4 ) {
       getHeatmapMore4D(model, currentDirectory);
@@ -437,7 +447,12 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(
 
     std::string command("mkdir " + subfolder);
 
-    system(command.data());
+    int result = system(command.data());
+    if (result) {
+      std::cout << subfolder << " succesfully created";
+    } else {
+      std::cout << subfolder << " already exists";
+    }
 
 
     for (size_t combination = 0; combination < 3; combination++) {
@@ -540,8 +555,13 @@ ModelFittingBase &model, std::string currentDirectory) {
 
     std::string command("mkdir "+subfolder);
 
-    system(command.data());
+    int result = system(command.data());
 
+    if (result) {
+      std::cout << subfolder << " succesfully created";
+    } else {
+      std::cout << subfolder << " already exists";
+    }
 
     std::copy(variableColumnIndexes.begin()+1, variableColumnIndexes.end(),
     workingIndexes.begin());
@@ -963,8 +983,8 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
       DataVector row(gridMatrix.getNcols());
       gridMatrix.getRow(index, row);
       if (gridMatrix.getNcols() >= 4) {
-        if (row.get(indexes.at(0)) == firstRow.get(indexes.at(0))&
-          row.get(indexes.at(1)) == firstRow.get(indexes.at(1))) {
+        if ((row.get(indexes.at(0)) == firstRow.get(indexes.at(0)))&
+          (row.get(indexes.at(1)) == firstRow.get(indexes.at(1)))) {
           tempGrid.appendRow(row);
         }
       } else {
