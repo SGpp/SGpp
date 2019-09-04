@@ -261,8 +261,8 @@ class Module(object):
       testRun = env.BoostTest(self.boostTestExecutable + "_run", self.boostTestExecutable)
       boostTestRunTargetList.append(testRun)
 
-  def runCpplint(self):
-    """Run the style checker.
+  def checkStyle(self):
+    """Run the style checks.
     """
     if env['RUN_CPPLINT']:
       # run the style checker on all source and header files
