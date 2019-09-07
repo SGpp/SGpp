@@ -54,21 +54,21 @@ namespace sgpp {
 namespace datadriven {
 
 class DataPoint {
-  size_t _ind;
+  int _ind;
 
  public:
   double* _x;
-  size_t _D;
+  int _D;
   DataPoint() {
     _D = 1;
     _ind = -1;
     _x = NULL;
   }
-  DataPoint(size_t D, int ind, double* x) {
+  DataPoint(int D, int ind, double* x) {
     _D = D;
     _ind = ind;
-    _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
-    for (size_t d = 0; d < _D; d++) {
+    _x = new double[_D];
+    for (int d = 0; d < _D; d++) {
       _x[d] = x[d];
     }
   }
@@ -76,8 +76,8 @@ class DataPoint {
     if (this != &other) {
       _D = other.dimensionality();
       _ind = other.index();
-      _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
-      for (size_t d = 0; d < _D; d++) {
+      _x = new double[_D];
+      for (int d = 0; d < _D; d++) {
         _x[d] = other.x(d);
       }
     }
@@ -85,31 +85,31 @@ class DataPoint {
 
   ~DataPoint() {
     if (_x != NULL) {
-      free(_x);
+      delete[] _x;
     }
   }
 
   DataPoint& operator= (const DataPoint& other) {         // asignment should free old object
     if (this != &other) {
       if (_x != NULL) {
-        free(_x);
+        delete[] _x;
       }
       _D = other.dimensionality();
       _ind = other.index();
-      _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
-      for (size_t d = 0; d < _D; d++) {
+      _x = new double[_D];
+      for (int d = 0; d < _D; d++) {
         _x[d] = other.x(d);
       }
     }
     return *this;
   }
-  size_t index() const {
+  int index() const {
     return _ind;
   }
-  size_t dimensionality() const {
+  int dimensionality() const {
     return _D;
   }
-  double x(size_t d) const {
+  double x(int d) const {
     return _x[d];
   }
 
@@ -118,13 +118,15 @@ class DataPoint {
     double* x1 = t1._x;
     double* x2 = t2._x;
     double diff;
-    for (size_t d = 0; d < t1._D; d++) {
+    for (int d = 0; d < t1._D; d++) {
         diff = (x1[d] - x2[d]);
         dd += diff * diff;
     }
     return sqrt(dd);
   }
 };
+
+
 
 
 template<typename T, double (*distance)( const T&, const T& )>
@@ -146,7 +148,7 @@ class VpTree {
   }
 
   // Function that uses the tree to find the k nearest neighbors of target
-  void search(const T& target, size_t k, std::vector<T>* results,
+  void search(const T& target, int k, std::vector<T>* results,
     std::vector<double>* distances) {
     // Use a priority queue to store intermediate results on
     std::priority_queue<HeapItem> heap;
@@ -177,7 +179,7 @@ class VpTree {
   // Single node of a VP tree (has a point and radius;
   // left children are closer to point than the radius)
   struct Node {
-    size_t index;              // index of point in node
+    int index;              // index of point in node
     double threshold;       // radius(?)
     Node* left;             // points closer by than threshold
     Node* right;            // points farther away than threshold
@@ -194,9 +196,9 @@ class VpTree {
 
   // An item on the intermediate result queue
   struct HeapItem {
-    HeapItem(size_t index, double dist) :
+    HeapItem(int index, double dist) :
     index(index), dist(dist) {}
-    size_t index;
+    int index;
     double dist;
     bool operator<(const HeapItem& o) const {
         return dist < o.dist;
@@ -213,7 +215,7 @@ class VpTree {
   };
 
   // Function that (recursively) fills the tree
-  Node* buildFromPoints(size_t lower, size_t upper) {
+  Node* buildFromPoints(int lower, int upper) {
     if (upper == lower) {     // indicates that we're done here!
       return NULL;
     }
@@ -224,13 +226,11 @@ class VpTree {
 
     if (upper - lower > 1) {      // if we did not arrive at leaf yet
       // Choose an arbitrary point and move it to the start
-      int i = static_cast<int> ((static_cast<double>(rand()) /
-        static_cast<double>(RAND_MAX * (upper - lower - 1)) +
-        static_cast<double>(lower)));
+      int i = static_cast<int> (((double)rand() / RAND_MAX * (upper - lower - 1)) + lower);
       std::swap(_items[lower], _items[i]);
 
       // Partition around the median distance
-      size_t median = (upper + lower) / 2;
+      int median = (upper + lower) / 2;
       std::nth_element(_items.begin() + lower + 1,
                        _items.begin() + median,
                        _items.begin() + upper,
@@ -250,7 +250,7 @@ class VpTree {
   }
 
   // Helper function that searches the tree
-  void search(Node* node, const T& target, size_t k, std::priority_queue<HeapItem>& heap) {
+  void search(Node* node, const T& target, int k, std::priority_queue<HeapItem>& heap) {
     if (node == NULL) {
       return;     // indicates that we're done here
     }
