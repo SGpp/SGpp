@@ -132,13 +132,13 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
       std::cout << "No data found. TSNE wo't run" << std::endl;
       return;
     }
-    double* input =  reinterpret_cast<double*>(malloc(N * D * sizeof(double)));
+    double* input =  new double[N*D];
 
     std::copy(originalData.data(), originalData.data()+N*D,
       input);
 
-    double* output =  reinterpret_cast<double*>(malloc(N * config.getVisualizationParameters().
-      targetDimension * sizeof(double)));
+    double* output =  new double[N* config.getVisualizationParameters().
+                                 targetDimension];
 
     if ( D > config.getVisualizationParameters().targetDimension ) {
       std::cout << "Compressing with tsne to " <<
@@ -152,13 +152,15 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
       config.getVisualizationParameters().maxNumberIterations);
       D = config.getVisualizationParameters().targetDimension;
     } else {
-      output = input;
+     std::copy(output, output+N*D,
+           input);
     }
+    delete[] input;
     DataVector evaluation(originalData.getNrows());
     model.evaluate(originalData, evaluation);
     tsneCompressedData = DataMatrix(output, N, D);
     tsneCompressedData.appendCol(evaluation);
-    free(output);
+    delete[] output;
 }
 
 void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
