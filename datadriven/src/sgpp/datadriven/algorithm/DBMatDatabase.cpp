@@ -60,7 +60,7 @@ bool DBMatDatabase::hasBaseDataMatrix(
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Call with base matrix flag
   return entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
-                                   densityEstimationConfig, true);
+                                   densityEstimationConfig, true) >= 0;
 }
 
 std::string& DBMatDatabase::getDataMatrix(
@@ -99,14 +99,14 @@ void DBMatDatabase::putDataMatrix(
     gridConfigEntry.addTextAttr(
         keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(gridConfig.generalType_));
     gridConfigEntry.addIDAttr(keyGridDimension, (uint64_t)gridConfig.dim_);
-    if(gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid){
-      sgpp::base::CombiGridConfiguration& componentGridConfig = (sgpp::base::CombiGridConfiguration&) gridConfig;
-      json::ListNode& level = (json::ListNode&) gridConfigEntry.addListAttr(keyGridLevel);
-      for (size_t i = 0; i < componentGridConfig.levels.size(); i ++){
+    if (gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid) {
+      sgpp::base::CombiGridConfiguration& componentGridConfig =
+          (sgpp::base::CombiGridConfiguration&)gridConfig;
+      json::ListNode& level = (json::ListNode&)gridConfigEntry.addListAttr(keyGridLevel);
+      for (size_t i = 0; i < componentGridConfig.levels.size(); i++) {
         level.addIdValue(componentGridConfig.levels[i]);
       }
-    }
-    else {
+    } else {
       gridConfigEntry.addIDAttr(keyGridLevel, (int64_t)gridConfig.level_);
     }
     // Add a regularization configuration entry
@@ -166,11 +166,13 @@ bool DBMatDatabase::baseGridConfigurationMatches(json::DictNode* node,
   for (uint64_t i = 0; i < nodeGridDimension; i++) {
     json::Node* indexLevelNode = (json::Node*)(&((*entryLevelVector)[i]));
     int indexLevelInt = indexLevelNode->getInt();
-    if (levelSet.find(indexLevelInt) != levelSet.end()) {
-      levelMap[indexLevelInt] = levelMap[indexLevelInt] + 1;
-    } else {
-      levelMap[indexLevelInt] = 1;
-      levelSet.insert(indexLevelInt);
+    if (indexLevelInt != 1) {
+      if (levelSet.find(indexLevelInt) != levelSet.end()) {
+        levelMap[indexLevelInt] = levelMap[indexLevelInt] + 1;
+      } else {
+        levelMap[indexLevelInt] = 1;
+        levelSet.insert(indexLevelInt);
+      }
     }
   }
 

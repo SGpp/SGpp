@@ -1,15 +1,54 @@
 {
    "database": [{
          "gridConfiguration": {
-            "type": "regular",
+            "type": "component",
             "dimension": 2,
-            "level": 5
+            "level": [2, 3]
          },
          "regularizationConfiguration": {
-            "lambda": 0.01
+            "lambda": 0.001
          },
          "densityEstimationConfiguration": {
-            "decomposition": "Chol"
+            "decomposition": "OrthoAdapt"
+         },
+         "filepath": "tmp"
+      }, {
+         "gridConfiguration": {
+            "type": "component",
+            "dimension": 4,
+            "level": [2, 3, 2, 1]
+         },
+         "regularizationConfiguration": {
+            "lambda": 0.001
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "OrthoAdapt"
+         },
+         "filepath": "tmp"
+      }, {
+         "gridConfiguration": {
+            "type": "component",
+            "dimension": 3,
+            "level": [2, 3, 2]
+         },
+         "regularizationConfiguration": {
+            "lambda": 0.001
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "OrthoAdapt"
+         },
+         "filepath": "tmp"
+      }, {
+         "gridConfiguration": {
+            "type": "component",
+            "dimension": 4,
+            "level": [2, 3, 1, 2]
+         },
+         "regularizationConfiguration": {
+            "lambda": 0.001
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "OrthoAdapt"
          },
          "filepath": "tmp"
       }]

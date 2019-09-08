@@ -6,14 +6,14 @@
 #pragma once
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-class DBMatOfflineOrthoAdapt : public DBMatOffline {
+class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
  public:
   /**
    * Constructor
@@ -46,7 +46,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 
-  void permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig, sgpp::base::GeneralGridConfiguration desiredGridCOnfig) override;
+  void permutateDecomposition(sgpp::base::CombiGridConfiguration baseGridConfig,
+                              sgpp::base::CombiGridConfiguration desiredGridCOnfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
@@ -111,10 +112,6 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   // distributed matrices, only initialized if scalapack is used
   DataMatrixDistributed q_ortho_matrix_distributed_;
   DataMatrixDistributed t_tridiag_inv_matrix_distributed_;
-
-  int getMatrixIndexForPoint(std::vector<size_t> level, std::vector<size_t> index, std::vector<size_t> gridLevel);
-  std::vector<size_t> deleteOnesFromLevelVec(std::vector<size_t> vectorWithOnes);
-  std::vector<size_t> permutateVector(std::vector<size_t> vector, std::vector<size_t> oldU, std::vector<size_t> newU);
 };
 }  // namespace datadriven
 }  // namespace sgpp

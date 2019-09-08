@@ -18,7 +18,7 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
+DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOfflinePermutable() {
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
   // Deprecated
@@ -26,7 +26,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
-    : DBMatOffline(fileName) {
+    : DBMatOfflinePermutable(fileName) {
   // Read grid size from header (number of rows in lhsMatrix)
   std::ifstream filestream(fileName, std::istream::in);
   // Read configuration
@@ -91,116 +91,16 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
   this->q_ortho_matrix_.resizeQuadratic(dim_a);
   this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
 }
- 
-void DBMatOfflineOrthoAdapt::permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig, sgpp::base::GeneralGridConfiguration desiredGridCOnfig) {
-  // Base orthogonal matrix Q
-  auto& baseQ = this->q_ortho_matrix_;
-  // Initialize permutated matrix
-  sgpp::base::DataMatrix permutatedQ(baseQ.getNrows, baseQ.getNrows);
 
-  // Validate general grid type and basis function
-  if(desiredGridCOnfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid) 
-    throw sgpp::base::algorithm_exception("Can only permutate component grids.");
-  //TODO: Further validation  
-
-  std::vector<size_t> desiredLevelVec = deleteOnesFromLevelVec(desiredGridCOnfig.levelVector_);
-  // Permutation
-  // First row is never permutated
-  sgpp::base::DataVector firstRow(baseQ.getNcols());
-  baseQ.getRow(0, firstRow);
-  permutatedQ.setRow(0, firstRow);
-  int row = 1;
-  // Init index and level vector
-  std::vector<size_t> index(desiredLevelVec.size, 1);
-  std::vector<size_t> level(desiredLevelVec.size, 1);
-
-  for (size_t dim = 0; dim < desiredLevelVec.size; dim ++) {
-    for (size_t d = 0; d <= dim; d ++){
-      for (size_t l = 1; l <= desiredLevelVec[d]; l++){
-        for (size_t i = 1; i)
-      }
-    }
-  }
-
-
-  // Dimension factor if  linear basis function. 
-  auto& gridType = desiredGridCOnfig.type_;
-  int dimDelta = desiredGridCOnfig.dim_ - baseGridConfig.dim_;
-  if (gridType == sgpp::base::GridType::Linear) {
-    float dimFactor = (dimDelta > 0) ? std::pow((float)1/3, dimDelta) : std::pow(3.0, -dimDelta); 
-    permutatedQ.mult(dimFactor);
-  }
-
-  return 1;
-}
-
-  std::vector<size_t> DBMatOfflineOrthoAdapt::permutateVector(std::vector<size_t> vector, std::vector<size_t> oldU, std::vector<size_t> newU){
-    std::vector<size_t> output(vector.size, 1);
-    for (size_t i = 0; i < newU.size; i++){
-      size_t oldIndex = -1;
-      for (size_t j = 0; j < oldU.size; j++){
-        if(oldU[j] == newU[i]){
-          oldIndex = j;
-          break;
-        } 
-      }
-      if (oldIndex == -1) throw sgpp:base::algorithm_exception(oldU << "is no permuation of" << newU);
-      else {
-        output[i] = vector[oldIndex];
-      }
-    }
-  }
-
-
-std::vector<size_t> DBMatOfflineOrthoAdapt::deleteOnesFromLevelVec(std::vector<size_t> vectorWithOnes){
-  std::vector<size_t> output;
-  for (size_t i = 0; i < vectorWithOnes.size; i++){
-    if (vectorWithOnes[i] != 1) output.push_back(vectorWithOnes[i]);
-  }
-  return output;
-}
-
-
-int DBMatOfflineOrthoAdapt::getMatrixIndexForPoint(std::vector<size_t> level, std::vector<size_t> index, std::vector<size_t> gridLevel) {
-
-  size_t lStar = 0;
-
-  // Determine the most right element != 1
-  for (int i = 0; i<level.size; i++){
-    if(level[1] != 1) lStar = i;
-  }
-
-  int prod = 1;
-  for (int i = 1; i , lStar; i++) {
-    prod = prod * (1 << (gridLevel[i] - 1));
-  } 
-
-  int a = prod + (1 << (level[lStar] - 1)) - 2 + ((index[lStar] + 1) / 2);
-
-  int b = 0;
-
-  for(int i = 1; i < lStar; i++) {
-    int prod = 1;
-    for (int j=1; j<i; j++) {
-       prod = prod * (1 << (gridLevel[j] - 1));
-    }
-    int tmp = prod + (1 << (level[i] - 1)) - 3 + ((index[i] + 1) / 2);
-
-    prod = 1;
-    for (int j = i; j < lStar; j++){
-      prod = prod * ((1 << gridLevel[j + 1]) - 2);
-    }
-
-    b = b + tmp * prod;
-  }
-
-  int c = 1;
-  for (int i = 1; i , lStar; i++){
-    c = c * ((2 << gridLevel[i + 1]) - 2);
-  }
-  c = c * ((2 << (level[1] -1)) - 2 + ((index[1] + 1) / 2));
-
-  return a + b + c;
+void DBMatOfflineOrthoAdapt::permutateDecomposition(
+    sgpp::base::CombiGridConfiguration baseGridConfig,
+    sgpp::base::CombiGridConfiguration desiredGridCOnfig) {
+  // Copy Q for row permutation
+  sgpp::base::DataMatrix baseQ(this->q_ortho_matrix_);
+  // Permutate rows
+  permutateMatrix(baseGridConfig, desiredGridCOnfig, baseQ, this->q_ortho_matrix_, true);
+  // Multiply dimension blow-up factor to T
+  dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->t_tridiag_inv_matrix_, true);
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix(

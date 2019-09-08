@@ -523,7 +523,7 @@ void DataMatrix::toString(std::string& text) const {
   std::stringstream str;
 
   str << std::scientific;
-  str.precision(20);
+  str.precision(4);
 
   str << "[";
 

@@ -105,7 +105,7 @@ struct RegularGridConfiguration : GeneralGridConfiguration {
  */
 struct CombiGridConfiguration : GeneralGridConfiguration {
   // The level_ member is replaced by a level vector
-  std::vector<int> levels;
+  std::vector<size_t> levels;
   CombiGridConfiguration() {
     generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;

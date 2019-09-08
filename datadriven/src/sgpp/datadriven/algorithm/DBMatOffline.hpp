@@ -128,12 +128,7 @@ class DBMatOffline {
    */
   virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
                                DensityEstimationConfiguration& densityEstimationConfig) = 0;
-
-  /**
-   * Permutates the matrix, if possible, to fit the desired level vector.
-   */
-  virtual void permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig, sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
-
+                               
   /**
    * Prints the matrix onto standard output
    */
