@@ -36,7 +36,7 @@
  * pipeline structure and has been parallelized
  */
 
-#include <iostream>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -53,18 +53,17 @@ class TSNE {
     bool skip_random_init, size_t max_iter = 1000,  size_t mom_switch_iter =250);
 
  private:
-  void computeGradient(double* P, size_t* inp_row_P, size_t* inp_col_P,
+  void computeGradient(size_t* inp_row_P, size_t* inp_col_P,
     double* inp_val_P, double* Y, size_t N, size_t D, double* dC, double theta);
-  void computeExactGradient(double* P, double* Y, size_t N, size_t D, double* dC);
-  double evaluateError(double* P, double* Y, size_t N, size_t D);
   double evaluateError(size_t* row_P, size_t* col_P, double* val_P,
     double* Y, size_t N, size_t D, double theta);
   void zeroMean(double* X, size_t N, size_t D);
-  void computeGaussianPerplexity(double* X, size_t N, size_t D, double* P, double perplexity);
-  void computeGaussianPerplexity(double* X, size_t N, size_t D, size_t** _row_P,
-    size_t** _col_P, double** _val_P, double perplexity, size_t K);
+  void computeGaussianPerplexity(double* X, size_t N, size_t D, size_t* row_P,
+    size_t* col_P, double* val_P, double perplexity, size_t K);
   void computeSquaredEuclideanDistance(double* X, size_t N, size_t D, double* DD);
-  void symmetrizeMatrix(size_t** row_P, size_t** col_P, double** val_P,
+  void symmetrizeMatrix(std::unique_ptr<size_t[]> &row_P,
+    std::unique_ptr<size_t[]> &col_P,
+    std::unique_ptr<double[]> &val_P,
     size_t N);
   double randn();
 };
