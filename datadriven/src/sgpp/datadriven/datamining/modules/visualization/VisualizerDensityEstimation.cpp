@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
 #include <omp.h>
 #include <iostream>
+#include <memory>
 #include <vector>
 #include <algorithm>
 #include <string>
@@ -132,13 +133,13 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
       std::cout << "No data found. TSNE wo't run" << std::endl;
       return;
     }
-    double* input =  new double[N*D];
+    std::unique_ptr<double[]> input (new double[N*D]);
 
     std::copy(originalData.data(), originalData.data()+N*D,
-      input);
+      input.get());
 
-    double* output =  new double[N* config.getVisualizationParameters().
-                                 targetDimension];
+    std::unique_ptr<double[]> output(new double[N* config.getVisualizationParameters().
+                                 targetDimension]);
 
     if ( D > config.getVisualizationParameters().targetDimension ) {
       std::cout << "Compressing with tsne to " <<
@@ -146,21 +147,20 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
       << " dimensions" << std::endl;
 
       TSNE tsne;
-      tsne.run(input, N, D , output, config.getVisualizationParameters().targetDimension,
+      tsne.run(input.get(), N, D , output.get(), config.getVisualizationParameters().targetDimension,
       config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
       config.getVisualizationParameters().seed, false,
       config.getVisualizationParameters().maxNumberIterations);
       D = config.getVisualizationParameters().targetDimension;
     } else {
-     std::copy(output, output+N*D,
-           input);
+     std::copy(output.get(), output.get()+N*D,
+           input.get());
     }
-    delete[] input;
     DataVector evaluation(originalData.getNrows());
     model.evaluate(originalData, evaluation);
-    tsneCompressedData = DataMatrix(output, N, D);
+    tsneCompressedData = DataMatrix(output.get(), N, D);
     tsneCompressedData.appendCol(evaluation);
-    delete[] output;
+
 }
 
 void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
