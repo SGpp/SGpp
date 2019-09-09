@@ -56,17 +56,19 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     classes.set(x.second, x.first);
   }
 
-  createOutputDirectory(fold, batch);
-
-  std::string command("mkdir "+currentDirectory+"/Classification"+" --parents");
-
-  int result = system(command.data());
-
-  if (result) {
-    std::cout << currentDirectory+"/Classification" << " succesfully created";
+  // Creating the output directory
+  if (config.getGeneralConfig().crossValidation) {
+    currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
   } else {
-    std::cout << currentDirectory+"/Classification" << " already exists";
+    currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Batch_" + std::to_string(batch);
   }
+
+  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
+     << std::endl;
+
+  createFolder(currentDirectory+"/Classification");
 
   omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
 
@@ -118,11 +120,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
                     +"/Model_Class_" + std::to_string(static_cast<int>(classes.get(index)));
          }
 
-        std::string mkdir("mkdir --parents ");
-
-        mkdir.append(currentDirectory);
-
-        system(mkdir.data());
+        createFolder(currentDirectory);
 
         auto currentModel = &(models->at(index));
         #pragma omp parallel sections
@@ -239,17 +237,7 @@ ModelFittingBase &model, std::string currentDirectory) {
     std::to_string(variableColumnIndexes.at(2)+1)+"_"+
     std::to_string(variableColumnIndexes.at(3)+1));
 
-    std::string command("mkdir "+subfolder+" --parents");
-
-    int result = system(command.data());
-
-    if (result) {
-      std::cout << subfolder << " succesfully created";
-    } else {
-      std::cout << subfolder << " already exists";
-    }
-
-
+    createFolder(subfolder);
     std::copy(variableColumnIndexes.begin()+1, variableColumnIndexes.end(),
     workingIndexes.begin());
 

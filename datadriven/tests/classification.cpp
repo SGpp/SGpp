@@ -63,10 +63,31 @@ double testModel(std::string configFile) {
 }
 
 bool testVisualization(std::string configFile) {
-   ClassificationMinerFactory factory;
-   SparseGridMiner *miner = factory.buildMiner(configFile);
-   miner->learn(false);
-   return true;
+  #ifdef __linux__
+    std::string rmdir("rm -r ./output ");
+  #elif _WIN32
+     std::string rmdir("rmdir ./output ");
+  #endif
+
+  int status = system(rmdir.data());
+
+  if (status == 0) {
+    std::cout << "Folder deletion command executed succesfully" << std::endl;
+  } else {
+    std::cout << "Error executing folder deletion command" << std::endl;
+  }
+
+  ClassificationMinerFactory factory;
+  SparseGridMiner *miner = factory.buildMiner(configFile);
+  miner->learn(false);
+  status = system(rmdir.data());
+
+  if (status == 0) {
+    std::cout << "Folder deletion command executed succesfully" << std::endl;
+  } else {
+    std::cout << "Error executing folder deletion command" << std::endl;
+  }
+  return true;
 }
 
 BOOST_AUTO_TEST_SUITE(testClassification)

@@ -27,30 +27,23 @@ const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const {
   return config;
 }
 
-void Visualizer::createOutputDirectory(size_t fold, size_t batch) {
-  std::cout << "Batch Number " << std::to_string(batch) << std::endl;
-  if (config.getGeneralConfig().crossValidation) {
-    currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
-  } else {
-    currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Batch_" + std::to_string(batch);
-  }
-
-  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
-     << std::endl;
-
+void Visualizer::createFolder(std::string folder_path) {
+  #ifdef _WIN32
+  std::string mkdir("mkdir -p ");
+  #elif __linux__
   std::string mkdir("mkdir --parents ");
+  #endif
 
-  mkdir.append(currentDirectory);
+  mkdir.append(folder_path);
 
   int status = system(mkdir.data());
 
   if (status == 0) {
-    std::cout << "Directory created succesfully" << std::endl;
+    std::cout << "Folder creation command executed succesfully" << std::endl;
   } else {
-    std::cout << "Directory already exists" << std::endl;
+    std::cout << "Error executing folder creation command" << std::endl;
   }
+
 }
 
 }  // namespace datadriven
