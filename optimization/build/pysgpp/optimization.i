@@ -93,6 +93,35 @@ void omp_set_num_threads(int num_threads);
 %shared_ptr(sgpp::optimization::test_problems::SimionescuObjective)
 %shared_ptr(sgpp::optimization::test_problems::SolandObjective)
 
+// shared pointer compatibility for VectorFunction (needs to know about all derived classes too)
+%shared_ptr(sgpp::optimization::test_problems::TestVectorFunction)
+%shared_ptr(sgpp::optimization::test_problems::FloudasInequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::FloudasEqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G03InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G03EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G04InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G04EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G05InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G05EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G06InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G06EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G08InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G08EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G09InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G09EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G10InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G10EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G11InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G11EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G12InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G12EqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G13InequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::G13EqualityConstraint)
+
+%shared_ptr(sgpp::optimization::test_problems::SimionescuInequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::SimionescuEqualityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::SolandInequalityConstraint)
+%shared_ptr(sgpp::optimization::test_problems::SolandEqualityConstraint)
 
 %rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
 %rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
@@ -291,6 +320,8 @@ void omp_set_num_threads(int num_threads);
 // includes
 %include "optimization/src/sgpp/optimization/function/scalar/ResponseSurface.hpp"
 %include "optimization/src/sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/ResponseSurfaceVector.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/SparseGridResponseSurfaceBsplineVector.hpp"
 
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
