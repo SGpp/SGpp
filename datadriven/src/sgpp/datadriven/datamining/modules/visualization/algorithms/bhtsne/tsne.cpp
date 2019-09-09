@@ -58,9 +58,9 @@ TSNE::TSNE() {
 }
 
 // Perform t-SNE
-void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double perplexity,
+void TSNE::run(std::unique_ptr<double[]> &X, size_t N, size_t D,
+  std::unique_ptr<double[]> &Y, size_t no_dims, double perplexity,
   double theta, size_t rand_seed, bool skip_random_init, size_t max_iter, size_t mom_switch_iter) {
-
   srand(static_cast<unsigned int>(rand_seed));
   // Determine whether we are using an exact algorithm
   if (static_cast<double>(N - 1) < 3 * perplexity) {
@@ -68,7 +68,6 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
     exit(1);
   }
   printf("Using no_dims = %zu, perplexity = %f, and theta = %f\n", no_dims, perplexity, theta);
-  bool exact = (theta == .0) ? true : false;
 
   // Set learning parameters
   float total_time = .0;
@@ -77,9 +76,9 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
   double eta = 200.0;
 
   // Allocate some memory
-  static std::unique_ptr<double[]> dY (new double[N * no_dims]);
-  static std::unique_ptr<double[]> uY  (new double[N * no_dims]);
-  static std::unique_ptr<double[]> gains (new double[N * no_dims]);
+  static std::unique_ptr<double[]> dY (new double[N * no_dims]());
+  static std::unique_ptr<double[]> uY  (new double[N * no_dims]());
+  static std::unique_ptr<double[]> gains (new double[N * no_dims]());
 
   for (size_t i = 0; i < N * no_dims; i++) {
     uY[i] =  .0;
@@ -91,7 +90,7 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
   // Normalize input data (to prevent numerical problems)
   printf("Computing input similarities...\n");
   start = clock();
-  zeroMean(X, N, D);
+  zeroMean(X.get(), N, D);
   double max_X = .0;
 
   #pragma omp parallel for schedule(dynamic)
@@ -108,13 +107,13 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
 
   // Allocate the memory we need
   size_t K = static_cast<size_t> (3 * perplexity);
-  static std::unique_ptr<size_t[]> row_P (new size_t[N + 1]);
-  static std::unique_ptr<size_t[]> col_P (new size_t[N*K]);
-  static std::unique_ptr<double[]> val_P (new double[N*K]);
+  static std::unique_ptr<size_t[]> row_P (new size_t[N + 1]());
+  static std::unique_ptr<size_t[]> col_P (new size_t[N*K]());
+  static std::unique_ptr<double[]> val_P (new double[N*K]());
 
   // Compute input similarities for approximate t-SNE
   // Compute asymmetric pairwise input similarities
-  computeGaussianPerplexity(X, N, D, row_P.get(), col_P.get(), val_P.get(), perplexity,
+  computeGaussianPerplexity(X, N, D, row_P, col_P, val_P, perplexity,
     K);
 
   // Symmetrize input similarities
@@ -147,8 +146,7 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
 
   start = clock();
   for (size_t iter = 0; iter < max_iter; iter++) {
-
-    computeGradient(row_P.get(), col_P.get(), val_P.get(), Y, N, no_dims, dY.get(), theta);
+    computeGradient(row_P, col_P, val_P, Y, N, no_dims, dY, theta);
     // Update gains
     #pragma omp parallel for schedule(dynamic)
     for (size_t i = 0; i < N * no_dims; i++) {
@@ -161,7 +159,7 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
       Y[i] = Y[i] + uY[i];
     }
     // Make solution zero-mean
-    zeroMean(Y, N, no_dims);
+    zeroMean(Y.get(), N, no_dims);
 
     if (iter == mom_switch_iter) {
       momentum = final_momentum;
@@ -172,7 +170,7 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
       end = clock();
       double C = .0;
         // doing approximate computation here!
-      C = evaluateError(row_P.get(), col_P.get(), val_P.get(), Y, N, no_dims, theta);
+      C = evaluateError(row_P, col_P, val_P, Y, N, no_dims, theta);
       if (iter == 0) {
           printf("Iteration %zu: error is %f\n", iter + 1, C);
       } else {
@@ -191,16 +189,17 @@ void TSNE::run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double 
 
 
 // Compute gradient of the t-SNE cost function (using Barnes-Hut algorithm)
-void TSNE::computeGradient(size_t* inp_row_P,
-  size_t* inp_col_P, double* inp_val_P, double* Y,
-  size_t N, size_t D, double* dC, double theta) {
+void TSNE::computeGradient(std::unique_ptr<size_t[]>  &inp_row_P,
+  std::unique_ptr<size_t[]>  &inp_col_P,
+  std::unique_ptr<double[]>  &inp_val_P, std::unique_ptr<double[]>  &Y, size_t N, size_t D,
+  std::unique_ptr<double[]>  &dC, double theta) {
   // Construct space-partitioning tree on current map
-  SPTree* tree = new SPTree(D, Y, N);
+  SPTree* tree = new SPTree(D, Y.get(), N);
 
   // Compute all terms required for t-SNE gradient
   double sum_Q = .0;
-  double* pos_f = reinterpret_cast<double*> (calloc(N * D, sizeof(double)));
-  double* neg_f = reinterpret_cast<double*> (calloc(N * D, sizeof(double)));
+  double* pos_f = new double[N*D]();
+  double* neg_f = new double[N*D]();
   if (pos_f == NULL || neg_f == NULL) {
     printf("Memory allocation failed!\n");
     exit(1);
@@ -210,7 +209,8 @@ void TSNE::computeGradient(size_t* inp_row_P,
   {
     #pragma omp section
     {
-      tree->computeEdgeForces(inp_row_P, inp_col_P, inp_val_P, N, pos_f);
+      tree->computeEdgeForces(inp_row_P.get(), inp_col_P.get(),
+        inp_val_P.get(), N, pos_f);
     }
 
     #pragma omp section
@@ -227,18 +227,20 @@ void TSNE::computeGradient(size_t* inp_row_P,
   for (size_t i = 0; i < N * D; i++) {
     dC[i] = pos_f[i] - (neg_f[i] / sum_Q);
   }
-  free(pos_f);
-  free(neg_f);
+  delete[] pos_f;
+  delete[] neg_f;
   delete tree;
 }
 
 
 // Evaluate t-SNE cost function (approximately)
-double TSNE::evaluateError(size_t* row_P, size_t* col_P,
-  double* val_P, double* Y, size_t N, size_t D, double theta) {
+double TSNE::evaluateError(std::unique_ptr<size_t[]>  &row_P,
+  std::unique_ptr<size_t[]>  &col_P,
+  std::unique_ptr<double[]>  &val_P,
+  std::unique_ptr<double[]>  &Y, size_t N, size_t D, double theta) {
   // Get estimate of normalization term
-  SPTree* tree = new SPTree(D, Y, N);
-  static std::unique_ptr<double[]> buff (new double[D]);
+  SPTree* tree = new SPTree(D, Y.get(), N);
+  static std::unique_ptr<double[]> buff (new double[D]());
   double sum_Q = .0;
   for (size_t n = 0; n < N; n++) {
     tree->computeNonEdgeForces(n, theta, buff.get(), &sum_Q);
@@ -268,16 +270,14 @@ double TSNE::evaluateError(size_t* row_P, size_t* col_P,
 
 // Compute input similarities with a fixed perplexity using ball trees
 // (this function allocates memory another function should free)
-void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D, size_t* row_P,
-  size_t* col_P, double* val_P, double perplexity, size_t K) {
+void TSNE::computeGaussianPerplexity(std::unique_ptr<double[]>  &X,
+  size_t N, size_t D, std::unique_ptr<size_t[]> &row_P,
+  std::unique_ptr<size_t[]> &col_P, std::unique_ptr<double[]>  &val_P,
+  double perplexity, size_t K) {
     if (perplexity > static_cast<double>(K)) {
       printf("Perplexity should be lower than K!\n");
     }
     std::unique_ptr<double[]>cur_P (new double[N-1]);
-    if (cur_P == NULL) {
-      printf("Memory allocation failed!\n");
-      exit(1);
-    }
     row_P[0] = 0;
     for (size_t n = 0; n < N; n++) {
       row_P[n + 1] = row_P[n] + static_cast<size_t> (K);
@@ -286,11 +286,11 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D, size_t* row_
     // Build ball tree on data set
     VpTree<DataPoint, DataPoint::euclidean_distance>* tree =
       new VpTree<DataPoint, DataPoint::euclidean_distance>();
-    std::vector<DataPoint> obj_X(N, DataPoint(D, -1, X));
+    std::vector<DataPoint> obj_X(N, DataPoint(D, -1, X.get()));
 
     #pragma omp parallel for schedule(dynamic)
     for (size_t n = 0; n < N; n++) {
-      obj_X[n] = DataPoint(D, static_cast<int>(n), X + n * D);
+      obj_X[n] = DataPoint(D, static_cast<int>(n), X.get() + n * D);
     }
     tree->create(obj_X);
 
@@ -375,20 +375,15 @@ void TSNE::computeGaussianPerplexity(double* X, size_t N, size_t D, size_t* row_
 
 
 // Symmetrizes a sparse matrix
-void TSNE::symmetrizeMatrix(std::unique_ptr<size_t[]> &_row_P,
-  std::unique_ptr<size_t[]> &_col_P,
-  std::unique_ptr<double[]> &_val_P, size_t N) {
+void TSNE::symmetrizeMatrix(std::unique_ptr<size_t[]> &row_P,
+  std::unique_ptr<size_t[]> &col_P,
+  std::unique_ptr<double[]> &val_P, size_t N) {
   // Get sparse matrix
-  size_t* row_P = _row_P.get();
-  size_t* col_P = _col_P.get();
-  double* val_P = _val_P.get();
+
 
   // Count number of elements and row counts of symmetric matrix
-  int* row_counts = reinterpret_cast<int*> (calloc(N, sizeof(int)));
-  if (row_counts == NULL) {
-    printf("Memory allocation failed!\n");
-    exit(1);
-  }
+  std::unique_ptr <int[]> row_counts (new int[N]());
+  // int* row_counts = reinterpret_cast<int*> (calloc(N, sizeof(int)));
 
   #pragma omp parallel for schedule(dynamic)
   for (size_t n = 0; n < N; n++) {
@@ -412,9 +407,9 @@ void TSNE::symmetrizeMatrix(std::unique_ptr<size_t[]> &_row_P,
   }
 
   // Allocate memory for symmetrized matrix
-  size_t* sym_row_P = (size_t*) malloc((N + 1) * sizeof(size_t));
-  size_t* sym_col_P = (size_t*) malloc(no_elem * sizeof(size_t));
-  double* sym_val_P = reinterpret_cast<double*> (malloc(no_elem * sizeof(double)));
+  size_t* sym_row_P = new size_t[N+1];
+  size_t* sym_col_P = new size_t[no_elem];
+  double* sym_val_P = new double[no_elem];;
 
   if (sym_row_P == NULL || sym_col_P == NULL || sym_val_P == NULL) {
     printf("Memory allocation failed!\n");
@@ -428,7 +423,7 @@ void TSNE::symmetrizeMatrix(std::unique_ptr<size_t[]> &_row_P,
   }
 
   // Fill the result matrix
-  int* offset = reinterpret_cast<int*> (calloc(N, sizeof(int)));
+  std::unique_ptr <int[]> offset (new int[N]());
 
   for (size_t n = 0; n < N; n++) {
     for (size_t i = row_P[n]; i < row_P[n + 1]; i++) {  // considering element(n, col_P[i])
@@ -468,38 +463,16 @@ void TSNE::symmetrizeMatrix(std::unique_ptr<size_t[]> &_row_P,
   }
 
   // Return symmetrized matrices
-  _row_P.reset(sym_row_P);
-  _col_P.reset(sym_col_P);
-  _val_P.reset(sym_val_P);
-
-  // Free up some memory
-  free(offset); offset = NULL;
-  free(row_counts); row_counts  = NULL;
-}
-
-// Compute squared Euclidean distance matrix
-void TSNE::computeSquaredEuclideanDistance(double* X, size_t N, size_t D, double* DD) {
-  const double* XnD = X;
-  for (size_t n = 0; n < N; ++n, XnD += D) {
-    const double* XmD = XnD + D;
-    double* curr_elem = &DD[n*N + n];
-    *curr_elem = 0.0;
-    double* curr_elem_sym = curr_elem + N;
-    for (size_t m = n + 1; m < N; ++m, XmD+=D, curr_elem_sym+=N) {
-      *(++curr_elem) = 0.0;
-      for (size_t d = 0; d < D; ++d) {
-          *curr_elem += (XnD[d] - XmD[d]) * (XnD[d] - XmD[d]);
-      }
-      *curr_elem_sym = *curr_elem;
-    }
-  }
+  row_P.reset(sym_row_P);
+  col_P.reset(sym_col_P);
+  val_P.reset(sym_val_P);
 }
 
 
 // Makes data zero-mean
 void TSNE::zeroMean(double* X, size_t N, size_t D) {
   // Compute data mean
- static std::unique_ptr<double[]> mean (new double[D]);
+ static std::unique_ptr<double[]> mean (new double[D]());
   size_t nD = 0;
   #pragma omp parallel for schedule(dynamic)
   for (size_t n = 0; n < N; n++) {

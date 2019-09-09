@@ -48,19 +48,25 @@ class TSNE {
    * Default constructor
    */
   TSNE();
-  void run(double* X, size_t N, size_t D, double* Y, size_t no_dims, double perplexity,
+  void run(std::unique_ptr<double[]> &X, size_t N, size_t D,
+    std::unique_ptr<double[]> &Y, size_t no_dims, double perplexity,
     double theta, size_t rand_seed,
     bool skip_random_init, size_t max_iter = 1000,  size_t mom_switch_iter =250);
 
  private:
-  void computeGradient(size_t* inp_row_P, size_t* inp_col_P,
-    double* inp_val_P, double* Y, size_t N, size_t D, double* dC, double theta);
-  double evaluateError(size_t* row_P, size_t* col_P, double* val_P,
-    double* Y, size_t N, size_t D, double theta);
+  void computeGradient(std::unique_ptr<size_t[]>  &inp_row_P,
+    std::unique_ptr<size_t[]>  &inp_col_P,
+    std::unique_ptr<double[]>  &inp_val_P, std::unique_ptr<double[]>  &Y, size_t N, size_t D,
+    std::unique_ptr<double[]>  &dC, double theta);
+  double evaluateError(std::unique_ptr<size_t[]>  &row_P,
+    std::unique_ptr<size_t[]>  &col_P,
+    std::unique_ptr<double[]>  &val_P,
+    std::unique_ptr<double[]>  &Y, size_t N, size_t D, double theta);
   void zeroMean(double* X, size_t N, size_t D);
-  void computeGaussianPerplexity(double* X, size_t N, size_t D, size_t* row_P,
-    size_t* col_P, double* val_P, double perplexity, size_t K);
-  void computeSquaredEuclideanDistance(double* X, size_t N, size_t D, double* DD);
+  void computeGaussianPerplexity(std::unique_ptr<double[]>  &X,
+    size_t N, size_t D, std::unique_ptr<size_t[]> &row_P,
+    std::unique_ptr<size_t[]> &col_P, std::unique_ptr<double[]>  &val_P,
+    double perplexity, size_t K);
   void symmetrizeMatrix(std::unique_ptr<size_t[]> &row_P,
     std::unique_ptr<size_t[]> &col_P,
     std::unique_ptr<double[]> &val_P,

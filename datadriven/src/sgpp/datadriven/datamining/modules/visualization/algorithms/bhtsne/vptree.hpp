@@ -67,7 +67,7 @@ class DataPoint {
   DataPoint(size_t D, int ind, double* x) {
     _D = D;
     _ind = ind;
-    _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
+    _x = new double[_D];
     for (size_t d = 0; d < _D; d++) {
       _x[d] = x[d];
     }
@@ -76,7 +76,7 @@ class DataPoint {
     if (this != &other) {
       _D = other.dimensionality();
       _ind = other.index();
-      _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
+      _x = new double[_D];
       for (size_t d = 0; d < _D; d++) {
         _x[d] = other.x(d);
       }
@@ -85,7 +85,7 @@ class DataPoint {
 
   ~DataPoint() {
     if (_x != NULL) {
-      free(_x);
+      delete[ ]_x;
     }
   }
 
@@ -96,7 +96,7 @@ class DataPoint {
       }
       _D = other.dimensionality();
       _ind = other.index();
-      _x = reinterpret_cast<double*> (malloc(_D * sizeof(double)));
+      _x = new double[_D];
       for (size_t d = 0; d < _D; d++) {
         _x[d] = other.x(d);
       }

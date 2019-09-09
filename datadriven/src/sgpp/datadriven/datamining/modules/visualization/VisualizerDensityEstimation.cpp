@@ -147,7 +147,7 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
       << " dimensions" << std::endl;
 
       TSNE tsne;
-      tsne.run(input.get(), N, D , output.get(), config.getVisualizationParameters().targetDimension,
+      tsne.run(input, N, D , output, config.getVisualizationParameters().targetDimension,
       config.getVisualizationParameters().perplexity, config.getVisualizationParameters().theta,
       config.getVisualizationParameters().seed, false,
       config.getVisualizationParameters().maxNumberIterations);

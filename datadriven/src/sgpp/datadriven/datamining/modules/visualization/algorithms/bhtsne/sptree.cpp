@@ -51,14 +51,14 @@ namespace datadriven {
 // Constructs cell
 Cell::Cell(size_t inp_dimension) {
   dimension = inp_dimension;
-  corner = reinterpret_cast<double*>(malloc(dimension * sizeof(double)));
-  width  = reinterpret_cast<double*>(malloc(dimension * sizeof(double)));
+  corner = new double[dimension];
+  width  = new double[dimension];
 }
 
 Cell::Cell(size_t inp_dimension, double* inp_corner, double* inp_width) {
   dimension = inp_dimension;
-  corner = reinterpret_cast<double*>(malloc(dimension * sizeof(double)));
-  width  = reinterpret_cast<double*>(malloc(dimension * sizeof(double)));
+  corner = new double[dimension];
+  width  = new double[dimension];
   for (size_t d = 0; d < dimension; d++) {
     setCorner(d, inp_corner[d]);
   }
@@ -69,8 +69,8 @@ Cell::Cell(size_t inp_dimension, double* inp_corner, double* inp_width) {
 
 // Destructs cell
 Cell::~Cell() {
-  free(corner);
-  free(width);
+  delete[] corner;
+  delete[] width;
 }
 
 double Cell::getCorner(size_t d) {
@@ -107,12 +107,12 @@ bool Cell::containsPoint(double point[]) {
 SPTree::SPTree(size_t D, double* inp_data, size_t N) {
   // Compute mean, width, and height of current map (boundaries of SPTree)
   size_t nD = 0;
-  double* mean_Y = reinterpret_cast<double*>(calloc(D,  sizeof(double)));
-  double*  min_Y = reinterpret_cast<double*>(malloc(D * sizeof(double)));
+  double* mean_Y = new double[D];
+  double*  min_Y = new double[D];
   for (size_t d = 0; d < D; d++) {
     min_Y[d] =  DBL_MAX;
   }
-  double*  max_Y = reinterpret_cast<double*>(malloc(D * sizeof(double)));
+  double*  max_Y = new double[D];
   for (size_t d = 0; d < D; d++)  {
     max_Y[d] = -DBL_MAX;
   }
@@ -134,7 +134,7 @@ SPTree::SPTree(size_t D, double* inp_data, size_t N) {
   }
 
   // Construct SPTree
-  double* width = reinterpret_cast<double*>(malloc(D * sizeof(double)));
+  double* width = new double[D];
 
   for (size_t d = 0; d < D; d++) {
     width[d] = fmax(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
@@ -143,10 +143,10 @@ SPTree::SPTree(size_t D, double* inp_data, size_t N) {
   fill(N);
 
   // Clean up memory
-  free(mean_Y);
-  free(max_Y);
-  free(min_Y);
-  free(width);
+  delete[] mean_Y;
+  delete[] max_Y;
+  delete[] min_Y;
+  delete[] width;
 }
 
 
@@ -200,18 +200,18 @@ void SPTree::init(SPTree* inp_parent, size_t D, double* inp_data,
   for (size_t d = 0; d < D; d++) {
     boundary->setWidth(d, inp_width[d]);
   }
-
-  children = reinterpret_cast<SPTree**> (malloc(no_children * sizeof(SPTree*)));
+  children = new SPTree*[no_children];
+  // children = reinterpret_cast<SPTree**> (malloc(no_children * sizeof(SPTree*)));
   for (size_t i = 0; i < no_children; i++) {
     children[i] = NULL;
   }
 
-  center_of_mass = reinterpret_cast<double*>(malloc(D * sizeof(double)));
+  center_of_mass = new double[D];;
   for (size_t d = 0; d < D; d++) {
     center_of_mass[d] = .0;
   }
 
-  buff = reinterpret_cast<double*> (malloc(D * sizeof(double)));
+  buff = new double[D];
 }
 
 
@@ -220,9 +220,9 @@ SPTree::~SPTree() {
   for (size_t i = 0; i < no_children; i++) {
     if (children[i] != NULL) delete children[i];
   }
-  free(children);
-  free(center_of_mass);
-  free(buff);
+  delete[] children;
+  delete[] center_of_mass;
+  delete[] buff;
   delete boundary;
 }
 
@@ -300,8 +300,8 @@ bool SPTree::insert(size_t new_index) {
 // Create four children which fully divide this cell into four quads of equal area
 void SPTree::subdivide() {
   // Create new children
-  double* new_corner = reinterpret_cast<double*> (malloc(dimension * sizeof(double)));
-  double* new_width  = reinterpret_cast<double*> (malloc(dimension * sizeof(double)));
+  double* new_corner = new double[dimension];
+  double* new_width  = new double[dimension];
   for (size_t i = 0; i < no_children; i++) {
     size_t div = 1;
     for (size_t d = 0; d < dimension; d++) {
@@ -315,8 +315,8 @@ void SPTree::subdivide() {
     }
     children[i] = new SPTree(this, dimension, data, new_corner, new_width);
   }
-  free(new_corner);
-  free(new_width);
+  delete[] new_corner;
+  delete[] new_width;
 
   // Move existing points to correct children
   for (size_t i = 0; i < size; i++) {
