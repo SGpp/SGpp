@@ -54,13 +54,10 @@ class Visualizer{
   virtual void runTsne(ModelFittingBase &model) = 0;
 
   /**
-   * Method to create the corresponding directory to store the visualization output
-   * files
-   * @param fold The current fold being processed
-   * @param batch The current batch being processed
+   * Method to create a folder based on the operating system of the user
+   * @param folder_path absolute or relative path of the folder to be created
    */
-  void createOutputDirectory(size_t fold, size_t batch);
-
+  void createFolder(std::string folder_path);
   /**
    * Configuration object for the fitter.
    */

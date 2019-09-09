@@ -34,8 +34,19 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
     !config.getGeneralConfig().execute) {
     return;
   }
-  // Creating the output directorz
-  createOutputDirectory(fold, batch);
+  // Creating the output directory
+  if (config.getGeneralConfig().crossValidation) {
+    currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+  } else {
+    currentDirectory = config.getGeneralConfig().
+    targetDirectory+"/Batch_" + std::to_string(batch);
+  }
+
+  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
+     << std::endl;
+
+  createFolder(currentDirectory);
 
   // If it's the first time executing obtaining the data from the datasource and
   // assign the resolution
@@ -252,16 +263,7 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
   // Here it decide which method to execute based on the dimensionality of the
   // model
   if ( nDimensions >= 2 ) {
-    std::string command("mkdir ");
-    command.append(currentDirectory);
-    command.append("/LinearCuts");
-    int result = system(command.data());
-    if (result) {
-      std::cout << currentDirectory+"/LinearCuts" << " succesfully created";
-    } else {
-      std::cout << currentDirectory+"/LinearCuts" << " already exists";
-    }
-
+  createFolder(currentDirectory+"/LinearCuts");
     if (nDimensions >=3) {
       getLinearCutsMore3D(model, currentDirectory);
     } else {
@@ -288,16 +290,7 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
 
   DataMatrix heatMapMatrix(0, nDimensions);
   if ( nDimensions >=3 ) {
-    std::string command("mkdir ");
-    command.append(currentDirectory);
-    command.append("/Heatmaps");
-    int result = system(command.data());
-    if (result) {
-      std::cout << currentDirectory+"/Heatmaps" << " succesfully created";
-    } else {
-      std::cout << currentDirectory+"/Heatmpas" << " already exists";
-    }
-
+    createFolder(currentDirectory+"/Heatmaps");
     if ( nDimensions >= 4 ) {
       getHeatmapMore4D(model, currentDirectory);
     } else if ( nDimensions == 3 ) {
@@ -447,15 +440,7 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(
     std::to_string(variableColumnIndexes.at(1)+1)+"_"+
     std::to_string(variableColumnIndexes.at(2)+1));
 
-    std::string command("mkdir " + subfolder);
-
-    int result = system(command.data());
-    if (result) {
-      std::cout << subfolder << " succesfully created";
-    } else {
-      std::cout << subfolder << " already exists";
-    }
-
+    createFolder(subfolder);
 
     for (size_t combination = 0; combination < 3; combination++) {
       DataMatrix cutResults(cutMatrix);
@@ -554,17 +539,7 @@ ModelFittingBase &model, std::string currentDirectory) {
     std::to_string(variableColumnIndexes.at(1)+1)+"_"+
     std::to_string(variableColumnIndexes.at(2)+1)+"_"+
     std::to_string(variableColumnIndexes.at(3)+1));
-
-    std::string command("mkdir "+subfolder);
-
-    int result = system(command.data());
-
-    if (result) {
-      std::cout << subfolder << " succesfully created";
-    } else {
-      std::cout << subfolder << " already exists";
-    }
-
+    createFolder(subfolder);
     std::copy(variableColumnIndexes.begin()+1, variableColumnIndexes.end(),
     workingIndexes.begin());
 
