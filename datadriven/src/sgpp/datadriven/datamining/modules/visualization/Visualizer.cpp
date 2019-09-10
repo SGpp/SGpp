@@ -11,12 +11,14 @@
  */
 
 #include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
-
-#include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 #include <string>
-
+#include<iostream>
+#ifdef _WIN32
+#include <direct.h>
+#elif defined __linux__
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
 namespace sgpp {
 namespace datadriven {
 
@@ -29,21 +31,10 @@ const VisualizerConfiguration &Visualizer::getVisualizerConfiguration() const {
 
 void Visualizer::createFolder(std::string folder_path) {
   #ifdef _WIN32
-  std::string mkdir("mkdir -p ");
+  _mkdir(folder_path.c_str());
   #elif __linux__
-  std::string mkdir("mkdir --parents ");
+  mkdir(folder_path.c_str(), S_IRWXU | S_IRWXU | S_IROTH);
   #endif
-
-  mkdir.append(folder_path);
-
-  int status = system(mkdir.data());
-
-  if (status == 0) {
-    std::cout << "Folder creation command executed succesfully" << std::endl;
-  } else {
-    std::cout << "Error executing folder creation command" << std::endl;
-  }
-
 }
 
 }  // namespace datadriven
