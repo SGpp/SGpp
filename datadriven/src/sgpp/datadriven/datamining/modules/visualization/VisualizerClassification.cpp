@@ -56,13 +56,21 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     classes.set(x.second, x.first);
   }
 
+  createFolder(config.getGeneralConfig().
+    targetDirectory);
   // Creating the output directory
   if (config.getGeneralConfig().crossValidation) {
     currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+    targetDirectory+"/Fold_" + std::to_string(fold);
+    createFolder(currentDirectory);
+    currentDirectory = config.getGeneralConfig().
+        targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+    createFolder(currentDirectory);
+
   } else {
     currentDirectory = config.getGeneralConfig().
     targetDirectory+"/Batch_" + std::to_string(batch);
+    createFolder(currentDirectory);
   }
 
   std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory

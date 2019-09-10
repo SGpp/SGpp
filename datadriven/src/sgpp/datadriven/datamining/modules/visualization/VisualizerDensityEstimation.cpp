@@ -34,19 +34,24 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
     !config.getGeneralConfig().execute) {
     return;
   }
+  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
+     << std::endl;
+  createFolder(config.getGeneralConfig().
+      targetDirectory);
   // Creating the output directory
   if (config.getGeneralConfig().crossValidation) {
     currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+    targetDirectory+"/Fold_" + std::to_string(fold);
+    createFolder(currentDirectory);
+    currentDirectory = config.getGeneralConfig().
+        targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+    createFolder(currentDirectory);
+
   } else {
     currentDirectory = config.getGeneralConfig().
     targetDirectory+"/Batch_" + std::to_string(batch);
+    createFolder(currentDirectory);
   }
-
-  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
-     << std::endl;
-
-  createFolder(currentDirectory);
 
   // If it's the first time executing obtaining the data from the datasource and
   // assign the resolution
