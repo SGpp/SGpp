@@ -157,10 +157,11 @@ void SparseGridResponseSurfaceBspline::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   functionValues.resizeZero(gridStorage.getSize());
   for (size_t i = 0; i < gridStorage.getSize(); i++) {
-    sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
-    for (size_t d = 0; d < gridStorage.getDimension(); d++) {
-      p[d] = gridStorage.getPointCoordinate(i, d);
-    }
+    // sgpp::base::DataVector p(gridStorage.getDimension(), 0.0);
+    // for (size_t d = 0; d < gridStorage.getDimension(); d++) {
+    //   p[d] = gridStorage.getPointCoordinate(i, d);
+    // }
+    sgpp::base::DataVector p = gridStorage.getPointCoordinates(i);
     transformPoint(p, unitLBounds, unitUBounds, lb, ub);
     functionValues[i] = objectiveFunc->eval(p);
   }
