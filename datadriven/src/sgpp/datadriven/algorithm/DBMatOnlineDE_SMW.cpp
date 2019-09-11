@@ -92,6 +92,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
     std::list<size_t> deletedGridPointIndices, double lambda,
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
@@ -136,6 +137,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
   }
 
   return return_vector;
+#endif /* USE_SCALAPACK */
 }
 
 void DBMatOnlineDE_SMW::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
@@ -154,12 +156,14 @@ void DBMatOnlineDE_SMW::solveSLEParallel(DataVectorDistributed& alpha, DataVecto
                                          Grid& grid,
                                          DensityEstimationConfiguration& densityEstimationConfig,
                                          bool do_cv) {
+#ifdef USE_SCALAPACK
   // create solver
   sgpp::datadriven::DBMatDMS_SMW* solver = new sgpp::datadriven::DBMatDMS_SMW();
   // solve the created system
   alpha.resize(b.getGlobalRows());
   solver->solveParallel(this->offlineObject.getDecomposedInverseDistributed(),
                         this->getBDistributed(), b, alpha);
+#endif /* USE_SCALAPACK */
 }
 
 void DBMatOnlineDE_SMW::smw_adapt(DataMatrix& X, size_t newPoints, bool refine,
@@ -367,7 +371,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
                                            std::shared_ptr<BlacsProcessGrid> processGrid,
                                            const ParallelConfiguration& parallelConfig,
                                            std::vector<size_t> coarsenIndices) {
-#ifdef USE_GSL
+#ifdef USE_SCALAPACK
   // dimension of offline's lhs matrix and its inverse
   size_t offMatrixSize = this->offlineObject.getGridSize();
 
@@ -649,7 +653,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   this->b_is_refined = this->b_adapt_matrix_.getNcols() > offMatrixSize;
 
   return;
-#endif /* USE_GSL */
+#endif /* USE_SCALAPACK */
 }
 
 void DBMatOnlineDE_SMW::compute_L2_refine_matrix(DataMatrix& X, Grid& grid, size_t newPoints,
