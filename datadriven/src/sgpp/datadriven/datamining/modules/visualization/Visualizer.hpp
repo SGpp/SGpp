@@ -47,12 +47,6 @@ class Visualizer{
 
 
  protected:
-  /*
-   * Method to run the tsne algorithm
-   * @model The model used to evaluate the compressed data
-   */
-  virtual void runTsne(ModelFittingBase &model) = 0;
-
   /**
    * Method to create a folder based on the operating system of the user
    * @param folder_path absolute or relative path of the folder to be created

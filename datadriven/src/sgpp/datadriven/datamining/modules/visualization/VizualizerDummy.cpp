@@ -25,9 +25,5 @@ void VisualizerDummy::runVisualization(ModelFittingBase &model, DataSource &data
   return;
 }
 
-void VisualizerDummy::runTsne(ModelFittingBase &model) {
-  return;
-}
-
 }  // namespace datadriven
 }  // namespace sgpp

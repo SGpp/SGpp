@@ -86,7 +86,8 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     {
       getHeatmapsClassification(model, currentDirectory);
     }
-    #pragma omp section
+    /* To be added after tsne is functioning again
+     * #pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
         if (fold == 0 && batch == 0) {
@@ -110,7 +111,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
           }
         }
       }
-    }
+    }*/
     #pragma omp section
     {
       // Running the density estimation visualization for each model
