@@ -39,9 +39,6 @@ class VisualizerDummy:public Visualizer {
    */
   void runVisualization(ModelFittingBase &model,  DataSource &dataSource,
     size_t fold, size_t batch) override;
-
- protected:
-  void runTsne(ModelFittingBase &model) override;
 };
 
 }  // namespace datadriven

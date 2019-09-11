@@ -50,12 +50,6 @@ class VisualizerDensityEstimation:public Visualizer {
 
  protected:
   /*
-   * Method to run the tsne algorithm
-   * @model The model used to evaluate the compressed data
-   */
-  void runTsne(ModelFittingBase &model) override;
-
-  /*
    * Method which starts the heatmap generation for Density Estimation Models
    * @model The model used to evaluate the heatmap
    * @currentDirectory The current directory to store the heatmap results

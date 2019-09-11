@@ -194,10 +194,6 @@
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/sptree.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/vptree.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
-
 
 
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>

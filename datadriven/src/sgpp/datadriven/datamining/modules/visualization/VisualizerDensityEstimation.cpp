@@ -14,7 +14,6 @@
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/algorithms/bhtsne/tsne.hpp>
 #include <omp.h>
 #include <iostream>
 #include <memory>
@@ -79,7 +78,7 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
       getHeatmap(model, currentDirectory);
     }
 
-    #pragma omp section
+    /*#pragma omp section
     {
       if (config.getGeneralConfig().algorithm == "tsne") {
         // Just run tsne if it's the first time the visualization module is executed
@@ -106,7 +105,7 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
           }
         }
       }
-    }
+    }*/
 
     #pragma omp section
     {
@@ -131,7 +130,7 @@ void VisualizerDensityEstimation::storeGrid(ModelFittingBase &model,
   CSVTools::writeMatrixToCSVFile(currentDirectory + "/grid", gridMatrix);
 }
 
-void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
+/*void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
     if ( originalData.getNcols() == 1 ) {
       std::cout << "The tsne algorithm can only be applied if "
       "the dimension is greater than 1" << std::endl;
@@ -177,7 +176,7 @@ void VisualizerDensityEstimation::runTsne(ModelFittingBase &model) {
     tsneCompressedData = DataMatrix(output.get(), N, D);
     tsneCompressedData.appendCol(evaluation);
 
-}
+}*/
 
 void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
   auto nDimensions = model.getDataset()->getDimension();
@@ -785,11 +784,11 @@ size_t &varDim, std::string filepath) {
     jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
 
     if (matrix.getNcols() > 3) {
-      jsonOutput["layout"][yAxisName].addListAttr("domain");
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-        (static_cast<double>(graphNumber)/5));
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-        ((static_cast<double>(graphNumber)/5)+1)-0.1);
+     jsonOutput["layout"][yAxisName].addListAttr("domain");
+     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+       static_cast<double>(graphNumber/5));
+     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+       (static_cast<double>(graphNumber/5)+1)-0.1);
     }
 
     // Adding titles to subplots
@@ -1031,11 +1030,11 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
 
     if (gridMatrix.getNcols() >= 4) {
-      jsonOutput["layout"][yAxisName].addListAttr("domain");
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-        (static_cast<double>(graphNumber)/5));
-      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-        ((static_cast<double>(graphNumber)/5)+1)-0.1);
+     jsonOutput["layout"][yAxisName].addListAttr("domain");
+     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+       static_cast<double>(graphNumber/5));
+     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+       (static_cast<double>(graphNumber/5)+1)-0.1);
     }
 
     // Adding titles to subplots
