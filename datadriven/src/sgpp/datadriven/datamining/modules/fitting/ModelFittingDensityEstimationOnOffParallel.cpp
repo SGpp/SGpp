@@ -148,18 +148,18 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
+#ifdef USE_SCALAPACK
   online->syncDistributedDecomposition(processGrid, parallelConfig);
-
   // in case of SMW decomposition type, the inverse of the matrix needs to be computed also
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
     offline->compute_inverse_parallel(processGrid, parallelConfig);
   }
-
   online->computeDensityFunctionParallel(alphaDistributed, newDataset, *grid,
                                          this->config->getDensityEstimationConfig(),
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
+#endif /* USE_SCALAPACK */
   online->setBeta(this->config->getLearnerConfig().beta);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
@@ -198,10 +198,12 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+#ifdef USE_SCALAPACK
     online_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
     online_SMW_pointer->updateSystemMatrixDecompositionParallel(
         config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, *deletedGridPoints,
         config->getRegularizationConfig().lambda_, processGrid, parallelConfig);
+#endif      /* USE_SCALAPACK */
   } else {  // every other decomposition type than SMW
     // Update online object: lhs, rhs and recompute the density function based on the b stored
     online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
@@ -212,7 +214,7 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
 
   online->syncDistributedDecomposition(processGrid, parallelConfig);
   return true;
-}  // namespace datadriven
+}
 
 void ModelFittingDensityEstimationOnOffParallel::update(Dataset& newDataset) {
   dataset = &newDataset;
