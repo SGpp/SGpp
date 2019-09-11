@@ -169,6 +169,7 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.lamda_start_ = 0.01;
   regularizationConfig.lambda_end_ = 0.01;
   regularizationConfig.lambda_steps_ = 0;
+  regularizationConfig.lambda_log_scale_ = false;
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
 

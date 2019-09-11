@@ -27,36 +27,6 @@
 namespace sgpp {
 namespace datadriven {
 
-void printMatrix(DataMatrix& A) {
-  for (size_t i = 0; i < A.getNrows(); i++) {
-    for (size_t j = 0; j < A.getNcols(); j++) {
-      std::cout << A.get(i, j) << "  ";
-    }
-    std::cout << "" << std::endl;
-  }
-  std::cout << std::endl;
-}
-
-void printMatrix(gsl_matrix* A) {
-  for (size_t i = 0; i < A->size1; i++) {
-    for (size_t j = 0; j < A->size2; j++) {
-      std::cout << A->data[i * A->size2 + j] << "  ";
-    }
-    std::cout << "" << std::endl;
-  }
-  std::cout << std::endl;
-}
-
-void printMatrix(DataMatrixDistributed& A) {
-  for (size_t i = 0; i < A.getGlobalRows(); i++) {
-    for (size_t j = 0; j < A.getGlobalCols(); j++) {
-      std::cout << A.get(i, j) << "  ";
-    }
-    std::cout << "" << std::endl;
-  }
-  std::cout << std::endl;
-}
-
 DBMatOnlineDE_SMW::DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double lambda, double beta)
     : sgpp::datadriven::DBMatOnlineDE(offline, grid, lambda, beta) {
   if (offline.getDecompositionType() != sgpp::datadriven::MatrixDecompositionType::OrthoAdapt &&

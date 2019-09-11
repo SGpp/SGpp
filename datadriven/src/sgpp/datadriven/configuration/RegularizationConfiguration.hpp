@@ -19,6 +19,7 @@ struct RegularizationConfiguration {
   double lamda_start_;
   double lambda_end_;
   double lambda_steps_;
+  bool lambda_log_scale_;
   double l1Ratio_;
   double exponentBase_;
 };
