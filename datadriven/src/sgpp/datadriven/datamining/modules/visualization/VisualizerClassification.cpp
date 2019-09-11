@@ -209,6 +209,9 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
     return;
   }
   if ( nDimensions >=3 ) {
+    std::string outputDir(currentDirectory+"/Classification"+
+       "/Heatmaps/");
+    createFolder(outputDir);
     if ( nDimensions >= 4 ) {
      getHeatmapMore4DClassification(model, currentDirectory);
     } else {
