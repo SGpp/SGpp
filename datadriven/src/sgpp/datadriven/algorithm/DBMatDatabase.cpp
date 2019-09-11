@@ -82,6 +82,25 @@ std::string& DBMatDatabase::getDataMatrix(
   }
 }
 
+std::string& DBMatDatabase::getBaseDataMatrix(
+    sgpp::base::GeneralGridConfiguration& gridConfig,
+    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+                                              densityEstimationConfig, true);
+  if (entry_index < 0) {
+    // No decomposition in database
+    throw sgpp::base::data_exception(
+        "Database does not contain any entry that can be permutated to match the "
+        "decomposition");
+  } else {
+    json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
+    std::string& filepath = (*entry)[keyFilepath].get();
+    return filepath;
+  }
+}
+
 void DBMatDatabase::putDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
