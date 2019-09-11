@@ -86,16 +86,31 @@ std::string& DBMatDatabase::getBaseDataMatrix(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    sgpp::base::CombiGridConfiguration baseGridConfig) {
+  // Get index of suitable base object if existing
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig, true);
+  // If none is found throw exception
   if (entry_index < 0) {
     // No decomposition in database
     throw sgpp::base::data_exception(
         "Database does not contain any entry that can be permutated to match the "
         "decomposition");
   } else {
+    // Get grid config of database entry
     json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
+    json::DictNode* gridConfigNode = (json::DictNode*)(&(*entry)[keyGridConfiguration]);
+    // Get grid dimension
+    baseGridConfig.dim_ = (*gridConfigNode)[keyGridDimension].getUInt();
+    json::ListNode* entryLevelVector = (json::ListNode*)(&(*gridConfigNode)[keyGridLevel]);
+    // Intialize level vector
+    baseGridConfig.levels = std::vector<size_t>(baseGridConfig.dim_);
+    // Fill out level vector
+    for (size_t i = 0; i < baseGridConfig.dim_; i++) {
+      baseGridConfig.levels[i] = (*entryLevelVector)[i].getUInt;
+    }
+    // Return file path of serialized offline object
     std::string& filepath = (*entry)[keyFilepath].get();
     return filepath;
   }
@@ -221,6 +236,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
   // Check if grid general type matches
   sgpp::base::GeneralGridType gridType;
   if (node->contains(keyGridType)) {
+    json::DictNode* entry = (json::DictNode*)(&((*database)[i]));
     // Parse the grid general type
     std::string strGridType = (*node)[keyGridType].get();
     gridType = sgpp::datadriven::GeneralGridTypeParser::parse(strGridType);
@@ -241,6 +257,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
               << "\" node does not contain \"" << keyGridDimension << "\" key and therefore is "
               << "ignored!" << std::endl;
     return false;
+    json::DictNode* entry = (json::DictNode*)(&((*database)[i]));
   }
   // Check if the grid level matches
   if (node->contains(keyGridLevel)) {

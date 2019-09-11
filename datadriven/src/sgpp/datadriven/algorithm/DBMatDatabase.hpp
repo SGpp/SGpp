@@ -40,10 +40,10 @@ class DBMatDatabase {
                      sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
-/**
-   * Scans the entire database and checks whether there exists an entry that can be permutated to match the
-   * configurations. A entry matches if all config properties except the gridConfig's level vector
-   * are equal and level vector elements unequal 1 are set equal.
+  /**
+   * Scans the entire database and checks whether there exists an entry that can be permutated to
+   * match the configurations. A entry matches if all config properties except the gridConfig's
+   * level vector are equal and level vector elements unequal 1 are set equal.
    * @param gridConfig the grid configuration the matrix must match
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
@@ -78,6 +78,7 @@ class DBMatDatabase {
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
+   * @param baseGridConfig is overriten with the entry's grid config 
    * @return Returns the string of the datamatrix if any match was obtained and throws an exception
    * otherwise
    */
@@ -85,7 +86,8 @@ class DBMatDatabase {
       sgpp::base::GeneralGridConfiguration& gridConfig,
       sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      sgpp::base::CombiGridConfiguration baseGridConfig);
 
   /**
    * Puts a filepath for a given configuration in the database. The filepath refers to the matrix
