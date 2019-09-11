@@ -74,6 +74,11 @@ bool DataMiningConfigParser::hasDataTransformationConfig() const {
   return hasDataTransformationConfig;
 }
 
+bool DataMiningConfigParser::getUseOfflinePermutation() const {
+  std::string key = "useOfflinePermutation";
+  return configFile->contains(key) ? parseBool(*configFile, key, true, "") : true;
+}
+
 bool DataMiningConfigParser::hasScorerConfig() const { return configFile->contains(scorer); }
 
 bool DataMiningConfigParser::hasFitterConfig() const { return configFile->contains(fitter); }

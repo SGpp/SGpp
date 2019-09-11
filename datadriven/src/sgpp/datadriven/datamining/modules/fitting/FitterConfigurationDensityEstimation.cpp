@@ -31,6 +31,7 @@ void FitterConfigurationDensityEstimation::setupDefaults() {
 void FitterConfigurationDensityEstimation::readParams(const DataMiningConfigParser &parser) {
   setupDefaults();
 
+  this->useOfflinePermutation = parser.getUseOfflinePermutation();
   parser.getFitterGridConfig(gridConfig, gridConfig);
   parser.getFitterAdaptivityConfig(adaptivityConfig, adaptivityConfig);
   parser.getFitterSolverRefineConfig(solverRefineConfig, solverRefineConfig);

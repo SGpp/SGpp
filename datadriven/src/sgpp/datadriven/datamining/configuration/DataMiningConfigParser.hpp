@@ -47,7 +47,7 @@ namespace datadriven {
 // forward declaration to break dependency cycle
 enum class FitterType;
 
-class DataMiningConfigParser {
+class  DataMiningConfigParser {
  public:
   explicit DataMiningConfigParser(const std::string &filepath);
   virtual ~DataMiningConfigParser();
@@ -75,6 +75,8 @@ class DataMiningConfigParser {
    * @return if the fitter configuration contains a cross validation configuration
    */
   bool hasFitterConfigCrossValidation() const;
+
+  bool getUseOfflinePermutation() const;
 
   bool getDataSourceConfig(DataSourceConfig &config, const DataSourceConfig &defaults) const;
   /**

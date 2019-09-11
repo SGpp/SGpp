@@ -78,6 +78,11 @@ class FitterConfiguration {
   virtual FitterConfiguration *clone() const = 0;
 
   /**
+   * Get whether offline permutation is to be used
+   */
+  bool getUseOfflinePermutation() const; 
+
+  /**
    * Get initial conditions for the grid before adaptive refinement.
    * @return immutable GeneralGridConfiguration
    */
@@ -213,6 +218,12 @@ class FitterConfiguration {
   virtual void readParams(const DataMiningConfigParser &parser) = 0;
 
  protected:
+
+  /**
+   * Defines whether offline permutation should be used if decomposition allows it. Defaults to true.
+   */
+  bool useOfflinePermutation;
+
   /**
    * Initial conditions for the grid before adaptive refinement.
    */

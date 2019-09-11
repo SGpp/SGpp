@@ -11,6 +11,10 @@
 namespace sgpp {
 namespace datadriven {
 
+bool FitterConfiguration::getUseOfflinePermutation() const {
+  return useOfflinePermutation;
+}
+
 const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
@@ -103,11 +107,14 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
 }
 
 void FitterConfiguration::setupDefaults() {
+  // Offline permutation should always be used if decomp allows it.
+  useOfflinePermutation = true;
+
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
   gridConfig.levelVector_ = std::vector<size_t>();
-  gridConfig.maxDegree_ = 1;  // mirrors struct default
+  gridConfig.maxDegree_ = 1;      // mirrors struct default
   gridConfig.boundaryLevel_ = 0;  // mirrors struct default
   gridConfig.filename_ = "";
   gridConfig.t_ = 0.0;  // mirrors struct default
@@ -116,20 +123,20 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.threshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
   adaptivityConfig.noPoints_ = 0;
-  adaptivityConfig.percent_ = 1.0;  // mirrors struct default
-  adaptivityConfig.errorBasedRefinement = false;  // mirrors struct default
+  adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
+  adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
-  adaptivityConfig.errorBufferSize = 3;  // mirrors struct default
-  adaptivityConfig.errorMinInterval = 0;  // mirrors struct default
-  adaptivityConfig.refinementPeriod = 1;  // mirrors struct default
+  adaptivityConfig.errorBufferSize = 3;                // mirrors struct default
+  adaptivityConfig.errorMinInterval = 0;               // mirrors struct default
+  adaptivityConfig.refinementPeriod = 1;               // mirrors struct default
   adaptivityConfig.refinementFunctorType =
-    sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptivityConfig.precomputeEvaluations = true;  // mirrors struct default
-  adaptivityConfig.levelPenalize = false;  // mirrors struct default
+      sgpp::base::RefinementFunctorType::Surplus;                // mirrors struct default
+  adaptivityConfig.precomputeEvaluations = true;                 // mirrors struct default
+  adaptivityConfig.levelPenalize = false;                        // mirrors struct default
   adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default;
 
   crossvalidationConfig.enable_ = false;  // mirrors struct default
-  crossvalidationConfig.kfold_ = 5;  // mirrors struct default
+  crossvalidationConfig.kfold_ = 5;       // mirrors struct default
   crossvalidationConfig.seed_ = 0;
   crossvalidationConfig.shuffle_ = false;
   crossvalidationConfig.silent_ = false;
@@ -145,10 +152,10 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
 
-  densityEstimationConfig.iCholSweepsDecompose_ = 4;  // mirrors struct default;
-  densityEstimationConfig.iCholSweepsRefine_ = 4;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default;
+  densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default;
   densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default;
-  densityEstimationConfig.iCholSweepsSolver_ = 2;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default;
 
   databaseConfig.filepath = "";
 
@@ -169,7 +176,7 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
 
-  learnerConfig.beta = 1.0;  // mirrors struct default
+  learnerConfig.beta = 1.0;        // mirrors struct default
   learnerConfig.usePrior = false;  // mirrors struct default
 
   // configure geometry configuration
