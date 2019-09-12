@@ -45,6 +45,7 @@ def processFile(path, performFix):
 
     print("")
     with open(path, "w") as f: f.write(source)
+    return True
   else:
     print(("{}:0: warning: #include with \"quotation marks\" found. "
            "Use <angle brackets> instead and do not use relative "
