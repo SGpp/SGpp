@@ -393,7 +393,8 @@ def checkStyleAction(target, source, env):
   stdouts, stderrs = zip(*[run(args) for args in [
       ["python", "tools/cpplint.py", "--extensions=cpp,hpp",
        "--linelength=100", sourcePath],
-      ["python", "tools/check_copyright_banners.py", sourcePath]]])
+      ["python", "tools/check_copyright_banners.py", sourcePath],
+      ["python", "tools/check_includes.py", sourcePath]]])
   stdout, stderr = "\n".join(stdouts), "\n".join(stderrs)
 
   # cpplint prints on stderr
