@@ -179,7 +179,7 @@ find base/src/ -name '*.cpp.lint' -or -name '*.hpp.lint' | xargs rm
 @endverbatim
 You can deactivate the style checking
 (and thus the creation of the *.lint files)
-by setting <tt>RUN_CPPLINT=0</tt> on the SCons command line.
+by setting <tt>CHECK_STYLE=0</tt> on the SCons command line.
 
 You can also use a formatter tool to automatically format your code
 which should fix most of the "easy" style warnings

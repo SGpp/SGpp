@@ -2,10 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-//
-//  Created on: Nov 18, 2015
-//      Author: pfandedd
-//
+
 
 #pragma once
 
