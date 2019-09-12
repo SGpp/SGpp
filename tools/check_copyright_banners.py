@@ -39,7 +39,7 @@ def processFile(path):
 def main():
   parser = argparse.ArgumentParser(description="Checks copyright banners.")
   parser.add_argument("-r", "--recursive", action="store_true",
-                      help="Act on a directory instead of a single file.")
+                      help="Recursively check a directory instead of a single file.")
   parser.add_argument("path", metavar="PATH",
                       help="Path to file or directory (with -r)")
   args = parser.parse_args()
