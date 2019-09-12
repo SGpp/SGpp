@@ -86,4 +86,4 @@ module.runBoostTests()
 module.buildBoostTests("performanceTests", compileFlag=performanceTestFlag)
 module.runBoostTests("performanceTests", compileFlag=performanceTestFlag,
                      runFlag=performanceTestRunFlag)
-module.runCpplint()
+module.checkStyle()
