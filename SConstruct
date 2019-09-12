@@ -171,7 +171,7 @@ vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written
                                          "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
-vars.Add(BoolVariable("RUN_CPPLINT",
+vars.Add(BoolVariable("CHECK_STYLE",
                       "Check compliance to Google's style guide using cpplint", True))
 vars.Add(BoolVariable("RUN_CPP_EXAMPLES", "Run all C++ examples", False))
 vars.Add(BoolVariable("RUN_PYTHON_EXAMPLES", "Run all Python examples", False))
@@ -379,16 +379,24 @@ else:
 # Style checker
 #########################################################################
 
-def lintAction(target, source, env):
-  p = subprocess.Popen(["python", "tools/cpplint.py",
-                        "--extensions=cpp,hpp", "--linelength=100",
-                        source[0].abspath],
-                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  # wait for termination and get output on stdout and stderr
-  stdout, stderr = p.communicate()
-  # in Python 3.x, communicate returns bytes
-  if sys.version_info >= (3, 0):
-    stdout, stderr = stdout.decode(), stderr.decode()
+def checkStyleAction(target, source, env):
+  def run(args):
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # wait for termination and get output on stdout and stderr
+    stdout, stderr = p.communicate()
+    # in Python 3.x, communicate returns bytes
+    if sys.version_info >= (3, 0):
+      stdout, stderr = stdout.decode(), stderr.decode()
+    return stdout, stderr
+
+  sourcePath = source[0].abspath
+  stdouts, stderrs = zip(*[run(args) for args in [
+      ["python", "tools/cpplint.py", "--extensions=cpp,hpp",
+       "--linelength=100", sourcePath],
+      ["python", "tools/check_copyright_banners.py", sourcePath],
+      ["python", "tools/check_includes.py", sourcePath]]])
+  stdout, stderr = "\n".join(stdouts), "\n".join(stderrs)
+
   # cpplint prints on stderr
   for line in stderr.splitlines():
     # skip status lines, empty lines, and some warning types
@@ -413,7 +421,7 @@ def lintAction(target, source, env):
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass
 
-env.Export("lintAction")
+env.Export("checkStyleAction")
 
 # Custom builders for running Python/Boost tests and examples
 #########################################################################

@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- * NegativeLogLikelihood.hpp
- *
- *  Created on: Jun 9, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_SCORING_NEGATIVELOGLIKELIHOOD_HPP_
 #define DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_SCORING_NEGATIVELOGLIKELIHOOD_HPP_
