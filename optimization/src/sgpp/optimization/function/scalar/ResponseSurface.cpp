@@ -132,9 +132,9 @@ void ResponseSurface::transformPoint(sgpp::base::DataVector& v, sgpp::base::Data
 }
 
 double ResponseSurface::domainVolume() {
-  double vol = 0;
+  double vol = 1;
   for (size_t d = 0; d < numDim; d++) {
-    vol += ub[d] - lb[d];
+    vol *= ub[d] - lb[d];
   }
   return vol;
 }

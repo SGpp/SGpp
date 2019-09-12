@@ -13,8 +13,7 @@
 #include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
 #include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
-// #include <sgpp/base/function/vector/WrapperScalarFunction.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/VectorSurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -129,7 +128,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * @param numPoints	desired number of grid points
    * @param verbose		print extra info
    */
-  // void regularByPoints(size_t numPoints, bool verbose = false);
+  void regularByPoints(size_t numPoints, bool verbose = false);
 
   /**
    * creates a surplus adaptive sparse grid inteprolant
@@ -138,8 +137,8 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * @param refinementsNum		max number of grid points, added in each refinement step
    * @param verbose		print extra info
    */
-  // void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3,
-  //                      bool verbose = false);
+  void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3,
+                       bool verbose = false);
 
   /**
    * creates an adaptive grid based on Ritter-Novak
@@ -169,7 +168,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   /**
    * return the integrals of the response surface
    */
-  // sgpp::base::DataVector getIntegrals();
+  sgpp::base::DataVector getIntegrals();
 
   /**
    * return the mean of the response surface w.r.t. a probability density function
@@ -239,7 +238,11 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
   std::shared_ptr<sgpp::base::SBasis> basis;
-  // the interpolation coefficients
+  // the interpolation coefficients of shape numGridPoints x numRes
+  // Entry [i,j] is the interpolation coefficient for the i'th basis function (grid point) and j'th
+  // result entry
+  // So every column are basically interpolation coefficients for the univariate function mapping to
+  // the j'th result
   sgpp::base::DataMatrix coefficients;
   // function vlaues at the grid points
   sgpp::base::DataMatrix functionValues;
@@ -258,7 +261,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
    *@param refinementsNum	number of grid points which should be refined
    */
-  // void refineSurplusAdaptive(size_t refinementsNum);
+  void refineSurplusAdaptive(size_t refinementsNum);
 
   /**
    * calculates the interpolation coefficients on a given grid

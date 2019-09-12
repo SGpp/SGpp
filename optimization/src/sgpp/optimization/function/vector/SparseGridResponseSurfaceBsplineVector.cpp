@@ -18,43 +18,38 @@ void SparseGridResponseSurfaceBsplineVector::regular(size_t level) {
       std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
 }
 
-// void SparseGridResponseSurfaceBsplineVector::regularByPoints(size_t numPoints, bool verbose) {
-//   // set initial level
-//   size_t level = 1;
-//   if (boundary == true) level = 0;
-//   do {
-//     // todo (rehmemk) instead of trying out until pointnumber matches, use formula for number of
-//     // grid points
-//     grid->getStorage().clear();
-//     grid->getGenerator().regular(level);
-//     if (verbose == true)
-//       std::cout << "level " << level << " with " << grid->getSize() << " points\n";
-//     level++;
-//   } while (grid->getSize() < numPoints);
-//   calculateInterpolationCoefficients();
-//   interpolants =
-//       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-//   interpolantGradients =
-//   std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-//       *grid, coefficients);
-// }
+void SparseGridResponseSurfaceBsplineVector::regularByPoints(size_t numPoints, bool verbose) {
+  // set initial level
+  size_t level = 1;
+  if (boundary == true) level = 0;
+  do {
+    // todo (rehmemk) instead of trying out until pointnumber matches, use formula for number of
+    // grid points
+    grid->getStorage().clear();
+    grid->getGenerator().regular(level);
+    if (verbose == true)
+      std::cout << "level " << level << " with " << grid->getSize() << " points\n";
+    level++;
+  } while (grid->getSize() < numPoints);
+  calculateInterpolationCoefficients();
+  interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
+  interpolantGradients =
+      std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+}
 
-// void SparseGridResponseSurfaceBsplineVector::surplusAdaptive(size_t maxNumGridPoints,
-//                                                              size_t initialLevel,
-//                                                              size_t refinementsNum, bool verbose)
-//                                                              {
-//   regular(initialLevel);
-//   while (grid->getSize() < maxNumGridPoints) {
-//     refineSurplusAdaptive(refinementsNum);
-//     interpolant =
-//         std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-//     interpolantGradient =
-//     std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-//         *grid, coefficients);
-//     if (verbose)
-//       std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
-//   }
-// }
+void SparseGridResponseSurfaceBsplineVector::surplusAdaptive(size_t maxNumGridPoints,
+                                                             size_t initialLevel,
+                                                             size_t refinementsNum, bool verbose) {
+  regular(initialLevel);
+  while (grid->getSize() < maxNumGridPoints) {
+    refineSurplusAdaptive(refinementsNum);
+    if (verbose)
+      std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
+  }
+  interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
+  interpolantGradients =
+      std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+}
 
 // void SparseGridResponseSurfaceBsplineVector::ritterNovak(size_t maxNumGridPoints, double gamma,
 //                                                          bool verbose) {
@@ -98,11 +93,18 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::evalGradient(
   return evaluations;
 }
 
-// double SparseGridResponseSurfaceBsplineVector::getIntegral() {
-//   sgpp::base::OperationQuadrature* opQuad = sgpp::op_factory::createOperationQuadrature(*grid);
-//   double unitIntegral = opQuad->doQuadrature(coefficients);
-//   return unitIntegral * domainVolume();
-// }
+sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getIntegrals() {
+  sgpp::base::OperationQuadrature* opQuad = sgpp::op_factory::createOperationQuadrature(*grid);
+  sgpp::base::DataVector integrals(numRes);
+  double vol = domainVolume();
+  for (size_t t = 0; t < numRes; t++) {
+    sgpp::base::DataVector coefficients_t(grid->getSize());
+    coefficients.getColumn(t, coefficients_t);
+    integrals[t] = opQuad->doQuadrature(coefficients_t);
+    integrals[t] *= vol;
+  }
+  return integrals;
+}
 
 // double SparseGridResponseSurfaceBsplineVector::getMeans(sgpp::base::DistributionsVector pdfs,
 //                                                        size_t quadOrder) {
@@ -159,11 +161,11 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::evalGradient(
 
 // ----------------- auxiliary routines -----------
 
-// void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refinementsNum) {
-//   sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
-//   grid->getGenerator().refine(functor);
-//   calculateInterpolationCoefficients();
-// }
+void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refinementsNum) {
+  sgpp::base::VectorSurplusRefinementFunctor functor(coefficients, refinementsNum);
+  grid->getGenerator().refine(functor);
+  calculateInterpolationCoefficients();
+}
 
 void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -175,6 +177,7 @@ void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients(
     objectiveFunc->eval(p, evaluations);
     functionValues.setRow(i, evaluations);
   }
+
   sgpp::base::sle_solver::Armadillo sleSolver;
   sgpp::base::Printer::getInstance().setVerbosity(-1);
   sgpp::base::HierarchisationSLE hierSLE(*grid);

@@ -141,5 +141,3 @@ class ResponseSurfaceVector {
 
 }  // namespace optimization
 }  // namespace sgpp
-
-// #endif /* USE_EIGEN */

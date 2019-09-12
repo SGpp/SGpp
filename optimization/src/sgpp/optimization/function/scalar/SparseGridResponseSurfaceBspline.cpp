@@ -44,13 +44,13 @@ void SparseGridResponseSurfaceBspline::surplusAdaptive(size_t maxNumGridPoints, 
   regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
     refineSurplusAdaptive(refinementsNum);
-    interpolant =
-        std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-        *grid, coefficients);
     if (verbose)
       std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
   }
+  interpolant =
+      std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+      *grid, coefficients);
 }
 
 void SparseGridResponseSurfaceBspline::ritterNovak(size_t maxNumGridPoints, double gamma,

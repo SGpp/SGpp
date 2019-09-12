@@ -116,6 +116,33 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalGradient) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSurplusAdaptive) {
+  std::vector<double> epsilons{1e-12};
+  size_t dim = 3;
+  size_t m = 2;
+  size_t maxNumGridPoints = 100;
+  size_t initialLevel = 0;
+  size_t refinementsNum = 10;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
+                                                                      gridType, degree);
+    reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum);
+
+    DataVector componentwiseErrors(m);
+    size_t numMCPoints = 1000;
+    double l2Error = reSurf.l2Error(testFunction, componentwiseErrors, numMCPoints);
+    // std::cout << "l2 error: " << l2Error << "\n";
+    // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
+    BOOST_CHECK_SMALL(l2Error, epsilons[t]);
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
   double epsilon = 1e-11;
   size_t dim = 3;
@@ -137,6 +164,34 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
     // std::cout << "l2 error: " << l2Error << "\n";
     // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
     BOOST_CHECK_SMALL(l2Error, epsilon);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorIntegral) {
+  std::vector<double> epsilons{1e-12};
+  size_t dim = 3;
+  size_t m = 2;
+  size_t level = 3;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
+                                                                      gridType, degree);
+    reSurf.regular(level);
+    sgpp::base::DataVector integrals = reSurf.getIntegrals();
+    // std::cout << integrals.toString() << "\n";
+    DataVector realIntegrals(2);
+    realIntegrals[0] = 0.0;
+    realIntegrals[1] = 3584.0 / 3.0;
+    // std::cout << realIntegrals.toString() << "\n";
+    realIntegrals.sub(integrals);
+    // std::cout << realIntegrals.toString() << "\n";
+    BOOST_CHECK_SMALL(fabs(realIntegrals[0]), epsilons[t]);
+    BOOST_CHECK_SMALL(fabs(realIntegrals[1]), epsilons[t]);
   }
 }
 
