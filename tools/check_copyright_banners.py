@@ -9,7 +9,7 @@ import sys
 
 def processFile(path):
   path = os.path.abspath(path)
-  if os.path.splitext(path)[1] not in [".cpp", ".hpp"]: return
+  if os.path.splitext(path)[1] not in [".cpp", ".hpp"]: return True
   with open(path, "r") as f: source = f.read()
 
   COPYRIGHT_BANNER = r"""// Copyright (C) 2008-today The SG++ project
