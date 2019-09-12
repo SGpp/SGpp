@@ -46,12 +46,32 @@ class VisualizerClassification:public VisualizerDensityEstimation {
     size_t fold, size_t batch) override;
 
  protected:
+  /**
+   * Method which starts the heatmap generation for Classification Models
+   * @model The model used to evaluate the heatmap
+   * @currentDirectory The current directory to store the heatmap results
+   */
   void getHeatmapsClassification(ModelFittingBase &model, std::string currentDirectory);
-
+  /*
+   * Method which generates the classification heatmap
+   * of models of 4 or more dimensions
+   * @model The model used to evaluate the heatmap
+   * @currentDirectory The current directory to store the heatmap results
+   */
   void getHeatmapMore4DClassification(ModelFittingBase &model, std::string currentDirectory);
-
+  /*
+   * Method which generates the classification heatmap
+   * of models of 2 dimensions
+   * @model The model used to evaluate the heatmap
+   * @currentDirectory The current directory to store the heatmap results
+   */
   void getHeatmap2DClassification(ModelFittingBase &model, std::string currentDirectory);
-
+  /*
+   * Method which generates the classification heatmap
+   * of models of 3 sdimensions
+   * @model The model used to evaluate the heatmap
+   * @currentDirectory The current directory to store the heatmap results
+   */
   void getHeatmap3DClassification(ModelFittingBase &model, std::string currentDirectory);
 
   /**
