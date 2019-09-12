@@ -22,4 +22,4 @@ if env["ARCH"] != "mic":
   module.runExamples()
 module.buildBoostTests()
 module.runBoostTests()
-module.runCpplint()
+module.checkStyle()
