@@ -15,7 +15,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
-
 #include "string"
 
 namespace sgpp {
