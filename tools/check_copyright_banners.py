@@ -50,8 +50,7 @@ def main():
     # for all source/header files
     for root, dirs, files in os.walk(args.path):
       for file_ in sorted(files):
-        if os.path.splitext(file_)[1] in [".cpp", ".hpp"]:
-          success = processFile(os.path.join(root, file_)) and success
+        success = processFile(os.path.join(root, file_)) and success
   else:
     success = processFile(args.path)
 
