@@ -16,7 +16,7 @@ using sgpp::base::DataVector;
 struct FixtureDataVector {
   FixtureDataVector() : nrows(5), ncols(3), N(nrows * ncols), d_rand(N), min(0), max(0), sum(0) {
     l_rand_total = new double[nrows * ncols];
-    l_rand = new double* [nrows];
+    l_rand = new double*[nrows];
 
     for (int i = 0; i < nrows; ++i) {
       l_rand[i] = new double[ncols];
@@ -24,7 +24,8 @@ struct FixtureDataVector {
 
     for (int i = 0; i < nrows; ++i) {
       for (int j = 0; j < ncols; ++j) {
-        l_rand[i][j] = i * j + i * 0.5 + 2.34 * j;
+        l_rand[i][j] = static_cast<double>(i) * static_cast<double>(j) +
+                       static_cast<double>(i) * 0.5 + 2.34 * static_cast<double>(j);
         l_rand_total[i * ncols + j] = l_rand[i][j];
         min = min > l_rand_total[i * ncols + j] ? l_rand_total[i * ncols + j] : min;
         max = max < l_rand_total[i * ncols + j] ? l_rand_total[i * ncols + j] : max;
@@ -171,7 +172,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   for (int i = 0; i < N; ++i) {
     rmsNormSquaredExpected += d_rand[i] * d_rand[i];
   }
-  rmsNormSquaredExpected *= 1.0 / N;
+  rmsNormSquaredExpected *= 1.0 / static_cast<double>(N);
   BOOST_CHECK_CLOSE(rmsNormSquaredActual, rmsNormSquaredExpected, tol);
 
   // sub
@@ -229,13 +230,13 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataVector(d_rand);
 
   for (int i = 0; i < N; ++i) {
-    d2[i] = i + 1.0;
+    d2[i] = static_cast<double>(i) + 1.0;
   }
 
   d.componentwise_div(d2);
 
   for (int i = 0; i < N; ++i) {
-    BOOST_CHECK_CLOSE(d_rand[i] / (i + 1.0), d[i], 1e-12);
+    BOOST_CHECK_CLOSE(d_rand[i] / (static_cast<double>(i) + 1.0), d[i], tol);
   }
 }
 
