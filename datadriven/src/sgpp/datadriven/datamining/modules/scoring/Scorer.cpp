@@ -22,7 +22,7 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
     return testDistributed(model, testDataset);
   }
 #endif
-  DataVector predictedValues{testDataset.getNumberInstances()};
+  DataVector predictedValues(testDataset.getNumberInstances());
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
   return metric->measure(predictedValues, testDataset.getTargets());
@@ -30,7 +30,7 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
 
 double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
 #ifdef USE_SCALAPACK
-  DataVector predictedValues{testDataset.getNumberInstances()};
+  DataVector predictedValues(testDataset.getNumberInstances());
   model.evaluate(testDataset.getData(), predictedValues);
 
   // only calculate the score on the master and send the result to the other processes, this means

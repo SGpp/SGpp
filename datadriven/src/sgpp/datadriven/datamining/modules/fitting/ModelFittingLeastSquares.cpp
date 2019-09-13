@@ -58,7 +58,7 @@ void ModelFittingLeastSquares::fit(Dataset &newDataset) {
   gridConfig.dim_ = dataset->getDimension();
   grid = std::unique_ptr<Grid>{buildGrid(config->getGridConfig())};
   // build surplus vector
-  alpha = DataVector{grid->getSize()};
+  alpha = DataVector(grid->getSize());
 
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
@@ -123,7 +123,7 @@ void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfigurati
       buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
                         config->getMultipleEvalConfig()));
 
-  DataVector b{grid->getSize()};
+  DataVector b(grid->getSize());
   systemMatrix->generateb(dataset->getTargets(), b);
 
   reconfigureSolver(*solver, solverConfig);

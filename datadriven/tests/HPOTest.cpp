@@ -357,7 +357,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
   size_t nCont = 6;
   BOConfig prototype{&discOptions, &catOptions, nCont};
 
-  DataVector scores{std::vector<double>({-0.1, 0.1})};
+  DataVector scores{-0.1, 0.1};
 
   initialConfigs.reserve(scores.size());
 
@@ -371,7 +371,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
   sgpp::datadriven::BayesianOptimization genprocess(initialConfigs);
   sgpp::datadriven::BayesianOptimization fitprocess(initialConfigs);
 
-  DataVector scales{std::vector<double>({1, 0.1, 0.3, 0.4, 0.01, 0.9, 0.2, 0.8, 1, 0.5, 0.3})};
+  DataVector scales{1, 0.1, 0.3, 0.4, 0.01, 0.9, 0.2, 0.8, 1, 0.5, 0.3};
   scales.resize(prototype.getNPar() + 1);
   genprocess.setScales(scales, 1);
   DataVector avscales(scales.size(), 1);
