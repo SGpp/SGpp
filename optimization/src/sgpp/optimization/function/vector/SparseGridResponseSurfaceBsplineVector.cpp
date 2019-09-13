@@ -75,19 +75,19 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::eval(sgpp::base::
   interpolants->eval(v, evaluations);
   return evaluations;
 }
-sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::evalGradient(
-    sgpp::base::DataVector v, sgpp::base::DataMatrix& gradients) {
-  gradients.resizeZero(numRes, numDim);
+sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::evalJacobian(
+    sgpp::base::DataVector v, sgpp::base::DataMatrix& jacobian) {
+  jacobian.resizeZero(numRes, numDim);
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
   sgpp::base::DataVector evaluations(numRes);
-  interpolantGradients->eval(v, evaluations, gradients);
+  interpolantGradients->eval(v, evaluations, jacobian);
   // scale gradient components according to the inner derivative of the chain rule when transforming
   // the interpolation point from the original coordinates to unit cube
 
   for (size_t i = 0; i < numRes; i++) {
     for (size_t j = 0; j < numDim; j++) {
-      double temp = gradients.get(i, j) / (ub[j] - lb[j]);
-      gradients.set(i, j, temp);
+      double temp = jacobian.get(i, j) / (ub[j] - lb[j]);
+      jacobian.set(i, j, temp);
     }
   }
   return evaluations;

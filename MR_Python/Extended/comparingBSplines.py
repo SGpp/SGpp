@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
-import functions
+import scalarFunctions
 import numpy as np
 import pysgpp
 # neon does not have ipdb
@@ -16,7 +16,7 @@ except:
     pass
 
 from dataHandling import saveData as saveData
-from functions import objFuncSGpp as objFuncSGpp
+from scalarFunctions import objFuncSGpp as objFuncSGpp
 # from sgAnuga import anugaError
 
 
@@ -170,11 +170,11 @@ def interpolateAndError(degree,
                     print("points {}    mean {:.16E}      meanSquare {:.16E}      stddv {:.16E}".format(reSurf.getSize(), means[ j], meanSquares[ j], np.sqrt(vars[ j])))
                     
                 gridSizes[ j] = reSurf.getSize()
+                runTimes[j] = time.time() - start  
                 
 #                 plot2DGrid(reSurf)
                 
             print("\n")
-        runTimes[j] = time.time() - start  
         print('{} {} done (took {}s)\n\n'.format(gridType,
                                                   degree,
                                                   np.sum(runTimes)))
@@ -251,7 +251,7 @@ if __name__ == '__main__':
         degrees = [0]
      
     pysgpp.omp_set_num_threads(args.numThreads)
-    pyFunc = functions.getFunction(args.model, args.dim, args.scalarModelParameter)
+    pyFunc = scalarFunctions.getFunction(args.model, args.dim, args.scalarModelParameter)
     objFunc = objFuncSGpp(pyFunc)
      
     # numErrPoints = max(10000, 2 * args.maxPoints)

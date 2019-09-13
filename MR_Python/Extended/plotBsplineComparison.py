@@ -6,12 +6,12 @@ matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 
 import _pickle as pickle
-import functions
+import scalarFunctions
 import numpy as np
 import pysgpp
 
 from dataHandling import loadData as loadData
-from functions import objFuncSGpp as objFuncSGpp
+from scalarFunctions import objFuncSGpp as objFuncSGpp
 
 
 def getStyle(style):
@@ -370,7 +370,7 @@ if __name__ == '__main__':
     else:
         fig = plt.figure()
     
-    pyFunc = functions.getFunction(args.model, args.dim, args.scalarModelParameter)
+    pyFunc = scalarFunctions.getFunction(args.model, args.dim, args.scalarModelParameter)
     objFunc = objFuncSGpp(pyFunc)
     
     l = 1

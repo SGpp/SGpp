@@ -106,6 +106,10 @@ class ResponseSurfaceVector {
   // void precalculateErrorTestData(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
   //                                size_t numMCPoints, const std::string& fileName);
 
+  size_t getNumDim() { return numDim; }
+
+  size_t getNumRes() { return numRes; }
+
  protected:
   // number of input parameters
   size_t numDim;

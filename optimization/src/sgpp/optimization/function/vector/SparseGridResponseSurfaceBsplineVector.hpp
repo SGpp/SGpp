@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <vector>
 
 #include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
 #include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
@@ -160,10 +161,10 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   /**
    * evaluates the response surface and its gradient
    * @param v			point to evaluate in
-   * @param gradient	reference to return the repsonse surfaces gradient evaluted in v
+   * @param jacobian	reference to return the repsonse surfaces jacobian matrix evaluted in v
    * @return 			the evaluation
    */
-  sgpp::base::DataVector evalGradient(sgpp::base::DataVector v, sgpp::base::DataMatrix& gradient);
+  sgpp::base::DataVector evalJacobian(sgpp::base::DataVector v, sgpp::base::DataMatrix& jacobian);
 
   /**
    * return the integrals of the response surface
