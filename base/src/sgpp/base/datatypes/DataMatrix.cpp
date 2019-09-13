@@ -484,7 +484,7 @@ void DataMatrix::abs() {
   size_t n = nrows * ncols;
 
   for (size_t i = 0; i < n; ++i) {
-    (*this)[i] = std::fabs((*this)[i]);
+    (*this)[i] = std::abs((*this)[i]);
   }
 }
 
@@ -678,7 +678,7 @@ size_t DataMatrix::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < n; ++i) {
-    if (fabs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0) {
       ++nonZero;
     }
   }

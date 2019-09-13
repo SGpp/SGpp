@@ -260,7 +260,7 @@ void DataVector::sqrt() {
 
 void DataVector::abs() {
   for (size_t i = 0; i < this->size(); i++) {
-    (*this)[i] = std::fabs((*this)[i]);
+    (*this)[i] = std::abs((*this)[i]);
   }
 }
 
@@ -278,8 +278,8 @@ double DataVector::maxNorm() const {
   double max = 0.0;
 
   for (size_t i = 0; i < this->size(); i++) {
-    if (max < fabs((*this)[i])) {
-      max = fabs((*this)[i]);
+    if (max < std::abs((*this)[i])) {
+      max = std::abs((*this)[i]);
     }
   }
 
@@ -369,7 +369,7 @@ size_t DataVector::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < this->size(); i++) {
-    if (fabs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0) {
       nonZero++;
     }
   }
