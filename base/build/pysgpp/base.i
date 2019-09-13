@@ -228,19 +228,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else

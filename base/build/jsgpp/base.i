@@ -217,6 +217,7 @@ namespace std {
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"*/
 
 %include "base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
+
 // SLE
 
 // global variables for the support of SLE solver libaries (set at compile-time)
@@ -231,19 +232,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else
@@ -272,9 +273,9 @@ const bool UMFPACK_ENABLED;
 %rename(OperatorInsertion) sgpp::base::operator<<;
 %include "base/src/sgpp/base/tools/Printer.hpp"
 
-
 // and the rest
 %rename(RNG)         sgpp::base::RandomNumberGenerator;
+
 //%apply std::string *INPUT { std::string& istr };
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 
