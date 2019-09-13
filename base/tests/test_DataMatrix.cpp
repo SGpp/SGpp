@@ -183,8 +183,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   BOOST_CHECK_EQUAL(d_min, min);
 
   // min max column
-  double minActual = 0;
-  double maxActual = 0;
+  double minActual = 0.0;
+  double maxActual = 0.0;
   for (int j = 0; j < ncols; ++j) {
     colMax = d.get(0, j);
     colMin = d.get(0, j);
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   double delta;
   for (int j = 0; j < ncols; ++j) {
     d.normalizeDimension(j);
-    delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
+    delta = (d_rand.max(j) - d_rand.min(j)) / (1.0 - 2.0 * border);
     for (int i = 0; i < nrows; ++i) {
       BOOST_CHECK_CLOSE(d.get(i, j), (d_rand.get(i, j) - d_rand.min(j)) / delta + border, tol);
     }
@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   border = 3.1415;
   for (int j = 0; j < ncols; ++j) {
     d.normalizeDimension(j, border);
-    delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
+    delta = (d_rand.max(j) - d_rand.min(j)) / (1.0 - 2.0 * border);
     for (int i = 0; i < nrows; ++i) {
       BOOST_CHECK_CLOSE(d.get(i, j), (d_rand.get(i, j) - d_rand.min(j)) / delta + border, tol);
     }
@@ -276,22 +276,22 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // setColumn
   d = DataMatrix(d_rand);
   DataVector setVectorRow(nrows);
-  setVectorRow.setAll(setValue + 1);
+  setVectorRow.setAll(setValue + 1.0);
   for (int j = 0; j < ncols; ++j) {
     d.setColumn(j, setVectorRow);
     for (int i = 0; i < nrows; ++i) {
-      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1);
+      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1.0);
     }
   }
 
   // setRow
   d = DataMatrix(d_rand);
   DataVector setVectorCol(ncols);
-  setVectorCol.setAll(setValue + 1);
+  setVectorCol.setAll(setValue + 1.0);
   for (int i = 0; i < nrows; ++i) {
     d.setRow(i, setVectorCol);
     for (int j = 0; j < ncols; ++j) {
-      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1);
+      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1.0);
     }
   }
 

@@ -389,7 +389,7 @@ void DataVector::normalize(double border) {
   double min, max;
   minmax(&min, &max);
 
-  double delta = (max - min) / (1 - 2 * border);
+  double delta = (max - min) / (1.0 - 2.0 * border);
 
   for (size_t i = 0; i < this->size(); i++) {
     (*this)[i] = ((*this)[i] - min) / delta + border;

@@ -513,7 +513,7 @@ void DataMatrix::normalizeDimension(size_t d, double border) {
   double xmin, xmax;
   minmax(d, &xmin, &xmax);
 
-  double delta = (xmax - xmin) / (1 - 2 * border);
+  double delta = (xmax - xmin) / (1.0 - 2.0 * border);
 
   if (delta == 0.0) {
     for (size_t i = d; i < n; i += ncols) {
