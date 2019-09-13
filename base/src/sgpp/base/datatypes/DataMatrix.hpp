@@ -94,6 +94,7 @@ class DataMatrix : public std::vector<double> {
    * Create a new DataMatrix from a std::vector<double>.
    *
    * @param input std::vector<double> that contains the data
+   * @param nrows number of rows
    */
   explicit DataMatrix(std::vector<double> input, size_t nrows);
 
@@ -101,6 +102,7 @@ class DataMatrix : public std::vector<double> {
    * Create a new DataMatrix from a std::initializer_list<double>.
    *
    * @param input std::initializer_list<double> that contains the data
+   * @param nrows number of rows
    */
   explicit DataMatrix(std::initializer_list<double> input, size_t nrows);
 

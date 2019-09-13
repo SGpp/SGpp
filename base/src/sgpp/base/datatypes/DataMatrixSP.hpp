@@ -98,6 +98,7 @@ class DataMatrixSP : public std::vector<float> {
    * Create a new DataMatrixSP from a std::vector<float>.
    *
    * @param input std::vector<float> that contains the data
+   * @param nrows number of rows
    */
   explicit DataMatrixSP(std::vector<float> input, size_t nrows);
 
@@ -105,6 +106,7 @@ class DataMatrixSP : public std::vector<float> {
    * Create a new DataMatrixSP from a std::initializer_list<float>.
    *
    * @param input std::initializer_list<float> that contains the data
+   * @param nrows number of rows
    */
   explicit DataMatrixSP(std::initializer_list<float> input, size_t nrows);
 
