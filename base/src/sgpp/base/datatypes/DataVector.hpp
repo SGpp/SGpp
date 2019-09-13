@@ -34,20 +34,20 @@ class DataVector : public std::vector<double> {
    */
   DataVector(const DataVector&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataVector(DataVector&&) = default;
+  /**
+   * Move constructor
+   */
+  DataVector(DataVector&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataVector& operator=(const DataVector&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataVector& operator=(DataVector&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataVector& operator=(DataVector&&) = default;
 
   /**
    * Destructor

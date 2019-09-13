@@ -41,20 +41,20 @@ class DataMatrixSP : public std::vector<float> {
    */
   DataMatrixSP(const DataMatrixSP&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataMatrixSP(DataMatrixSP&&) = default;
+  /**
+   * Move constructor
+   */
+  DataMatrixSP(DataMatrixSP&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataMatrixSP& operator=(const DataMatrixSP&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataMatrixSP& operator=(DataMatrixSP&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataMatrixSP& operator=(DataMatrixSP&&) = default;
 
   /**
    * Destructor

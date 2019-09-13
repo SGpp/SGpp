@@ -37,20 +37,20 @@ class DataMatrix : public std::vector<double> {
    */
   DataMatrix(const DataMatrix&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataMatrix(DataMatrix&&) = default;
+  /**
+   * Move constructor
+   */
+  DataMatrix(DataMatrix&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataMatrix& operator=(const DataMatrix&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataMatrix& operator=(DataMatrix&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataMatrix& operator=(DataMatrix&&) = default;
 
   /**
    * Destructor

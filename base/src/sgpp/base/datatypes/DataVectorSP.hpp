@@ -38,20 +38,20 @@ class DataVectorSP : public std::vector<float> {
    */
   DataVectorSP(const DataVectorSP&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataVectorSP(DataVectorSP&&) = default;
+  /**
+   * Move constructor
+   */
+  DataVectorSP(DataVectorSP&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataVectorSP& operator=(const DataVectorSP&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataVectorSP& operator=(DataVectorSP&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataVectorSP& operator=(DataVectorSP&&) = default;
 
   /**
    * Destructor
