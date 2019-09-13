@@ -90,6 +90,20 @@ class DataMatrix : public std::vector<double> {
    */
   DataMatrix(const double* input, size_t nrows, size_t ncols);
 
+  /**
+   * Create a new DataMatrix from a std::vector<double>.
+   *
+   * @param input std::vector<double> that contains the data
+   */
+  explicit DataMatrix(std::vector<double> input, size_t nrows);
+
+  /**
+   * Create a new DataMatrix from a std::initializer_list<double>.
+   *
+   * @param input std::initializer_list<double> that contains the data
+   */
+  explicit DataMatrix(std::initializer_list<double> input, size_t nrows);
+
   static DataMatrix fromFile(const std::string& fileName);
 
   static DataMatrix fromString(const std::string& serializedVector);

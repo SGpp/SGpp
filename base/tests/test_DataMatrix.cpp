@@ -63,6 +63,17 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
   BOOST_CHECK_EQUAL(d.getSize(), 42 * 17);
   BOOST_CHECK_EQUAL(d.getNrows(), 42);
   BOOST_CHECK_EQUAL(d.getNcols(), 17);
+
+  d = DataMatrix({1.0, 0.5, -2.0, 2.5, 1.0, -0.5}, 3);
+  BOOST_CHECK_EQUAL(d.getSize(), 6);
+  BOOST_CHECK_EQUAL(d.getNrows(), 3);
+  BOOST_CHECK_EQUAL(d.getNcols(), 2);
+  BOOST_CHECK_EQUAL(d(0, 0), 1.0);
+  BOOST_CHECK_EQUAL(d(0, 1), 0.5);
+  BOOST_CHECK_EQUAL(d(1, 0), -2.0);
+  BOOST_CHECK_EQUAL(d(1, 1), 2.5);
+  BOOST_CHECK_EQUAL(d(2, 0), 1.0);
+  BOOST_CHECK_EQUAL(d(2, 1), -0.5);
 }
 
 BOOST_AUTO_TEST_CASE(testSetUp) {

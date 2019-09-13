@@ -34,6 +34,8 @@ DataVector::DataVector(double* input, size_t size) : std::vector<double>(input, 
 
 DataVector::DataVector(std::vector<double> input) : std::vector<double>(input) {}
 
+DataVector::DataVector(std::initializer_list<double> input) : std::vector<double>(input) {}
+
 DataVector::DataVector(std::vector<int> input) {
   // copy data
   this->reserve(input.size());

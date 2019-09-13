@@ -32,6 +32,12 @@ DataMatrix::DataMatrix(size_t nrows, size_t ncols, double value) : nrows(nrows),
 DataMatrix::DataMatrix(const double* input, size_t nrows, size_t ncols)
     : std::vector<double>(input, input + nrows * ncols), nrows(nrows), ncols(ncols) {}
 
+DataMatrix::DataMatrix(std::vector<double> input, size_t nrows)
+    : DataMatrix(input.data(), nrows, input.size() / nrows) {}
+
+DataMatrix::DataMatrix(std::initializer_list<double> input, size_t nrows)
+    : std::vector<double>(input), nrows(nrows), ncols(input.size() / nrows) {}
+
 DataMatrix DataMatrix::fromFile(const std::string& fileName) {
   std::ifstream f(fileName, std::ifstream::in);
   f.exceptions(std::ifstream::failbit | std::ifstream::badbit);

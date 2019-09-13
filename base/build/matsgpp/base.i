@@ -25,10 +25,14 @@ namespace std {
 %rename(operatorAssignment) sgpp::base::DataVectorSP::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrix::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrixSP::operator=;
+%ignore sgpp::base::DataVector::DataVector(std::initializer_list<double>);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::initializer_list<float>);
 %ignore sgpp::base::DataVector::operator[];
 %ignore sgpp::base::DataVectorSP::operator[];
 %ignore sgpp::base::DataVector::getPointer const;
 %ignore sgpp::base::DataVectorSP::getPointer const;
+%ignore sgpp::base::DataMatrix::DataMatrix(std::initializer_list<double>, size_t);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(std::initializer_list<float>, size_t);
 %ignore sgpp::base::DataMatrix::operator[];
 %ignore sgpp::base::DataMatrixSP::operator[];
 %ignore sgpp::base::DataMatrix::operator();
