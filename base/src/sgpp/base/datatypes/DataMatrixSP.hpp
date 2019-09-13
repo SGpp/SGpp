@@ -10,10 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <string>
 #include <vector>
-#include <algorithm>
-
 
 namespace sgpp {
 namespace base {
@@ -30,8 +29,38 @@ namespace base {
  * for single precision floating point numbers in order to
  * increase support for GPUs.
  */
-class DataMatrixSP {
+class DataMatrixSP : public std::vector<float> {
  public:
+  /**
+   * Creates an empty two-dimensional DataMatrixSP.
+   */
+  DataMatrixSP();
+
+  /**
+   * Copy constructor.
+   */
+  DataMatrixSP(const DataMatrixSP&) = default;
+
+  // /**
+  //  * Move constructor
+  //  */
+  // DataMatrixSP(DataMatrixSP&&) = default;
+
+  /**
+   * Copy assignment operator
+   */
+  DataMatrixSP& operator=(const DataMatrixSP&) = default;
+
+  // /**
+  //  * Move assignment operator
+  //  */
+  // DataMatrixSP& operator=(DataMatrixSP&&) = default;
+
+  /**
+   * Destructor
+   */
+  ~DataMatrixSP() = default;
+
   /**
    * Create a two-dimensional DataMatrixSP with @em nrows rows and
    * @em ncols columns (uninitialized values).
@@ -52,13 +81,6 @@ class DataMatrixSP {
   DataMatrixSP(size_t nrows, size_t ncols, float value);
 
   /**
-   * Create a new DataMatrixSP that is a copy of matr.
-   *
-   * @param matr Reference to another instance of DataMatrixSP
-   */
-  DataMatrixSP(const DataMatrixSP& matr);
-
-  /**
    * Create a new DataMatrixSP from a float array.
    * The float array contains the entries row-wise:
    * x0_0,x0_1,...,x0_ncol-1,
@@ -70,8 +92,36 @@ class DataMatrixSP {
    * @param nrows number of rows
    * @param ncols number of columns
    */
-  DataMatrixSP(float* input, size_t nrows, size_t ncols);
+  DataMatrixSP(const float* input, size_t nrows, size_t ncols);
 
+  /**
+   * Create a new DataMatrixSP from a std::vector<float>.
+   *
+   * @param input std::vector<float> that contains the data
+   */
+  explicit DataMatrixSP(std::vector<float> input, size_t nrows);
+
+  /**
+   * Create a new DataMatrixSP from a std::initializer_list<float>.
+   *
+   * @param input std::initializer_list<float> that contains the data
+   */
+  explicit DataMatrixSP(std::initializer_list<float> input, size_t nrows);
+
+  static DataMatrixSP fromFile(const std::string& fileName);
+
+  static DataMatrixSP fromString(const std::string& serializedVector);
+
+  /**
+   * Resizes the DataMatrixSP to nrows rows.
+   * All new additional entries are uninitialized.
+   * If nrows is smaller than the current number of rows,
+   * all superfluous entries are removed.
+   * \deprecated use resizeRows
+   *
+   * @param nrows New number of rows of the DataMatrixSP
+   */
+  void resize(size_t nrows);
 
   /**
    * Resizes the DataMatrixSP to nrows rows.
@@ -81,7 +131,19 @@ class DataMatrixSP {
    *
    * @param nrows New number of rows of the DataMatrixSP
    */
-  void resize(size_t nrows);
+  void resizeRows(size_t nrows);
+
+  /**
+   * Resizes the DataMatrixSP to nrows rows and ncols columns.
+   * All new additional entries are uninitialized.
+   * If nrows*ncols is smaller than the current number of entries,
+   * all superfluous entries are removed.
+   * \deprecated use resizeRowsCols
+   *
+   * @param nrows New number of rows of the DataMatrixSP
+   * @param ncols New number of columns of the DataMatrixSP
+   */
+  void resize(size_t nrows, size_t ncols);
 
   /**
    * Resizes the DataMatrixSP to nrows rows and ncols columns.
@@ -92,13 +154,24 @@ class DataMatrixSP {
    * @param nrows New number of rows of the DataMatrixSP
    * @param ncols New number of columns of the DataMatrixSP
    */
-  void resize(size_t nrows, size_t ncols);
+  void resizeRowsCols(size_t nrows, size_t ncols);
+
+  /**
+   * Resizes the quadratic DataMatrixSP to size rows and size columns.
+   * All new additional entries are uninitialized.
+   * If size is smaller than the current size of the quadratic DataMatrixSP,
+   * all superfluous entries are removed.
+   *
+   * @param size New dimension of quadratic data DataMatrixSP
+   */
+  void resizeQuadratic(size_t size);
 
   /**
    * Resizes the DataMatrixSP to nrows rows.
    * All new additional entries are set to zero.
    * If nrows is smaller than the current number of rows,
    * all superfluous entries are removed.
+   * \deprecated use resizeRows
    *
    * @param nrows New number of rows of the DataMatrixSP
    */
@@ -109,11 +182,20 @@ class DataMatrixSP {
    * All new additional entries are set to zero.
    * If nrows*ncols is smaller than the current number of entries,
    * all superfluous entries are removed.
+   * \deprecated use resizeRowsCols
    *
    * @param nrows New number of rows of the DataMatrixSP
    * @param ncols New number of columns of the DataMatrixSP
    */
   void resizeZero(size_t nrows, size_t ncols);
+
+  /**
+   * Resize current matrix to the submatrix Mat[row_1:row_2, col_1:col_2].
+   *
+   * @param row_1, col_1 corresponding to left upper index of desired submatrix
+   * @param row_2, col_2 corresponding to right lower index of desired submatrix
+   */
+  void resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, size_t col_2);
 
   /**
    * Reserves memory for potentially inc_nrows new rows;
@@ -123,12 +205,10 @@ class DataMatrixSP {
    *
    * @param inc_nrows Number of additional rows for which storage is to be reserved.
    */
-  void addSize(size_t inc_nrows);
+  void reserveAdditionalRows(size_t inc_nrows);
 
   /**
    * Appends a new row and returns index of it.
-   * If the new row does not fit into the reserved memory,
-   * reserves memory for getIncRows() additional rows.
    *
    * @return Index of new row
    */
@@ -137,14 +217,20 @@ class DataMatrixSP {
   /**
    * Appends a new row with data contained in DataVectorSP vec
    * and returns index of new row.
-   * If the new row does not fit into the reserved memory,
-   * reserves memory for getIncRows() additional rows.
    *
    * @param vec DataVectorSP (length has to match getNcols()) with data
    * @return Index of new row
    */
   size_t appendRow(const DataVectorSP& vec);
 
+  /**
+   * Appends a new Col with data contained in DataVectorSP vec
+   * and returns index of new col.
+   *
+   * @param vec DataVectorSP (length has to match getNcols()) with data
+   * @return Index of new col
+   */
+  size_t appendCol(const DataVectorSP& vec);
 
   /**
    * Sets all entries of DataMatrixSP to value.
@@ -171,24 +257,13 @@ class DataMatrixSP {
   void transpose();
 
   /**
-   * Copies the data from another DataMatrixSP.
-   * Dimensions have to match.
-   *
-   * @param matr the DataMatrixSP containing the data
-   * @return *this
-   */
-  DataMatrixSP& operator=(const DataMatrixSP& matr);
-
-  /**
    * Returns the value of the element at position [row,col]
    *
    * @param row Row
    * @param col Column
    * @return reference to the element
    */
-  inline float& operator()(size_t row, size_t col) {
-    return data[row * ncols + col];
-  }
+  inline float& operator()(size_t row, size_t col) { return (*this)[row * ncols + col]; }
 
   /**
    * Returns the value of the element at position [row,col]
@@ -198,7 +273,7 @@ class DataMatrixSP {
    * @return constant reference to the element
    */
   inline const float& operator()(size_t row, size_t col) const {
-    return data[row * ncols + col];
+    return (*this)[row * ncols + col];
   }
 
   /**
@@ -208,9 +283,7 @@ class DataMatrixSP {
    * @param col Column
    * @return Value of the element
    */
-  inline float get(size_t row, size_t col) const {
-    return data[row * ncols + col];
-  }
+  inline float get(size_t row, size_t col) const { return (*this)[row * ncols + col]; }
 
   /**
    * Sets the element at position [row,col] to value.
@@ -219,9 +292,7 @@ class DataMatrixSP {
    * @param col Column
    * @param value New value for element
    */
-  inline void set(size_t row, size_t col, float value) {
-    data[row * ncols + col] = value;
-  }
+  inline void set(size_t row, size_t col, float value) { (*this)[row * ncols + col] = value; }
 
   /**
    * Copies the values of a row to the DataVectorSP vec.
@@ -263,7 +334,6 @@ class DataMatrixSP {
    */
   void setColumn(size_t col, const DataVectorSP& vec);
 
-
   /**
    * Adds the values from another DataMatrixSP to the current values.
    * Modifies the current values.
@@ -293,11 +363,11 @@ class DataMatrixSP {
    * columns by adding all entries in one row.
    *
    * @param reduction DataVectorSP to which the reduce columns are added
-   * @param beta vector with length of number of columns beta[i] is multiplied to each element row[j][i]
+   * @param beta vector with length of number of columns beta[i] is multiplied to each element
+   *             row[j][i]
    * @param start_beta where to start using the beta coefficients
    */
-  void addReduce(DataVectorSP& reduction, DataVectorSP& beta,
-                 size_t start_beta);
+  void addReduce(DataVectorSP& reduction, DataVectorSP& beta, size_t start_beta);
 
   /**
    * expands a given DataVectorSP into a
@@ -335,6 +405,13 @@ class DataMatrixSP {
   void componentwise_div(const DataMatrixSP& matr);
 
   /**
+   * Multiplies all elements by a constant factor
+   *
+   * @param scalar the constant
+   */
+  void mult(float scalar);
+
+  /**
    * Multiplies the matrix with a vector x and stores the result
    * in another vector y.
    *
@@ -342,13 +419,6 @@ class DataMatrixSP {
    * @param[out] y vector in which the result should be stored
    */
   void mult(const DataVectorSP& x, DataVectorSP& y);
-
-  /**
-   * Multiplies all elements by a constant factor
-   *
-   * @param scalar the constant
-   */
-  void mult(float scalar);
 
   /**
    * Squares all elements of the DataMatrixSP
@@ -441,17 +511,15 @@ class DataMatrixSP {
    *
    * @return Number of elements stored in the matrix
    */
-  inline size_t getSize() const {
-    return ncols * nrows;
-  }
+  inline size_t getSize() const { return this->ncols * this->nrows; }
 
   /**
    * Returns the number of unused rows.
    *
    * @return number of unused rows
    */
-  inline size_t getUnused() const {
-    return unused;
+  inline size_t getAdditionallyReservedRows() const {
+    return this->size() / this->ncols - this->nrows;
   }
 
   /**
@@ -466,39 +534,14 @@ class DataMatrixSP {
    *
    * @return Number of rows
    */
-  inline size_t getNrows() const {
-    return nrows;
-  }
+  inline size_t getNrows() const { return this->nrows; }
 
   /**
    * Returns the number of columns of the DataMatrixSP.
    *
    * @return Number of columns
    */
-  inline size_t getNcols() const {
-    return ncols;
-  }
-
-  /**
-   * Get the current number of rows by which the DataMatrixSP is extended,
-   * if appendRow() is called and no unused rows are left
-   *
-   * @return Row increment
-   */
-  inline size_t getInc() const {
-    return inc_rows;
-  }
-
-  /**
-   * Sets the current number of rows by which the DataMatrixSP is extended,
-   * if appendRow() is called and no unused rows are left.
-   * Defaults to 100.
-   *
-   * @param inc_rows Row increment
-   */
-  void setInc(size_t inc_rows) {
-    this->inc_rows = inc_rows;
-  }
+  inline size_t getNcols() const { return this->ncols; }
 
   /**
    * Normalizes the d-th dimension (entries in the d-th column) to @f$[0,1]@f$.
@@ -526,6 +569,8 @@ class DataMatrixSP {
    */
   void toString(std::string& text) const;
 
+  void toFile(const std::string& fileName) const;
+
   /**
    * Returns a description of the DataMatrixSP as a string.
    *
@@ -533,25 +578,23 @@ class DataMatrixSP {
    */
   std::string toString() const;
 
-  /**
-   * Destructor
-   */
-  virtual ~DataMatrixSP();
-
  private:
-  /// Pointer to the data
-  float* data;
+  inline iterator row_begin(size_t row) { return this->begin() + row * this->ncols; }
+
+  inline const_iterator row_begin(size_t row) const { return this->row_cbegin(row); }
+
+  inline const_iterator row_cbegin(size_t row) const { return this->cbegin() + row * this->ncols; }
+
+  inline iterator row_end(size_t row) { return this->row_begin(row + 1); }
+
+  inline const_iterator row_end(size_t row) const { return this->row_cend(row); }
+
+  inline const_iterator row_cend(size_t row) const { return this->row_cbegin(row + 1); }
+
   /// Number of rows of the data matrix
   size_t nrows;
   /// Number of columns of the data matrix
   size_t ncols;
-  /// Number of additional rows for which memory has already been reserved
-  size_t unused;
-  /**
-   * Number of rows by which the reserved memory is increased,
-   * if adding a row would exceed the storage reserved so far.
-   */
-  size_t inc_rows;
 };
 
 }  // namespace base

@@ -360,7 +360,7 @@ class DataMatrix : public std::vector<double> {
    *
    * @param reduction DataVector to which the reduce columns are added
    * @param beta vector with length of number of columns beta[i] is multiplied to each element
-   *row[j][i]
+   *             row[j][i]
    * @param start_beta where to start using the beta coefficients
    */
   void addReduce(DataVector& reduction, DataVector& beta, size_t start_beta);
