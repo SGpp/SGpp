@@ -4,3 +4,18 @@
 // sgpp.sparsegrids.org
 
 #pragma once
+
+#include <sgpp/combigrid/CombinationGrid.hpp>
+#include <sgpp/combigrid/FullGrid.hpp>
+#include <sgpp/combigrid/GeneralOperation.hpp>
+#include <sgpp/combigrid/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/IndexVectorIterator.hpp>
+#include <sgpp/combigrid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/LevelIndexTypes.hpp>
+#include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
+#include <sgpp/combigrid/OperationEvalFullGrid.hpp>
+#include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/OperationPoleHierarchisationBspline.hpp>
+#include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
+#include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
+#include <sgpp/combigrid/OperationUPFullGrid.hpp>
