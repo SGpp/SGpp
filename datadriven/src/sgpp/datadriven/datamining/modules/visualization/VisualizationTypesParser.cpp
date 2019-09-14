@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
-
 #include <sgpp/base/exception/data_exception.hpp>
 
 #include <algorithm>
