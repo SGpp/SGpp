@@ -1,19 +1,12 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * VisualizerDensityEstimation.hpp
- *
- *  Created on: 16th Jun 2019
- *      Author: Vincent Bautista
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
-#include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
+#include <sgpp/base/tools/json/JSON.hpp>
 #include <omp.h>
 #include <iostream>
 #include <memory>
@@ -658,7 +651,7 @@ void VisualizerDensityEstimation::getHeatmap2D(
 
 void VisualizerDensityEstimation::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model,
   std::string currentDirectory) {
-  JSON jsonOutput;
+  json::JSON jsonOutput;
 
   jsonOutput.addListAttr("data");
 
@@ -711,7 +704,7 @@ size_t &varDim, std::string filepath) {
   indexes.erase(std::find(indexes.begin(), indexes.end(), varDim));
 
 
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
 
   jsonOutput.addDictAttr("layout");
@@ -840,7 +833,7 @@ size_t &varDim, std::string filepath) {
 }
 
 void VisualizerDensityEstimation::storeCutJson(DataMatrix &matrix, std::string filepath) {
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
 
   jsonOutput.addDictAttr("layout");
@@ -892,7 +885,7 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
   double maxValue = matrix.max(matrix.getNcols()-1);
   double minValue = matrix.min(matrix.getNcols()-1);
 
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
   jsonOutput.addDictAttr("layout");
   jsonOutput["layout"].addDictAttr("title");
@@ -1101,7 +1094,7 @@ std::string filepath) {
   double maxValue = matrix.max();
   double minValue = matrix.min();
 
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
 
   jsonOutput.addDictAttr("layout");

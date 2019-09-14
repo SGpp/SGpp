@@ -26,6 +26,7 @@ BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
 using sgpp::base::GridType;
 using sgpp::base::RegularGridConfiguration;
+using sgpp::base::AdaptivityConfiguration;
 using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::datadriven::DataSourceConfig;
 using sgpp::datadriven::DataSourceFileType;
@@ -39,6 +40,8 @@ using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::ScorerMetricType;
 using sgpp::solver::SLESolverConfiguration;
 using sgpp::solver::SLESolverType;
+using sgpp::datadriven::VisualizationGeneralConfig;
+using sgpp::datadriven::VisualizationParameters;
 
 using sgpp::datadriven::VisualizationFileType;
 

@@ -30,6 +30,7 @@
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -40,6 +41,12 @@ using json::json_exception;
 using sgpp::base::data_exception;
 using sgpp::base::file_exception;
 using sgpp::solver::SLESolverConfiguration;
+using sgpp::base::GeneralGridConfiguration;
+using sgpp::base::AdaptivityConfiguration;
+using sgpp::datadriven::VisualizationParameters;
+using sgpp::datadriven::VisualizationGeneralConfig;
+using sgpp::datadriven::CrossvalidationConfiguration;
+using sgpp::datadriven::DensityEstimationConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -307,7 +314,8 @@ bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &confi
 }
 
 bool DataMiningConfigParser::getFitterAdaptivityConfig(
-    AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
+    sgpp::base::AdaptivityConfiguration &config,
+    const sgpp::base::AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
 
