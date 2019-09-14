@@ -16,12 +16,16 @@
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/OperationPoleHierarchisationGeneral.hpp>
 #include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
 #include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
 #include <sgpp/combigrid/OperationUPFullGrid.hpp>
 #include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
 
 #include <boost/test/unit_test.hpp>
+
+#include <memory>
+#include <vector>
 
 // TODO(valentjn)
 #include <iostream>
@@ -35,6 +39,7 @@ using sgpp::combigrid::IndexVectorRange;
 using sgpp::combigrid::LevelVector;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
+using sgpp::combigrid::OperationPoleHierarchisationGeneral;
 using sgpp::combigrid::OperationPoleHierarchisationLinear;
 using sgpp::combigrid::OperationPoleNodalisationBspline;
 using sgpp::combigrid::OperationUPFullGrid;
@@ -120,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   BOOST_CHECK_EQUAL(op.eval(surpluses, point), -3.9375);
 }
 
-BOOST_AUTO_TEST_CASE(testOperationUPFullGrid) {
+BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
   sgpp::base::SLinearBase basis1d;
   HeterogeneousBasis basis(2, basis1d);
   FullGrid fullGrid({2, 1}, basis);
@@ -131,6 +136,26 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGrid) {
   operation.apply(values);
   DataVector correctSurpluses{-0.5, 3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
                               -2.1875, 1.0, 2.0, -2.5, 0.5, -2.0, -1.0};
+
+  for (size_t i = 0; i < values.size(); i++) {
+    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
+  sgpp::base::SBsplineBase basis1d(3);
+  HeterogeneousBasis basis(2, basis1d);
+  FullGrid fullGrid({2, 1}, basis);
+  std::vector<std::unique_ptr<OperationPole>> operationPole;
+  OperationPoleHierarchisationGeneral::fromHeterogenerousBasis(basis, operationPole);
+  OperationUPFullGrid operation(fullGrid, operationPole);
+  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+                    -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+  operation.apply(values);
+  DataVector correctSurpluses{-4.34548191029053, 11.29388598889826, -0.45638469432632633,
+      8.30837174457185, -3.402942074462426, -4.7579856595053664, 10.752772401474628,
+      4.220642134584388, -8.117821514507945, 5.795370207225638, 8.991769884961288,
+      -15.38082204309674, 3.036651517372788, -7.852574819533291, -3.5702774351738715};
 
   for (size_t i = 0; i < values.size(); i++) {
     BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);

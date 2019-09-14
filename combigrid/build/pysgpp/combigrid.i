@@ -16,6 +16,7 @@
 %include "combigrid/src/sgpp/combigrid/OperationEvalCombinationGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationEvalFullGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationPole.hpp"
+%include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationGeneral.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationLinear.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationBspline.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationLinear.hpp"
@@ -23,8 +24,9 @@
 %include "combigrid/src/sgpp/combigrid/OperationUPCombinationGrid.hpp"
 
 namespace std {
-  %template(FullGridVector) vector<sgpp::combigrid::FullGrid>;
-  %template(LevelVectorVector) vector<sgpp::combigrid::LevelVector>;
   %template(BasisVector) vector<sgpp::base::Basis<sgpp::combigrid::level_t, sgpp::combigrid::index_t>*>;
+  %template(FullGridVector) vector<sgpp::combigrid::FullGrid>;
+  %template(LevelVector) vector<sgpp::combigrid::level_t>;
+  %template(LevelVectorVector) vector<sgpp::combigrid::LevelVector>;
   %template(OperationPoleVector) vector<sgpp::combigrid::OperationPole*>;
 }

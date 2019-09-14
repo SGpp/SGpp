@@ -46,6 +46,14 @@ class HeterogeneousBasis {
     return result;
   }
 
+  size_t getDimension() const {
+    return bases1d.size();
+  }
+
+  const std::vector<base::Basis<level_t, index_t>*> getBases1d() const {
+    return bases1d;
+  }
+
  protected:
   std::vector<base::Basis<level_t, index_t>*> bases1d;
 };
