@@ -1,14 +1,8 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * VisualizerDensityEstimation.hpp
- *
- *  Created on: 16th Jun 2019
- *      Author: Vincent Bautista
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
@@ -361,7 +355,7 @@ void VisualizerClassification::getHeatmap2DClassification(
 
 void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model,
   std::string currentDirectory) {
-  JSON jsonOutput;
+  json::JSON jsonOutput;
 
   jsonOutput.addListAttr("data");
 
@@ -430,7 +424,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
   double maxValue = matrix.max(matrix.getNcols()-1);
   double minValue = matrix.min(matrix.getNcols()-1);
 
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
   jsonOutput.addDictAttr("layout");
   jsonOutput["layout"].addDictAttr("title");
@@ -745,7 +739,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
   unsigned int graphIndex = 0;
 
-  JSON jsonOutput;
+  json::JSON jsonOutput;
   jsonOutput.addListAttr("data");
 
   jsonOutput.addDictAttr("layout");

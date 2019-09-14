@@ -29,16 +29,6 @@ struct DataSourceConfig;
 } /* namespace datadriven */
 } /* namespace sgpp */
 
-using json::DictNode;
-using json::JSON;
-
-using sgpp::base::AdaptivityConfiguration;
-using sgpp::base::GeneralGridConfiguration;
-using sgpp::datadriven::CrossvalidationConfiguration;
-using sgpp::datadriven::DensityEstimationConfiguration;
-using sgpp::datadriven::VisualizationGeneralConfig;
-using sgpp::datadriven::VisualizationParameters;
-using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -67,7 +57,7 @@ class DataMiningConfigParser {
                           std::map<std::string, DiscreteParameter> &catpar,
                           std::vector<base::GridType> &basisFunctions) const;
   void getHPOConfig(HPOConfig &config);
-  std::vector<int64_t> parseIntArray(DictNode &dict, const std::string &key,
+  std::vector<int64_t> parseIntArray(json::JSON::DictNode &dict, const std::string &key,
                                      std::vector<int64_t> defaultValue,
                                      const std::string &parentNode) const;
   std::string getHPOMethod(std::string defaultValue) const;
@@ -88,18 +78,18 @@ class DataMiningConfigParser {
   bool getScorerConfig(ScorerConfiguration &config, const ScorerConfiguration &defaults) const;
 
   bool getFitterConfigType(FitterType &fitter, const FitterType &defaults) const;
-  bool getFitterGridConfig(GeneralGridConfiguration &config,
-                           const GeneralGridConfiguration &defaults) const;
-  bool getFitterAdaptivityConfig(AdaptivityConfiguration &config,
-                                 const AdaptivityConfiguration &defaults) const;
+  bool getFitterGridConfig(base::GeneralGridConfiguration &config,
+              const base::GeneralGridConfiguration &defaults) const;
+  bool getFitterAdaptivityConfig(base::AdaptivityConfiguration &config,
+              const base::AdaptivityConfiguration &defaults) const;
   bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
-                                      const CrossvalidationConfiguration &defaults) const;
+              const CrossvalidationConfiguration &defaults) const;
   bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
-                                        const DensityEstimationConfiguration &defaults) const;
-  bool getFitterSolverRefineConfig(SLESolverConfiguration &config,
-                                   const SLESolverConfiguration &defaults) const;
-  bool getFitterSolverFinalConfig(SLESolverConfiguration &config,
-                                  const SLESolverConfiguration &defaults) const;
+              const DensityEstimationConfiguration &defaults) const;
+  bool getFitterSolverRefineConfig(solver::SLESolverConfiguration &config,
+                                   const solver::SLESolverConfiguration &defaults) const;
+  bool getFitterSolverFinalConfig(solver::SLESolverConfiguration &config,
+                                  const solver::SLESolverConfiguration &defaults) const;
   bool getFitterRegularizationConfig(RegularizationConfiguration &config,
                                      const RegularizationConfiguration &defaults) const;
   bool getFitterLambda(double &lambda, double defaultValue) const;
@@ -146,45 +136,45 @@ class DataMiningConfigParser {
    * @param defaults default balues if the fitter config does not contain a matching entry
    * @return wether the configuration contains a visualization configuration
    */
-  bool getVisualizationGeneralConfig(VisualizationGeneralConfig &config,
-    const VisualizationGeneralConfig &defaults) const;
+  bool getVisualizationGeneralConfig(datadriven::VisualizationGeneralConfig &config,
+    const datadriven::VisualizationGeneralConfig &defaults) const;
 
-  bool getVisualizationParameters(VisualizationParameters &config,
-                                  const VisualizationParameters &defaults) const;
+  bool getVisualizationParameters(datadriven::VisualizationParameters &config,
+            const datadriven::VisualizationParameters &defaults) const;
 
  private:
-  std::unique_ptr<JSON> configFile;
+  std::unique_ptr<json::JSON> configFile;
 
   static const std::string dataSource;
   static const std::string scorer;
   static const std::string fitter;
   static const std::string visualization;
 
-  std::string parseString(DictNode &dict, const std::string &key, const std::string &defaultValue,
+  std::string parseString(json::JSON::DictNode &dict, const std::string &key, const std::string &defaultValue,
                           const std::string &parentNode) const;
-  double parseDouble(DictNode &dict, const std::string &key, double defaultValue,
+  double parseDouble(json::JSON::DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
-  std::vector<double> parseDoubleArray(DictNode &dict, const std::string &key,
+  std::vector<double> parseDoubleArray(json::JSON::DictNode &dict, const std::string &key,
                                        std::vector<double> defaultValue,
                                        const std::string &parentNode) const;
-  std::vector<size_t> parseUIntArray(DictNode &dict, const std::string &key,
+  std::vector<size_t> parseUIntArray(json::JSON::DictNode &dict, const std::string &key,
                                      std::vector<size_t> defaultValue,
                                      const std::string &parentNode) const;
-  size_t parseUInt(DictNode &dict, const std::string &key, size_t defaultValue,
+  size_t parseUInt(json::JSON::DictNode &dict, const std::string &key, size_t defaultValue,
                    const std::string &parentNode) const;
-  int64_t parseInt(DictNode &dict, const std::string &key, int64_t defaultValue,
+  int64_t parseInt(json::JSON::DictNode &dict, const std::string &key, int64_t defaultValue,
                    const std::string &parentNode) const;
-  bool parseBool(DictNode &dict, const std::string &key, bool defaultValue,
+  bool parseBool(json::JSON::DictNode &dict, const std::string &key, bool defaultValue,
                  const std::string &parentNode) const;
 
-  void parseSLESolverConfig(DictNode &dict, SLESolverConfiguration &config,
-                            const SLESolverConfiguration &defaults,
+  void parseSLESolverConfig(json::JSON::DictNode &dict,solver:: SLESolverConfiguration &config,
+                            const solver::SLESolverConfiguration &defaults,
                             const std::string &parentNode) const;
 
-  void parseDataTransformationConfig(DictNode &dict, DataTransformationConfig &config,
+  void parseDataTransformationConfig(json::JSON::DictNode &dict, DataTransformationConfig &config,
                                      const DataTransformationConfig &defaults,
                                      const std::string &parentNode) const;
-  void parseRosenblattTransformationConfig(DictNode &dict, RosenblattTransformationConfig &config,
+  void parseRosenblattTransformationConfig(json::JSON::DictNode &dict, RosenblattTransformationConfig &config,
                                            const RosenblattTransformationConfig &defaults,
                                            const std::string &parentNode) const;
 

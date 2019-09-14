@@ -17,7 +17,6 @@
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <string>
-#include <iostream>
 
 namespace sgpp {
 namespace datadriven {
