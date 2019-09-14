@@ -64,7 +64,7 @@ class CombinationGrid {
     }
   }
 
-  static CombinationGrid regular(size_t dim, level_t n, HeterogeneousBasis basis,
+  static CombinationGrid fromRegular(size_t dim, level_t n, HeterogeneousBasis basis,
       bool hasBoundary = true) {
     std::vector<size_t> binomialCoefficients((dim+1)/2);
     binomialCoefficients[0] = 1.0;

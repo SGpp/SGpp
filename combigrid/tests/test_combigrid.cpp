@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   HeterogeneousBasis basis(3, basis1d);
 
   for (bool hasBoundary : {true, false}) {
-    CombinationGrid combinationGrid = CombinationGrid::regular(3, 5, basis, hasBoundary);
+    CombinationGrid combinationGrid = CombinationGrid::fromRegular(3, 5, basis, hasBoundary);
     BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
         (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
     sgpp::base::GridStorage gridStorage(3);
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   sgpp::base::SLinearBase basis1d;
   HeterogeneousBasis basis(2, basis1d);
-  CombinationGrid combinationGrid = CombinationGrid::regular(2, 2, basis, false);
+  CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 2, basis, false);
   OperationEvalCombinationGrid op(combinationGrid);
   std::vector<DataVector> surpluses = {
       DataVector{1.0, -2.0, -1.0}, DataVector{-0.5, 0.5, 1.0}, DataVector{5.0}};
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
 BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
   sgpp::base::SBsplineBase basis1d;
   HeterogeneousBasis basis(2, basis1d);
-  CombinationGrid combinationGrid = CombinationGrid::regular(2, 1, basis);
+  CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 1, basis);
   OperationPoleNodalisationBspline operationPole(3);
   OperationUPCombinationGrid operation(combinationGrid, operationPole);
   std::vector<DataVector> values = {
