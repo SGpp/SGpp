@@ -113,7 +113,7 @@ class CombinationGrid {
         for (size_t d = 0; d < dim; d++) {
           level_t l = level[d];
           index_t i = index[d];
-          FullGrid::hierarchizeLevelIndex(l, i);
+          HeterogeneousBasis::hierarchizeLevelIndex(l, i);
           point.set(d, l, i);
         }
 

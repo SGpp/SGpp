@@ -35,6 +35,17 @@ class HeterogeneousBasis {
   HeterogeneousBasis(size_t dim, base::Basis<level_t, index_t>& basis1d) : bases1d(dim, &basis1d) {
   }
 
+  inline static void hierarchizeLevelIndex(level_t& level, index_t& index) {
+    if (index == 0) {
+      level = 0;
+    } else if (level > 0) {
+      while (index % 2 == 0) {
+        level--;
+        index /= 2;
+      }
+    }
+  }
+
   inline double eval(LevelVector level, IndexVector index, base::DataVector point) const {
     double result = 1.0;
     const size_t dim = bases1d.size();

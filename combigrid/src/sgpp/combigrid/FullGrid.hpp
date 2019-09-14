@@ -22,17 +22,6 @@ class FullGrid {
       level(level), hasBoundary_(hasBoundary), basis(basis) {
   }
 
-  inline static void hierarchizeLevelIndex(level_t& level, index_t& index) {
-    if (index == 0) {
-      level = 0;
-    } else if (level > 0) {
-      while (index % 2 == 0) {
-        level--;
-        index /= 2;
-      }
-    }
-  }
-
   const LevelVector& getLevel() const {
     return level;
   }

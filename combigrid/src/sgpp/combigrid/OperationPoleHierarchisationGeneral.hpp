@@ -75,7 +75,7 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
     double getMatrixEntry(size_t i, size_t j) override {
       level_t levelBasis = level;
       index_t indexBasis = static_cast<index_t>(j);
-      FullGrid::hierarchizeLevelIndex(levelBasis, indexBasis);
+      HeterogeneousBasis::hierarchizeLevelIndex(levelBasis, indexBasis);
       const double point = static_cast<double>(i + (hasBoundary_ ? 0 : 1)) /
           (static_cast<index_t>(1) << level);
       return basis.eval(levelBasis, indexBasis, point);
