@@ -16,7 +16,7 @@
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
-#include <sgpp/combigrid/OperationPoleHierarchisationBspline.hpp>
+#include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
 #include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -33,7 +33,7 @@ using sgpp::combigrid::IndexVectorRange;
 using sgpp::combigrid::LevelVector;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
-using sgpp::combigrid::OperationPoleHierarchisationBspline;
+using sgpp::combigrid::OperationPoleNodalisationBspline;
 using sgpp::combigrid::OperationUPCombinationGrid;
 
 // fix for clang (from https://stackoverflow.com/a/33755176)
@@ -120,12 +120,12 @@ BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
   sgpp::base::SBsplineBase basis1d;
   HeterogeneousBasis basis(2, basis1d);
   CombinationGrid combinationGrid = CombinationGrid::regular(2, 1, basis);
-  OperationPoleHierarchisationBspline operationPole(3);
-  OperationUPCombinationGrid op(combinationGrid, operationPole);
+  OperationPoleNodalisationBspline operationPole(3);
+  OperationUPCombinationGrid operation(combinationGrid, operationPole);
   std::vector<DataVector> values = {
       DataVector{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0}, DataVector{5.0, 2.5, -1.5, 0.0, 2.0, -1.0},
       DataVector{1.0, -2.0, -1.0, 0.5}};
-  op.apply(values);
+  operation.apply(values);
   BOOST_CHECK_CLOSE(values[0][0], -3.83571429, 1e-6);
   BOOST_CHECK_CLOSE(values[0][1], 9.34285714, 1e-6);
   BOOST_CHECK_CLOSE(values[0][2], -2.33571429, 1e-6);

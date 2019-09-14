@@ -19,8 +19,8 @@
 %include "combigrid/src/sgpp/combigrid/OperationEvalFullGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/GeneralOperation.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationPole.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationBspline.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationLinear.hpp"
+%include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationBspline.hpp"
+%include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationLinear.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationUPFullGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/OperationUPCombinationGrid.hpp"
 

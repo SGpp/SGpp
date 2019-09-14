@@ -13,17 +13,17 @@
 namespace sgpp {
 namespace combigrid {
 
-class OperationPoleHierarchisationLinear : public OperationPole {
+class OperationPoleNodalisationLinear : public OperationPole {
  public:
-  explicit OperationPoleHierarchisationLinear(level_t level = 0, bool hasBoundary = true) :
+  explicit OperationPoleNodalisationLinear(level_t level = 0, bool hasBoundary = true) :
       OperationPole(level, hasBoundary) {
   }
 
-  ~OperationPoleHierarchisationLinear() override {
+  ~OperationPoleNodalisationLinear() override {
   }
 
   void apply(base::DataVector& values, size_t start, size_t step, size_t count) override {
-    // do nothing, as surpluses equal values
+    // do nothing, as nodal coefficients equal values
   }
 };
 

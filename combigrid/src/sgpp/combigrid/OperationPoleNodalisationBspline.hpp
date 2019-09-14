@@ -13,19 +13,19 @@
 namespace sgpp {
 namespace combigrid {
 
-class OperationPoleHierarchisationBspline : public OperationPole {
+class OperationPoleNodalisationBspline : public OperationPole {
  public:
-  explicit OperationPoleHierarchisationBspline(size_t degree, level_t level = 0, bool hasBoundary = true) :
-      OperationPole(level, hasBoundary), degree(degree) {
+  explicit OperationPoleNodalisationBspline(size_t degree, level_t level = 0,
+      bool hasBoundary = true) : OperationPole(level, hasBoundary), degree(degree) {
   }
 
-  ~OperationPoleHierarchisationBspline() override {
+  ~OperationPoleNodalisationBspline() override {
   }
 
   void apply(base::DataVector& values, size_t start, size_t step, size_t count) override {
     switch (degree) {
       case 1: {
-        // do nothing, as surpluses equal values
+        // do nothing, as nodal coefficients equal values
         break;
       }
       case 3: {
