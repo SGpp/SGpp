@@ -3,10 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%ignore sgpp::combigrid::HeterogeneousBasis::HeterogeneousBasis(size_t, base::Basis<level_t, index_t>&);
 %ignore sgpp::combigrid::IndexVectorRange::begin;
 %ignore sgpp::combigrid::IndexVectorRange::end;
-%ignore sgpp::combigrid::OperationUPCombinationGrid::OperationUPCombinationGrid(const CombinationGrid&, OperationPole&);
 %shared_ptr(sgpp::combigrid::OperationEvalFullGrid);
 
 %include "combigrid/src/sgpp/combigrid/LevelIndexTypes.hpp"
