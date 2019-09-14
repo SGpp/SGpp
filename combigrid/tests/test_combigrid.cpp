@@ -16,7 +16,9 @@
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
 #include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
+#include <sgpp/combigrid/OperationUPFullGrid.hpp>
 #include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
 
 #include <boost/test/unit_test.hpp>
@@ -33,7 +35,9 @@ using sgpp::combigrid::IndexVectorRange;
 using sgpp::combigrid::LevelVector;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
+using sgpp::combigrid::OperationPoleHierarchisationLinear;
 using sgpp::combigrid::OperationPoleNodalisationBspline;
+using sgpp::combigrid::OperationUPFullGrid;
 using sgpp::combigrid::OperationUPCombinationGrid;
 
 // fix for clang (from https://stackoverflow.com/a/33755176)
@@ -114,6 +118,23 @@ BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   // + (-1) * 5.0*0.75*0.75
   // = (0 - 0.75 - 0.375) + (-0.1875 + 0.1875 + 0) - 2.8125 = -1.125 + 0 - 2.8125 = -3.9375
   BOOST_CHECK_EQUAL(op.eval(surpluses, point), -3.9375);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationUPFullGrid) {
+  sgpp::base::SLinearBase basis1d;
+  HeterogeneousBasis basis(2, basis1d);
+  FullGrid fullGrid({2, 1}, basis);
+  OperationPoleHierarchisationLinear operationPole(3);
+  OperationUPFullGrid operation(fullGrid, operationPole);
+  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+                    -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+  operation.apply(values);
+  DataVector correctSurpluses{-0.5, 3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
+                              -2.1875, 1.0, 2.0, -2.5, 0.5, -2.0, -1.0};
+
+  for (size_t i = 0; i < values.size(); i++) {
+    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {

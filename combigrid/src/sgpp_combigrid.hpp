@@ -15,6 +15,7 @@
 #include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/OperationEvalFullGrid.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
 #include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
 #include <sgpp/combigrid/OperationPoleNodalisationLinear.hpp>
 #include <sgpp/combigrid/OperationUPCombinationGrid.hpp>

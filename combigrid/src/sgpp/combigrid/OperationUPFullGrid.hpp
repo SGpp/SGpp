@@ -22,6 +22,14 @@ class OperationUPFullGrid : public GeneralOperation {
       grid(grid), operationPole(operationPole) {
   }
 
+  OperationUPFullGrid(const FullGrid& grid, OperationPole* operationPole) :
+      grid(grid), operationPole(grid.getDimension(), operationPole) {
+  }
+
+  OperationUPFullGrid(const FullGrid& grid, OperationPole& operationPole) :
+      OperationUPFullGrid(grid, &operationPole) {
+  }
+
   ~OperationUPFullGrid() override {
   }
 
