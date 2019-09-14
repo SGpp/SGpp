@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/HeterogeneousBasis.hpp>

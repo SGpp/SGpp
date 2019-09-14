@@ -52,6 +52,21 @@ class IndexVectorRange {
     numberOfIndexVectors = grid.getNumberOfIndexVectors();
   }
 
+  void getPoints(base::DataMatrix& points) const {
+    const LevelVector& level = grid.getLevel();
+    size_t i = 0;
+    points.resize(numberOfIndexVectors, dim);
+
+    for (const IndexVector& index : *this) {
+      for (size_t d = 0; d < dim; d++) {
+        points(i, d) = static_cast<double>(index[d]) /
+            static_cast<double>(static_cast<index_t>(1) << level[d]);
+      }
+
+      i++;
+    }
+  }
+
  protected:
   size_t dim;
   FullGrid grid;
