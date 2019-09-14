@@ -34,6 +34,8 @@ DataVector::DataVector(double* input, size_t size) : std::vector<double>(input, 
 
 DataVector::DataVector(std::vector<double> input) : std::vector<double>(input) {}
 
+DataVector::DataVector(std::initializer_list<double> input) : std::vector<double>(input) {}
+
 DataVector::DataVector(std::vector<int> input) {
   // copy data
   this->reserve(input.size());
@@ -258,7 +260,7 @@ void DataVector::sqrt() {
 
 void DataVector::abs() {
   for (size_t i = 0; i < this->size(); i++) {
-    (*this)[i] = std::fabs((*this)[i]);
+    (*this)[i] = std::abs((*this)[i]);
   }
 }
 
@@ -276,8 +278,8 @@ double DataVector::maxNorm() const {
   double max = 0.0;
 
   for (size_t i = 0; i < this->size(); i++) {
-    if (max < fabs((*this)[i])) {
-      max = fabs((*this)[i]);
+    if (max < std::abs((*this)[i])) {
+      max = std::abs((*this)[i]);
     }
   }
 
@@ -367,7 +369,7 @@ size_t DataVector::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < this->size(); i++) {
-    if (fabs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0) {
       nonZero++;
     }
   }
@@ -387,7 +389,7 @@ void DataVector::normalize(double border) {
   double min, max;
   minmax(&min, &max);
 
-  double delta = (max - min) / (1 - 2 * border);
+  double delta = (max - min) / (1.0 - 2.0 * border);
 
   for (size_t i = 0; i < this->size(); i++) {
     (*this)[i] = ((*this)[i] - min) / delta + border;

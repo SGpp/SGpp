@@ -26,14 +26,26 @@ namespace std {
 %rename(operatorAssignment) sgpp::base::DataVectorSP::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrix::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrixSP::operator=;
+%ignore sgpp::base::DataVector::DataVector(DataVector&&);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(DataVectorSP&&);
+%ignore sgpp::base::DataVector::DataVector(std::initializer_list<double>);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::initializer_list<float>);
 %ignore sgpp::base::DataVector::operator[];
 %ignore sgpp::base::DataVectorSP::operator[];
+%ignore sgpp::base::DataVector::operator=(DataVector&&);
+%ignore sgpp::base::DataVectorSP::operator=(DataVectorSP&&);
 %ignore sgpp::base::DataVector::getPointer const;
 %ignore sgpp::base::DataVectorSP::getPointer const;
+%ignore sgpp::base::DataMatrix::DataMatrix(DataMatrix&&);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(DataMatrixSP&&);
+%ignore sgpp::base::DataMatrix::DataMatrix(std::initializer_list<double>, size_t);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(std::initializer_list<float>, size_t);
 %ignore sgpp::base::DataMatrix::operator[];
 %ignore sgpp::base::DataMatrixSP::operator[];
 %ignore sgpp::base::DataMatrix::operator();
 %ignore sgpp::base::DataMatrixSP::operator();
+%ignore sgpp::base::DataMatrix::operator=(DataMatrix&&);
+%ignore sgpp::base::DataMatrixSP::operator=(DataMatrixSP&&);
 %ignore sgpp::base::DataMatrix::getPointer const;
 %ignore sgpp::base::DataMatrixSP::getPointer const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
@@ -205,6 +217,7 @@ namespace std {
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"*/
 
 %include "base/src/sgpp/base/tools/RandomNumberGenerator.hpp"
+
 // SLE
 
 // global variables for the support of SLE solver libaries (set at compile-time)
@@ -219,19 +232,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else
@@ -260,9 +273,9 @@ const bool UMFPACK_ENABLED;
 %rename(OperatorInsertion) sgpp::base::operator<<;
 %include "base/src/sgpp/base/tools/Printer.hpp"
 
-
 // and the rest
 %rename(RNG)         sgpp::base::RandomNumberGenerator;
+
 //%apply std::string *INPUT { std::string& istr };
 //%apply unsigned int *OUTPUT { unsigned int& l, unsigned int& i };
 

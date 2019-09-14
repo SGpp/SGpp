@@ -37,20 +37,20 @@ class DataMatrix : public std::vector<double> {
    */
   DataMatrix(const DataMatrix&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataMatrix(DataMatrix&&) = default;
+  /**
+   * Move constructor
+   */
+  DataMatrix(DataMatrix&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataMatrix& operator=(const DataMatrix&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataMatrix& operator=(DataMatrix&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataMatrix& operator=(DataMatrix&&) = default;
 
   /**
    * Destructor
@@ -89,6 +89,22 @@ class DataMatrix : public std::vector<double> {
    * @param ncols number of columns
    */
   DataMatrix(const double* input, size_t nrows, size_t ncols);
+
+  /**
+   * Create a new DataMatrix from a std::vector<double>.
+   *
+   * @param input std::vector<double> that contains the data
+   * @param nrows number of rows
+   */
+  explicit DataMatrix(std::vector<double> input, size_t nrows);
+
+  /**
+   * Create a new DataMatrix from a std::initializer_list<double>.
+   *
+   * @param input std::initializer_list<double> that contains the data
+   * @param nrows number of rows
+   */
+  explicit DataMatrix(std::initializer_list<double> input, size_t nrows);
 
   static DataMatrix fromFile(const std::string& fileName);
 
@@ -346,7 +362,7 @@ class DataMatrix : public std::vector<double> {
    *
    * @param reduction DataVector to which the reduce columns are added
    * @param beta vector with length of number of columns beta[i] is multiplied to each element
-   *row[j][i]
+   *             row[j][i]
    * @param start_beta where to start using the beta coefficients
    */
   void addReduce(DataVector& reduction, DataVector& beta, size_t start_beta);

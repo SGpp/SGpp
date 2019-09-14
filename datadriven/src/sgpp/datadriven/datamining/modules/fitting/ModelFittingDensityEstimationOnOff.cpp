@@ -75,7 +75,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
   // build surplus vector
-  alpha = DataVector{grid->getSize()};
+  alpha = DataVector(grid->getSize());
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;

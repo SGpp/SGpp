@@ -64,11 +64,15 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
 
+%ignore sgpp::base::DataVectorSP::DataVectorSP(DataVectorSP&&);
 %ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::initializer_list<float>);
 %ignore sgpp::base::DataVectorSP::operator=;
 %ignore sgpp::base::DataVectorSP::operator[];
 %ignore sgpp::base::DataVectorSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(DataMatrixSP&&);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(std::initializer_list<float>, size_t);
 %ignore sgpp::base::DataMatrixSP::operator=;
 %ignore sgpp::base::DataMatrixSP::operator[];
 %ignore sgpp::base::DataMatrixSP::toString(std::string& text) const;
@@ -224,19 +228,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else

@@ -11,7 +11,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -19,23 +18,24 @@ using sgpp::base::DataVector;
 struct FixtureDataMatrix {
   FixtureDataMatrix()
       : nrows(5), ncols(3), N(nrows * ncols), d_rand(nrows, ncols), min(0), max(0), sum(0) {
-    l_rand = new double* [nrows];
+    l_rand = new double*[nrows];
 
-    for (int i = 0; i < nrows; ++i) {
+    for (int i = 0; i < nrows; i++) {
       l_rand[i] = new double[ncols];
     }
 
-    for (int i = 0; i < nrows; ++i) {
-      for (int j = 0; j < ncols; ++j) {
-        l_rand[i][j] = i * j + i * 0.5 + 2.34 * j;
+    for (int i = 0; i < nrows; i++) {
+      for (int j = 0; j < ncols; j++) {
+        l_rand[i][j] = static_cast<double>(i) * static_cast<double>(j) +
+                static_cast<double>(i) * 0.5 + 2.34 * static_cast<double>(j);
         min = min > l_rand[i][j] ? l_rand[i][j] : min;
         max = max < l_rand[i][j] ? l_rand[i][j] : max;
         sum += l_rand[i][j];
       }
     }
 
-    for (int i = 0; i < nrows; ++i) {
-      for (int j = 0; j < ncols; ++j) {
+    for (int i = 0; i < nrows; i++) {
+      for (int j = 0; j < ncols; j++) {
         d_rand.set(i, j, l_rand[i][j]);
       }
     }
@@ -43,7 +43,7 @@ struct FixtureDataMatrix {
     BOOST_TEST_MESSAGE("setup fixture");
   }
   ~FixtureDataMatrix() {
-    for (int i = 0; i < nrows; ++i) {
+    for (int i = 0; i < nrows; i++) {
       delete[] l_rand[i];
     }
 
@@ -63,11 +63,22 @@ BOOST_AUTO_TEST_CASE(testConstructor) {
   BOOST_CHECK_EQUAL(d.getSize(), 42 * 17);
   BOOST_CHECK_EQUAL(d.getNrows(), 42);
   BOOST_CHECK_EQUAL(d.getNcols(), 17);
+
+  d = DataMatrix({1.0, 0.5, -2.0, 2.5, 1.0, -0.5}, 3);
+  BOOST_CHECK_EQUAL(d.getSize(), 6);
+  BOOST_CHECK_EQUAL(d.getNrows(), 3);
+  BOOST_CHECK_EQUAL(d.getNcols(), 2);
+  BOOST_CHECK_EQUAL(d(0, 0), 1.0);
+  BOOST_CHECK_EQUAL(d(0, 1), 0.5);
+  BOOST_CHECK_EQUAL(d(1, 0), -2.0);
+  BOOST_CHECK_EQUAL(d(1, 1), 2.5);
+  BOOST_CHECK_EQUAL(d(2, 0), 1.0);
+  BOOST_CHECK_EQUAL(d(2, 1), -0.5);
 }
 
 BOOST_AUTO_TEST_CASE(testSetUp) {
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d_rand.get(i, j), l_rand[i][j]);
     }
   }
@@ -84,8 +95,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   DataMatrix d = d_rand;
   DataMatrix d2(nrows, ncols);
 
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       d2.set(i, j, 1.0 + 2.123 * (static_cast<double>(rand()) / static_cast<double>(RAND_MAX)) +
                        static_cast<double>(i * j));
     }
@@ -93,8 +104,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // abs
   d.abs();
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(i, j), std::abs(d_rand.get(i, j)));
     }
   }
@@ -102,8 +113,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // add
   d = DataMatrix(d_rand);
   d.add(d2);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(i, j), d_rand.get(i, j) + d2.get(i, j));
     }
   }
@@ -113,9 +124,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
   DataVector reduction(nrows);
   d.addReduce(reduction);
   double reduce_sum = 0.0;
-  for (int i = 0; i < nrows; ++i) {
+  for (int i = 0; i < nrows; i++) {
     reduce_sum = 0.0;
-    for (int j = 0; j < ncols; ++j) {
+    for (int j = 0; j < ncols; j++) {
       reduce_sum += d_rand.get(i, j);
     }
     BOOST_CHECK_CLOSE(reduction[i], reduce_sum, tol);
@@ -124,8 +135,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // componentwise_div
   d = DataMatrix(d_rand);
   d.componentwise_div(d2);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j) * (1.0 / d2.get(i, j)), tol);
     }
   }
@@ -133,8 +144,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // componentwise_mult
   d = DataMatrix(d_rand);
   d.componentwise_mult(d2);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(i, j), d_rand.get(i, j) * d2.get(i, j));
     }
   }
@@ -142,9 +153,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // max column
   d = DataMatrix(d_rand);
   double colMax;
-  for (int j = 0; j < ncols; ++j) {
+  for (int j = 0; j < ncols; j++) {
     colMax = d.get(0, j);
-    for (int i = 0; i < nrows; ++i) {
+    for (int i = 0; i < nrows; i++) {
       colMax = colMax < d_rand.get(i, j) ? d_rand.get(i, j) : colMax;
     }
     BOOST_CHECK_EQUAL(d.max(j), colMax);
@@ -158,9 +169,9 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // min column
   d = DataMatrix(d_rand);
   double colMin;
-  for (int j = 0; j < ncols; ++j) {
+  for (int j = 0; j < ncols; j++) {
     colMin = d.get(0, j);
-    for (int i = 0; i < nrows; ++i) {
+    for (int i = 0; i < nrows; i++) {
       colMin = colMin > d_rand.get(i, j) ? d_rand.get(i, j) : colMin;
     }
     BOOST_CHECK_EQUAL(d.min(j), colMin);
@@ -172,13 +183,13 @@ BOOST_AUTO_TEST_CASE(testOps) {
   BOOST_CHECK_EQUAL(d_min, min);
 
   // min max column
-  double minActual = 0;
-  double maxActual = 0;
-  for (int j = 0; j < ncols; ++j) {
+  double minActual = 0.0;
+  double maxActual = 0.0;
+  for (int j = 0; j < ncols; j++) {
     colMax = d.get(0, j);
     colMin = d.get(0, j);
     d.minmax(j, &minActual, &maxActual);
-    for (int i = 0; i < nrows; ++i) {
+    for (int i = 0; i < nrows; i++) {
       colMin = colMin > d_rand.get(i, j) ? d_rand.get(i, j) : colMin;
       colMax = colMax < d_rand.get(i, j) ? d_rand.get(i, j) : colMax;
     }
@@ -195,8 +206,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   double scalar = 1.3124;
   d.mult(scalar);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j) * scalar, tol);
     }
   }
@@ -205,10 +216,10 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   double border = 0.0;
   double delta;
-  for (int j = 0; j < ncols; ++j) {
+  for (int j = 0; j < ncols; j++) {
     d.normalizeDimension(j);
-    delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
-    for (int i = 0; i < nrows; ++i) {
+    delta = (d_rand.max(j) - d_rand.min(j)) / (1.0 - 2.0 * border);
+    for (int i = 0; i < nrows; i++) {
       BOOST_CHECK_CLOSE(d.get(i, j), (d_rand.get(i, j) - d_rand.min(j)) / delta + border, tol);
     }
   }
@@ -216,10 +227,10 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // normalize dimension with border
   d = DataMatrix(d_rand);
   border = 3.1415;
-  for (int j = 0; j < ncols; ++j) {
+  for (int j = 0; j < ncols; j++) {
     d.normalizeDimension(j, border);
-    delta = (d_rand.max(j) - d_rand.min(j)) / (1 - 2 * border);
-    for (int i = 0; i < nrows; ++i) {
+    delta = (d_rand.max(j) - d_rand.min(j)) / (1.0 - 2.0 * border);
+    for (int i = 0; i < nrows; i++) {
       BOOST_CHECK_CLOSE(d.get(i, j), (d_rand.get(i, j) - d_rand.min(j)) / delta + border, tol);
     }
   }
@@ -256,8 +267,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   double setValue = 3.12;
   d.setAll(setValue);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(i, j), setValue);
     }
   }
@@ -265,30 +276,30 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // setColumn
   d = DataMatrix(d_rand);
   DataVector setVectorRow(nrows);
-  setVectorRow.setAll(setValue + 1);
-  for (int j = 0; j < ncols; ++j) {
+  setVectorRow.setAll(setValue + 1.0);
+  for (int j = 0; j < ncols; j++) {
     d.setColumn(j, setVectorRow);
-    for (int i = 0; i < nrows; ++i) {
-      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1);
+    for (int i = 0; i < nrows; i++) {
+      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1.0);
     }
   }
 
   // setRow
   d = DataMatrix(d_rand);
   DataVector setVectorCol(ncols);
-  setVectorCol.setAll(setValue + 1);
-  for (int i = 0; i < nrows; ++i) {
+  setVectorCol.setAll(setValue + 1.0);
+  for (int i = 0; i < nrows; i++) {
     d.setRow(i, setVectorCol);
-    for (int j = 0; j < ncols; ++j) {
-      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1);
+    for (int j = 0; j < ncols; j++) {
+      BOOST_CHECK_EQUAL(d.get(i, j), setValue + 1.0);
     }
   }
 
   // sqr
   d = DataMatrix(d_rand);
   d.sqr();
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j) * d_rand.get(i, j), tol);
     }
   }
@@ -297,8 +308,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   d.sqrt();
   d.sqr();
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_CLOSE(d.get(i, j), d_rand.get(i, j), tol);
     }
   }
@@ -306,8 +317,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // sub
   d = DataMatrix(d_rand);
   d.sub(d2);
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(i, j), d_rand.get(i, j) - d2.get(i, j));
     }
   }
@@ -316,8 +327,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataMatrix(d_rand);
   double actualSum = d.sum();
   double expectedSum = 0.0;
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       expectedSum += d_rand.get(i, j);
     }
   }
@@ -326,8 +337,8 @@ BOOST_AUTO_TEST_CASE(testOps) {
   // transpose
   d = DataMatrix(d_rand);
   d.transpose();
-  for (int i = 0; i < nrows; ++i) {
-    for (int j = 0; j < ncols; ++j) {
+  for (int i = 0; i < nrows; i++) {
+    for (int j = 0; j < ncols; j++) {
       BOOST_CHECK_EQUAL(d.get(j, i), d_rand(i, j));
     }
   }
@@ -339,17 +350,17 @@ BOOST_AUTO_TEST_CASE(quadraticTransposeTest) {
       DataMatrix m(rows, cols);
       {
         size_t k = 0;
-        for (size_t i = 0; i < rows; ++i) {
-          for (size_t j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; i++) {
+          for (size_t j = 0; j < cols; j++) {
             m(i, j) = static_cast<double>(k);
-            ++k;
+            k++;
           }
         }
       }
       DataMatrix t = m;
       t.transpose();
-      for (size_t i = 0; i < rows; ++i) {
-        for (size_t j = 0; j < cols; ++j) {
+      for (size_t i = 0; i < rows; i++) {
+        for (size_t j = 0; j < cols; j++) {
           BOOST_CHECK_MESSAGE(m(i, j) == t(j, i), "rows=" << rows << " cols=" << cols << " m(" << i
                                                           << "," << j << ")=" << m(i, j)
                                                           << "!=" << t(j, i));
@@ -360,30 +371,30 @@ BOOST_AUTO_TEST_CASE(quadraticTransposeTest) {
 }
 
 BOOST_AUTO_TEST_CASE(appendToColTest) {
-  for (size_t rows = 0; rows < 20; ++rows) {
-    for (size_t cols = 0; cols < 20; ++cols) {
+  for (size_t rows = 0; rows < 20; rows++) {
+    for (size_t cols = 0; cols < 20; cols++) {
       DataMatrix m(rows, cols);
       DataVector v(rows);
       {
         size_t k = 0;
-        for (size_t i = 0; i < rows; ++i) {
-          for (size_t j = 0; j < cols; ++j) {
+        for (size_t i = 0; i < rows; i++) {
+          for (size_t j = 0; j < cols; j++) {
             m(i, j) = static_cast<double>(k);
-            ++k;
+            k++;
           }
           v[i] = static_cast<double>(k);
-          ++k;
+          k++;
         }
       }
       m.appendCol(v);
       {
         size_t k = 0;
-        for (size_t i = 0; i < rows; ++i) {
-          for (size_t j = 0; j < cols + 1; ++j) {
+        for (size_t i = 0; i < rows; i++) {
+          for (size_t j = 0; j < cols + 1; j++) {
             BOOST_CHECK_MESSAGE(m(i, j) == static_cast<double>(k),
                                 "rows=" << rows << " cols=" << cols << " m(" << i
                                         << "," << j << ")=" << m(i, j) << "!=" << k);
-            ++k;
+            k++;
           }
         }
       }
@@ -398,10 +409,10 @@ BOOST_AUTO_TEST_CASE(resizeToSubMatrixTests) {
   DataMatrix m(rows, cols);
   {
     size_t k = 0;
-    for (size_t i = 0; i < rows; ++i) {
-      for (size_t j = 0; j < cols; ++j) {
+    for (size_t i = 0; i < rows; i++) {
+      for (size_t j = 0; j < cols; j++) {
         m(i, j) = static_cast<double>(k);
-        ++k;
+        k++;
       }
     }
   }
@@ -413,8 +424,8 @@ BOOST_AUTO_TEST_CASE(resizeToSubMatrixTests) {
   BOOST_CHECK_EQUAL(m.getNrows(), x2 - x1 + 1);
   BOOST_CHECK_EQUAL(m.getNcols(), y2 - y1 + 1);
   {
-    for (size_t i = 0; i < x2 - x1 + 1; ++i) {
-      for (size_t j = 0; j < y2 - y1 + 1; ++j) {
+    for (size_t i = 0; i < x2 - x1 + 1; i++) {
+      for (size_t j = 0; j < y2 - y1 + 1; j++) {
         BOOST_CHECK_EQUAL(m(i, j), (i + (x1 - 1)) * cols + (y1 - 1) + j);
       }
     }

@@ -31,7 +31,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regula
     } else {
       //  auto begin = std::chrono::high_resolution_clock::now();
 
-      DataMatrix tmpMatrix{lhsMatrix.getNrows(), lhsMatrix.getNcols()};
+      DataMatrix tmpMatrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
 
 // only copy lower triangular matrix
 #pragma omp parallel for schedule(guided)
