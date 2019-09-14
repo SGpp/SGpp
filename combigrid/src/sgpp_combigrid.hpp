@@ -7,7 +7,6 @@
 
 #include <sgpp/combigrid/CombinationGrid.hpp>
 #include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/GeneralOperation.hpp>
 #include <sgpp/combigrid/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/IndexVectorIterator.hpp>
 #include <sgpp/combigrid/IndexVectorRange.hpp>

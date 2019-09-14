@@ -8,7 +8,6 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/GeneralOperation.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
@@ -16,7 +15,7 @@
 namespace sgpp {
 namespace combigrid {
 
-class OperationUPFullGrid : public GeneralOperation {
+class OperationUPFullGrid {
  public:
   OperationUPFullGrid(const FullGrid& grid, const std::vector<OperationPole*> operationPole) :
       grid(grid), operationPole(operationPole) {
@@ -30,11 +29,12 @@ class OperationUPFullGrid : public GeneralOperation {
       OperationUPFullGrid(grid, &operationPole) {
   }
 
-  ~OperationUPFullGrid() override {
+  virtual ~OperationUPFullGrid() {
   }
 
-  void apply(base::DataVector& values) override {
+  virtual void apply(base::DataVector& values) {
     const size_t dim = grid.getDimension();
+    const bool hasBoundary = grid.hasBoundary();
     FullGrid gridProjection(LevelVector(dim-1, 0), grid.getBasis(), grid.hasBoundary());
     LevelVector& levelProjection = gridProjection.getLevel();
     IndexVectorRange range(grid);
@@ -56,8 +56,6 @@ class OperationUPFullGrid : public GeneralOperation {
       const index_t count = grid.getNumberOfIndexVectors(d);
       IndexVectorRange rangeProjection(gridProjection);
       indexStart[d] = grid.getMinIndex(d);
-      operationPole[d]->setLevel(level[d]);
-      operationPole[d]->setHasBoundary(grid.hasBoundary());
 
       for (const IndexVector& indexProjection : rangeProjection) {
         for (size_t d2 = 0; d2 < dim; d2++) {
@@ -68,7 +66,7 @@ class OperationUPFullGrid : public GeneralOperation {
           }
         }
 
-        operationPole[d]->apply(values, range.find(indexStart), step, count);
+        operationPole[d]->apply(values, range.find(indexStart), step, count, level[d], hasBoundary);
       }
 
       step *= count;

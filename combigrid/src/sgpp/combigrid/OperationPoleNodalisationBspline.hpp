@@ -15,14 +15,14 @@ namespace combigrid {
 
 class OperationPoleNodalisationBspline : public OperationPole {
  public:
-  explicit OperationPoleNodalisationBspline(size_t degree, level_t level = 0,
-      bool hasBoundary = true) : OperationPole(level, hasBoundary), degree(degree) {
+  explicit OperationPoleNodalisationBspline(size_t degree) : degree(degree) {
   }
 
   ~OperationPoleNodalisationBspline() override {
   }
 
-  void apply(base::DataVector& values, size_t start, size_t step, size_t count) override {
+  void apply(base::DataVector& values, size_t start, size_t step, size_t count,
+      level_t level, bool hasBoundary = true) override {
     switch (degree) {
       case 1: {
         // do nothing, as nodal coefficients equal values

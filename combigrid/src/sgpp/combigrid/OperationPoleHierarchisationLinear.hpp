@@ -15,19 +15,19 @@ namespace combigrid {
 
 class OperationPoleHierarchisationLinear : public OperationPole {
  public:
-  explicit OperationPoleHierarchisationLinear(level_t level = 0, bool hasBoundary = true) :
-      OperationPole(level, hasBoundary) {
+  OperationPoleHierarchisationLinear() {
   }
 
   ~OperationPoleHierarchisationLinear() override {
   }
 
-  void apply(base::DataVector& values, size_t start, size_t step, size_t count) override {
+  void apply(base::DataVector& values, size_t start, size_t step, size_t count,
+      level_t level, bool hasBoundary = true) override {
     index_t hInv = static_cast<index_t>(1) << level;
     index_t h = 1;
 
     for (level_t l = level; l > 0; l--) {
-      size_t k = start + step * (h - (hasBoundary_ ? 0 : 1));
+      size_t k = start + step * (h - (hasBoundary ? 0 : 1));
 
       for (index_t i = 1; i < hInv; i += 2) {
         values[k] -= (values[k - step * h] + values[k + step * h]) / 2.0;

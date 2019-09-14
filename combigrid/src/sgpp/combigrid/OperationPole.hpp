@@ -7,46 +7,25 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/GeneralOperation.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 
 namespace sgpp {
 namespace combigrid {
 
-class OperationPole : public GeneralOperation {
+class OperationPole {
  public:
-  OperationPole(level_t level, bool hasBoundary = true) :
-      level(level), hasBoundary_(hasBoundary) {
+  OperationPole() {
   }
 
-  ~OperationPole() override {
+  virtual ~OperationPole() {
   }
 
-  void apply(base::DataVector& values) override {
-    apply(values, 0, 1, values.size());
+  virtual void apply(base::DataVector& values, level_t level, bool hasBoundary = true) {
+    apply(values, 0, 1, values.size(), level, hasBoundary);
   }
 
-  void apply(base::DataVector& values, size_t start, size_t step, size_t count) override = 0;
-
-  level_t getLevel() const {
-    return level;
-  }
-
-  void setLevel(level_t level) {
-    this->level = level;
-  }
-
-  bool hasBoundary() const {
-    return hasBoundary_;
-  }
-
-  void setHasBoundary(bool hasBoundary) {
-    this->hasBoundary_ = hasBoundary;
-  }
-
- protected:
-  level_t level;
-  bool hasBoundary_;
+  virtual void apply(base::DataVector& values, size_t start, size_t step, size_t count,
+      level_t level, bool hasBoundary = true) = 0;
 };
 
 }  // namespace combigrid
