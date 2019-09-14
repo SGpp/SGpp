@@ -10,6 +10,7 @@
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 
+#include <memory>
 #include <vector>
 
 namespace sgpp {
@@ -20,15 +21,18 @@ class HeterogeneousBasis {
   HeterogeneousBasis() : bases1d() {
   }
 
+  explicit HeterogeneousBasis(
+      const std::vector<std::unique_ptr<base::Basis<level_t, index_t>>>& bases1d) : bases1d() {
+    for (const std::unique_ptr<base::Basis<level_t, index_t>>& basis1d : bases1d) {
+      this->bases1d.push_back(basis1d.get());
+    }
+  }
+
   explicit HeterogeneousBasis(const std::vector<base::Basis<level_t, index_t>*>& bases1d) :
       bases1d(bases1d) {
   }
 
-  HeterogeneousBasis(size_t dim, base::Basis<level_t, index_t>* basis1d) : bases1d(dim, basis1d) {
-  }
-
-  HeterogeneousBasis(size_t dim, base::Basis<level_t, index_t>& basis1d) :
-      HeterogeneousBasis(dim, &basis1d) {
+  HeterogeneousBasis(size_t dim, base::Basis<level_t, index_t>& basis1d) : bases1d(dim, &basis1d) {
   }
 
   inline double eval(LevelVector level, IndexVector index, base::DataVector point) const {

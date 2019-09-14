@@ -12,21 +12,28 @@
 #include <sgpp/combigrid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
 
+#include <memory>
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 
 class OperationUPFullGrid {
  public:
+  OperationUPFullGrid(const FullGrid& grid,
+      const std::vector<std::unique_ptr<OperationPole>>& operationPole) :
+      grid(grid), operationPole() {
+    for (const std::unique_ptr<OperationPole>& operationPole1d : operationPole) {
+      this->operationPole.push_back(operationPole1d.get());
+    }
+  }
+
   OperationUPFullGrid(const FullGrid& grid, const std::vector<OperationPole*> operationPole) :
       grid(grid), operationPole(operationPole) {
   }
 
-  OperationUPFullGrid(const FullGrid& grid, OperationPole* operationPole) :
-      grid(grid), operationPole(grid.getDimension(), operationPole) {
-  }
-
   OperationUPFullGrid(const FullGrid& grid, OperationPole& operationPole) :
-      OperationUPFullGrid(grid, &operationPole) {
+      grid(grid), operationPole(grid.getDimension(), &operationPole) {
   }
 
   virtual ~OperationUPFullGrid() {

@@ -9,6 +9,8 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 
+#include <memory>
+
 namespace sgpp {
 namespace combigrid {
 

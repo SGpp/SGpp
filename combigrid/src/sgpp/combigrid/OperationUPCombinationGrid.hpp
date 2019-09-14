@@ -20,17 +20,20 @@ namespace combigrid {
 class OperationUPCombinationGrid {
  public:
   OperationUPCombinationGrid(const CombinationGrid& grid,
+      const std::vector<std::unique_ptr<OperationPole>>& operationPole) :
+      grid(grid), operationPole() {
+    for (const std::unique_ptr<OperationPole>& operationPole1d : operationPole) {
+      this->operationPole.push_back(operationPole1d.get());
+    }
+  }
+
+  OperationUPCombinationGrid(const CombinationGrid& grid,
       const std::vector<OperationPole*> operationPole) :
       grid(grid), operationPole(operationPole) {
   }
 
-  OperationUPCombinationGrid(const CombinationGrid& grid,
-      OperationPole* operationPole) :
-      grid(grid), operationPole(grid.getDimension(), operationPole) {
-  }
-
   OperationUPCombinationGrid(const CombinationGrid& grid, OperationPole& operationPole) :
-      OperationUPCombinationGrid(grid, &operationPole) {
+      grid(grid), operationPole(grid.getDimension(), &operationPole) {
   }
 
   virtual ~OperationUPCombinationGrid() {
