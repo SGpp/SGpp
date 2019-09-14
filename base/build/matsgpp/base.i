@@ -6,12 +6,22 @@
 %include "base/src/sgpp/globaldef.hpp"
 
 namespace std {
+    %template(IntVector) vector<int>;
+    %template(IntVectorVector) vector< vector<int> >;
+    %template(BoolVector) vector<bool>;
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
-    %template(SizeTVector) vector<size_t>;
+    %template(SizeVector) vector<size_t>;
+    %template(SizeDoublePair) pair<size_t, double>;
+    %template(SizeDoublePairVector) vector<pair<size_t, double> >;
+    %template(SizeList) list<size_t>;
+    // For OnlinePredictiveRefinementDimension
+    %template(refinement_key) std::pair<size_t, unsigned int>;
+    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
+    // For interaction-term-aware sparse grids.
+    %template(SizeVectorVector) vector< vector<size_t> >;
     %template(DataVectorVector) vector<sgpp::base::DataVector>;
+    %template(DataMatrixVector) vector<sgpp::base::DataMatrix>;
 }
 
 // include other interface files
