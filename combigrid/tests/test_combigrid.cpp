@@ -112,7 +112,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
 BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   sgpp::base::SLinearBase basis1d;
-  HeterogeneousBasis basis(2, basis1d);
+  HeterogeneousBasis basis(2, basis1d, false);
   CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 2, basis, false);
   OperationEvalCombinationGrid op(combinationGrid);
   std::vector<DataVector> surpluses = {
@@ -143,22 +143,33 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
 }
 
 BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
-  sgpp::base::SBsplineBase basis1d(3);
-  HeterogeneousBasis basis(2, basis1d);
-  FullGrid fullGrid({2, 1}, basis);
-  std::vector<std::unique_ptr<OperationPole>> operationPole;
-  OperationPoleHierarchisationGeneral::fromHeterogenerousBasis(basis, operationPole);
-  OperationUPFullGrid operation(fullGrid, operationPole);
-  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
-                    -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
-  operation.apply(values);
-  DataVector correctSurpluses{-4.34548191029053, 11.29388598889826, -0.45638469432632633,
-      8.30837174457185, -3.402942074462426, -4.7579856595053664, 10.752772401474628,
-      4.220642134584388, -8.117821514507945, 5.795370207225638, 8.991769884961288,
-      -15.38082204309674, 3.036651517372788, -7.852574819533291, -3.5702774351738715};
+  for (bool isBasisHierarchical : {true, false}) {
+    sgpp::base::SBsplineBase basis1d(3);
+    HeterogeneousBasis basis(2, basis1d, isBasisHierarchical);
+    FullGrid fullGrid({2, 1}, basis);
+    std::vector<std::unique_ptr<OperationPole>> operationPole;
+    OperationPoleHierarchisationGeneral::fromHeterogenerousBasis(basis, operationPole);
+    OperationUPFullGrid operation(fullGrid, operationPole);
+    DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+                      -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+    operation.apply(values);
+    DataVector correctSurpluses;
 
-  for (size_t i = 0; i < values.size(); i++) {
-    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+    if (isBasisHierarchical) {
+      correctSurpluses = DataVector{-4.34548191029053, 11.29388598889826, -0.45638469432632633,
+          8.30837174457185, -3.402942074462426, -4.7579856595053664, 10.752772401474628,
+          4.220642134584388, -8.117821514507945, 5.795370207225638, 8.991769884961288,
+          -15.38082204309674, 3.036651517372788, -7.852574819533291, -3.5702774351738715};
+    } else {
+      correctSurpluses = DataVector{-2.860096153846154, 5.333241758241758, -3.044299450549451,
+          3.4689560439560445, -3.4386675824175827, -1.101923076923078, 10.83626373626374,
+          4.042582417582418, -4.506593406593407, 2.4123626373626372, 5.998557692307693,
+          -7.601373626373627, 3.8355082417582422, -4.365659340659341, -1.4800137362637362};
+    }
+
+    for (size_t i = 0; i < values.size(); i++) {
+      BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+    }
   }
 }
 

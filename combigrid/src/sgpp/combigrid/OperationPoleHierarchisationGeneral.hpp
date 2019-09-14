@@ -11,6 +11,7 @@
 #include <sgpp/base/tools/sle/solver/Auto.hpp>
 #include <sgpp/base/tools/sle/system/SLE.hpp>
 #include <sgpp/combigrid/FullGrid.hpp>
+#include <sgpp/combigrid/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/OperationPole.hpp>
 
@@ -22,8 +23,8 @@ namespace combigrid {
 
 class OperationPoleHierarchisationGeneral : public OperationPole {
  public:
-  explicit OperationPoleHierarchisationGeneral(base::Basis<level_t, index_t>& basis) :
-      sle(basis, 0, 0), sleSolver() {
+  explicit OperationPoleHierarchisationGeneral(base::Basis<level_t, index_t>& basis,
+      bool isBasisHierarchical) : sle(basis, isBasisHierarchical, 0, 0), sleSolver() {
   }
 
   ~OperationPoleHierarchisationGeneral() override {
@@ -32,14 +33,16 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
   static void fromHeterogenerousBasis(const HeterogeneousBasis& basis,
       std::vector<std::unique_ptr<OperationPole>>& operation) {
     for (base::Basis<level_t, index_t>* const & basis1d : basis.getBases1d()) {
-      operation.emplace_back(new OperationPoleHierarchisationGeneral(*basis1d));
+      operation.emplace_back(new OperationPoleHierarchisationGeneral(
+          *basis1d, basis.isHierarchical()));
     }
   }
 
   static void fromHeterogenerousBasis(const HeterogeneousBasis& basis,
       std::vector<OperationPole*>& operation) {
     for (base::Basis<level_t, index_t>* const & basis1d : basis.getBases1d()) {
-      operation.push_back(new OperationPoleHierarchisationGeneral(*basis1d));
+      operation.push_back(new OperationPoleHierarchisationGeneral(
+          *basis1d, basis.isHierarchical()));
     }
   }
 
@@ -65,8 +68,10 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
  protected:
   class HierarchisationGeneralSLE : public base::SLE {
    public:
-    HierarchisationGeneralSLE(base::Basis<level_t, index_t>& basis, size_t dim, level_t level,
-        bool hasBoundary = true) : basis(basis), dim(dim), level(level), hasBoundary_(hasBoundary) {
+    HierarchisationGeneralSLE(base::Basis<level_t, index_t>& basis, bool isBasisHierarchical,
+        size_t dim, level_t level, bool hasBoundary = true) :
+        basis(basis), isBasisHierarchical_(isBasisHierarchical),
+        dim(dim), level(level), hasBoundary_(hasBoundary) {
     }
 
     ~HierarchisationGeneralSLE() override {
@@ -75,7 +80,11 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
     double getMatrixEntry(size_t i, size_t j) override {
       level_t levelBasis = level;
       index_t indexBasis = static_cast<index_t>(j);
-      HeterogeneousBasis::hierarchizeLevelIndex(levelBasis, indexBasis);
+
+      if (isBasisHierarchical_) {
+        HeterogeneousBasis::hierarchizeLevelIndex(levelBasis, indexBasis);
+      }
+
       const double point = static_cast<double>(i + (hasBoundary_ ? 0 : 1)) /
           (static_cast<index_t>(1) << level);
       return basis.eval(levelBasis, indexBasis, point);
@@ -83,6 +92,14 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
 
     bool isMatrixEntryNonZero(size_t i, size_t j) override {
       return (std::abs(getMatrixEntry(i, j)) > 1e-12);
+    }
+
+    bool isBasisHierarchical() const {
+      return isBasisHierarchical_;
+    }
+
+    void setIsBasisHierarchical(bool isBasisHierarchical) {
+      isBasisHierarchical_ = isBasisHierarchical;
     }
 
     size_t getDimension() const override {
@@ -111,6 +128,7 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
 
    protected:
     base::Basis<level_t, index_t>& basis;
+    bool isBasisHierarchical_;
     size_t dim;
     level_t level;
     bool hasBoundary_;
