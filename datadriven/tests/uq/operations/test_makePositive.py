@@ -22,7 +22,7 @@ from pysgpp import createOperationMakePositive, \
     MakePositiveCandidateSearchAlgorithm_Intersections, \
     MakePositiveInterpolationAlgorithm_SetToZero, \
     MakePositiveInterpolationAlgorithm_InterpolateExp, \
-    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, IndexList, \
+    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, SizeList, \
     HashGridPoint, MakePositiveCandidateSearchAlgorithm_HybridFullIntersections, \
     GridType_Linear, GridType_Poly, RegularGridConfiguration
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity
