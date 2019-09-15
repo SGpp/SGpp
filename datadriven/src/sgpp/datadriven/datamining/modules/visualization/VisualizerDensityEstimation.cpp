@@ -763,8 +763,9 @@ size_t &varDim, std::string filepath) {
     std::string xAxisName("xaxis" + ((graphNumber == 0)?"":std::to_string(graphNumber+1)));
     std::string yAxisName("yaxis" + ((graphNumber == 0)?"":std::to_string(graphNumber+1)));
 
+
     jsonOutput["layout"].addDictAttr(xAxisName);
-    jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\""+yAxis+"\"");
+    jsonOutput["layout"][xAxisName].addIDAttr("anchor", "\"" + yAxis + "\"");
     jsonOutput["layout"][xAxisName].addIDAttr("type", "\"linear\"");
     jsonOutput["layout"][xAxisName].addListAttr("domain");
     jsonOutput["layout"][xAxisName]["domain"].addIdValue(0.2*
@@ -1022,14 +1023,13 @@ std::vector<size_t> indexes, size_t &varDim1, size_t &varDim2, std::string filep
     jsonOutput["layout"][yAxisName].addIDAttr("anchor", "\""+xAxis+"\"");
     jsonOutput["layout"][yAxisName].addIDAttr("type", "\"linear\"");
 
-    if (gridMatrix.getNcols() >= 4) {
-     jsonOutput["layout"][yAxisName].addListAttr("domain");
-     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-       static_cast<double>(graphNumber/5));
-     jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
-       (static_cast<double>(graphNumber/5)+1)-0.1);
+    if (matrix.getNcols() > 4) {
+      jsonOutput["layout"][yAxisName].addListAttr("domain");
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        static_cast<double>(graphNumber/5));
+      jsonOutput["layout"][yAxisName]["domain"].addIdValue(0.2*
+        (static_cast<double>(graphNumber/5)+1)-0.1);
     }
-
     // Adding titles to subplots
     std::string dim1Text(std::to_string(indexes.at(0)+1));
 
