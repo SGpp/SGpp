@@ -20,6 +20,9 @@ namespace combigrid {
 
 class CombinationGrid {
  public:
+  CombinationGrid() : fullGrids(), coefficients() {
+  }
+
   CombinationGrid(const std::vector<FullGrid>& fullGrids, const base::DataVector& coefficients) :
       fullGrids(fullGrids), coefficients(coefficients) {
   }
@@ -204,8 +207,16 @@ class CombinationGrid {
     return fullGrids;
   }
 
+  void setFullGrids(const std::vector<FullGrid>& fullGrids) {
+    this->fullGrids = fullGrids;
+  }
+
   const base::DataVector& getCoefficients() const {
     return coefficients;
+  }
+
+  void setCoefficients(const base::DataVector& coefficients) {
+    this->coefficients = coefficients;
   }
 
  protected:
