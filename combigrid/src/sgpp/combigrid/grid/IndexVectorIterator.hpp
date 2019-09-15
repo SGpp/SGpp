@@ -25,24 +25,21 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
   inline explicit IndexVectorIterator(const FullGrid& grid) : dim(grid.getDimension()),
       indexVector(dim), minIndex(dim), maxIndex(dim),
       numberOfIndexVectors(dim), sequenceIndex(0) {
-    // use move semantics as soon as DataVector supports it
     grid.getMinIndex(minIndex);
     grid.getMaxIndex(maxIndex);
     grid.getNumberOfIndexVectors(numberOfIndexVectors);
   }
 
+  inline IndexVectorIterator(const IndexVector& minIndex, const IndexVector& maxIndex) :
+      dim(minIndex.size()), indexVector(dim), minIndex(minIndex), maxIndex(maxIndex),
+      numberOfIndexVectors(dim), sequenceIndex(0) {
+    for (size_t d = 0; d < dim; d++) {
+      numberOfIndexVectors[d] = maxIndex[d] - minIndex[d] + 1;
+    }
+  }
+
   inline IndexVectorIterator(const IndexVectorIterator&) = default;
   inline IndexVectorIterator& operator=(const IndexVectorIterator&) = default;
-
-  static inline IndexVectorIterator begin(const FullGrid& grid) {
-    return IndexVectorIterator(grid);
-  }
-
-  static inline IndexVectorIterator end(const FullGrid& grid) {
-    IndexVectorIterator result(grid);
-    result.setSequenceIndex(grid.getNumberOfIndexVectors());
-    return result;
-  }
 
   inline size_t getSequenceIndex() const {
     return sequenceIndex;

@@ -15,19 +15,31 @@ namespace combigrid {
 
 class IndexVectorRange {
  public:
-  IndexVectorRange() : dim(0), grid(), numberOfIndexVectors(0) {
+  IndexVectorRange() : dim(0), minIndex(), maxIndex(), numberOfIndexVectors(),
+      totalNumberOfIndexVectors(0) {
   }
 
-  explicit IndexVectorRange(const FullGrid& grid) : dim(grid.getDimension()), grid(grid),
-      numberOfIndexVectors(grid.getNumberOfIndexVectors()) {
+  explicit IndexVectorRange(const FullGrid& grid) : IndexVectorRange() {
+    setGrid(grid);
+  }
+
+  IndexVectorRange(const IndexVector& minIndex, const IndexVector& maxIndex) :
+      dim(minIndex.size()), minIndex(minIndex), maxIndex(maxIndex), numberOfIndexVectors(dim),
+      totalNumberOfIndexVectors(1) {
+    for (size_t d = 0; d < dim; d++) {
+      numberOfIndexVectors[d] = maxIndex[d] - minIndex[d] + 1;
+      totalNumberOfIndexVectors *= numberOfIndexVectors[d];
+    }
   }
 
   IndexVectorIterator begin() const {
-    return IndexVectorIterator::begin(grid);
+    return IndexVectorIterator(minIndex, maxIndex);
   }
 
   IndexVectorIterator end() const {
-    return IndexVectorIterator::end(grid);
+    IndexVectorIterator result(minIndex, maxIndex);
+    result.setSequenceIndex(totalNumberOfIndexVectors);
+    return result;
   }
 
   size_t find(const IndexVector& index) const {
@@ -35,31 +47,29 @@ class IndexVectorRange {
     size_t factor = 1;
 
     for (size_t d = 0; d < dim; d++) {
-      result += factor * (index[d] - grid.getMinIndex(d));
-      factor *= grid.getNumberOfIndexVectors(d);
+      result += factor * (index[d] - minIndex[d]);
+      factor *= numberOfIndexVectors[d];
     }
 
     return result;
   }
 
-  const FullGrid& getGrid() const {
-    return grid;
-  }
-
   void setGrid(const FullGrid& grid) {
     dim = grid.getDimension();
-    this->grid = grid;
-    numberOfIndexVectors = grid.getNumberOfIndexVectors();
+    grid.getMinIndex(minIndex);
+    grid.getMaxIndex(maxIndex);
+    grid.getNumberOfIndexVectors(numberOfIndexVectors);
+    totalNumberOfIndexVectors = grid.getNumberOfIndexVectors();
   }
 
   void getIndices(std::vector<IndexVector>& indices) const {
     indices.assign(begin(), end());
   }
 
-  void getPoints(base::DataMatrix& points) const {
+  void getPoints(const FullGrid& grid, base::DataMatrix& points) const {
     const LevelVector& level = grid.getLevel();
     size_t i = 0;
-    points.resize(numberOfIndexVectors, dim);
+    points.resize(totalNumberOfIndexVectors, dim);
 
     for (const IndexVector& index : *this) {
       for (size_t d = 0; d < dim; d++) {
@@ -73,8 +83,10 @@ class IndexVectorRange {
 
  protected:
   size_t dim;
-  FullGrid grid;
-  size_t numberOfIndexVectors;
+  IndexVector minIndex;
+  IndexVector maxIndex;
+  IndexVector numberOfIndexVectors;
+  size_t totalNumberOfIndexVectors;
 };
 
 }  // namespace combigrid
