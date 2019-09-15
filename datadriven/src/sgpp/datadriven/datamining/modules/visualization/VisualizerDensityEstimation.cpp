@@ -63,12 +63,12 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   {
     #pragma omp section
     {
-      getLinearCuts(model, currentDirectory);
+      getLinearCuts(model, currentDirectory, cutMatrix);
     }
 
     #pragma omp section
     {
-      getHeatmap(model, currentDirectory);
+      getHeatmap(model, currentDirectory, heatMapMatrix);
     }
 
     /*#pragma omp section
@@ -252,7 +252,7 @@ void VisualizerDensityEstimation::initializeMatrices(ModelFittingBase &model) {
 }
 
 void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix cutMatrix) {
   std::cout << "Generating the linear cuts" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
@@ -262,17 +262,17 @@ void VisualizerDensityEstimation::getLinearCuts(ModelFittingBase &model,
   if ( nDimensions >= 2 ) {
   createFolder(currentDirectory+"/LinearCuts");
     if (nDimensions >=3) {
-      getLinearCutsMore3D(model, currentDirectory);
+      getLinearCutsMore3D(model, currentDirectory, cutMatrix);
     } else {
-      getLinearCuts2D(model, currentDirectory);
+      getLinearCuts2D(model, currentDirectory, cutMatrix);
     }
   } else {
-    getLinearCuts1D(model, currentDirectory);
+    getLinearCuts1D(model, currentDirectory, cutMatrix);
   }
 }
 
 void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix heatMapMatrix) {
   std::cout << "Generating the heatmaps" << std::endl;
 
   auto nDimensions = model.getFitterConfiguration().getGridConfig().dim_;
@@ -285,16 +285,15 @@ void VisualizerDensityEstimation::getHeatmap(ModelFittingBase &model,
     return;
   }
 
-  DataMatrix heatMapMatrix(0, nDimensions);
   if ( nDimensions >=3 ) {
     createFolder(currentDirectory+"/Heatmaps");
     if ( nDimensions >= 4 ) {
-      getHeatmapMore4D(model, currentDirectory);
+      getHeatmapMore4D(model, currentDirectory, heatMapMatrix);
     } else if ( nDimensions == 3 ) {
-      getHeatmap3D(model, currentDirectory);
+      getHeatmap3D(model, currentDirectory, heatMapMatrix);
     }
   } else {
-    getHeatmap2D(model, currentDirectory);
+    getHeatmap2D(model, currentDirectory, heatMapMatrix);
   }
 }
 
@@ -426,7 +425,7 @@ void VisualizerDensityEstimation::swapColumns(DataMatrix &matrix, size_t col1, s
 // 4° Update the indexes
 // 5° Repeat until the last column index exceeds the number of dimensions
 void VisualizerDensityEstimation::getLinearCutsMore3D(
-  ModelFittingBase &model, std::string currentDirectory) {
+  ModelFittingBase &model, std::string currentDirectory, DataMatrix cutMatrix) {
   std::string outputDir(currentDirectory + "/LinearCuts/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
@@ -468,7 +467,7 @@ void VisualizerDensityEstimation::getLinearCutsMore3D(
 // 3° Store current evaluation
 // 4° Repeat until we have made D shifts
 void VisualizerDensityEstimation::getLinearCuts2D(
-  ModelFittingBase &model, std::string currentDirectory) {
+  ModelFittingBase &model, std::string currentDirectory, DataMatrix cutMatrix) {
   std::string outputDir(currentDirectory + "/LinearCuts/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
@@ -496,7 +495,7 @@ void VisualizerDensityEstimation::getLinearCuts2D(
 }
 
 void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix cutMatrix) {
   std::string outputDir(currentDirectory+"/");
 
   DataMatrix cutResults(cutMatrix);
@@ -523,7 +522,7 @@ void VisualizerDensityEstimation::getLinearCuts1D(ModelFittingBase &model,
 // 8° Update the indexes
 // 9° Repeat until the last column index exceeds the number of dimensions
 void VisualizerDensityEstimation::getHeatmapMore4D(
-ModelFittingBase &model, std::string currentDirectory) {
+ModelFittingBase &model, std::string currentDirectory, DataMatrix heatMapMatrix) {
   std::string outputDir(currentDirectory+"/Heatmaps/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
@@ -594,7 +593,7 @@ ModelFittingBase &model, std::string currentDirectory) {
 // 3° Shift to the right
 // 4° Repeat steps 1 to 3 two more times
 void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix heatMapMatrix) {
   std::string outputDir(currentDirectory+"/Heatmaps/");
 
   // Dummy to reutilize the storejson method
@@ -629,7 +628,7 @@ void VisualizerDensityEstimation::getHeatmap3D(ModelFittingBase &model,
 }
 
 void VisualizerDensityEstimation::getHeatmap2D(
-  ModelFittingBase &model, std::string currentDirectory) {
+  ModelFittingBase &model, std::string currentDirectory, DataMatrix heatMapMatrix) {
   std::string outputDir(currentDirectory+"/");
 
   DataMatrix heatMapResults(heatMapMatrix);

@@ -44,67 +44,75 @@ class VisualizerDensityEstimation:public Visualizer {
  protected:
   /*
    * Method which starts the heatmap generation for Density Estimation Models
-   * @model The model used to evaluate the heatmap
-   * @currentDirectory The current directory to store the heatmap results
+   * @param model The model used to evaluate the heatmap
+   * @param currentDirectory The current directory to store the heatmap results
+   * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which starts the linear cut generation for Density Estimation Models
-   * @model The model used to evaluate the linear cuts
-   * @currentDirectory The current directory to store the linear cuts results
+   * @param model The model used to evaluate the linear cuts
+   * @param currentDirectory The current directory to store the linear cuts results
+   * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCuts(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which stores the coordinates of the grid points
    * of a Density Estimation model
-   * @model The model from where the grid is obtained
-   * @currentDirectory The current directory to store the grid data
+   * @param model The model from where the grid is obtained
+   * @param currentDirectory The current directory to store the grid data
    */
   void storeGrid(ModelFittingBase &model, std::string currentDirectory);
 
   /*
    * Method which generates the linear cuts graphs for models of 3 or more dimensions
-   * @model the model used to evaluate the linear cuts
-   * @currentDirectory The current directory to store the linear cuts results
+   * @param model the model used to evaluate the linear cuts
+   * @param currentDirectory The current directory to store the linear cuts results
    */
-  void getLinearCutsMore3D(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCutsMore3D(ModelFittingBase &model, std::string currentDirectory,
+    DataMatrix matrix);
 
   /*
    * Method which generates the linear cuts graphs for models of 1 dimension
-   * @model the model used to evaluate the linear cuts
-   * @currentDirectory The current directory to store the linear cuts results
+   * @param model the model used to evaluate the linear cuts
+   * @param currentDirectory The current directory to store the linear cuts results
+   * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which generates the linear cuts graphs for models of 2 dimensions
-   * @model the model used to evaluate the linear cuts
-   * @currentDirectory The current directory to store the linear cuts results
+   * @param model the model used to evaluate the linear cuts
+   * @param currentDirectory The current directory to store the linear cuts results
+   * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory);
+  void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which generates the heatmap of models of 4 or more dimensions
-   * @model The model used to evaluate the heatmap
-   * @currentDirectory The current directory to store the heatmap results
+   * @param model The model used to evaluate the heatmap
+   * @param currentDirectory The current directory to store the heatmap results
+   * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which generates the heatmap of models of 3 dimensions
-   * @model The model used to evaluate the heatmap
-   * @currentDirectory The current directory to store the heatmap results
+   * @param model The model used to evaluate the heatmap
+   * @param currentDirectory The current directory to store the heatmap results
+   * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which generates the heatmap of models of 2 dimensions
    * @model The model used to evaluate the heatmap
    * @currentDirectory The current directory to store the heatmap results
+   * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
 
   /*
    * Method which shifts one position the columns of a matrix from left to right
