@@ -40,10 +40,12 @@ class FullGrid {
   }
 
   index_t getMinIndex(size_t d) const {
-    return (hasBoundary() ? 0 : 1);
+    return (hasBoundary_ ? 0 : 1);
   }
 
   void getMinIndex(IndexVector& index) const {
+    index.resize(level.size());
+
     for (size_t d = 0; d < level.size(); d++) {
       index[d] = getMinIndex(d);
     }
@@ -54,6 +56,8 @@ class FullGrid {
   }
 
   void getMaxIndex(IndexVector& index) const {
+    index.resize(level.size());
+
     for (size_t d = 0; d < level.size(); d++) {
       index[d] = getMaxIndex(d);
     }
@@ -64,6 +68,8 @@ class FullGrid {
   }
 
   void getNumberOfIndexVectors(IndexVector& number) const {
+    number.resize(level.size());
+
     for (size_t d = 0; d < level.size(); d++) {
       number[d] = getNumberOfIndexVectors(d);
     }
