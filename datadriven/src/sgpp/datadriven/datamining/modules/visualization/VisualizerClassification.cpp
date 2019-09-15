@@ -109,9 +109,9 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     #pragma omp section
     {
       // Running the density estimation visualization for each model
-      #pragma omp parallel for schedule(dynamic)
+      #pragma omp parallel for schedule(dynamic) firstprivate(heatMapMatrix, cutMatrix)
+
       for (size_t index=0; index < models->size(); index++) {
-        std::string currentDirectory;
         if (config.getGeneralConfig().crossValidation) {
           currentDirectory = config.getGeneralConfig().
                    targetDirectory+"/Fold_" + std::to_string(fold)
@@ -130,11 +130,11 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         {
           #pragma omp section
           {
-            getLinearCuts(**currentModel, currentDirectory);
+            getLinearCuts(**currentModel, currentDirectory, cutMatrix);
           }
           #pragma omp section
           {
-            getHeatmap(**currentModel, currentDirectory);
+            getHeatmap(**currentModel, currentDirectory, heatMapMatrix);
           }
         }
       }
