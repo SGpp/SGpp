@@ -52,6 +52,10 @@ class IndexVectorRange {
     numberOfIndexVectors = grid.getNumberOfIndexVectors();
   }
 
+  void getIndices(std::vector<IndexVector>& indices) const {
+    indices.assign(begin(), end());
+  }
+
   void getPoints(base::DataMatrix& points) const {
     const LevelVector& level = grid.getLevel();
     size_t i = 0;
