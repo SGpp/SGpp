@@ -36,7 +36,6 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     resolution = static_cast<size_t>(pow(2,
       model.getFitterConfiguration().getGridConfig().level_+2));
   }
-  initializeMatrices(model);
 
   ModelFittingClassification* classificationModel =
     dynamic_cast<ModelFittingClassification*>(&model);
@@ -78,7 +77,9 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
   {
     #pragma omp section
     {
-      getHeatmapsClassification(model, currentDirectory);
+      DataMatrix heatMapClassificationMatrix;
+      initializeMatrices(model, heatMapClassificationMatrix);
+      getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
     }
     /* To be added after tsne is functioning again
      * #pragma omp section
@@ -109,9 +110,12 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
     #pragma omp section
     {
       // Running the density estimation visualization for each model
-      #pragma omp parallel for schedule(dynamic) firstprivate(heatMapMatrix, cutMatrix)
-
+      #pragma omp parallel for schedule(dynamic)
       for (size_t index=0; index < models->size(); index++) {
+        DataMatrix heatMapMatrixThread;
+        DataMatrix cutMatrixThread;
+        VisualizerDensityEstimation::initializeMatrices(model, cutMatrixThread,
+          heatMapMatrixThread);
         if (config.getGeneralConfig().crossValidation) {
           currentDirectory = config.getGeneralConfig().
                    targetDirectory+"/Fold_" + std::to_string(fold)
@@ -130,11 +134,11 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         {
           #pragma omp section
           {
-            getLinearCuts(**currentModel, currentDirectory, cutMatrix);
+            getLinearCuts(**currentModel, currentDirectory, cutMatrixThread);
           }
           #pragma omp section
           {
-            getHeatmap(**currentModel, currentDirectory, heatMapMatrix);
+            getHeatmap(**currentModel, currentDirectory, heatMapMatrixThread);
           }
         }
       }
@@ -143,8 +147,8 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
 }
 
 
-void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
-  VisualizerDensityEstimation::initializeMatrices(model);
+void VisualizerClassification::initializeMatrices(ModelFittingBase &model,
+  DataMatrix &classMatrix) {
     std::cout << "Resolution " << std::to_string(resolution) << std::endl;
     double step = 1.0/static_cast<double>(resolution);
 
@@ -157,7 +161,7 @@ void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
           for (double dim2 = 0; dim2 <= 1; dim2+=0.25) {
             for (double dim3 = 0; dim3 <= 1; dim3+= step) {
               for (double dim4 = 0; dim4 <= 1; dim4+= step) {
-              DataVector row(heatMapMatrix.getNcols(), 0.5);
+              DataVector row(classMatrix.getNcols(), 0.5);
               row.set(0, dim3);
               row.set(1, dim4);
               row.set(2, dim1);
@@ -194,7 +198,7 @@ void VisualizerClassification::initializeMatrices(ModelFittingBase &model) {
 }
 
 void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix &classMatrix) {
   std::cout << "Generating the classification heatmaps" << std::endl;
 
   auto nDimensions = model.getDataset()->getDimension();
@@ -208,12 +212,12 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
        "/Heatmaps/");
     createFolder(outputDir);
     if ( nDimensions >= 4 ) {
-     getHeatmapMore4DClassification(model, currentDirectory);
+     getHeatmapMore4DClassification(model, currentDirectory, classMatrix);
     } else {
-      getHeatmap3DClassification(model, currentDirectory);
+      getHeatmap3DClassification(model, currentDirectory, classMatrix);
     }
   } else {
-    getHeatmap2DClassification(model, currentDirectory);
+    getHeatmap2DClassification(model, currentDirectory, classMatrix);
   }
 }
 
@@ -228,7 +232,7 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
 // 8° Update the indexes
 // 9° Repeat until the last column index exceeds the number of dimensions
 void VisualizerClassification::getHeatmapMore4DClassification(
-ModelFittingBase &model, std::string currentDirectory) {
+ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) {
   std::string outputDir(currentDirectory+"/Classification"+
     "/Heatmaps/");
 
@@ -236,7 +240,7 @@ ModelFittingBase &model, std::string currentDirectory) {
 
   std::vector<size_t> workingIndexes = {0, 0, 0};
 
-  while (variableColumnIndexes.at(3) < heatMapMatrix.getNcols()) {
+  while (variableColumnIndexes.at(3) < classMatrix.getNcols()) {
     std::string subfolder(outputDir+"dimensions_"+
     std::to_string(variableColumnIndexes.at(0)+1)+"_"+
     std::to_string(variableColumnIndexes.at(1)+1)+"_"+
@@ -303,7 +307,7 @@ ModelFittingBase &model, std::string currentDirectory) {
 // 3° Shift to the right
 // 4° Repeat steps 1 to 3 two more times
 void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model,
-  std::string currentDirectory) {
+  std::string currentDirectory, DataMatrix &classMatrix) {
   std::string outputDir(currentDirectory+"/Classification/");
 
   // Dummy to reutilize the storejson method
@@ -335,7 +339,7 @@ void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &mode
   }
 }
 void VisualizerClassification::getHeatmap2DClassification(
-  ModelFittingBase &model, std::string currentDirectory) {
+  ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) {
   std::string outputDir(currentDirectory+"/Classification/");
 
   DataMatrix heatMapResults(classMatrix);
