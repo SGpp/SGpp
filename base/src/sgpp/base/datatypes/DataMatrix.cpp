@@ -445,7 +445,7 @@ void DataMatrix::mult(double scalar) {
   }
 }
 
-void DataMatrix::mult(const DataVector& x, DataVector& y) {
+void DataMatrix::mult(const DataVector& x, DataVector& y) const {
   if (ncols != x.getSize()) {
     throw sgpp::base::data_exception("DataMatrix::mult : Dimensions do not match (x)");
   }
