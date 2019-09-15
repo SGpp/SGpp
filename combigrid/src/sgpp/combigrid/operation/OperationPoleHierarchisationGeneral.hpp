@@ -10,10 +10,10 @@
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/tools/sle/solver/Auto.hpp>
 #include <sgpp/base/tools/sle/system/SLE.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
 
 #include <cmath>
 #include <vector>

@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
 
 namespace sgpp {
 namespace combigrid {

@@ -8,10 +8,10 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/combigrid/HeterogeneousBasis.hpp>
-#include <sgpp/combigrid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 
 #include <vector>
 

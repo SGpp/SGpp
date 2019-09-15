@@ -6,9 +6,9 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/IndexVectorIterator.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
 
 namespace sgpp {
 namespace combigrid {

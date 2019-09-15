@@ -9,26 +9,24 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
-#include <sgpp/combigrid/CombinationGrid.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/HeterogeneousBasis.hpp>
-#include <sgpp/combigrid/IndexVectorRange.hpp>
+
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
-#include <sgpp/combigrid/OperationPole.hpp>
-#include <sgpp/combigrid/OperationPoleHierarchisationGeneral.hpp>
-#include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
-#include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
-#include <sgpp/combigrid/OperationUPFullGrid.hpp>
-#include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/grid/CombinationGrid.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp>
+#include <sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp>
+#include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
 
 #include <boost/test/unit_test.hpp>
 
 #include <memory>
 #include <vector>
-
-// TODO(valentjn)
-#include <iostream>
 
 using sgpp::base::DataVector;
 using sgpp::combigrid::CombinationGrid;
@@ -42,8 +40,8 @@ using sgpp::combigrid::OperationPole;
 using sgpp::combigrid::OperationPoleHierarchisationGeneral;
 using sgpp::combigrid::OperationPoleHierarchisationLinear;
 using sgpp::combigrid::OperationPoleNodalisationBspline;
-using sgpp::combigrid::OperationUPFullGrid;
 using sgpp::combigrid::OperationUPCombinationGrid;
+using sgpp::combigrid::OperationUPFullGrid;
 
 // fix for clang (from https://stackoverflow.com/a/33755176)
 #ifdef __clang__

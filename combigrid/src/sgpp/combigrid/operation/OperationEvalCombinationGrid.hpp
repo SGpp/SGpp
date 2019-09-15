@@ -8,9 +8,9 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/CombinationGrid.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/OperationEvalFullGrid.hpp>
+#include <sgpp/combigrid/grid/CombinationGrid.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/operation/OperationEvalFullGrid.hpp>
 
 #include <vector>
 

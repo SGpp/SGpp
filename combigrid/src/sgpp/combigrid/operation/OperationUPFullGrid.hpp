@@ -7,10 +7,10 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/IndexVectorRange.hpp>
-#include <sgpp/combigrid/OperationPole.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
 
 #include <memory>
 #include <vector>

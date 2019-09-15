@@ -5,18 +5,21 @@
 
 #pragma once
 
-#include <sgpp/combigrid/CombinationGrid.hpp>
-#include <sgpp/combigrid/FullGrid.hpp>
-#include <sgpp/combigrid/HeterogeneousBasis.hpp>
-#include <sgpp/combigrid/IndexVectorIterator.hpp>
-#include <sgpp/combigrid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/OperationEvalCombinationGrid.hpp>
-#include <sgpp/combigrid/OperationEvalFullGrid.hpp>
-#include <sgpp/combigrid/OperationPole.hpp>
-#include <sgpp/combigrid/OperationPoleHierarchisationGeneral.hpp>
-#include <sgpp/combigrid/OperationPoleHierarchisationLinear.hpp>
-#include <sgpp/combigrid/OperationPoleNodalisationBspline.hpp>
-#include <sgpp/combigrid/OperationPoleNodalisationLinear.hpp>
-#include <sgpp/combigrid/OperationUPCombinationGrid.hpp>
-#include <sgpp/combigrid/OperationUPFullGrid.hpp>
+
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
+
+#include <sgpp/combigrid/grid/CombinationGrid.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
+#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+
+#include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationEvalFullGrid.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp>
+#include <sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp>
+#include <sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp>
+#include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>

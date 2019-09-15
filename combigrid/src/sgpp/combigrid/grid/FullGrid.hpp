@@ -9,7 +9,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 
 namespace sgpp {
 namespace combigrid {

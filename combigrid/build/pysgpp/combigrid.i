@@ -8,20 +8,22 @@
 %shared_ptr(sgpp::combigrid::OperationEvalFullGrid);
 
 %include "combigrid/src/sgpp/combigrid/LevelIndexTypes.hpp"
-%include "combigrid/src/sgpp/combigrid/HeterogeneousBasis.hpp"
-%include "combigrid/src/sgpp/combigrid/FullGrid.hpp"
-%include "combigrid/src/sgpp/combigrid/IndexVectorRange.hpp"
-%include "combigrid/src/sgpp/combigrid/CombinationGrid.hpp"
 
-%include "combigrid/src/sgpp/combigrid/OperationEvalCombinationGrid.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationEvalFullGrid.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPole.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationGeneral.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleHierarchisationLinear.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationBspline.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationPoleNodalisationLinear.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationUPFullGrid.hpp"
-%include "combigrid/src/sgpp/combigrid/OperationUPCombinationGrid.hpp"
+%include "combigrid/src/sgpp/combigrid/basis/HeterogeneousBasis.hpp"
+
+%include "combigrid/src/sgpp/combigrid/grid/FullGrid.hpp"
+%include "combigrid/src/sgpp/combigrid/grid/IndexVectorRange.hpp"
+%include "combigrid/src/sgpp/combigrid/grid/CombinationGrid.hpp"
+
+%include "combigrid/src/sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationEvalFullGrid.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationPole.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationUPFullGrid.hpp"
+%include "combigrid/src/sgpp/combigrid/operation/OperationUPCombinationGrid.hpp"
 
 namespace std {
   %template(BasisVector) vector<sgpp::base::Basis<sgpp::combigrid::level_t, sgpp::combigrid::index_t>*>;
