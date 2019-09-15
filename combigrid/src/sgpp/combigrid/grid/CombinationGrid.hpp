@@ -105,6 +105,7 @@ class CombinationGrid {
   void combinePoints(base::GridStorage& gridStorage) const {
     const size_t dim = getDimension();
     base::GridPoint point(dim);
+    gridStorage.clear();
 
     for (const FullGrid& fullGrid : fullGrids) {
       const LevelVector& level = fullGrid.getLevel();
