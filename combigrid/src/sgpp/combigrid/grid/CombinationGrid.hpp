@@ -20,7 +20,7 @@ namespace combigrid {
 
 class CombinationGrid {
  public:
-  CombinationGrid(std::vector<FullGrid> fullGrids, base::DataVector coefficients) :
+  CombinationGrid(const std::vector<FullGrid>& fullGrids, const base::DataVector& coefficients) :
       fullGrids(fullGrids), coefficients(coefficients) {
   }
 
@@ -64,7 +64,7 @@ class CombinationGrid {
     }
   }
 
-  static CombinationGrid fromRegular(size_t dim, level_t n, HeterogeneousBasis basis,
+  static CombinationGrid fromRegular(size_t dim, level_t n, const HeterogeneousBasis& basis,
       bool hasBoundary = true) {
     std::vector<size_t> binomialCoefficients((dim+1)/2);
     binomialCoefficients[0] = 1.0;
@@ -147,11 +147,11 @@ class CombinationGrid {
     }
   }
 
-  double combineValues(base::DataVector values) const {
+  double combineValues(const base::DataVector& values) const {
     return values.dotProduct(coefficients);
   }
 
-  void combineValues(base::DataMatrix values, base::DataVector& result) const {
+  void combineValues(const base::DataMatrix& values, base::DataVector& result) const {
     result.resize(values.getNrows());
     values.mult(coefficients, result);
   }
