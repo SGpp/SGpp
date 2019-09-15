@@ -12,10 +12,8 @@
 #include <sgpp/base/tools/sle/system/SLE.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
-#include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/operation/OperationPole.hpp>
 
-#include <cmath>
 #include <vector>
 
 namespace sgpp {
@@ -24,107 +22,46 @@ namespace combigrid {
 class OperationPoleHierarchisationGeneral : public OperationPole {
  public:
   explicit OperationPoleHierarchisationGeneral(base::Basis<level_t, index_t>& basis,
-      bool isBasisHierarchical) : sle(basis, isBasisHierarchical, 0, 0), sleSolver() {
-  }
+      bool isBasisHierarchical);
 
-  ~OperationPoleHierarchisationGeneral() override {
-  }
+  ~OperationPoleHierarchisationGeneral() override;
 
   static void fromHeterogenerousBasis(const HeterogeneousBasis& basis,
-      std::vector<std::unique_ptr<OperationPole>>& operation) {
-    for (base::Basis<level_t, index_t>* const & basis1d : basis.getBases1d()) {
-      operation.emplace_back(new OperationPoleHierarchisationGeneral(
-          *basis1d, basis.isHierarchical()));
-    }
-  }
+      std::vector<std::unique_ptr<OperationPole>>& operation);
 
   static void fromHeterogenerousBasis(const HeterogeneousBasis& basis,
-      std::vector<OperationPole*>& operation) {
-    for (base::Basis<level_t, index_t>* const & basis1d : basis.getBases1d()) {
-      operation.push_back(new OperationPoleHierarchisationGeneral(
-          *basis1d, basis.isHierarchical()));
-    }
-  }
+      std::vector<OperationPole*>& operation);
 
   void apply(base::DataVector& values, size_t start, size_t step, size_t count,
-      level_t level, bool hasBoundary = true) override {
-    base::DataVector rhs(count);
-    base::DataVector solution(count);
-
-    for (size_t i = 0; i < count; i++) {
-      rhs[i] = values[start + i * step];
-    }
-
-    sle.setDimension(count);
-    sle.setLevel(level);
-    sle.setHasBoundary(hasBoundary);
-    sleSolver.solve(sle, rhs, solution);
-
-    for (size_t i = 0; i < count; i++) {
-      values[start + i * step] = solution[i];
-    }
-  }
+      level_t level, bool hasBoundary = true) override;
 
  protected:
   class HierarchisationGeneralSLE : public base::SLE {
    public:
     HierarchisationGeneralSLE(base::Basis<level_t, index_t>& basis, bool isBasisHierarchical,
-        size_t dim, level_t level, bool hasBoundary = true) :
-        basis(basis), isBasisHierarchical_(isBasisHierarchical),
-        dim(dim), level(level), hasBoundary_(hasBoundary) {
-    }
+        size_t dim, level_t level, bool hasBoundary = true);
 
-    ~HierarchisationGeneralSLE() override {
-    }
+    ~HierarchisationGeneralSLE() override;
 
-    double getMatrixEntry(size_t i, size_t j) override {
-      level_t levelBasis = level;
-      index_t indexBasis = static_cast<index_t>(j);
+    double getMatrixEntry(size_t i, size_t j) override;
 
-      if (isBasisHierarchical_) {
-        HeterogeneousBasis::hierarchizeLevelIndex(levelBasis, indexBasis);
-      }
+    bool isMatrixEntryNonZero(size_t i, size_t j) override;
 
-      const double point = static_cast<double>(i + (hasBoundary_ ? 0 : 1)) /
-          (static_cast<index_t>(1) << level);
-      return basis.eval(levelBasis, indexBasis, point);
-    }
+    bool isBasisHierarchical() const;
 
-    bool isMatrixEntryNonZero(size_t i, size_t j) override {
-      return (std::abs(getMatrixEntry(i, j)) > 1e-12);
-    }
+    void setIsBasisHierarchical(bool isBasisHierarchical);
 
-    bool isBasisHierarchical() const {
-      return isBasisHierarchical_;
-    }
+    size_t getDimension() const override;
 
-    void setIsBasisHierarchical(bool isBasisHierarchical) {
-      isBasisHierarchical_ = isBasisHierarchical;
-    }
+    void setDimension(size_t dim);
 
-    size_t getDimension() const override {
-      return dim;
-    }
+    level_t getLevel() const;
 
-    void setDimension(size_t dim) {
-      this->dim = dim;
-    }
+    void setLevel(level_t level);
 
-    level_t getLevel() const {
-      return level;
-    }
+    bool hasBoundary() const;
 
-    void setLevel(level_t level) {
-      this->level = level;
-    }
-
-    bool hasBoundary() const {
-      return hasBoundary_;
-    }
-
-    void setHasBoundary(bool hasBoundary) {
-      hasBoundary_ = hasBoundary;
-    }
+    void setHasBoundary(bool hasBoundary);
 
    protected:
     base::Basis<level_t, index_t>& basis;

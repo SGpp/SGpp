@@ -9,8 +9,6 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
-#include <sgpp/combigrid/grid/FullGrid.hpp>
-#include <sgpp/combigrid/operation/OperationEvalFullGrid.hpp>
 
 #include <vector>
 
@@ -19,41 +17,13 @@ namespace combigrid {
 
 class OperationEvalCombinationGrid {
  public:
-  explicit OperationEvalCombinationGrid(const CombinationGrid& grid) : grid(grid) {
-  }
+  explicit OperationEvalCombinationGrid(const CombinationGrid& grid);
 
-  virtual ~OperationEvalCombinationGrid() {
-  }
+  double eval(const std::vector<base::DataVector>& surpluses,
+      const base::DataVector& point);
 
-  virtual double eval(const std::vector<base::DataVector>& surpluses,
-      const base::DataVector& point) {
-    const std::vector<FullGrid>& fullGrids = grid.getFullGrids();
-    base::DataVector values(fullGrids.size());
-    OperationEvalFullGrid operationEvalFullGrid;
-
-    for (size_t i = 0; i < fullGrids.size(); i++) {
-      operationEvalFullGrid.setGrid(fullGrids[i]);
-      values[i] = operationEvalFullGrid.eval(surpluses[i], point);
-    }
-
-    return grid.combineValues(values);
-  }
-
-  virtual void eval(const std::vector<base::DataVector>& surpluses,
-      const base::DataMatrix& points, base::DataVector& result) {
-    const std::vector<FullGrid>& fullGrids = grid.getFullGrids();
-    base::DataMatrix values(points.getNrows(), fullGrids.size());
-    base::DataVector curValues(points.getNrows());
-    OperationEvalFullGrid operationEvalFullGrid;
-
-    for (size_t i = 0; i < fullGrids.size(); i++) {
-      operationEvalFullGrid.setGrid(fullGrids[i]);
-      operationEvalFullGrid.eval(surpluses[i], points, curValues);
-      values.setColumn(i, curValues);
-    }
-
-    grid.combineValues(values, result);
-  }
+  void eval(const std::vector<base::DataVector>& surpluses,
+      const base::DataMatrix& points, base::DataVector& result);
 
  protected:
   CombinationGrid grid;

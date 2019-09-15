@@ -5,6 +5,7 @@
 
 %ignore sgpp::combigrid::IndexVectorRange::begin;
 %ignore sgpp::combigrid::IndexVectorRange::end;
+%ignore sgpp::combigrid::OperationPoleHierarchisationGeneral::HierarchisationGeneralSLE;
 %shared_ptr(sgpp::combigrid::OperationEvalFullGrid);
 
 %include "combigrid/src/sgpp/combigrid/LevelIndexTypes.hpp"

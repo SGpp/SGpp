@@ -10,6 +10,8 @@
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
 
+#include <vector>
+
 namespace sgpp {
 namespace combigrid {
 

@@ -37,7 +37,7 @@ class HeterogeneousBasis {
       bool isHierarchical = true) : bases1d(dim, &basis1d), isHierarchical_(isHierarchical) {
   }
 
-  static inline void hierarchizeLevelIndex(level_t& level, index_t& index) {
+  static void hierarchizeLevelIndex(level_t& level, index_t& index) {
     if (index == 0) {
       level = 0;
     } else if (level > 0) {
@@ -48,20 +48,20 @@ class HeterogeneousBasis {
     }
   }
 
-  static inline void hierarchizeLevelIndex(LevelVector& level, IndexVector& index) {
+  static void hierarchizeLevelIndex(LevelVector& level, IndexVector& index) {
     for (size_t d = 0; d < level.size(); d++) {
       hierarchizeLevelIndex(level[d], index[d]);
     }
   }
 
-  static inline void hierarchizeLevelIndex(std::vector<LevelVector>& levels,
+  static void hierarchizeLevelIndex(std::vector<LevelVector>& levels,
       std::vector<IndexVector>& indices) {
     for (size_t i = 0; i < levels.size(); i++) {
       hierarchizeLevelIndex(levels[i], indices[i]);
     }
   }
 
-  inline double eval(const LevelVector& level, const IndexVector& index,
+  double eval(const LevelVector& level, const IndexVector& index,
       const base::DataVector& point) const {
     double result = 1.0;
     const size_t dim = bases1d.size();

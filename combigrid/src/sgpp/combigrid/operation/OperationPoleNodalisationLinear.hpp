@@ -15,16 +15,12 @@ namespace combigrid {
 
 class OperationPoleNodalisationLinear : public OperationPole {
  public:
-  OperationPoleNodalisationLinear() {
-  }
+  OperationPoleNodalisationLinear();
 
-  ~OperationPoleNodalisationLinear() override {
-  }
+  ~OperationPoleNodalisationLinear() override;
 
   void apply(base::DataVector& values, size_t start, size_t step, size_t count,
-      level_t level, bool hasBoundary = true) override {
-    // do nothing, as nodal coefficients equal values
-  }
+      level_t level, bool hasBoundary = true) override;
 };
 
 }  // namespace combigrid

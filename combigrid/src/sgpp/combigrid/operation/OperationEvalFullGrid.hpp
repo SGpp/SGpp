@@ -9,65 +9,27 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
-#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 
 namespace sgpp {
 namespace combigrid {
 
 class OperationEvalFullGrid : public base::OperationEval {
  public:
-  OperationEvalFullGrid() : grid() {
-  }
+  OperationEvalFullGrid();
 
-  explicit OperationEvalFullGrid(const FullGrid& grid) : grid(grid) {
-  }
+  explicit OperationEvalFullGrid(const FullGrid& grid);
 
-  ~OperationEvalFullGrid() override {
-  }
+  ~OperationEvalFullGrid() override;
 
-  double eval(const base::DataVector& surpluses, const base::DataVector& point) override {
-    const LevelVector& level = grid.getLevel();
-    const HeterogeneousBasis& basis = grid.getBasis();
-    size_t i = 0;
-    double result = 0.0;
-
-    for (const IndexVector& index : IndexVectorRange(grid)) {
-      result += surpluses[i] * basis.eval(level, index, point);
-      i++;
-    }
-
-    return result;
-  }
+  double eval(const base::DataVector& surpluses, const base::DataVector& point) override;
 
   virtual void eval(const base::DataVector& surpluses, const base::DataMatrix& points,
-      base::DataVector& result) {
-    const LevelVector& level = grid.getLevel();
-    const HeterogeneousBasis& basis = grid.getBasis();
-    const size_t n = points.getNrows();
-    base::DataVector point(points.getNcols());
-    size_t i = 0;
-    result.resize(n);
-    result.setAll(0.0);
+      base::DataVector& result);
 
-    for (const IndexVector& index : IndexVectorRange(grid)) {
-      for (size_t j = 0; j < n; j++) {
-        points.getRow(j, point);
-        result[j] += surpluses[i] * basis.eval(level, index, point);
-      }
+  const FullGrid& getGrid() const;
 
-      i++;
-    }
-  }
-
-  const FullGrid& getGrid() const {
-    return grid;
-  }
-
-  void setGrid(const FullGrid& grid) {
-    this->grid = grid;
-  }
+  void setGrid(const FullGrid& grid);
 
  protected:
   FullGrid grid;
