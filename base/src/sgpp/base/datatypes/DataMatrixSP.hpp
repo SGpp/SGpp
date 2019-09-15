@@ -420,7 +420,7 @@ class DataMatrixSP : public std::vector<float> {
    * @param[in] x vector to be multiplied
    * @param[out] y vector in which the result should be stored
    */
-  void mult(const DataVectorSP& x, DataVectorSP& y);
+  void mult(const DataVectorSP& x, DataVectorSP& y) const;
 
   /**
    * Squares all elements of the DataMatrixSP
