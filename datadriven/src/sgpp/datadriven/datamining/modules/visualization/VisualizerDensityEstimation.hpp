@@ -48,7 +48,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the heatmap results
    * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getHeatmap(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which starts the linear cut generation for Density Estimation Models
@@ -56,7 +56,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the linear cuts results
    * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getLinearCuts(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which stores the coordinates of the grid points
@@ -72,7 +72,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the linear cuts results
    */
   void getLinearCutsMore3D(ModelFittingBase &model, std::string currentDirectory,
-    DataMatrix matrix);
+    DataMatrix &matrix);
 
   /*
    * Method which generates the linear cuts graphs for models of 1 dimension
@@ -80,7 +80,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the linear cuts results
    * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which generates the linear cuts graphs for models of 2 dimensions
@@ -88,7 +88,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the linear cuts results
    * @param matrix The matrix containing the points to evaluate the cuts
    */
-  void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which generates the heatmap of models of 4 or more dimensions
@@ -96,7 +96,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the heatmap results
    * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which generates the heatmap of models of 3 dimensions
@@ -104,7 +104,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @param currentDirectory The current directory to store the heatmap results
    * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which generates the heatmap of models of 2 dimensions
@@ -112,7 +112,7 @@ class VisualizerDensityEstimation:public Visualizer {
    * @currentDirectory The current directory to store the heatmap results
    * @param matrix The matrix containing the points to evaluate the heatmap
    */
-  void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix matrix);
+  void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
   /*
    * Method which shifts one position the columns of a matrix from left to right
@@ -223,17 +223,8 @@ class VisualizerDensityEstimation:public Visualizer {
    * heatmaps
    * @param model The model used to evaluate the linear cuts and the heatmaps
    */
-  void initializeMatrices(ModelFittingBase &model);
-
-  /**
-   * Variable to store the cut matrix to be evaluated
-   */
-  DataMatrix cutMatrix;
-
-  /**
-   * Variable to store the heatmap matrix to be evaluated
-   */
-  DataMatrix heatMapMatrix;
+  void initializeMatrices(ModelFittingBase &model, DataMatrix &cutMatrix,
+    DataMatrix &heatMapMatrix);
 };
 
 }  // namespace datadriven

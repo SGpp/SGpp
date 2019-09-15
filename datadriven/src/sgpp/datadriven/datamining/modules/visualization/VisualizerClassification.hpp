@@ -43,29 +43,37 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * Method which starts the heatmap generation for Classification Models
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
+   * @param classMatrix matrix to be evaluated to generate the heatmap
    */
-  void getHeatmapsClassification(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmapsClassification(ModelFittingBase &model, std::string currentDirectory,
+    DataMatrix &classMatrix);
   /*
    * Method which generates the classification heatmap
    * of models of 4 or more dimensions
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
+   * @param classMatrix matrix to be evaluated to generate the heatmap
    */
-  void getHeatmapMore4DClassification(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmapMore4DClassification(ModelFittingBase &model, std::string currentDirectory,
+    DataMatrix &classMatrix);
   /*
    * Method which generates the classification heatmap
    * of models of 2 dimensions
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
+   * @param classMatrix matrix to be evaluated to generate the heatmap
    */
-  void getHeatmap2DClassification(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap2DClassification(ModelFittingBase &model, std::string currentDirectory,
+    DataMatrix &classMatrix);
   /*
    * Method which generates the classification heatmap
    * of models of 3 sdimensions
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
+   * @param classMatrix matrix to be evaluated to generate the heatmap
    */
-  void getHeatmap3DClassification(ModelFittingBase &model, std::string currentDirectory);
+  void getHeatmap3DClassification(ModelFittingBase &model, std::string currentDirectory,
+    DataMatrix &classMatrix);
 
   /**
    * Method to generate and store in json format for the
@@ -107,8 +115,9 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * Method which builds the matrices used to generate the cuts and the
    * heatmaps
    * @param model The model used to evaluate the linear cuts and the heatmaps
+   * @param classMatrix matrix to be initialized
    */
-  void initializeMatrices(ModelFittingBase &model);
+  void initializeMatrices(ModelFittingBase &model, DataMatrix &classMatrix);
 
 
  private:
@@ -118,15 +127,12 @@ class VisualizerClassification:public VisualizerDensityEstimation {
   std::vector<std::string> colors = {"red", "darkviolet", "orange", "palegreen",
                     "plum", "purple", "chocolate", "darkcyan", "gold", "tomato"};
 
-  /**
-   * Variable to store the classification heatmap matrix to be evaluated
-   */
-  DataMatrix classMatrix;
 
   /**
    * Vector which contains the all of the class label values in the model
    */
   DataVector classes;
+
 };
 
 }  // namespace datadriven
