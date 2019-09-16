@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * RefinementFunctorTypeParser.cpp
- *
- *  Created on: Jun 29, 2018
- *
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>

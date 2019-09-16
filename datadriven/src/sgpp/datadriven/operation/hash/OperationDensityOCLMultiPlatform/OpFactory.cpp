@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
