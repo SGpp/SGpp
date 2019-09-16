@@ -150,8 +150,8 @@ class DataMiningConfigParser {
   static const std::string fitter;
   static const std::string visualization;
 
-  std::string parseString(json::JSON::DictNode &dict, const std::string &key, const std::string &defaultValue,
-                          const std::string &parentNode) const;
+  std::string parseString(json::JSON::DictNode &dict, const std::string &key,
+    const std::string &defaultValue, const std::string &parentNode) const;
   double parseDouble(json::JSON::DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
   std::vector<double> parseDoubleArray(json::JSON::DictNode &dict, const std::string &key,
@@ -167,16 +167,15 @@ class DataMiningConfigParser {
   bool parseBool(json::JSON::DictNode &dict, const std::string &key, bool defaultValue,
                  const std::string &parentNode) const;
 
-  void parseSLESolverConfig(json::JSON::DictNode &dict,solver:: SLESolverConfiguration &config,
-                            const solver::SLESolverConfiguration &defaults,
-                            const std::string &parentNode) const;
+  void parseSLESolverConfig(json::JSON::DictNode &dict, solver:: SLESolverConfiguration &config,
+    const solver::SLESolverConfiguration &defaults, const std::string &parentNode) const;
 
   void parseDataTransformationConfig(json::JSON::DictNode &dict, DataTransformationConfig &config,
-                                     const DataTransformationConfig &defaults,
-                                     const std::string &parentNode) const;
-  void parseRosenblattTransformationConfig(json::JSON::DictNode &dict, RosenblattTransformationConfig &config,
-                                           const RosenblattTransformationConfig &defaults,
-                                           const std::string &parentNode) const;
+    const DataTransformationConfig &defaults, const std::string &parentNode) const;
+
+  void parseRosenblattTransformationConfig(json::JSON::DictNode &dict,
+    RosenblattTransformationConfig &config, const RosenblattTransformationConfig &defaults,
+                           const std::string &parentNode) const;
 
   template <typename Enumeration>
   int asInteger(Enumeration const value) const {

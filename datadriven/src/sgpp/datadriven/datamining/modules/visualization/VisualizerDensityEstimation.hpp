@@ -222,6 +222,10 @@ class VisualizerDensityEstimation:public Visualizer {
    * Method which builds the matrices used to generate the cuts and the
    * heatmaps
    * @param model The model used to evaluate the linear cuts and the heatmaps
+   * @param cutMatrix Matrix to be initialized which will be
+   * used to evaluate the linear cuts
+   * @param heatMapMatrix Matrix to be initialized which will be
+   * used to evaluate the heatmaps
    */
   void initializeMatrices(ModelFittingBase &model, DataMatrix &cutMatrix,
     DataMatrix &heatMapMatrix);

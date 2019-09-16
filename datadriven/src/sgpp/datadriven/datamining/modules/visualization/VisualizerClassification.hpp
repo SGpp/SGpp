@@ -132,7 +132,6 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    * Vector which contains the all of the class label values in the model
    */
   DataVector classes;
-
 };
 
 }  // namespace datadriven
