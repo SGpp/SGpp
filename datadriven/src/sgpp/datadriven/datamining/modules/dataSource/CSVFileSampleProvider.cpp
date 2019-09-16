@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * CSVFileSampleProvider.cpp
- *
- *  Created on: Dec 18, 2017
- *      Author: Eric Koepke, perun, Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
 

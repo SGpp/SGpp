@@ -1,14 +1,8 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * BOConfig.cpp
- *
- *  Created on:	20.03.2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 
 #include <sgpp/base/datatypes/DataVector.hpp>

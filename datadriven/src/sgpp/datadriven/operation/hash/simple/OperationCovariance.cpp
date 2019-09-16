@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>

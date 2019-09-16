@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ClassificationFitterFactory.hpp
- *
- *  Created on: 01.05.2019
- *      Author: Sebastian Kreisel
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 

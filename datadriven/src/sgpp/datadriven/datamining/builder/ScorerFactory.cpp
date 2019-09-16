@@ -1,14 +1,8 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ScorerFactory.cpp
- *
- *  Created on: 25.01.2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>

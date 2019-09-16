@@ -261,11 +261,11 @@ class Module(object):
       testRun = env.BoostTest(self.boostTestExecutable + "_run", self.boostTestExecutable)
       boostTestRunTargetList.append(testRun)
 
-  def runCpplint(self):
-    """Run the style checker.
+  def checkStyle(self):
+    """Run the style checks.
     """
-    if env['RUN_CPPLINT']:
+    if env["CHECK_STYLE"]:
       # run the style checker on all source and header files
       for path in self.cpps + self.hpps:
-        lintCommand = env.Command(path + ".lint", path, lintAction)
-        env.Depends(self.lib, lintCommand)
+        checkStyleCommand = env.Command(path + ".lint", path, checkStyleAction)
+        env.Depends(self.lib, checkStyleCommand)
