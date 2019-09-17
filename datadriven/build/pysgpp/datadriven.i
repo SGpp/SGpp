@@ -167,9 +167,18 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/Metric.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/scoring/MSE.hpp"

@@ -17,6 +17,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <string>
 
 namespace sgpp {
@@ -61,6 +62,12 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
   return fitfac;
 }
 
+Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const {
+  VisualizerConfiguration config;
 
+  config.readParams(parser);
+
+  return new VisualizerDummy();
+}
 } /* namespace datadriven */
 } /* namespace sgpp */
