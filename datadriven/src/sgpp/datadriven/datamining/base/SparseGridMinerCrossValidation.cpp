@@ -15,9 +15,11 @@
 namespace sgpp {
 namespace datadriven {
 
+
 SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
-    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer)
-    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
+    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer,
+    Visualizer* visualizer)
+    : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below
@@ -88,7 +90,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
         if (verbose) {
           std::ostringstream out;
           out << "###############"
-              << "Itertation #" << (iteration++) << std::endl
+              << "Iteration #" << (iteration) << std::endl
               << "Batch size: " << numInstances;
           print(out);
         }
@@ -107,6 +109,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
           print(out);
         }
 
+        visualizer->runVisualization(*fitter, *dataSource, fold, iteration);
         // Refine the model if neccessary
         monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
         size_t refinements = monitor->refinementsNecessary();
@@ -120,6 +123,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
               << "Iteration finished.";
           print(out);
         }
+        iteration++;
       }
     }
     // Evaluate the final score on the validation data

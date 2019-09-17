@@ -37,6 +37,25 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
+Dataset* DataSource::getAllSamples() {
+  Dataset* dataset = nullptr;
+
+  sampleProvider->reset();
+
+  dataset = sampleProvider->getAllSamples();
+
+  sampleProvider->reset();
+
+  sampleProvider->getNextSamples(currentIteration*config.batchSize);
+  // Transform dataset if wanted
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+    dataTransformation->initialize(dataset, config.dataTransformationConfig);
+    return dataTransformation->doTransformation(dataset);
+  } else {
+    return dataset;
+  }
+}
+
 Dataset* DataSource::getNextSamples() {
   Dataset* dataset = nullptr;
 

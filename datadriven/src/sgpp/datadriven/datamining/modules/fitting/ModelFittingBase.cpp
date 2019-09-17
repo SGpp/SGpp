@@ -97,5 +97,9 @@ void ModelFittingBase::reconfigureSolver(SLESolver &solver,
   solver.setMaxIterations(sleConfig.maxIterations_);
   solver.setEpsilon(sleConfig.eps_);
 }
+
+Dataset *ModelFittingBase::getDataset() {
+  return dataset;
+}
 } /* namespace datadriven */
 } /* namespace sgpp */
