@@ -105,6 +105,11 @@ class CSVTools {
                                   bool hasTargets = true,
                                   std::vector<double> selectedTargets = std::vector<double>());
 
+  /**
+   * Method to write the content of a matrix to a CSV File
+   */
+  static void writeMatrixToCSVFile(const std::string& path, sgpp::base::DataMatrix matrix);
+
  private:
   /**
    * Take a comma-sererated line and return its values as double values
