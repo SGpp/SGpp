@@ -202,8 +202,8 @@ void DataMatrixSP::transpose() {
   } else {
     DataMatrixSP oldMatrix(*this);
     this->resize(this->ncols, this->nrows);
-    for (size_t i = 0; i < this->nrows; i++) {
-      for (size_t j = 0; j < this->ncols; j++) {
+    for (size_t i = 0; i < oldMatrix.nrows; i++) {
+      for (size_t j = 0; j < oldMatrix.ncols; j++) {
         (*this)(j, i) = oldMatrix(i, j);
       }
     }

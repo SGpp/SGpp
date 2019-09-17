@@ -125,7 +125,7 @@ void DataVector::remove(std::vector<size_t>& indexesToRemove) {
 
   // Count the indexes to remove for the case when there are duplicates in indexesToRemove
   size_t numIndexesToRemove = 0;
-  for (size_t i = 0; i < indexesToRemove.size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); i++) {
     size_t idx = indexesToRemove[i];
     if (!willBeRemoved[idx]) {
       willBeRemoved[idx] = true;
@@ -133,9 +133,9 @@ void DataVector::remove(std::vector<size_t>& indexesToRemove) {
     }
   }
 
-  this->resize(this->size() - numIndexesToRemove);
+  this->resize(oldVector.size() - numIndexesToRemove);
   size_t j = 0;
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); i++) {
     if (!willBeRemoved[i]) {
       (*this)[j] = oldVector[i];
       j++;
