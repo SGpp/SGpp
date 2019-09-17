@@ -15,9 +15,11 @@
 namespace sgpp {
 namespace datadriven {
 
+
 SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
-                                                   ModelFittingBase* fitter, Scorer* scorer)
-    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
+                                                   ModelFittingBase* fitter, Scorer* scorer,
+                                                   Visualizer* visualizer)
+    : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerSplitting::learn(bool verbose) {
 #ifdef USE_SCALAPACK
@@ -55,16 +57,18 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       if (verbose) {
         std::ostringstream out;
         out << "###############"
-            << "Itertation #" << (iteration++) << std::endl
+            << "Iteration #" << (iteration) << std::endl
             << "Batch size: " << numInstances;
         print(out);
       }
       // Train model on new batch
       fitter->update(*dataset);
 
+
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
+
 
       if (verbose) {
         std::ostringstream out;
@@ -72,6 +76,8 @@ double SparseGridMinerSplitting::learn(bool verbose) {
             << "Score on validation data: " << scoreVal;
         print(out);
       }
+
+      visualizer->runVisualization(*fitter, *dataSource, 0, iteration);
 
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
@@ -82,6 +88,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       if (verbose) {
         print("###############Iteration finished.");
       }
+      iteration++;
     }
   }
   return scorer->test(*fitter, *(dataSource->getValidationData()));

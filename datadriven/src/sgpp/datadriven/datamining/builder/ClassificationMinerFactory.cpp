@@ -13,6 +13,8 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ClassificationFitterFactory.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
+
 #include <string>
 
 namespace sgpp {
@@ -29,5 +31,15 @@ FitterFactory *ClassificationMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
   return new ClassificationFitterFactory(parser);
 }
+
+Visualizer* ClassificationMinerFactory::createVisualizer(const DataMiningConfigParser& parser)
+const {
+  VisualizerConfiguration config;
+
+  config.readParams(parser);
+
+  return new VisualizerClassification(config);
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */
