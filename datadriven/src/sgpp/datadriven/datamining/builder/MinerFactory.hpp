@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 
 #include <string>
 
@@ -77,6 +78,12 @@ class MinerFactory {
    * @return the scorer instance
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+
+  /* Factory method to build a visualizer instance base on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  virtual Visualizer* createVisualizer(const DataMiningConfigParser& parser) const = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

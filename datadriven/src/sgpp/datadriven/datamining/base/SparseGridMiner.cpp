@@ -13,15 +13,16 @@
 
 namespace sgpp {
 namespace datadriven {
-
-SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
-    : fitter(fitter), scorer(scorer) {}
+SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer, Visualizer *visualizer)
+    : fitter(fitter), scorer(scorer), visualizer(visualizer) {}
 
 double SparseGridMiner::test(Dataset& testDataset) { return scorer->test(*fitter, testDataset); }
 
 ModelFittingBase* SparseGridMiner::getModel() { return &(*fitter); }
 
 void SparseGridMiner::setModel(ModelFittingBase* model) { fitter.reset(model); }
+
+Visualizer* SparseGridMiner::getVisualizer() { return &(*visualizer); }
 
 void SparseGridMiner::print(std::ostringstream& messageStream) { print(messageStream.str()); }
 
