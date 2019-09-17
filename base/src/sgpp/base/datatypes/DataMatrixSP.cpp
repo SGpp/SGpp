@@ -677,7 +677,7 @@ size_t DataMatrixSP::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < n; i++) {
-    if (std::abs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0f) {
       nonZero++;
     }
   }
