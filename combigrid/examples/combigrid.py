@@ -82,7 +82,7 @@ for doFullGrid in [True, False]:
 
   if doFullGrid:
     Xdm = pysgpp.DataMatrix(0, 0)
-    pysgpp.IndexVectorRange(fullGrid).getPoints(Xdm)
+    pysgpp.IndexVectorRange(fullGrid).getPoints(fullGrid, Xdm)
     X = np.array([[Xdm.get(k, j) for j in range(Xdm.getNcols())] for k in range(Xdm.getNrows())])
   else:
     X = gridPointsSG
