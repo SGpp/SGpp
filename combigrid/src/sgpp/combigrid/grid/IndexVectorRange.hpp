@@ -68,13 +68,14 @@ class IndexVectorRange {
     indices.assign(begin(), end());
   }
 
-  void getPoints(const FullGrid& grid, base::DataMatrix& points) const {
+  static void getPoints(const FullGrid& grid, base::DataMatrix& points) {
+    IndexVectorRange range(grid);
     const LevelVector& level = grid.getLevel();
     size_t i = 0;
-    points.resize(totalNumberOfIndexVectors, dim);
+    points.resize(range.totalNumberOfIndexVectors, range.dim);
 
-    for (const IndexVector& index : *this) {
-      for (size_t d = 0; d < dim; d++) {
+    for (const IndexVector& index : range) {
+      for (size_t d = 0; d < range.dim; d++) {
         points(i, d) = static_cast<double>(index[d]) /
             static_cast<double>(static_cast<index_t>(1) << level[d]);
       }
