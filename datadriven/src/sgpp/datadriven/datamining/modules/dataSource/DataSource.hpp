@@ -48,6 +48,13 @@ class DataSource {
   virtual Dataset* getNextSamples();
 
   /**
+   * Request all data from the underlying SampleProvider
+   * object upon construction.
+   * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
+   */
+  virtual Dataset* getAllSamples();
+
+  /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain
    * new batches in batch learning scenarios as often as specified inside the configuration. Allows
    * convenient range based for loops for batch learning.

@@ -23,13 +23,15 @@ namespace datadriven {
 
 SparseGridMiner* MinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
+
   if (parser.hasFitterConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser));
+     return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
+                                               createFitter(parser), createScorer(parser),
+                                               createVisualizer(parser));
   } else {
-    return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
-                                        createScorer(parser));
+     return new SparseGridMinerSplitting(createDataSourceSplitting(parser), createFitter(parser),
+                                         createScorer(parser),
+                                         createVisualizer(parser));
   }
 }
 
@@ -78,5 +80,7 @@ Scorer* MinerFactory::createScorer(const DataMiningConfigParser& parser) const {
   std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
   return factory->buildScorer(parser);
 }
+
+
 } /* namespace datadriven */
 } /* namespace sgpp */

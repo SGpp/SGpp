@@ -30,9 +30,11 @@ class SparseGridMinerCrossValidation : public SparseGridMiner {
    * @param scorer configured instance of scorer object that will assess the quality of the
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
+   * @param visualizer configured instance of viusalizer object that will produce the output
+   * to visualize the model and its results
    */
   SparseGridMinerCrossValidation(DataSourceCrossValidation* dataSource, ModelFittingBase* fitter,
-      Scorer* scorer);
+      Scorer* scorer, Visualizer* visualizer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .

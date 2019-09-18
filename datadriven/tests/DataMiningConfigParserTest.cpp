@@ -14,6 +14,8 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <string>
 #include <vector>
@@ -24,6 +26,7 @@ BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
 using sgpp::base::GridType;
 using sgpp::base::RegularGridConfiguration;
+using sgpp::base::AdaptivityConfiguration;
 using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::datadriven::DataSourceConfig;
 using sgpp::datadriven::DataSourceFileType;
@@ -37,12 +40,17 @@ using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::ScorerMetricType;
 using sgpp::solver::SLESolverConfiguration;
 using sgpp::solver::SLESolverType;
+using sgpp::datadriven::VisualizationGeneralConfig;
+using sgpp::datadriven::VisualizationParameters;
+
+using sgpp::datadriven::VisualizationFileType;
 
 BOOST_AUTO_TEST_CASE(testTopLevel) {
   DataMiningConfigParser parser{datasetPath};
   BOOST_CHECK_EQUAL(parser.hasDataSourceConfig(), true);
   BOOST_CHECK_EQUAL(parser.hasFitterConfig(), true);
   BOOST_CHECK_EQUAL(parser.hasScorerConfig(), true);
+  BOOST_CHECK_EQUAL(parser.hasVisualizationConfig(), true);
 }
 
 BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
@@ -276,6 +284,62 @@ BOOST_AUTO_TEST_CASE(testParallelConfig) {
   BOOST_CHECK_EQUAL(config.processCols_, 1);
   BOOST_CHECK_EQUAL(config.rowBlockSize_, 64);
   BOOST_CHECK_EQUAL(config.columnBlockSize_, 128);
+}
+
+BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
+  DataMiningConfigParser parser{datasetPath};
+  VisualizationGeneralConfig defaults;
+
+  defaults.algorithm = "otherAlgorithm";
+  defaults.targetDirectory = "./targetDirectory";
+  defaults.targetFileType = VisualizationFileType::json;
+  defaults.numBatches = 5;
+  defaults.crossValidation = false;
+
+  VisualizationGeneralConfig config;
+  bool hasConfig;
+  bool hasGeneralVisualizationConfig;
+
+  hasGeneralVisualizationConfig = parser.hasVisualizationGeneralConfig();
+  hasConfig = parser.getVisualizationGeneralConfig(config, defaults);
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
+
+  BOOST_CHECK_EQUAL(std::strcmp(config.algorithm.c_str(), "tsne"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
+    static_cast<int>(VisualizationFileType::json));
+  BOOST_CHECK_EQUAL(defaults.numBatches, 5);
+  BOOST_CHECK_EQUAL(defaults.crossValidation, false);
+}
+
+BOOST_AUTO_TEST_CASE(testVisualizationParameters) {
+  DataMiningConfigParser parser{datasetPath};
+  VisualizationParameters defaults;
+
+  defaults.perplexity = 22;
+  defaults.theta = 0.1;
+  defaults.targetDimension = 2;
+  defaults.seed = 50;
+  defaults.numberCores = 3;
+  defaults.maxNumberIterations = 200;
+
+  VisualizationParameters config;
+  bool hasVisualizationParameters;
+  bool hasConfig;
+
+  hasVisualizationParameters = parser.hasVisualizationParametersConfig();
+  hasConfig = parser.getVisualizationParameters(config, defaults);
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(hasVisualizationParameters, true);
+  BOOST_CHECK_EQUAL(config.perplexity, 30);
+  BOOST_CHECK_EQUAL(config.theta, 0.5);
+  BOOST_CHECK_EQUAL(config.targetDimension, 2);
+  BOOST_CHECK_EQUAL(config.seed, 150);
+  BOOST_CHECK_EQUAL(config.numberCores, 3);
+  BOOST_CHECK_EQUAL(config.maxNumberIterations, 500);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
