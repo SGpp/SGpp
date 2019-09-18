@@ -123,7 +123,7 @@ void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
   }
 }
 
-void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStorage,
     const std::vector<base::DataVector>& values, base::DataVector& result) const {
   const size_t N = gridStorage.getSize();
   const size_t n = fullGrids.size();
@@ -143,7 +143,7 @@ void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStor
   }
 }
 
-void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStorage,
     const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const {
   const size_t N = gridStorage.getSize();
 
