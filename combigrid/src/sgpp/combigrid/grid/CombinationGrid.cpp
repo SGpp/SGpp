@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 
@@ -96,8 +97,7 @@ CombinationGrid CombinationGrid::fromRegular(size_t dim, level_t n,
 CombinationGrid CombinationGrid::fromSubspaces(
     const std::vector<LevelVector>& subspaceLevels, const HeterogeneousBasis& basis,
     bool hasBoundary, bool makeDownwardClosed) {
-  // TODO(valentjn)
-  return CombinationGrid();
+  throw sgpp::base::not_implemented_exception("CombinationGrid::fromSubspaces is not implemented");
 }
 
 void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
