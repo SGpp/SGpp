@@ -36,8 +36,8 @@ class CombinationGrid {
 
   void combinePoints(base::GridStorage& gridStorage) const;
 
-  void combineValuesOnFullGrids(const std::vector<base::DataVector>& values,
-      base::DataVector& result) const;
+  void combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+      const std::vector<base::DataVector>& values, base::DataVector& result) const;
 
   double combineValues(const base::DataVector& values) const;
 

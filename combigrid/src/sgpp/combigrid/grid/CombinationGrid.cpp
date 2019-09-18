@@ -123,12 +123,10 @@ void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
   }
 }
 
-void CombinationGrid::combineValuesOnFullGrids(const std::vector<base::DataVector>& values,
-    base::DataVector& result) const {
+void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+    const std::vector<base::DataVector>& values, base::DataVector& result) const {
   const size_t n = fullGrids.size();
   const size_t dim = getDimension();
-  base::GridStorage gridStorage(dim);
-  combinePoints(gridStorage);
   const size_t N = gridStorage.getSize();
   IndexVector index(dim);
   IndexVectorRange range;
