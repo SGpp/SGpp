@@ -52,8 +52,9 @@ def dataMatrixToNdArray(dataMatrix):
     newNdArray = np.ndarray((dataMatrix.getNrows(), dataMatrix.getNcols()))
     for i in range(dataMatrix.getNrows()):
         for j in range(dataMatrix.getNcols()):
-            newNdArray[i,j] = dataMatrix.get(i,j)
+            newNdArray[i, j] = dataMatrix.get(i, j)
     return newNdArray
+
 
 def jacobianErrorFromData(reSurf,
                           funcName,
@@ -64,20 +65,22 @@ def jacobianErrorFromData(reSurf,
     componentwiseJacobianError = np.zeros(
         (objFunc.getOut(), objFunc.getDim()))
     # matrix containing the evaluation points, each row is one point
-    pointsPath = os.path.join(path, 'precalcGradients', funcName, 'evaluationPoints.pkl')
+    pointsPath = os.path.join(path, 'precalcGradients',
+                              funcName, 'evaluationPoints.pkl')
     with open(pointsPath, 'rb') as fp:
         points = pickle.load(fp)
     # 3D matrix containing the jacobian evaluated at the evaluation points xi_0, xi_1, ...
     # entry[t,d,n] is df_t / dx_d (xi_n)
     # the t-th component of function f, derived w.r.t parameter x_d evaluated at point xi_n
-    jacobianPath = os.path.join(path, 'precalcGradients', funcName, 'jacobianEvaluations.pkl')
+    jacobianPath = os.path.join(
+        path, 'precalcGradients', funcName, 'jacobianEvaluations.pkl')
     with open(jacobianPath, 'rb') as fp:
         trueJacobianEvaluations = pickle.load(fp)
 
     shape = np.shape(trueJacobianEvaluations)
     if (shape[0] != out) or (shape[1] != dim):
         print("WARNING: shape of the Jacobian data matrix does not fit the objective function!")
-    
+
     numPoints = shape[2]
     print("calculating jacobian error with {} precalculated points".format(numPoints))
     point = pysgpp.DataVector(dim)
@@ -100,7 +103,7 @@ def jacobianErrorFromData(reSurf,
     componentwiseJacobianError = np.sqrt(componentwiseJacobianError)
     totalJacobianL2Error = np.linalg.norm(componentwiseJacobianError)
 
-    return totalJacobianL2Error, componentwiseJacobianError
+    return totalJacobianL2Error, componentwiseJacobianError, numPoints
 
 
 def interpolateAndError(degree,
@@ -205,11 +208,12 @@ def interpolateAndError(degree,
                 print("total l2 err={}".format(totalL2Errors[j]))
 
             if calculateJacobianError:
-                totalJacobianL2Error, componentwiseJacobianError = jacobianErrorFromData(reSurf,
-                                                                                         objFunc.getName(),
-                                                                                         dataPath)
+                totalJacobianL2Error, componentwiseJacobianError, jacobianNumErrPoints = jacobianErrorFromData(reSurf,
+                                                                                                               objFunc.getName(),
+                                                                                                               dataPath)
                 totalJacobianL2Errors[j] = totalJacobianL2Error
-                componentwiseJacobianErrors[j, :, :] = componentwiseJacobianError
+                componentwiseJacobianErrors[j, :,
+                                            :] = componentwiseJacobianError
                 print("total jacobian err={}".format(totalJacobianL2Errors[j]))
 
             # if calculateMean == 1:
@@ -243,10 +247,6 @@ def interpolateAndError(degree,
         print('{} {} done (took {}s)\n\n'.format(
             gridType, degree, np.sum(runTimes)))
 
-
-        print(totalJacobianL2Errors)
-        print(componentwiseJacobianErrors)
-
         if saveDataFlag == 1:
             data = {'gridType': gridType,
                     'totalL2Errors': totalL2Errors,
@@ -262,7 +262,8 @@ def interpolateAndError(degree,
                     'runTimes': runTimes,
                     'refineType': refineType,
                     'degree': degree,
-                    'numErrPoints': numErrPoints}
+                    'numErrPoints': numErrPoints,
+                    'jacobianNumErrPoints': jacobianNumErrPoints}
             savePath = os.path.join(dataPath, 'results')
             saveData(data, savePath, gridType, model, refineType,
                      maxPoints, maxLevel, degree, objFunc)
@@ -276,17 +277,18 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='demo', type=str,
+    parser.add_argument('--model', default='dc_motor_I', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=2, type=int,
+    parser.add_argument('--dim', default=6, type=int,
                         help='the problems input dimensionality')
-    parser.add_argument('--out', default=2, type=int,
+    parser.add_argument('--out', default=101, type=int,
                         help='the problems output dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--gridType', default='nakexbound',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
+    parser.add_argument('--degree', default=135,
+                        type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus',
                         type=str, help='surplus or regular or mc for Monte Carlo')
     parser.add_argument('--maxLevel', default=3, type=int,
@@ -312,7 +314,7 @@ if __name__ == '__main__':
                         help='calculate variance')
     parser.add_argument('--quadOrder', default=100, type=int,
                         help='quadrature order for mean and variance calculations')
-    parser.add_argument('--numErrPoints', default=10000, type=int,
+    parser.add_argument('--numErrPoints', default=1000, type=int,
                         help='number of MC samples for l2 and nrmse')
     parser.add_argument('--saveDataFlag', default=1, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int,

@@ -147,6 +147,9 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
         saveName = '{}_regular{}_surplusAndMC{}_ {}'.format(
             objFunc.getName(), maxLevel, maxPoints, qoi)
 
+    if not os.path.exists(saveDirectory):
+        os.makedirs(saveDirectory)
+
     figname = os.path.join(saveDirectory, saveName + '_' + style)
     plt.savefig(figname + '.pdf', dpi=300, bbox_inches='tight', format='pdf')
     print('saved fig to {}'.format(figname + '.pdf'))
@@ -192,6 +195,20 @@ def plotConvergenceOrder(order, start, length):
     plt.plot(X, Y, linestyle=linestyle, color='k', label=label)
 
 
+def color_variant(hex_color, brightness_offset=1):
+    """ takes a color like #87c95f and produces a lighter or darker variant """
+    if len(hex_color) != 7:
+        raise Exception(
+            "Passed %s into color_variant(), needs to be in #87c95f format." % hex_color)
+    rgb_hex = [hex_color[x:x+2] for x in [1, 3, 5]]
+    new_rgb_int = [int(hex_value, 16) +
+                   brightness_offset for hex_value in rgb_hex]
+    # make sure new values are between 0 and 255
+    new_rgb_int = [min([255, max([0, i])]) for i in new_rgb_int]
+    # hex() produces "0x88", we want just "88"
+    return "#" + "".join([hex(i)[2:] for i in new_rgb_int])
+
+
 def plotter(qoi,
             data,
             objFunc,
@@ -232,6 +249,40 @@ def plotter(qoi,
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
             # plt.ylabel('l2 error', fontsize=ylabelsize)
 
+    # error in each derivative df/dx_i as l2 error over all df_t/dx_i
+    # ATTENTION: If f HAS TOO MANY PARAMETERS THE COLOR_VARIANT CODE WILL TURN TO WHITE
+    elif qoi == 'parameterwiseJacobianErrors':
+        componentwiseJacobianErrors = data['componentwiseJacobianErrors']
+        numGrids, _, numDim = np.shape(componentwiseJacobianErrors)
+        parameterwiseJacobianErrors = np.zeros((numGrids, numDim))
+        for g in range(numGrids):
+            for d in range(numDim):
+                parameterwiseJacobianErrors[g, d] = np.linalg.norm(
+                    componentwiseJacobianErrors[g, :, d])
+        for d in range(numDim):
+            varied_color = color_variant(color, brightness_offset=d*25)
+            plt.plot(gridSizes, parameterwiseJacobianErrors[:, d], label=label + ' d/dx{}'.format(d),
+                     color=varied_color, marker=marker, linestyle=linestyle)
+        plt.gca().set_xscale('log')
+        plt.gca().set_yscale('log')
+
+    # error in eachcomponent df_t/dx as l2 error over all df_t/dx_i
+    # ATTENTION: If f HAS TOO MANY OUTPUTS THE COLOR_VARIANT CODE WILL TURN TO WHITE
+    elif qoi == 'outwiseJacobianErrors':
+        componentwiseJacobianErrors = data['componentwiseJacobianErrors']
+        numGrids, numOut, numDim = np.shape(componentwiseJacobianErrors)
+        outwiseJacobianErrors = np.zeros((numGrids, numOut))
+        for g in range(numGrids):
+            for t in range(numOut):
+                outwiseJacobianErrors[g, t] = np.linalg.norm(
+                    componentwiseJacobianErrors[g, t, :])
+        for t in range(numOut):
+            varied_color = color_variant(color, brightness_offset=t*25)
+            plt.plot(gridSizes, outwiseJacobianErrors[:, t], label=label + ' df{}/dx'.format(t),
+                     color=varied_color, marker=marker, linestyle=linestyle)
+        plt.gca().set_xscale('log')
+        plt.gca().set_yscale('log')
+
     else:
         print("qoi '{}' not supported".format(qoi))
     plt.xlabel('number of grid points', fontsize=xlabelsize)
@@ -250,19 +301,20 @@ def plotter(qoi,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--qoi', default='gradientL2',
+    parser.add_argument('--qoi', default='parameterwiseJacobianErrors',
                         type=str, help='what to plot')
-    parser.add_argument('--model', default='demo', type=str,
+    parser.add_argument('--model', default='dc_motor_I', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=1, type=int,
+    parser.add_argument('--dim', default=6, type=int,
                         help='the problems dimensionality')
-    parser.add_argument('--out', default=2, type=int,
+    parser.add_argument('--out', default=101, type=int,
                         help='the problems output dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
     parser.add_argument('--gridType', default='nakexbound',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
+    parser.add_argument('--degree', default=135,
+                        type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus',
                         type=str, help='surplus (adaptive) or regular')
     parser.add_argument('--maxLevel', default=8, type=int,
@@ -271,7 +323,7 @@ if __name__ == '__main__':
                         help='maximum number of points used')
     parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Vector/data', type=str,
                         help='path were results are stored and precalculated data is stored')
-    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
+    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
     parser.add_argument('--style', default='paper', type=str,
                         help='style of the plot, paper or presentation')
     args = parser.parse_args()
