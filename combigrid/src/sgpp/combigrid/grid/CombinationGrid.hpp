@@ -39,6 +39,9 @@ class CombinationGrid {
   void combineValuesOnFullGrids(const base::GridStorage& gridStorage,
       const std::vector<base::DataVector>& values, base::DataVector& result) const;
 
+  void combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+      const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const;
+
   double combineValues(const base::DataVector& values) const;
 
   void combineValues(const base::DataMatrix& values, base::DataVector& result) const;

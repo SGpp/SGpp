@@ -125,9 +125,9 @@ void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
 
 void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStorage,
     const std::vector<base::DataVector>& values, base::DataVector& result) const {
+  const size_t N = gridStorage.getSize();
   const size_t n = fullGrids.size();
   const size_t dim = getDimension();
-  const size_t N = gridStorage.getSize();
   IndexVector index(dim);
   IndexVectorRange range;
   result.resize(N);
@@ -138,6 +138,36 @@ void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStor
       if (findGridPointInFullGrid(fullGrids[i], gridStorage[k], index)) {
         range.setGrid(fullGrids[i]);
         result[k] += coefficients[i] * values[i][range.find(index)];
+      }
+    }
+  }
+}
+
+void CombinationGrid::combineValuesOnFullGrids(const base::GridStorage& gridStorage,
+    const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const {
+  const size_t N = gridStorage.getSize();
+
+  if (values.empty()) {
+    result.resize(N, 0);
+    return;
+  }
+
+  const size_t n = fullGrids.size();
+  const size_t m = values[0].getNrows();
+  const size_t dim = getDimension();
+  IndexVector index(dim);
+  IndexVectorRange range;
+  result.resize(N, m);
+  result.setAll(0.0);
+
+  for (size_t k = 0; k < N; k++) {
+    for (size_t i = 0; i < n; i++) {
+      if (findGridPointInFullGrid(fullGrids[i], gridStorage[k], index)) {
+        range.setGrid(fullGrids[i]);
+
+        for (size_t j = 0; j < m; j++) {
+          result(k, j) += coefficients[i] * values[i](range.find(index), j);
+        }
       }
     }
   }
