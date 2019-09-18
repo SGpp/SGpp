@@ -142,14 +142,13 @@ void DataMatrixSP::resizeQuadratic(size_t size) {
     return;
   }
 
-  DataMatrixSP newMatrix(size, size);
+  DataMatrixSP oldMatrix(*this);
 
   size_t min_size = std::min(this->ncols, size);
+  this->resize(size, size);
   for (size_t i = 0; i < min_size; i++) {
-    std::copy(this->row_begin(i), this->row_begin(i) + min_size, newMatrix.row_begin(i));
+    std::copy(oldMatrix.row_begin(i), oldMatrix.row_begin(i) + min_size, this->row_begin(i));
   }
-
-  this->operator=(std::move(newMatrix));
 }
 
 void DataMatrixSP::resizeZero(size_t nrows) { this->resizeRows(nrows); }
@@ -168,17 +167,16 @@ void DataMatrixSP::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, s
   }
 
   // create new matrix
-  DataMatrixSP newMatrix(0, col_2 - col_1 + 1);
-  newMatrix.reserveAdditionalRows(row_2 - row_1 + 1);
+  DataMatrixSP oldMatrix(*this);
+  this->resize(0, col_2 - col_1 +1);
+  this->reserveAdditionalRows(row_2 - row_1 + 1);
 
-  auto regionBegin = this->begin() + (row_1 - 1) * this->ncols + (col_1 - 1);
-  auto regionEnd = this->begin() + (row_2) * this->ncols + (col_1 - 1);
-  for (auto it = regionBegin; it < regionEnd; it += this->ncols) {
-    newMatrix.insert(newMatrix.end(), it, it + (col_2 - col_1 + 1));
-    newMatrix.nrows++;
+  auto regionBegin = oldMatrix.begin() + (row_1 - 1) * oldMatrix.ncols + (col_1 - 1);
+  auto regionEnd = oldMatrix.begin() + (row_2) * oldMatrix.ncols + (col_1 - 1);
+  for (auto it = regionBegin; it < regionEnd; it += oldMatrix.ncols) {
+    this->insert(this->end(), it, it + (col_2 - col_1 + 1));
+    this->nrows++;
   }
-
-  this->operator=(std::move(newMatrix));
 }
 
 void DataMatrixSP::reserveAdditionalRows(size_t inc_nrows) {
@@ -202,13 +200,13 @@ void DataMatrixSP::transpose() {
       }
     }
   } else {
-    DataMatrixSP newMatrix(this->ncols, this->nrows);
-    for (size_t i = 0; i < this->nrows; i++) {
-      for (size_t j = 0; j < this->ncols; j++) {
-        newMatrix(j, i) = (*this)(i, j);
+    DataMatrixSP oldMatrix(*this);
+    this->resize(this->ncols, this->nrows);
+    for (size_t i = 0; i < oldMatrix.nrows; i++) {
+      for (size_t j = 0; j < oldMatrix.ncols; j++) {
+        (*this)(j, i) = oldMatrix(i, j);
       }
     }
-    this->operator=(std::move(newMatrix));
   }
 }
 
@@ -679,7 +677,7 @@ size_t DataMatrixSP::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < n; i++) {
-    if (std::abs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0f) {
       nonZero++;
     }
   }

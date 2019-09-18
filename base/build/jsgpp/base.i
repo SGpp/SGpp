@@ -14,7 +14,6 @@ namespace std {
     %template(SizeVector) vector<size_t>;
     %template(SizeDoublePair) pair<size_t, double>;
     %template(SizeDoublePairVector) vector<pair<size_t, double> >;
-    %template(SizeList) list<size_t>;
     // For OnlinePredictiveRefinementDimension
     %template(refinement_key) std::pair<size_t, unsigned int>;
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;

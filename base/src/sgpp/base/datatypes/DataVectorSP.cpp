@@ -111,23 +111,21 @@ DataVectorSP DataVectorSP::fromString(const std::string& serializedVector) {
 void DataVectorSP::resizeZero(size_t size) { this->resize(size); }
 
 void DataVectorSP::restructure(std::vector<size_t>& remainingIndex) {
-  DataVectorSP newVector;
-  newVector.reserve(remainingIndex.size());
+  DataVectorSP oldVector(*this);
+  this->resize(remainingIndex.size());
 
   for (size_t i = 0; i < remainingIndex.size(); i++) {
-    newVector.emplace_back((*this)[remainingIndex[i]]);
+    (*this)[i] = oldVector[remainingIndex[i]];
   }
-
-  *this = std::move(newVector);
 }
 
 void DataVectorSP::remove(std::vector<size_t>& indexesToRemove) {
-  DataVectorSP newVector;
+  DataVectorSP oldVector(*this);
   std::vector<bool> willBeRemoved(this->size(), false);
 
   // Count the indexes to remove for the case when there are duplicates in indexesToRemove
   size_t numIndexesToRemove = 0;
-  for (size_t i = 0; i < indexesToRemove.size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); i++) {
     size_t idx = indexesToRemove[i];
     if (!willBeRemoved[idx]) {
       willBeRemoved[idx] = true;
@@ -135,14 +133,14 @@ void DataVectorSP::remove(std::vector<size_t>& indexesToRemove) {
     }
   }
 
-  newVector.reserve(this->size() - numIndexesToRemove);
-  for (size_t i = 0; i < this->size(); i++) {
+  this->resize(oldVector.size() - numIndexesToRemove);
+  size_t j = 0;
+  for (size_t i = 0; i < oldVector.size(); i++) {
     if (!willBeRemoved[i]) {
-      newVector.emplace_back((*this)[i]);
+      (*this)[j] = oldVector[i];
+      j++;
     }
   }
-
-  *this = std::move(newVector);
 }
 
 size_t DataVectorSP::append() { return this->append(0.0f); }
