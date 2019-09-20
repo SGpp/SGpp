@@ -60,6 +60,14 @@ def jacobianErrorFromData(reSurf,
                           funcName,
                           path):
 
+    # for the dc_motor_model based on numerical ode solutions no
+    # gradient evaluations are available.
+    # use precalculated values of the analytical solution instead
+    if 'dc_motor_ode_I' in funcName:
+        funcName = funcName.replace('ode', 'analytical')
+    elif 'dc_motor_ode_W' in funcName:
+        funcName = funcName.replace('ode', 'analytical')
+
     dim = reSurf.getNumDim()
     out = reSurf.getNumRes()
     componentwiseJacobianError = np.zeros(
@@ -138,6 +146,7 @@ def interpolateAndError(degree,
         totalJacobianL2Errors = np.zeros(len(sampleRange))
         componentwiseJacobianErrors = np.zeros(
             (len(sampleRange), objFunc.getOut(), objFunc.getDim()))
+        jacobianNumErrPoints = 0
         means = np.zeros(len(sampleRange))
         meanErrors = np.zeros(len(sampleRange))
         varErrors = np.zeros(len(sampleRange))
@@ -201,8 +210,24 @@ def interpolateAndError(degree,
 
             if calculateError:
                 componentwiseError = pysgpp.DataVector(objFunc.getOut())
-                totalL2Errors[j] = reSurf.l2Error(
-                    objFunc, componentwiseError, numErrPoints)
+                # special case, dc_motor with ode based surrogate, but error from analytical solution
+                # (Actually there is no difference. Might omit this, except if we want to argument via analytical solution in the paper)
+                if 'dc_motor_ode_I' in objFunc.getName():
+                    pyFunc = vectorFunctions.getFunction(
+                        'dc_motor_analytical_I', objFunc.getDim(), objFunc.getOut(), 'dummy')
+                    analyticalSolution = vectorObjFuncSGpp(pyFunc)
+                    totalL2Errors[j] = reSurf.l2Error(
+                        analyticalSolution, componentwiseError, numErrPoints)
+                elif 'dc_motor_ode_W' in objFunc.getName():
+                    pyFunc = vectorFunctions.getFunction(
+                        'dc_motor_analytical_W', objFunc.getDim(), objFunc.getOut(), 'dummy')
+                    analyticalSolution = vectorObjFuncSGpp(pyFunc)
+                    totalL2Errors[j] = reSurf.l2Error(
+                        analyticalSolution, componentwiseError, numErrPoints)
+                # end special case
+                else:
+                    totalL2Errors[j] = reSurf.l2Error(
+                        objFunc, componentwiseError, numErrPoints)
                 for t in range((objFunc.getOut())):
                     componentwiseErrors[j, t] = componentwiseError[t]
                 print("total l2 err={}".format(totalL2Errors[j]))
@@ -277,27 +302,27 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='dc_motor_I', type=str,
+    parser.add_argument('--model', default='okushiri', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=6, type=int,
+    parser.add_argument('--dim', default=2, type=int,
                         help='the problems input dimensionality')
-    parser.add_argument('--out', default=101, type=int,
+    parser.add_argument('--out', default=451, type=int,
                         help='the problems output dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakexbound',
+    parser.add_argument('--gridType', default='nakbsplineboundary',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=135,
+    parser.add_argument('--degree', default=3,
                         type=int, help='spline degree')
-    parser.add_argument('--refineType', default='surplus',
+    parser.add_argument('--refineType', default='regular',
                         type=str, help='surplus or regular or mc for Monte Carlo')
     parser.add_argument('--maxLevel', default=3, type=int,
                         help='maximum level for regular refinement')
-    parser.add_argument('--minPoints', default=10, type=int,
+    parser.add_argument('--minPoints', default=5, type=int,
                         help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=1000, type=int,
+    parser.add_argument('--maxPoints', default=5, type=int,
                         help='maximum number of points used')
-    parser.add_argument('--numSteps', default=5, type=int,
+    parser.add_argument('--numSteps', default=1, type=int,
                         help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int,
                         help='initial regular level for adaptive sparse grids')
@@ -305,9 +330,9 @@ if __name__ == '__main__':
                         help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Vector/data', type=str,
                         help='path were results are stored and precalculated data is stored')
-    parser.add_argument('--error', default=1, type=int,
+    parser.add_argument('--error', default=0, type=int,
                         help='calculate l2 error')
-    parser.add_argument('--jacobianError', default=1, type=int,
+    parser.add_argument('--jacobianError', default=0, type=int,
                         help='calculate l2 error of jacobian matrix')
     parser.add_argument('--mean', default=0, type=int, help='calculate mean')
     parser.add_argument('--var', default=0, type=int,
@@ -366,3 +391,6 @@ if __name__ == '__main__':
                                    args.error, args.jacobianError, args.mean, args.var,
                                    args.quadOrder, args.initialLevel, args.numRefine, args.saveDataFlag,
                                    args.model)
+
+    if 'okushiri' in args.model:
+        objFunc.cleanUp()
