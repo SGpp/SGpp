@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEvalInterModLinear)
 BOOST_AUTO_TEST_CASE(zeroAlpha) {
   srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10.*rand()/static_cast<double>(RAND_MAX));
-  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
   std::set<size_t> tmp;
 
