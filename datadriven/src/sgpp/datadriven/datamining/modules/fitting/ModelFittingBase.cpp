@@ -47,7 +47,7 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
   GridFactory gridFactory;
 
   // pass interactions with size 0
-  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
+  std::set<std::set<size_t>> interactions;
   return gridFactory.createGrid(gridConfig, interactions);
 }
 
@@ -58,7 +58,7 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
   // a regular sparse grid is created, if no geometryConfig is defined,
   if (geometryConfig.stencils.empty()) {
     // interaction with size 0
-    std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
+    std::set<std::set<size_t>> interactions;
     return gridFactory.createGrid(gridConfig, interactions);
   }
 

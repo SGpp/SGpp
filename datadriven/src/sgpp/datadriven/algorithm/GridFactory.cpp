@@ -94,7 +94,7 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
     auto position = std::vector<int64_t>(dimensions, 0);
     while (!position.empty()) {
       for (size_t j = 1; j < (size_t)2 << (blockLenght * dimensions); j++) {
-        std::set<size_t> tmp = std::set<size_t>();
+        std::set<size_t> tmp;
         for (size_t k = 0; k < blockLenght; k++) {
           for (size_t l = 0; l < dimensions; l++) {
             if (j & (size_t)1 << (k * dimensions + l) &&
@@ -222,7 +222,7 @@ void sgpp::datadriven::GridFactory::addChildParentInteraction(
                                 childOffset, interactions);
     }
   } else {
-    auto interaction = std::set<size_t>();
+    std::set<size_t> interaction;
     interaction.insert(getDataIndex(numberOfAxes, childMultiplicators, childPosition) +
                        childOffset);
     interaction.insert(getDataIndex(numberOfAxes, parentMultiplicators, parentPosition) +
@@ -271,7 +271,7 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
   while (position.size() != 0) {
     size_t colorChannels = layerDim.at(colorIndex);
     for (size_t j = 1; j < ((size_t)1 << colorChannels); j++) {
-      std::set<size_t> tmp = std::set<size_t>();
+      std::set<size_t> tmp;
       for (size_t k = 0; k < colorChannels; k++) {
         if (j & (1 << k)) {
           position.at(colorIndex) = k;
@@ -296,7 +296,7 @@ void sgpp::datadriven::GridFactory::getDirectNeighbours(
     do {
       for (size_t j = 0; j < geometryConf.dim.at(i).size(); j++) {
         if (position.at(j) + 1 < geometryConf.dim.at(i).at(j)) {
-          std::set<size_t> tmp = std::set<size_t>();
+          std::set<size_t> tmp;
           tmp.insert(offsetsPerLevel.at(i) + getDataIndex(geometryConf.dim.at(i).size(),
                                                           multiplicatorsPerLevel.at(i), position));
           position.at(j)++;

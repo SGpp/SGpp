@@ -219,7 +219,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(
   StringTokenizer::tokenize(str, ",", tokens);
 
   for (size_t i = 4; i < tokens.size(); i += std::stoi(tokens[i]) + 1) {
-    std::set<size_t> tmp = std::set<size_t>();
+    std::set<size_t> tmp;
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
       tmp.insert(std::stoi(tokens[i + j]));
     }

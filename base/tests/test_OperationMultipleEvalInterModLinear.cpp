@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
 BOOST_AUTO_TEST_CASE(symmetry) {
   srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
-  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
   std::set<size_t> tmp = std::set<size_t> ();
 
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(symmetry) {
 BOOST_AUTO_TEST_CASE(regularEvaluation) {
   srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
-  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
   std::set<size_t> tmp = std::set<size_t> ();
 
