@@ -29,7 +29,7 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
   const size_t dim = size_t(4+10.*rand()/static_cast<double>(RAND_MAX));
   std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
 
-  std::set<size_t> tmp = std::set<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
   interactions.insert(tmp);
