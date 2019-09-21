@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::set<size_t> ();
+    tmp.clear();
     tmp.insert(i);
     interactions.insert(tmp);
   }
