@@ -143,7 +143,7 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
     for (size_t j = 0; j < dataset.getNrows(); j++) {
       dataset.getRow(j, line);
       // iterate over all interactions
-      for (std::set<size_t> in : interactions) {
+      for (const std::set<size_t>& in : interactions) {
         bool pointComputed = true;
         bool lvlComplete = false;
         size_t relLvl = 0;
