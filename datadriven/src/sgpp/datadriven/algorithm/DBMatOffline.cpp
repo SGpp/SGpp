@@ -146,7 +146,7 @@ void DBMatOffline::store(const std::string& fileName) {
   }
 
   std::string inter = "," + std::to_string(interactions.size());
-  for (std::set<size_t> i : interactions) {
+  for (const std::set<size_t>& i : interactions) {
     inter.append("," + std::to_string(i.size()));
     for (size_t j : i) {
       inter.append("," + std::to_string(j));
