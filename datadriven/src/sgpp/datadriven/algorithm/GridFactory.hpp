@@ -66,11 +66,27 @@ class GridFactory {
                            sgpp::datadriven::StencilConfiguration& stencilConf) const;
 
  private:
-  void addChildParentInteraction(
-      std::vector<double>& ratio, size_t numberOfAxes, size_t currentAxis,
-      std::vector<int64_t>& childPosition, std::vector<int64_t>& parentPosition,
-      std::vector<size_t>& parentMultiplicators, std::vector<size_t>& childMultiplicators,
-      size_t parentOffset, size_t childOffset, std::set<std::set<size_t>>& interactions) const;
+  /*
+   * Adds interactions between childs and parent pixels to the set of interactions by
+   * calculating and setting the position per axis of the data
+   * @param[in] ratio of the axes sizes of the two layers
+   * @param[in] number of axes in the data
+   * @param[in] current axis the recursive function is on
+   * @param[in] position on the child layer
+   * @param[in,out] position on the parent layer
+   * @param[in] multiplicator of the parent layer
+   * @param[in] multiplicator of the child layer
+   * @param[in] data offset of the parent layer
+   * @param[in] data offset of the child layer
+   * @param[in,out] set of interaction terms
+   */
+  void addChildParentInteraction(std::vector<double>& ratio, size_t numberOfAxes,
+                                 size_t currentAxis, std::vector<int64_t>& childPosition,
+                                 std::vector<int64_t>& parentPosition,
+                                 std::vector<size_t>& parentMultiplicators,
+                                 std::vector<size_t>& childMultiplicators, size_t parentOffset,
+                                 size_t childOffset,
+                                 std::set<std::set<size_t>>& interactions) const;
 
   /*
    * calculates the index of a given position. This method exspect a row wise data layout
@@ -100,6 +116,14 @@ class GridFactory {
   std::vector<std::vector<size_t>> getMultiplicatorsPerLevel(
       std::vector<std::vector<int64_t>>& imageDimensions) const;
 
+  /*
+   * Adds all color interactions in the respective layer to the set of interactions
+   * @param[in] vector of resolutions
+   * @param[in] index of the color axis
+   * @param[in] data offset of the current layer
+   * @param[in] vector of the multiplicators of the current layer
+   * @param[in,out] set of interaction terms
+   */
   void addColorInteractions(std::vector<int64_t>& layerDim, size_t colorIndex, size_t offset,
                             std::vector<size_t>& multiplicators,
                             std::set<std::set<size_t>>& interactions) const;
