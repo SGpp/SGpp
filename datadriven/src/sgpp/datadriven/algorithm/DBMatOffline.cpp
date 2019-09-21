@@ -48,7 +48,6 @@ using sgpp::base::RegularGridConfiguration;
 
 DBMatOffline::DBMatOffline()
      : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse(), interactions() {
-  interactions = std::set<std::set<size_t>>();
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
