@@ -90,7 +90,7 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
   auto offsetsPerLevel = getOffsetPerLevel(geoConf.dim, multiplicatorsPerLevel);
   for (size_t i : stencilConf.applyOnLayers) {
     auto dimensions = geoConf.dim.at(i).size();
-    auto offset = offsetsPerLevel.at(i);
+    auto offset = offsetsPerLevel[i];
     auto position = std::vector<int64_t>(dimensions, 0);
     while (!position.empty()) {
       for (size_t j = 1; j < (size_t)2 << (blockLenght * dimensions); j++) {
@@ -98,16 +98,16 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
         for (size_t k = 0; k < blockLenght; k++) {
           for (size_t l = 0; l < dimensions; l++) {
             if (j & (size_t)1 << (k * dimensions + l) &&
-                static_cast<int64_t>(position.at(l) + k) < geoConf.dim.at(i).at(l)) {
-              position.at(l) += k;
-              tmp.insert(getDataIndex(dimensions, multiplicatorsPerLevel.at(i), position) + offset);
-              position.at(l) -= k;
+                static_cast<int64_t>(position[l] + k) < geoConf.dim[i][l]) {
+              position[l] += k;
+              tmp.insert(getDataIndex(dimensions, multiplicatorsPerLevel[i], position) + offset);
+              position[l] -= k;
             }
           }
         }
         interactions.insert(tmp);
       }
-      getNextPosition(geoConf.dim.at(i), position, -1);
+      getNextPosition(geoConf.dim[i], position, -1);
     }
     interactions.insert(std::set<size_t>());
   }
@@ -120,7 +120,7 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getMultiplicator
     auto multiplicators = std::vector<size_t>();
     multiplicators.push_back(1);
     for (size_t i = 1; i < dimension.size(); i++) {
-      multiplicators.push_back(multiplicators.at(i - 1) * dimension.at(i - 1));
+      multiplicators.push_back(multiplicators[i - 1] * dimension[i - 1]);
     }
     multiplicatorsPerLevel.push_back(multiplicators);
   }
@@ -133,11 +133,11 @@ std::vector<size_t> sgpp::datadriven::GridFactory::getOffsetPerLevel(
   auto offsetsPerLevel = std::vector<size_t>();
   offsetsPerLevel.push_back(0);
   for (size_t i = 1; i < imageDimensions.size(); i++) {
-    auto childDimensions = imageDimensions.at(i - 1);
-    auto childMultiplicator = multiplicatorsPerLevel.at(i - 1);
-    auto numberOfDataColumnsInChild = childMultiplicator.at(childMultiplicator.size() - 1) *
-                                      childDimensions.at(childDimensions.size() - 1);
-    auto childOffset = offsetsPerLevel.at(i - 1);
+    auto childDimensions = imageDimensions[i - 1];
+    auto childMultiplicator = multiplicatorsPerLevel[i - 1];
+    auto numberOfDataColumnsInChild = childMultiplicator[childMultiplicator.size() - 1] *
+                                      childDimensions[childDimensions.size() - 1];
+    auto childOffset = offsetsPerLevel[i - 1];
     offsetsPerLevel.push_back(childOffset + numberOfDataColumnsInChild);
   }
   return offsetsPerLevel;
@@ -152,38 +152,38 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
   for (size_t i : stencilConf.applyOnLayers) {
     for (size_t j = i + 1; j < geometryConf.dim.size(); j++) {
       auto ratio = std::vector<double>();
-      for (size_t k = 0; k < geometryConf.dim.at(i).size(); k++) {
-        ratio.push_back(static_cast<double>(geometryConf.dim.at(j).at(k)) /
-                        static_cast<double>(geometryConf.dim.at(i).at(k)));
+      for (size_t k = 0; k < geometryConf.dim[i].size(); k++) {
+        ratio.push_back(static_cast<double>(geometryConf.dim[j][k]) /
+                        static_cast<double>(geometryConf.dim[i][k]));
       }
 
-      auto position = std::vector<int64_t>(geometryConf.dim.at(j).size(), 0);
+      auto position = std::vector<int64_t>(geometryConf.dim[j].size(), 0);
 
       // Iterate over all positions
       do {
         std::vector<int64_t> parentPosition = std::vector<int64_t>(position.size(), 0);
-        addChildParentInteraction(ratio, geometryConf.dim.at(i).size(), 0, position, parentPosition,
-                                  multiplicatorsPerLevel.at(j), multiplicatorsPerLevel.at(i),
-                                  offsetsPerLevel.at(j), offsetsPerLevel.at(i), interactions);
+        addChildParentInteraction(ratio, geometryConf.dim[i].size(), 0, position, parentPosition,
+                                  multiplicatorsPerLevel[j], multiplicatorsPerLevel[i],
+                                  offsetsPerLevel[j], offsetsPerLevel[i], interactions);
 
-        getNextPosition(geometryConf.dim.at(i), position, -1);
+        getNextPosition(geometryConf.dim[i], position, -1);
       } while (position.size() != 0);
 
       if (stencilConf.colorIndex != -1) {
-        addColorInteractions(geometryConf.dim.at(j), stencilConf.colorIndex, offsetsPerLevel.at(j),
-                             multiplicatorsPerLevel.at(j), interactions);
+        addColorInteractions(geometryConf.dim[j], stencilConf.colorIndex, offsetsPerLevel[j],
+                             multiplicatorsPerLevel[j], interactions);
       }
-      addOneDimensionalInteractions(geometryConf.dim.at(j), offsetsPerLevel.at(j), interactions);
+      addOneDimensionalInteractions(geometryConf.dim[j], offsetsPerLevel[j], interactions);
 
       if (stencilConf.stencilType == StencilType::NextHierarchicalParent) {
         break;
       }
     }
     if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel.at(i),
-                           multiplicatorsPerLevel.at(i), interactions);
+      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel[i],
+                           multiplicatorsPerLevel[i], interactions);
     }
-    addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel.at(i), interactions);
+    addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel[i], interactions);
   }
 
   // Add empty interaction
@@ -210,13 +210,13 @@ void sgpp::datadriven::GridFactory::addChildParentInteraction(
   // Check if all axes has been set
   if (currentAxis < numberOfAxes) {
     // Calculate first and last parent on this axis
-    size_t begin = static_cast<size_t>(ratio.at(currentAxis) *
-                                       static_cast<double>(childPosition.at(currentAxis)));
-    double end = ratio.at(currentAxis) * static_cast<double>(childPosition.at(currentAxis) + 1);
+    size_t begin = static_cast<size_t>(ratio[currentAxis] *
+                                       static_cast<double>(childPosition[currentAxis]));
+    double end = ratio[currentAxis] * static_cast<double>(childPosition[currentAxis] + 1);
 
     // Iterate over all parents' positions
     for (size_t i = begin; static_cast<double>(i) < end; i++) {
-      parentPosition.at(currentAxis) = i;
+      parentPosition[currentAxis] = i;
       addChildParentInteraction(ratio, numberOfAxes, currentAxis + 1, childPosition, parentPosition,
                                 parentMultiplicators, childMultiplicators, parentOffset,
                                 childOffset, interactions);
@@ -236,7 +236,7 @@ size_t sgpp::datadriven::GridFactory::getDataIndex(size_t numberOfDimensions,
                                                    std::vector<int64_t>& position) const {
   size_t index = 0;
   for (size_t i = 0; i < numberOfDimensions; i++) {
-    index += multiplicators.at(i) * position.at(i);
+    index += multiplicators[i] * position[i];
   }
   return index;
 }
@@ -251,14 +251,14 @@ void sgpp::datadriven::GridFactory::getNextPosition(std::vector<int64_t>& dimens
     if (i == colorIndex) {
       continue;
     }
-    if (position.at(i) + 1 < dimension.at(i)) {
-      position.at(i)++;
+    if (position[i] + 1 < dimension[i]) {
+      position[i]++;
       break;
     } else {
       if (i == position.size() - 1) {  // last element reached
         position.clear();
       } else {
-        position.at(i) = 0;
+        position[i] = 0;
       }
     }
   }
@@ -274,7 +274,7 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
       std::set<size_t> tmp;
       for (size_t k = 0; k < colorChannels; k++) {
         if (j & (1 << k)) {
-          position.at(colorIndex) = k;
+          position[colorIndex] = k;
           tmp.insert(offset + getDataIndex(layerDim.size(), multiplicators, position));
         }
       }
@@ -294,28 +294,28 @@ void sgpp::datadriven::GridFactory::getDirectNeighbours(
     std::vector<int64_t> position = std::vector<int64_t>(geometryConf.dim.at(i).size(), 0);
 
     do {
-      for (size_t j = 0; j < geometryConf.dim.at(i).size(); j++) {
-        if (position.at(j) + 1 < geometryConf.dim.at(i).at(j)) {
+      for (size_t j = 0; j < geometryConf.dim[i].size(); j++) {
+        if (position[j] + 1 < geometryConf.dim[i][j]) {
           std::set<size_t> tmp;
-          tmp.insert(offsetsPerLevel.at(i) + getDataIndex(geometryConf.dim.at(i).size(),
-                                                          multiplicatorsPerLevel.at(i), position));
-          position.at(j)++;
-          tmp.insert(offsetsPerLevel.at(i) + getDataIndex(geometryConf.dim.at(i).size(),
-                                                          multiplicatorsPerLevel.at(i), position));
-          position.at(j)--;
+          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConf.dim[i].size(),
+                                                          multiplicatorsPerLevel[i], position));
+          position[j]++;
+          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConf.dim[i].size(),
+                                                          multiplicatorsPerLevel[i], position));
+          position[j]--;
           interactions.insert(tmp);
         }
       }
 
       // Color index set to -1 to also include neighbours with same color
-      getNextPosition(geometryConf.dim.at(i), position, -1);
+      getNextPosition(geometryConf.dim[i], position, -1);
     } while (position.size() != 0);
 
     if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel.at(i),
-                           multiplicatorsPerLevel.at(i), interactions);
+      addColorInteractions(geometryConf.dim[i], stencilConf.colorIndex, offsetsPerLevel[i],
+                           multiplicatorsPerLevel[i], interactions);
     }
-    addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel.at(i), interactions);
+    addOneDimensionalInteractions(geometryConf.dim[i], offsetsPerLevel[i], interactions);
   }
 
   // add empty vector
