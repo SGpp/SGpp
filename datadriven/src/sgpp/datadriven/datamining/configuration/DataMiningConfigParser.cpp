@@ -28,7 +28,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
@@ -39,6 +41,12 @@ using json::json_exception;
 using sgpp::base::data_exception;
 using sgpp::base::file_exception;
 using sgpp::solver::SLESolverConfiguration;
+using sgpp::base::GeneralGridConfiguration;
+using sgpp::base::AdaptivityConfiguration;
+using sgpp::datadriven::VisualizationParameters;
+using sgpp::datadriven::VisualizationGeneralConfig;
+using sgpp::datadriven::CrossvalidationConfiguration;
+using sgpp::datadriven::DensityEstimationConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -46,6 +54,7 @@ namespace datadriven {
 const std::string DataMiningConfigParser::dataSource = "dataSource";
 const std::string DataMiningConfigParser::scorer = "scorer";
 const std::string DataMiningConfigParser::fitter = "fitter";
+const std::string DataMiningConfigParser::visualization = "visualization";
 
 DataMiningConfigParser::DataMiningConfigParser(const std::string &filepath) : configFile(nullptr) {
   try {
@@ -88,6 +97,23 @@ bool DataMiningConfigParser::hasGeometryConfig() const {
   return configFile->contains("geometryConfig");
 }
 
+bool DataMiningConfigParser::hasVisualizationConfig() const {
+  return configFile->contains(visualization);
+}
+
+bool DataMiningConfigParser::hasVisualizationGeneralConfig() const {
+  bool hasVisualizationParameters =
+       hasVisualizationConfig() ? (*configFile)[visualization]
+           .contains("generalConfig") : false;
+  return hasVisualizationParameters;
+}
+
+bool DataMiningConfigParser::hasVisualizationParametersConfig() const {
+  bool hasVisualizationParameters =
+       hasVisualizationConfig() ? (*configFile)[visualization]
+           .contains("parameters") : false;
+  return hasVisualizationParameters;
+}
 
 bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
                                                  const DataSourceConfig &defaults) const {
@@ -288,7 +314,8 @@ bool DataMiningConfigParser::getFitterGridConfig(GeneralGridConfiguration &confi
 }
 
 bool DataMiningConfigParser::getFitterAdaptivityConfig(
-    AdaptivityConfiguration &config, const AdaptivityConfiguration &defaults) const {
+    sgpp::base::AdaptivityConfiguration &config,
+    const sgpp::base::AdaptivityConfiguration &defaults) const {
   bool hasFitterAdaptivityConfig =
       hasFitterConfig() ? (*configFile)[fitter].contains("adaptivityConfig") : false;
 
@@ -504,6 +531,95 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
   return hasRegularizationConfig;
 }
+
+bool DataMiningConfigParser::getVisualizationGeneralConfig(
+  VisualizationGeneralConfig &config, const VisualizationGeneralConfig &defaults) const {
+  bool hasVisualization = hasVisualizationConfig();
+
+  if (!hasVisualization) {
+    config.execute = false;
+  } else {
+    config.execute = true;
+  }
+  bool hasGeneralConfig = hasVisualizationGeneralConfig();
+
+  if (hasGeneralConfig) {
+    auto visualizationGeneralConfig =
+     static_cast<DictNode *>(&(*configFile)[visualization]["generalConfig"]);
+
+    std::cout << "Starting reading visualization " << std::endl;
+    config.algorithm = parseString(*visualizationGeneralConfig, "algorithm",
+     defaults.algorithm, "visualization");
+
+    config.targetDirectory = parseString(*visualizationGeneralConfig, "targetDirectory",
+     defaults.targetDirectory, "visualization");
+
+    // parse file type
+    if (visualizationGeneralConfig->contains("targetFileType")) {
+      config.targetFileType = VisualizationTypesParser::
+        parseFileType((*visualizationGeneralConfig)["targetFileType"].get());
+    } else {
+      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
+                << VisualizationTypesParser::toString(defaults.targetFileType) << "." << std::endl;
+      config.targetFileType = defaults.targetFileType;
+    }
+
+    config.numBatches = parseUInt(*visualizationGeneralConfig, "numBatches",
+      defaults.numBatches, "visualization");
+  } else {
+    std::cout << "# Could not find specification of "
+     "visualization general config. Falling Back to default values." << std::endl;
+    config = defaults;
+  }
+
+  // This is out of the if, since the default value is not directly given by the user
+  bool hasFitterCrossvalidationConfig =
+     hasFitterConfig() ? (*configFile)[fitter].contains("crossValidation") : false;
+  if (hasFitterCrossvalidationConfig) {
+    auto crossvalidationConfig = static_cast<DictNode *>(&(*configFile)[fitter]
+                                                                         ["crossValidation"]);
+    config.crossValidation = parseBool(*crossvalidationConfig, "enable",
+      defaults.crossValidation, "crossValidation");
+  } else {
+    config.crossValidation = false;
+  }
+  return hasGeneralConfig;
+}
+
+bool DataMiningConfigParser::getVisualizationParameters(
+  VisualizationParameters &config, const VisualizationParameters &defaults) const {
+  bool hasVisualizationParameters = hasVisualizationParametersConfig();
+
+  if (hasVisualizationParameters) {
+    auto visualizationParameters =
+      static_cast<DictNode *>(&(*configFile)[visualization]["parameters"]);
+
+    config.perplexity = parseDouble(*visualizationParameters, "perplexity",
+      defaults.perplexity, "visualization");
+
+    config.theta = parseDouble(*visualizationParameters, "theta",
+      defaults.theta, "visualization");
+
+    config.seed = parseUInt(*visualizationParameters, "seed",
+      defaults.seed, "visualization");
+
+    config.maxNumberIterations = parseUInt(*visualizationParameters,
+      "maxNumberIterations", defaults.maxNumberIterations, "visualization");
+
+    config.targetDimension = parseUInt(*visualizationParameters, "targetDimension",
+      defaults.targetDimension, "visualization");
+
+    config.numberCores = parseUInt(*visualizationParameters,
+      "numberCores", defaults.numberCores, "visualization");
+  } else {
+    std::cout << "# Could not find specification of visualization parameters. "
+      "Falling Back to default values." << std::endl;
+    config = defaults;
+  }
+  return hasVisualizationParameters;
+}
+
+
 
 std::string DataMiningConfigParser::parseString(DictNode &dict, const std::string &key,
                                                 const std::string &defaultValue,
@@ -875,6 +991,7 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
   config.solverThreshold =
       parseDouble(dict, "solverThreshold", defaults.solverThreshold, parentNode);
 }
+
 
 bool DataMiningConfigParser::getFitterDatabaseConfig(
     datadriven::DatabaseConfiguration &config,

@@ -412,6 +412,14 @@ void ModelFittingClassification::storeClassificator() {
   }
 }
 
+std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* ModelFittingClassification::
+getModels() {
+  return &(models);
+}
+
+std::map<double, size_t> ModelFittingClassification::getClassIdx() {
+  return this->classIdx;
+}
 #ifdef USE_SCALAPACK
 std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() const {
   return processGrid;

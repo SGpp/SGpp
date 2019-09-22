@@ -7,6 +7,7 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
@@ -31,8 +32,11 @@ class SparseGridMiner {
    * @param scorer configured instance of scorer object that will assess the quality of the
    * generalization provided by the fitter on testing data. The miner instance will take ownership
    * of the passed object.
+   * @param visualizer configured instance of the visualizer object that will execute the
+   * visualization module of the model.
+   * The miner instance will take ownership of the passed object
    */
-  SparseGridMiner(ModelFittingBase *fitter, Scorer *scorer);
+  SparseGridMiner(ModelFittingBase *fitter, Scorer *scorer, Visualizer *visualizer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -77,12 +81,15 @@ class SparseGridMiner {
 
   void setModel(ModelFittingBase *model);
 
+  Visualizer *getVisualizer();
+
   /**
    * Evaluate the model on a certain test dataset.
    *
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
    * @return score of the fit.
    */
+
   double test(Dataset &testDataset);
 
   /**
@@ -112,6 +119,12 @@ class SparseGridMiner {
    * Scorer that quantifies the quality of a fit. (e.g. cross validation or training with testing)
    */
   std::unique_ptr<Scorer> scorer;
+
+ /*
+  * Visualizer which generates files as
+  * an input of graphic libraries to visualize the models
+  */
+  std::unique_ptr<Visualizer> visualizer;
 };
 }  // namespace datadriven
 }  // namespace sgpp
