@@ -103,6 +103,9 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
 }
 
 void FitterConfiguration::setupDefaults() {
+  // (Sebastian Kreisel) The comments "mirrors struct default" are no longer
+  // applicable since all structs now have default values that match the ones
+  // set here. The comments are kept for history / debugging.
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
@@ -112,10 +115,10 @@ void FitterConfiguration::setupDefaults() {
   gridConfig.filename_ = "";
   gridConfig.t_ = 0.0;  // mirrors struct default
 
-  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.numRefinements_ = 1;
   adaptivityConfig.threshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
-  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.noPoints_ = 5;
   adaptivityConfig.percent_ = 1.0;  // mirrors struct default
   adaptivityConfig.errorBasedRefinement = false;  // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default

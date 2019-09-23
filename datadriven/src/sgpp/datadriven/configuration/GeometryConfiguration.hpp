@@ -21,12 +21,12 @@ struct GeometryConfiguration{
   /*
    * Stencil for geometric relation
    */
-  StencilType stencilType;
+  StencilType stencilType = StencilType::DN;
 
   /*
    * resolution of image/video e.g 28x28
    */
-  std::vector<int64_t> dim;
+  std::vector<int64_t> dim{28, 28};
 };
 
 
