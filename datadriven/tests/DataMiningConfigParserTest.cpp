@@ -249,22 +249,22 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
-  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.size(), 2);
-  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.at(0), 0);
-  BOOST_CHECK_EQUAL(config.stencils.at(0).applyOnLayers.at(1), 1);
-  BOOST_CHECK_EQUAL(config.stencils.at(0).colorIndex, 0);
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers.size(), 2);
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[1], 1);
+  BOOST_CHECK_EQUAL(config.stencils[0].colorIndex, 0);
 
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(1).stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::Block));
-  BOOST_CHECK_EQUAL(config.stencils.at(1).applyOnLayers.size(), 1);
-  BOOST_CHECK_EQUAL(config.stencils.at(1).applyOnLayers.at(0), 0);
-  BOOST_CHECK_EQUAL(config.stencils.at(1).colorIndex, 1);
-  BOOST_CHECK_EQUAL(config.stencils.at(1).blockLenght, 2);
+  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers.size(), 1);
+  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils[1].colorIndex, 1);
+  BOOST_CHECK_EQUAL(config.stencils[1].blockLenght, 2);
 
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
   for (size_t i = 0; i < config.dim.size(); i++) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.at(i).begin(), config.dim.at(i).end(),
-                                  dim.at(i).begin(), dim.at(i).end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(),
+                                  dim[i].begin(), dim[i].end());
   }
 }
 

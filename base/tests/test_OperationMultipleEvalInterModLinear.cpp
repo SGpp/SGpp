@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::set<size_t> ();
+        tmp.clear();
         tmp.insert(i);
         tmp.insert(j);
         interactions.insert(tmp);
@@ -119,14 +119,14 @@ BOOST_AUTO_TEST_CASE(symmetry) {
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
   std::set<std::set<size_t>> interactions;
 
-  std::set<size_t> tmp = std::set<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
   interactions.insert(tmp);
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::set<size_t> ();
+    tmp.clear();
     tmp.insert(i);
     interactions.insert(tmp);
   }
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(symmetry) {
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::set<size_t> ();
+        tmp.clear();
         tmp.insert(i);
         tmp.insert(j);
         interactions.insert(tmp);
@@ -235,14 +235,14 @@ BOOST_AUTO_TEST_CASE(regularEvaluation) {
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
   std::set<std::set<size_t>> interactions;
 
-  std::set<size_t> tmp = std::set<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
   interactions.insert(tmp);
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::set<size_t> ();
+    tmp.clear();
     tmp.insert(i);
     interactions.insert(tmp);
   }
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(regularEvaluation) {
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::set<size_t> ();
+        tmp.clear();
         tmp.insert(i);
         tmp.insert(j);
         interactions.insert(tmp);

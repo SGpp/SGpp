@@ -55,8 +55,8 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
-      regularizationConfig(regularizationConfig) {
-  terms = std::set<std::set<size_t>>();
+      regularizationConfig(regularizationConfig),
+      terms() {
   initializeGrid(gridConfig);
 }
 

@@ -35,8 +35,8 @@ ClassificationLearner::ClassificationLearner(
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
-      regularizationConfig(regularizationConfig) {
-  terms = std::set<std::set<size_t>>();
+      regularizationConfig(regularizationConfig),
+      terms() {
 }
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,

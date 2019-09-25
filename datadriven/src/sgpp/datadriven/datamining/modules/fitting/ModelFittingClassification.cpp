@@ -67,7 +67,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
     }
 
     bool evaluatedModel = false;
-    auto priors = getClassPriors();
+    std::vector<double> priors = getClassPriors();
     for (auto& p : classIdx) {
       double label = p.first;
       size_t idx = p.second;
@@ -116,7 +116,7 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
   }
 #endif  // USE_SCALAPACK
 
-  auto priors = getClassPriors();
+  std::vector<double> priors = getClassPriors();
   std::vector<DataVector> classResults(models.size());
   for (auto& p : classIdx) {
     size_t idx = p.second;
@@ -130,8 +130,8 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
     double prediction = 0.0;
     for (auto& p : classIdx) {
       size_t idx = p.second;
-      if (maxDensity < classResults.at(idx).at(j)) {
-        maxDensity = classResults.at(idx).at(j);
+      if (maxDensity < classResults[idx][j]) {
+        maxDensity = classResults[idx][j];
         prediction = p.first;
       }
     }

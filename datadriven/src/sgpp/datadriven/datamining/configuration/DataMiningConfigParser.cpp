@@ -925,7 +925,7 @@ bool DataMiningConfigParser::getGeometryConfig(
 
     // check if global color available
     int64_t colorIndexDefault = parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
-    std::vector<size_t> layerDefault = std::vector<size_t>();
+    std::vector<size_t> layerDefault;
     for (size_t i = 0; i < config.dim.size(); i++) {
       layerDefault.push_back(i);
     }
@@ -951,6 +951,27 @@ bool DataMiningConfigParser::getGeometryConfig(
       }
     } else {
       config.stencils = defaults.stencils;
+    }
+
+    // Validate configuration
+    size_t numberOfLayers = config.dim.size();
+    if (numberOfLayers > 0) {
+      size_t numberOfAxes = config.dim[0].size();
+      for (const std::vector<int64_t> &res : config.dim) {
+        if (numberOfAxes != res.size())
+          throw data_exception("Each layer has to have identical number of axes");
+      }
+      for (const sgpp::datadriven::StencilConfiguration &stencilConf : config.stencils) {
+        if (stencilConf.colorIndex != -1 &&
+            static_cast<size_t>(stencilConf.colorIndex) >= numberOfAxes) {
+          throw data_exception("ColorIndex is not a valid index for an axis:");
+        }
+        for (size_t layerIndex : stencilConf.applyOnLayers) {
+          if (layerIndex >= numberOfAxes) {
+            throw data_exception("There is an invalid index contained in ApplyOnLayers");
+          }
+        }
+      }
     }
   }
 

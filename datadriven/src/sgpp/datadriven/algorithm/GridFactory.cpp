@@ -60,7 +60,6 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
   std::set<std::set<size_t>> interactions;
   std::vector<std::vector<int64_t>> res = config.dim;
 
-  interactions = std::set<std::set<size_t>>();
   for (StencilConfiguration stencil : config.stencils) {
     switch (stencil.stencilType) {
       case sgpp::datadriven::StencilType::DirectNeighbour:
@@ -85,13 +84,13 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
 void sgpp::datadriven::GridFactory::getBlockInteractions(
     std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geoConf,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
-  auto blockLenght = stencilConf.blockLenght;
-  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(geoConf.dim);
-  auto offsetsPerLevel = getOffsetPerLevel(geoConf.dim, multiplicatorsPerLevel);
+  size_t blockLenght = stencilConf.blockLenght;
+  std::vector<std::vector<size_t>> multiplicatorsPerLevel = getMultiplicatorsPerLevel(geoConf.dim);
+  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geoConf.dim, multiplicatorsPerLevel);
   for (size_t i : stencilConf.applyOnLayers) {
-    auto dimensions = geoConf.dim.at(i).size();
-    auto offset = offsetsPerLevel[i];
-    auto position = std::vector<int64_t>(dimensions, 0);
+    size_t dimensions = geoConf.dim[i].size();
+    size_t offset = offsetsPerLevel[i];
+    std::vector<int64_t> position(dimensions, 0);
     while (!position.empty()) {
       for (size_t j = 1; j < (size_t)2 << (blockLenght * dimensions); j++) {
         std::set<size_t> tmp;
@@ -115,9 +114,9 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
 
 std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getMultiplicatorsPerLevel(
     std::vector<std::vector<int64_t>>& imageDimensions) const {
-  auto multiplicatorsPerLevel = std::vector<std::vector<size_t>>();
-  for (auto dimension : imageDimensions) {
-    auto multiplicators = std::vector<size_t>();
+  std::vector<std::vector<size_t>> multiplicatorsPerLevel;
+  for (const std::vector<int64_t>& dimension : imageDimensions) {
+    std::vector<size_t> multiplicators;
     multiplicators.push_back(1);
     for (size_t i = 1; i < dimension.size(); i++) {
       multiplicators.push_back(multiplicators[i - 1] * dimension[i - 1]);
@@ -130,14 +129,14 @@ std::vector<std::vector<size_t>> sgpp::datadriven::GridFactory::getMultiplicator
 std::vector<size_t> sgpp::datadriven::GridFactory::getOffsetPerLevel(
     std::vector<std::vector<int64_t>>& imageDimensions,
     std::vector<std::vector<size_t>>& multiplicatorsPerLevel) const {
-  auto offsetsPerLevel = std::vector<size_t>();
+  std::vector<size_t> offsetsPerLevel;
   offsetsPerLevel.push_back(0);
   for (size_t i = 1; i < imageDimensions.size(); i++) {
-    auto childDimensions = imageDimensions[i - 1];
-    auto childMultiplicator = multiplicatorsPerLevel[i - 1];
-    auto numberOfDataColumnsInChild = childMultiplicator[childMultiplicator.size() - 1] *
-                                      childDimensions[childDimensions.size() - 1];
-    auto childOffset = offsetsPerLevel[i - 1];
+    std::vector<int64_t> childDimensions = imageDimensions[i - 1];
+    std::vector<size_t> childMultiplicator = multiplicatorsPerLevel[i - 1];
+    size_t numberOfDataColumnsInChild = childMultiplicator[childMultiplicator.size() - 1] *
+                                        childDimensions[childDimensions.size() - 1];
+    size_t childOffset = offsetsPerLevel[i - 1];
     offsetsPerLevel.push_back(childOffset + numberOfDataColumnsInChild);
   }
   return offsetsPerLevel;
@@ -146,18 +145,19 @@ std::vector<size_t> sgpp::datadriven::GridFactory::getOffsetPerLevel(
 void sgpp::datadriven::GridFactory::getHierarchicalParents(
     std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geometryConf,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
-  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(geometryConf.dim);
-  auto offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
+  std::vector<std::vector<size_t>> multiplicatorsPerLevel =
+      getMultiplicatorsPerLevel(geometryConf.dim);
+  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
 
   for (size_t i : stencilConf.applyOnLayers) {
     for (size_t j = i + 1; j < geometryConf.dim.size(); j++) {
-      auto ratio = std::vector<double>();
+      std::vector<double> ratio;
       for (size_t k = 0; k < geometryConf.dim[i].size(); k++) {
         ratio.push_back(static_cast<double>(geometryConf.dim[j][k]) /
                         static_cast<double>(geometryConf.dim[i][k]));
       }
 
-      auto position = std::vector<int64_t>(geometryConf.dim[j].size(), 0);
+      std::vector<int64_t> position(geometryConf.dim[j].size(), 0);
 
       // Iterate over all positions
       do {
@@ -180,10 +180,10 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
       }
     }
     if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf.dim.at(i), stencilConf.colorIndex, offsetsPerLevel[i],
+      addColorInteractions(geometryConf.dim[i], stencilConf.colorIndex, offsetsPerLevel[i],
                            multiplicatorsPerLevel[i], interactions);
     }
-    addOneDimensionalInteractions(geometryConf.dim.at(i), offsetsPerLevel[i], interactions);
+    addOneDimensionalInteractions(geometryConf.dim[i], offsetsPerLevel[i], interactions);
   }
 
   // Add empty interaction
@@ -193,7 +193,7 @@ void sgpp::datadriven::GridFactory::getHierarchicalParents(
 void sgpp::datadriven::GridFactory::addOneDimensionalInteractions(
     std::vector<int64_t>& imageDimensions, size_t offset, std::set<std::set<size_t>>& vec) const {
   size_t factor = 1;
-  for (auto dimension : imageDimensions) {
+  for (int64_t dimension : imageDimensions) {
     factor *= dimension;
   }
 
@@ -210,8 +210,8 @@ void sgpp::datadriven::GridFactory::addChildParentInteraction(
   // Check if all axes has been set
   if (currentAxis < numberOfAxes) {
     // Calculate first and last parent on this axis
-    size_t begin = static_cast<size_t>(ratio[currentAxis] *
-                                       static_cast<double>(childPosition[currentAxis]));
+    size_t begin =
+        static_cast<size_t>(ratio[currentAxis] * static_cast<double>(childPosition[currentAxis]));
     double end = ratio[currentAxis] * static_cast<double>(childPosition[currentAxis] + 1);
 
     // Iterate over all parents' positions
@@ -269,7 +269,7 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
     std::vector<size_t>& multiplicators, std::set<std::set<size_t>>& interactions) const {
   std::vector<int64_t> position = std::vector<int64_t>(layerDim.size(), 0);
   while (position.size() != 0) {
-    size_t colorChannels = layerDim.at(colorIndex);
+    size_t colorChannels = layerDim[colorIndex];
     for (size_t j = 1; j < ((size_t)1 << colorChannels); j++) {
       std::set<size_t> tmp;
       for (size_t k = 0; k < colorChannels; k++) {
@@ -287,21 +287,22 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
 void sgpp::datadriven::GridFactory::getDirectNeighbours(
     std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geometryConf,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
-  auto multiplicatorsPerLevel = getMultiplicatorsPerLevel(geometryConf.dim);
-  auto offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
+  std::vector<std::vector<size_t>> multiplicatorsPerLevel =
+      getMultiplicatorsPerLevel(geometryConf.dim);
+  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
 
   for (size_t i : stencilConf.applyOnLayers) {
-    std::vector<int64_t> position = std::vector<int64_t>(geometryConf.dim.at(i).size(), 0);
+    std::vector<int64_t> position = std::vector<int64_t>(geometryConf.dim[i].size(), 0);
 
     do {
       for (size_t j = 0; j < geometryConf.dim[i].size(); j++) {
         if (position[j] + 1 < geometryConf.dim[i][j]) {
           std::set<size_t> tmp;
-          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConf.dim[i].size(),
-                                                          multiplicatorsPerLevel[i], position));
+          tmp.insert(offsetsPerLevel[i] +
+                     getDataIndex(geometryConf.dim[i].size(), multiplicatorsPerLevel[i], position));
           position[j]++;
-          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConf.dim[i].size(),
-                                                          multiplicatorsPerLevel[i], position));
+          tmp.insert(offsetsPerLevel[i] +
+                     getDataIndex(geometryConf.dim[i].size(), multiplicatorsPerLevel[i], position));
           position[j]--;
           interactions.insert(tmp);
         }
