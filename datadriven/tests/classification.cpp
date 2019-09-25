@@ -56,6 +56,14 @@ double testModel(std::string configFile) {
   return accuracy;
 }
 
+bool testVisualization(std::string configFile) {
+  ClassificationMinerFactory factory;
+  SparseGridMiner *miner = factory.buildMiner(configFile);
+  miner->learn(false);
+
+  return true;
+}
+
 BOOST_AUTO_TEST_SUITE(testClassification)
 
 BOOST_AUTO_TEST_CASE(testOnOff) {
@@ -75,6 +83,11 @@ BOOST_AUTO_TEST_CASE(testGeo) {
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy >= 0);
+}
+
+BOOST_AUTO_TEST_CASE(visualization) {
+  std::string configFile = "datadriven/tests/visualizationConfig.json";
+  BOOST_CHECK(testVisualization(configFile));
 }
 
 #ifdef USE_SCALAPACK

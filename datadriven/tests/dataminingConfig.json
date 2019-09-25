@@ -88,5 +88,19 @@
 			"rowBlockSize": 64,
 			"columnBlockSize": 128
 		}
-	}
+	},
+    "visualization":{
+        "generalConfig":{
+            "algorithm":"tsne",
+            "targetDirectory":"./output"
+            
+        },
+        "parameters":{
+            "perplexity":30,
+             "theta":0.5,
+             "targetDimension":2,
+             "seed":150,
+             "maxNumberIterations":500
+        }
+    }
 }
