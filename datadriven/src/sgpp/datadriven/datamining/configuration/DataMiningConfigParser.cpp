@@ -769,7 +769,7 @@ std::vector<std::vector<int64_t>> DataMiningConfigParser::parseArrayOfIntArrays(
       return array;
     } catch (json_exception &e) {
       std::string errorMsg = "# Failed to parse array of integer arrays" + parentNode + "[" + key +
-                             "] from string" + dict[key].get() + ".";
+                             "] from string" + dict[key].get() + ": " + e.what();
       throw data_exception(errorMsg.c_str());
     }
   } else {
