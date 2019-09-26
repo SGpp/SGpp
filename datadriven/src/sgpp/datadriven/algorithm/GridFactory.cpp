@@ -71,10 +71,8 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
         break;
       case sgpp::datadriven::StencilType::Block:
         getBlockInteractions(interactions, config, stencil);
-      case sgpp::datadriven::StencilType::None:
         break;
-      default:
-        std::cout << "Stencil not found" << std::endl;
+      case sgpp::datadriven::StencilType::None:
         break;
     }
   }
@@ -92,11 +90,11 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
     size_t offset = offsetsPerLevel[i];
     std::vector<int64_t> position(dimensions, 0);
     while (!position.empty()) {
-      for (size_t j = 1; j < (size_t)2 << (blockLenght * dimensions); j++) {
+      for (size_t j = 1; j < static_cast<size_t>(2) << (blockLenght * dimensions); j++) {
         std::set<size_t> tmp;
         for (size_t k = 0; k < blockLenght; k++) {
           for (size_t l = 0; l < dimensions; l++) {
-            if (j & (size_t)1 << (k * dimensions + l) &&
+            if (j & static_cast<size_t>(1) << (k * dimensions + l) &&
                 static_cast<int64_t>(position[l] + k) < geoConf.dim[i][l]) {
               position[l] += k;
               tmp.insert(getDataIndex(dimensions, multiplicatorsPerLevel[i], position) + offset);
@@ -270,7 +268,7 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
   std::vector<int64_t> position = std::vector<int64_t>(layerDim.size(), 0);
   while (position.size() != 0) {
     size_t colorChannels = layerDim[colorIndex];
-    for (size_t j = 1; j < ((size_t)1 << colorChannels); j++) {
+    for (size_t j = 1; j < (static_cast<size_t>(1) << colorChannels); j++) {
       std::set<size_t> tmp;
       for (size_t k = 0; k < colorChannels; k++) {
         if (j & (1 << k)) {
