@@ -12,7 +12,9 @@ def call_python_version(Version, Module, Function, ArgumentList):
         channel.send(the_function(*channel.receive()))
     """ % (Module, Function))
     channel.send(ArgumentList)
-    return channel.receive()
+    result = channel.receive()
+    gw.exit()
+    return result
 
 
 class okushiriStorage():
@@ -21,8 +23,10 @@ class okushiriStorage():
         self.dim = dim
         self.numTimeSteps = numTimeSteps
         self.gridResolution = gridResolution
-        np.savetxt('Okushiri/data/numTimeSteps.txt', [numTimeSteps])
-        np.savetxt('Okushiri/data/gridsize.txt', [gridResolution])
+        np.savetxt(
+            '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/numTimeSteps.txt', [numTimeSteps])
+        np.savetxt(
+            '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/gridsize.txt', [gridResolution])
         self.precalcValuesFileName = '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/precalculatedValues/sg_precalculations{}D{}T{}R.pkl'.format(
             dim, numTimeSteps, gridResolution)
         try:
@@ -35,7 +39,7 @@ class okushiriStorage():
     def cleanUp(self):
         with open(self.precalcValuesFileName, "wb") as f:
             pickle.dump(self.precalculatedValues, f)
-        print("calculated {} new Okushiri evaluations".format(self.numNew))
+        print("\ncalculated {} new Okushiri evaluations".format(self.numNew))
         if self.numNew > 0:
             print("saved them to {}".format(self.precalcValuesFileName))
 
@@ -48,16 +52,20 @@ class okushiriStorage():
         if key in self.precalculatedValues:
             y = self.precalculatedValues[key]
         else:
+            print("sgppOkushiri: processing {}".format(parameters))
             # x = np.array([0.5, 0.5, 0.875, 0.5])
-            np.savetxt('Okushiri/data/x.txt', parameters)
+            np.savetxt(
+                '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/x.txt', parameters)
 
             # reset time
-            np.savetxt('Okushiri/data/t.txt', [-1])
+            np.savetxt(
+                '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/t.txt', [-1])
 
             # run solver
-            #print("Calling python2.7")
+            # This must currently be called from /home/rehmemk/git/SGpp/MR_Python/Vector
             call_python_version("2.7", "Okushiri.okushiri", "run", [])
-            y = np.loadtxt('Okushiri/data/y.txt')
+            y = np.loadtxt(
+                '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/y.txt')
             #print("Ran okushiri benchmark with python 2.7 in {}s".format(dt))
 
             # plt.plot(range(len(y)), y)
@@ -65,12 +73,15 @@ class okushiriStorage():
 
             self.precalculatedValues[key] = y
             self.numNew += 1
+            print("sgppOkushiri: Done ({})".format(self.numNew))
+            # if self.numNew % 50 == 0:
+            #     self.cleanUp()
         return y
 
 
 class okushiri():
     # The Okushiri Benchmark
-    def __init__(self, dim, numTimeSteps):
+    def __init__(self, dim, numTimeSteps=451):
         self.dim = dim
         self.out = numTimeSteps
         self.gridResolution = 16
