@@ -92,10 +92,10 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
     std::list<size_t> deletedGridPointIndices, double lambda,
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
-#ifdef USE_SCALAPACK
+
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
-
+#ifdef USE_SCALAPACK
   // coarsening:
   // split the valid coarsen indices and the non valid ones and do sherman-morrison coarsening
   if (!deletedGridPointIndices.empty()) {
@@ -135,9 +135,9 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
         parallelConfig.columnBlockSize_);
     this->smw_adapt_parallel(XDistributed, numAddedGridPoints, true, processGrid, parallelConfig);
   }
-
-  return return_vector;
 #endif /* USE_SCALAPACK */
+  return return_vector;
+
 }
 
 void DBMatOnlineDE_SMW::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
