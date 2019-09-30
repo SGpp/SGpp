@@ -122,6 +122,7 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
 
   // decomposed matrix now consists of Q, T^-1, with: (lhs+lambda*I)^-1 = Q * T^-1 * Q^t
   this->isDecomposed = true;
+
 #else
   throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
@@ -143,6 +144,7 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
       parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
   size_t dim_a = lhsMatrix.getNrows();
+
   if (dim_a <= 1) {
     this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
         this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
@@ -216,6 +218,9 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
            this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
            this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
   free(work2);
+
+  // transpose q, because fortran ..., no need for t_tridiag though, because symmetric
+  q_ortho_matrix_distributed_ = q_ortho_matrix_distributed_.transpose();
   // sync non-distributed matrices
   q_ortho_matrix_distributed_.toLocalDataMatrix(q_ortho_matrix_);
   t_tridiag_inv_matrix_distributed_.toLocalDataMatrix(t_tridiag_inv_matrix_);

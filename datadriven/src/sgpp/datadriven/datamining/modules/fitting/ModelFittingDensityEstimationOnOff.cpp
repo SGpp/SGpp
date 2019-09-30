@@ -102,7 +102,8 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->interactions = getInteractions(geometryConfig);
   }
 
-  // todo(dima): non-parallel version of regularization here
+  // todo(): non-parallel version of regularization here?
+  // but not access to path
 
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};

@@ -135,7 +135,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   alphaDistributed =
       DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
-  // todo(): parallel version of regularization here
+  // todo(): parallel version of regularization here?
   // but no access to path
 
   // online phase
@@ -187,11 +187,11 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
 
   // in case of SMW decomposition type, refinement is distributed/parallelized also with special
   // handling, therefore has to be passed additional parameters of parallelconfig
-  sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
 #ifdef USE_SCALAPACK
+    sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
     online_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
     online_SMW_pointer->updateSystemMatrixDecompositionParallel(
         config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, *deletedGridPoints,

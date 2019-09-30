@@ -100,6 +100,9 @@ void DBMatOfflineChol::decomposeMatrixParallel(
   pdpotrf_("L", n, this->lhsDistributed.getLocalPointer(), 1, 1,
            this->lhsDistributed.getDescriptor(), info);
 
+  // transpose matrix, because fortran ...
+  lhsDistributed = lhsDistributed.transpose();
+
   // sync non-distri and distri matrices
   this->lhsDistributed.toLocalDataMatrix(this->lhsMatrix);
 
