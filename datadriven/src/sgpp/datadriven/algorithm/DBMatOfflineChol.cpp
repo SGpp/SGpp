@@ -72,6 +72,7 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
+
 #else
   throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
@@ -100,7 +101,7 @@ void DBMatOfflineChol::decomposeMatrixParallel(
   pdpotrf_("L", n, this->lhsDistributed.getLocalPointer(), 1, 1,
            this->lhsDistributed.getDescriptor(), info);
 
-  // transpose matrix, because fortran ...
+  // transpose matrix, because fortran column-major
   lhsDistributed = lhsDistributed.transpose();
 
   // sync non-distri and distri matrices
@@ -128,7 +129,7 @@ void DBMatOfflineChol::compute_inverse() {
   gsl_matrix_view m =
       gsl_matrix_view_array(lhsInverse.getPointer(), lhsInverse.getNrows(), lhsInverse.getNcols());
 
-  // inverts matrix, and stores it inplace, therefore in lhsInverse
+  // inverts matrix, and stores it inplace in lhsInverse
   gsl_linalg_cholesky_invert(&m.matrix);
 
 #else
@@ -150,10 +151,23 @@ void DBMatOfflineChol::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid
       this->lhsMatrix.getPointer(), processGrid, this->lhsMatrix.getNrows(),
       this->lhsMatrix.getNcols(), parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
+  // transpose, because fortran column-major
+  lhsDistributedInverse = lhsDistributedInverse.transpose();
+
   // inverting cholesky-decomposed matrix
   int info;
   pdpotri_("L", n, this->lhsDistributedInverse.getLocalPointer(), 1, 1,
            this->lhsDistributedInverse.getDescriptor(), info);
+
+  // explicit inverse needs to be full matrix, so fill in upper right values
+  for (size_t i = 0; i < this->lhsDistributedInverse.getGlobalRows(); i++) {
+    for (size_t j = i; j < this->lhsDistributedInverse.getGlobalCols(); j++) {
+      double val = this->lhsDistributedInverse.get(i, j);
+      this->lhsDistributedInverse.set(j, i, val);
+    }
+  }
+
+  // Note: no need to transpose even though fortran column-major, because symmetric
 
   // syncing non-distri and distri inverse matrices
   this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
