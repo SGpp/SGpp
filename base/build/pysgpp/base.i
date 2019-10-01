@@ -28,7 +28,6 @@
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemFreeBoundaries)
 
 %include "base/src/sgpp/globaldef.hpp"
-%include "std_set.i"
 
 %apply (double* IN_ARRAY1, int DIM1) {(double* input, int size)}
 
@@ -46,7 +45,6 @@ namespace std {
     %template(refinement_key) std::pair<size_t, unsigned int>;
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
     // For interaction-term-aware sparse grids.
-    %template(SetSetSizeT) std::set< std::set<size_t> >;
     %template(VecVecSizeT) vector< vector<size_t> >;
     %template(DataVectorVector) vector<sgpp::base::DataVector>;
     %template(DataMatrixVector) vector<sgpp::base::DataMatrix>;
