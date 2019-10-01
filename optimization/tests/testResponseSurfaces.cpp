@@ -33,18 +33,18 @@ class multivariateTestFunction : public VectorFunction {
 
   /**
    * @param x         evluation point
-   * @param gradient  Jacobian of the linear combination (each row is a gradient vector)
+   * @param jacobian  Jacobian of the linear combination (each row is a gradient vector)
    */
-  void evalGradient(const DataVector& x, DataMatrix& gradients) {
+  void evalJacobian(const DataVector& x, DataMatrix& jacobian) {
     double sum = 0.0;
     for (size_t s = 0; s < d; s++) {
       sum += (static_cast<double>(s) + 1) * x[s];
     }
-    gradients.resizeZero(m, d);
+    jacobian.resizeZero(m, d);
     for (size_t t = 0; t < m; t++) {
       for (size_t s = 0; s < d; s++) {
         double val = static_cast<double>(t + 1) * std::pow(sum, t) * (static_cast<double>(s) + 1);
-        gradients.set(t, s, val);
+        jacobian.set(t, s, val);
       }
     }
   }
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEval) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalGradient) {
+BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalJacobian) {
   double epsilon = 1e-13;
   size_t dim = 3;
   size_t m = 2;
@@ -103,16 +103,15 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalGradient) {
     reSurf.regular(level);
 
     DataVector point(dim, 1.0 / 6.0);
-    DataMatrix gradients(dim, m);
-    DataVector reSurfEval = reSurf.evalGradient(point, gradients);
-    DataMatrix trueGradients(m, dim);
-    testFunction->evalGradient(point, trueGradients);
+    DataMatrix jacobian(dim, m);
+    DataVector reSurfEval = reSurf.evalJacobian(point, jacobian);
+    DataMatrix trueJacobian(m, dim);
+    testFunction->evalJacobian(point, trueJacobian);
 
-    // std::cout << trueGradients.sum() << "\n";
-    trueGradients.sub(gradients);
-    double elementwiseError = trueGradients.sum();
-    // std::cout << elementwiseError << "\n";
-    BOOST_CHECK_SMALL(elementwiseError, epsilon);
+    trueJacobian.sub(jacobian);
+    double errorSum = trueJacobian.sum();
+    // std::cout << errorSum << "\n";
+    BOOST_CHECK_SMALL(errorSum, epsilon);
   }
 }
 
@@ -136,10 +135,11 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSurplusAdaptive) {
 
     DataVector componentwiseErrors(m);
     size_t numMCPoints = 1000;
-    double l2Error = reSurf.l2Error(testFunction, componentwiseErrors, numMCPoints);
+    DataVector errorVec = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
+    double averageL2Err = errorVec[0];
     // std::cout << "l2 error: " << l2Error << "\n";
     // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
-    BOOST_CHECK_SMALL(l2Error, epsilons[t]);
+    BOOST_CHECK_SMALL(averageL2Err, epsilons[t]);
   }
 }
 
@@ -160,10 +160,39 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
 
     DataVector componentwiseErrors(m);
     size_t numMCPoints = 1000;
-    double l2Error = reSurf.l2Error(testFunction, componentwiseErrors, numMCPoints);
+    DataVector l2Error = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
+    double averageL2Err = l2Error[0];
     // std::cout << "l2 error: " << l2Error << "\n";
     // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
-    BOOST_CHECK_SMALL(l2Error, epsilon);
+    BOOST_CHECK_SMALL(averageL2Err, epsilon);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorNRMSE) {
+  double epsilon = 1e-11;
+  size_t dim = 3;
+  size_t m = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (auto& degree : degrees) {
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
+                                                                      gridType, degree);
+    reSurf.regular(level);
+
+    DataMatrix componentwiseErrors(4, m);
+    size_t numMCPoints = 1000;
+    DataVector errorVec = reSurf.averageNRMSE(testFunction, componentwiseErrors, numMCPoints);
+    double averageNRMSE = errorVec[0];
+    double averageL2Err = errorVec[1];
+    std::cout << "NRMSE: " << averageNRMSE << "\n";
+    std::cout << "l2 error: " << averageL2Err << "\n";
+    // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
+    BOOST_CHECK_SMALL(averageL2Err, epsilon);
+    BOOST_CHECK_SMALL(averageNRMSE, epsilon);
   }
 }
 

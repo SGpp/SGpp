@@ -164,7 +164,8 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * @param jacobian	reference to return the repsonse surfaces jacobian matrix evaluted in v
    * @return 			the evaluation
    */
-  sgpp::base::DataVector evalJacobian(sgpp::base::DataVector v, sgpp::base::DataMatrix& jacobian);
+  sgpp::base::DataVector evalJacobian(sgpp::base::DataVector v,
+                                      sgpp::base::DataMatrix& jacobian) override;
 
   /**
    * return the integrals of the response surface

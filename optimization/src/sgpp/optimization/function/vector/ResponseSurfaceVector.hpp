@@ -5,6 +5,7 @@
 
 #pragma once
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <string>
 
@@ -42,42 +43,46 @@ class ResponseSurfaceVector {
   virtual sgpp::base::DataVector eval(sgpp::base::DataVector v);
 
   /**
-   * evaluates the response surface and its gradient
+   * evaluates the response surface and its gradients
    *
    * @param v			     point in which the response surface shall be evaluated
-   * @param gradient 	 reference to return the gradient evaluated in v
+   * @param gradient 	 reference to return the jacobian evaluated in v. Each row is one gradient
    * @return 			     evaluation
    */
-  virtual sgpp::base::DataVector evalGradient(sgpp::base::DataVector v,
-                                              sgpp::base::DataMatrix& gradient);
+  virtual sgpp::base::DataVector evalJacobian(sgpp::base::DataVector v,
+                                              sgpp::base::DataMatrix& jacobian) = 0;
 
   /**
-   * Calculates the l2 error between interpolant and objective function
+   * Calculates the average l2 error between interpolant and objective function
    *
    * @param objectiveFunction	    the objectiveFunction
    * @param componentwiseErrors   reference to return the l2 error in each individual of the numRes
    *                              components
    * @param numMCPoints			      number of Monte Carlo Points
    *
-   * @return 					            l2 error
+   * @return 					            vector with [average l2 error, min l2
+                                              error, max l2 error]
+
    */
-  double l2Error(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
-                 sgpp::base::DataVector& componentwiseErrors, size_t numMCPoints = 1000);
+  sgpp::base::DataVector averageL2Error(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
+                                        sgpp::base::DataVector& componentwiseErrors,
+                                        size_t numMCPoints = 1000);
 
   /**
-   * Calculates the normalized root mean square error between interpolant and objective function
-   * in random points
+   * Calculates the normalized root mean square error between interpolant
+   * and objective function at random points
    *
    * @param objectiveFunction	    the objectiveFunction
    * @param componentwiseErrors   reference to return the NRMSE, l2, min and max for each individual
    *                              of the numRes components
    * @param numMCPoints			      number of Monte Carlo Points
    *
-   * @return 				            	vector [NRMSE, l2 error, min, max]
+   * @return 				            	vector [average NRMSE, average l2 error, min
+   *                                      NRMSE, max NRMSE]
    */
-  // sgpp::base::DataVector nrmsError(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
-  //                                  sgpp::base::DataMatrix& componentwiseErrors,
-  //                                  size_t numMCPoints = 1000);
+  sgpp::base::DataVector averageNRMSE(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
+                                      sgpp::base::DataMatrix& componentwiseErrorData,
+                                      size_t numMCPoints = 1000);
 
   /**
    * Calculates the normalized root mean square error between interpolant and objective function
