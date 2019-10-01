@@ -219,7 +219,7 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
            this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
   free(work2);
 
-  // transpose q, because fortran ..., no need for t_tridiag though, because symmetric
+  // transpose q, because fortran column-major, no need for t_tridiag though, because symmetric
   q_ortho_matrix_distributed_ = q_ortho_matrix_distributed_.transpose();
   // sync non-distributed matrices
   q_ortho_matrix_distributed_.toLocalDataMatrix(q_ortho_matrix_);
@@ -347,6 +347,7 @@ void DBMatOfflineOrthoAdapt::compute_inverse() {
   gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, QT, &q_view.matrix, 0.0, &inv_view.matrix);
 
   gsl_matrix_free(QT);
+
 #else
   throw sgpp::base::algorithm_exception("build without GSL");
 #endif /*USE_GSL*/
@@ -372,9 +373,11 @@ void DBMatOfflineOrthoAdapt::compute_inverse_parallel(std::shared_ptr<BlacsProce
 
   // Note: Because "L", a.k.a. lower triangular storage mode, was chosen on decomposition with
   // pdsytrd_, the Q is altered to Q^t, i.e. A = Q^t * T * Q, and also A^-1 = Q^t * T^-1 * Q
+  // but fortran "transposes" the matrices again by using column major
+  // therefore: A = Q * T * Q^t and A^-1 = Q * T^-1 * Q^t
   DataMatrixDistributed::mult(this->q_ortho_matrix_distributed_,
-                              this->t_tridiag_inv_matrix_distributed_, *QT, true, false);
-  DataMatrixDistributed::mult(*QT, this->q_ortho_matrix_distributed_, *INV, false, false);
+                              this->t_tridiag_inv_matrix_distributed_, *QT, false, false);
+  DataMatrixDistributed::mult(*QT, this->q_ortho_matrix_distributed_, *INV, false, true);
 
   // writing computed inverse into member and syncing both distri and non-distri matrices
   this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
@@ -389,6 +392,7 @@ void DBMatOfflineOrthoAdapt::compute_inverse_parallel(std::shared_ptr<BlacsProce
 
   free(QT);
   free(INV);
+
   return;
 #endif /* USE_SCALAPACK */
 }

@@ -92,7 +92,6 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
     std::list<size_t> deletedGridPointIndices, double lambda,
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
-
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 #ifdef USE_SCALAPACK
@@ -137,7 +136,6 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
   }
 #endif /* USE_SCALAPACK */
   return return_vector;
-
 }
 
 void DBMatOnlineDE_SMW::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
@@ -425,39 +423,42 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   }
 
   // A^-1 + B (calculate in size of A^-1, store in size of B)
-  DataMatrixDistributed* AB =
-      new DataMatrixDistributed(this->b_adapt_matrix_.getPointer(), processGrid,
-                                this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols(),
-                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed AB = DataMatrixDistributed::fromSharedData(
+      this->b_adapt_matrix_.data(), processGrid, this->b_adapt_matrix_.getNrows(),
+      this->b_adapt_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
 
   // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
-  // notice, that to start from 0, passed argument is 1, because fortran
+  // notice, that to start from 0, passed argument is 1, because fortran,
+  // also transpose before and after, because fortran column-major
+  AB = AB.transpose();
   sgpp::datadriven::pdgeadd_(
       "N", offMatrixSize, offMatrixSize, 1.0,
       this->offlineObject.getDecomposedInverseDistributed().getLocalPointer(), 1, 1,
       this->offlineObject.getDecomposedInverseDistributed().getDescriptor(), 1.0,
-      AB->getLocalPointer(), 1, 1, AB->getDescriptor());
+      AB.getLocalPointer(), 1, 1, AB.getDescriptor());
+  AB = AB.transpose();
 
   // (A^-1 + B) * X
   DataMatrixDistributed* AX =
       new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
-  DataMatrixDistributed::mult(*AB, X, *AX);
+  DataMatrixDistributed::mult(AB, X, *AX);
 
   // E^t * (A^-1 + B)
   DataMatrixDistributed* EtA =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalRows(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
-  DataMatrixDistributed::mult(*Et, *AB, *EtA);
+  DataMatrixDistributed::mult(*Et, AB, *EtA);
 
   // I + E^t * (A^-1 + B) * X
-  DataMatrixDistributed* INV =
+  DataMatrixDistributed* INVp =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  for (size_t i = 0; i < INV->getGlobalCols(); i++) {
-    INV->set(i, i, 1.0);
+  for (size_t i = 0; i < INVp->getGlobalCols(); i++) {
+    INVp->set(i, i, 1.0);
   }
-  DataMatrixDistributed::mult(*Et, *AX, *INV, false, false, 1.0, 1.0);
+  DataMatrixDistributed::mult(*Et, *AX, *INVp, false, false, 1.0, 1.0);
 
   // (I + E^t * (A^-1 + B) * X)^-1
   // Note: this is an explicit inversion, but the inverted matrix is of size kxk, where k denotes
@@ -467,29 +468,33 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   size_t inv_dim = X.getGlobalCols();
   int* ipiv = new int[inv_dim];
 
+  DataMatrixDistributed INV = INVp->transpose();
+
   // LU-decomposing
-  pdgetrf_(inv_dim, inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, info);
+  pdgetrf_(inv_dim, inv_dim, INV.getLocalPointer(), 1, 1, INV.getDescriptor(), ipiv, info);
 
   int lwork = -1;
   double* work = new double[1];
   int liwork = -1;
   int* iwork = new int[1];
   // ask pdgetri_ how much workspace it needs
-  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, lwork, iwork,
+  pdgetri_(inv_dim, INV.getLocalPointer(), 1, 1, INV.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
   lwork = work[0];
   liwork = iwork[0];
   work = new double[lwork];
   iwork = new int[liwork];
   // inverting with pdgetri_
-  pdgetri_(inv_dim, INV->getLocalPointer(), 1, 1, INV->getDescriptor(), ipiv, work, lwork, iwork,
+  pdgetri_(inv_dim, INV.getLocalPointer(), 1, 1, INV.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
+
+  INV = INV.transpose();
 
   // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1
   DataMatrixDistributed* AXINV =
       new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  DataMatrixDistributed::mult(*AX, *INV, *AXINV);
+  DataMatrixDistributed::mult(*AX, INV, *AXINV);
 
   // (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
   DataMatrixDistributed* AXINVEtA =
@@ -501,10 +506,9 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AXINVEtA, false, 1.0, 1.0);
   this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
 
-  free(AB);
   free(AX);
   free(EtA);
-  free(INV);
+  free(INVp);
   free(AXINV);
   free(AXINVEtA);
   /************************************************************
@@ -520,65 +524,72 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   DataMatrixDistributed E = Et->transpose();
 
   // A^-1 + B~ (calculate in size of A^-1, store in size of B)
-  DataMatrixDistributed* ABtilde =
-      new DataMatrixDistributed(this->b_adapt_matrix_.getPointer(), processGrid,
-                                this->b_adapt_matrix_.getNrows(), this->b_adapt_matrix_.getNcols(),
-                                parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed ABtilde = DataMatrixDistributed::fromSharedData(
+      this->b_adapt_matrix_.data(), processGrid, this->b_adapt_matrix_.getNrows(),
+      this->b_adapt_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
   // pdgeadd_ is used as addition of submatrices here, quadratic from 0 to offMatrixSize
-  // notice, that to start from 0, passed argument is 1, because fortran
+  // notice, that to start from 0, passed argument is 1, because fortran,
+  // also transpose before and after because fortran column-major
+  ABtilde = ABtilde.transpose();
   sgpp::datadriven::pdgeadd_(
       "N", offMatrixSize, offMatrixSize, 1.0,
       this->offlineObject.getDecomposedInverseDistributed().getLocalPointer(), 1, 1,
       this->offlineObject.getDecomposedInverseDistributed().getDescriptor(), 1.0,
-      ABtilde->getLocalPointer(), 1, 1, ABtilde->getDescriptor());
+      ABtilde.getLocalPointer(), 1, 1, ABtilde.getDescriptor());
+  ABtilde = ABtilde.transpose();
 
   // (A^-1 + B~) * E
   DataMatrixDistributed* AE =
       new DataMatrixDistributed(processGrid, E.getGlobalRows(), E.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
-  DataMatrixDistributed::mult(*ABtilde, E, *AE);
+  DataMatrixDistributed::mult(ABtilde, E, *AE);
 
   // X^t * (A^-1 + B~)
   DataMatrixDistributed* XtA =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalRows(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
-  DataMatrixDistributed::mult(Xt, *ABtilde, *XtA);
+  DataMatrixDistributed::mult(Xt, ABtilde, *XtA);
 
   // I + X^t * (A^-1 + B~) * E
-  DataMatrixDistributed* INV2 =
+  DataMatrixDistributed* INV2p =
       new DataMatrixDistributed(processGrid, X.getGlobalCols(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  for (size_t i = 0; i < INV2->getGlobalCols(); i++) {
-    INV2->set(i, i, 1.0);
+  for (size_t i = 0; i < INV2p->getGlobalCols(); i++) {
+    INV2p->set(i, i, 1.0);
   }
-  DataMatrixDistributed::mult(Xt, *AE, *INV2, false, false, 1.0, 1.0);
+  DataMatrixDistributed::mult(Xt, *AE, *INV2p, false, false, 1.0, 1.0);
 
   // (I + X^t * (A^-1 + B~) * E)^-1
   // Note: explicit inversion, see note above in phase 1 of smw
 
+  DataMatrixDistributed INV2 = INV2p->transpose();
+
   // LU-decomposing
-  pdgetrf_(inv_dim, inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, info);
+  pdgetrf_(inv_dim, inv_dim, INV2.getLocalPointer(), 1, 1, INV2.getDescriptor(), ipiv, info);
 
   lwork = -1;
   work = new double[1];
   liwork = -1;
   iwork = new int[1];
   // ask pdgetri_ how much workspace it needs
-  pdgetri_(inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, work, lwork, iwork,
+  pdgetri_(inv_dim, INV2.getLocalPointer(), 1, 1, INV2.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
   lwork = work[0];
   liwork = iwork[0];
   work = new double[lwork];
   iwork = new int[liwork];
   // inverting with pdgetri_
-  pdgetri_(inv_dim, INV2->getLocalPointer(), 1, 1, INV2->getDescriptor(), ipiv, work, lwork, iwork,
+  pdgetri_(inv_dim, INV2.getLocalPointer(), 1, 1, INV2.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
+
+  INV2 = INV2.transpose();
 
   // (A^-1 + B~) E (I + X^t * (A^-1 + B~) * E)^-1
   DataMatrixDistributed* AEINV =
       new DataMatrixDistributed(processGrid, X.getGlobalRows(), X.getGlobalCols(),
                                 parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_, 0.0);
-  DataMatrixDistributed::mult(*AE, *INV2, *AEINV);
+  DataMatrixDistributed::mult(*AE, INV2, *AEINV);
 
   // (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
   DataMatrixDistributed* AEINVXtA =
@@ -590,10 +601,9 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // effectively stores final values of Phase 2 in b_adapt_matrix_
   DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AEINVXtA, false, 1.0, 1.0);
 
-  free(ABtilde);
   free(AE);
   free(XtA);
-  free(INV2);
+  free(INV2p);
   free(AEINV);
   free(AEINVXtA);
 
