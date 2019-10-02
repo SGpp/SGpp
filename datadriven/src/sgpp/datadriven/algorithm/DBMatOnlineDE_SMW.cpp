@@ -480,7 +480,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // ask pdgetri_ how much workspace it needs
   pdgetri_(inv_dim, INV.getLocalPointer(), 1, 1, INV.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
-  lwork = work[0];
+  lwork = static_cast<int>(work[0]);
   liwork = iwork[0];
   work = new double[lwork];
   iwork = new int[liwork];
@@ -575,7 +575,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // ask pdgetri_ how much workspace it needs
   pdgetri_(inv_dim, INV2.getLocalPointer(), 1, 1, INV2.getDescriptor(), ipiv, work, lwork, iwork,
            liwork, info);
-  lwork = work[0];
+  lwork = static_cast<int>(work[0]);
   liwork = iwork[0];
   work = new double[lwork];
   iwork = new int[liwork];
