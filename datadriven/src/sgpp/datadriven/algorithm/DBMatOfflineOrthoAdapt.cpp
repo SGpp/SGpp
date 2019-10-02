@@ -6,6 +6,9 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
 #include <string>
 #include <vector>
 
@@ -13,7 +16,7 @@ namespace sgpp {
 namespace datadriven {
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
-  this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1);
+  this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1, 1.0);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
   // Deprecated
   // dim_a = 0, indirectly tells the online object if build() or decompose() were performed
@@ -84,13 +87,24 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
 
   this->q_ortho_matrix_.resizeQuadratic(dim_a);
   this->t_tridiag_inv_matrix_.resizeQuadratic(dim_a);
+  // isConstructed = true, set by parent call
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix(
     RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
+  if (!isConstructed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineOrthoAdapt::decomposeMatrix: \nmatrix not built yet.");
+  }
   size_t dim_a = lhsMatrix.getNrows();
+  if (dim_a <= 1) {
+    this->q_ortho_matrix_.set(0, 0, 1.0);
+    this->t_tridiag_inv_matrix_.set(0, 0, 1.0 / this->lhsMatrix.get(0, 0));
+    isDecomposed = true;
+    return;
+  }
   // allocating subdiagonal and diagonal vectors of T
   sgpp::base::DataVector diag(dim_a);
   sgpp::base::DataVector subdiag(dim_a - 1);
@@ -106,17 +120,120 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
   // inverting T+lambda*I, by solving L*R*x_i = e_i, for every i-th column x_i of T_inv
   this->invert_symmetric_tridiag(diag, subdiag);
 
-  // decomposed matrix: (lhs+lambda*I) = Q * T^{-1} * Q^t
+  // decomposed matrix now consists of Q, T^-1, with: (lhs+lambda*I)^-1 = Q * T^-1 * Q^t
   this->isDecomposed = true;
+
 #else
   throw base::not_implemented_exception("built without GSL");
 #endif /* USE_GSL */
+}
+
+void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
+    RegularizationConfiguration& regularizationConfig,
+    DensityEstimationConfiguration& densityEstimationConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  if (!isConstructed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineOrthoAdapt::decomposeMatrix: \nmatrix not built yet.");
+  }
+
+  // syncing lhs distributed matrix
+  this->lhsDistributed = DataMatrixDistributed::fromSharedData(
+      this->lhsMatrix.getPointer(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
+      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  size_t dim_a = lhsMatrix.getNrows();
+
+  if (dim_a <= 1) {
+    this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+        this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
+        this->q_ortho_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+        parallelConfig.columnBlockSize_);
+    this->q_ortho_matrix_distributed_.set(0, 0, 1.0);
+    this->t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+        this->t_tridiag_inv_matrix_.getPointer(), processGrid,
+        this->t_tridiag_inv_matrix_.getNrows(), this->t_tridiag_inv_matrix_.getNcols(),
+        parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+    this->t_tridiag_inv_matrix_distributed_.set(0, 0, 1.0 / this->lhsMatrix.get(0, 0));
+    isDecomposed = true;
+    return;
+  }
+
+  // allocating subdiagonal and diagonal vectors of T
+  sgpp::base::DataVector d(dim_a);
+  sgpp::base::DataVector sd(dim_a - 1);
+  sgpp::base::DataVector tau(dim_a);
+
+  for (size_t i = 0; i < tau.size(); i++) {
+    tau.set(i, 1.1);
+  }
+  int lwork = -1;
+  double* work = new double[1];
+  int info;
+  // ask pdsytrd_ how much workspace it needs
+  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+           work, lwork, info);
+  lwork = static_cast<int>(work[0]);
+  work = new double[lwork];
+  // pdsytrd_ amounts to hessenberg_decomposition of non-parallel version
+  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+           work, lwork, info);
+  free(work);
+
+  // inverting middle matrix with added lambda: T <~ (T + lambda*I)^-1
+  for (size_t i = 0; i < dim_a; i++) {
+    d.set(i, d.get(i) + regularizationConfig.lambda_);
+  }
+
+  this->invert_symmetric_tridiag(d, sd);
+  this->t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      this->t_tridiag_inv_matrix_.getPointer(), processGrid, this->t_tridiag_inv_matrix_.getNrows(),
+      this->t_tridiag_inv_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
+
+  // obtaining Q
+  this->q_ortho_matrix_.setAll(0.0);
+  for (size_t i = 0; i < dim_a; i++) {
+    this->q_ortho_matrix_.set(i, i, 1.0);
+  }
+  this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
+      this->q_ortho_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
+  // ask pdormtr_ how much workspace it needs
+  double* work2 = new double[1];
+  lwork = -1;
+  pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), tau.getPointer(),
+           this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
+           this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
+  lwork = static_cast<int>(work2[0]);
+  work2 = new double[lwork];
+  // pdormtr_ is used on Q (=identity) to obtain Q by overwriting Id*Q into it
+  pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
+           this->lhsDistributed.getDescriptor(), tau.getPointer(),
+           this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
+           this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
+  free(work2);
+
+  // transpose q, because fortran column-major, no need for t_tridiag though, because symmetric
+  q_ortho_matrix_distributed_ = q_ortho_matrix_distributed_.transpose();
+  // sync non-distributed matrices
+  q_ortho_matrix_distributed_.toLocalDataMatrix(q_ortho_matrix_);
+  t_tridiag_inv_matrix_distributed_.toLocalDataMatrix(t_tridiag_inv_matrix_);
+
+  this->isDecomposed = true;
+#endif /* USE_SCALAPACK */
 }
 
 void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& diag,
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
+
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
   gsl_matrix_view gsl_lhs = gsl_matrix_view_array(lhsMatrix.getPointer(), dim_a, dim_a);
   gsl_matrix_view gsl_q = gsl_matrix_view_array(q_ortho_matrix_.getPointer(), dim_a, dim_a);
@@ -138,6 +255,9 @@ void DBMatOfflineOrthoAdapt::invert_symmetric_tridiag(sgpp::base::DataVector& di
                                                       sgpp::base::DataVector& subdiag) {
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
+  if (dim_a <= 1) {
+    return;
+  }
   gsl_vector* e = gsl_vector_calloc(diag.getSize());  // calloc sets all values to zero
   gsl_vector* x = gsl_vector_alloc(diag.getSize());   // target of solving
 
@@ -185,6 +305,11 @@ void DBMatOfflineOrthoAdapt::store(const std::string& fileName) {
 void DBMatOfflineOrthoAdapt::syncDistributedDecomposition(
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
 #ifdef USE_SCALAPACK
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "In DBMatOfflineOrthoAdapt::syncDistributedDecomposition\nCan't sync, because lhsMatrix "
+        "was not decomposed yet");
+  }
   q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
       q_ortho_matrix_.data(), processGrid, q_ortho_matrix_.getNrows(), q_ortho_matrix_.getNcols(),
       parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
@@ -222,10 +347,56 @@ void DBMatOfflineOrthoAdapt::compute_inverse() {
   gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, QT, &q_view.matrix, 0.0, &inv_view.matrix);
 
   gsl_matrix_free(QT);
+
 #else
   throw sgpp::base::algorithm_exception("build without GSL");
 #endif /*USE_GSL*/
 }
+
+void DBMatOfflineOrthoAdapt::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                                      const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  if (!isDecomposed) {
+    throw sgpp::base::algorithm_exception(
+        "in DBMatOfflineOrthoAdapt::compute_inverse_parallel:\noffline matrix not decomposed "
+        "yet.\n");
+  }
+  size_t dim_a = this->lhsDistributed.getGlobalRows();
+
+  if (dim_a <= 1) {
+  }
+
+  DataMatrixDistributed* QT = new DataMatrixDistributed(
+      processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  DataMatrixDistributed* INV = new DataMatrixDistributed(
+      processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  // Note: Because "L", a.k.a. lower triangular storage mode, was chosen on decomposition with
+  // pdsytrd_, the Q is altered to Q^t, i.e. A = Q^t * T * Q, and also A^-1 = Q^t * T^-1 * Q
+  // but fortran "transposes" the matrices again by using column major
+  // therefore: A = Q * T * Q^t and A^-1 = Q * T^-1 * Q^t
+  DataMatrixDistributed::mult(this->q_ortho_matrix_distributed_,
+                              this->t_tridiag_inv_matrix_distributed_, *QT, false, false);
+  DataMatrixDistributed::mult(*QT, this->q_ortho_matrix_distributed_, *INV, false, true);
+
+  // writing computed inverse into member and syncing both distri and non-distri matrices
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+  INV->toLocalDataMatrix(this->lhsInverse);
+  this->lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
+      this->lhsInverse.getPointer(), processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
+  this->lhsDistributedInverse.toLocalDataMatrix(this->lhsInverse);
+  this->lhsDistributed = DataMatrixDistributed::fromSharedData(
+      this->lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
+      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+
+  free(QT);
+  free(INV);
+
+  return;
+#endif /* USE_SCALAPACK */
+}
+
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 }
