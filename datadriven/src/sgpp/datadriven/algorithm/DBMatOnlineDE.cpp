@@ -111,8 +111,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
                                            DensityEstimationConfiguration& densityEstimationConfig,
                                            bool save_b, bool do_cv,
                                            std::list<size_t>* deletedPoints, size_t newPoints) {
-  std::cout << "Computing density function..." << std::endl;
-
   if (!localVectorsInitialized) {
     // init bsave and bTotalPoints only here, as they are not needed in the parallel version
     bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
@@ -200,7 +198,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     functionComputed = true;
   }
-  std::cout << "\ndensity function computed successfully\n";
 }
 
 void DBMatOnlineDE::computeDensityFunctionParallel(
@@ -234,10 +231,6 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     DensityEstimationConfiguration& densityEstimationConfig,
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool save_b, bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
-  if (processGrid->getRowColumnIndex() == 0) {
-    std::cout << "Computing density function..." << std::endl;
-  }
-
   if (save_b && !distributedVectorsInitialized) {
     // init bSaveDistributed and bTotalPointsDistributed only here, as they are not needed in the
     // local version
@@ -253,13 +246,29 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt, the current size is not lhs size, but B size
-    size_t bSize = lhsMatrix.getNcols();
-    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
+    bool use_B_size = false;
+    size_t B_size = 0;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
     if (densityEstimationConfig.decomposition_ ==
         sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
-      thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
-      if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
-        bSize = thisOrthoAdaptPtr->getB().getNcols();
+      this_OrthoAdapt_pointer = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
+        use_B_size = true;
+        B_size = this_OrthoAdapt_pointer->getB().getNcols();
+      }
+    }
+
+    // in case of SMW_ortho or SMW_chol, current size is B size and
+    // also B is not used, bus B_distributed_
+    sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+      this_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
+      if (this_SMW_pointer->getBDistributed().getGlobalCols() > 1) {
+        use_B_size = true;
+        B_size = this_SMW_pointer->getBDistributed().getGlobalCols();
       }
     }
 
@@ -267,7 +276,10 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     size_t numberOfPoints = m.getNrows();
     totalPoints++;
 
+    size_t bSize = use_B_size ? B_size : lhsMatrix.getNcols();
+
     DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
+
     if (b.getGlobalRows() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
           "In DBMatOnlineDE::computeDensityFunctionParallel: b doesn't match size of system "
