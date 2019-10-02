@@ -175,7 +175,7 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
   pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
            this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
            work, lwork, info);
-  lwork = work[0];
+  lwork = static_cast<int>(work[0]);
   work = new double[lwork];
   // pdsytrd_ amounts to hessenberg_decomposition of non-parallel version
   pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
@@ -210,7 +210,7 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
            this->lhsDistributed.getDescriptor(), tau.getPointer(),
            this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
            this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
-  lwork = work2[0];
+  lwork = static_cast<int>(work2[0]);
   work2 = new double[lwork];
   // pdormtr_ is used on Q (=identity) to obtain Q by overwriting Id*Q into it
   pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
