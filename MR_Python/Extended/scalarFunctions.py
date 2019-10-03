@@ -12,18 +12,13 @@ try:
     import ipdb
 except:
     pass
-try:
-    rc('animation', html='jshtml')
-    import anuga
-    sys.path.append("/home/rehmemk/git/anuga-clinic-2018")
-    import anuga_tools.animate as animate
-    sys.path.append("/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA")
-    import okushiri
-except:
-    pass
+
+# Okushiri
+import sys
+sys.path.append('/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri')
+from sgppOkushiri import maxOkushiri
 
 # MALTE: Er nimmt als schwierige Funktion immer sin(sin(x))
-
 # Extrem schwierig: sin(1/x), oszilliert enorm am linken Rand
 
 
@@ -121,13 +116,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'analytical':
         return analytical(dim)
 
-    # Steves tsunami Code ANUGA
-    elif model == 'anugaStorage':
-        return anugaStorage(dim)
-    elif model == 'anuga':
-        return anugaWrap(dim)
-    elif model == 'anugaTime':
-        return anugaTime(dim)
+    # Steves tsunami Code ANUGA, Okushiri Benchmark
+    elif model == 'maxOkushiri':
+        return maxOkushiri(dim)
 
 
 ####################### auxiliary functions #######################
@@ -164,6 +155,9 @@ class objFuncSGpp(pysgpp.ScalarFunction):
 
     def getVar(self):
         return self.objFunc.getVar()
+    
+    def cleanUp(self):
+        self.objFunc.cleanUp()
 
 
 # wraps the negative of the objective function for SGpp. Needed for optimization (Max -> Min)
@@ -845,14 +839,14 @@ class continuousGenz():
     def __init__(self, dim):
         self.dim = dim
         # TODO: Choose these randomly?
-        self.a = [5] * self.dim
-        self.u = [0.5] * self.dim 
+        self.a = [1] * self.dim
+        self.u = [0.5] * self.dim
         self.pdfs = pysgpp.DistributionsVector()
         self.mu = 0.5
         self.sigma = 1.0 / 18.0
         for d in range(self.dim):
-            self.pdfs.push_back(pysgpp.DistributionNormal(self.mu, self.sigma))
-#             self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
+            # self.pdfs.push_back(pysgpp.DistributionNormal(self.mu, self.sigma))
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.dim)
@@ -1043,7 +1037,9 @@ class borehole():
 
 
 class boreholeUQ():
-
+    # If you wat to calculate means and variances, set the boundaries in 
+    # DistributionNormal and DistributionLogNormal MANUALLY to the values
+    # from getDomain()!
     def __init__(self):
         self.dim = 8
         self.pdfs = pysgpp.DistributionsVector()
@@ -1097,7 +1093,7 @@ class boreholeUQ():
     # The grid had 36.043 point and an l2 error of 5.71383612e-11, a NRMSE of  1.44149761e-09
 
     def getMean(self):
-        return 0.00655072585279  # old with sigma = sqrt(): 0.00244501293667
+        return 0.00655072585279   # old with sigma = sqrt(): 0.00244501293667
 
     def getVar(self):
         return 8.36242263552e-06  # old with sigma = sqrt(): 2.35017408798e-05
@@ -1732,118 +1728,3 @@ class analytical():
         elif self.dim == 6:
             return -1
 
-
-class anugaStorage():
-
-    def __init__(self, dim):
-        self.dim = dim
-        self.precalculatedValuesFileName = '/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/Values/sg_precalculations{}D.pkl'.format(
-            dim)
-        try:
-            with open(self.precalculatedValuesFileName, 'rb') as f:
-                self.precalculatedValues = pickle.load(f)
-        except:
-            self.precalculatedValues = {}
-        self.numNew = 0
-
-    def cleanUp(self):
-        with open(self.precalculatedValuesFileName, "wb") as f:
-            pickle.dump(self.precalculatedValues, f)
-        print("calculated {} new ANUGA evaluations".format(self.numNew))
-        print("saved them to {}".format(self.precalculatedValuesFileName))
-
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
-        return lb, ub
-
-    def getName(self):
-        return "anugaStorage{}D".format(self.dim)
-
-    def getDim(self):
-        return self.dim
-
-    def eval(self, x):
-        gridsize = 16
-        # lists are not allowed as keys, but tuples are
-        key = tuple(x)
-        if key in self.precalculatedValues:
-            # print("load for {}".format(x))
-            y = self.precalculatedValues[key]
-        else:
-            # print("evaluating in {}".format(x))
-            y = okushiri.run(x, gridsize)
-            self.precalculatedValues[key] = y
-            self.numNew += 1
-        return y[0]
-
-
-class anugaWrap():
-
-    # constructor loads precalculated values
-    def __init__(self, dim):
-        self.dim = dim
-        self.anugaStorage = anugaStorage(dim)
-
-    # cleanUp saves newly calculated values, if there are any
-    def cleanUp(self):
-        self.anugaStorage.cleanUp()
-
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
-        return lb, ub
-
-    def getName(self):
-        return "anuga{}D".format(self.dim)
-
-    def getDim(self):
-        return self.dim
-
-    def eval(self, v):
-        x = [0] * self.getDim()
-        for i in range(self.getDim()):
-            x[i] = v[i]
-        y = self.anugaStorage.eval(x)
-        return np.max(y)
-
-
-# the last dmension is time, so this is always d+1 dimensional for a d-dimensional ANUGA!
-# because there is a fixed time discretization, but SG++ is evaluating in differing points,
-# the time series is interpolated in between the actual points with scipys interp1d
-class anugaTime():
-
-    # constructor loads precalculated values
-    def __init__(self, dim):
-        self.dim = dim
-        self.anugaStorage = anugaStorage(dim - 1)
-
-    # cleanUp saves newly calculated values, if there are any
-    def cleanUp(self):
-        self.anugaStorage.cleanUp()
-
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 0.0)
-        ub = pysgpp.DataVector(self.getDim(), 1.0)
-        return lb, ub
-
-    def getName(self):
-        return "anugaTime{}D".format(self.dim)
-
-    def getDim(self):
-        return self.dim
-
-    def eval(self, v):
-        x = [0] * (self.getDim() - 1)
-        for i in range(self.getDim() - 1):
-            x[i] = v[i]
-        # last parameter is time
-        t = v[self.getDim() - 1]
-        y = self.anugaStorage.eval(x)
-        # Interpolate over time to evaluate in arbitrary points of time
-        timestepsNormalized = [i * 1.0 / (len(y) - 1) for i in range(len(y))]
-        # res = np.interp(t, timestepsNormalized, y)
-        # 'linear', 'cubic', scipy also has spline interpolation
-        timeInterpolant = interp1d(timestepsNormalized, y, kind='linear')
-        res = timeInterpolant(t)
-        return float(res)

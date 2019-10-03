@@ -174,25 +174,25 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
             handles[5] = originalHandles[3]
             labels[5] = originalLabels[3]
 
-        elif model == 'boreholeUQ':
-            handles[1] = originalHandles[5]
-            labels[1] = originalLabels[5]
-            handles[2] = originalHandles[4]
-            labels[2] = originalLabels[4]
-            handles[3] = originalHandles[1]
-            labels[3] = originalLabels[1]
-            handles[4] = originalHandles[6]
-            labels[4] = originalLabels[6]
-            handles[5] = originalHandles[9]
-            labels[5] = originalLabels[9]
-            handles[6] = originalHandles[2]
-            labels[6] = originalLabels[2]
-            handles[7] = originalHandles[7]
-            labels[7] = originalLabels[7]
-            handles[8] = originalHandles[3]
-            labels[8] = originalLabels[3]
-            handles[9] = originalHandles[8]
-            labels[9] = originalLabels[8]
+        # elif model == 'boreholeUQ':
+        #     handles[1] = originalHandles[5]
+        #     labels[1] = originalLabels[5]
+        #     handles[2] = originalHandles[4]
+        #     labels[2] = originalLabels[4]
+        #     handles[3] = originalHandles[1]
+        #     labels[3] = originalLabels[1]
+        #     handles[4] = originalHandles[6]
+        #     labels[4] = originalLabels[6]
+        #     handles[5] = originalHandles[9]
+        #     labels[5] = originalLabels[9]
+        #     handles[6] = originalHandles[2]
+        #     labels[6] = originalLabels[2]
+        #     handles[7] = originalHandles[7]
+        #     labels[7] = originalLabels[7]
+        #     handles[8] = originalHandles[3]
+        #     labels[8] = originalLabels[3]
+        #     handles[9] = originalHandles[8]
+        #     labels[9] = originalLabels[8]
 
         plt.figure()
         axe = plt.gca()
@@ -289,8 +289,6 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
         realMean = objFunc.getMean()
         meanErrors = np.zeros(np.shape(means))
         for i in range(len(means)):
-            # for j in range(len(means[0])):
-            #     meanErrors[i, j] = abs((means[i, j] - realMean) / realMean)
             meanErrors[i] = abs((means[i] - realMean) / realMean)
         plt.loglog(gridSizes, meanErrors, label=label,
                    color=color, marker=marker, linestyle=linestyle)
@@ -327,6 +325,7 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
         if model == "boreholeUQ" and refineType == "surplus":
             meanSGpp = 0.00655072585279
             meanSquareSGpp = 5.127443183386146e-05
+            varSGpp = 8.36242263552e-06
             scalingFactor = 0.9960008520179663
             realVar = meanSquareSGpp / scalingFactor - \
                 (meanSGpp / scalingFactor) ** 2
@@ -344,42 +343,25 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
             # To compare the two, we rescale SG++'s var with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
             means = data['means']
             meanSquares = data['meanSquares']
+            variances = data['vars']
             varErrors = np.zeros(np.shape(means))
             for i in range(len(means)):
-                for j in range(len(means[0])):
-                    var = meanSquares[i, j] / scalingFactor - \
-                        means[i, j] ** 2 / scalingFactor ** 2
-                    varErrors[i, j] = abs((var - realVar) / realVar)
+                    var = meanSquares[i] / scalingFactor - \
+                        means[i] ** 2 / scalingFactor ** 2
+                    varErrors[i] = abs((var - realVar) / realVar)
         else:
             realVar = objFunc.getVar()
             # varErrors = data['varErrors']
-            vars = data['vars']
-            varErrors = np.zeros(np.shape(vars))
-            for i in range(len(vars)):
-                # for j in range(len(vars[0])):
-                #     varErrors[i, j] = abs((vars[i, j] - realVar) / realVar)
-                varErrors[i] = abs((vars[i] - realVar) / realVar)
+            variances = data['vars']
+            varErrors = np.zeros(np.shape(variances))
+            for i in range(len(variances)):
+                varErrors[i] = abs((variances[i] - realVar) / realVar)
 
         plt.loglog(gridSizes, varErrors, label=label, color=color,
                    marker=marker, linestyle=linestyle)
 #         if degree == 1:
 #             plt.ylabel(r'$\vert (V(u) - V(\tilde{u})) / V(u) \vert$', fontsize=ylabelsize)
         plt.ylabel("relative variance error", fontsize=ylabelsize)
-
-        ######## TEMPORARY ############
-#         DakotaDetteVars = [8.5039366526098217e+00 ** 2, 8.4923736984643909e+00 ** 2, 8.4917776350692957e+00 ** 2 ]
-#         DakotaDetteVarErrors = [abs((var - realVar) / realVar) for var in DakotaDetteVars]
-#         plt.loglog([161, 1121, 6273], DakotaDetteVarErrors, marker='*', label='DAKOTA dette')
-
-#         DakotaFriedmanVars = [5.0492199656125969e+00 ** 2, 4.8812399191269042e+00 ** 2, 4.8812351939697516e+00 ** 2 ]
-#         DakotaFriedmanVarErrors = [abs((var - realVar) / realVar) for var in DakotaFriedmanVars]
-#         plt.loglog([71, 351, 1391], DakotaFriedmanVarErrors, marker='*', label='DAKOTA friedman')
-
-#         DakotaIshigamiVars = [3.3451294269149523e+00 ** 2, 3.5857974927853418e+00 ** 2, 3.7206792853677029e+00 ** 2]
-#         DakotaIshigamiVarErrors = [abs((var - realVar) / realVar) for var in DakotaIshigamiVars]
-#         plt.loglog([31, 111, 303], DakotaIshigamiVarErrors,marker='*', label='DAKOTA ishigami')
-
-        ###############################
 
     else:
         print("qoi '{}' not supported".format(qoi))
@@ -416,23 +398,23 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input')
     parser.add_argument('--qoi', default='nrmse',
                         type=str, help='what to plot')
-    parser.add_argument('--model', default='continuousGenz', type=str,
+    parser.add_argument('--model', default='boreholeUQ', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=4, type=int,
+    parser.add_argument('--dim', default=6, type=int,
                         help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=0, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakexmodbound',
+    parser.add_argument('--gridType', default='nak',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3,
+    parser.add_argument('--degree', default=5,
                         type=int, help='spline degree')
-    parser.add_argument('--refineType', default='surplus',
+    parser.add_argument('--refineType', default='regularAndSurplus',
                         type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=8, type=int,
+    parser.add_argument('--maxLevel', default=10, type=int,
                         help='maximum level for regualr refinement')
     parser.add_argument('--maxPoints', default=10000, type=int,
                         help='maximum number of points used')
-    parser.add_argument('--saveFig', default=0, type=int, help='save figure')
+    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
     parser.add_argument('--style', default='paper', type=str,
                         help='style of the plot, paper or presentation')
     args = parser.parse_args()
