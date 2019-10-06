@@ -54,7 +54,7 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   return result;
 }
 
-std::vector<size_t> DBMatOfflinePermutable::deleteOnesFromLevelVec(
+std::vector<size_t> PermutationUtil::deleteOnesFromLevelVec(
     std::vector<size_t> vectorWithOnes) {
   std::vector<size_t> output;
   for (size_t i = 0; i < vectorWithOnes.size(); i++) {
@@ -63,7 +63,7 @@ std::vector<size_t> DBMatOfflinePermutable::deleteOnesFromLevelVec(
   return output;
 }
 
-std::vector<size_t> DBMatOfflinePermutable::permutateVector(std::vector<size_t> vector,
+std::vector<size_t> PermutationUtil::permutateVector(std::vector<size_t> vector,
                                                             std::vector<size_t> oldU,
                                                             std::vector<size_t> newU) {
   std::vector<size_t> output(vector.size(), 1);
@@ -95,7 +95,7 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::CombiGridConfiguration 
 
   // TODO: Further validation
 
-  std::vector<size_t> desiredLevelVec = deleteOnesFromLevelVec(desiredGridCOnfig.levels);
+  std::vector<size_t> desiredLevelVec = PermutationUtil::deleteOnesFromLevelVec(desiredGridCOnfig.levels);
 
   // Permutation
   // First row is never permutated
@@ -147,9 +147,9 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::CombiGridConfiguration 
             points.push_back(newPoint);
             // Get corresponding matrix row from old Q
             std::vector<size_t> baseLevel =
-                permutateVector(newPoint.level, desiredLevelVec, baseLevelVec);
+                PermutationUtil::permutateVector(newPoint.level, desiredLevelVec, baseLevelVec);
             std::vector<size_t> baseIndex =
-                permutateVector(newPoint.index, desiredLevelVec, baseLevelVec);
+                PermutationUtil::permutateVector(newPoint.index, desiredLevelVec, baseLevelVec);
 
             size_t correspondingBaseRowIndex =
                 getMatrixIndexForPoint(baseLevel, baseIndex, baseLevelVec) - 1;
