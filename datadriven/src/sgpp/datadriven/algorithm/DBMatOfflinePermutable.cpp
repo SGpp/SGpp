@@ -6,6 +6,10 @@
 namespace sgpp {
 namespace datadriven {
 
+const std::set<MatrixDecompositionType> DBMatOfflinePermutable::PermutableDecompositions{
+    MatrixDecompositionType::OrthoAdapt
+    };
+
 DBMatOfflinePermutable::DBMatOfflinePermutable() : DBMatOffline() {}
 
 DBMatOfflinePermutable::DBMatOfflinePermutable(const std::string& fileName)
@@ -26,7 +30,8 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   size_t mult = 1;
   while (lStar >= 0) {
     if (lStar == 0) {
-      result += (1 << (level[0] - 1) - 2 + (index[0] + 1) / 2) * mult;
+      result += ((1 << (level[0] - 1)) - 2 + ((index[0] + 1) >> 1)) * mult;
+
       break;
     }
 
@@ -34,11 +39,14 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
     for (size_t i = 0; i < lStar; i++) {
       prod *= (1 << gridLevel[i]) - 1;
     }
-    result += (prod + (1 << (level[lStar] - 1)) + (index[lStar] + 1) / 2 - 3) * mult;
+
+    result += (prod + (1 << (level[lStar] - 1)) + ((index[lStar] + 1) >> 1) - 3) * mult;
+
     mult *= (1 << gridLevel[lStar]) - 2;
+
     // determine new lStar
     int lStar_ = -1;
-    for (size_t i = 0; i < lStar; i++) {
+    for (size_t i = lStar - 1; i >=  0; i--) {
       if (level[i] > 1) lStar_ = i;
     }
     lStar = lStar_;
@@ -121,7 +129,6 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::CombiGridConfiguration 
 
   for (size_t dim = 0; dim < desiredLevelVec.size(); dim++) {
     size_t currentSize = points.size();
-
     // Iterate over all current points
     for (int p = 0; p < currentSize; p++) {
       bool first = true;
@@ -146,7 +153,6 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::CombiGridConfiguration 
 
             size_t correspondingBaseRowIndex =
                 getMatrixIndexForPoint(baseLevel, baseIndex, baseLevelVec) - 1;
-            std::cout << "Correspomding row: " << correspondingBaseRowIndex << "\n";
 
             if (permutateRowsOrColums) {
               sgpp::base::DataVector baseRow(baseMatrix.getNcols());
@@ -166,18 +172,26 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::CombiGridConfiguration 
   }
 }
 
-void dimensionBlowUp(sgpp::base::CombiGridConfiguration baseGridConfig,
-                     sgpp::base::CombiGridConfiguration desiredGridCOnfig,
-                     sgpp::base::DataMatrix& baseMatrix, bool matrixIsInverse) {
+void DBMatOfflinePermutable::dimensionBlowUp(sgpp::base::CombiGridConfiguration baseGridConfig,
+                                             sgpp::base::CombiGridConfiguration desiredGridCOnfig,
+                                             sgpp::base::DataMatrix& baseMatrix,
+                                             bool matrixIsInverse) {
+  std::cout << "dimension blow up..."
+            << "\n";
   auto& gridType = desiredGridCOnfig.type_;
   int dimDelta = desiredGridCOnfig.dim_ - baseGridConfig.dim_;
   if (gridType == sgpp::base::GridType::Linear) {
-    float dimFactor = (dimDelta > 0) ? std::pow((float)1 / 3, dimDelta) : std::pow(3.0, -dimDelta);
-    if(matrixIsInverse){
-      baseMatrix.mult(1 / dimFactor);
-    }
-    else {
-      baseMatrix.mult(dimFactor);
+    float dimFactor = std::pow(3, std::abs(dimDelta));
+    if (matrixIsInverse) {
+      if (dimDelta > 0)
+        baseMatrix.mult(dimFactor);
+      else
+        baseMatrix.mult(1.0 / dimFactor);
+    } else {
+      if (dimDelta > 0)
+        baseMatrix.mult(1.0 / dimFactor);
+      else
+        baseMatrix.mult(dimFactor);
     }
   }
 }
@@ -185,12 +199,14 @@ void dimensionBlowUp(sgpp::base::CombiGridConfiguration baseGridConfig,
 void DBMatOfflinePermutable::permutateLhsMatrix(
     sgpp::base::CombiGridConfiguration baseGridConfig,
     sgpp::base::CombiGridConfiguration desiredGridCOnfig) {
-  // Copy base matrix for permutation    
+  // Copy base matrix for permutation
   sgpp::base::DataMatrix baseLhs(this->lhsMatrix);
   // Permutate rows
   permutateMatrix(baseGridConfig, desiredGridCOnfig, baseLhs, this->lhsMatrix, true);
+  // Copy permutated lhs
+  sgpp::base::DataMatrix rowPermutatedLhs(this->lhsMatrix);
   // Permutate collumns
-  permutateMatrix(baseGridConfig, desiredGridCOnfig, baseLhs, this->lhsMatrix, false);
+  permutateMatrix(baseGridConfig, desiredGridCOnfig, rowPermutatedLhs, this->lhsMatrix, false);
   // Multiply dimensios blow up factor
   dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->lhsMatrix);
 }
