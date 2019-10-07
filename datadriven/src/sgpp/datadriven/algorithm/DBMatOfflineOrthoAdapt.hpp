@@ -29,7 +29,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    */
   explicit DBMatOfflineOrthoAdapt(const std::string& fileName);
 
-  DBMatOffline* clone();
+  DBMatOffline* clone() const;
 
   bool isRefineable() override;
 
@@ -46,8 +46,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    */
   void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
 
-  void permutateDecomposition(sgpp::base::CombiGridConfiguration baseGridConfig,
-                              sgpp::base::CombiGridConfiguration desiredGridCOnfig) override;
+  void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
+                              sgpp::base::GeneralGridConfiguration  desiredGridCOnfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object

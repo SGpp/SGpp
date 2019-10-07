@@ -76,7 +76,7 @@ class DBMatOffline {
    * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
    * the caller.
    */
-  virtual DBMatOffline* clone() = 0;
+  virtual DBMatOffline* clone() const = 0;
 
   /**
    * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined

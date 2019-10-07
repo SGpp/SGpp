@@ -31,7 +31,7 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
 
   explicit DBMatOfflineDenseIChol(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object

@@ -52,7 +52,7 @@ DBMatOfflineLU& DBMatOfflineLU::operator=(const DBMatOfflineLU& rhs) {
   return *this;
 }
 
-DBMatOffline* DBMatOfflineLU::clone() { return new DBMatOfflineLU{*this}; }
+DBMatOffline* DBMatOfflineLU::clone() const { return new DBMatOfflineLU{*this}; }
 
 bool DBMatOfflineLU::isRefineable() { return false; }
 

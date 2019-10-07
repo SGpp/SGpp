@@ -11,6 +11,7 @@
 #endif /* USE_GSL */
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <string>
 #include <vector>
@@ -79,7 +80,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
 #endif /* USE_GSL */
 }
 
-DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
+DBMatOffline* DBMatOfflineOrthoAdapt::clone() const { return new DBMatOfflineOrthoAdapt{*this}; }
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
@@ -93,12 +94,15 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
 }
 
 void DBMatOfflineOrthoAdapt::permutateDecomposition(
-    sgpp::base::CombiGridConfiguration baseGridConfig,
-    sgpp::base::CombiGridConfiguration desiredGridCOnfig) {
-  // Copy Q for row permutation
-  sgpp::base::DataMatrix baseQ(this->q_ortho_matrix_);
+    sgpp::base::GeneralGridConfiguration baseGridConfig,
+    sgpp::base::GeneralGridConfiguration desiredGridCOnfig) {
+
+  // new Q
+  sgpp::base::DataMatrix newQ(this->q_ortho_matrix_.getNrows(), this->q_ortho_matrix_.getNcols());
   // Permutate rows
-  permutateMatrix(baseGridConfig, desiredGridCOnfig, baseQ, this->q_ortho_matrix_, true);
+  permutateMatrix(baseGridConfig, desiredGridCOnfig, this->q_ortho_matrix_, newQ, true);
+  // Reassing Q
+  this->q_ortho_matrix_ = newQ;
   // Multiply dimension blow-up factor to T
   dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->t_tridiag_inv_matrix_, true);
 }

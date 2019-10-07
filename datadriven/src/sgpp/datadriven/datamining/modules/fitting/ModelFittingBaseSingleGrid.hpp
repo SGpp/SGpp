@@ -100,7 +100,7 @@ class ModelFittingBaseSingleGrid : public ModelFittingBase {
   /**
    * hierarchical surpluses of the #grid.
    */
-  DataVector alpha;
+  DataVector  alpha;
 };
 
 } /* namespace datadriven */

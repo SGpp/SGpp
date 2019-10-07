@@ -31,7 +31,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
 
   explicit DBMatOfflineChol(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   bool isRefineable() override;
 

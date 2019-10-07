@@ -11,7 +11,6 @@
  */
 
 #pragma once
-
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
@@ -40,12 +39,17 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * Constructor from a FitterConfig
    * @param config FitterConfig
    */
-  explicit ModelFittingDensityEstimationCombi(FitterConfigurationDensityEstimation& config);
+  explicit ModelFittingDensityEstimationCombi(const FitterConfigurationDensityEstimation& config);
+
+  explicit ModelFittingDensityEstimationCombi(const FitterConfigurationDensityEstimation& config,
+                                              sgpp::datadriven::DBMatBaseObjectStore* objectStore);
 
   /**
    * Fit the grids to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
-   * @param newDataset the training dataset that is used to fit the model.
+   * @param newDataset the training derror: ‘DBMatBaseObjectStore’ was not declared in this scope
+   SwigValueWrapper< std::shared_ptr< DBMatBaseObjectStore > > arg2 ;ataset that is used to fit the
+   model.
    */
   void fit(Dataset& newDataset);
 
@@ -100,6 +104,8 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   void reset() override;
 
  protected:
+  DBMatBaseObjectStore* objectStore;
+  bool hasBaseObjectStore;
   /**
    * Contains the component grids witch form the sparse grids
    */

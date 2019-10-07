@@ -27,7 +27,7 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol() : DBMatOfflineChol() {}
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
+DBMatOffline* DBMatOfflineDenseIChol::clone() const { return new DBMatOfflineDenseIChol{*this}; }
 
 void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig) {

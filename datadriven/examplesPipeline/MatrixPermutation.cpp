@@ -1,7 +1,10 @@
+
 #include <iomanip>
 #include <iostream>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
 int main(int argc, char** argv) {
   // output path of sereialized test matrix
@@ -11,17 +14,21 @@ int main(int argc, char** argv) {
   sgpp::datadriven::DBMatDatabase db("database.json");
 
   // config
-  sgpp::base::CombiGridConfiguration gridConfig;
+  sgpp::base::CombiGridConfiguration baseGridConfig;
 
-  gridConfig.dim_ = 2;
-  gridConfig.levels = std::vector<size_t>{2, 3};
+  baseGridConfig.dim_ = 4;
+  baseGridConfig.levels = std::vector<size_t>{3, 3, 2, 3};
+
+  sgpp::base::CombiGridConfiguration desiredGridConfig;
+  desiredGridConfig.dim_ = 8;
+  desiredGridConfig.levels = std::vector<size_t>{1, 1, 2, 1, 1, 3, 3, 3};
 
   sgpp::base::AdaptivityConfiguration adpativityConfig;
 
   adpativityConfig.numRefinements_ = 0;
 
   sgpp::datadriven::RegularizationConfiguration regConfig;
-  regConfig.lambda_ = 0.001;
+  regConfig.lambda_ = 0;
 
   sgpp::datadriven::DensityEstimationConfiguration densConfig;
   densConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
@@ -29,61 +36,129 @@ int main(int argc, char** argv) {
 
   // create the underlying grid
   std::unique_ptr<sgpp::base::Grid> grid =
-      std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+      std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_)};
 
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();
-  gridGen.anisotropicFull(gridConfig.levels);
+  gridGen.anisotropicFull(baseGridConfig.levels);
 
-  sgpp::datadriven::DBMatOfflineOrthoAdapt* mat = (sgpp::datadriven::DBMatOfflineOrthoAdapt*)
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig, adpativityConfig,
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* baseMat = (sgpp::datadriven::DBMatOfflineOrthoAdapt*)
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(baseGridConfig, adpativityConfig,
                                                                 regConfig, densConfig);
-  // build base matrix
-  mat->buildMatrix(grid.get(), regConfig);
-  // mat->decomposeMatrix(regConfig, densConfig);
 
-  gridConfig.levels = std::vector<size_t>{3, 2};
+  std::cout << "Building base matrix"
+            << "\n";
+  // build base matrix
+  baseMat->buildMatrix(grid.get(), regConfig);
+
   std::unique_ptr<sgpp::base::Grid> grid2 =
-      std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
+      std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(desiredGridConfig.dim_)};
   sgpp::base::GridGenerator& gridGen2 = grid2->getGenerator();
-  gridGen2.anisotropicFull(gridConfig.levels);
+  gridGen2.anisotropicFull(desiredGridConfig.levels);
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt* permMat = (sgpp::datadriven::DBMatOfflineOrthoAdapt*)
-      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig, adpativityConfig,
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(desiredGridConfig, adpativityConfig,
                                                                 regConfig, densConfig);
+
+  std::cout << "Building perm matrix"
+            << "\n";
   // build base matrix
   permMat->buildMatrix(grid2.get(), regConfig);
   // permMat->decomposeMatrix(regConfig, densConfig);
 
-  sgpp::base::CombiGridConfiguration baseConfig;
-  baseConfig.levels = std::vector<size_t>{2, 3};
-  baseConfig.dim_ = 2;
+  std::cout << "Decomposing base matrix"
+            << "\n";
+  baseMat->decomposeMatrix(regConfig, densConfig);
 
+  std::cout << "Decomposing perm matrix"
+            << "\n";
   
+  permMat->decomposeMatrix(regConfig, densConfig);
 
-  std::cout << "Starting permutation"
-            << "\n\n\n";
+  std::cout << "Permutating base matrix"
+            << "\n";         
+  baseMat->permutateDecomposition(baseGridConfig, desiredGridConfig);
 
-  std::cout << mat->getLhsMatrix_ONLY_FOR_TESTING().toString() << "\n\n\n";
 
-  std::cout << permMat->getLhsMatrix_ONLY_FOR_TESTING().toString() << "\n\n\n";
 
-  /*std::cout << mat->getTinv().toString() << "\n\n\n";
+  // Test online fitting
+  std::unique_ptr<sgpp::datadriven::DBMatOnlineDE> online1{
+      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(*baseMat, *grid2,
+                                                                 regConfig.lambda_)};
 
-  std::cout << permMat->getTinv().toString() << "\n\n\n";*/
-  mat->permutateLhsMatrix(baseConfig, gridConfig);
+  std::unique_ptr<sgpp::datadriven::DBMatOnlineDE> online2{
+      sgpp::datadriven::DBMatOnlineDEFactory::buildDBMatOnlineDE(*permMat, *grid2,
+                                                                 regConfig.lambda_)};
 
-  std::cout << mat->getLhsMatrix_ONLY_FOR_TESTING().toString() << "\n\n\n";
+  // Generate sample dataset
+  sgpp::base::DataMatrix samples(100, desiredGridConfig.dim_);
+  for (int i = 0; i < 100; i++) {
+    sgpp::base::DataVector vec(desiredGridConfig.dim_);
+    for (int j = 0; j < desiredGridConfig.dim_; j++) {
+      vec.at(j) = (double)std::rand() / RAND_MAX;
+    }
+    samples.setRow(i, vec);
+  }
 
-  for (size_t i = 0; i < mat->getLhsMatrix_ONLY_FOR_TESTING().getNrows(); i++) {
-    for (size_t j = 0; j < mat->getLhsMatrix_ONLY_FOR_TESTING().getNcols(); j++) {
-      if (mat->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) -
-              permMat->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) >
-          0.0001) {
-        std::cout << "Unequal pair L: " << i << ", " << j
-                  << " mat: " << mat->getLhsMatrix_ONLY_FOR_TESTING().get(i, j)
-                  << " perMat: " << permMat->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) << "\n";
+  sgpp::base::DataVector alpha1(baseMat->getGridSize());
+  sgpp::base::DataVector alpha2(permMat->getGridSize());
+
+  online1->computeDensityFunction(alpha1, samples, *grid2, densConfig, false);
+  online2->computeDensityFunction(alpha2, samples, *grid2, densConfig, false);
+
+  online1->setBeta(1);
+  online2->setBeta(1);
+
+  if (alpha1.getSize() != alpha2.getSize())
+    std::cout << "Unequal alpha size."
+              << "\n";
+
+  for (int i = 0; i < alpha1.getSize(); i++) {
+    if (alpha1[i] - alpha2[i] > 0.001) {
+      std::cout << "Uneq alpha: " << alpha1[i] << " | " << alpha2[i] << "\n";
+    }
+  }
+
+  std::cout << "Starting test"
+            << "\n";
+  for (int i = 0; i < 10; i++) {
+    sgpp::base::DataVector p(desiredGridConfig.dim_);
+
+    for (int j = 0; j < desiredGridConfig.dim_; j++) {
+      p.at(j) = (double)std::rand() / RAND_MAX;
+    }
+
+    double eval1 = online1->eval(alpha1, p, *grid2);
+    double eval2 = online2->eval(alpha2, p, *grid2);
+
+    if (eval1 - eval2 > 0.001) {
+      std::cout << "Unequal eval. Point: (" << p.at(0) << "," << p.at(1) << ") Values: " << eval1
+                << " | " << eval2 << "\n";
+    }
+  }
+
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* baseMat1 = (sgpp::datadriven::DBMatOfflineOrthoAdapt*)
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(baseGridConfig, adpativityConfig,
+                                                                regConfig, densConfig);
+
+  sgpp::datadriven::DBMatOfflineOrthoAdapt* permMat1 = (sgpp::datadriven::DBMatOfflineOrthoAdapt*)
+      sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(desiredGridConfig, adpativityConfig,
+                                                                regConfig, densConfig);
+
+  baseMat1->buildMatrix(grid.get(), regConfig);
+  permMat1->buildMatrix(grid2.get(), regConfig);
+
+  baseMat1->permutateLhsMatrix(baseGridConfig, desiredGridConfig);
+
+  for (int i = 0; i < permMat1->getGridSize(); i++) {
+    for (int j = 0; j < permMat1->getGridSize(); j++) {
+      if (baseMat1->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) -
+              permMat1->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) >
+          0.001) {
+        std::cout << "Uneq, base: " << baseMat1->getLhsMatrix_ONLY_FOR_TESTING().get(i, j)
+                  << "  perm: " << permMat1->getLhsMatrix_ONLY_FOR_TESTING().get(i, j) << "\n";
       }
     }
   }
+
   return 0;
 }

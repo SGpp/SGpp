@@ -41,7 +41,7 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   virtual ~DBMatOfflineLU() = default;
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object

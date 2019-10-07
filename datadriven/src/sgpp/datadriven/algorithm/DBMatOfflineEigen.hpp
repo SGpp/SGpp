@@ -32,7 +32,7 @@ class DBMatOfflineEigen : public DBMatOffline {
 
   explicit DBMatOfflineEigen(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object

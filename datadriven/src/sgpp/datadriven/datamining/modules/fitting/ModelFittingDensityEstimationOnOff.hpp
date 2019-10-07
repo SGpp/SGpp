@@ -24,12 +24,13 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/algorithm/DBMatBaseObjectStore.hpp>
 
 #include <list>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -52,6 +53,15 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
+   * Constuctor with main memory component offline object database
+   *
+   * @param config configuration object that specifies grid, refinement, and regularization
+   * @param
+   */
+  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
+                                              DBMatBaseObjectStore* objectStore);
+
+  /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
@@ -72,7 +82,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
 
   void update(Dataset& dataset) override;
 
@@ -115,6 +125,9 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
  private:
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
+  // The offline object store
+  DBMatBaseObjectStore* objectStore;
+  bool hasBaseObjectStore;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

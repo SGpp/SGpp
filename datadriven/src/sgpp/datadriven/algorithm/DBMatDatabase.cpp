@@ -87,7 +87,7 @@ std::string& DBMatDatabase::getBaseDataMatrix(
     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    sgpp::base::CombiGridConfiguration baseGridConfig) {
+    sgpp::base::GeneralGridConfiguration baseGridConfig) {
   // Get index of suitable base object if existing
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig, true);
@@ -105,10 +105,10 @@ std::string& DBMatDatabase::getBaseDataMatrix(
     baseGridConfig.dim_ = (*gridConfigNode)[keyGridDimension].getUInt();
     json::ListNode* entryLevelVector = (json::ListNode*)(&(*gridConfigNode)[keyGridLevel]);
     // Intialize level vector
-    baseGridConfig.levels = std::vector<size_t>(baseGridConfig.dim_);
+    baseGridConfig.levelVector_ = std::vector<size_t>(baseGridConfig.dim_);
     // Fill out level vector
     for (size_t i = 0; i < baseGridConfig.dim_; i++) {
-      baseGridConfig.levels[i] = (*entryLevelVector)[i].getUInt;
+      baseGridConfig.levelVector_[i] = (*entryLevelVector)[i].getUInt();
     }
     // Return file path of serialized offline object
     std::string& filepath = (*entry)[keyFilepath].get();
@@ -133,12 +133,12 @@ void DBMatDatabase::putDataMatrix(
     gridConfigEntry.addTextAttr(
         keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(gridConfig.generalType_));
     gridConfigEntry.addIDAttr(keyGridDimension, (uint64_t)gridConfig.dim_);
+    // In case the offline object corresponds to a anisotropic component grid,
+    // its level vector has to be stored.
     if (gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid) {
-      sgpp::base::CombiGridConfiguration& componentGridConfig =
-          (sgpp::base::CombiGridConfiguration&)gridConfig;
       json::ListNode& level = (json::ListNode&)gridConfigEntry.addListAttr(keyGridLevel);
-      for (size_t i = 0; i < componentGridConfig.levels.size(); i++) {
-        level.addIdValue(componentGridConfig.levels[i]);
+      for (size_t i = 0; i < gridConfig.levelVector_.size(); i++) {
+        level.addIdValue(gridConfig.levelVector_[i]);
       }
     } else {
       gridConfigEntry.addIDAttr(keyGridLevel, (int64_t)gridConfig.level_);
@@ -175,7 +175,7 @@ void DBMatDatabase::putDataMatrix(
 
 // Neu implementier -> TODO: Testen
 bool DBMatDatabase::baseGridConfigurationMatches(json::DictNode* node,
-                                                 sgpp::base::CombiGridConfiguration& gridConfig,
+                                                 sgpp::base::GeneralGridConfiguration& gridConfig,
                                                  size_t entry_num) {
   uint64_t nodeGridDimension;
   // Check if grid dimensionality matches
@@ -212,7 +212,7 @@ bool DBMatDatabase::baseGridConfigurationMatches(json::DictNode* node,
 
   if (node->contains(keyGridLevel)) {
     for (size_t i = 0; i < gridConfig.dim_; i++) {
-      int configLevel = gridConfig.levels.at(i);
+      int configLevel = gridConfig.levelVector_.at(i);
       // entries euqal to 1 can be ignored
       if (configLevel == 1) continue;
       // If given config config contains a level entry that does not exist in the json object,
@@ -236,7 +236,6 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
   // Check if grid general type matches
   sgpp::base::GeneralGridType gridType;
   if (node->contains(keyGridType)) {
-    json::DictNode* entry = (json::DictNode*)(&((*database)[i]));
     // Parse the grid general type
     std::string strGridType = (*node)[keyGridType].get();
     gridType = sgpp::datadriven::GeneralGridTypeParser::parse(strGridType);
@@ -257,7 +256,6 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
               << "\" node does not contain \"" << keyGridDimension << "\" key and therefore is "
               << "ignored!" << std::endl;
     return false;
-    json::DictNode* entry = (json::DictNode*)(&((*database)[i]));
   }
   // Check if the grid level matches
   if (node->contains(keyGridLevel)) {
@@ -271,18 +269,16 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
         return false;
       }
       // Compare configuration level vector with json level vector
-      sgpp::base::CombiGridConfiguration& combiGridConfig =
-          (sgpp::base::CombiGridConfiguration&)gridConfig;
-      if (combiGridConfig.levels.size() != gridConfig.dim_) {
+      if (gridConfig.levelVector_.size() != gridConfig.dim_) {
         std::string what = "Invalid combi grid config: Level vector size " +
-                           std::to_string(combiGridConfig.levels.size()) +
+                           std::to_string(gridConfig.levelVector_.size()) +
                            " does not match dimensionality of grid" + " configuration" +
                            std::to_string(gridConfig.dim_);
         throw sgpp::base::data_exception(what.c_str());
       }
       for (size_t i = 0; i < gridConfig.dim_; i++) {
         json::Node* indexLevelNode = (json::Node*)(&((*entryLevelVector)[i]));
-        if (indexLevelNode->getInt() != combiGridConfig.levels.at(i)) {
+        if (indexLevelNode->getInt() != gridConfig.levelVector_.at(i)) {
           return false;
         }
       }
@@ -347,8 +343,9 @@ int DBMatDatabase::entryIndexByConfiguration(
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool findBaseConfig) {
-  if (findBaseConfig && (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)) {
-    throw "Base matrices can only be found for anisotrophic grids.";
+  if (findBaseConfig && gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid) {
+    throw sgpp::base::algorithm_exception(
+        "Base matrices can only be found for anisotrophic grids.");
   }
   // Scan the entire database
   for (size_t i = 0; i < database->size(); i++) {
@@ -357,9 +354,7 @@ int DBMatDatabase::entryIndexByConfiguration(
     if (entry->contains(keyGridConfiguration)) {
       json::DictNode* gridConfigNode = (json::DictNode*)(&(*entry)[keyGridConfiguration]);
       if (findBaseConfig) {
-        if (!baseGridConfigurationMatches(gridConfigNode,
-                                          (sgpp::base::CombiGridConfiguration&)gridConfig, i))
-          continue;
+        if (!baseGridConfigurationMatches(gridConfigNode, gridConfig, i)) continue;
       } else {
         if (!gridConfigurationMatches(gridConfigNode, gridConfig, i)) continue;
       }

@@ -10,8 +10,8 @@
  *     Author: Kilian Röhner
  */
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -19,6 +19,7 @@
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
 #include <list>
@@ -46,6 +47,15 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
+      this->hasBaseObjectStore = false;
+}
+
+ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
+    const FitterConfigurationDensityEstimation& config,
+    DBMatBaseObjectStore* objectStore)
+    : ModelFittingDensityEstimationOnOff(config) {
+  this->objectStore = objectStore;
+  this->hasBaseObjectStore = true;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -71,6 +81,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
+  bool useOfflinePermutation = this->config->getUseOfflinePermutation();
 
   // clear model
   reset();
@@ -86,6 +97,19 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
+
+  // If the decompositions method is suitable for the permutation approach
+  // and a base object store is specified, get the offline object from the store
+  if (DBMatOfflinePermutable::PermutableDecompositions.find(
+          densityEstimationConfig.decomposition_) !=
+          DBMatOfflinePermutable::PermutableDecompositions.end() &&
+      this->hasBaseObjectStore) {
+    // The offline store builds and decomposes a new base object if no base object for the 
+    // desired configuration is available. Base objects are transformed into the desired
+    // object using the permutation approach.
+    offline = this->objectStore->getOfflineObject(
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+  }
 
   // Intialize database if it is provided
   if (!databaseConfig.filepath.empty()) {

@@ -17,15 +17,14 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <iostream>
 #include <list>
 #include <vector>
 
-using std::vector;
-using std::unique_ptr;
 using sgpp::base::application_exception;
+using std::unique_ptr;
+using std::vector;
 
 namespace sgpp {
 namespace datadriven {
@@ -33,12 +32,21 @@ namespace datadriven {
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi() {}
 
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
-    FitterConfigurationDensityEstimation& config)
+    const FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation{} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
+  this->hasBaseObjectStore = false;
+}
+
+ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
+    const FitterConfigurationDensityEstimation& config,
+    DBMatBaseObjectStore* objectStore)
+    : ModelFittingDensityEstimationCombi(config) {
+  this->hasBaseObjectStore = true;
+  this->objectStore = objectStore;
 }
 
 void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
@@ -227,7 +235,13 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
     case DensityEstimationType::Decomposition: {
-      return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+      //
+      if (this->hasBaseObjectStore) {
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
+                                                                    objectStore);
+      } else {
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+      }
     }
     default: { throw base::application_exception("Unknown density estimation type"); }
   }

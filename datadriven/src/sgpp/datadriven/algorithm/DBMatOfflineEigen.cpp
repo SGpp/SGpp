@@ -79,7 +79,7 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
 }
 
 
-DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
+DBMatOffline* DBMatOfflineEigen::clone() const { return new DBMatOfflineEigen{*this}; }
 
 bool DBMatOfflineEigen::isRefineable() { return false; }
 

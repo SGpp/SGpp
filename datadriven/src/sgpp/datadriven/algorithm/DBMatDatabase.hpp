@@ -9,6 +9,7 @@
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <string>
 
@@ -87,7 +88,7 @@ class DBMatDatabase {
       sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-      sgpp::base::CombiGridConfiguration baseGridConfig);
+      sgpp::base::GeneralGridConfiguration baseGridConfig);
 
   /**
    * Puts a filepath for a given configuration in the database. The filepath refers to the matrix
@@ -152,7 +153,7 @@ class DBMatDatabase {
                                 sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num);
 
   bool baseGridConfigurationMatches(json::DictNode* node,
-                                    sgpp::base::CombiGridConfiguration& gridConfig,
+                                    sgpp::base::GeneralGridConfiguration& gridConfig,
                                     size_t entry_num);
 
   /**
