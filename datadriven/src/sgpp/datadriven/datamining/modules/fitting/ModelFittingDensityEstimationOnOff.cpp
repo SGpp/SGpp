@@ -47,12 +47,11 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-      this->hasBaseObjectStore = false;
+  this->hasBaseObjectStore = false;
 }
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
-    const FitterConfigurationDensityEstimation& config,
-    DBMatBaseObjectStore* objectStore)
+    const FitterConfigurationDensityEstimation& config, DBMatBaseObjectStore* objectStore)
     : ModelFittingDensityEstimationOnOff(config) {
   this->objectStore = objectStore;
   this->hasBaseObjectStore = true;
@@ -104,11 +103,10 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
           densityEstimationConfig.decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end() &&
       this->hasBaseObjectStore) {
-    // The offline store builds and decomposes a new base object if no base object for the 
+    // The offline store builds and decomposes a new base object if no base object for the
     // desired configuration is available. Base objects are transformed into the desired
     // object using the permutation approach.
-    offline = this->objectStore->getOfflineObject(
-        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+    offline = this->objectStore->getOfflineObject(gridConfig);
   }
 
   // Intialize database if it is provided
