@@ -7,25 +7,39 @@
 
 namespace sgpp {
 namespace datadriven {
-DBMatBaseObjectStore::DBMatBaseObjectStore() : hasDatabase(false) {}
+DBMatBaseObjectStore::DBMatBaseObjectStore(
+    sgpp::base::AdaptivityConfiguration adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig)
+    : hasDatabase(false) {
+  this->adaptivityConfig = adaptivityConfig;
+  this->regularizationConfig = regularizationConfig;
+  this->densityEstimationConfig = densityEstimationConfig;
+}
 
-DBMatBaseObjectStore::DBMatBaseObjectStore(const std::string& filePath)
-    : dbFilePath(filePath), hasDatabase(true) {}
+DBMatBaseObjectStore::DBMatBaseObjectStore(
+    const std::string& filePath, sgpp::base::AdaptivityConfiguration adaptivityConfig,
+    sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig)
+    : dbFilePath(filePath), hasDatabase(true) {
+  this->adaptivityConfig = adaptivityConfig;
+  this->regularizationConfig = regularizationConfig;
+  this->densityEstimationConfig = densityEstimationConfig;
+}
 
 DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    sgpp::base::GeneralGridConfiguration& gridConfig) {
+  std::cout << "Test: " << this->regularizationConfig.lambda_ << std::endl;
+
   // base object that will be transformed
   DBMatOfflinePermutable* baseObject = nullptr;
   // grid configuration of the base object
   sgpp::base::GeneralGridConfiguration baseGridConfig;
   // try to find matching object locally
-  int baseObjectContainerIndex = this->getBaseObjectContainerIndex(
-      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
+  int baseObjectContainerIndex = this->getBaseObjectContainerIndex(gridConfig);
   // if a suitable object exists, use it
   if (baseObjectContainerIndex != -1) {
+    std::cout << "Obtained Base Object from local store" << std::endl;
     // obtain the object container
     const DBMatBaseObjectStore::ObjectContainer& baseObjectContainer =
         this->getBaseObjectContainer(baseObjectContainerIndex);
@@ -37,14 +51,15 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   // if no suitable object exists locally, and a db path is given, search the db and store the base
   // object if found
   else if (hasDatabase) {
+    std::cout << "Obtained Base Object from database" << std::endl;
     // contruct the database
     DBMatDatabase db(dbFilePath);
-    if (db.hasBaseDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-                             densityEstimationConfig)) {
+    if (db.hasBaseDataMatrix(gridConfig, this->adaptivityConfig, this->regularizationConfig,
+                             this->densityEstimationConfig)) {
       sgpp::base::GeneralGridConfiguration dbGridConfig;
       std::string objectFile =
-          db.getBaseDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-                               densityEstimationConfig, dbGridConfig);
+          db.getBaseDataMatrix(gridConfig, this->adaptivityConfig, this->regularizationConfig,
+                               this->densityEstimationConfig, dbGridConfig);
       // build offline object
       baseObject = (DBMatOfflinePermutable*)DBMatOfflineFactory::buildFromFile(objectFile);
       // grid config with 1 elemts remove from level vector                    onst must be
@@ -52,26 +67,30 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
       // permutate base object to match cleaned level vec
       baseObject->permutateDecomposition(dbGridConfig, baseGridConfig);
       // store base objects. Ownership gets transfered to the object's ObjectContainer
-      this->putBaseObject(gridConfig, adaptivityConfig, regularizationConfig,
-                          densityEstimationConfig,
-                          std::unique_ptr<DBMatOfflinePermutable>(baseObject));
+      this->putBaseObject(gridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
     }
   }
   // if the object is not available, build it
   if (baseObject == nullptr) {
+    std::cout << "Constructing base object ..." << std::endl;
     // remove 1 elements
     baseGridConfig = PermutationUtil::getNormalizedConfig(gridConfig);
+
     baseObject = (DBMatOfflinePermutable*)DBMatOfflineFactory::buildOfflineObject(
-        baseGridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
+        baseGridConfig, this->adaptivityConfig, this->regularizationConfig,
+        this->densityEstimationConfig);
     // build grid
     std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_));
+    grid->getGenerator().anisotropicFull(baseGridConfig.levelVector_);
     // build matrix
-    baseObject->buildMatrix(grid.get(), regularizationConfig);
+    baseObject->buildMatrix(grid.get(), this->regularizationConfig);
     // decompose matrix
-    baseObject->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+    baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
+
     // store base objects. Ownership gets transfered to the object's ObjectContainer
-    this->putBaseObject(gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig,
-                        std::unique_ptr<DBMatOfflinePermutable>(baseObject));
+    this->putBaseObject(gridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
+
+    std::cout << "Constructed base object ..." << std::endl;
   }
   // apply permutation and dimension blow-up
   baseObject->permutateDecomposition(baseGridConfig, gridConfig);
@@ -79,15 +98,10 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
 }
 
 int DBMatBaseObjectStore::getBaseObjectContainerIndex(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    sgpp::base::GeneralGridConfiguration& gridConfig) {
   // Iterate over objects to find match
   for (int i = 0; i < this->objects.size(); i++) {
-    if (this->objects[i].configMatches(gridConfig, adaptivityConfig, regularizationConfig,
-                                       densityEstimationConfig))
-      return i;
+    if (this->objects[i].configMatches(gridConfig)) return i;
   }
   // If no object matches, return nullopt
   return -1;
@@ -98,27 +112,15 @@ const DBMatBaseObjectStore::ObjectContainer& DBMatBaseObjectStore::getBaseObject
   return this->objects.at(index);
 }
 
-void DBMatBaseObjectStore::putBaseObject(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    std::unique_ptr<DBMatOfflinePermutable> object) {
-  this->objects.push_back(ObjectContainer{gridConfig, adaptivityConfig, regularizationConfig,
-                                          densityEstimationConfig, std::move(object)});
+void DBMatBaseObjectStore::putBaseObject(sgpp::base::GeneralGridConfiguration& gridConfig,
+                                         std::unique_ptr<DBMatOfflinePermutable> object) {
+  this->objects.push_back(ObjectContainer{gridConfig, std::move(object)});
 }
 
 DBMatBaseObjectStore::ObjectContainer::ObjectContainer(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    const RegularizationConfiguration& regularizationConfig,
-    const DensityEstimationConfiguration& densityEstimationConfig,
     std::unique_ptr<const DBMatOfflinePermutable> offlineObject)
-    : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
-      regularizationConfig(regularizationConfig),
-      densityEstimationConfig(densityEstimationConfig),
-      offlineObject(std::move(offlineObject)) {}
+    : gridConfig(gridConfig), offlineObject(std::move(offlineObject)) {}
 
 const DBMatOfflinePermutable& DBMatBaseObjectStore::ObjectContainer::getOfflineObject() const {
   return *(this->offlineObject);
@@ -130,77 +132,47 @@ const sgpp::base::GeneralGridConfiguration& DBMatBaseObjectStore::ObjectContaine
 }
 
 bool DBMatBaseObjectStore::ObjectContainer::configMatches(
-    const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig) {
   // store is only implemented for component grids
   if (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)
     throw sgpp::base::not_implemented_exception("Only implemented for component grids.");
 
-  if (regularizationConfig.lambda_ != 0)
-    throw sgpp::base::algorithm_exception(
-        "Permutation is not possible with regularization applied. Lambda != 0.");
   // check if a permutation exists
-  std::vector<size_t> levelVec(this->gridConfig.levelVector_);
-  for (auto l : gridConfig.levelVector_) {
-    // 1 elements are irrelevant
-    if (l == 1) continue;
-    // iterate through base level vector to find suitable element
-    for (size_t i = 0; i < levelVec.size(); i++) {
-      auto l_ = levelVec[i];
-      // base objects are not allowed to have elements equal to 1.
-      assert(l_ != 1);
-      // if suitable elemet is found, remove it from the base vector by setting it to -1.
-      if (l == l_) {
-        levelVec[i] = -1;
-        break;
-      }
-      // If no suitable element has been found, base level vec is no permutation
-      else if (i == levelVec.size() - 1) {
-        return false;
-        break;
-      }
-    }
-  }
-
-  // base vec is permutation if all elements have been set to -1
-  for (auto l : levelVec) {
-    if (l != -1) return false;
-  }
-
-  // check if other configs match
-  return  // remaining grid config
-      gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
-      gridConfig.type_ == this->gridConfig.type_ &&
-      // adaptivity config
-      adaptivityConfig.errorBasedRefinement == this->adaptivityConfig.errorBasedRefinement &&
-      adaptivityConfig.errorBufferSize == this->adaptivityConfig.errorConvergenceThreshold &&
-      adaptivityConfig.levelPenalize == this->adaptivityConfig.levelPenalize &&
-      adaptivityConfig.maxLevelType_ == this->adaptivityConfig.maxLevelType_ &&
-      adaptivityConfig.noPoints_ == this->adaptivityConfig.numRefinements_ &&
-      adaptivityConfig.percent_ == this->adaptivityConfig.percent_ &&
-      adaptivityConfig.precomputeEvaluations == this->adaptivityConfig.precomputeEvaluations &&
-      adaptivityConfig.refinementFunctorType == this->adaptivityConfig.refinementFunctorType &&
-      adaptivityConfig.refinementPeriod == this->adaptivityConfig.refinementPeriod &&
-      adaptivityConfig.scalingCoefficients == this->adaptivityConfig.scalingCoefficients &&
-      adaptivityConfig.threshold_ == this->adaptivityConfig.threshold_ &&
-      // remaining regularization config
-      regularizationConfig.exponentBase_ == this->regularizationConfig.exponentBase_ &&
-      regularizationConfig.l1Ratio_ == this->regularizationConfig.l1Ratio_ &&
-      regularizationConfig.type_ == this->regularizationConfig.type_ &&
-      // density estimation config
-      densityEstimationConfig.decomposition_ == this->densityEstimationConfig.decomposition_ &&
-      densityEstimationConfig.iCholSweepsDecompose_ ==
-          this->densityEstimationConfig.iCholSweepsDecompose_ &&
-      densityEstimationConfig.iCholSweepsRefine_ ==
-          this->densityEstimationConfig.iCholSweepsRefine_ &&
-      densityEstimationConfig.iCholSweepsSolver_ ==
-          this->densityEstimationConfig.iCholSweepsSolver_ &&
-      densityEstimationConfig.iCholSweepsUpdateLambda_ ==
-          this->densityEstimationConfig.iCholSweepsUpdateLambda_ &&
-      densityEstimationConfig.normalize_ == this->densityEstimationConfig.normalize_ &&
-      densityEstimationConfig.type_ == this->densityEstimationConfig.type_;
+  return PermutationUtil::isPermutation(this->gridConfig.levelVector_, gridConfig.levelVector_);
+  // remaining grid config
+  /*gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
+    gridConfig.type_ == this->gridConfig.type_ &&
+    // adaptivity config
+    adaptivityConfig.errorBasedRefinement == this->adaptivityConfig.errorBasedRefinement &&
+    adaptivityConfig.errorBufferSize == this->adaptivityConfig.errorBufferSize &&
+    adaptivityConfig.errorConvergenceThreshold ==  this->adaptivityConfig.errorConvergenceThreshold
+    && adaptivityConfig.errorMinInterval == this->adaptivityConfig.errorMinInterval &&
+    adaptivityConfig.levelPenalize == this->adaptivityConfig.levelPenalize &&
+    adaptivityConfig.maxLevelType_ == this->adaptivityConfig.maxLevelType_ &&
+    adaptivityConfig.noPoints_ == this->adaptivityConfig.noPoints_ &&
+    adaptivityConfig.numRefinements_ == this->adaptivityConfig.numRefinements_ &&
+    adaptivityConfig.percent_ == this->adaptivityConfig.percent_ &&
+    adaptivityConfig.precomputeEvaluations == this->adaptivityConfig.precomputeEvaluations &&
+    adaptivityConfig.refinementFunctorType == this->adaptivityConfig.refinementFunctorType &&
+    adaptivityConfig.refinementPeriod == this->adaptivityConfig.refinementPeriod &&
+    adaptivityConfig.scalingCoefficients == this->adaptivityConfig.scalingCoefficients &&
+    adaptivityConfig.threshold_ == this->adaptivityConfig.threshold_ &&
+    // remaining regularization config
+    regularizationConfig.exponentBase_ == this->regularizationConfig.exponentBase_ &&
+    regularizationConfig.l1Ratio_ == this->regularizationConfig.l1Ratio_ &&
+    regularizationConfig.type_ == this->regularizationConfig.type_ &&
+    // density estimation config
+    densityEstimationConfig.decomposition_ == this->densityEstimationConfig.decomposition_ &&
+    densityEstimationConfig.iCholSweepsDecompose_ ==
+        this->densityEstimationConfig.iCholSweepsDecompose_ &&
+    densityEstimationConfig.iCholSweepsRefine_ ==
+        this->densityEstimationConfig.iCholSweepsRefine_ &&
+    densityEstimationConfig.iCholSweepsSolver_ ==
+        this->densityEstimationConfig.iCholSweepsSolver_ &&
+    densityEstimationConfig.iCholSweepsUpdateLambda_ ==
+        this->densityEstimationConfig.iCholSweepsUpdateLambda_ &&
+    densityEstimationConfig.normalize_ == this->densityEstimationConfig.normalize_ &&
+    densityEstimationConfig.type_ == this->densityEstimationConfig.type_;*/
 }
 }  // namespace datadriven
 }  // namespace sgpp

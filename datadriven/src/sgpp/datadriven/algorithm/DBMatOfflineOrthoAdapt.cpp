@@ -96,7 +96,6 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
 void DBMatOfflineOrthoAdapt::permutateDecomposition(
     sgpp::base::GeneralGridConfiguration baseGridConfig,
     sgpp::base::GeneralGridConfiguration desiredGridCOnfig) {
-
   // new Q
   sgpp::base::DataMatrix newQ(this->q_ortho_matrix_.getNrows(), this->q_ortho_matrix_.getNcols());
   // Permutate rows
@@ -115,7 +114,6 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
   // allocating subdiagonal and diagonal vectors of T
   sgpp::base::DataVector diag(dim_a);
   sgpp::base::DataVector subdiag(dim_a - 1);
-
   // decomposing: lhs = Q * T * Q^t
   this->hessenberg_decomposition(diag, subdiag);
 

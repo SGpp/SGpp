@@ -13,6 +13,8 @@ std::vector<size_t> permutateVector(std::vector<size_t> vector, std::vector<size
                                     std::vector<size_t> newU);
 sgpp::base::GeneralGridConfiguration getNormalizedConfig(
     sgpp::base::GeneralGridConfiguration gridConfig);
+
+bool isPermutation(std::vector<size_t> vec1, std::vector<size_t> vec2);
 }  // namespace PermutationUtil
 
 class DBMatOfflinePermutable : public DBMatOffline {
@@ -34,7 +36,6 @@ class DBMatOfflinePermutable : public DBMatOffline {
   virtual void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
                                       sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
 
- protected:
   DBMatOfflinePermutable();
 
   size_t getMatrixIndexForPoint(std::vector<size_t> level, std::vector<size_t> index,

@@ -6,6 +6,82 @@
 namespace sgpp {
 namespace datadriven {
 
+// Implementatio of the utility functions
+
+std::vector<size_t> PermutationUtil::deleteOnesFromLevelVec(std::vector<size_t> vectorWithOnes) {
+  std::vector<size_t> output;
+  for (size_t i = 0; i < vectorWithOnes.size(); i++) {
+    if (vectorWithOnes[i] != 1) output.push_back(vectorWithOnes[i]);
+  }
+  return output;
+}
+
+sgpp::base::GeneralGridConfiguration PermutationUtil::getNormalizedConfig(
+    sgpp::base::GeneralGridConfiguration gridConfig) {
+  sgpp::base::GeneralGridConfiguration normalizedConfig = gridConfig;
+  std::vector<size_t> levelVecWithoutOnes =
+      PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_);
+  normalizedConfig.levelVector_.swap(levelVecWithoutOnes);
+  normalizedConfig.dim_ = levelVecWithoutOnes.size();
+
+  for (int i = 0; i < levelVecWithoutOnes.size(); i++) {
+    std::cout << levelVecWithoutOnes[i] << std::endl;
+    std::cout << normalizedConfig.levelVector_[i] << std::endl;
+  }
+  return normalizedConfig;
+}
+
+std::vector<size_t> PermutationUtil::permutateVector(std::vector<size_t> vector,
+                                                     std::vector<size_t> oldU,
+                                                     std::vector<size_t> newU) {
+  std::vector<size_t> output(vector.size(), 1);
+  for (size_t i = 0; i < newU.size(); i++) {
+    size_t oldIndex = -1;
+    for (size_t j = 0; j < oldU.size(); j++) {
+      if (oldU[j] == newU[i]) {
+        oldIndex = j;
+        oldU[j] = 0;
+        break;
+      }
+    }
+    if (oldIndex == -1)
+      throw sgpp::base::algorithm_exception("No permuation.");
+    else {
+      output[i] = vector[oldIndex];
+    }
+  }
+  return output;
+}
+
+bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t> vec2){
+
+  // only vectors with same dimesion can be permutations
+  if (vec1.size() != vec2.size()) return false;
+
+  std::vector<int> vec2_(vec1.size(), 0);
+  for (size_t i = 0; i < vec2.size(); i ++) {
+    vec2_[i] = vec2[i];
+  }
+
+  for (auto l : vec1) {
+    // iterate through base level vector to find suitable element
+    for (size_t i = 0; i < vec2.size(); i++) {
+      auto l_ = vec2[i];
+      // if suitable elemet is found, remove it from the base vector by setting it to -1.
+      if (l == l_) {
+        vec2[i] = -1;
+        break;
+      }
+      // If no suitable element has been found yet, base level vec is no permutation
+      else if (i == vec2.size() - 1) {
+        return false;
+        break;
+      }
+    }
+  }
+  return true;
+}
+
 const std::set<MatrixDecompositionType> DBMatOfflinePermutable::PermutableDecompositions{
     MatrixDecompositionType::OrthoAdapt};
 
@@ -46,51 +122,14 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
     // determine new lStar
     int lStar_ = -1;
     for (size_t i = lStar - 1; i >= 0; i--) {
-      if (level[i] > 1) lStar_ = i;
+      if (level[i] > 1) {
+        lStar_ = i;
+        break;
+      }
     }
     lStar = lStar_;
   }
   return result;
-}
-
-std::vector<size_t> PermutationUtil::deleteOnesFromLevelVec(std::vector<size_t> vectorWithOnes) {
-  std::vector<size_t> output;
-  for (size_t i = 0; i < vectorWithOnes.size(); i++) {
-    if (vectorWithOnes[i] != 1) output.push_back(vectorWithOnes[i]);
-  }
-  return output;
-}
-
-sgpp::base::GeneralGridConfiguration PermutationUtil::getNormalizedConfig(
-    sgpp::base::GeneralGridConfiguration gridConfig) {
-  sgpp::base::GeneralGridConfiguration normalizedConfig = gridConfig;
-  std::vector<size_t> levelVecWithoutOnes =
-      PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_);
-  normalizedConfig.levelVector_.swap(levelVecWithoutOnes);
-  normalizedConfig.dim_ = levelVecWithoutOnes.size();
-  return normalizedConfig;
-}
-
-std::vector<size_t> PermutationUtil::permutateVector(std::vector<size_t> vector,
-                                                     std::vector<size_t> oldU,
-                                                     std::vector<size_t> newU) {
-  std::vector<size_t> output(vector.size(), 1);
-  for (size_t i = 0; i < newU.size(); i++) {
-    size_t oldIndex = -1;
-    for (size_t j = 0; j < oldU.size(); j++) {
-      if (oldU[j] == newU[i]) {
-        oldIndex = j;
-        oldU[j] = 0;
-        break;
-      }
-    }
-    if (oldIndex == -1)
-      throw sgpp::base::algorithm_exception("No permuation.");
-    else {
-      output[i] = vector[oldIndex];
-    }
-  }
-  return output;
 }
 
 void DBMatOfflinePermutable::permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,

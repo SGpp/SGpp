@@ -9,9 +9,14 @@ namespace datadriven {
 
 class DBMatBaseObjectStore {
  public:
-  DBMatBaseObjectStore();
+  DBMatBaseObjectStore(sgpp::base::AdaptivityConfiguration adaptivityConfig,
+                       sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+                       sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig);
 
-  explicit DBMatBaseObjectStore(const std::string& fileName);
+  explicit DBMatBaseObjectStore(
+      const std::string& fileName, sgpp::base::AdaptivityConfiguration adaptivityConfig,
+      sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+      sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig);
 
   /**
    * Returns a offline object for the given configuration.
@@ -29,28 +34,20 @@ class DBMatBaseObjectStore {
    * @param regularizationConfig the desired regularization configuration
    * @param densityEstimationConfig the desired desityestimation config
    */
-  DBMatOfflinePermutable* getOfflineObject(sgpp::base::GeneralGridConfiguration& gridConfig,
-                                           sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                                           RegularizationConfiguration& regularizationConfig,
-                                           DensityEstimationConfiguration& densityEstimationConfig);
+  DBMatOfflinePermutable* getOfflineObject(sgpp::base::GeneralGridConfiguration& gridConfig);
 
  protected:
   class ObjectContainer {
    public:
     explicit ObjectContainer(const sgpp::base::GeneralGridConfiguration& gridConfig,
-                             const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                             const RegularizationConfiguration& regularizationConfig,
-                             const DensityEstimationConfiguration& densityEstimationConfig,
+
                              std::unique_ptr<const DBMatOfflinePermutable> offlineObject);
 
     const DBMatOfflinePermutable& getOfflineObject() const;
 
     const sgpp::base::GeneralGridConfiguration& getGridConfig() const;
 
-    bool configMatches(const sgpp::base::GeneralGridConfiguration& gridConfig,
-                       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                       const RegularizationConfiguration& regularizationConfig,
-                       const DensityEstimationConfiguration& densityEstimationConfig);
+    bool configMatches(const sgpp::base::GeneralGridConfiguration& gridConfig);
 
    private:
     sgpp::base::GeneralGridConfiguration gridConfig;
@@ -60,18 +57,17 @@ class DBMatBaseObjectStore {
     std::unique_ptr<const DBMatOfflinePermutable> offlineObject;
   };
 
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+
   std::vector<ObjectContainer> objects;
   std::string dbFilePath;
   bool hasDatabase;
-  int getBaseObjectContainerIndex(sgpp::base::GeneralGridConfiguration& gridConfig,
-                                  sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                                  RegularizationConfiguration& regularizationConfig,
-                                  DensityEstimationConfiguration& densityEstimationConfig);
+  int getBaseObjectContainerIndex(sgpp::base::GeneralGridConfiguration& gridConfig);
   const ObjectContainer& getBaseObjectContainer(int index) const;
   void putBaseObject(sgpp::base::GeneralGridConfiguration& gridConfig,
-                     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                     RegularizationConfiguration& regularizationConfig,
-                     DensityEstimationConfiguration& densityEstimationConfig,
+
                      std::unique_ptr<DBMatOfflinePermutable> object);
 };
 
