@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from argparse import ArgumentParser
 import os
 import time
+import pickle
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -16,8 +17,6 @@ try:
     import ipdb
 except:
     pass
-
-# from sgAnuga import anugaError
 
 
 def plot2DGrid(reSurf):
@@ -56,6 +55,53 @@ def mcVar(objFunc, pdfs, numPoints):
     return var
 
 
+def NRMSEFromData(reSurf,
+                  objFunc,
+                  path):
+    # if model evaluations take long, or we want the same Monte Carlo
+    # points every time, we can use precalculated Monte carlo points
+    # and this outine to measure the error
+
+    # returns vector containing
+    # [NRMSE, l2Error, min, max]
+    dim = objFunc.getDim()
+    funcName = objFunc.getName()
+    errorVec = np.zeros(4)
+
+    pointsPath = os.path.join(path, 'precalcEvaluations',
+                              funcName, 'evaluationPoints.pkl')
+    with open(pointsPath, 'rb') as fp:
+        points = pickle.load(fp)
+    # vector containing the objective function evaluated at the evaluation
+    # points xi_0, xi_1, ...
+    # entry[n] is f(xi_n)
+    evaluationsPath = os.path.join(
+        path, 'precalcEvaluations', funcName, 'evaluations.pkl')
+    with open(evaluationsPath, 'rb') as fp:
+        trueEvaluations = pickle.load(fp)
+    numPoints = len(points)
+    print("calculating error with {} precalculated points".format(numPoints))
+    point = pysgpp.DataVector(dim)
+    l2Error = 0
+    for n in range(numPoints):
+        for d in range(dim):
+            point.set(d, points[n, d])
+        approxEval = reSurf.eval(point)
+        diff = trueEvaluations[n] - approxEval
+        diff = diff**2
+        l2Error += diff
+    l2Error /= numPoints
+    l2Error = np.sqrt(l2Error)
+
+    # get average l2 errors before the normalization
+    errorVec[0] = l2Error / (np.max(trueEvaluations) - np.min(trueEvaluations))
+    errorVec[1] = l2Error
+    errorVec[2] = np.min(trueEvaluations)
+    errorVec[3] = np.max(trueEvaluations)
+
+    return errorVec
+
+
 def interpolateAndError(degree,
                         maxLevel,
                         minPoints,
@@ -66,6 +112,8 @@ def interpolateAndError(degree,
                         gridTypes,
                         refineType,
                         calculateError,
+                        dataPath,
+                        calculateErrorFromData,
                         calculateMean,
                         calculateVar,
                         quadOrder,
@@ -99,8 +147,6 @@ def interpolateAndError(degree,
         else:
             initialLevelwithOffset = initialLevel
         for j, numPoints in enumerate(sampleRange):
-            print("refine for {} points".format(numPoints))
-
             if refineType == 'mc':
                 gridSizes[j] = numPoints
                 pdfs = objFunc.getDistributions()
@@ -131,21 +177,21 @@ def interpolateAndError(degree,
                 start = time.time()
                 verbose = True
                 if refineType == 'regular':
+                    print("refine for level {}".format(numPoints))
                     level = numPoints  # numPoints is an ugly wrapper for level. Improve this
                     reSurf.regular(numPoints)
-                    print("{} {} ".format(numPoints, reSurf.getSize()))
+                    print("created grid with {} points".format(reSurf.getSize()))
                 elif refineType == 'regularByPoints':
+                    print("refine regular for {} points".format(numPoints))
                     reSurf.regularByPoints(numPoints, verbose)
                 elif refineType == 'surplus':
+                    print("refine adaptively for {} points".format(numPoints))
                     reSurf.surplusAdaptive(
                         numPoints, initialLevelwithOffset, numRefine, verbose)
                 else:
                     print("this refineType is not supported")
 
                 if calculateError:
-                    #                 if  "anuga" in objFunc.getName():
-                    #                     interpolErrors[j] = sgAnuga.anugaError(reSurf, objFunc)
-                    #                 else:
                     errorVector = reSurf.nrmsError(objFunc, numErrPoints)
                     interpolErrors[j] = errorVector[1]
                     nrmsErrors[j] = errorVector[0]
@@ -153,7 +199,14 @@ def interpolateAndError(degree,
                         errorVector[2], errorVector[3]))
                     print("l2 err={}".format(interpolErrors[j]))
                     print("NRMSE ={}".format(nrmsErrors[j]))
-
+                if calculateErrorFromData == 1:
+                    errorVector = NRMSEFromData(reSurf, objFunc, dataPath)
+                    interpolErrors[j] = errorVector[1]
+                    nrmsErrors[j] = errorVector[0]
+                    print("min {}  max {}".format(
+                        errorVector[2], errorVector[3]))
+                    print("l2 err={}".format(interpolErrors[j]))
+                    print("NRMSE ={}".format(nrmsErrors[j]))
                 if calculateMean == 1:
                     pdfs = objFunc.getDistributions()
                     startMean = time.time()
@@ -213,38 +266,42 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='continuousGenz', type=str,
+    parser.add_argument('--model', default='expPeak', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=4, type=int,
+    parser.add_argument('--dim', default=7, type=int,
                         help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakexmodbound',
+    parser.add_argument('--gridType', default= 'nakexmodbound',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=3, type=int, help='spline degree')
+    parser.add_argument('--degree', default=135, type=int, help='spline degree')
     parser.add_argument('--refineType', default='surplus',
                         type=str, help='surplus or regular or mc for Monte Carlo')
     parser.add_argument('--maxLevel', default=6, type=int,
                         help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=1, type=int,
                         help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=10000, type=int,
+    parser.add_argument('--maxPoints', default=25000, type=int,
                         help='maximum number of points used')
-    parser.add_argument('--numSteps', default=7, type=int,
+    parser.add_argument('--numSteps', default=5, type=int,
                         help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int,
                         help='initial regular level for adaptive sparse grids')
-    parser.add_argument('--numRefine', default=25, type=int,
+    parser.add_argument('--numRefine', default=100, type=int,
                         help='max number of grid points added in refinement steps for sparse grids')
     parser.add_argument('--error', default=1, type=int,
                         help='calculate l2 error')
-    parser.add_argument('--mean', default=0, type=int, help='calculate mean')
-    parser.add_argument('--var', default=0, type=int,
+    parser.add_argument('--numErrPoints', default=100000,
+                        type=int, help='number of MC samples for l2 and nrmse')
+    parser.add_argument('--errorFromData', default=0, type=int,
+                        help='calculate l2 error from precalculated data')
+    parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Extended/data', type=str,
+                        help='path were results are stored and precalculated data is stored')
+    parser.add_argument('--mean', default=1, type=int, help='calculate mean')
+    parser.add_argument('--var', default=1, type=int,
                         help='calculate variance')
     parser.add_argument('--quadOrder', default=100, type=int,
                         help='quadrature order for mean and variance calculations')
-    parser.add_argument('--numErrPoints', default=100000,
-                        type=int, help='number of MC samples for l2 and nrmse')
     parser.add_argument('--saveDataFlag', default=1, type=int, help='saveData')
     parser.add_argument('--numThreads', default=4, type=int,
                         help='number of threads for omp parallelization')
@@ -275,6 +332,8 @@ if __name__ == '__main__':
         degrees = [1, 3, 5]
     elif args.degree == 35:
         degrees = [3, 5]
+    elif args.degree == 15:
+        degrees = [1, 5]
     else:
         degrees = [args.degree]
 
@@ -293,7 +352,8 @@ if __name__ == '__main__':
 
     for degree in degrees:
         data = interpolateAndError(degree, args.maxLevel, args.minPoints, args.maxPoints, args.numSteps,
-                                   args.numErrPoints, objFunc, gridTypes, args.refineType, args.error, args.mean, args.var,
+                                   args.numErrPoints, objFunc, gridTypes, args.refineType, args.error,
+                                   args.dataPath, args.errorFromData, args.mean, args.var,
                                    args.quadOrder, args.initialLevel, args.numRefine, args.saveDataFlag,
                                    args.model)
 

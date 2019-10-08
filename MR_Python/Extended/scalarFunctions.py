@@ -32,6 +32,9 @@ def getFunction(model, dim=1, scalarModelParameter=3):
     elif model == 'plainE':
         return plainE()
 
+    elif model =='expPeak':
+        return expPeak(dim)
+
     elif model == 'sinSum':
         return sinSum(dim)
     elif model == 'cosSum':
@@ -251,50 +254,13 @@ def mcVar(model, dim, numPoints, numSteps):
 
 ####################### functions #######################
 
-
-# this demonstrates how a fully equipped function could look like
-class demo():
-
-    def __init__(self):
-        self.dummy = 7
-
-    def getDomain(self):
-        lb = pysgpp.DataVector(self.getDim(), 1.0)
-        ub = pysgpp.DataVector(self.getDim(), 2.0)
-        return lb, ub
-
-    def getName(self):
-        return "test{}D".format(self.getDim())
-
-    def getDim(self):
-        return 2
-
-    def eval(self, X):
-        lb, ub = self.getDomain()
-        lN = pysgpp.DataVector(self.getDim(), 0.0)
-        uN = pysgpp.DataVector(self.getDim(), 1.0)
-        x = unnormalize(X, lb, ub, lN, uN)
-        return x[0] * x[0] * x[1]
-
-    def eval_grad(self, X):
-        lb, ub = self.getDomain()
-        x = unnormalize(X, lb, ub, lN, uN)
-        df = pysgpp.DataVector(self.getDim())
-        df[0] = 2 * x[0] * x[1]
-        df[1] = x[0] ** 2
-        return df
-
-    def getIntegral(self):
-        return 1.0 / 6.0
-
-
 class test():
 
     def __init__(self):
         self.dim = 5
         self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
-            self.pdfs.push_back(pysgpp.DistributionUniform(0, 1))
+            self.pdfs.push_back(pysgpp.DistributionUniform(0., 1.))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.dim)
@@ -312,21 +278,65 @@ class test():
         return self.dim
 
     def eval(self, v):
-        #         sum = 0.0
-        #         for d in range(self.dim):
-        #             sum += np.exp(-self.dim * v[d])
-        #         return np.sin(sum / self.dim)
-        return 10 * np.sin(np.pi * v[0] * v[1]) + 20 * (v[2] - 0.5) ** 2 + 10 * v[3] + 5 * v[4]
+        prod = 1
+        for d in range(self.dim):
+            if v[d] < 0.5:
+                prod *= np.exp(v[d]**2)
+            else:
+                prod *= np.exp((1-v[d])**2)
+
+        return prod
 
     def getDistributions(self):
         return self.pdfs
 
     def getMean(self):
-        return 0
+        return (2*0.544987104183622)**self.dim 
 
     def getVar(self):
         return -1
 
+class expPeak():
+
+    def __init__(self, dim):
+        self.dim = dim
+        self.pdfs = pysgpp.DistributionsVector()
+        for d in range(self.dim):
+            self.pdfs.push_back(pysgpp.DistributionUniform(0., 1.))
+
+    def getDomain(self):
+        lb = pysgpp.DataVector(self.dim)
+        ub = pysgpp.DataVector(self.dim)
+        for d in range(self.dim):
+            bounds = self.pdfs.get(d).getBounds()
+            lb[d] = bounds[0]
+            ub[d] = bounds[1]
+        return lb, ub
+
+    def getName(self):
+        return "expPeak{}D".format(self.dim)
+
+    def getDim(self):
+        return self.dim
+
+    def eval(self, v):
+        prod = 1
+        for d in range(self.dim):
+            if v[d] < 0.5:
+                prod *= np.exp(v[d]**2)
+            else:
+                prod *= np.exp((1-v[d])**2)
+
+        return prod
+
+    def getDistributions(self):
+        return self.pdfs
+
+    def getMean(self):
+        return (2*0.544987104183622)**self.dim 
+
+    def getVar(self):
+        return (2*0.59747883095511381)**self.dim - self.getMean()**2
 
 # sum(x_i)^p, in particular equals 1 for p=0
 class monomial():
@@ -839,14 +849,14 @@ class continuousGenz():
     def __init__(self, dim):
         self.dim = dim
         # TODO: Choose these randomly?
-        self.a = [1] * self.dim
+        self.a = [5] * self.dim
         self.u = [0.5] * self.dim
         self.pdfs = pysgpp.DistributionsVector()
         self.mu = 0.5
         self.sigma = 1.0 / 18.0
         for d in range(self.dim):
-            # self.pdfs.push_back(pysgpp.DistributionNormal(self.mu, self.sigma))
-            self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
+            self.pdfs.push_back(pysgpp.DistributionNormal(self.mu, self.sigma))
+            # self.pdfs.push_back(pysgpp.DistributionUniform(0.0, 1.0))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.dim)
