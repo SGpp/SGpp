@@ -29,8 +29,6 @@ DBMatBaseObjectStore::DBMatBaseObjectStore(
 
 DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     sgpp::base::GeneralGridConfiguration& gridConfig) {
-  std::cout << "Test: " << this->regularizationConfig.lambda_ << std::endl;
-
   // base object that will be transformed
   DBMatOfflinePermutable* baseObject = nullptr;
   // grid configuration of the base object
@@ -88,7 +86,7 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
 
     // store base objects. Ownership gets transfered to the object's ObjectContainer
-    this->putBaseObject(gridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
+    this->putBaseObject(baseGridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
 
     std::cout << "Constructed base object ..." << std::endl;
   }
@@ -136,9 +134,9 @@ bool DBMatBaseObjectStore::ObjectContainer::configMatches(
   // store is only implemented for component grids
   if (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)
     throw sgpp::base::not_implemented_exception("Only implemented for component grids.");
-
+  std::vector<size_t> levelVecWithoutOnes = PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_);
   // check if a permutation exists
-  return PermutationUtil::isPermutation(this->gridConfig.levelVector_, gridConfig.levelVector_);
+  return PermutationUtil::isPermutation(this->gridConfig.levelVector_, levelVecWithoutOnes);
   // remaining grid config
   /*gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
     gridConfig.type_ == this->gridConfig.type_ &&
