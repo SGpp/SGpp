@@ -81,31 +81,74 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   HeterogeneousBasis basis(3, basis1d);
 
   for (bool hasBoundary : {true, false}) {
-    CombinationGrid combinationGrid = CombinationGrid::fromRegular(3, 5, basis, hasBoundary);
-    BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
-        (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
-    sgpp::base::GridStorage gridStorage(3);
-    combinationGrid.combinePoints(gridStorage);
-    BOOST_CHECK_EQUAL(gridStorage.getSize(), (hasBoundary ? 705 : 351));
-  }
+    std::vector<LevelVector> subspaceLevels;
 
-  /*std::cout << "BOOM1\n";
-  CombinationGrid combinationGrid = CombinationGrid::regular(20, 6, basis, false);
-  std::cout << "BOOM2: " << combinationGrid.getCoefficients().size() << "\n";
-  sgpp::base::GridStorage gridStorage(20);
-  combinationGrid.combinePoints(gridStorage);
-  std::cout << "BOOM3: " << gridStorage.getSize() << "\n";*/
-
-  /*for (const CombinationGrid& combinationGrid  : {
-      CombinationGrid::regular(3, 5, basis), CombinationGrid::regular(3, 5, basis, false)}) {
-    for (size_t i = 0; i < combinationGrid.getCoefficients().size(); i++) {
-      const LevelVector& level = combinationGrid.getFullGrids()[i].getLevel();
-      const double coefficient = combinationGrid.getCoefficients()[i];
-      std::cout << level.size() << ": " << level[0] << ", " << level[1] << ", " << level[2] << " - " << coefficient << "\n";
+    if (hasBoundary) {
+      subspaceLevels = {
+          {0, 0, 5}, {0, 1, 4}, {0, 2, 3}, {0, 3, 2}, {0, 4, 1}, {0, 5, 0},
+          {1, 0, 4}, {1, 1, 3}, {1, 2, 2}, {1, 3, 1}, {1, 4, 0},
+          {2, 0, 3}, {2, 1, 2}, {2, 2, 1}, {2, 3, 0},
+          {3, 0, 2}, {3, 1, 1}, {3, 2, 0},
+          {4, 0, 1}, {4, 1, 0},
+          {5, 0, 0},
+          {0, 0, 4}, {0, 1, 3}, {0, 2, 2}, {0, 3, 1}, {0, 4, 0},
+          {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 0},
+          {2, 0, 2}, {2, 1, 1}, {2, 2, 0},
+          {3, 0, 1}, {3, 1, 0},
+          {4, 0, 0},
+          {0, 0, 3}, {0, 1, 2}, {0, 2, 1}, {0, 3, 0},
+          {1, 0, 2}, {1, 1, 1}, {1, 2, 0},
+          {2, 0, 1}, {2, 1, 0},
+          {3, 0, 0},
+          {0, 0, 2}, {0, 1, 1}, {0, 2, 0},
+          {1, 0, 1}, {1, 1, 0},
+          {2, 0, 0},
+          {0, 0, 1}, {0, 1, 0},
+          {1, 0, 0},
+          {0, 0, 0}};
+    } else {
+      subspaceLevels = {
+          {1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1},
+          {2, 1, 4}, {2, 2, 3}, {2, 3, 2}, {2, 4, 1},
+          {3, 1, 3}, {3, 2, 2}, {3, 3, 1},
+          {4, 1, 2}, {4, 2, 1},
+          {5, 1, 1},
+          {1, 1, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 1},
+          {2, 1, 3}, {2, 2, 2}, {2, 3, 1},
+          {3, 1, 2}, {3, 2, 1},
+          {4, 1, 1},
+          {1, 1, 3}, {1, 2, 2}, {1, 3, 1},
+          {2, 1, 2}, {2, 2, 1},
+          {3, 1, 1},
+          {1, 1, 2}, {1, 2, 1},
+          {2, 1, 1},
+          {1, 1, 1}};
     }
 
-    std::cout << "\n";
-  }*/
+    std::vector<CombinationGrid> combinationGrids = {
+        CombinationGrid::fromRegular(3, 5, basis, hasBoundary),
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary)};
+
+    for (const CombinationGrid& combinationGrid : combinationGrids) {
+      BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
+          (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
+      sgpp::base::GridStorage gridStorage(3);
+      combinationGrid.combinePoints(gridStorage);
+      BOOST_CHECK_EQUAL(gridStorage.getSize(), (hasBoundary ? 705 : 351));
+    }
+
+    const std::vector<FullGrid>& fullGrids0 = combinationGrids[0].getFullGrids();
+    const std::vector<FullGrid>& fullGrids1 = combinationGrids[1].getFullGrids();
+    const DataVector& coefficients0 = combinationGrids[0].getCoefficients();
+    const DataVector& coefficients1 = combinationGrids[1].getCoefficients();
+
+    for (size_t i = 0; i < fullGrids1.size(); i++) {
+      const FullGrid& fullGrid = fullGrids1[i];
+      auto it = std::find(fullGrids0.begin(), fullGrids0.end(), fullGrid);
+      BOOST_CHECK(it != fullGrids0.end());
+      BOOST_CHECK_EQUAL(coefficients0[it - fullGrids0.begin()], coefficients1[i]);
+    }
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {

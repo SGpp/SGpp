@@ -32,7 +32,7 @@ class CombinationGrid {
       bool hasBoundary = true);
 
   static CombinationGrid fromSubspaces(const std::vector<LevelVector>& subspaceLevels,
-      const HeterogeneousBasis& basis, bool hasBoundary = true, bool makeDownwardClosed = false);
+      const HeterogeneousBasis& basis, bool hasBoundary = true);
 
   void combinePoints(base::GridStorage& gridStorage) const;
 

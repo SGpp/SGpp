@@ -8,10 +8,28 @@
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 
+#include <algorithm>
+#include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
+
+namespace {
+class HashLevelVector {
+ public:
+  size_t operator()(const LevelVector& level) const {
+    size_t seed = level.size();
+
+    for (const level_t& l : level) {
+      seed ^= (l + 0x9e3779b9 + (seed << 6) + (seed >> 2));
+    }
+
+    return seed;
+  }
+};
+}  // namespace
 
 CombinationGrid::CombinationGrid() : fullGrids(), coefficients() {
 }
@@ -96,8 +114,39 @@ CombinationGrid CombinationGrid::fromRegular(size_t dim, level_t n,
 
 CombinationGrid CombinationGrid::fromSubspaces(
     const std::vector<LevelVector>& subspaceLevels, const HeterogeneousBasis& basis,
-    bool hasBoundary, bool makeDownwardClosed) {
-  throw sgpp::base::not_implemented_exception("CombinationGrid::fromSubspaces is not implemented");
+    bool hasBoundary) {
+  const size_t dim = basis.getDimension();
+  std::unordered_map<LevelVector, double, HashLevelVector> coefficientMap;
+  LevelVector offsetMinIndex(dim, 0);
+  LevelVector offsetMaxIndex(dim, 1);
+  LevelVector level(dim);
+  std::vector<FullGrid> fullGrids;
+  base::DataVector coefficients;
+
+  for (const LevelVector& subspaceLevel : subspaceLevels) {
+    IndexVectorRange indexVectorRange(offsetMinIndex, offsetMaxIndex);
+    double coefficient = 0.0;
+
+    for (const IndexVector& offsetIndex : indexVectorRange) {
+      double sign = 1.0;
+
+      for (size_t d = 0; d < dim; d++) {
+        level[d] = subspaceLevel[d] + offsetIndex[d];
+        sign *= (1.0 - 2.0 * static_cast<double>(offsetIndex[d]));
+      }
+
+      if (std::find(subspaceLevels.begin(), subspaceLevels.end(), level) != subspaceLevels.end()) {
+        coefficient += sign;
+      }
+    }
+
+    if (coefficient != 0.0) {
+      fullGrids.emplace_back(subspaceLevel, basis, hasBoundary);
+      coefficients.push_back(coefficient);
+    }
+  }
+
+  return CombinationGrid(fullGrids, coefficients);
 }
 
 void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
