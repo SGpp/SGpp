@@ -55,11 +55,14 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
+  std::cout << "a" << std::endl;
   configurator = CombiConfigurator();
+  std::cout << "b" << std::endl;
   configurator.initAdaptiveScheme(newDataset.getNcols(), config->getGridConfig().level_);
   configurator.getCombiScheme(componentConfigs);
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());
+  std::cout << "c" << std::endl;
 
   for (size_t i = 0; i < componentConfigs.size(); i++) {
     FitterConfigurationDensityEstimation newFitterConfig{};
@@ -73,7 +76,9 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
 
     components.at(i) = createNewModel(newFitterConfig);
+    std::cout << "Created" << std::endl;
     fitted.at(i) = 0;
+    std::cout << "Fitted" << std::endl;
   }
   for (size_t i = 0; i < components.size(); i++) {
     components.at(i)->fit(newDataset);

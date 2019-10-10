@@ -81,10 +81,12 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_));
     grid->getGenerator().anisotropicFull(baseGridConfig.levelVector_);
     // build matrix
+    std::cout << "Buildig the base matrix" << std::endl;
     baseObject->buildMatrix(grid.get(), this->regularizationConfig);
     // decompose matrix
+    std::cout << "Decomposing the base matrix" << std::endl;
     baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
-
+    std::cout << "Storing object" << std::endl;
     // store base objects. Ownership gets transfered to the object's ObjectContainer
     this->putBaseObject(baseGridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
 

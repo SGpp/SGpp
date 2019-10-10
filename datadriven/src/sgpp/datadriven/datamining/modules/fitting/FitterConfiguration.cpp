@@ -15,6 +15,10 @@ bool FitterConfiguration::getUseOfflinePermutation() const {
   return useOfflinePermutation;
 }
 
+void FitterConfiguration::setUseOfflinePermutation(bool val){
+  this->useOfflinePermutation = val;
+}
+
 const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }

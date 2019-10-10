@@ -36,10 +36,19 @@ class DBMatOfflinePermutable : public DBMatOffline {
   virtual void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
                                       sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
 
+ protected:
   DBMatOfflinePermutable();
 
+  std::vector<size_t> preComputeMatrixIndexForPoint(std::vector<size_t> level);
+
+  std::vector<size_t> computePermutation(std::vector<size_t> baseLevel,
+                                                            std::vector<size_t> desiredLevel);
+  inline std::vector<size_t> applyPermutation(std::vector<size_t> vector,
+                                              std::vector<size_t> permutation);
+
   size_t getMatrixIndexForPoint(std::vector<size_t> level, std::vector<size_t> index,
-                                std::vector<size_t> gridLevel);
+                                std::vector<size_t> gridLevel,
+                                const std::vector<size_t>& preComputations);
 
   void permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,
                        sgpp::base::GeneralGridConfiguration desiredGridCOnfig,

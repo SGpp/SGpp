@@ -83,6 +83,11 @@ class FitterConfiguration {
   bool getUseOfflinePermutation() const; 
 
   /**
+   * Get whether offline permutation is to be used
+   */
+  void setUseOfflinePermutation(bool val);
+
+  /**
    * Get initial conditions for the grid before adaptive refinement.
    * @return immutable GeneralGridConfiguration
    */
