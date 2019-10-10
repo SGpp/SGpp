@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * bayesianOptimization.cpp
- *
- *  Created on: June 24, 2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -261,7 +255,7 @@ BOOST_AUTO_TEST_CASE(DistanceCalculation) {
       contpoint[k] = curconf.getCont(k);
     }
     double twostepdist = oldconf.getTotalDistance(contpoint, scales);
-    BOOST_CHECK_CLOSE(curdist, twostepdist, 10e-6);
+    BOOST_CHECK_CLOSE(curdist, twostepdist, 1e-5);
     oldconf = curconf;
   }
 }
@@ -312,8 +306,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
-    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 10e-6);
-    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 10e-6);
+    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
+    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
     // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
@@ -346,8 +340,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
-    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 10e-6);
-    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 10e-6);
+    BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
+    BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
     // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }

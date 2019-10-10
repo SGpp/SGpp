@@ -1,12 +1,8 @@
-/* This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * dataminingDataSourceTest.cpp
- *
- *  Created on: Jun 9, 2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifdef ZLIB
 
 #define BOOST_TEST_DYN_LINK
@@ -40,16 +36,16 @@ using sgpp::base::DataVector;
 struct State {
   State()
       : path("datadriven/datasets/liver/liver-disorders_normalized_small.arff.gz"),
-        testPoints({{{0.307143, 0.130137, 0.050000},
-                     {0.365584, 0.105479, 0.050000},
-                     {0.178571, 0.201027, 0.050000},
-                     {0.272078, 0.145548, 0.050000},
-                     {0.318831, 0.065411, 0.050000},
-                     {0.190260, 0.086986, 0.050000},
-                     {0.190260, 0.062329, 0.072500},
-                     {0.120130, 0.068493, 0.072500},
-                     {0.225325, 0.056164, 0.072500},
-                     {0.213636, 0.050000, 0.072500}}}),
+        testPoints({{{{0.307143, 0.130137, 0.050000}},
+                     {{0.365584, 0.105479, 0.050000}},
+                     {{0.178571, 0.201027, 0.050000}},
+                     {{0.272078, 0.145548, 0.050000}},
+                     {{0.318831, 0.065411, 0.050000}},
+                     {{0.190260, 0.086986, 0.050000}},
+                     {{0.190260, 0.062329, 0.072500}},
+                     {{0.120130, 0.068493, 0.072500}},
+                     {{0.225325, 0.056164, 0.072500}},
+                     {{0.213636, 0.050000, 0.072500}}}}),
         testValues({{-1., 1., 1., 1., 1., 1., -1., -1., -1., -1.}}) {}
   ~State() {}
   std::string path;

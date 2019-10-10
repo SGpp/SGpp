@@ -7,8 +7,7 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
@@ -34,7 +33,7 @@ class OperationMakePositiveInterpolationAlgorithm {
 class OperationMakePositiveSetToZero : public OperationMakePositiveInterpolationAlgorithm {
  public:
   OperationMakePositiveSetToZero();
-  virtual ~OperationMakePositiveSetToZero();
+  ~OperationMakePositiveSetToZero() override;
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
                                        std::vector<size_t>& addedGridPoints,
@@ -63,15 +62,15 @@ class OperationMakePositiveInterpolateBoundaryOfSupport
 class OperationMakePositiveInterpolateFunction
     : public OperationMakePositiveInterpolationAlgorithm {
  public:
-  explicit OperationMakePositiveInterpolateFunction(optimization::ScalarFunction* f);
-  virtual ~OperationMakePositiveInterpolateFunction();
+  explicit OperationMakePositiveInterpolateFunction(base::ScalarFunction* f);
+  ~OperationMakePositiveInterpolateFunction() override;
 
   void computeHierarchicalCoefficients(base::Grid& grid, base::DataVector& alpha,
                                        std::vector<size_t>& addedGridPoints,
                                        double tol = -1e-14) override;
 
  private:
-  optimization::ScalarFunction* f;
+  base::ScalarFunction* f;
 };
 
 } /* namespace datadriven */

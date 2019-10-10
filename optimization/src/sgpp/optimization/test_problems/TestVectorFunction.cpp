@@ -11,7 +11,7 @@ namespace optimization {
 namespace test_problems {
 
 TestVectorFunction::TestVectorFunction(size_t d, size_t m)
-    : VectorFunction(d, m), displacement(d, 0.0), xTmp(d) {}
+    : base::VectorFunction(d, m), displacement(d, 0.0), xTmp(d) {}
 
 TestVectorFunction::~TestVectorFunction() {}
 

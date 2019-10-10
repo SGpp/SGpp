@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "LevelManager.hpp"
+#include <sgpp/combigrid/operation/multidim/LevelManager.hpp>
 
 #include <sgpp/combigrid/threading/PtrGuard.hpp>
 

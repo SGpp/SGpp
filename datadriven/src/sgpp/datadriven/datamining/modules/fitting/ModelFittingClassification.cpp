@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingClassification.cpp
- *
- *  Created on: Jul 1, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
@@ -158,11 +151,9 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
 #endif  // USE_SCALAPACK
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default: {
-      std::string errMsg = "Unknown density estimation type";
-      throw application_exception(errMsg.c_str());
-    }
   }
+
+  throw application_exception("Unknown density estimation type");
 }
 
 size_t ModelFittingClassification::labelToIdx(double label) {
@@ -225,7 +216,8 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
+      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+                                                 refinementConfig.levelPenalize,
                                                  refinementConfig.precomputeEvaluations,
                                                  refinementConfig.threshold_);
     }
@@ -233,9 +225,9 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
                                                 refinementConfig.threshold_);
     }
-    default:
-      return nullptr;
   }
+
+  return nullptr;
 }
 
 bool ModelFittingClassification::refine() {
@@ -378,6 +370,14 @@ void ModelFittingClassification::storeClassificator() {
   }
 }
 
+std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* ModelFittingClassification::
+getModels() {
+  return &(models);
+}
+
+std::map<double, size_t> ModelFittingClassification::getClassIdx() {
+  return this->classIdx;
+}
 #ifdef USE_SCALAPACK
 std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() const {
   return processGrid;

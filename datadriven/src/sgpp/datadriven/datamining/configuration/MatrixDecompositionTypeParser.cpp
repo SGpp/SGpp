@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * MatrixDecompositionTypeParser.cpp
- *
- * Created on: Jan 30, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
@@ -35,9 +28,14 @@ MatrixDecompositionType MatrixDecompositionTypeParser::parse(const std::string &
     return sgpp::datadriven::MatrixDecompositionType::DenseIchol;
   } else if (inputLower.compare("orthoadapt") == 0) {
     return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  } else if (inputLower.compare("smw_ortho") == 0) {
+    return sgpp::datadriven::MatrixDecompositionType::SMW_ortho;
+  } else if (inputLower.compare("smw_chol") == 0) {
+    return sgpp::datadriven::MatrixDecompositionType::SMW_chol;
   } else {
-    std::string errorMsg = "Failed to convert string \"" + input + "\" to any "
-        "known MatrixDecompositionType";
+    std::string errorMsg = "Failed to convert string \"" + input +
+                           "\" to any "
+                           "known MatrixDecompositionType";
     throw data_exception(errorMsg.c_str());
   }
 }
@@ -48,12 +46,14 @@ const std::string &MatrixDecompositionTypeParser::toString(MatrixDecompositionTy
 
 const MatrixDecompositionTypeParser::MatrixDecompositionTypeMap_t
     MatrixDecompositionTypeParser::matrixDecompositionTypeMap = []() {
-  return MatrixDecompositionTypeMap_t{
-      std::make_pair(MatrixDecompositionType::LU, "LU"),
-      std::make_pair(MatrixDecompositionType::Eigen, "Eigen"),
-      std::make_pair(MatrixDecompositionType::Chol, "Chol"),
-      std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
-      std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt")};
-}();
+      return MatrixDecompositionTypeMap_t{
+          std::make_pair(MatrixDecompositionType::LU, "LU"),
+          std::make_pair(MatrixDecompositionType::Eigen, "Eigen"),
+          std::make_pair(MatrixDecompositionType::Chol, "Chol"),
+          std::make_pair(MatrixDecompositionType::DenseIchol, "DenseIchol"),
+          std::make_pair(MatrixDecompositionType::OrthoAdapt, "OrthoAdapt"),
+          std::make_pair(MatrixDecompositionType::SMW_ortho, "SMW_ortho"),
+          std::make_pair(MatrixDecompositionType::SMW_chol, "SMW_chol")};
+    }();
 } /* namespace datadriven */
 } /* namespace sgpp */

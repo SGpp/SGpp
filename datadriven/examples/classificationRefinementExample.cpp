@@ -49,7 +49,7 @@ int main() {
   /**
    * Get the training/test data
    */
-  std::string basePath = "../../datasets/ripley/ripleyGarcke";
+  std::string basePath = "../datasets/ripley/ripleyGarcke";
   sgpp::datadriven::Dataset datasetTr =
     sgpp::datadriven::ARFFTools::readARFFFromFile(basePath + ".train.arff");
   sgpp::datadriven::Dataset datasetTs =

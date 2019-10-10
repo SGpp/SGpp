@@ -5,35 +5,34 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/CMAES.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-CMAES::CMAES(const ScalarFunction& f, size_t maxFcnEvalCount)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount) {}
+CMAES::CMAES(const base::ScalarFunction& f, size_t maxFcnEvalCount)
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount) {}
 
-CMAES::CMAES(const CMAES& other)
-    : UnconstrainedOptimizer(other) {
-}
+CMAES::CMAES(const CMAES& other) : UnconstrainedOptimizer(other) {}
 
 CMAES::~CMAES() {}
 
 void CMAES::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (CMA-ES)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (CMA-ES)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -109,7 +108,7 @@ void CMAES::optimize() {
 
     for (size_t j = 0; j < lambda; j++) {
       for (size_t t = 0; t < d; t++) {
-        tmp[t] = DDiag[t] * RandomNumberGenerator::getInstance().getGaussianRN();
+        tmp[t] = DDiag[t] * base::RandomNumberGenerator::getInstance().getGaussianRN();
       }
 
       B.mult(tmp, y);
@@ -130,7 +129,7 @@ void CMAES::optimize() {
           }
         }
 
-        fX[j] = (inDomain ? f->eval(x) : INFINITY);
+        fX[j] = (inDomain ? f->eval(x) : std::numeric_limits<double>::infinity());
         fXOrder[j] = j;
       }
     }
@@ -183,8 +182,8 @@ void CMAES::optimize() {
     C = CNew;
     k++;
 
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                             std::to_string(fX[fXOrder[0]]));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " steps, f(x) = " + std::to_string(fX[fXOrder[0]]));
 
     X.getColumn(fXOrder[0], x);
     xHist.appendRow(x);
@@ -195,9 +194,9 @@ void CMAES::optimize() {
   X.getColumn(fXOrder[0], xOpt);
   fOpt = fX[fXOrder[0]];
 
-  Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                           std::to_string(fX[fXOrder[0]]));
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusUpdate(
+      std::to_string(k) + " steps, f(x) = " + std::to_string(fX[fXOrder[0]]));
+  base::Printer::getInstance().printStatusEnd();
 }
 
 void CMAES::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {

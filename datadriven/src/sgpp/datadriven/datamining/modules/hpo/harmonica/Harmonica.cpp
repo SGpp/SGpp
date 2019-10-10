@@ -1,21 +1,16 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Harmonica.cpp
- *
- *  Created on: Feb 2, 2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 
 #include <vector>

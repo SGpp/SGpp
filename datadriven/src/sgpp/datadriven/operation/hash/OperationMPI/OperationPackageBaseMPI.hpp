@@ -1,8 +1,8 @@
-
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #ifndef OPERATIONPACKAGEBASEMPI_H
 #define OPERATIONPACKAGEBASEMPI_H
 
@@ -85,7 +85,7 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         sub_worker_comm(MPIEnviroment::get_communicator()),
         prefetching(false),
         redistribute(true),
-        parameters(NULL) {
+        parameters(nullptr) {
     if (std::is_same<T, int>::value) {
       mpi_typ = MPI_INT;
     } else if (std::is_same<T, float>::value) {
@@ -145,7 +145,7 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         sub_worker_comm(MPIEnviroment::get_communicator()),
         prefetching(false),
         redistribute(true),
-        parameters(NULL) {
+        parameters(nullptr) {
     if (std::is_same<T, int>::value) {
       mpi_typ = MPI_INT;
     } else if (std::is_same<T, float>::value) {
@@ -202,8 +202,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
     // Work Loop
     int datainfo[2];
     T *partial_results[2];
-    partial_results[0] = NULL;
-    partial_results[1] = NULL;
+    partial_results[0] = nullptr;
+    partial_results[1] = nullptr;
     int buffersizes[2];
     buffersizes[0] = 0;
     buffersizes[1] = 0;
@@ -237,8 +237,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         continue;
       } else {
         if (datainfo[1] * packagesize_multiplier != buffersizes[currentbuffer] ||
-            partial_results[currentbuffer] == NULL) {
-          if (partial_results[currentbuffer] != NULL) delete[] partial_results[currentbuffer];
+            partial_results[currentbuffer] == nullptr) {
+          if (partial_results[currentbuffer] != nullptr) delete[] partial_results[currentbuffer];
           partial_results[currentbuffer] = new T[datainfo[1] * packagesize_multiplier];
           if (verbose) std::cout << "New Buffer created!" << std::endl;
           buffersizes[currentbuffer] = datainfo[1] * packagesize_multiplier;
@@ -281,8 +281,8 @@ class MPIWorkerPackageBase : virtual public MPIWorkerBase {
         if (buffersizes[currentbuffer] != 0) MPI_Wait(request + currentbuffer, &stat);
       }
     } while (true);
-    if (partial_results[0] != NULL) delete[] partial_results[0];
-    if (partial_results[1] != NULL) delete[] partial_results[1];
+    if (partial_results[0] != nullptr) delete[] partial_results[0];
+    if (partial_results[1] != nullptr) delete[] partial_results[1];
   }
 };
 

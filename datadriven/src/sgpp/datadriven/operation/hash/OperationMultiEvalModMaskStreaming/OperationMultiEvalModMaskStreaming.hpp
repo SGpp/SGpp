@@ -5,7 +5,9 @@
 
 #pragma once
 
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
@@ -44,7 +46,7 @@ class OperationMultiEvalModMaskStreaming : public base::OperationMultipleEval {
   OperationMultiEvalModMaskStreaming(base::Grid& grid,
                                      base::DataMatrix& dataset);
 
-  ~OperationMultiEvalModMaskStreaming();
+  ~OperationMultiEvalModMaskStreaming() override;
 
   size_t getChunkGridPoints();
 

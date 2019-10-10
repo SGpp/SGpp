@@ -5,6 +5,14 @@
 
 #pragma once
 
+#ifdef USE_GSL
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 
@@ -29,7 +37,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    */
   explicit DBMatOfflineOrthoAdapt(const std::string& fileName);
 
-  DBMatOffline* clone() const;
+  DBMatOffline* clone() const override;
 
   bool isRefineable() override;
 
@@ -44,7 +52,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
 
   void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
                               sgpp::base::GeneralGridConfiguration  desiredGridCOnfig) override;
@@ -58,7 +66,19 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig);
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
+
+  /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                               DensityEstimationConfiguration& densityEstimationConfig,
+                               std::shared_ptr<BlacsProcessGrid> processGrid,
+                               const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
@@ -89,13 +109,29 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    *
    * @param fileName path where to store the file
    */
-  void store(const std::string& fileName);
+  void store(const std::string& fileName) override;
 
   /**
    * Override to sync Q and Tinv
    */
   void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                     const ParallelConfiguration& parallelConfig) override;
+
+  /*
+   * explicitly computes the inverse
+   * note: the computed inverse is not the inverse of the decomposed matrix,
+   * but rather the inverse of the previous undecomposed matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse() override;
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                const ParallelConfiguration& parallelConfig) override;
 
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 

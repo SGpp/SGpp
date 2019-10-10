@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * HarmonicaHyperparameterOptimizer.cpp
- *
- * Created on: Jan 22, 2018
- *     Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 
@@ -60,7 +53,7 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
 
   // loop over stages
   for (size_t q = 0; q < config.getStages().size(); q++) {
-    size_t nRuns = (size_t) config.getStages()[q];
+    size_t nRuns = static_cast<size_t>(config.getStages()[q]);
     std::vector<ModelFittingBase*> fitters(nRuns);
     DataVector scores(nRuns);
     DataVector transformedScores(nRuns);

@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOnlineDEChol.cpp
- *
- *  Created on: Apr 8, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 
@@ -75,16 +69,17 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
   switch (offlineObject.getDecompositionType()) {
     case (MatrixDecompositionType::Chol):
       return new DBMatDMSChol();
-      break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatDMSDenseIChol(densityEstimationConfig, grid, lambda, doCV);
-      break;
     case (MatrixDecompositionType::LU):
     case (MatrixDecompositionType::Eigen):
     case (MatrixDecompositionType::OrthoAdapt):
-    default:
-      throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
+    case (MatrixDecompositionType::SMW_chol):
+    case (MatrixDecompositionType::SMW_ortho):
+      break;
   }
+
+  throw sgpp::base::algorithm_exception{"Only Cholesky based solvers can use this Solver"};
 }
 
 std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(

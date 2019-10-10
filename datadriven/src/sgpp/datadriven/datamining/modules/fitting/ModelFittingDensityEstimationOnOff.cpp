@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.cpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
@@ -130,8 +123,18 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE>{
-      DBMatOnlineDEFactory::buildDBMatOnlineDE(*offline, *grid, regularizationConfig.lambda_)};
+
+  // todo(): non-parallel version of regularization here?
+  // but not access to path
+
+  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
+      *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
+
+  // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+    offline->compute_inverse();
+  }
 
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,

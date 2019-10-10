@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <limits>
 
 
 namespace sgpp {
@@ -99,7 +100,7 @@ void DataMatrixSP::resizeZero(size_t nrows) {
   // set new elements to zero
   for (size_t i = std::min(this->nrows, nrows) * this->ncols; i < nrows
        * this->ncols; i++) {
-    newdata[i] = 0.0;
+    newdata[i] = 0.0f;
   }
 
   delete[] this->data;
@@ -127,7 +128,7 @@ void DataMatrixSP::resizeZero(size_t nrows, size_t ncols) {
     // set new elements to zero
     for (size_t i = std::min(this->nrows * this->ncols, nrows * ncols);
          i < nrows * ncols; i++) {
-      newdata[i] = 0.0;
+      newdata[i] = 0.0f;
     }
 
     delete[] this->data;
@@ -325,7 +326,7 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction) {
   }
 
   for (size_t i = 0; i < this->nrows; i++) {
-    float tmp = 0.0;
+    float tmp = 0.0f;
 
     for (size_t j = 0; j < this->ncols; j++) {
       tmp += this->data[(i * this->ncols) + j];
@@ -348,7 +349,7 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta,
   }
 
   for (size_t i = 0; i < this->nrows; i++) {
-    float tmp = 0.0;
+    float tmp = 0.0f;
 
     for (size_t j = 0; j < this->ncols; j++) {
       tmp += beta[j + start_beta] * this->data[(i * this->ncols) + j];
@@ -453,7 +454,7 @@ void DataMatrixSP::abs() {
 
 float DataMatrixSP::sum() const {
   size_t n = nrows * ncols;
-  float result = 0.0;
+  float result = 0.0f;
 
   for (size_t i = 0; i < n; i++) {
     result += data[i];
@@ -463,7 +464,7 @@ float DataMatrixSP::sum() const {
 }
 
 void DataMatrixSP::normalizeDimension(size_t d) {
-  normalizeDimension(d, 0.0);
+  normalizeDimension(d, 0.0f);
 }
 
 void DataMatrixSP::normalizeDimension(size_t d, float border) {
@@ -480,9 +481,9 @@ void DataMatrixSP::normalizeDimension(size_t d, float border) {
 
   float delta = (xmax - xmin) / (1 - 2 * border);
 
-  if (delta == 0.0) {
+  if (delta == 0.0f) {
     for (size_t i = d; i < n; i += ncols) {
-      data[i] = 0.5;
+      data[i] = 0.5f;
     }
   } else {
     for (size_t i = d; i < n; i += ncols) {
@@ -525,7 +526,7 @@ std::string DataMatrixSP::toString() const {
 
 float DataMatrixSP::min(size_t d) const {
   size_t n = nrows * ncols;
-  float min = INFINITY;
+  float min = std::numeric_limits<float>::infinity();
 
   for (size_t i = d; i < n; i += ncols) {
     if (min > data[i]) {
@@ -538,7 +539,7 @@ float DataMatrixSP::min(size_t d) const {
 
 float DataMatrixSP::min() const {
   size_t n = nrows * ncols;
-  float min = INFINITY;
+  float min = std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < n; i++) {
     if (min > data[i]) {
@@ -551,7 +552,7 @@ float DataMatrixSP::min() const {
 
 float DataMatrixSP::max(size_t d) const {
   size_t n = nrows * ncols;
-  float max = -INFINITY;
+  float max = -std::numeric_limits<float>::infinity();
 
   for (size_t i = d; i < n; i += ncols) {
     if (max < data[i]) {
@@ -564,7 +565,7 @@ float DataMatrixSP::max(size_t d) const {
 
 float DataMatrixSP::max() const {
   size_t n = nrows * ncols;
-  float max = -INFINITY;
+  float max = -std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < n; i++) {
     if (max < data[i]) {
@@ -584,8 +585,8 @@ void DataMatrixSP::minmax(size_t col, float* min, float* max) const {
   }
 
   // find min and max of column col
-  float min_t = INFINITY;
-  float max_t = -INFINITY;
+  float min_t = std::numeric_limits<float>::infinity();
+  float max_t = -std::numeric_limits<float>::infinity();
 
   for (size_t i = col; i < n; i += ncols) {
     if (min_t > data[i]) {
@@ -604,8 +605,8 @@ void DataMatrixSP::minmax(size_t col, float* min, float* max) const {
 void DataMatrixSP::minmax(float* min, float* max) const {
   size_t n = nrows * ncols;
 
-  float min_t = INFINITY;
-  float max_t = -INFINITY;
+  float min_t = std::numeric_limits<float>::infinity();
+  float max_t = -std::numeric_limits<float>::infinity();
 
   for (size_t i = 0; i < n; i++) {
     if (min_t > data[i]) {
@@ -638,7 +639,7 @@ size_t DataMatrixSP::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < n; i++) {
-    if (fabs(data[i]) > 0.0) {
+    if (std::abs(data[i]) > 0.0f) {
       nonZero++;
     }
   }

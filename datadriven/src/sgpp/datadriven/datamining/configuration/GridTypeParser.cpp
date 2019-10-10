@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * GridTypeParser.cpp
- *
- * Created on: Jan 25, 2017
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
@@ -67,8 +60,12 @@ GridType GridTypeParser::parse(const std::string &input) {
     return sgpp::base::GridType::Wavelet;
   } else if (inputLower.compare("waveletboundary") == 0) {
     return sgpp::base::GridType::WaveletBoundary;
+  } else if (inputLower.compare("fundamentalnaksplineboundary") == 0) {
+    return sgpp::base::GridType::FundamentalNakSplineBoundary;
   } else if (inputLower.compare("fundamentalspline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
+  } else if (inputLower.compare("fundamentalsplineboundary") == 0) {
+    return sgpp::base::GridType::FundamentalSplineBoundary;
   } else if (inputLower.compare("modfundamentalspline") == 0) {
     return sgpp::base::GridType::ModFundamentalSpline;
   } else if (inputLower.compare("modbsplineclenshawcurtis") == 0) {
@@ -108,7 +105,10 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::BsplineClenshawCurtis, "BsplineClenshawCurtis"),
       std::make_pair(GridType::Wavelet, "Wavelet"),
       std::make_pair(GridType::WaveletBoundary, "WaveletBoundary"),
+      std::make_pair(GridType::FundamentalNakSplineBoundary,
+                     "FundamentalNakSplineBoundary"),
       std::make_pair(GridType::FundamentalSpline, "FundamentalSpline"),
+      std::make_pair(GridType::FundamentalSplineBoundary, "FundamentalSplineBoundary"),
       std::make_pair(GridType::ModFundamentalSpline, "ModFundamentalSpline"),
       std::make_pair(GridType::ModBsplineClenshawCurtis, "ModBsplineClenshawCurtis"),
       std::make_pair(GridType::LinearStencil, "LinearStencil"),

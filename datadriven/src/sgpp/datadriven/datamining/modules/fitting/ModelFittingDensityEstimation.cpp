@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.cpp
- *
- * Created on: Jul 10, 2018
- *     Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -63,7 +56,6 @@ RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
           "for classification!";
       throw new application_exception(errorMessage.c_str());
     }
-    default: break;
   }
   return nullptr;
 }
@@ -92,7 +84,6 @@ bool ModelFittingDensityEstimation::refine() {
       } else {
         throw application_exception(
             "ModelFittingDensityEstimation: No refinement functor could be created!");
-        return false;
       }
     } else {
       return false;
@@ -101,9 +92,7 @@ bool ModelFittingDensityEstimation::refine() {
   } else {
     throw application_exception(
         "ModelFittingDensityEstimation: Can't refine before initial grid is created");
-    return false;
   }
-  return false;
 }
 
 }  // namespace datadriven

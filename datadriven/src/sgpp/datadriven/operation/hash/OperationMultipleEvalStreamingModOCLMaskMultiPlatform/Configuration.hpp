@@ -2,17 +2,13 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-//
-//  Created on: Nov 18, 2015
-//      Author: pfandedd
-//
 
 #pragma once
 
 #include <string>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 namespace sgpp {
 namespace datadriven {

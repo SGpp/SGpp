@@ -22,7 +22,7 @@
  */
 
 // in %
-double tolerance = 0.01;
+const double tolerance = 0.01;
 
 // BOOST_AUTO_TEST_CASE(testLejaPoints) {
 //  std::function<double(double)> weight_func = [](double d) { return 1; };

@@ -182,10 +182,10 @@ sgpp::combigrid::GridFunction BSplineCoefficientGridFunction(
       }
     }
 
-    sgpp::optimization::FullSLE sle(A);
+    sgpp::base::FullSLE sle(A);
 
-    sgpp::optimization::sle_solver::Auto solver;
-    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    sgpp::base::sle_solver::Auto solver;
+    sgpp::base::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
     if (!solved) {
@@ -219,8 +219,8 @@ size_t getUniqueIndex(size_t level, size_t index) {
 sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
     sgpp::combigrid::MultiFunction func, sgpp::combigrid::CombiHierarchies::Collection grids,
     size_t degree) {
-  sgpp::combigrid::GridFunction gf([func, grids,
-                                    degree](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
+  sgpp::combigrid::GridFunction gf(
+      [func, grids](std::shared_ptr<sgpp::combigrid::TensorGrid> grid) {
     size_t numDimensions = grid->getDimension();
     // stores the values of the objective function
     auto funcStorage = std::make_shared<sgpp::combigrid::CombigridTreeStorage>(grids, func);
@@ -278,10 +278,9 @@ sgpp::combigrid::GridFunction BSplineTensorCoefficientGridFunction(
       }
     }
 
-    sgpp::optimization::FullSLE sle(A);
-
-    sgpp::optimization::sle_solver::Auto solver;
-    sgpp::optimization::Printer::getInstance().setVerbosity(-1);
+    sgpp::base::FullSLE sle(A);
+    sgpp::base::sle_solver::Auto solver;
+    sgpp::base::Printer::getInstance().setVerbosity(-1);
     bool solved = solver.solve(sle, functionValues, coefficients_sle);
 
     if (!solved) {

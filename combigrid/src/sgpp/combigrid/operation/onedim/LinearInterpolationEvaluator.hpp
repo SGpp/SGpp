@@ -29,11 +29,11 @@ class LinearInterpolationEvaluator : public AbstractLinearEvaluator<FloatScalarV
 
  public:
   LinearInterpolationEvaluator();
-  virtual ~LinearInterpolationEvaluator();
+  ~LinearInterpolationEvaluator() override;
   LinearInterpolationEvaluator(LinearInterpolationEvaluator const &other);
 
-  virtual std::vector<FloatScalarVector> getBasisValues() { return basisValues; }
-  virtual std::vector<double> getBasisCoefficients() { return basisCoefficients; }
+  std::vector<FloatScalarVector> getBasisValues() override { return basisValues; }
+  std::vector<double> getBasisCoefficients() override { return basisCoefficients; }
 
   void setGridPoints(std::vector<double> const &newXValues) override;
   void setBasisCoefficientsAtGridPoints(std::vector<double> &functionValues) override;

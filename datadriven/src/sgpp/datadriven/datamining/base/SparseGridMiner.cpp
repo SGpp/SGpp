@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SparseGridMiner.cpp
- *
- * Created on: Oct 7, 2016
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
@@ -20,15 +13,16 @@
 
 namespace sgpp {
 namespace datadriven {
-
-SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer)
-    : fitter(fitter), scorer(scorer) {}
+SparseGridMiner::SparseGridMiner(ModelFittingBase* fitter, Scorer* scorer, Visualizer *visualizer)
+    : fitter(fitter), scorer(scorer), visualizer(visualizer) {}
 
 double SparseGridMiner::test(Dataset& testDataset) { return scorer->test(*fitter, testDataset); }
 
 ModelFittingBase* SparseGridMiner::getModel() { return &(*fitter); }
 
 void SparseGridMiner::setModel(ModelFittingBase* model) { fitter.reset(model); }
+
+Visualizer* SparseGridMiner::getVisualizer() { return &(*visualizer); }
 
 void SparseGridMiner::print(std::ostringstream& messageStream) { print(messageStream.str()); }
 

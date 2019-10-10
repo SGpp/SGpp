@@ -8,8 +8,8 @@
 #include <sgpp/base/opencl/OCLManager.hpp>
 #include <sgpp/globaldef.hpp>
 #include <string>
-#include "OpFactory.hpp"
-#include "OperationPruneGraphOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OperationPruneGraphOCL.hpp>
 namespace sgpp {
 namespace datadriven {
 
@@ -43,7 +43,7 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dimensions,
@@ -75,7 +75,7 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
@@ -105,7 +105,7 @@ pruneNearestNeighborGraphConfigured(int *gridpoints, size_t gridsize, size_t dim
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 DensityOCLMultiPlatform::OperationPruneGraphOCL*
 pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::DataVector &alpha,
@@ -159,7 +159,7 @@ pruneNearestNeighborGraphConfigured(base::Grid& grid, size_t dimensions, base::D
                 << " invalid value for parameter \"INTERNAL_PRECISION\"";
     throw base::factory_exception(errorString.str().c_str());
   }
-  return NULL;
+  return nullptr;
 }
 }  // namespace datadriven
 }  // namespace sgpp

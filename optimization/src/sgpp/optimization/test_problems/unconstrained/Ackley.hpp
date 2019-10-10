@@ -45,18 +45,18 @@ class AckleyObjective : public TestScalarFunction {
   /**
    * @param[out] clone pointer to cloned object
    */
-  void clone(std::unique_ptr<ScalarFunction>& clone) const override;
+  void clone(std::unique_ptr<base::ScalarFunction>& clone) const override;
 };
 
 /**
  * Ackley unconstrained test problem.
  *
  * * Number of parameters: \f$d\f$
- * * Domain: \f$\bar{\vec{x}} \in [-1, 9]^d\f$
+ * * Domain: \f$\bar{\vec{x}} \in [1.5, 6.5]^d\f$
  * * Optimal point: \f$\bar{\vec{x}}_{\text{opt}} =
- *   \vec{0}\f$
+ *   0.0948903972968234 \cdot \vec{1}\f$
  * * Optimal function value: \f$\bar{f}(\bar{\vec{x}}_{\text{opt}}) =
- *   0\f$
+ *   6.559645375627878\f$
  */
 class Ackley : public UnconstrainedTestProblem {
  public:

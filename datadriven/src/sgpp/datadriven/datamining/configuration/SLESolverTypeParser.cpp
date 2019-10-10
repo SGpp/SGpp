@@ -1,16 +1,9 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SolverTypeParser.cpp
- *
- * Created on: Jan 25, 2017
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "SLESolverTypeParser.hpp"
+#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <algorithm>

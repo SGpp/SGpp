@@ -42,7 +42,7 @@ class MultipleClassRefinement : public HashRefinement {
         std::vector<sgpp::base::MultipleClassPoint>* pts,
         std::vector<Grid*>& classGrids,
         double &borderSum, double &borderCnt, double topPercent);
-    virtual ~MultipleClassRefinement() {}
+    ~MultipleClassRefinement() override {}
 
  protected:
   void refineGridpoint(GridStorage& storage, size_t refine_index) override;

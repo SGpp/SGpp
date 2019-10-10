@@ -92,11 +92,24 @@ class DBMatOffline {
   DataMatrix& getDecomposedMatrix();
 
   /**
+   * Get a reference to the inverse matrix
+   *
+   * @return inverse matrix
+   */
+  DataMatrix& getInverseMatrix();
+
+  /**
    * Get a reference to the distributed decomposed matrix. Throws if matrix has not yet been
    * decomposed. In order to return valid data, syncDistributedDecomposition() has to be called if
    * the decomposition was changed (after refinements).
    */
   DataMatrixDistributed& getDecomposedMatrixDistributed();
+
+  /**
+   * Get a reference to the distributed decomposed matrix, analogously to
+   * getDecomposedMatrixDistributed()
+   */
+  DataMatrixDistributed& getDecomposedInverseDistributed();
 
   /**
    * Synchronizes the decomposed matrix.
@@ -106,6 +119,14 @@ class DBMatOffline {
    */
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
+
+  /**
+   * Synchronizes the inverse matrix
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void syncDistributedInverse(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                      const ParallelConfiguration& parallelConfig);
 
   /**
    * Allows access to lhs matrix, which is meant ONLY FOR TESTING
@@ -130,6 +151,18 @@ class DBMatOffline {
                                DensityEstimationConfiguration& densityEstimationConfig) = 0;
                                
   /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                                       DensityEstimationConfiguration& densityEstimationConfig,
+                                       std::shared_ptr<BlacsProcessGrid> processGrid,
+                                       const ParallelConfiguration& parallelConfig);
+
+  /**
    * Prints the matrix onto standard output
    */
   void printMatrix();
@@ -141,6 +174,19 @@ class DBMatOffline {
    * @param newPoints amount of points to refine
    */
   void compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid, size_t newPoints);
+
+  /*
+   * explicitly computes the inverse of the decomposed offline matrix
+   */
+  virtual void compute_inverse();
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                        const ParallelConfiguration& parallelConfig);
 
   /**
    * Serialize the DBMatOffline Object
@@ -162,12 +208,14 @@ class DBMatOffline {
 
  protected:
   DBMatOffline();
-  DataMatrix lhsMatrix;  // stores the (decomposed) matrix
-  bool isConstructed;    // If the matrix was built
-  bool isDecomposed;     // If the matrix was decomposed
+  DataMatrix lhsMatrix;   // stores the (decomposed) matrix
+  bool isConstructed;     // If the matrix was built
+  bool isDecomposed;      // If the matrix was decomposed
+  DataMatrix lhsInverse;  // stores the explicitly computed inverse (only in SMW case)
 
   // distributed lhs, only initialized in ScaLAPACK version
   DataMatrixDistributed lhsDistributed;
+  DataMatrixDistributed lhsDistributedInverse;
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)

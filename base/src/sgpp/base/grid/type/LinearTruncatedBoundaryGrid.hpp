@@ -18,8 +18,8 @@ namespace base {
 /**
  * grid with linear base functions with boundaries, pentagon cut
  * Generalization of the LinearL0Boundary and LinearBoundary Grids
- * The sparse grid does contain all fullgrids with |l|<a given level, and l_min>l_user
- * For l_user=0 we obtain the LinearL0BoundaryGrid and for l_user=1 we obtain the linear truncated boundary grid
+ * The sparse grid does contain all fullgrids with |l| < a given level, and l_min > l_user
+ * For l_user = 0 we obtain the LinearL0BoundaryGrid and for l_user = 1 we obtain the linear truncated boundary grid
  */
 class LinearTruncatedBoundaryGrid : public Grid {
  protected:

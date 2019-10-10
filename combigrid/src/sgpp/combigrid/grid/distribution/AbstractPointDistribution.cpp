@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "AbstractPointDistribution.hpp"
+#include <sgpp/combigrid/grid/distribution/AbstractPointDistribution.hpp>
 
 namespace sgpp {
 namespace combigrid {

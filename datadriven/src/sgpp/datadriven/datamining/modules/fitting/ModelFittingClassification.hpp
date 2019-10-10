@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingClassification.hpp
- *
- *  Created on: Jul 1, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -86,11 +79,20 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   void reset() override;
 
-  /*
+  /**
    * store Fitter into text file in folder /datadriven/classificator/
    */
   void storeClassificator();
 
+  /**
+   * obtain the density estimation models per each class. To be used in VisualizerClassification
+   */
+  std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* getModels();
+
+  /**
+   * obtain the index mapping for each label class. To be used in VisualizerClassification
+   */
+  std::map<double, size_t> getClassIdx();
 #ifdef USE_SCALAPACK
     /**
    * @returns the BLACS process grid

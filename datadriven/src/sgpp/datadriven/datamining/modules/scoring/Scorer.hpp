@@ -1,14 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- *
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Scorer.hpp
- *
- *  Created on: Feb 8, 2016
- *      Author: perun, Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -44,12 +37,7 @@ class Scorer {
    */
   Scorer(Scorer&& rhs) = default;
 
-  /**
-   * Copy assign operator
-   * @param rhs const reference to the scorer object to copy from.
-   * @return rerefernce to this with updated values.
-   */
-  Scorer& operator=(const Scorer& rhs) = default;
+  Scorer& operator=(const Scorer& rhs) = delete;
 
   /**
    * Move assign operator

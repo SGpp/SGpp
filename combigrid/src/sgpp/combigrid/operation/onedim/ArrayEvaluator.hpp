@@ -9,12 +9,12 @@
 #include <sgpp/combigrid/algebraic/FloatArrayVector.hpp>
 #include <sgpp/combigrid/algebraic/FloatScalarVector.hpp>
 #include <sgpp/combigrid/definitions.hpp>
+#include <sgpp/combigrid/operation/OperationConfiguration.hpp>
 #include <sgpp/combigrid/operation/onedim/AbstractLinearEvaluator.hpp>
 
 #include <sgpp/base/exception/operation_exception.hpp>
 
 #include <vector>
-#include "../OperationConfiguration.hpp"
 
 namespace sgpp {
 namespace combigrid {
@@ -79,7 +79,7 @@ class ArrayEvaluator : public AbstractLinearEvaluator<FloatArrayVector> {
         xValues(other.xValues),
         doesNeedParameter(other.doesNeedParameter) {}
 
-  ~ArrayEvaluator() {}
+  ~ArrayEvaluator() override {}
 
   std::vector<FloatArrayVector> getBasisValues() override {
     if (!valuesComputed) {

@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # Copyright (C) 2008-today The SG++ Project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
@@ -8,17 +8,16 @@
 # script creates a pysgpp lib in the site-packages of
 # python. Furthermore, it collects all the relevant python code,
 # located in each module under the path <module name>/python and
-# copies it to the site-package folder of pysgpp using the following
-# scheme: <path to site-packages>/pysgpp-<unique
-# key>/extensions/<module name>/<copy of python code of correponding
-# module>.
+# copies it to the site-package folder of pysgpp under the extensions namespace
+# pysgpp.extensions
 
 import os
 import shutil
-from setuptools import setup
+from setuptools import setup, find_packages
 
 # path to pysgpp lib
 libpath = os.path.join("lib", "pysgpp")
+extensionspath = os.path.join(libpath, "extensions")
 
 # list of all available modules -> all folders in the root directory
 moduleFolders = [filename for filename in os.listdir(".")
@@ -29,16 +28,44 @@ pythonModuleFolders = [(moduleFolder, os.path.join(moduleFolder, "python"))
                        for moduleFolder in moduleFolders
                        if os.path.exists(os.path.join(moduleFolder, "python"))]
 
-# create the data file list such that it can be used by setuptools
-dataFiles = []
-for moduleFolder, srcdir in pythonModuleFolders:
-    basepath = os.path.join("pysgpp", "extensions", moduleFolder)
-    for root, dirs, files in os.walk(srcdir):
-        if '.svn' in dirs:
-            dirs.remove('.svn')
+try:
+    os.mkdir(extensionspath)
+except FileExistsError as e:
+    pass
 
-        dataFiles += [(root.replace(srcdir, basepath),
-                       [os.path.join(root, f) for f in files])]
+# create list of extension scripts
+extFiles = []
+for moduleFolder, srcdir in pythonModuleFolders:
+    basepath = os.path.join(extensionspath, moduleFolder)
+    try:
+        os.mkdir(basepath)
+    except FileExistsError as e:
+        pass
+    for root, dirs, files in os.walk(srcdir):
+        if '.git' in dirs:
+            dirs.remove('.git')
+
+        extFiles += [os.path.join(root, f) for f in files if ".py" in f]
+
+##
+# copy extension python files to new layout
+# pysgpp
+# --extensions
+# ----modulename
+# ------*.py
+##
+
+for f in extFiles:
+    dest = os.path.join(extensionspath,f)
+    dest = dest.replace(os.sep + "python", "")
+    try:
+        shutil.copy2(f, dest)
+    except FileNotFoundError as e:
+        os.mkdir(os.path.dirname(dest))
+        shutil.copy2(f, dest)
+    except shutil.SameFileError as e:
+        pass
+    
 
 # write init file for pysgpp
 initFile = os.path.join(libpath, "__init__.py")
@@ -50,8 +77,8 @@ import sys
 sys.path.append(os.path.dirname(__file__))
 
 # import pysgpp_swig and extensions
-from pysgpp_swig import *
-import pysgpp.extensions
+from .pysgpp_swig import *
+from . import extensions
 """)
 
 if len(moduleFolders) > 0:
@@ -59,9 +86,13 @@ if len(moduleFolders) > 0:
     initFile = os.path.join("__init__.py")
     with open(initFile, "w") as f:
         for moduleFolder, _ in pythonModuleFolders:
-            f.write("import %s\n" % moduleFolder)
+            f.write("from . import %s\n" % moduleFolder)
 
-    dataFiles += [(os.path.join("pysgpp", "extensions"), [initFile])]
+    try:
+        shutil.copy2(initFile, os.path.join(extensionspath, initFile))
+    except shutil.SameFileError as e:
+        pass
+    
 
 # if the current system is windows we need to rename the dll to pyd
 dllLibs = [filename for filename in os.listdir(libpath)
@@ -74,20 +105,20 @@ for dllLib in dllLibs:
 
 # setup pysgpp
 setup(name='pysgpp',
-      version="1.0.0",
-      url='sgpp.sparsegrids.org',
-      author="Fabian Franzelin",
+      version="3.3.0",
+      url='https://github.com/SGpp/SGpp',
+      author="",
       description='',
       license='',
       long_description="README",
       platforms='any',
       zip_safe=False,
       package_dir={'': 'lib'},
-      packages=['pysgpp'],
+      packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
       package_data={'pysgpp': ['*.so', '*.lib', '*.pyd']},
-      data_files=dataFiles
       )
 
 # cleanup
 if len(moduleFolders) > 0 and os.path.exists(initFile):
     os.remove(initFile)
+    shutil.rmtree(extensionspath, ignore_errors=True)

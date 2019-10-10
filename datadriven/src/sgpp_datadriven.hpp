@@ -24,15 +24,18 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDELU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #endif /* USE_GSL */
 
+#include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
@@ -137,6 +140,7 @@
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
+// #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
@@ -144,7 +148,6 @@
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
@@ -177,11 +180,21 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
+
+
 
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>

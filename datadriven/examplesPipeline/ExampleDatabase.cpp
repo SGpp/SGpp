@@ -1,14 +1,10 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Created on: Mar 28, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
@@ -17,6 +13,7 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 
+#include <iostream>
 #include <string>
 
 using sgpp::datadriven::DBMatDatabase;
@@ -97,8 +94,19 @@ int main(int argc, char** argv) {
    *  that the database needs to identify a decomposition.
    */
   std::cout << "Creating dbmat" << std::endl;
-  sgpp::datadriven::DBMatOffline* db = sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
-      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
+  sgpp::datadriven::DBMatOffline* db;
+  try {
+    db = sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
+        gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
+  } catch (sgpp::base::factory_exception& exc)  {
+    if (std::string(exc.what()).find("built without GSL") != std::string::npos) {
+      std::cout << "Exception: " << exc.what() << std::endl;
+      std::cout << "Skipping example..." << std::endl;
+      return 0;
+    } else {
+      throw;
+    }
+  }
   db->buildMatrix(grid.get(), regularizationConfig);
   db->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   db->store(outputPath);

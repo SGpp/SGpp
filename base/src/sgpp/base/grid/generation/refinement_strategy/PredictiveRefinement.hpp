@@ -83,7 +83,7 @@ class PredictiveRefinement: public virtual RefinementDecorator {
    */
   void free_refine(GridStorage& storage,
                    PredictiveRefinementIndicator& functor,
-                   std::vector<size_t>* addedPoints = 0);
+                   std::vector<size_t>* addedPoints = nullptr);
 
 
 

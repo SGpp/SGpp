@@ -4,7 +4,8 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_constrainedOptimization_cpp constrainedOptimization.cpp
+ * \page example_constrainedOptimization_cpp Constrained Optimization
+ *
  * This example demonstrates the optimization of an objective function \f$ f\f$ with additional
  * constraints.
  * The inequality constraints are specified via a function \f$ g\f$, the equality constraints are
@@ -34,7 +35,7 @@
  * process of solving linear system.
  */
 int main() {
-  sgpp::optimization::Printer::getInstance().setVerbosity(0);
+  sgpp::base::Printer::getInstance().setVerbosity(0);
 
   /**
    * Load the predefined test problem G04. G04 consists of the following:
@@ -49,9 +50,9 @@ int main() {
 
   problem.generateDisplacement();
 
-  sgpp::optimization::ScalarFunction& f = problem.getObjectiveFunction();
-  sgpp::optimization::VectorFunction& g = problem.getInequalityConstraintFunction();
-  sgpp::optimization::VectorFunction& h = problem.getEqualityConstraintFunction();
+  sgpp::base::ScalarFunction& f = problem.getObjectiveFunction();
+  sgpp::base::VectorFunction& g = problem.getInequalityConstraintFunction();
+  sgpp::base::VectorFunction& h = problem.getEqualityConstraintFunction();
 
   /**
    * Generate a regular sparse grid of level five with modified B-Splines of degree five as basis
@@ -60,7 +61,7 @@ int main() {
   const size_t p = 5;
   const size_t d = problem.getObjectiveFunction().getNumberOfParameters();
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
-  const size_t l = 5;
+  const size_t l = 3;
   grid->getGenerator().regular(l);
 
   /**
@@ -105,14 +106,14 @@ int main() {
    * interpolant functions \f$\tilde{f}, \tilde{g}\f$ and \f$\tilde{h}\f$ as well as their
    * gradients.
    */
-  sgpp::optimization::InterpolantScalarFunction ft(*grid, fAlpha);
-  sgpp::optimization::InterpolantScalarFunctionGradient ftGradient(*grid, fAlpha);
+  sgpp::base::InterpolantScalarFunction ft(*grid, fAlpha);
+  sgpp::base::InterpolantScalarFunctionGradient ftGradient(*grid, fAlpha);
 
-  sgpp::optimization::InterpolantVectorFunction gt(*grid, gAlpha);
-  sgpp::optimization::InterpolantVectorFunctionGradient gtGradient(*grid, gAlpha);
+  sgpp::base::InterpolantVectorFunction gt(*grid, gAlpha);
+  sgpp::base::InterpolantVectorFunctionGradient gtGradient(*grid, gAlpha);
 
-  sgpp::optimization::InterpolantVectorFunction ht(*grid, hAlpha);
-  sgpp::optimization::InterpolantVectorFunctionGradient htGradient(*grid, hAlpha);
+  sgpp::base::InterpolantVectorFunction ht(*grid, hAlpha);
+  sgpp::base::InterpolantVectorFunctionGradient htGradient(*grid, hAlpha);
 
   /**
    * Define an augmented lagrangian method to solve the constrained optimization problem using the

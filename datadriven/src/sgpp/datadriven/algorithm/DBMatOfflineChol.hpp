@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineChol.hpp
- *
- *  Created on: 02.03.2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -48,7 +42,19 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
+
+  /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                               DensityEstimationConfiguration& densityEstimationConfig,
+                               std::shared_ptr<BlacsProcessGrid> processGrid,
+                               const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -60,9 +66,25 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param deletedPoints list of indices of last coarsed points
    * @param lambda the regularization parameter
    */
-  virtual void choleskyModification(Grid& grid,
-      datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
-      std::list<size_t> deletedPoints, double lambda);
+  virtual void choleskyModification(
+      Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+
+  /*
+   * explicitly computes the inverse
+   * note: the computed inverse is not the inverse of the decomposed matrix,
+   * but rather the inverse of the previous undecomposed matrix
+   * @param inv the matrix to store the computed inverse
+   */
+  void compute_inverse() override;
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                const ParallelConfiguration& parallelConfig) override;
 
  protected:
   /**

@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.hpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -42,7 +35,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   virtual void fit(DataMatrix& dataset) = 0;
 
-  virtual void fit(Dataset& dataset) = 0;
+  void fit(Dataset& dataset) override = 0;
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only
@@ -52,11 +45,11 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    */
   virtual void update(DataMatrix& samples) = 0;
 
-  virtual void update(Dataset& dataset) = 0;
+  void update(Dataset& dataset) override = 0;
 
-  virtual double evaluate(const DataVector& sample) = 0;
+  double evaluate(const DataVector& sample) override = 0;
 
-  virtual void evaluate(DataMatrix& samples, DataVector& results) = 0;
+  void evaluate(DataMatrix& samples, DataVector& results) override = 0;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened

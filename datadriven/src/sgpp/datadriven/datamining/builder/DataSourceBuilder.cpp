@@ -1,15 +1,9 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * FileBasedDataSourceBuilder.cpp
- *
- *  Created on: 01.06.2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "DataSourceBuilder.hpp"
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
@@ -165,7 +159,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
-    } catch (data_exception& e) {
+    } catch (data_exception&) {
       // wasn't found
       withFileType(DataSourceFileType::NONE);
     }

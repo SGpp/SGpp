@@ -38,7 +38,7 @@ class FullGridLinearSummationStrategy : public AbstractFullGridSummationStrategy
       std::vector<std::shared_ptr<AbstractPointHierarchy>> pointHierarchies)
       : AbstractFullGridSummationStrategy<V>(storage, evaluatorPrototypes, pointHierarchies) {}
 
-  ~FullGridLinearSummationStrategy() {}
+  ~FullGridLinearSummationStrategy() override {}
 
   /**
    * Evaluates the function given through the storage for a certain level-multi-index (see class

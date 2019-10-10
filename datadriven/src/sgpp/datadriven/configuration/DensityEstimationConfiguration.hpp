@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DensityEstimationConfiguration.hpp
- *
- *  Created on: Jan 02, 2018
- *      Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -24,7 +17,7 @@ namespace datadriven {
 
 enum class DensityEstimationType { CG, Decomposition };
 
-enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt };
+enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
   DensityEstimationType type_;             // Type of density estimation

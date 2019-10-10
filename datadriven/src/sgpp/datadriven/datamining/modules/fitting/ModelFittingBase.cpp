@@ -1,12 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- *
- *
- * Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
@@ -101,6 +96,10 @@ void ModelFittingBase::reconfigureSolver(SLESolver &solver,
                                          const SLESolverConfiguration &sleConfig) const {
   solver.setMaxIterations(sleConfig.maxIterations_);
   solver.setEpsilon(sleConfig.eps_);
+}
+
+Dataset *ModelFittingBase::getDataset() {
+  return dataset;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

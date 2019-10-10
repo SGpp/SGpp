@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/generation_exception.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/combigrid/functions/OrthogonalPolynomialBasis1D.hpp>
 #include <sgpp/combigrid/operation/onedim/InterpolationCoefficientEvaluator.hpp>
 
@@ -32,7 +32,7 @@ InterpolationCoefficientEvaluator::InterpolationCoefficientEvaluator(
   evalConfig.type = CombiEvaluatorTypes::Tensor_PolynomialInterpolation;
   evalConfig.functionBasis = functionBasis;
   if (functionBasis == nullptr) {
-    throw sgpp::base::generation_exception(
+    throw sgpp::base::application_exception(
         "InterpolationCoefficientEvaluator: the basis function is not defined");
   }
 }
@@ -80,7 +80,7 @@ void InterpolationCoefficientEvaluator::setGridPoints(const std::vector<double>&
   }
 
 #else
-  throw sgpp::base::generation_exception("need Eigen to use the PCE transformation.");
+  throw sgpp::base::application_exception("need Eigen to use the PCE transformation.");
 #endif
 }
 

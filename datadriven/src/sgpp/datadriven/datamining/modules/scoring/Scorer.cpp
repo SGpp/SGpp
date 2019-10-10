@@ -1,16 +1,9 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Scorer.cpp
- *
- * Created on: Oct 7, 2016
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "Scorer.hpp"
+#include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>

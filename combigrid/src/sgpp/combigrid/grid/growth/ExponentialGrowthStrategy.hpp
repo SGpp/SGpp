@@ -6,7 +6,7 @@
 #ifndef COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_EXPONENTIALGROWTHSTRATEGY_HPP_
 #define COMBIGRID_SRC_SGPP_COMBIGRID_GRID_POINTS_GROWTH_EXPONENTIALGROWTHSTRATEGY_HPP_
 
-#include "AbstractGrowthStrategy.hpp"
+#include <sgpp/combigrid/grid/growth/AbstractGrowthStrategy.hpp>
 
 namespace sgpp {
 namespace combigrid {

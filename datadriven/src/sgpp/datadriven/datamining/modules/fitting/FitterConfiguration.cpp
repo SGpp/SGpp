@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "FitterConfiguration.hpp"
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 
 #include <string>
 #include <vector>
@@ -177,6 +177,10 @@ void FitterConfiguration::setupDefaults() {
 
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
   regularizationConfig.lambda_ = 0.01;
+  regularizationConfig.lamda_start_ = 0.01;
+  regularizationConfig.lambda_end_ = 0.01;
+  regularizationConfig.lambda_steps_ = 0;
+  regularizationConfig.lambda_log_scale_ = false;
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
 
