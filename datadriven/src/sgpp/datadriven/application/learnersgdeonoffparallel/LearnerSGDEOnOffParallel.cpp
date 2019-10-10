@@ -129,7 +129,7 @@ Grid& LearnerSGDEOnOffParallel::getGrid(size_t classIndex) {
 size_t LearnerSGDEOnOffParallel::getNumClasses() const { return numClasses; }
 
 double LearnerSGDEOnOffParallel::getAccuracy() const {
-  DataVector computedLabels{testData.getNumberInstances()};
+  DataVector computedLabels(testData.getNumberInstances());
   predict(testData.getData(), computedLabels);
   size_t correct = 0;
   size_t correctLabel1 = 0;
@@ -185,7 +185,7 @@ void LearnerSGDEOnOffParallel::predict(DataMatrix& data, DataVector& result) con
 double LearnerSGDEOnOffParallel::getError(Dataset& dataset) const {
   double res = -1.0;
 
-  DataVector computedLabels{dataset.getNumberInstances()};
+  DataVector computedLabels(dataset.getNumberInstances());
   predict(dataset.getData(), computedLabels);
   size_t correct = 0;
   for (size_t i = 0; i < computedLabels.getSize(); i++) {
@@ -731,8 +731,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
         // See DBMatOnlineDe::updateAlpha()
         if (!deletedPoints.empty()) {
           D(std::cout << "Copying vector (deleting deleted grid points)." << std::endl;)
-          DataVector newAlpha{
-              dataVector.getSize() - deletedPoints.size() + addedPoints.size()};
+          DataVector newAlpha(dataVector.getSize() - deletedPoints.size() + addedPoints.size());
           for (size_t i = 0; i < dataVector.getSize(); i++) {
             if (std::find(deletedPoints.begin(), deletedPoints.end(), i) !=
                 deletedPoints.end()) {

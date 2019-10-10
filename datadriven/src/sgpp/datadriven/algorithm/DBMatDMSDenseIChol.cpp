@@ -42,7 +42,7 @@ void DBMatDMSDenseIChol::choleskyBackwardSolve(const sgpp::base::DataMatrix& dec
                                                const sgpp::base::DataVector& y,
                                                sgpp::base::DataVector& alpha) const {
   // cache efficient version of jaccobi based backward substitution
-  DataVector tmpVec{alpha.getSize()};
+  DataVector tmpVec(alpha.getSize());
   alpha.setAll(0.0);
   size_t size = alpha.getSize();
 

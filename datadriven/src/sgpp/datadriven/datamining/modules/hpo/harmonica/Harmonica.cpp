@@ -93,7 +93,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   // run solver
   solver::LassoFunction g{lambda};
   solver::Fista<solver::LassoFunction> fista{g};
-  DataVector alpha = DataVector{paritymatrix.getNcols()};
+  DataVector alpha = DataVector(paritymatrix.getNcols());
   base::LinearGrid dummygrid(0);
   OperationMultipleEvalMatrix opMultEval{dummygrid, paritymatrix};
   fista.solve(opMultEval, alpha, normed, 100, DEFAULT_RES_THRESHOLD);
@@ -129,7 +129,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   std::cout << "Free bits in new space: " << freeBits.size() << std::endl;
 
   std::vector<int> configIDsNew{};
-  DataVector newScores{};
+  DataVector newScores;
   for (size_t k = 0; k < configIDs.size(); k++) {
     int moved = moveToNewSpace(configIDs[k], freeBitsold);
     // if in new space push back on vector

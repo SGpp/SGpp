@@ -6,11 +6,21 @@
 %include "base/src/sgpp/globaldef.hpp"
 
 namespace std {
+    %template(IntVector) vector<int>;
+    %template(IntVectorVector) vector< vector<int> >;
+    %template(BoolVector) vector<bool>;
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
-    %template(SizeTVector) vector<size_t>;
+    %template(SizeVector) vector<size_t>;
+    %template(SizeDoublePair) pair<size_t, double>;
+    %template(SizeDoublePairVector) vector<pair<size_t, double> >;
+    // For OnlinePredictiveRefinementDimension
+    %template(refinement_key) std::pair<size_t, unsigned int>;
+    %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
+    // For interaction-term-aware sparse grids.
+    %template(SizeVectorVector) vector< vector<size_t> >;
+    %template(DataVectorVector) vector<sgpp::base::DataVector>;
+    %template(DataMatrixVector) vector<sgpp::base::DataMatrix>;
 }
 
 // include other interface files
@@ -25,14 +35,26 @@ namespace std {
 %rename(operatorAssignment) sgpp::base::DataVectorSP::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrix::operator=;
 %rename(operatorAssignment) sgpp::base::DataMatrixSP::operator=;
+%ignore sgpp::base::DataVector::DataVector(DataVector&&);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(DataVectorSP&&);
+%ignore sgpp::base::DataVector::DataVector(std::initializer_list<double>);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::initializer_list<float>);
 %ignore sgpp::base::DataVector::operator[];
 %ignore sgpp::base::DataVectorSP::operator[];
+%ignore sgpp::base::DataVector::operator=(DataVector&&);
+%ignore sgpp::base::DataVectorSP::operator=(DataVectorSP&&);
 %ignore sgpp::base::DataVector::getPointer const;
 %ignore sgpp::base::DataVectorSP::getPointer const;
+%ignore sgpp::base::DataMatrix::DataMatrix(DataMatrix&&);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(DataMatrixSP&&);
+%ignore sgpp::base::DataMatrix::DataMatrix(std::initializer_list<double>, size_t);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(std::initializer_list<float>, size_t);
 %ignore sgpp::base::DataMatrix::operator[];
 %ignore sgpp::base::DataMatrixSP::operator[];
 %ignore sgpp::base::DataMatrix::operator();
 %ignore sgpp::base::DataMatrixSP::operator();
+%ignore sgpp::base::DataMatrix::operator=(DataMatrix&&);
+%ignore sgpp::base::DataMatrixSP::operator=(DataMatrixSP&&);
 %ignore sgpp::base::DataMatrix::getPointer const;
 %ignore sgpp::base::DataMatrixSP::getPointer const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
@@ -155,16 +177,36 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/BsplineModifiedClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/FundamentalNakSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv2.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv1.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/PolyModifiedClenshawCurtisBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/PrewaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
@@ -199,19 +241,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else
@@ -249,11 +291,17 @@ const bool UMFPACK_ENABLED;
 %template(SLinearBase) sgpp::base::LinearBasis<unsigned int, unsigned int>;
 %template(SLinearBoundaryBase) sgpp::base::LinearBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearClenshawCurtisBase) sgpp::base::LinearClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SLinearClenshawCurtisBoundaryBase) sgpp::base::LinearClenshawCurtisBoundaryBasis<unsigned int, unsigned int>;
+%template(SLinearModifiedClenshawCurtisBase) sgpp::base::LinearModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBase) sgpp::base::LinearStretchedBasis<unsigned int, unsigned int>;
 %template(SLinearStretchedBoundaryBase) sgpp::base::LinearStretchedBoundaryBasis<unsigned int, unsigned int>;
 %template(SLinearModifiedBase) sgpp::base::LinearModifiedBasis<unsigned int, unsigned int>;
 %template(SPolyBase) sgpp::base::PolyBasis<unsigned int, unsigned int>;
-//%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyBoundaryBase) sgpp::base::PolyBoundaryBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedBase) sgpp::base::PolyModifiedBasis<unsigned int, unsigned int>;
+%template(SPolyClenshawCurtisBase) sgpp::base::PolyClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SPolyClenshawCurtisBoundaryBase) sgpp::base::PolyClenshawCurtisBoundaryBasis<unsigned int, unsigned int>;
+%template(SPolyModifiedClenshawCurtisBase) sgpp::base::PolyModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SWaveletBase) sgpp::base::WaveletBasis<unsigned int, unsigned int>;
 %template(SWaveletBoundaryBase) sgpp::base::WaveletBoundaryBasis<unsigned int, unsigned int>;
 %template(SWaveletModifiedBase) sgpp::base::WaveletModifiedBasis<unsigned int, unsigned int>;
@@ -262,8 +310,22 @@ const bool UMFPACK_ENABLED;
 %template(SBsplineClenshawCurtisBase) sgpp::base::BsplineClenshawCurtisBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedBase) sgpp::base::BsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SBsplineModifiedClenshawCurtisBase) sgpp::base::BsplineModifiedClenshawCurtisBasis<unsigned int, unsigned int>;
+%template(SFundamentalNakSplineBase) sgpp::base::FundamentalNakSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineBase) sgpp::base::FundamentalSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBase) sgpp::base::WeaklyFundamentalSplineBasis<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBaseDeriv1) sgpp::base::WeaklyFundamentalSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalSplineBaseDeriv2) sgpp::base::WeaklyFundamentalSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNakSplineBase) sgpp::base::WeaklyFundamentalNakSplineBasis<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNakSplineBaseDeriv1) sgpp::base::WeaklyFundamentalNakSplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SWeaklyFundamentalNakSplineBaseDeriv2) sgpp::base::WeaklyFundamentalNakSplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
+%template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
+%template(SNakBsplineBaseDeriv1) sgpp::base::NakBsplineBasisDeriv1<unsigned int, unsigned int>;
+%template(SNakBsplineBaseDeriv2) sgpp::base::NakBsplineBasisDeriv2<unsigned int, unsigned int>;
+%template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;
+%template(SNakBsplineModifiedBaseDeriv1) sgpp::base::NakBsplineModifiedBasisDeriv1<unsigned int, unsigned int>;
+%template(SNakBsplineModifiedBaseDeriv2) sgpp::base::NakBsplineModifiedBasisDeriv2<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
 
 //%apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
@@ -275,6 +337,7 @@ const bool UMFPACK_ENABLED;
 %template(SGetAffectedBasisFunctionsLinearStretchedBoundaries) sgpp::base::GetAffectedBasisFunctions<sgpp::base::SLinearStretchedBoundaryBase>;
 %template(BoundingBox1DVector) std::vector<sgpp::base::BoundingBox1D>;
 %template(Stretching1DVector) std::vector<sgpp::base::Stretching1D>;
+
 
 
 // classes with director interface
