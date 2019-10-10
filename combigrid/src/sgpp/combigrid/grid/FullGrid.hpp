@@ -23,6 +23,14 @@ class FullGrid {
       level(level), hasBoundary_(hasBoundary), basis(basis) {
   }
 
+  bool operator==(const FullGrid& other) const {
+    return (level == other.level) && (hasBoundary_ == other.hasBoundary_) && (basis == other.basis);
+  }
+
+  bool operator!=(const FullGrid& other) const {
+    return !(*this == other);
+  }
+
   const LevelVector& getLevel() const {
     return level;
   }

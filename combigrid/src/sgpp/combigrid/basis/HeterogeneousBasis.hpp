@@ -37,6 +37,14 @@ class HeterogeneousBasis {
       bool isHierarchical = true) : bases1d(dim, &basis1d), isHierarchical_(isHierarchical) {
   }
 
+  bool operator==(const HeterogeneousBasis& other) const {
+    return (bases1d == other.bases1d) && (isHierarchical_ == other.isHierarchical_);
+  }
+
+  bool operator!=(const HeterogeneousBasis& other) const {
+    return !(*this == other);
+  }
+
   static void hierarchizeLevelIndex(level_t& level, index_t& index) {
     if (index == 0) {
       level = 0;
