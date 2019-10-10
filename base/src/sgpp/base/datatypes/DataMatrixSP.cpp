@@ -73,18 +73,18 @@ DataMatrixSP DataMatrixSP::fromString(const std::string& serializedVector) {
     } else if (state == PARSER_STATE::ROW) {
       row.resize(0);
       state = PARSER_STATE::ROWVALUE;
-      i++;
+      ++i;
     } else if (state == PARSER_STATE::ROWVALUE) {
       //      size_t next;
       float value = std::strtof(&(serializedVector[i]), nullptr);
       row.append(value);
       state = PARSER_STATE::ROWCOMMAEND;
       //      i += next;
-      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      while (serializedVector[i] != ',' && serializedVector[i] != ']') ++i;
     } else if (state == PARSER_STATE::ROWCOMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::ROWVALUE;
-        i++;
+        ++i;
       } else if (c == ']') {
         if (m.getNcols() == 0 || m.getNrows() == 0) {
           // set up the dimension after having read the first row
@@ -92,15 +92,15 @@ DataMatrixSP DataMatrixSP::fromString(const std::string& serializedVector) {
         }
         m.appendRow(row);
         state = PARSER_STATE::COMMAEND;
-        i++;
+        ++i;
       }
     } else if (state == PARSER_STATE::COMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::ROW;
-        i++;
+        ++i;
       } else if (c == ']') {
         state = PARSER_STATE::END;
-        i++;
+        ++i;
       }
     } else if (state == PARSER_STATE::END) {
       // only reached if a non-whitespace character was encountered after closing brace
@@ -146,7 +146,7 @@ void DataMatrixSP::resizeQuadratic(size_t size) {
 
   size_t min_size = std::min(this->ncols, size);
   this->resize(size, size);
-  for (size_t i = 0; i < min_size; i++) {
+  for (size_t i = 0; i < min_size; ++i) {
     std::copy(oldMatrix.row_begin(i), oldMatrix.row_begin(i) + min_size, this->row_begin(i));
   }
 }
@@ -175,7 +175,7 @@ void DataMatrixSP::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, s
   auto regionEnd = oldMatrix.begin() + (row_2) * oldMatrix.ncols + (col_1 - 1);
   for (auto it = regionBegin; it < regionEnd; it += oldMatrix.ncols) {
     this->insert(this->end(), it, it + (col_2 - col_1 + 1));
-    this->nrows++;
+    ++this->nrows;
   }
 }
 
@@ -187,23 +187,23 @@ size_t DataMatrixSP::appendRow() {
   this->insert(this->end(), this->ncols, 0.0f);
 
   size_t x = nrows;
-  this->nrows++;
+  ++this->nrows;
 
   return x;
 }
 
 void DataMatrixSP::transpose() {
   if (this->nrows == this->ncols) {
-    for (size_t i = 1; i < this->nrows; i++) {
-      for (size_t j = 0; j < i; j++) {
+    for (size_t i = 1; i < this->nrows; ++i) {
+      for (size_t j = 0; j < i; ++j) {
         std::swap((*this)[(j * this->nrows) + i], (*this)[(i * this->ncols) + j]);
       }
     }
   } else {
     DataMatrixSP oldMatrix(*this);
     this->resize(this->ncols, this->nrows);
-    for (size_t i = 0; i < oldMatrix.nrows; i++) {
-      for (size_t j = 0; j < oldMatrix.ncols; j++) {
+    for (size_t i = 0; i < oldMatrix.nrows; ++i) {
+      for (size_t j = 0; j < oldMatrix.ncols; ++j) {
         (*this)(j, i) = oldMatrix(i, j);
       }
     }
@@ -215,7 +215,7 @@ size_t DataMatrixSP::appendRow(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataMatrixSP::appendRow : Dimensions do not match");
   }
   this->insert(this->end(), vec.begin(), vec.end());
-  this->nrows++;
+  ++this->nrows;
   return this->nrows - 1;
 }
 
@@ -224,17 +224,17 @@ size_t DataMatrixSP::appendCol(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataMatrixSP::appendCol : Dimensions do not match");
   }
   if (this->nrows == 0) {
-    this->ncols++;
+    ++this->ncols;
     return this->ncols - 1;
   }
   if (this->nrows == 1) {
     this->push_back(vec[0]);
-    this->ncols++;
+    ++this->ncols;
     return this->ncols - 1;
   }
   if (this->ncols == 0) {
     this->assign(vec.begin(), vec.end());
-    this->ncols++;
+    ++this->ncols;
     return this->ncols - 1;
   }
 
@@ -251,7 +251,7 @@ size_t DataMatrixSP::appendCol(const DataVectorSP& vec) {
   this->push_back(vec[retained_rows]);
 
   // append full rows
-  for (size_t push_back_row = retained_rows + 1; push_back_row < this->nrows; push_back_row++) {
+  for (size_t push_back_row = retained_rows + 1; push_back_row < this->nrows; ++push_back_row) {
     this->insert(this->end(), this->row_begin(push_back_row), this->row_end(push_back_row));
     this->push_back(vec[push_back_row]);
   }
@@ -276,7 +276,7 @@ size_t DataMatrixSP::appendCol(const DataVectorSP& vec) {
 void DataMatrixSP::setAll(float value) {
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] = value;
   }
 }
@@ -286,7 +286,7 @@ void DataMatrixSP::getRow(size_t row, DataVectorSP& vec) const {
     throw sgpp::base::data_exception("DataMatrixSP::getRow : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->ncols; i++) {
+  for (size_t i = 0; i < this->ncols; ++i) {
     vec[i] = (*this)[row * ncols + i];
   }
 }
@@ -294,7 +294,7 @@ void DataMatrixSP::getRow(size_t row, DataVectorSP& vec) const {
 void DataMatrixSP::getRow(size_t row, std::vector<float>& vec) const {
   vec.clear();
 
-  for (size_t i = 0; i < this->ncols; i++) {
+  for (size_t i = 0; i < this->ncols; ++i) {
     vec.push_back((*this)[row * ncols + i]);
   }
 }
@@ -306,7 +306,7 @@ void DataMatrixSP::setRow(size_t row, const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataMatrixSP::setRow : \"row\" out of bounds");
   }
 
-  for (size_t i = 0; i < this->ncols; i++) {
+  for (size_t i = 0; i < this->ncols; ++i) {
     (*this)[row * ncols + i] = vec.get(i);
   }
 }
@@ -316,7 +316,7 @@ void DataMatrixSP::getColumn(size_t col, DataVectorSP& vec) const {
     throw sgpp::base::data_exception("DataMatrixSP::getColumn : Dimensions do not match");
   }
 
-  for (size_t j = 0; j < this->nrows; j++) {
+  for (size_t j = 0; j < this->nrows; ++j) {
     vec[j] = (*this)[j * ncols + col];
   }
 }
@@ -326,7 +326,7 @@ void DataMatrixSP::setColumn(size_t col, const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataMatrixSP::setColumn : Dimensions do not match");
   }
 
-  for (size_t j = 0; j < this->nrows; j++) {
+  for (size_t j = 0; j < this->nrows; ++j) {
     (*this)[j * ncols + col] = vec.get(j);
   }
 }
@@ -345,7 +345,7 @@ void DataMatrixSP::add(const DataMatrixSP& matr) {
 
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] += matr[i];
   }
 }
@@ -357,7 +357,7 @@ void DataMatrixSP::sub(const DataMatrixSP& matr) {
 
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] -= matr[i];
   }
 }
@@ -367,10 +367,10 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction) {
     throw sgpp::base::data_exception("DataMatrixSP::addReduce : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->nrows; i++) {
+  for (size_t i = 0; i < this->nrows; ++i) {
     float tmp = 0.0f;
 
-    for (size_t j = 0; j < this->ncols; j++) {
+    for (size_t j = 0; j < this->ncols; ++j) {
       tmp += (*this)[(i * this->ncols) + j];
     }
 
@@ -388,10 +388,10 @@ void DataMatrixSP::addReduce(DataVectorSP& reduction, DataVectorSP& beta, size_t
     throw sgpp::base::data_exception("DataMatrixSP::addReduce : Dimensions do not match (beta)");
   }
 
-  for (size_t i = 0; i < this->nrows; i++) {
+  for (size_t i = 0; i < this->nrows; ++i) {
     float tmp = 0.0f;
 
-    for (size_t j = 0; j < this->ncols; j++) {
+    for (size_t j = 0; j < this->ncols; ++j) {
       tmp += beta[j + start_beta] * (*this)[(i * this->ncols) + j];
     }
 
@@ -404,8 +404,8 @@ void DataMatrixSP::expand(const DataVectorSP& expand) {
     throw sgpp::base::data_exception("DataMatrixSP::expand : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->nrows; i++) {
-    for (size_t j = 0; j < this->ncols; j++) {
+  for (size_t i = 0; i < this->nrows; ++i) {
+    for (size_t j = 0; j < this->ncols; ++j) {
       (*this)[(i * this->ncols) + j] = expand.get(i);
     }
   }
@@ -418,7 +418,7 @@ void DataMatrixSP::componentwise_mult(const DataMatrixSP& matr) {
 
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] *= matr[i];
   }
 }
@@ -430,7 +430,7 @@ void DataMatrixSP::componentwise_div(const DataMatrixSP& matr) {
 
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] /= matr[i];
   }
 }
@@ -438,7 +438,7 @@ void DataMatrixSP::componentwise_div(const DataMatrixSP& matr) {
 void DataMatrixSP::mult(float scalar) {
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] *= scalar;
   }
 }
@@ -452,10 +452,10 @@ void DataMatrixSP::mult(const DataVectorSP& x, DataVectorSP& y) const {
     throw sgpp::base::data_exception("DataMatrixSP::mult : Dimensions do not match (y)");
   }
 
-  for (size_t i = 0; i < nrows; i++) {
+  for (size_t i = 0; i < nrows; ++i) {
     float entry = 0.0f;
 
-    for (size_t j = 0; j < ncols; j++) {
+    for (size_t j = 0; j < ncols; ++j) {
       entry += (*this)[(i * ncols) + j] * x[j];
     }
 
@@ -466,7 +466,7 @@ void DataMatrixSP::mult(const DataVectorSP& x, DataVectorSP& y) const {
 void DataMatrixSP::sqr() {
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] = (*this)[i] * (*this)[i];
   }
 }
@@ -474,7 +474,7 @@ void DataMatrixSP::sqr() {
 void DataMatrixSP::sqrt() {
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] = std::sqrt((*this)[i]);
   }
 }
@@ -482,7 +482,7 @@ void DataMatrixSP::sqrt() {
 void DataMatrixSP::abs() {
   size_t n = nrows * ncols;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     (*this)[i] = std::abs((*this)[i]);
   }
 }
@@ -491,7 +491,7 @@ float DataMatrixSP::sum() const {
   size_t n = nrows * ncols;
   float result = 0.0f;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     result += (*this)[i];
   }
 
@@ -533,10 +533,10 @@ void DataMatrixSP::toString(std::string& text) const {
 
   str << "[";
 
-  for (size_t i = 0; i < nrows; i++) {
+  for (size_t i = 0; i < nrows; ++i) {
     str << "[";
 
-    for (size_t j = 0; j < ncols; j++) {
+    for (size_t j = 0; j < ncols; ++j) {
       if (j != 0) {
         str << ", ";
         // add linebreak for readability
@@ -588,7 +588,7 @@ float DataMatrixSP::min() const {
   size_t n = nrows * ncols;
   float min = std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     if (min > (*this)[i]) {
       min = (*this)[i];
     }
@@ -614,7 +614,7 @@ float DataMatrixSP::max() const {
   size_t n = nrows * ncols;
   float max = -std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     if (max < (*this)[i]) {
       max = (*this)[i];
     }
@@ -654,7 +654,7 @@ void DataMatrixSP::minmax(float* min, float* max) const {
   float min_t = std::numeric_limits<float>::infinity();
   float max_t = -std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     if (min_t > (*this)[i]) {
       min_t = (*this)[i];
     }
@@ -676,9 +676,9 @@ size_t DataMatrixSP::getNumberNonZero() const {
   size_t n = nrows * ncols;
   size_t nonZero = 0;
 
-  for (size_t i = 0; i < n; i++) {
+  for (size_t i = 0; i < n; ++i) {
     if (std::abs((*this)[i]) > 0.0f) {
-      nonZero++;
+      ++nonZero;
     }
   }
 

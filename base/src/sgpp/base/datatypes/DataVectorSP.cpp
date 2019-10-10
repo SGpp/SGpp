@@ -78,9 +78,9 @@ DataVectorSP DataVectorSP::fromString(const std::string& serializedVector) {
       //      size_t next;
       //      float value = std::atof(&(serializedVector[i]));
       size_t endNumber = i;
-      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') endNumber++;
+      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') ++endNumber;
       std::stringstream stream;
-      for (size_t j = i; j < endNumber; j++) {
+      for (size_t j = i; j < endNumber; ++j) {
         stream << serializedVector[j];
       }
       std::string shortString(stream.str());
@@ -89,16 +89,16 @@ DataVectorSP DataVectorSP::fromString(const std::string& serializedVector) {
       v.append(value);
       state = PARSER_STATE::COMMAEND;
       //      i += next;
-      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') ++i;
       i = endNumber;
 
     } else if (state == PARSER_STATE::COMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::VALUE;
-        i++;
+        ++i;
       } else if (c == ']') {
         state = PARSER_STATE::END;
-        i++;
+        ++i;
       }
     } else if (state == PARSER_STATE::END) {
       // only reached if a non-whitespace character was encountered after closing brace
@@ -114,7 +114,7 @@ void DataVectorSP::restructure(std::vector<size_t>& remainingIndex) {
   DataVectorSP oldVector(*this);
   this->resize(remainingIndex.size());
 
-  for (size_t i = 0; i < remainingIndex.size(); i++) {
+  for (size_t i = 0; i < remainingIndex.size(); ++i) {
     (*this)[i] = oldVector[remainingIndex[i]];
   }
 }
@@ -125,20 +125,20 @@ void DataVectorSP::remove(std::vector<size_t>& indexesToRemove) {
 
   // Count the indexes to remove for the case when there are duplicates in indexesToRemove
   size_t numIndexesToRemove = 0;
-  for (size_t i = 0; i < oldVector.size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); ++i) {
     size_t idx = indexesToRemove[i];
     if (!willBeRemoved[idx]) {
       willBeRemoved[idx] = true;
-      numIndexesToRemove++;
+      ++numIndexesToRemove;
     }
   }
 
   this->resize(oldVector.size() - numIndexesToRemove);
   size_t j = 0;
-  for (size_t i = 0; i < oldVector.size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); ++i) {
     if (!willBeRemoved[i]) {
       (*this)[j] = oldVector[i];
-      j++;
+      ++j;
     }
   }
 }
@@ -159,7 +159,7 @@ void DataVectorSP::insert(size_t index, float value) {
 }
 
 void DataVectorSP::setAll(float value) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = value;
   }
 }
@@ -178,7 +178,7 @@ void DataVectorSP::add(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataVectorSP::add : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] += vec[i];
   }
 }
@@ -190,7 +190,7 @@ void DataVectorSP::accumulate(const DataVectorSP& vec) {
 
   float y, t;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     y = vec[i] - this->correction[i];
     t = (*this)[i] + y;
     this->correction[i] = (t - (*this)[i]) - y;
@@ -203,7 +203,7 @@ void DataVectorSP::sub(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataVectorSP::sub : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] -= vec[i];
   }
 }
@@ -213,7 +213,7 @@ void DataVectorSP::componentwise_mult(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataVectorSP::componentwise_mult : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] *= vec[i];
   }
 }
@@ -223,7 +223,7 @@ void DataVectorSP::componentwise_div(const DataVectorSP& vec) {
     throw sgpp::base::data_exception("DataVectorSP::componentwise_div : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] /= vec[i];
   }
 }
@@ -231,7 +231,7 @@ void DataVectorSP::componentwise_div(const DataVectorSP& vec) {
 float DataVectorSP::dotProduct(const DataVectorSP& vec) const {
   float sum = 0.0f;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     sum += (*this)[i] * vec[i];
   }
 
@@ -239,25 +239,25 @@ float DataVectorSP::dotProduct(const DataVectorSP& vec) const {
 }
 
 void DataVectorSP::mult(float scalar) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] *= scalar;
   }
 }
 
 void DataVectorSP::sqr() {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = (*this)[i] * (*this)[i];
   }
 }
 
 void DataVectorSP::sqrt() {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = std::sqrt((*this)[i]);
   }
 }
 
 void DataVectorSP::abs() {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = std::abs((*this)[i]);
   }
 }
@@ -265,7 +265,7 @@ void DataVectorSP::abs() {
 float DataVectorSP::sum() const {
   float result = 0.0f;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     result += (*this)[i];
   }
 
@@ -275,7 +275,7 @@ float DataVectorSP::sum() const {
 float DataVectorSP::maxNorm() const {
   float max = 0.0f;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (max < std::abs((*this)[i])) {
       max = std::abs((*this)[i]);
     }
@@ -310,7 +310,7 @@ float DataVectorSP::l2Norm() const {
 float DataVectorSP::min() const {
   float min = std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (min > (*this)[i]) {
       min = (*this)[i];
     }
@@ -322,7 +322,7 @@ float DataVectorSP::min() const {
 float DataVectorSP::max() const {
   float max = -std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (max < (*this)[i]) {
       max = (*this)[i];
     }
@@ -335,7 +335,7 @@ void DataVectorSP::minmax(float* min, float* max) const {
   float min_t = std::numeric_limits<float>::infinity();
   float max_t = -std::numeric_limits<float>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (min_t > (*this)[i]) {
       min_t = (*this)[i];
     }
@@ -354,7 +354,7 @@ void DataVectorSP::axpy(float a, DataVectorSP& x) {
     return;
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] += a * x[i];
   }
 }
@@ -366,9 +366,9 @@ const float* DataVectorSP::getPointer() const { return this->data(); }
 size_t DataVectorSP::getNumberNonZero() const {
   size_t nonZero = 0;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (std::abs((*this)[i]) > 0.0f) {
-      nonZero++;
+      ++nonZero;
     }
   }
 
@@ -376,7 +376,7 @@ size_t DataVectorSP::getNumberNonZero() const {
 }
 
 void DataVectorSP::partitionClasses(float threshold) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = (*this)[i] > threshold ? 1.0f : -1.0f;
   }
 }
@@ -389,7 +389,7 @@ void DataVectorSP::normalize(float border) {
 
   float delta = (max - min) / (1.0f - 2.0f * border);
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = ((*this)[i] - min) / delta + border;
   }
 }
@@ -402,7 +402,7 @@ void DataVectorSP::toString(std::string& text) const {
 
   str << "[";
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (i != 0) {
       str << ", ";
       // add linebreaks for readability
