@@ -3,6 +3,7 @@
 #include <sgpp/datadriven/algorithm/DBMatBaseObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <vector>
 
 namespace sgpp {
@@ -28,7 +29,8 @@ DBMatBaseObjectStore::DBMatBaseObjectStore(
 }
 
 DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
-    sgpp::base::GeneralGridConfiguration& gridConfig) {
+    sgpp::base::GeneralGridConfiguration& gridConfig,
+    sgpp::datadriven::GeometryConfiguration geometryConfig) {
   // base object that will be transformed
   DBMatOfflinePermutable* baseObject = nullptr;
   // grid configuration of the base object
@@ -37,7 +39,6 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   int baseObjectContainerIndex = this->getBaseObjectContainerIndex(gridConfig);
   // if a suitable object exists, use it
   if (baseObjectContainerIndex != -1) {
-    std::cout << "Obtained Base Object from local store" << std::endl;
     // obtain the object container
     const DBMatBaseObjectStore::ObjectContainer& baseObjectContainer =
         this->getBaseObjectContainer(baseObjectContainerIndex);
@@ -49,7 +50,6 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   // if no suitable object exists locally, and a db path is given, search the db and store the base
   // object if found
   else if (hasDatabase) {
-    std::cout << "Obtained Base Object from database" << std::endl;
     // contruct the database
     DBMatDatabase db(dbFilePath);
     if (db.hasBaseDataMatrix(gridConfig, this->adaptivityConfig, this->regularizationConfig,
@@ -70,31 +70,49 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   }
   // if the object is not available, build it
   if (baseObject == nullptr) {
-    std::cout << "Constructing base object ..." << std::endl;
     // remove 1 elements
     baseGridConfig = PermutationUtil::getNormalizedConfig(gridConfig);
+
+    // If normalized config has dimension 0, component grid has 1 level vector
+    if (baseGridConfig.dim_ == 0) {
+      baseGridConfig = gridConfig;
+    }
 
     baseObject = (DBMatOfflinePermutable*)DBMatOfflineFactory::buildOfflineObject(
         baseGridConfig, this->adaptivityConfig, this->regularizationConfig,
         this->densityEstimationConfig);
     // build grid
-    std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_));
-    grid->getGenerator().anisotropicFull(baseGridConfig.levelVector_);
+    /*std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_));
+    grid->getGenerator().anisotropicFull(baseGridConfig.levelVector_);*/
+
+    std::unique_ptr<Grid> grid;
+    sgpp::datadriven::GridFactory gridFactory;
+
+    sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
+    std::vector<int64_t> dim = geometryConfig.dim;
+
+    // a regular sparse grid is created, if no geometryConfig is defined,
+    if (stencilType == sgpp::datadriven::StencilType::None) {
+      // interaction with size 0
+      std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+      grid = std::unique_ptr<Grid>{gridFactory.createGrid(baseGridConfig, interactions)};
+    } else {
+      grid = std::unique_ptr<Grid>{
+          gridFactory.createGrid(baseGridConfig, gridFactory.getInteractions(stencilType, dim))};
+    }
+
     // build matrix
-    std::cout << "Buildig the base matrix" << std::endl;
     baseObject->buildMatrix(grid.get(), this->regularizationConfig);
     // decompose matrix
-    std::cout << "Decomposing the base matrix" << std::endl;
     baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
-    std::cout << "Storing object" << std::endl;
     // store base objects. Ownership gets transfered to the object's ObjectContainer
     this->putBaseObject(baseGridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
 
-    std::cout << "Constructed base object ..." << std::endl;
   }
   // apply permutation and dimension blow-up
-  baseObject->permutateDecomposition(baseGridConfig, gridConfig);
-  return baseObject;
+  DBMatOfflinePermutable* returnObject = dynamic_cast<DBMatOfflinePermutable*>(baseObject->clone());
+  returnObject->permutateDecomposition(baseGridConfig, gridConfig);
+  return returnObject;
 }
 
 int DBMatBaseObjectStore::getBaseObjectContainerIndex(
@@ -136,7 +154,8 @@ bool DBMatBaseObjectStore::ObjectContainer::configMatches(
   // store is only implemented for component grids
   if (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)
     throw sgpp::base::not_implemented_exception("Only implemented for component grids.");
-  std::vector<size_t> levelVecWithoutOnes = PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_);
+  std::vector<size_t> levelVecWithoutOnes =
+      PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_);
   // check if a permutation exists
   return PermutationUtil::isPermutation(this->gridConfig.levelVector_, levelVecWithoutOnes);
   // remaining grid config
