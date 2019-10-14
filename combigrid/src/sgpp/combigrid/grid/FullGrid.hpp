@@ -39,12 +39,12 @@ class FullGrid {
     return level;
   }
 
-  void setLevel(const LevelVector& level) {
-    this->level = level;
-  }
-
   size_t getLevel(size_t d) const {
     return level[d];
+  }
+
+  void setLevel(const LevelVector& level) {
+    this->level = level;
   }
 
   index_t getMinIndex(size_t d) const {
