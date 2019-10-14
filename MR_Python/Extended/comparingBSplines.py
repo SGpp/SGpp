@@ -266,9 +266,9 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='expPeak', type=str,
+    parser.add_argument('--model', default='test', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=7, type=int,
+    parser.add_argument('--dim', default=1, type=int,
                         help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=5, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
@@ -297,8 +297,8 @@ if __name__ == '__main__':
                         help='calculate l2 error from precalculated data')
     parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Extended/data', type=str,
                         help='path were results are stored and precalculated data is stored')
-    parser.add_argument('--mean', default=1, type=int, help='calculate mean')
-    parser.add_argument('--var', default=1, type=int,
+    parser.add_argument('--mean', default=0, type=int, help='calculate mean')
+    parser.add_argument('--var', default=0, type=int,
                         help='calculate variance')
     parser.add_argument('--quadOrder', default=100, type=int,
                         help='quadrature order for mean and variance calculations')
