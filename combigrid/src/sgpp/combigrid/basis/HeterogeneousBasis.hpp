@@ -98,8 +98,16 @@ class HeterogeneousBasis {
     return bases1d;
   }
 
+  void setBases1D(const std::vector<base::Basis<level_t, index_t>*>& bases1d) {
+    this->bases1d = bases1d;
+  }
+
   bool isHierarchical() const {
     return isHierarchical_;
+  }
+
+  void setIsHierarchical(bool isHierarchical) {
+    isHierarchical_ = isHierarchical;
   }
 
  protected:
