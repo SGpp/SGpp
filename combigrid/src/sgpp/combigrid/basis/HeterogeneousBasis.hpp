@@ -94,7 +94,7 @@ class HeterogeneousBasis {
     return bases1d.size();
   }
 
-  const std::vector<base::Basis<level_t, index_t>*> getBases1d() const {
+  const std::vector<base::Basis<level_t, index_t>*>& getBases1d() const {
     return bases1d;
   }
 
