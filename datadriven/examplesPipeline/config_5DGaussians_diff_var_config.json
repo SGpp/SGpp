@@ -1,0 +1,56 @@
+{
+  "dataSource": {
+    "filePath": "../datasets/visualization/5D_Gaussian_diff_var_SG++.csv",
+    "fileType":"csv",
+    "hasTargets": false,
+    "randomSeed" : 50,
+    "numBatches":1,
+    "validationPortion": 0.0
+  },
+  "scorer": {
+    "metric": "accuracy"
+  },
+"fitter": {
+    "type": "classification",
+    "gridConfig": {
+      "gridType": "linear",
+      "level": 4
+    },
+    "adaptivityConfig": {
+        "numRefinements": 10,
+        "threshold": 0.001,
+        "maxLevelType": false,
+        "noPoints": 10,
+        "refinementIndicator" : "DataBased",
+        "errorBasedRefinement" : true,
+        "errorMinInterval" : 1,
+        "errorBufferSize" : 2,
+        "errorConvergenceThreshold" : 0.001
+    },
+    "regularizationConfig": {
+      "lambda": 1e-2
+    },
+    "densityEstimationConfig" : {
+      "densityEstimationType" : "decomposition",
+      "matrixDecompositionType" : "chol"
+    },
+    "learner" : {
+      "usePrior" : true,
+      "beta" : 1.0
+    }
+  },
+   "visualization": {
+    "generalConfig": {
+      "algorithm":"tsne",
+      "targetFile":"./output",
+      "targetFileType":"json"
+    },
+    "parameters": {
+      "perplexity":30,
+      "theta":0.5,
+      "seed":150,
+      "maxNumberIterations":1000,
+      "numberCores":4
+    }
+  }
+}

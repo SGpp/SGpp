@@ -1,0 +1,62 @@
+{
+	"dataSource": {
+		"filePath": "../datasets/twomoons/twomoons.arff",
+		"hasTargets" : true,
+		"validationPortion" : 0.1,
+		"epochs" : 2,
+		"shuffling" : "random",
+		"randomSeed" : 50,
+		"readinCutoff": -1,
+		"readinClasses": [-1, 1],
+		"readinColumns": [0, 1]
+	},
+	"scorer": {
+		"metric": "Accuracy"
+	},
+	"fitter": {
+		"type": "classification",
+		"gridConfig": {
+			"gridType": "linear",
+			"level": 5
+		},
+		"adaptivityConfig": {
+				"numRefinements": 10,
+				"threshold": 0.001,
+				"maxLevelType": false,
+				"noPoints": 10,
+				"refinementIndicator" : "DataBased",
+				"errorBasedRefinement" : true,
+				"errorMinInterval" : 1,
+				"errorBufferSize" : 2,
+				"errorConvergenceThreshold" : 0.001
+		},
+		"regularizationConfig": {
+			"lambda": 1e-2
+		},
+		"densityEstimationConfig" : {
+			"densityEstimationType" : "decomposition",
+			"matrixDecompositionType" : "chol"
+		},
+		"learner" : {
+			"usePrior" : true,
+			"beta" : 1.0
+		}
+	},
+	 "visualization": {
+    "generalConfig": {
+      "algorithm":"tsne",
+      "targetDirectory":"./output",
+      "targetFileType":"json",
+      "numBatches":1
+    },
+    "parameters": {
+      "perplexity":30,
+      "theta":0.5,
+      "seed":150,
+      "maxNumberIterations":1000,
+      "numberCores":2
+    }
+  }
+}
+
+
