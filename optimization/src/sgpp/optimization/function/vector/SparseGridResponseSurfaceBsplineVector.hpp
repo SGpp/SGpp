@@ -9,8 +9,6 @@
 #include <iomanip>
 #include <iostream>
 #include <memory>
-#include <vector>
-
 #include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
 #include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
@@ -31,6 +29,8 @@
 #include <sgpp/optimization/function/vector/ResponseSurfaceVector.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace optimization {
@@ -47,8 +47,10 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * Constructor
    *
    * @param objectiveFunc		objective Function
-   * @param gridType			type of the interpolants grid/basis
-   * @param degree				degree of the interpolants basis
+   * @param lb              lower parameter boundaries
+   * @param ub              upper parameter boundaries
+   * @param gridType			  type of the interpolants grid/basis
+   * @param degree				  degree of the interpolants basis
    */
   SparseGridResponseSurfaceBsplineVector(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
                                          sgpp::base::DataVector lb, sgpp::base::DataVector ub,
@@ -68,47 +70,93 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
     if (gridType == sgpp::base::GridType::Bspline) {
       grid = std::make_shared<sgpp::base::BsplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
+      // basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
       grid = std::make_shared<sgpp::base::BsplineBoundaryGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
+      // basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
       boundary = true;
     } else if (gridType == sgpp::base::GridType::ModBspline) {
       grid = std::make_shared<sgpp::base::ModBsplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
+      // basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
       grid = std::make_shared<sgpp::base::BsplineClenshawCurtisGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
+      // basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
       grid = std::make_shared<sgpp::base::FundamentalSplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
+      // basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
       grid = std::make_shared<sgpp::base::ModFundamentalSplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
+      // basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBspline) {
       grid = std::make_shared<sgpp::base::NakBsplineGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+      // basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
       grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+      // basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
       boundary = true;
     } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
       grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+      // basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
       grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
-      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      // basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
       boundary = false;
     } else {
       throw sgpp::base::generation_exception(
           "SparseGridResponseSurfaceBsplineVector: gridType not supported.");
+    }
+  }
+
+  /**
+   * Constructor loading an already calculated response surface from serialized grid
+   * and coefficients
+   *
+   * @param objectiveFunc		objective Function
+   * @param lb              lower parameter boundaries
+   * @param ub              upper parameter boundaries
+   * @param gridStr			    string containing a serialized grid
+   * @param degree          basis degree
+   * @param coefficients		interpolatino
+   */
+  SparseGridResponseSurfaceBsplineVector(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
+                                         sgpp::base::DataVector lb, sgpp::base::DataVector ub,
+                                         std::string gridStr, size_t degree,
+                                         sgpp::base::DataMatrix coefficients)
+      : ResponseSurfaceVector(objectiveFunc->getNumberOfParameters(),
+                              objectiveFunc->getNumberOfComponents()),
+        objectiveFunc(objectiveFunc),
+        degree(degree),
+        coefficients(coefficients) {
+    this->lb = lb;
+    this->ub = ub;
+    // dummy values for mean and variance
+    means.resize(numRes, 777);
+    variances.resize(numRes, -1);
+    computedMeanFlag = false;
+    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
+    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
+    std::istringstream gridStream;
+    gridStream.str(gridStr);
+    std::string gridtype;
+    gridStream >> gridtype;
+    grid.reset(sgpp::base::Grid::unserialize(gridStr));
+
+    interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
+    interpolantGradients =
+        std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+
+    boundary = false;
+    if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+      boundary = true;
     }
   }
 
@@ -205,6 +253,13 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   // sgpp::base::DataVector optimize();
 
   /**
+   * Serialize the grid for storing and later usage
+   *
+   * @return   string of the serialized grid
+   */
+  std::string serializeGrid();
+
+  /**
    * @return the interpolation grid
    */
   std::shared_ptr<sgpp::base::Grid> getGrid() { return grid; }
@@ -239,7 +294,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
-  std::shared_ptr<sgpp::base::SBasis> basis;
+  // std::shared_ptr<sgpp::base::SBasis> basis;
   // the interpolation coefficients of shape numGridPoints x numRes
   // Entry [i,j] is the interpolation coefficient for the i'th basis function (grid point) and j'th
   // result entry
@@ -269,7 +324,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * calculates the interpolation coefficients on a given grid
    */
   void calculateInterpolationCoefficients();
-};
+};  // namespace optimization
 
 }  // namespace optimization
 }  // namespace sgpp

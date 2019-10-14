@@ -188,8 +188,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorNRMSE) {
     DataVector errorVec = reSurf.averageNRMSE(testFunction, componentwiseErrors, numMCPoints);
     double averageNRMSE = errorVec[0];
     double averageL2Err = errorVec[1];
-    std::cout << "NRMSE: " << averageNRMSE << "\n";
-    std::cout << "l2 error: " << averageL2Err << "\n";
+    // std::cout << "NRMSE: " << averageNRMSE << "\n";
+    // std::cout << "l2 error: " << averageL2Err << "\n";
     // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
     BOOST_CHECK_SMALL(averageL2Err, epsilon);
     BOOST_CHECK_SMALL(averageNRMSE, epsilon);
@@ -222,6 +222,42 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorIntegral) {
     BOOST_CHECK_SMALL(fabs(realIntegrals[0]), epsilons[t]);
     BOOST_CHECK_SMALL(fabs(realIntegrals[1]), epsilons[t]);
   }
+}
+
+BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
+  double epsilon = 1e-14;
+  size_t dim = 3;
+  size_t m = 2;
+  size_t level = 3;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  size_t degree = 3;
+  DataVector lb = testFunction->getLowerBounds();
+  DataVector ub = testFunction->getUpperBounds();
+  sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub, gridType,
+                                                                    degree);
+  reSurf.regular(level);
+
+  std::string gridStr = reSurf.serializeGrid();
+  DataMatrix coeffs = reSurf.getCoefficients();
+
+  sgpp::optimization::SparseGridResponseSurfaceBsplineVector loadedReSurf(testFunction, lb, ub,
+                                                                          gridStr, degree, coeffs);
+
+  DataVector point(dim, 0.337);
+  DataVector reSurfEval = reSurf.eval(point);
+  DataVector loadedReSurfEval = loadedReSurf.eval(point);
+  DataVector trueEval(m);
+  testFunction->eval(point, trueEval);
+
+  reSurfEval.sub(trueEval);
+  loadedReSurfEval.sub(trueEval);
+
+  double evalErr = reSurfEval.sum();
+  double loadedEvalErr = loadedReSurfEval.sum();
+  // std::cout << "evalErr = " << evalErr << "\n";
+  BOOST_CHECK_SMALL(fabs(evalErr), epsilon);
+  BOOST_CHECK_SMALL(fabs(loadedEvalErr), epsilon);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

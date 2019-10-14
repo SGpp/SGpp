@@ -159,6 +159,12 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getIntegrals() {
 //   return xOpt;
 // }
 
+std::string SparseGridResponseSurfaceBsplineVector::serializeGrid() {
+  std::string gridStr;
+  grid->serialize(gridStr);
+  return gridStr;
+}
+
 // ----------------- auxiliary routines -----------
 
 void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refinementsNum) {

@@ -6,7 +6,6 @@
 // to disable OpenMP multi-threading within Java
 void omp_set_num_threads(int num_threads);
 
-
 // renames
 %rename(OptHashRefinementMultiple)              sgpp::optimization::HashRefinementMultiple;
 %rename(OptIterativeGridGenerator)              sgpp::optimization::IterativeGridGenerator;
