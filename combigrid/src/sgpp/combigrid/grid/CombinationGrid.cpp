@@ -130,6 +130,16 @@ void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
   }
 }
 
+double CombinationGrid::combineValues(const base::DataVector& values) const {
+  return values.dotProduct(coefficients);
+}
+
+void CombinationGrid::combineValues(const base::DataMatrix& values,
+    base::DataVector& result) const {
+  result.resize(values.getNrows());
+  values.mult(coefficients, result);
+}
+
 void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStorage,
     const std::vector<base::DataVector>& values, base::DataVector& result) const {
   const size_t N = gridStorage.getSize();
@@ -178,16 +188,6 @@ void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStora
       }
     }
   }
-}
-
-double CombinationGrid::combineValues(const base::DataVector& values) const {
-  return values.dotProduct(coefficients);
-}
-
-void CombinationGrid::combineValues(const base::DataMatrix& values,
-    base::DataVector& result) const {
-  result.resize(values.getNrows());
-  values.mult(coefficients, result);
 }
 
 void CombinationGrid::distributeValuesToFullGrid(const base::GridStorage& gridStorage,

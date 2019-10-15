@@ -32,15 +32,15 @@ class CombinationGrid {
 
   void combinePoints(base::GridStorage& gridStorage) const;
 
+  double combineValues(const base::DataVector& values) const;
+
+  void combineValues(const base::DataMatrix& values, base::DataVector& result) const;
+
   void combineSparseGridValues(const base::GridStorage& gridStorage,
       const std::vector<base::DataVector>& values, base::DataVector& result) const;
 
   void combineSparseGridValues(const base::GridStorage& gridStorage,
       const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const;
-
-  double combineValues(const base::DataVector& values) const;
-
-  void combineValues(const base::DataMatrix& values, base::DataVector& result) const;
 
   void distributeValuesToFullGrid(const base::GridStorage& gridStorage,
       const base::DataVector& values, const FullGrid& fullGrid, base::DataVector& result) const;
