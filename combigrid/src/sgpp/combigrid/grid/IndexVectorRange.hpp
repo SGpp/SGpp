@@ -40,7 +40,7 @@ class IndexVectorRange {
 
   IndexVectorIterator end() const {
     IndexVectorIterator result(minIndex, maxIndex);
-    result.setSequenceIndex(totalNumberOfIndexVectors);
+    result.setSequenceNumber(totalNumberOfIndexVectors);
     return result;
   }
 

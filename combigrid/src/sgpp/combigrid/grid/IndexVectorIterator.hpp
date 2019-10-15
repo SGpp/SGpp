@@ -19,12 +19,12 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
                                                  size_t, IndexVector*, IndexVector&> {
  public:
   IndexVectorIterator() : dim(0), indexVector(), minIndex(), maxIndex(),
-      numberOfIndexVectors(0), sequenceIndex(0) {
+      numberOfIndexVectors(0), sequenceNumber(0) {
   }
 
   explicit IndexVectorIterator(const FullGrid& grid) : dim(grid.getDimension()),
       indexVector(dim), minIndex(dim), maxIndex(dim),
-      numberOfIndexVectors(dim), sequenceIndex(0) {
+      numberOfIndexVectors(dim), sequenceNumber(0) {
     grid.getMinIndex(minIndex);
     grid.getMaxIndex(maxIndex);
     grid.getNumberOfIndexVectors(numberOfIndexVectors);
@@ -32,7 +32,7 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
 
   IndexVectorIterator(const IndexVector& minIndex, const IndexVector& maxIndex) :
       dim(minIndex.size()), indexVector(dim), minIndex(minIndex), maxIndex(maxIndex),
-      numberOfIndexVectors(dim), sequenceIndex(0) {
+      numberOfIndexVectors(dim), sequenceNumber(0) {
     for (size_t d = 0; d < dim; d++) {
       numberOfIndexVectors[d] = maxIndex[d] - minIndex[d] + 1;
     }
@@ -41,20 +41,20 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
   IndexVectorIterator(const IndexVectorIterator&) = default;
   IndexVectorIterator& operator=(const IndexVectorIterator&) = default;
 
-  size_t getSequenceIndex() const {
-    return sequenceIndex;
+  size_t getSequenceNumber() const {
+    return sequenceNumber;
   }
 
-  void setSequenceIndex(size_t sequenceIndex) {
-    this->sequenceIndex = sequenceIndex;
+  void setSequenceNumber(size_t sequenceNumber) {
+    this->sequenceNumber = sequenceNumber;
   }
 
   IndexVector& operator*() {
-    return operator[](sequenceIndex);
+    return operator[](sequenceNumber);
   }
 
   IndexVector* operator->() {
-    return &operator[](sequenceIndex);
+    return &operator[](sequenceNumber);
   }
 
   IndexVector& operator[](size_t rhs) {
@@ -67,81 +67,81 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
   }
 
   IndexVectorIterator& operator++() {
-    sequenceIndex++;
+    sequenceNumber++;
     return *this;
   }
 
   IndexVectorIterator operator++(int) {
     IndexVectorIterator tmp(*this);
-    sequenceIndex++;
+    sequenceNumber++;
     return tmp;
   }
 
   IndexVectorIterator& operator--() {
-    sequenceIndex--;
+    sequenceNumber--;
     return *this;
   }
 
   IndexVectorIterator operator--(int) {
     IndexVectorIterator tmp(*this);
-    sequenceIndex--;
+    sequenceNumber--;
     return tmp;
   }
 
   IndexVectorIterator operator+(size_t rhs) const {
     IndexVectorIterator tmp(*this);
-    tmp.sequenceIndex += rhs;
+    tmp.sequenceNumber += rhs;
     return tmp;
   }
 
   friend IndexVectorIterator operator+(size_t lhs, const IndexVectorIterator& rhs) {
     IndexVectorIterator tmp(rhs);
-    tmp.sequenceIndex += lhs;
+    tmp.sequenceNumber += lhs;
     return tmp;
   }
 
   IndexVectorIterator operator-(size_t rhs) const {
     IndexVectorIterator tmp(*this);
-    tmp.sequenceIndex -= rhs;
+    tmp.sequenceNumber -= rhs;
     return tmp;
   }
 
   size_t operator-(const IndexVectorIterator& other) const {
-    return sequenceIndex - other.sequenceIndex;
+    return sequenceNumber - other.sequenceNumber;
   }
 
   IndexVectorIterator& operator+=(size_t rhs) {
-    sequenceIndex += rhs;
+    sequenceNumber += rhs;
     return *this;
   }
 
   IndexVectorIterator& operator-=(size_t rhs) {
-    sequenceIndex -= rhs;
+    sequenceNumber -= rhs;
     return *this;
   }
 
   bool operator==(const IndexVectorIterator& other) const {
-    return (sequenceIndex == other.sequenceIndex);
+    return (sequenceNumber == other.sequenceNumber);
   }
 
   bool operator!=(const IndexVectorIterator& other) const {
-    return (sequenceIndex != other.sequenceIndex);
+    return (sequenceNumber != other.sequenceNumber);
   }
 
   bool operator<(const IndexVectorIterator& other) const {
-    return (sequenceIndex < other.sequenceIndex);
+    return (sequenceNumber < other.sequenceNumber);
   }
 
   bool operator>(const IndexVectorIterator& other) const {
-    return (sequenceIndex > other.sequenceIndex);
+    return (sequenceNumber > other.sequenceNumber);
   }
 
   bool operator<=(const IndexVectorIterator& other) const {
-    return (sequenceIndex <= other.sequenceIndex);
+    return (sequenceNumber <= other.sequenceNumber);
   }
 
   bool operator>=(const IndexVectorIterator& other) const {
-    return (sequenceIndex >= other.sequenceIndex);
+    return (sequenceNumber >= other.sequenceNumber);
   }
 
  protected:
@@ -150,7 +150,7 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
   IndexVector minIndex;
   IndexVector maxIndex;
   IndexVector numberOfIndexVectors;
-  size_t sequenceIndex;
+  size_t sequenceNumber;
 };
 
 }  // namespace combigrid
