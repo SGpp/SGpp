@@ -75,7 +75,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
   // build surplus vector
-  alpha = DataVector{grid->getSize()};
+  alpha = DataVector(grid->getSize());
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
@@ -100,15 +100,19 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
-
-    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-      offline->compute_inverse();
-    }
   }
+
+  // todo(): non-parallel version of regularization here?
+  // but not access to path
+
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
+
+  // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+    offline->compute_inverse();
+  }
 
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,

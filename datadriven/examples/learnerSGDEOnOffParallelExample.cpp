@@ -262,7 +262,7 @@ int main(int argc, char *argv[]) {
   // store results (classified data, grids, density functions)
   // learner.storeResults();
 
-//        sgpp::base::DataVector tmp{};
+//        sgpp::base::DataVector tmp;
 //        avgErrorFolds += 1.0 - learner.getAccuracy();
 //        learner.getAvgErrors(tmp);
 //        avgErrorsFolds.add(tmp);

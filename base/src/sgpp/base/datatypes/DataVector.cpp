@@ -34,6 +34,8 @@ DataVector::DataVector(double* input, size_t size) : std::vector<double>(input, 
 
 DataVector::DataVector(std::vector<double> input) : std::vector<double>(input) {}
 
+DataVector::DataVector(std::initializer_list<double> input) : std::vector<double>(input) {}
+
 DataVector::DataVector(std::vector<int> input) {
   // copy data
   this->reserve(input.size());
@@ -76,9 +78,9 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       //      size_t next;
       //      double value = std::atof(&(serializedVector[i]));
       size_t endNumber = i;
-      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') endNumber++;
+      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') ++endNumber;
       std::stringstream stream;
-      for (size_t j = i; j < endNumber; j++) {
+      for (size_t j = i; j < endNumber; ++j) {
         stream << serializedVector[j];
       }
       std::string shortString(stream.str());
@@ -87,16 +89,16 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       v.append(value);
       state = PARSER_STATE::COMMAEND;
       //      i += next;
-      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') i++;
+      //      while (serializedVector[i] != ',' && serializedVector[i] != ']') ++i;
       i = endNumber;
 
     } else if (state == PARSER_STATE::COMMAEND) {
       if (c == ',') {
         state = PARSER_STATE::VALUE;
-        i++;
+        ++i;
       } else if (c == ']') {
         state = PARSER_STATE::END;
-        i++;
+        ++i;
       }
     } else if (state == PARSER_STATE::END) {
       // only reached if a non-whitespace character was encountered after closing brace
@@ -109,38 +111,36 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
 void DataVector::resizeZero(size_t size) { this->resize(size); }
 
 void DataVector::restructure(std::vector<size_t>& remainingIndex) {
-  DataVector newVector;
-  newVector.reserve(remainingIndex.size());
+  DataVector oldVector(*this);
+  this->resize(remainingIndex.size());
 
-  for (size_t i = 0; i < remainingIndex.size(); i++) {
-    newVector.emplace_back((*this)[remainingIndex[i]]);
+  for (size_t i = 0; i < remainingIndex.size(); ++i) {
+    (*this)[i] = oldVector[remainingIndex[i]];
   }
-
-  *this = std::move(newVector);
 }
 
 void DataVector::remove(std::vector<size_t>& indexesToRemove) {
-  DataVector newVector;
+  DataVector oldVector(*this);
   std::vector<bool> willBeRemoved(this->size(), false);
 
   // Count the indexes to remove for the case when there are duplicates in indexesToRemove
   size_t numIndexesToRemove = 0;
-  for (size_t i = 0; i < indexesToRemove.size(); i++) {
+  for (size_t i = 0; i < oldVector.size(); ++i) {
     size_t idx = indexesToRemove[i];
     if (!willBeRemoved[idx]) {
       willBeRemoved[idx] = true;
-      numIndexesToRemove++;
+      ++numIndexesToRemove;
     }
   }
 
-  newVector.reserve(this->size() - numIndexesToRemove);
-  for (size_t i = 0; i < this->size(); i++) {
+  this->resize(oldVector.size() - numIndexesToRemove);
+  size_t j = 0;
+  for (size_t i = 0; i < oldVector.size(); ++i) {
     if (!willBeRemoved[i]) {
-      newVector.emplace_back((*this)[i]);
+      (*this)[j] = oldVector[i];
+      ++j;
     }
   }
-
-  *this = std::move(newVector);
 }
 
 size_t DataVector::append() { return this->append(0.0); }
@@ -159,7 +159,7 @@ void DataVector::insert(size_t index, double value) {
 }
 
 void DataVector::setAll(double value) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = value;
   }
 }
@@ -178,7 +178,7 @@ void DataVector::add(const DataVector& vec) {
     throw sgpp::base::data_exception("DataVector::add : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] += vec[i];
   }
 }
@@ -190,7 +190,7 @@ void DataVector::accumulate(const DataVector& vec) {
 
   double y, t;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     y = vec[i] - this->correction[i];
     t = (*this)[i] + y;
     this->correction[i] = (t - (*this)[i]) - y;
@@ -203,7 +203,7 @@ void DataVector::sub(const DataVector& vec) {
     throw sgpp::base::data_exception("DataVector::sub : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] -= vec[i];
   }
 }
@@ -213,7 +213,7 @@ void DataVector::componentwise_mult(const DataVector& vec) {
     throw sgpp::base::data_exception("DataVector::componentwise_mult : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] *= vec[i];
   }
 }
@@ -223,7 +223,7 @@ void DataVector::componentwise_div(const DataVector& vec) {
     throw sgpp::base::data_exception("DataVector::componentwise_div : Dimensions do not match");
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] /= vec[i];
   }
 }
@@ -231,7 +231,7 @@ void DataVector::componentwise_div(const DataVector& vec) {
 double DataVector::dotProduct(const DataVector& vec) const {
   double sum = 0.0;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     sum += (*this)[i] * vec[i];
   }
 
@@ -239,33 +239,33 @@ double DataVector::dotProduct(const DataVector& vec) const {
 }
 
 void DataVector::mult(double scalar) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] *= scalar;
   }
 }
 
 void DataVector::sqr() {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = (*this)[i] * (*this)[i];
   }
 }
 
 void DataVector::sqrt() {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = std::sqrt((*this)[i]);
   }
 }
 
 void DataVector::abs() {
-  for (size_t i = 0; i < this->size(); i++) {
-    (*this)[i] = std::fabs((*this)[i]);
+  for (size_t i = 0; i < this->size(); ++i) {
+    (*this)[i] = std::abs((*this)[i]);
   }
 }
 
 double DataVector::sum() const {
   double result = 0.0;
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     result += (*this)[i];
   }
 
@@ -275,9 +275,9 @@ double DataVector::sum() const {
 double DataVector::maxNorm() const {
   double max = 0.0;
 
-  for (size_t i = 0; i < this->size(); i++) {
-    if (max < fabs((*this)[i])) {
-      max = fabs((*this)[i]);
+  for (size_t i = 0; i < this->size(); ++i) {
+    if (max < std::abs((*this)[i])) {
+      max = std::abs((*this)[i]);
     }
   }
 
@@ -310,7 +310,7 @@ double DataVector::l2Norm() const {
 double DataVector::min() const {
   double min = std::numeric_limits<double>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (min > (*this)[i]) {
       min = (*this)[i];
     }
@@ -322,7 +322,7 @@ double DataVector::min() const {
 double DataVector::max() const {
   double max = -std::numeric_limits<double>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (max < (*this)[i]) {
       max = (*this)[i];
     }
@@ -335,7 +335,7 @@ void DataVector::minmax(double* min, double* max) const {
   double min_t = std::numeric_limits<double>::infinity();
   double max_t = -std::numeric_limits<double>::infinity();
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (min_t > (*this)[i]) {
       min_t = (*this)[i];
     }
@@ -354,7 +354,7 @@ void DataVector::axpy(double a, DataVector& x) {
     return;
   }
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] += a * x[i];
   }
 }
@@ -366,9 +366,9 @@ const double* DataVector::getPointer() const { return this->data(); }
 size_t DataVector::getNumberNonZero() const {
   size_t nonZero = 0;
 
-  for (size_t i = 0; i < this->size(); i++) {
-    if (fabs((*this)[i]) > 0.0) {
-      nonZero++;
+  for (size_t i = 0; i < this->size(); ++i) {
+    if (std::abs((*this)[i]) > 0.0) {
+      ++nonZero;
     }
   }
 
@@ -376,7 +376,7 @@ size_t DataVector::getNumberNonZero() const {
 }
 
 void DataVector::partitionClasses(double threshold) {
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = (*this)[i] > threshold ? 1.0 : -1.0;
   }
 }
@@ -387,9 +387,9 @@ void DataVector::normalize(double border) {
   double min, max;
   minmax(&min, &max);
 
-  double delta = (max - min) / (1 - 2 * border);
+  double delta = (max - min) / (1.0 - 2.0 * border);
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     (*this)[i] = ((*this)[i] - min) / delta + border;
   }
 }
@@ -402,7 +402,7 @@ void DataVector::toString(std::string& text) const {
 
   str << "[";
 
-  for (size_t i = 0; i < this->size(); i++) {
+  for (size_t i = 0; i < this->size(); ++i) {
     if (i != 0) {
       str << ", ";
       // add linebreaks for readability
