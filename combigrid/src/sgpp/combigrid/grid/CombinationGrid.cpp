@@ -38,48 +38,6 @@ CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
     const base::DataVector& coefficients) : fullGrids(fullGrids), coefficients(coefficients) {
 }
 
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(
-    size_t dim, level_t n) {
-  if (dim == 0) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else if (n == 0) {
-    return std::vector<LevelVector>{LevelVector(dim, 0)};
-  } else {
-    std::vector<LevelVector> result;
-
-    for (level_t l = 0; l <= n; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithBoundary(dim-1, n-l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
-    }
-
-    return result;
-  }
-}
-
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
-    size_t dim, level_t n) {
-  if ((dim == 0) || (n < dim)) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else {
-    std::vector<LevelVector> result;
-
-    for (level_t l = 1; l <= n-dim+1; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithoutBoundary(dim-1, n-l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
-    }
-
-    return result;
-  }
-}
-
 CombinationGrid CombinationGrid::fromRegular(size_t dim, level_t n,
     const HeterogeneousBasis& basis, bool hasBoundary) {
   std::vector<size_t> binomialCoefficients((dim+1)/2);
@@ -292,8 +250,50 @@ void CombinationGrid::setCoefficients(const base::DataVector& coefficients) {
   this->coefficients = coefficients;
 }
 
+std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(
+    size_t dim, level_t n) {
+  if (dim == 0) {
+    return std::vector<LevelVector>();
+  } else if (dim == 1) {
+    return std::vector<LevelVector>{LevelVector{n}};
+  } else if (n == 0) {
+    return std::vector<LevelVector>{LevelVector(dim, 0)};
+  } else {
+    std::vector<LevelVector> result;
+
+    for (level_t l = 0; l <= n; l++) {
+      for (LevelVector& level : enumerateLevelsWithSumWithBoundary(dim-1, n-l)) {
+        level.push_back(l);
+        result.push_back(level);
+      }
+    }
+
+    return result;
+  }
+}
+
+std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
+    size_t dim, level_t n) {
+  if ((dim == 0) || (n < dim)) {
+    return std::vector<LevelVector>();
+  } else if (dim == 1) {
+    return std::vector<LevelVector>{LevelVector{n}};
+  } else {
+    std::vector<LevelVector> result;
+
+    for (level_t l = 1; l <= n-dim+1; l++) {
+      for (LevelVector& level : enumerateLevelsWithSumWithoutBoundary(dim-1, n-l)) {
+        level.push_back(l);
+        result.push_back(level);
+      }
+    }
+
+    return result;
+  }
+}
+
 bool CombinationGrid::findGridPointInFullGrid(const FullGrid& fullGrid,
-    const base::GridPoint& gridPoint, IndexVector& index) const {
+    const base::GridPoint& gridPoint, IndexVector& index) {
   const LevelVector& levelFullGrid = fullGrid.getLevel();
   bool isContained = true;
 

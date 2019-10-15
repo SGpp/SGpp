@@ -24,10 +24,6 @@ class CombinationGrid {
 
   CombinationGrid(const std::vector<FullGrid>& fullGrids, const base::DataVector& coefficients);
 
-  static std::vector<LevelVector> enumerateLevelsWithSumWithBoundary(size_t dim, level_t n);
-
-  static std::vector<LevelVector> enumerateLevelsWithSumWithoutBoundary(size_t dim, level_t n);
-
   static CombinationGrid fromRegular(size_t dim, level_t n, const HeterogeneousBasis& basis,
       bool hasBoundary = true);
 
@@ -62,12 +58,16 @@ class CombinationGrid {
 
   void setCoefficients(const base::DataVector& coefficients);
 
+  static std::vector<LevelVector> enumerateLevelsWithSumWithBoundary(size_t dim, level_t n);
+
+  static std::vector<LevelVector> enumerateLevelsWithSumWithoutBoundary(size_t dim, level_t n);
+
+  static bool findGridPointInFullGrid(const FullGrid& fullGrid, const base::GridPoint& gridPoint,
+      IndexVector& index);
+
  protected:
   std::vector<FullGrid> fullGrids;
   base::DataVector coefficients;
-
-  bool findGridPointInFullGrid(const FullGrid& fullGrid, const base::GridPoint& gridPoint,
-      IndexVector& index) const;
 };
 
 }  // namespace combigrid
