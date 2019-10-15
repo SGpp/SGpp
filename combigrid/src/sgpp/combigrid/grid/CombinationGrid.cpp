@@ -238,15 +238,13 @@ const std::vector<FullGrid>& CombinationGrid::getFullGrids() const {
   return fullGrids;
 }
 
-void CombinationGrid::setFullGrids(const std::vector<FullGrid>& fullGrids) {
-  this->fullGrids = fullGrids;
-}
-
 const base::DataVector& CombinationGrid::getCoefficients() const {
   return coefficients;
 }
 
-void CombinationGrid::setCoefficients(const base::DataVector& coefficients) {
+void CombinationGrid::setFullGridsAndCoefficients(const std::vector<FullGrid>& fullGrids,
+    const base::DataVector& coefficients) {
+  this->fullGrids = fullGrids;
   this->coefficients = coefficients;
 }
 

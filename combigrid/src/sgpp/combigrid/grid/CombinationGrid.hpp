@@ -52,11 +52,10 @@ class CombinationGrid {
 
   const std::vector<FullGrid>& getFullGrids() const;
 
-  void setFullGrids(const std::vector<FullGrid>& fullGrids);
-
   const base::DataVector& getCoefficients() const;
 
-  void setCoefficients(const base::DataVector& coefficients);
+  void setFullGridsAndCoefficients(const std::vector<FullGrid>& fullGrids,
+      const base::DataVector& coefficients);
 
   static std::vector<LevelVector> enumerateLevelsWithSumWithBoundary(size_t dim, level_t n);
 
