@@ -23,7 +23,7 @@ OperationUPFullGrid::OperationUPFullGrid(const FullGrid& grid,
 }
 
 OperationUPFullGrid::OperationUPFullGrid(const FullGrid& grid,
-    const std::vector<OperationPole*> operationPole) : grid(grid), operationPole(operationPole) {
+    const std::vector<OperationPole*>& operationPole) : grid(grid), operationPole(operationPole) {
 }
 
 OperationUPFullGrid::OperationUPFullGrid(const FullGrid& grid, OperationPole& operationPole) :

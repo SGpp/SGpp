@@ -21,7 +21,7 @@ class OperationUPFullGrid {
   OperationUPFullGrid(const FullGrid& grid,
       const std::vector<std::unique_ptr<OperationPole>>& operationPole);
 
-  OperationUPFullGrid(const FullGrid& grid, const std::vector<OperationPole*> operationPole);
+  OperationUPFullGrid(const FullGrid& grid, const std::vector<OperationPole*>& operationPole);
 
   OperationUPFullGrid(const FullGrid& grid, OperationPole& operationPole);
 
