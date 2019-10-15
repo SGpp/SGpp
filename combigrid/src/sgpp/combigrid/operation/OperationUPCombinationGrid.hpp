@@ -27,6 +27,14 @@ class OperationUPCombinationGrid {
 
   void apply(std::vector<base::DataVector>& values);
 
+  const CombinationGrid& getGrid() const;
+
+  void setGrid(const CombinationGrid& grid);
+
+  const std::vector<OperationPole*>& getOperationPole() const;
+
+  void setOperationPole(const std::vector<OperationPole*>& operationPole);
+
  protected:
   CombinationGrid grid;
   std::vector<OperationPole*> operationPole;

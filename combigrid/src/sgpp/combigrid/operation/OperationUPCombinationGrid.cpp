@@ -45,5 +45,21 @@ void OperationUPCombinationGrid::apply(std::vector<base::DataVector>& values) {
   }
 }
 
+const CombinationGrid& OperationUPCombinationGrid::getGrid() const {
+  return grid;
+}
+
+void OperationUPCombinationGrid::setGrid(const CombinationGrid& grid) {
+  this->grid = grid;
+}
+
+const std::vector<OperationPole*>& OperationUPCombinationGrid::getOperationPole() const {
+  return operationPole;
+}
+
+void OperationUPCombinationGrid::setOperationPole(const std::vector<OperationPole*>& operationPole) {
+  this->operationPole = operationPole;
+}
+
 }  // namespace combigrid
 }  // namespace sgpp
