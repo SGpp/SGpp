@@ -15,7 +15,10 @@ namespace combigrid {
 
 using sgpp::base::level_t;
 using sgpp::base::index_t;
+
+/// level multi-index
 typedef std::vector<level_t> LevelVector;
+/// index multi-index
 typedef std::vector<index_t> IndexVector;
 
 }  // namespace combigrid
