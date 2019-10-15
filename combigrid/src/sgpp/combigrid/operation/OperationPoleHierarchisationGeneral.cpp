@@ -56,8 +56,8 @@ void OperationPoleHierarchisationGeneral::apply(base::DataVector& values, size_t
 }
 
 OperationPoleHierarchisationGeneral::HierarchisationGeneralSLE::HierarchisationGeneralSLE(
-    base::Basis<level_t, index_t>& basis, bool isBasisHierarchical,
-    size_t dim, level_t level, bool hasBoundary) :
+    base::Basis<level_t, index_t>& basis, size_t dim, level_t level,
+    bool isBasisHierarchical, bool hasBoundary) :
     basis(basis), isBasisHierarchical_(isBasisHierarchical),
     dim(dim), level(level), hasBoundary_(hasBoundary) {
 }

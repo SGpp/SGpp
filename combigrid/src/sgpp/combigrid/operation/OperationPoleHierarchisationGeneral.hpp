@@ -22,7 +22,7 @@ namespace combigrid {
 class OperationPoleHierarchisationGeneral : public OperationPole {
  public:
   explicit OperationPoleHierarchisationGeneral(base::Basis<level_t, index_t>& basis,
-      bool isBasisHierarchical);
+      bool isBasisHierarchical = true);
 
   ~OperationPoleHierarchisationGeneral() override;
 
@@ -38,8 +38,8 @@ class OperationPoleHierarchisationGeneral : public OperationPole {
  protected:
   class HierarchisationGeneralSLE : public base::SLE {
    public:
-    HierarchisationGeneralSLE(base::Basis<level_t, index_t>& basis, bool isBasisHierarchical,
-        size_t dim, level_t level, bool hasBoundary = true);
+    HierarchisationGeneralSLE(base::Basis<level_t, index_t>& basis, size_t dim, level_t level,
+        bool isBasisHierarchical = true, bool hasBoundary = true);
 
     ~HierarchisationGeneralSLE() override;
 
