@@ -47,5 +47,13 @@ void OperationEvalCombinationGrid::eval(const std::vector<base::DataVector>& sur
   grid.combineValues(values, result);
 }
 
+const CombinationGrid& OperationEvalCombinationGrid::getGrid() const {
+  return grid;
+}
+
+void OperationEvalCombinationGrid::setGrid(const CombinationGrid& grid) {
+  this->grid = grid;
+}
+
 }  // namespace combigrid
 }  // namespace sgpp

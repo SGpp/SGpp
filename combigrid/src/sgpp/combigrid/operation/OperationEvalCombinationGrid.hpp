@@ -25,6 +25,10 @@ class OperationEvalCombinationGrid {
   void eval(const std::vector<base::DataVector>& surpluses,
       const base::DataMatrix& points, base::DataVector& result);
 
+  const CombinationGrid& getGrid() const;
+
+  void setGrid(const CombinationGrid& grid);
+
  protected:
   CombinationGrid grid;
 };
