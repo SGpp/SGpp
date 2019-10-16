@@ -103,16 +103,10 @@ void DBMatOfflineOrthoAdapt::permutateDecomposition(
     permutateMatrix(baseGridConfig, desiredGridCOnfig, this->q_ortho_matrix_, newQ, true);
     // Reassing Q
     this->q_ortho_matrix_ = newQ;
-  } else {
-    std::cout << "Only blow up" << std::endl;
   }
 
   // Multiply dimension blow-up factor to T^-1
-  // dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->t_tridiag_inv_matrix_, true);
-  double dimDelta = desiredGridCOnfig.dim_ - baseGridConfig.dim_;
-  double dimFac = std::pow(3, std::abs(dimDelta) / 3.0);
-  this->t_tridiag_inv_matrix_.mult(dimFac);
-  this->q_ortho_matrix_.mult(dimFac);
+  dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->t_tridiag_inv_matrix_, true);
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix(

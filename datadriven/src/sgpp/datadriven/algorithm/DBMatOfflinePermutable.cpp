@@ -117,7 +117,6 @@ std::vector<size_t> DBMatOfflinePermutable::computePermutation(std::vector<size_
       output.at(i) = oldIndex;
     }
   }
-  std::cout << "Hooo" << std::endl;
   return output;
 }
 
@@ -152,12 +151,6 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
 
       break;
     }
-
-    /*size_t prod = 1;
-    for (size_t i = 0; i < lStar; i++) {
-      prod *= (1 << gridLevel[i]) - 1;
-    }*/
-    //
     size_t prod = preComputations.at(lStar - 1);
 
     result += (prod + (1 << (level[lStar] - 1)) + ((index[lStar] + 1) >> 1) - 3) * mult;
@@ -195,19 +188,18 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::GeneralGridConfiguratio
   }
 
   // Base level vector
-  std::vector<size_t> baseLevelVec = baseGridConfig.levelVector_;
+  std::vector<size_t> baseLevelVec =
+      PermutationUtil::deleteOnesFromLevelVec(baseGridConfig.levelVector_);
+  std::vector<size_t> desiredLevelVec =
+      PermutationUtil::deleteOnesFromLevelVec(desiredGridCOnfig.levelVector_);
 
   // Precomputation for h_inverse
   std::vector<size_t> preComputation = preComputeMatrixIndexForPoint(baseLevelVec);
 
   // compute permutation
-  // std::vector<size_t> permutation = computePermutation(desiredGridCOnfig.levelVector_,
-  // baseGridConfig.levelVector_);
+  std::vector<size_t> permutation = computePermutation(baseLevelVec, desiredLevelVec);
 
   // TODO: Further validation
-
-  std::vector<size_t> desiredLevelVec =
-      PermutationUtil::deleteOnesFromLevelVec(desiredGridCOnfig.levelVector_);
 
   // Permutation
   // First row is never permutated
@@ -258,13 +250,12 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::GeneralGridConfiguratio
             newPoint.index[dim] = i;
             points.push_back(newPoint);
             // Get corresponding matrix row from old Q
-            std::cout << "Old version" << std::endl;
-            std::vector<size_t> baseLevel =
+            /*std::vector<size_t> baseLevel =
                 PermutationUtil::permutateVector(newPoint.level, desiredLevelVec, baseLevelVec);
             std::vector<size_t> baseIndex =
-                PermutationUtil::permutateVector(newPoint.index, desiredLevelVec, baseLevelVec);
-            // std::vector<size_t> baseLevel = applyPermutation(newPoint.level, permutation);
-            // std::vector<size_t> baseIndex = applyPermutation(newPoint.index, permutation);
+                PermutationUtil::permutateVector(newPoint.index, desiredLevelVec, baseLevelVec);*/
+            std::vector<size_t> baseLevel = applyPermutation(newPoint.level, permutation);
+            std::vector<size_t> baseIndex = applyPermutation(newPoint.index, permutation);
 
             size_t correspondingBaseRowIndex =
                 getMatrixIndexForPoint(baseLevel, baseIndex, baseLevelVec, preComputation) - 1;
@@ -297,7 +288,6 @@ void DBMatOfflinePermutable::dimensionBlowUp(sgpp::base::GeneralGridConfiguratio
   if (dimDelta == 0) return;
   if (gridType == sgpp::base::GridType::Linear) {
     double dimFactor = std::pow(3, std::abs(dimDelta));
-    std::cout << "dimension blow up. Factor: " << dimFactor << std::endl;
     if (matrixIsInverse) {
       if (dimDelta > 0)
         baseMatrix.mult(dimFactor);

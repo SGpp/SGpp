@@ -39,11 +39,11 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   int baseObjectContainerIndex = this->getBaseObjectContainerIndex(gridConfig);
   // if a suitable object exists, use it
   if (baseObjectContainerIndex != -1) {
-    // obtain the object container
+    // obtain the objecWt container
     const DBMatBaseObjectStore::ObjectContainer& baseObjectContainer =
         this->getBaseObjectContainer(baseObjectContainerIndex);
     // copy the stored object in order to transform it
-    baseObject = (DBMatOfflinePermutable*)baseObjectContainer.getOfflineObject().clone();
+    baseObject = (DBMatOfflinePermutable*) &baseObjectContainer.getOfflineObject();
     // copy grid config from container
     baseGridConfig = baseObjectContainer.getGridConfig();
   }
@@ -107,7 +107,6 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
     // store base objects. Ownership gets transfered to the object's ObjectContainer
     this->putBaseObject(baseGridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
-
   }
   // apply permutation and dimension blow-up
   DBMatOfflinePermutable* returnObject = dynamic_cast<DBMatOfflinePermutable*>(baseObject->clone());

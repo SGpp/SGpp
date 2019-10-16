@@ -90,8 +90,8 @@ int main(int argc, char** argv) {
                                                                  regConfig.lambda_)};
 
   // Generate sample dataset
-  sgpp::base::DataMatrix samples(100, desiredGridConfig.dim_);
-  for (int i = 0; i < 100; i++) {
+  sgpp::base::DataMatrix samples(1000, desiredGridConfig.dim_);
+  for (int i = 0; i < 1000; i++) {
     sgpp::base::DataVector vec(desiredGridConfig.dim_);
     for (int j = 0; j < desiredGridConfig.dim_; j++) {
       vec.at(j) = (double)std::rand() / RAND_MAX;

@@ -3,6 +3,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -34,7 +35,8 @@ class DBMatBaseObjectStore {
    * @param regularizationConfig the desired regularization configuration
    * @param densityEstimationConfig the desired desityestimation config
    */
-  DBMatOfflinePermutable* getOfflineObject(sgpp::base::GeneralGridConfiguration& gridConfig);
+  DBMatOfflinePermutable* getOfflineObject(sgpp::base::GeneralGridConfiguration& gridConfig,
+                                           sgpp::datadriven::GeometryConfiguration geometryConfig);
 
  protected:
   class ObjectContainer {

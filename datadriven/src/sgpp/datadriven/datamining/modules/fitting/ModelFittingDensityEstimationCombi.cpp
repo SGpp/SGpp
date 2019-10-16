@@ -36,8 +36,7 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
 }
 
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
-    const FitterConfigurationDensityEstimation& config,
-    DBMatBaseObjectStore* objectStore)
+    const FitterConfigurationDensityEstimation& config, DBMatBaseObjectStore* objectStore)
     : ModelFittingDensityEstimationCombi(config) {
   this->hasBaseObjectStore = true;
   this->objectStore = objectStore;
@@ -53,11 +52,17 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   componentConfigs = scheme.getCombiScheme();
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());
-  std::cout << "c" << std::endl;
 
   for (size_t i = 0; i < componentConfigs.size(); i++) {
     FitterConfigurationDensityEstimation newFitterConfig{};
     newFitterConfig.setupDefaults();
+    newFitterConfig.getRegularizationConfig().lambda_ =
+        this->getFitterConfiguration().getRegularizationConfig().lambda_;
+    //
+    newFitterConfig.getGridConfig().generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+    newFitterConfig.getDensityEstimationConfig().decomposition_ =
+        this->getFitterConfiguration().getDensityEstimationConfig().decomposition_;
+    //
     newFitterConfig.getDensityEstimationConfig().type_ = config->getDensityEstimationConfig().type_;
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
     newFitterConfig.getGridConfig().levelVector_.clear();
@@ -67,9 +72,7 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
 
     components.at(i) = createNewModel(newFitterConfig);
-    std::cout << "Created" << std::endl;
     fitted.at(i) = 0;
-    std::cout << "Fitted" << std::endl;
   }
   for (size_t i = 0; i < components.size(); i++) {
     components.at(i)->fit(newDataset);

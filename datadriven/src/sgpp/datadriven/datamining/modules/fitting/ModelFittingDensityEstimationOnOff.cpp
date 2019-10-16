@@ -80,7 +80,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
-  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
@@ -89,6 +88,8 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
+
+  if (regularizationConfig.lambda_ != 0) throw std::invalid_argument("Sapralott");
 
   // If the decompositions method is suitable for the permutation approach
   // and a base object store is specified, get the offline object from the store
@@ -99,11 +100,12 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     // The offline store builds and decomposes a new base object if no base object for the
     // desired configuration is available. Base objects are transformed into the desired
     // object using the permutation approach.
-    offline = this->objectStore->getOfflineObject(gridConfig);
+    offline = this->objectStore->getOfflineObject(gridConfig, geometryConfig);
+    offline->interactions = getInteractions(geometryConfig);
   }
 
   // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
+  else if (!databaseConfig.filepath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filepath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
