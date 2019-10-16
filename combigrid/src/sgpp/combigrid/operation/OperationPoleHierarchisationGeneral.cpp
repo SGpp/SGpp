@@ -14,7 +14,7 @@ namespace combigrid {
 
 OperationPoleHierarchisationGeneral::OperationPoleHierarchisationGeneral(
     base::Basis<level_t, index_t>& basis, bool isBasisHierarchical) :
-    sle(basis, isBasisHierarchical, 0, 0), sleSolver() {
+    sle(basis, 0, 0, isBasisHierarchical), sleSolver() {
 }
 
 OperationPoleHierarchisationGeneral::~OperationPoleHierarchisationGeneral() {
