@@ -57,7 +57,8 @@ const std::vector<OperationPole*>& OperationUPCombinationGrid::getOperationPole(
   return operationPole;
 }
 
-void OperationUPCombinationGrid::setOperationPole(const std::vector<OperationPole*>& operationPole) {
+void OperationUPCombinationGrid::setOperationPole(
+    const std::vector<OperationPole*>& operationPole) {
   this->operationPole = operationPole;
 }
 
