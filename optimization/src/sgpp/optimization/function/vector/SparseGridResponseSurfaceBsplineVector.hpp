@@ -147,11 +147,9 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
     std::string gridtype;
     gridStream >> gridtype;
     grid.reset(sgpp::base::Grid::unserialize(gridStr));
-
     interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
     interpolantGradients =
         std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
-
     boundary = false;
     if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
       boundary = true;

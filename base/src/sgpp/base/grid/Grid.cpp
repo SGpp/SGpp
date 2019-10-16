@@ -604,6 +604,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("nakbsplineboundary", NakBsplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("nakbsplinemodified", NakBsplineModifiedGrid::unserialize));
+    tMap->insert(std::make_pair("nakbsplineextended", NakBsplineExtendedGrid::unserialize));
 #endif
   }
 
@@ -678,6 +679,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
                                                                     "nakbsplineboundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineModified,
                                                                     "nakbsplinemodified"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineExtended,
+                                                                    "nakbsplineextended"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::NakBspline, "nakbspline"));
 #else
@@ -722,6 +725,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakbsplineboundary"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineModified, "nakbsplinemodified"));
+    verboseMap->insert(std::make_pair(GridType::NakBsplineExtended, "nakbsplineextended"));
     verboseMap->insert(std::make_pair(GridType::NakBspline, "nakbspline"));
 #endif
   }
