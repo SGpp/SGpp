@@ -1,3 +1,4 @@
+from vectorFunctions import vectorObjFuncSGpp
 import ipdb
 import matplotlib
 import pysgpp
@@ -8,104 +9,11 @@ import numpy as np
 import pymc3 as pm
 import matplotlib.pyplot as plt
 from sgppOkushiri import okushiri
+from argparse import ArgumentParser
 import sys
+import os
+import pickle
 matplotlib.use("TkAgg")
-
-# TODO: This should be included from vectorFunctions.py!
-
-
-class vectorObjFuncSGpp(pysgpp.VectorFunction):
-    # wraps the objective function for SGpp
-    # NOTE: If we want to optimize we have to introduce an
-    #       objFuncSGppSigned as in scalarFunction.py!
-
-    # input dimension dim
-    # output dimension out
-    def __init__(self, objFunc):
-        self.dim = objFunc.getDim()
-        self.out = objFunc.getOut()
-        self.objFunc = objFunc
-        super().__init__(self.dim, self.out)
-
-    def eval(self, x, value):
-        result = self.objFunc.eval(x)
-        for t in range(self.out):
-            value.set(t, result[t])
-
-    def evalJacobian(self, x):
-        jacobian = self.objFunc.evalJacobian(x)
-        return jacobian
-
-    def getName(self):
-        return self.objFunc.getName()
-
-    def getDim(self):
-        return self.dim
-
-    def getOut(self):
-        return self.out
-
-    def getLowerBounds(self):
-        lb, _ = self.objFunc.getDomain()
-        return lb
-
-    def getUpperBounds(self):
-        _, ub = self.objFunc.getDomain()
-        return ub
-
-    def getDistributions(self):
-        return self.objFunc.getDistributions()
-
-    def getMean(self):
-        return self.objFunc.getMean()
-
-    def getVar(self):
-        return self.objFunc.getVar()
-
-    def cleanUp(self):
-        self.objFunc.cleanUp()
-
-
-##########
-dim = 2
-numTimeSteps = 451
-gridType = 'nakbsplineboundary'
-degree = 3
-maxPoints = 500
-initialLevel = 1
-numRefine = 10
-numDraws = 2000
-numTune = 1000
-numChains = 2
-##########
-
-pyFunc = okushiri(dim, numTimeSteps=numTimeSteps)
-objFunc = vectorObjFuncSGpp(pyFunc)
-
-# set parameter ranges
-lb = pysgpp.DataVector(dim, 0.0)
-ub = pysgpp.DataVector(dim, 1.0)
-
-# create surrogate
-reSurf = pysgpp.SparseGridResponseSurfaceBsplineVector(
-    objFunc, lb, ub, pysgpp.Grid.stringToGridType(gridType), degree)
-reSurf.surplusAdaptive(maxPoints, initialLevel, numRefine)
-print("created I response surface with {} grid points".format(
-    reSurf.getSize()))
-
-# Testing one eval
-# somePoint = pysgpp.DataVector(dim, 0.33)
-# someEval = reSurf.eval(somePoint)
-# print("Here is something for you:")
-# print(someEval)
-
-# measure error of surrogates
-# numErrPoints = 1000
-# componentwiseError = pysgpp.DataVector(len(times))
-# averageL2Error = reSurf.averageL2Error(
-#     I_motor_instance, IComponentwiseError, numErrPoints)
-# print("average I error: {}    (min {} max {})".format(
-#     IAverageL2Error[0], IAverageL2Error[1], IAverageL2Error[2]))
 
 
 class ODEGradop(theano.Op):
@@ -172,42 +80,149 @@ class ODEop(theano.Op):
         return [grad_op_apply]
 
 
-my_ODEop = ODEop(dim, reSurf, numTimeSteps)
+def execute(dim,
+            numTimeSteps,
+            gridType,
+            degree,
+            maxPoints,
+            initialLevel,
+            numRefine,
+            stepType,
+            numDraws,
+            numTune,
+            numChains,
+            input_true,
+            sigma_true):
+    pyFunc = okushiri(dim, numTimeSteps=numTimeSteps)
+    objFunc = vectorObjFuncSGpp(pyFunc)
 
-# create true measurement values
-trueValues = pysgpp.DataVector(numTimeSteps)
-input_true = pysgpp.DataVector(dim, 0.33)
-objFunc.eval(input_true, trueValues)
-# add errors to measurements. Maximum true value is of size 0.012, 1% error
-sigma_true = 0.00012  # =0.01*0.012
-np.random.seed(0)
-Y = np.zeros((numTimeSteps, ))
-for t in range(numTimeSteps):
-    Y[t] = trueValues[t] + (np.random.randn(1) * sigma_true)
+    # set parameter ranges
+    lb = pysgpp.DataVector(dim, 0.5)
+    ub = pysgpp.DataVector(dim, 1.5)
 
-# The probabilistic model
-with pm.Model() as prob_model:
+    # create surrogate
+    reSurf = pysgpp.SparseGridResponseSurfaceBsplineVector(
+        objFunc, lb, ub, pysgpp.Grid.stringToGridType(gridType), degree)
+    reSurf.surplusAdaptive(maxPoints, initialLevel, numRefine)
+    print("created response surface with {} grid points".format(
+        reSurf.getSize()))
 
-    # Priors for unknown model parameters
-    param1 = pm.Uniform('parameter 1', lower=0.0, upper=1.0)
-    param2 = pm.Uniform('parameter 2', lower=0.0, upper=1.0)
-    all_params = pm.math.stack([param1, param2], axis=0)
+    my_ODEop = ODEop(dim, reSurf, numTimeSteps)
 
-    # sigma = pm.HalfNormal('sigma', sd=0.1)
-    sigma = pm.Lognormal('sigma', mu=-1, sd=1)
+    # create true measurement values
+    trueValues = pysgpp.DataVector(numTimeSteps)
+    objFunc.eval(input_true, trueValues)
+    input_true_py = np.zeros(input_true.getSize())
+    for d in range(input_true.getSize()):
+        input_true_py[d] = input_true.get(d)
+    # add errors to measurements.
+    np.random.seed(0)
+    numMeasurements = 5
+    measurements = np.zeros((numTimeSteps, numMeasurements))
+    for m in range(numMeasurements):
+        for t in range(numTimeSteps):
+            measurements[t, m] = trueValues[t] + \
+                (np.random.randn(1) * sigma_true)
 
-    # Forward model
-    ode_sol = my_ODEop(all_params)
-    forward = ode_sol
+    # The probabilistic model
+    with pm.Model() as prob_model:
 
-    # Likelihood
-    Y_obs = pm.Normal('Y_obs', mu=forward, sd=sigma, observed=Y)
-    # Y_obs = pm.Lognormal('Y_obs', mu=pm.math.log(
-    #     forward), sd=sigma, observed=Y)
-    step = pm.Metropolis()
-    trace = pm.sample(draws=numDraws, step=step, tune=numTune,
-                      init='adapt_diag', chains=numChains)  # ,cores=4
+        # Priors for unknown model parameters
+        all_params = pm.Uniform('parameter', lower=0.5, upper=1.5, shape=dim)
 
-with prob_model:
+        # sigma = pm.HalfNormal('sigma', sd=0.1)
+        sigma = pm.Lognormal('sigma', mu=-1, sd=1)
+
+        # Forward model
+        ode_sol = my_ODEop(all_params)
+        forward = ode_sol
+
+        # Likelihood
+        Y_obs = []
+        for m in range(numMeasurements):
+            Y_obs.append(pm.Normal('Y_obs_%i' % m, mu=forward,
+                                   sd=sigma, observed=measurements[:, m]))
+        if stepType == 'Metropolis':
+            step = pm.Metropolis()
+        elif stepType == 'NUTS':
+            step = pm.NUTS()
+        trace = pm.sample(draws=numDraws, step=step, tune=numTune,
+                          init='adapt_diag', chains=numChains)  # ,cores=4
+
+        metaData = {
+            'dim': dim,
+            'numTimeSteps': numTimeSteps,
+            'gridType': gridType,
+            'degree': degree,
+            'maxPoints': maxPoints,
+            'initialLevel': initialLevel,
+            'numRefine': numRefine,
+            'numDraws': numDraws,
+            'numTune': numTune,
+            'numChains': numChains,
+            'stepType': stepType,
+            'numMeasurements': numMeasurements,
+            'sigma_true': sigma_true,
+            'input_true': input_true_py,
+            'measurements': measurements,
+        }
+        savePath = '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/traces'
+        name = 'okushiri_{}D_{}_{}draws_{}tune_{}{}_{}'.format(
+            dim, stepType, numDraws, numTune, gridType, degree, maxPoints)
+        savePath = os.path.join(savePath, name)
+        pm.save_trace(trace, directory=savePath, overwrite=True)
+        with open(savePath+'/metaData.pkl', 'wb') as buff:
+            pickle.dump(metaData, buff)
+        gridStr = reSurf.serializeGrid()
+        with open(savePath+'/grid.dat', 'w+') as fp:
+            fp.write(gridStr)
+        coeffs = reSurf.getCoefficients()
+        coeffs.toFile(savePath + '/coeffs.dat')
+        print('saved data to {}'.format(savePath))
+
+        return trace, prob_model, measurements
+
+
+############################ Main ############################
+if __name__ == '__main__':
+    # parse the input arguments
+    parser = ArgumentParser(description='Get a program and run it with input')
+    parser.add_argument('--demo', default='nothing', type=str,
+                        help='this is how you add arguments')
+
+    args = parser.parse_args()
+    dim = 2
+    numTimeSteps = 451
+    gridType = 'nakbsplineboundary'
+    degree = 3
+    maxPoints = 500
+    initialLevel = 1
+    numRefine = 10
+
+    stepType = 'NUTS'
+    numDraws = 2000
+    numTune = 1000
+    numChains = 2
+
+    input_true = pysgpp.DataVector(dim, 0.77)
+    # Maximum true value is of size 0.012, 1% error
+    sigma_true = 0.00012  # =0.01*0.012
+
+    trace, prob_model, measurements = execute(dim, numTimeSteps, gridType, degree, maxPoints, initialLevel,
+                                              numRefine, stepType, numDraws, numTune, numChains, input_true,
+                                              sigma_true)
+
+    print('Summary:')
+    summary = pm.summary(trace)
+    print(summary)
+
+    print('\n')
+    for d in range(dim):
+        meanPosterior = summary['mean'][d]
+        print('true parameter_{} - posterior mean = {}'.format(d,
+                                                               input_true[d] - meanPosterior))
+    print('true sigma - posterior mean        = {}'.format(
+        sigma_true - summary['mean'][-1]))
+
     pm.traceplot(trace)
-plt.show()
+    plt.show()
