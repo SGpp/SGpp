@@ -153,7 +153,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
 #endif /* USE_SCALAPACK */
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 

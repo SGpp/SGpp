@@ -176,7 +176,7 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
 
-  learnerConfig.beta = 1.0;        // mirrors struct default
+  learnerConfig.learningRate = 1.0;        // mirrors struct default
   learnerConfig.usePrior = false;  // mirrors struct default
 
   // configure geometry configuration

@@ -994,7 +994,7 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   if (hasLearnerConfig) {
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
-    config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
+    config.learningRate = parseDouble(*learnerConfig, "learningRate", defaults.learningRate, "learnerConfig");
     config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior, "learnerConfig");
   }
 
