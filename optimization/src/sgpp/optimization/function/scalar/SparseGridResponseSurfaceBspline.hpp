@@ -44,9 +44,9 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * @param gridType			type of the interpolants grid/basis
    * @param degree				degree of the interpolants basis
    */
-  SparseGridResponseSurfaceBspline(
-      std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc, sgpp::base::DataVector lb,
-      sgpp::base::DataVector ub, sgpp::base::GridType gridType, size_t degree = 3)
+  SparseGridResponseSurfaceBspline(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
+                                   sgpp::base::DataVector lb, sgpp::base::DataVector ub,
+                                   sgpp::base::GridType gridType, size_t degree = 3)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
         gridType(gridType),
@@ -139,10 +139,12 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
    * this is favourable for optimization
    *
    * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
-   * @param gamma 				Ritter Novak adaptivity parameter between 0 and 1
-   * @param verbose				print extra info
+   * @param gamma 				    Ritter Novak adaptivity parameter between 0 and1
+   * @param initialLevel      initial level for the refinement
+   * @param verbose				    print extra info
    */
-  void ritterNovak(size_t maxNumGridPoints, double gamma, bool verbose = false);
+  void ritterNovak(size_t maxNumGridPoints, double gamma, size_t initialLevel = 3,
+                   bool verbose = false);
 
   /**
    * creates a surplus adaptive sparse grid regression approximation

@@ -54,10 +54,10 @@ void SparseGridResponseSurfaceBspline::surplusAdaptive(size_t maxNumGridPoints, 
 }
 
 void SparseGridResponseSurfaceBspline::ritterNovak(size_t maxNumGridPoints, double gamma,
-                                                   bool verbose) {
+                                                   size_t initialLevel, bool verbose) {
   // this uses the default values for Ritter Novaks initial Level, max level, powerMethod
-  sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(*objectiveFunc, *grid,
-                                                                maxNumGridPoints, gamma);
+  sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(
+      *objectiveFunc, *grid, maxNumGridPoints, gamma, initialLevel);
   if (!gridGen.generate()) {
     std::cout << "Grid generation failed, exiting.\n";
   }
