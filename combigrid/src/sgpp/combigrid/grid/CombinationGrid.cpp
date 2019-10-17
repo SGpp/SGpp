@@ -296,8 +296,10 @@ bool CombinationGrid::findGridPointInFullGrid(const FullGrid& fullGrid,
   bool isContained = true;
 
   for (size_t d = 0; d < gridPoint.getDimension(); d++) {
-    if (gridPoint.getLevel(d) <= levelFullGrid[d]) {
-      index[d] = gridPoint.getIndex(d) << (levelFullGrid[d] - gridPoint.getLevel(d));
+    const level_t curLevel = gridPoint.getLevel(d);
+
+    if ((curLevel <= levelFullGrid[d]) && (fullGrid.hasBoundary() || (curLevel >= 1))) {
+      index[d] = gridPoint.getIndex(d) << (levelFullGrid[d] - curLevel);
     } else {
       isContained = false;
       break;
