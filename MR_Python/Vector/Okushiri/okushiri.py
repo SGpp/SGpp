@@ -13,38 +13,37 @@ import numpy as np
 from scipy.optimize import fmin
 
 
-# par parameters
-# n discretiazion size
-# def run(par, n):
+# par   input-wave parameters
+# n     discretiazion size
 def run():
     par = np.loadtxt('Okushiri/data/x.txt')
     n = np.loadtxt('Okushiri/data/gridsize.txt')
     # ------------------------------------------------------------------------------
     # Setup computational domain
     # ------------------------------------------------------------------------------
-    xleft = 0
-    xright = 5.448
-    ybottom = 0
-    ytop = 3.402
-    # rectangular cross mesh
-    points, vertices, boundary = anuga.rectangular_cross(int(n), int(n),
-                                                         xright - xleft, ytop - ybottom,
-                                                         (xleft, ybottom))
+    # xleft = 0
+    # xright = 5.448
+    # ybottom = 0
+    # ytop = 3.402
+    # # rectangular cross mesh
+    # points, vertices, boundary = anuga.rectangular_cross(int(n), int(n),
+    #                                                      xright - xleft, ytop - ybottom,
+    #                                                      (xleft, ybottom))
 
-    newpoints = points.copy()
+    # newpoints = points.copy()
 
-    # make refinement in x direction
-    x = np.multiply([0., 0.1, 0.2, 0.335, 0.925, 1.], max(points[:, 0]))
-    y = [0., 3., 4.25, 4.7, 5.3, max(points[:, 0])]
-    f1 = interp1d(x, y, kind='quadratic')
-    newpoints[:, 0] = f1(points[:, 0])
+    # # make refinement in x direction
+    # x = np.multiply([0., 0.1, 0.2, 0.335, 0.925, 1.], max(points[:, 0]))
+    # y = [0., 3., 4.25, 4.7, 5.3, max(points[:, 0])]
+    # f1 = interp1d(x, y, kind='quadratic')
+    # newpoints[:, 0] = f1(points[:, 0])
 
-    # make refinement in y direction
-    x = np.multiply([0., .125, .3, .7, .9, 1.], max(points[:, 1]))
-    y = [0., 1.25, 1.75, 2.15, 2.65, max(points[:, 1])]
-    f2 = interp1d(x, y, kind='quadratic')
-    newpoipar = np.loadtxt('Okushiri/data/x.txt')
-    n = np.loadtxt('Okushiri/data/gridsize.txt')
+    # # make refinement in y direction
+    # x = np.multiply([0., .125, .3, .7, .9, 1.], max(points[:, 1]))
+    # y = [0., 1.25, 1.75, 2.15, 2.65, max(points[:, 1])]
+    # f2 = interp1d(x, y, kind='quadratic')
+    # newpoipar = np.loadtxt('Okushiri/data/x.txt')
+    # n = np.loadtxt('Okushiri/data/gridsize.txt')
     # ------------------------------------------------------------------------------
     # Setup computational domain
     # ------------------------------------------------------------------------------
@@ -154,6 +153,19 @@ def run():
     wave_function = scipy.interpolate.interp1d(
         t, ynew, kind='zero', fill_value='extrapolate')
 
+    # MR: uncomment to plot input wave
+    # points = np.linspace(-10, 30, 10000)
+    # evals = np.zeros(len(points))
+    # for i in range(len(evals)):
+    #     evals[i] = wave_function(points[i])
+    # plt.figure()
+    # plt.plot(points, evals)
+    # plt.plot(t, residual, 'r')
+    # for k in range(nbump):
+    #     plt.plot(t, par[k]*bump(c[k, :]))
+    # plt.title('Okushiri Input Wave')
+    # plt.show()
+
     # prepare time boundary
     # prepare_timeboundary('/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/boundary_wave_input.tms')
 
@@ -162,7 +174,6 @@ def run():
     # ------------------------------------------------------------------------------
 
     # Create boundary function from input wave [replaced by wave function]
-    # function = anuga.file_function('/home/rehmemk/git/SGpp/MR_Python/Extended/ANUGA/boundary_wave_input.tms', domain)
 
     # Create and assign boundary objects
     Bts = anuga.Transmissive_momentum_set_stage_boundary(domain, wave_function)
@@ -192,8 +203,9 @@ def run():
     yieldstep = 0.05
     finaltime = (numTimeSteps - 1)*yieldstep
     for t in domain.evolve(yieldstep=yieldstep, finaltime=finaltime):
+        # domain.write_time()
 
-                # stage [=height of water]
+        # stage [=height of water]
         stage = domain.quantities['stage'].centroid_values[v]
         # averaging for smoothness
         meanstage[0, k] = np.mean(stage)
