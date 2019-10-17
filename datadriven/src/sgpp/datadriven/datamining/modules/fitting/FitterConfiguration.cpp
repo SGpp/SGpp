@@ -104,8 +104,8 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
 
 void FitterConfiguration::setupDefaults() {
   // (Sebastian Kreisel) The comments "mirrors struct default" are no longer
-  // applicable since all structs now have default values that match the ones
-  // set here. The comments are kept for history / debugging.
+  // applicable since all structs now have default values that (should) 
+  // match the ones set here. The comments are kept for history / debugging.
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
@@ -146,7 +146,7 @@ void FitterConfiguration::setupDefaults() {
   // in the subclass FitterConfigurationDensityEstimation but were moved here
   // to have all of the default value config in this file.
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
-  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default;
   densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default;
