@@ -13,6 +13,7 @@ from argparse import ArgumentParser
 import sys
 import os
 import pickle
+import time
 matplotlib.use("TkAgg")
 
 
@@ -92,7 +93,9 @@ def execute(dim,
             numTune,
             numChains,
             input_true,
-            sigma_true):
+            sigma_true,
+            error_percent,
+            numMeasurements):
     pyFunc = okushiri(dim, numTimeSteps=numTimeSteps)
     objFunc = vectorObjFuncSGpp(pyFunc)
 
@@ -117,7 +120,6 @@ def execute(dim,
         input_true_py[d] = input_true.get(d)
     # add errors to measurements.
     np.random.seed(0)
-    numMeasurements = 5
     measurements = np.zeros((numTimeSteps, numMeasurements))
     for m in range(numMeasurements):
         for t in range(numTimeSteps):
@@ -146,8 +148,10 @@ def execute(dim,
             step = pm.Metropolis()
         elif stepType == 'NUTS':
             step = pm.NUTS()
+        start = time.time()
         trace = pm.sample(draws=numDraws, step=step, tune=numTune,
                           init='adapt_diag', chains=numChains)  # ,cores=4
+        totalSampleTime = time.time()-start
 
         metaData = {
             'dim': dim,
@@ -165,10 +169,12 @@ def execute(dim,
             'sigma_true': sigma_true,
             'input_true': input_true_py,
             'measurements': measurements,
+            'error_percent': error_percent,
+            'totalSampleTime': totalSampleTime
         }
         savePath = '/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri/data/traces'
-        name = 'okushiri_{}D_{}_{}draws_{}tune_{}{}_{}'.format(
-            dim, stepType, numDraws, numTune, gridType, degree, maxPoints)
+        name = 'okushiri_{}D_{}_{}draws_{}tune_{}{}_{}grid_{}errp_{}msr'.format(
+            dim, stepType, numDraws, numTune, gridType, degree, maxPoints, error_percent, numMeasurements)
         savePath = os.path.join(savePath, name)
         pm.save_trace(trace, directory=savePath, overwrite=True)
         with open(savePath+'/metaData.pkl', 'wb') as buff:
@@ -203,14 +209,16 @@ if __name__ == '__main__':
     numDraws = 2000
     numTune = 1000
     numChains = 2
-
+    numMeasurements = 10
     input_true = pysgpp.DataVector(dim, 0.77)
-    # Maximum true value is of size 0.012, 1% error
-    sigma_true = 0.00012  # =0.01*0.012
+    # TODO: Check for the final domain we choose if the max is still 0.012!
+    # Maximum true value is of size 0.012, p% error -> sigma = 0.01*p*0.012
+    error_percent = 10
+    sigma_true = 0.01*error_percent*0.012
 
     trace, prob_model, measurements = execute(dim, numTimeSteps, gridType, degree, maxPoints, initialLevel,
                                               numRefine, stepType, numDraws, numTune, numChains, input_true,
-                                              sigma_true)
+                                              sigma_true, error_percent, numMeasurements)
 
     print('Summary:')
     summary = pm.summary(trace)
