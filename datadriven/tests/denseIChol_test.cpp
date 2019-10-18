@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
   // clang-format on
 
   auto size = 5u;
-  DataMatrix A{data.data(), size, size};
+  DataMatrix A(data, size);
   auto B = A;
 
   // decomp:
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
       0.707106781186547, 0, 1.492405014489273, 0.565333771083307, 3.599045012221992};
   // clang-format on
 
-  DataMatrix A{data.data(), size, size};
+  DataMatrix A(data, size);
   auto B = A;
 
   // decomp:

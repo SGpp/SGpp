@@ -32,12 +32,14 @@ class MultipleClassRefinementFunctor: public ZeroCrossingRefinementFunctor {
    *
    * @param grids Vector of grids. current_grid_index specifies the grid to be refined
    * @param alphas Vector of surpluses related to the grids
+   * @param priors Vector of priors related to the classificator
    * @param refinements_num Maximum number of refinements done
    * @param partCombined Number of refinement done in the combined grid
    * @param thresh Threshold for refinement scores
    */
   MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
+                                std::vector<double> priors,
                                 size_t refinements_num,
                                 size_t partCombined,
                                 double thresh);

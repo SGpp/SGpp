@@ -114,11 +114,13 @@ class ModelFittingClassification : public ModelFittingBase {
   /**
    * Returns the refinement functor suitable for the model settings.
    * @param grids vector of pointers to grids for each class
-   * @param surpluses vector of pointers to the suprluses for each class
+   * @param surpluses vector of pointers to the surpluses for each class
+   * @param priors vector of priors for each class
    * @return pointer to a refinement functor that suits the model settings
    */
   MultiGridRefinementFunctor* getRefinementFunctor(std::vector<Grid*> grids,
-                                                   std::vector<DataVector*> surpluses);
+                                                   std::vector<DataVector*> surpluses,
+                                                   std::vector<double> priors);
 
   /**
    * Creates a density estimation model that fits the model settings.

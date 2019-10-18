@@ -61,6 +61,12 @@ BOOST_FIXTURE_TEST_SUITE(testDataVectorSP, FixtureDataVectorSP)
 BOOST_AUTO_TEST_CASE(testConstructor) {
   DataVectorSP d = DataVectorSP(2);
   BOOST_CHECK_EQUAL(d.getSize(), 2U);
+
+  d = DataVectorSP({1.0f, 0.5f, -2.0f});
+  BOOST_CHECK_EQUAL(d.getSize(), 3U);
+  BOOST_CHECK_EQUAL(d[0], 1.0f);
+  BOOST_CHECK_EQUAL(d[1], 0.5f);
+  BOOST_CHECK_EQUAL(d[2], -2.0f);
 }
 
 BOOST_AUTO_TEST_CASE(testSetUp) {
@@ -147,7 +153,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataVectorSP(d_rand);
   d.normalize();
   float border = 0.0f;
-  float delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
+  float delta = (d_rand.max() - d_rand.min()) / (1.0f - 2.0f * border);
   for (int i = 0; i < N; i++) {
     BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min()) / delta + border, tol);
   }
@@ -156,7 +162,7 @@ BOOST_AUTO_TEST_CASE(testOps) {
   d = DataVectorSP(d_rand);
   border = 3.64f;
   d.normalize(border);
-  delta = (d_rand.max() - d_rand.min()) / (1 - 2 * border);
+  delta = (d_rand.max() - d_rand.min()) / (1.0f - 2.0f * border);
   for (int i = 0; i < N; i++) {
     BOOST_CHECK_CLOSE(d[i], (d_rand[i] - d_rand.min()) / delta + border, tol);
   }
@@ -215,16 +221,20 @@ BOOST_AUTO_TEST_CASE(testOps) {
 
   // componentwise mult
   d = DataVectorSP(d_rand);
+
   d.componentwise_mult(d2);
+
   for (int i = 0; i < N; ++i) {
     BOOST_CHECK_EQUAL(d[i], d_rand[i] * static_cast<float>(i));
   }
 
   // componentwise div
   d = DataVectorSP(d_rand);
+
   for (int i = 0; i < N; ++i) {
     d2[i] = static_cast<float>(i) + 1.0f;
   }
+
   d.componentwise_div(d2);
 
   for (int i = 0; i < N; ++i) {

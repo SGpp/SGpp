@@ -214,16 +214,18 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 }
 
 MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
-    std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
+    std::vector<Grid*> grids, std::vector<DataVector*> surpluses, std::vector<double> priors) {
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus: {
-      return new MultiSurplusRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+      return new MultiSurplusRefinementFunctor(grids, surpluses,
+                                               refinementConfig.noPoints_,
                                                refinementConfig.levelPenalize,
                                                refinementConfig.threshold_);
     }
     case RefinementFunctorType::ZeroCrossing: {
-      return new ZeroCrossingRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+      return new ZeroCrossingRefinementFunctor(grids, surpluses, priors,
+                                               refinementConfig.noPoints_,
                                                refinementConfig.levelPenalize,
                                                refinementConfig.precomputeEvaluations);
     }
@@ -240,7 +242,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
           return nullptr;
         }
       }
-      return new DataBasedRefinementFunctor(grids, surpluses, &(dataset->getData()),
+      return new DataBasedRefinementFunctor(grids, surpluses, priors, &(dataset->getData()),
                                             &(dataset->getTargets()), refinementConfig.noPoints_,
                                             refinementConfig.levelPenalize,
                                             refinementConfig.scalingCoefficients);
@@ -252,13 +254,15 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+      return new GridPointBasedRefinementFunctor(grids, surpluses, priors,
+                                                 refinementConfig.noPoints_,
                                                  refinementConfig.levelPenalize,
                                                  refinementConfig.precomputeEvaluations,
                                                  refinementConfig.threshold_);
     }
     case RefinementFunctorType::MultipleClass: {
-      return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
+      return new MultipleClassRefinementFunctor(grids, surpluses, priors,
+                                                refinementConfig.noPoints_, 0,
                                                 refinementConfig.threshold_);
     }
   }
@@ -279,15 +283,28 @@ bool ModelFittingClassification::refine() {
     // Assemble grids and alphas
     std::vector<Grid*> grids;
     std::vector<DataVector*> surpluses;
+    std::vector<double> priors;
     grids.reserve(models.size());
     surpluses.reserve(models.size());
+    bool usePrior = this->config->getLearnerConfig().usePrior;
+    size_t numInstances = 0;
+    for (auto& p : classIdx) {
+      size_t idx = p.second;
+      numInstances += classNumberInstances[idx];
+    }
     for (size_t idx = 0; idx < models.size(); idx++) {
       grids.push_back(&(models[idx]->getGrid()));
       surpluses.push_back(&(models[idx]->getSurpluses()));
+      if (usePrior) {
+        priors.push_back(
+            static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances));
+      } else {
+        priors.push_back(1.0);
+      }
     }
 
     // Create a refinement functor
-    MultiGridRefinementFunctor* func = getRefinementFunctor(grids, surpluses);
+    MultiGridRefinementFunctor* func = getRefinementFunctor(grids, surpluses, priors);
 
     // Apply refinements for all models
     if (func) {
