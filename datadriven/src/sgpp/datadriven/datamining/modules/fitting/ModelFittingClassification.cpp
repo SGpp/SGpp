@@ -260,7 +260,8 @@ bool ModelFittingClassification::refine() {
       grids.push_back(&(models[idx]->getGrid()));
       surpluses.push_back(&(models[idx]->getSurpluses()));
       if (usePrior) {
-        priors.push_back(static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances));
+        priors.push_back(
+            static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances));
       } else {
         priors.push_back(1.0);
       }
