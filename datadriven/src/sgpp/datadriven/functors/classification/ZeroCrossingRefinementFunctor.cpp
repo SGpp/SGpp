@@ -23,11 +23,12 @@ namespace datadriven {
   ZeroCrossingRefinementFunctor::
   ZeroCrossingRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
+                                std::vector<double> priors,
                                 size_t refinements_num,
                                 bool level_penalize,
                                 bool pre_compute,
                                 double thresh) :
-    grids(grids), alphas(alphas), current_grid_index(0),
+    grids(grids), alphas(alphas), priors(priors), current_grid_index(0),
     refinements_num(refinements_num), threshold(thresh),
     level_penalize(level_penalize),
     pre_compute(pre_compute), pre_comp_evals() {
@@ -134,7 +135,7 @@ namespace datadriven {
       for (size_t j = 0; j < grids.size(); j++) {
         std::unique_ptr<base::OperationEval>
           opEval(op_factory::createOperationEval(*grids.at(j)));
-        double eval = opEval->eval(*alphas.at(j), coords);
+        double eval = (opEval->eval(*alphas.at(j), coords))*priors.at(j);
         evals.push_back(eval);
       }
     }
@@ -177,7 +178,7 @@ namespace datadriven {
           grids.at(j)->getStorage().getPoint(k).getStandardCoordinates(p);
           key = p.toString();
           if (pre_comp_evals.at(i).count(key) == 0) {
-            v = opEval->eval(*alphas.at(i), p);
+            v = (opEval->eval(*alphas.at(i), p))*priors.at(i);
             pre_comp_evals.at(i).insert(std::pair<std::string, double>(key,
                                                                        v));
           }
