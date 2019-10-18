@@ -372,13 +372,16 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
 
   // Copy the vector of grids for typecasting
   std::vector<Grid*> gridVector;
+  std::vector<double> priorVector;
   gridVector.reserve(grids.size());
   for (size_t idx = 0; idx < grids.size(); idx++) {
     gridVector.push_back(&(*(grids[idx])));
+    priorVector.push_back(prior.at(classLabels[idx]));
   }
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, adaptivityConfig.noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, priorVector,
+                                         adaptivityConfig.noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -392,7 +395,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-    gridVector, alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
+    gridVector, alphas, priorVector, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
