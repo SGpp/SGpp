@@ -42,9 +42,9 @@
 			"beta" : 1.0
 		}
 	},
-	 "visualization": {
+	"visualization": {
     "generalConfig": {
-      "algorithm":"tsne",
+      "algorithm":["tsne", "heatmaps"],
       "targetFile":"./output",
       "targetFileType":"csv",
       "numBatches":1

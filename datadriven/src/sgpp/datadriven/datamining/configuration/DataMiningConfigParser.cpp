@@ -548,7 +548,7 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
      static_cast<DictNode *>(&(*configFile)[visualization]["generalConfig"]);
 
     std::cout << "Starting reading visualization " << std::endl;
-    config.algorithm = parseString(*visualizationGeneralConfig, "algorithm",
+    config.algorithm = parseStringArray(*visualizationGeneralConfig, "algorithm",
      defaults.algorithm, "visualization");
 
     config.targetDirectory = parseString(*visualizationGeneralConfig, "targetDirectory",
@@ -761,6 +761,28 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, con
       std::vector<double> array;
       for (size_t i = 0; i < dict[key].size(); ++i) {
         array.push_back(dict[key][i].getDouble());
+      }
+      return array;
+    } catch (json_exception&) {
+      std::string errorMsg = "# Failed to parse double array" + parentNode + "[" + key +
+                             "] from string" + dict[key].get() + ".";
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
+    return defaultValue;
+  }
+}
+
+
+std::vector<std::string> DataMiningConfigParser::parseStringArray(json::JSON::DictNode &dict,
+    const std::string &key, std::vector<std::string> defaultValue, const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<std::string> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        array.push_back(dict[key][i].get());
       }
       return array;
     } catch (json_exception&) {

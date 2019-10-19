@@ -77,9 +77,12 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
   {
     #pragma omp section
     {
-      DataMatrix heatMapClassificationMatrix;
-      initializeMatrices(model, heatMapClassificationMatrix);
-      getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
+      if(std::find(config.getGeneralConfig().algorithm.begin(),
+                   config.getGeneralConfig().algorithm.end(), "heatmaps") != config.getGeneralConfig().algorithm.end()) {
+        DataMatrix heatMapClassificationMatrix;
+        initializeMatrices(model, heatMapClassificationMatrix);
+        getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
+      }
     }
     /* To be added after tsne is functioning again
      * #pragma omp section
@@ -134,11 +137,19 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         {
           #pragma omp section
           {
-            getLinearCuts(**currentModel, currentDirectory, cutMatrixThread);
+            if(std::find(config.getGeneralConfig().algorithm.begin(),
+                         config.getGeneralConfig().algorithm.end(), "linearcuts")
+                         != config.getGeneralConfig().algorithm.end()) {
+              getLinearCuts(**currentModel, currentDirectory, cutMatrixThread);
+            }
           }
           #pragma omp section
           {
-            getHeatmap(**currentModel, currentDirectory, heatMapMatrixThread);
+            if(std::find(config.getGeneralConfig().algorithm.begin(),
+                         config.getGeneralConfig().algorithm.end(), "heatmaps")
+                         != config.getGeneralConfig().algorithm.end()) {
+              getHeatmap(**currentModel, currentDirectory, heatMapMatrixThread);
+            }
           }
         }
       }
