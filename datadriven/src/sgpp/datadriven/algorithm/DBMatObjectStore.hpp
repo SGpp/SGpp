@@ -8,13 +8,13 @@
 namespace sgpp {
 namespace datadriven {
 
-class DBMatBaseObjectStore {
+class DBMatObjectStore {
  public:
-  DBMatBaseObjectStore(sgpp::base::AdaptivityConfiguration adaptivityConfig,
-                       sgpp::datadriven::RegularizationConfiguration regularizationConfig,
-                       sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig);
+  DBMatObjectStore(sgpp::base::AdaptivityConfiguration adaptivityConfig,
+                   sgpp::datadriven::RegularizationConfiguration regularizationConfig,
+                   sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig);
 
-  explicit DBMatBaseObjectStore(
+  explicit DBMatObjectStore(
       const std::string& fileName, sgpp::base::AdaptivityConfiguration adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig);

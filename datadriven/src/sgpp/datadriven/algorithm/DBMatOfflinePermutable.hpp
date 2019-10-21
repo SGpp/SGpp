@@ -33,8 +33,13 @@ class DBMatOfflinePermutable : public DBMatOffline {
   void permutateLhsMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,
                           sgpp::base::GeneralGridConfiguration desiredGridCOnfig);
 
+  
   virtual void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
                                       sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
+
+  virtual DBMatOfflinePermutable& getPermutatedDecomposition(
+      sgpp::base::GeneralGridConfiguration baseGridConfig,
+      sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
 
  protected:
   DBMatOfflinePermutable();
@@ -42,7 +47,7 @@ class DBMatOfflinePermutable : public DBMatOffline {
   std::vector<size_t> preComputeMatrixIndexForPoint(std::vector<size_t> level);
 
   std::vector<size_t> computePermutation(std::vector<size_t> baseLevel,
-                                                            std::vector<size_t> desiredLevel);
+                                         std::vector<size_t> desiredLevel);
   inline std::vector<size_t> applyPermutation(std::vector<size_t> vector,
                                               std::vector<size_t> permutation);
 

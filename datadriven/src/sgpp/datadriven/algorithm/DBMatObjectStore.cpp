@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatBaseObjectStore.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
@@ -8,7 +8,7 @@
 
 namespace sgpp {
 namespace datadriven {
-DBMatBaseObjectStore::DBMatBaseObjectStore(
+DBMatObjectStore::DBMatObjectStore(
     sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig)
@@ -18,7 +18,7 @@ DBMatBaseObjectStore::DBMatBaseObjectStore(
   this->densityEstimationConfig = densityEstimationConfig;
 }
 
-DBMatBaseObjectStore::DBMatBaseObjectStore(
+DBMatObjectStore::DBMatObjectStore(
     const std::string& filePath, sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig)
@@ -28,7 +28,7 @@ DBMatBaseObjectStore::DBMatBaseObjectStore(
   this->densityEstimationConfig = densityEstimationConfig;
 }
 
-DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
+DBMatOfflinePermutable* DBMatObjectStore::getOfflineObject(
     sgpp::base::GeneralGridConfiguration& gridConfig,
     sgpp::datadriven::GeometryConfiguration geometryConfig) {
   // base object that will be transformed
@@ -40,10 +40,10 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
   // if a suitable object exists, use it
   if (baseObjectContainerIndex != -1) {
     // obtain the objecWt container
-    const DBMatBaseObjectStore::ObjectContainer& baseObjectContainer =
+    const DBMatObjectStore::ObjectContainer& baseObjectContainer =
         this->getBaseObjectContainer(baseObjectContainerIndex);
     // copy the stored object in order to transform it
-    baseObject = (DBMatOfflinePermutable*) &baseObjectContainer.getOfflineObject();
+    baseObject = (DBMatOfflinePermutable*)&baseObjectContainer.getOfflineObject();
     // copy grid config from container
     baseGridConfig = baseObjectContainer.getGridConfig();
   }
@@ -77,17 +77,14 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     if (baseGridConfig.dim_ == 0) {
       baseGridConfig = gridConfig;
     }
-
+    // Instanciate base offline object
     baseObject = (DBMatOfflinePermutable*)DBMatOfflineFactory::buildOfflineObject(
         baseGridConfig, this->adaptivityConfig, this->regularizationConfig,
         this->densityEstimationConfig);
-    // build grid
-    /*std::unique_ptr<Grid> grid(sgpp::base::Grid::createLinearGrid(baseGridConfig.dim_));
-    grid->getGenerator().anisotropicFull(baseGridConfig.levelVector_);*/
 
+    // build grid with geometry config
     std::unique_ptr<Grid> grid;
     sgpp::datadriven::GridFactory gridFactory;
-
     sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
     std::vector<int64_t> dim = geometryConfig.dim;
 
@@ -105,16 +102,17 @@ DBMatOfflinePermutable* DBMatBaseObjectStore::getOfflineObject(
     baseObject->buildMatrix(grid.get(), this->regularizationConfig);
     // decompose matrix
     baseObject->decomposeMatrix(this->regularizationConfig, this->densityEstimationConfig);
-    // store base objects. Ownership gets transfered to the object's ObjectContainer
+    // store base objects, ownership gets transfered to the object's ObjectContainer
     this->putBaseObject(baseGridConfig, std::unique_ptr<DBMatOfflinePermutable>(baseObject));
   }
-  // apply permutation and dimension blow-up
+  // copy return instance from base object 
   DBMatOfflinePermutable* returnObject = dynamic_cast<DBMatOfflinePermutable*>(baseObject->clone());
+  // apply permutation and dimension blow-up
   returnObject->permutateDecomposition(baseGridConfig, gridConfig);
   return returnObject;
 }
 
-int DBMatBaseObjectStore::getBaseObjectContainerIndex(
+int DBMatObjectStore::getBaseObjectContainerIndex(
     sgpp::base::GeneralGridConfiguration& gridConfig) {
   // Iterate over objects to find match
   for (int i = 0; i < this->objects.size(); i++) {
@@ -124,31 +122,31 @@ int DBMatBaseObjectStore::getBaseObjectContainerIndex(
   return -1;
 }
 
-const DBMatBaseObjectStore::ObjectContainer& DBMatBaseObjectStore::getBaseObjectContainer(
+const DBMatObjectStore::ObjectContainer& DBMatObjectStore::getBaseObjectContainer(
     int index) const {
   return this->objects.at(index);
 }
 
-void DBMatBaseObjectStore::putBaseObject(sgpp::base::GeneralGridConfiguration& gridConfig,
+void DBMatObjectStore::putBaseObject(sgpp::base::GeneralGridConfiguration& gridConfig,
                                          std::unique_ptr<DBMatOfflinePermutable> object) {
   this->objects.push_back(ObjectContainer{gridConfig, std::move(object)});
 }
 
-DBMatBaseObjectStore::ObjectContainer::ObjectContainer(
+DBMatObjectStore::ObjectContainer::ObjectContainer(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     std::unique_ptr<const DBMatOfflinePermutable> offlineObject)
     : gridConfig(gridConfig), offlineObject(std::move(offlineObject)) {}
 
-const DBMatOfflinePermutable& DBMatBaseObjectStore::ObjectContainer::getOfflineObject() const {
+const DBMatOfflinePermutable& DBMatObjectStore::ObjectContainer::getOfflineObject() const {
   return *(this->offlineObject);
 }
 
-const sgpp::base::GeneralGridConfiguration& DBMatBaseObjectStore::ObjectContainer::getGridConfig()
+const sgpp::base::GeneralGridConfiguration& DBMatObjectStore::ObjectContainer::getGridConfig()
     const {
   return this->gridConfig;
 }
 
-bool DBMatBaseObjectStore::ObjectContainer::configMatches(
+bool DBMatObjectStore::ObjectContainer::configMatches(
     const sgpp::base::GeneralGridConfiguration& gridConfig) {
   // store is only implemented for component grids
   if (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)
