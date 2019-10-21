@@ -19,14 +19,14 @@ class DBMatObjectStore {
                  const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                  const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                  const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-                 std::unique_ptr<const DBMatOffline> object);
+                 const DBMatOffline* object);
 
   const DBMatOfflinePermutable* getBaseObject(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, 
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       sgpp::base::GeneralGridConfiguration& baseGridConfig);
 
   const DBMatOffline* getObject(
@@ -51,14 +51,17 @@ class DBMatObjectStore {
 
     const sgpp::base::GeneralGridConfiguration& getGridConfig() const;
 
-    bool configMatches(const sgpp::base::GeneralGridConfiguration& gridConfig, bool searchBase);
+    bool configMatches(const sgpp::base::GeneralGridConfiguration& gridConfig,
+                       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
+                       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+                       const sgpp::datadriven::DensityEstimationConfiguration&
+                           densityEstimationConfig, bool searchBase);
 
    private:
     sgpp::base::GeneralGridConfiguration gridConfig;
     sgpp::datadriven::GeometryConfiguration geometryConfig;
     sgpp::base::AdaptivityConfiguration adaptivityConfig;
-    sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-    sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
     RegularizationConfiguration regularizationConfig;
     DensityEstimationConfiguration densityEstimationConfig;
     std::unique_ptr<const DBMatOffline> offlineObject;

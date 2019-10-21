@@ -69,7 +69,6 @@ class DBMatDatabase {
    */
   std::string& getDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
-      const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);

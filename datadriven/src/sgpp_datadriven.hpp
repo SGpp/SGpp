@@ -37,15 +37,18 @@
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>

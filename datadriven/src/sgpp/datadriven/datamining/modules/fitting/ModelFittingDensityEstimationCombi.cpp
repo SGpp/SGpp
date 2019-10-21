@@ -32,7 +32,7 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
-  if (config.getUseOfflinePermutation &&
+  if (config.getUseOfflinePermutation() &&
       DBMatOfflinePermutable::PermutableDecompositions.find(
           config.getDensityEstimationConfig().decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end()) {

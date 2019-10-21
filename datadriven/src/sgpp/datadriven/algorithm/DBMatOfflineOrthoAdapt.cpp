@@ -91,7 +91,7 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
   // isConstructed = true, set by parent call
 }
 
-void DBMatOfflineOrthoAdapt::permutateDecomposition(
+void DBMatOfflineOrthoAdapt::permuteDecomposition(
     const sgpp::base::GeneralGridConfiguration& baseGridConfig,
     const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig) {
   // If sequence of level vector elements unequal to 1 is equal, no permutation has to be applied
@@ -100,7 +100,7 @@ void DBMatOfflineOrthoAdapt::permutateDecomposition(
     // new Q
     sgpp::base::DataMatrix newQ(this->q_ortho_matrix_.getNrows(), this->q_ortho_matrix_.getNcols());
     // Permutate rows
-    permutateMatrix(baseGridConfig, desiredGridCOnfig, this->q_ortho_matrix_, newQ, true);
+    permuteMatrix(baseGridConfig, desiredGridCOnfig, this->q_ortho_matrix_, newQ, true);
     // Reassing Q
     this->q_ortho_matrix_ = newQ;
   }

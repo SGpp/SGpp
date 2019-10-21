@@ -45,7 +45,8 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
 }
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
-    const FitterConfigurationDensityEstimation& config,std::shared_ptr<DBMatObjectStore> objectStore)
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<DBMatObjectStore> objectStore)
     : ModelFittingDensityEstimationOnOff(config) {
   this->objectStore = objectStore;
   this->hasObjectStore = true;
@@ -90,8 +91,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
 
-  if (regularizationConfig.lambda_ != 0) throw std::invalid_argument("Sapralott");
-
   // If the decompositions method is suitable for the permutation approach
   // and a base object store is specified, get the offline object from the store
   if (DBMatOfflinePermutable::PermutableDecompositions.find(
@@ -102,10 +101,14 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     // desired configuration is available. Base objects are transformed into the desired
     // object using the permutation approach.
     DBMatPermutationFactory permutationFactory;
-    if(databaseConfig.filepath.empty()){
-
+    if (databaseConfig.filepath.empty()) {
+      permutationFactory = DBMatPermutationFactory(this->objectStore);
+    } else {
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filepath);
     }
-    offline = this->objectStore->getOfflineObject(gridConfig, geometryConfig);
+    offline = permutationFactory.getPermutedObject(
+        config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
+        config->getRegularizationConfig(), config->getDensityEstimationConfig());
     offline->interactions = getInteractions(geometryConfig);
   }
 

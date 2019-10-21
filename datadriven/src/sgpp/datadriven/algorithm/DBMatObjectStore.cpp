@@ -2,6 +2,7 @@
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <vector>
@@ -22,7 +23,9 @@ int DBMatObjectStore::getObjectContainerIndex(
     bool searchBase) {
   // Iterate over objects to find match
   for (int i = 0; i < this->objects.size(); i++) {
-    if (this->objects[i].configMatches(gridConfig, searchBase)) return i;
+    if (this->objects[i].configMatches(gridConfig, geometryConfig, adaptivityConfig,
+                                       regularizationConfig, densityEstimationConfig, searchBase))
+      return i;
   }
   // If no object matches, return nullopt
   return -1;
@@ -73,10 +76,10 @@ void DBMatObjectStore::putObject(
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    std::unique_ptr<const DBMatOffline> object) {
+    const DBMatOffline* object) {
   this->objects.push_back(ObjectContainer{gridConfig, geometryConfig, adaptivityConfig,
                                           regularizationConfig, densityEstimationConfig,
-                                          std::move(object)});
+                                          std::unique_ptr<const DBMatOffline>(object)});
 }
 
 DBMatObjectStore::ObjectContainer::ObjectContainer(
@@ -103,7 +106,12 @@ const sgpp::base::GeneralGridConfiguration& DBMatObjectStore::ObjectContainer::g
 }
 
 bool DBMatObjectStore::ObjectContainer::configMatches(
-    const sgpp::base::GeneralGridConfiguration& gridConfig, bool searchBase) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    bool searchBase) {
   bool configMatch = true;
   if (searchBase) {
     if (gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid)

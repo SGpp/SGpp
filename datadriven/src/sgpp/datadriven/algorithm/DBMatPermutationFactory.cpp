@@ -4,6 +4,8 @@
 namespace sgpp {
 namespace datadriven {
 
+DBMatPermutationFactory::DBMatPermutationFactory() : store(nullptr), hasDataBase(false) {}
+
 DBMatPermutationFactory::DBMatPermutationFactory(std::shared_ptr<DBMatObjectStore> store)
     : store(store), hasDataBase(false) {}
 
@@ -11,7 +13,7 @@ DBMatPermutationFactory::DBMatPermutationFactory(std::shared_ptr<DBMatObjectStor
                                                  const std::string& dbFilePath)
     : store(store), dbFilePath(dbFilePath), hasDataBase(true) {}
 
-DBMatOfflinePermutable& DBMatPermutationFactory::getPermutatedObject(
+DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
@@ -22,7 +24,7 @@ DBMatOfflinePermutable& DBMatPermutationFactory::getPermutatedObject(
   // base object that will be transformed
   const DBMatOfflinePermutable* baseObject =
       this->store->getBaseObject(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
-                                densityEstimationConfig, baseGridConfig);
+                                 densityEstimationConfig, baseGridConfig);
 
   if (baseObject == nullptr) {
     // if no suitable object exists locally, and a db path is given, search the db and store the
@@ -45,10 +47,10 @@ DBMatOfflinePermutable& DBMatPermutationFactory::getPermutatedObject(
         newBaseObject->permuteDecomposition(dbGridConfig, baseGridConfig);
 
         baseObject = newBaseObject;
+
         // store base objects. Ownership gets transfered to the object's ObjectContainer
         this->store->putObject(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
-                              densityEstimationConfig,
-                              std::unique_ptr<const DBMatOfflinePermutable>(baseObject));
+                               densityEstimationConfig, baseObject);
       }
     }
     // if the object is not available, build it
@@ -85,17 +87,19 @@ DBMatOfflinePermutable& DBMatPermutationFactory::getPermutatedObject(
       newBaseObject->buildMatrix(grid.get(), regularizationConfig);
       // decompose matrix
       newBaseObject->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+
+      baseObject = newBaseObject;
+
       // store base objects, ownership gets transfered to the object's ObjectContainer
       this->store->putObject(baseGridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
-                            densityEstimationConfig,
-                            std::unique_ptr<const DBMatOfflinePermutable>(baseObject));
+                             densityEstimationConfig, baseObject);
     }
   }
   // copy return instance from base object
   DBMatOfflinePermutable* returnObject = dynamic_cast<DBMatOfflinePermutable*>(baseObject->clone());
   // apply permutation and dimension blow-up
   returnObject->permuteDecomposition(baseGridConfig, gridConfig);
-  return *returnObject;
+  return returnObject;
 }
 }  // namespace datadriven
 }  // namespace sgpp

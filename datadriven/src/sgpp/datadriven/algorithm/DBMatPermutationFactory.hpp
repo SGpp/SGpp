@@ -10,7 +10,7 @@ class DBMatPermutationFactory {
   explicit DBMatPermutationFactory(std::shared_ptr<DBMatObjectStore> store);
   explicit DBMatPermutationFactory(std::shared_ptr<DBMatObjectStore>  store, const std::string& dbFilePath);
 
-  DBMatOfflinePermutable& getPermutatedObject(
+  DBMatOfflinePermutable* getPermutedObject(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
