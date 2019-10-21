@@ -777,7 +777,8 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, con
 
 
 std::vector<std::string> DataMiningConfigParser::parseStringArray(json::JSON::DictNode &dict,
-    const std::string &key, std::vector<std::string> defaultValue, const std::string &parentNode) const {
+    const std::string &key, std::vector<std::string> defaultValue,
+    const std::string &parentNode) const {
   if (dict.contains(key)) {
     try {
       std::vector<std::string> array;

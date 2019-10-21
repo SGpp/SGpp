@@ -77,8 +77,9 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
   {
     #pragma omp section
     {
-      if(std::find(config.getGeneralConfig().algorithm.begin(),
-                   config.getGeneralConfig().algorithm.end(), "heatmaps") != config.getGeneralConfig().algorithm.end()) {
+      if (std::find(config.getGeneralConfig().algorithm.begin(),
+                   config.getGeneralConfig().algorithm.end(), "heatmaps") !=
+                   config.getGeneralConfig().algorithm.end()) {
         DataMatrix heatMapClassificationMatrix;
         initializeMatrices(model, heatMapClassificationMatrix);
         getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
@@ -137,7 +138,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         {
           #pragma omp section
           {
-            if(std::find(config.getGeneralConfig().algorithm.begin(),
+            if (std::find(config.getGeneralConfig().algorithm.begin(),
                          config.getGeneralConfig().algorithm.end(), "linearcuts")
                          != config.getGeneralConfig().algorithm.end()) {
               getLinearCuts(**currentModel, currentDirectory, cutMatrixThread);
@@ -145,7 +146,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
           }
           #pragma omp section
           {
-            if(std::find(config.getGeneralConfig().algorithm.begin(),
+            if (std::find(config.getGeneralConfig().algorithm.begin(),
                          config.getGeneralConfig().algorithm.end(), "heatmaps")
                          != config.getGeneralConfig().algorithm.end()) {
               getHeatmap(**currentModel, currentDirectory, heatMapMatrixThread);
