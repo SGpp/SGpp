@@ -14,6 +14,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 
 #include <list>
 #include <string>
@@ -40,14 +41,14 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-  this->hasBaseObjectStore = false;
+  this->hasObjectStore = false;
 }
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
-    const FitterConfigurationDensityEstimation& config, DBMatBaseObjectStore* objectStore)
+    const FitterConfigurationDensityEstimation& config,std::shared_ptr<DBMatObjectStore> objectStore)
     : ModelFittingDensityEstimationOnOff(config) {
   this->objectStore = objectStore;
-  this->hasBaseObjectStore = true;
+  this->hasObjectStore = true;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -96,10 +97,14 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   if (DBMatOfflinePermutable::PermutableDecompositions.find(
           densityEstimationConfig.decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end() &&
-      this->hasBaseObjectStore) {
+      this->hasObjectStore) {
     // The offline store builds and decomposes a new base object if no base object for the
     // desired configuration is available. Base objects are transformed into the desired
     // object using the permutation approach.
+    DBMatPermutationFactory permutationFactory;
+    if(databaseConfig.filepath.empty()){
+
+    }
     offline = this->objectStore->getOfflineObject(gridConfig, geometryConfig);
     offline->interactions = getInteractions(geometryConfig);
   }

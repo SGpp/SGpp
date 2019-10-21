@@ -48,8 +48,8 @@ class DBMatOfflineEigen : public DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+      const DensityEstimationConfiguration& densityEstimationConfig) override;
 };
 
 } /* namespace datadriven */

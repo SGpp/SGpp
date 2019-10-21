@@ -32,13 +32,22 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
-  this->hasBaseObjectStore = false;
+  if (config.getUseOfflinePermutation &&
+      DBMatOfflinePermutable::PermutableDecompositions.find(
+          config.getDensityEstimationConfig().decomposition_) !=
+          DBMatOfflinePermutable::PermutableDecompositions.end()) {
+    this->objectStore = std::make_shared<DBMatObjectStore>();
+    this->hasObjectStore = true;
+  } else {
+    this->hasObjectStore = false;
+  }
 }
 
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
-    const FitterConfigurationDensityEstimation& config, DBMatBaseObjectStore* objectStore)
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<DBMatObjectStore> objectStore)
     : ModelFittingDensityEstimationCombi(config) {
-  this->hasBaseObjectStore = true;
+  this->hasObjectStore = true;
   this->objectStore = objectStore;
 }
 
@@ -235,7 +244,7 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
     }
     case DensityEstimationType::Decomposition: {
       //
-      if (this->hasBaseObjectStore) {
+      if (this->hasObjectStore) {
         return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
                                                                     objectStore);
       } else {

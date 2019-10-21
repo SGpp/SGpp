@@ -77,8 +77,8 @@ DBMatOffline* DBMatOfflineEigen::clone() const { return new DBMatOfflineEigen{*t
 
 bool DBMatOfflineEigen::isRefineable() { return false; }
 
-void DBMatOfflineEigen::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineEigen::decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing

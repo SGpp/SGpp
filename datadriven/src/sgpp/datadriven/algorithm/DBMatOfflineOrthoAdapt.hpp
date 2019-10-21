@@ -52,14 +52,11 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
+  void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) override;
 
-  void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                              sgpp::base::GeneralGridConfiguration desiredGridCOnfig) override;
+  void permuteDecomposition(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                              const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig) override;
 
-  DBMatOfflinePermutable& getPermutatedDecomposition(
-      sgpp::base::GeneralGridConfiguration baseGridConfig,
-      sgpp::base::GeneralGridConfiguration desiredGridCOnfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
@@ -69,8 +66,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * The parallel/distributed version of decomposeMatrix(...)

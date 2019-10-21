@@ -17,7 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-#include <sgpp/datadriven/algorithm/DBMatBaseObjectStore.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 
 #include <list>
 
@@ -52,7 +52,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param
    */
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
-                                              DBMatBaseObjectStore* objectStore);
+                                              std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
@@ -119,8 +119,8 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
   // The offline object store
-  DBMatBaseObjectStore* objectStore;
-  bool hasBaseObjectStore;
+  std::shared_ptr<DBMatObjectStore> objectStore;
+  bool hasObjectStore;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

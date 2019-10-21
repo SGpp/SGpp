@@ -170,11 +170,11 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   return result;
 }
 
-void DBMatOfflinePermutable::permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                                             sgpp::base::GeneralGridConfiguration desiredGridCOnfig,
-                                             const sgpp::base::DataMatrix& baseMatrix,
-                                             sgpp::base::DataMatrix& permutatedMatrix,
-                                             bool permutateRowsOrColums) {
+void DBMatOfflinePermutable::permuteMatrix(
+    const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+    const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig,
+    const sgpp::base::DataMatrix& baseMatrix, sgpp::base::DataMatrix& permutatedMatrix,
+    bool permutateRowsOrColums) {
   if (baseMatrix.getNrows() != permutatedMatrix.getNrows() ||
       baseMatrix.getNcols() != permutatedMatrix.getNcols())
     throw sgpp::base::algorithm_exception(
@@ -278,10 +278,10 @@ void DBMatOfflinePermutable::permutateMatrix(sgpp::base::GeneralGridConfiguratio
   }
 }
 
-void DBMatOfflinePermutable::dimensionBlowUp(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                                             sgpp::base::GeneralGridConfiguration desiredGridCOnfig,
-                                             sgpp::base::DataMatrix& baseMatrix,
-                                             bool matrixIsInverse) {
+void DBMatOfflinePermutable::dimensionBlowUp(
+    const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+    const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig,
+    sgpp::base::DataMatrix& baseMatrix, bool matrixIsInverse) {
   auto& gridType = desiredGridCOnfig.type_;
   int dimDelta = desiredGridCOnfig.dim_ - baseGridConfig.dim_;
   // no dimension blow-up needs to be applied
@@ -302,17 +302,17 @@ void DBMatOfflinePermutable::dimensionBlowUp(sgpp::base::GeneralGridConfiguratio
   }
 }
 
-void DBMatOfflinePermutable::permutateLhsMatrix(
-    sgpp::base::GeneralGridConfiguration baseGridConfig,
-    sgpp::base::GeneralGridConfiguration desiredGridCOnfig) {
+void DBMatOfflinePermutable::permuteLhsMatrix(
+    const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+    const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig) {
   // Copy base matrix for permutation
   sgpp::base::DataMatrix baseLhs(this->lhsMatrix);
   // Permutate rows
-  permutateMatrix(baseGridConfig, desiredGridCOnfig, baseLhs, this->lhsMatrix, true);
+  permuteMatrix(baseGridConfig, desiredGridCOnfig, baseLhs, this->lhsMatrix, true);
   // Copy permutated lhs
   sgpp::base::DataMatrix rowPermutatedLhs(this->lhsMatrix);
   // Permutate collumns
-  permutateMatrix(baseGridConfig, desiredGridCOnfig, rowPermutatedLhs, this->lhsMatrix, false);
+  permuteMatrix(baseGridConfig, desiredGridCOnfig, rowPermutatedLhs, this->lhsMatrix, false);
   // Multiply dimensios blow up factor
   dimensionBlowUp(baseGridConfig, desiredGridCOnfig, this->lhsMatrix);
 }

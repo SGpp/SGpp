@@ -74,7 +74,7 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
 }
 
 
-void DBMatOfflineGE::buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) {
+void DBMatOfflineGE::buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) {
   // build matrix
   DBMatOffline::buildMatrix(grid, regularizationConfig);
 

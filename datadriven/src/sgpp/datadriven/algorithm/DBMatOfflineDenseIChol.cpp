@@ -23,8 +23,8 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
 
 DBMatOffline* DBMatOfflineDenseIChol::clone() const { return new DBMatOfflineDenseIChol{*this}; }
 
-void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineDenseIChol::decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       return;

@@ -82,7 +82,7 @@ DBMatOffline* DBMatOfflineOrthoAdapt::clone() const { return new DBMatOfflineOrt
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
 void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
-                                         RegularizationConfiguration& regularizationConfig) {
+                                         const RegularizationConfiguration& regularizationConfig) {
   DBMatOffline::buildMatrix(grid, regularizationConfig);
   size_t dim_a = grid->getStorage().getSize();
 
@@ -92,8 +92,8 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
 }
 
 void DBMatOfflineOrthoAdapt::permutateDecomposition(
-    sgpp::base::GeneralGridConfiguration baseGridConfig,
-    sgpp::base::GeneralGridConfiguration desiredGridCOnfig) {
+    const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+    const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig) {
   // If sequence of level vector elements unequal to 1 is equal, no permutation has to be applied
   if (PermutationUtil::deleteOnesFromLevelVec(baseGridConfig.levelVector_) !=
       PermutationUtil::deleteOnesFromLevelVec(desiredGridCOnfig.levelVector_)) {
@@ -110,8 +110,8 @@ void DBMatOfflineOrthoAdapt::permutateDecomposition(
 }
 
 void DBMatOfflineOrthoAdapt::decomposeMatrix(
-    RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (!isConstructed) {
     throw sgpp::base::algorithm_exception(

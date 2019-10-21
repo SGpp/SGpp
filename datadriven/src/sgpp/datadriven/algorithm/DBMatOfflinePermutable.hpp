@@ -30,16 +30,13 @@ class DBMatOfflinePermutable : public DBMatOffline {
    * Permutates the base matrix and multiplies the dimension blowup factor to obtain the desired
    * system matrix.
    */
-  void permutateLhsMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                          sgpp::base::GeneralGridConfiguration desiredGridCOnfig);
+  void permuteLhsMatrix(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                          const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig);
 
   
-  virtual void permutateDecomposition(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                                      sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
+  virtual void permuteDecomposition(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                                      const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig) = 0;
 
-  virtual DBMatOfflinePermutable& getPermutatedDecomposition(
-      sgpp::base::GeneralGridConfiguration baseGridConfig,
-      sgpp::base::GeneralGridConfiguration desiredGridCOnfig) = 0;
 
  protected:
   DBMatOfflinePermutable();
@@ -55,13 +52,13 @@ class DBMatOfflinePermutable : public DBMatOffline {
                                 std::vector<size_t> gridLevel,
                                 const std::vector<size_t>& preComputations);
 
-  void permutateMatrix(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                       sgpp::base::GeneralGridConfiguration desiredGridCOnfig,
+  void permuteMatrix(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                       const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig,
                        const sgpp::base::DataMatrix& baseMatrix,
-                       sgpp::base::DataMatrix& permutatedMatrix, bool permutateRowsOrColumns);
+                       sgpp::base::DataMatrix& permutedMatrix, bool permuteRowsOrColumns);
 
-  void dimensionBlowUp(sgpp::base::GeneralGridConfiguration baseGridConfig,
-                       sgpp::base::GeneralGridConfiguration desiredGridCOnfig,
+  void dimensionBlowUp(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                       const sgpp::base::GeneralGridConfiguration& desiredGridCOnfig,
                        sgpp::base::DataMatrix& baseMatrix, bool matrixIsInverse = false);
 };
 

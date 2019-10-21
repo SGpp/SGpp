@@ -5,11 +5,11 @@
 
 #pragma once
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
 
 #include <string>
 
@@ -37,10 +37,11 @@ class DBMatDatabase {
    * @param densityEstimationConfig the density estimation configuration the matrix must match
    * @return weather the configuration is held in the database
    */
-  bool hasDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
-                     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+  bool hasDataMatrix(
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
   /**
    * Scans the entire database and checks whether there exists an entry that can be permutated to
    * match the configurations. A entry matches if all config properties except the gridConfig's
@@ -51,10 +52,11 @@ class DBMatDatabase {
    * @param densityEstimationConfig the density estimation configuration the matrix must match
    * @return weather the configuration is held in the database
    */
-  bool hasBaseDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
-                         sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                         sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                         sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+  bool hasBaseDataMatrix(
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Scans the entire database and finds the first entry that matches the configurations.
@@ -66,10 +68,11 @@ class DBMatDatabase {
    * otherwise
    */
   std::string& getDataMatrix(
-      sgpp::base::GeneralGridConfiguration& gridConfig,
-      sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
    * Scans the entire database and returns the first entry that can be permutated to match the
@@ -79,15 +82,15 @@ class DBMatDatabase {
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
-   * @param baseGridConfig is overriten with the entry's grid config 
+   * @param baseGridConfig is overriten with the entry's grid config
    * @return Returns the string of the datamatrix if any match was obtained and throws an exception
    * otherwise
    */
   std::string& getBaseDataMatrix(
-      sgpp::base::GeneralGridConfiguration& gridConfig,
-      sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       sgpp::base::GeneralGridConfiguration baseGridConfig);
 
   /**
@@ -102,11 +105,12 @@ class DBMatDatabase {
    * @param overwriteEntry replaces existing entries with the same configuration if and only if
    * this parameter is set
    */
-  void putDataMatrix(sgpp::base::GeneralGridConfiguration& gridConfig,
-                     sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-                     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-                     sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-                     std::string filepath, bool overwriteEntry = false);
+  void putDataMatrix(
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      std::string filepath, bool overwriteEntry = false);
 
  private:
   /**
@@ -135,10 +139,10 @@ class DBMatDatabase {
    * @return the index of the entry that matches the configuration or -1 if not entry matches
    */
   int entryIndexByConfiguration(
-      sgpp::base::GeneralGridConfiguration& gridConfig,
-      sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-      sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       bool findBaseConfig = false);
 
   /**
@@ -150,10 +154,11 @@ class DBMatDatabase {
    * @return if the passed grid configuration matches the grid configuration of the node
    */
   bool gridConfigurationMatches(json::DictNode* node,
-                                sgpp::base::GeneralGridConfiguration& gridConfig, size_t entry_num);
+                                const sgpp::base::GeneralGridConfiguration& gridConfig,
+                                size_t entry_num);
 
   bool baseGridConfigurationMatches(json::DictNode* node,
-                                    sgpp::base::GeneralGridConfiguration& gridConfig,
+                                    const sgpp::base::GeneralGridConfiguration& gridConfig,
                                     size_t entry_num);
 
   /**
@@ -166,8 +171,8 @@ class DBMatDatabase {
    * of the node
    */
   bool regularizationConfigurationMatches(
-      json::DictNode* node, sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      size_t entry_num);
+      json::DictNode* node,
+      const sgpp::datadriven::RegularizationConfiguration& regularizationConfig, size_t entry_num);
 
   /**
    * Checks weather the regularization configuration of a json dict node representing a
@@ -180,7 +185,8 @@ class DBMatDatabase {
    */
   bool densityEstimationConfigurationMatches(
       json::DictNode* node,
-      sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t entry_num);
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      size_t entry_num);
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

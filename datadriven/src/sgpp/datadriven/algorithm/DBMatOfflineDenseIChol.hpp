@@ -40,8 +40,8 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+      const DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)

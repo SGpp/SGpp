@@ -44,30 +44,30 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
 }
 
 bool DBMatDatabase::hasDataMatrix(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   return entry_index >= 0;
 }
 
 bool DBMatDatabase::hasBaseDataMatrix(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Call with base matrix flag
   return entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                    densityEstimationConfig, true) >= 0;
 }
 
 std::string& DBMatDatabase::getDataMatrix(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   if (entry_index < 0) {
@@ -83,10 +83,10 @@ std::string& DBMatDatabase::getDataMatrix(
 }
 
 std::string& DBMatDatabase::getBaseDataMatrix(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     sgpp::base::GeneralGridConfiguration baseGridConfig) {
   // Get index of suitable base object if existing
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
@@ -117,11 +117,11 @@ std::string& DBMatDatabase::getBaseDataMatrix(
 }
 
 void DBMatDatabase::putDataMatrix(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig, std::string filepath,
-    bool overwriteEntry) {
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    std::string filepath, bool overwriteEntry) {
   // Check if for this setting an entry is already definied
   int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
@@ -177,9 +177,9 @@ void DBMatDatabase::putDataMatrix(
 }
 
 // Neu implementier -> TODO: Testen
-bool DBMatDatabase::baseGridConfigurationMatches(json::DictNode* node,
-                                                 sgpp::base::GeneralGridConfiguration& gridConfig,
-                                                 size_t entry_num) {
+bool DBMatDatabase::baseGridConfigurationMatches(
+    json::DictNode* node, const sgpp::base::GeneralGridConfiguration& gridConfig,
+    size_t entry_num) {
   uint64_t nodeGridDimension;
   // Check if grid dimensionality matches
   if (node->contains(keyGridDimension)) {
@@ -234,7 +234,7 @@ bool DBMatDatabase::baseGridConfigurationMatches(json::DictNode* node,
 }
 
 bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
-                                             sgpp::base::GeneralGridConfiguration& gridConfig,
+                                             const sgpp::base::GeneralGridConfiguration& gridConfig,
                                              size_t entry_num) {
   // Check if grid general type matches
   sgpp::base::GeneralGridType gridType;
@@ -302,7 +302,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
 }
 
 bool DBMatDatabase::regularizationConfigurationMatches(
-    json::DictNode* node, sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    json::DictNode* node, const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     size_t entry_num) {
   // Check if the reguluarization strength matches
   if (node->contains(keyRegularizationStrength)) {
@@ -320,7 +320,8 @@ bool DBMatDatabase::regularizationConfigurationMatches(
 }
 
 bool DBMatDatabase::densityEstimationConfigurationMatches(
-    json::DictNode* node, sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    json::DictNode* node,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     size_t entry_num) {
   // Check if the decomposition type matches
   if (node->contains(keyDecompositionType)) {
@@ -341,10 +342,10 @@ bool DBMatDatabase::densityEstimationConfigurationMatches(
 }
 
 int DBMatDatabase::entryIndexByConfiguration(
-    sgpp::base::GeneralGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
-    sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool findBaseConfig) {
   if (findBaseConfig && gridConfig.generalType_ != sgpp::base::GeneralGridType::ComponentGrid) {
     throw sgpp::base::algorithm_exception(
@@ -355,7 +356,8 @@ int DBMatDatabase::entryIndexByConfiguration(
     json::DictNode* entry = dynamic_cast<json::DictNode*>(&((*database)[i]));
     // Check if the entry matches the grid configuration
     if (entry->contains(keyGridConfiguration)) {
-      json::DictNode* gridConfigNode = dynamic_cast<json::DictNode*>(&(*entry)[keyGridConfiguration]);
+      json::DictNode* gridConfigNode =
+          dynamic_cast<json::DictNode*>(&(*entry)[keyGridConfiguration]);
       if (findBaseConfig) {
         if (!baseGridConfigurationMatches(gridConfigNode, gridConfig, i)) continue;
       } else {

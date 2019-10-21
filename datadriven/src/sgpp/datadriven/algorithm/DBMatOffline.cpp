@@ -144,7 +144,7 @@ void DBMatOffline::syncDistributedInverse(std::shared_ptr<BlacsProcessGrid> proc
   // no action needed without scalapack
 }
 
-void DBMatOffline::buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) {
+void DBMatOffline::buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) {
   if (isConstructed) {  // Already constructed, do nothing
     return;
   }

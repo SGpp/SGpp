@@ -36,7 +36,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   explicit ModelFittingDensityEstimationCombi(const FitterConfigurationDensityEstimation& config);
 
   explicit ModelFittingDensityEstimationCombi(const FitterConfigurationDensityEstimation& config,
-                                              sgpp::datadriven::DBMatBaseObjectStore* objectStore);
+                                              std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
    * Fit the grids to the given dataset by determining the weights of the initial grid by the
@@ -99,8 +99,8 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
   void reset() override;
 
  protected:
-  DBMatBaseObjectStore* objectStore;
-  bool hasBaseObjectStore;
+  std::shared_ptr<DBMatObjectStore> objectStore;
+  bool hasObjectStore;
   /**
    * Contains the component grids witch form the sparse grids
    */

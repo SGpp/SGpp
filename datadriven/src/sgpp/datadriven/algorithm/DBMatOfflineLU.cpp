@@ -49,8 +49,8 @@ DBMatOffline* DBMatOfflineLU::clone() const { return new DBMatOfflineLU{*this}; 
 
 bool DBMatOfflineLU::isRefineable() { return false; }
 
-void DBMatOfflineLU::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineLU::decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
