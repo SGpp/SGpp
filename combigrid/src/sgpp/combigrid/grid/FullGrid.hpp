@@ -75,7 +75,7 @@ class FullGrid {
   }
 
   /**
-   * @return level of the full grid
+   * @param level   level of the full grid
    */
   void setLevel(const LevelVector& level) {
     this->level = level;
