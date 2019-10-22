@@ -82,6 +82,14 @@ class FullGrid {
   }
 
   /**
+   * @param d       dimension
+   * @param level   \f$d\f$-th level of the full grid
+   */
+  void setLevel(size_t d, level_t level) {
+    this->level[d] = level;
+  }
+
+  /**
    * Minimum 1D index of grid points.
    *
    * @param d   dimension
