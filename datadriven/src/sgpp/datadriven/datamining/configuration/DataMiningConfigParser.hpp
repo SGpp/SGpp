@@ -121,7 +121,7 @@ class DataMiningConfigParser {
   bool getFitterParallelConfig(datadriven::ParallelConfiguration &config,
                                const datadriven::ParallelConfiguration &defaults) const;
 
-  /*
+  /**
    * Initializes the geometry configuration if it exists
    * @param config the configuration instance that will be initialized
    * @param defaults default values if the fitter config does not contain a matching entry
@@ -130,15 +130,21 @@ class DataMiningConfigParser {
   bool getGeometryConfig(datadriven::GeometryConfiguration &config,
       const datadriven::GeometryConfiguration &defaults) const;
 
-  /*
-   * Initializes the visualization configuration if it exists
+  /**
+   * Initializes the visualization general configuration if it exists
    * @param config the configuration instance that will be initiazlized
-   * @param defaults default balues if the fitter config does not contain a matching entry
+   * @param defaults default values if the fitter config does not contain a matching entry
    * @return wether the configuration contains a visualization configuration
    */
   bool getVisualizationGeneralConfig(datadriven::VisualizationGeneralConfig &config,
     const datadriven::VisualizationGeneralConfig &defaults) const;
 
+  /**
+   * Initializes the visualization parameters configuration if it exists
+   * @param config the configuration instance that will be initiazlized
+   * @param defaults default values if the fitter config does not contain a matching entry
+   * @return wether the configuration contains a visualization configuration
+   */
   bool getVisualizationParameters(datadriven::VisualizationParameters &config,
             const datadriven::VisualizationParameters &defaults) const;
 
