@@ -194,7 +194,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
     }
 
     std::vector<CombinationGrid> combinationGrids = {
-        CombinationGrid::fromRegular(3, 5, basis, hasBoundary),
+        CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary),
         CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary)};
 
     for (const CombinationGrid& combinationGrid : combinationGrids) {
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
     }
   }
 
-  CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 2, basis);
+  CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 2, basis);
   BOOST_CHECK_EQUAL(combinationGrid.combineValues(DataVector({1.0, 0.5, -0.5, -2.0, 4.0})), -1.0);
 
   sgpp::base::GridStorage gridStorage(2);
@@ -381,7 +381,7 @@ BOOST_AUTO_TEST_CASE(testIndexVectorRangeIterator) {
 BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   sgpp::base::SLinearBase basis1d;
   const HeterogeneousBasis basis(2, basis1d, false);
-  const CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 2, basis, false);
+  const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 2, basis, false);
   OperationEvalCombinationGrid op(combinationGrid);
   const std::vector<DataVector> surpluses = {
       DataVector{1.0, -2.0, -1.0}, DataVector{-0.5, 0.5, 1.0}, DataVector{5.0}};
@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
 BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
   sgpp::base::SBsplineBase basis1d;
   const HeterogeneousBasis basis(2, basis1d);
-  const CombinationGrid combinationGrid = CombinationGrid::fromRegular(2, 1, basis);
+  const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 1, basis);
   const std::vector<DataVector> originalValues = {
       DataVector{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0}, DataVector{5.0, 2.5, -1.5, 0.0, 2.0, -1.0},
       DataVector{1.0, -2.0, -1.0, 0.5}};

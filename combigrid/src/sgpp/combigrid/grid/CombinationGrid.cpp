@@ -38,7 +38,7 @@ CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
     const base::DataVector& coefficients) : fullGrids(fullGrids), coefficients(coefficients) {
 }
 
-CombinationGrid CombinationGrid::fromRegular(size_t dim, level_t n,
+CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
     const HeterogeneousBasis& basis, bool hasBoundary) {
   std::vector<size_t> binomialCoefficients((dim+1)/2);
   binomialCoefficients[0] = 1.0;

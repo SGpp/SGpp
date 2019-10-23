@@ -54,7 +54,7 @@ int main() {
    * for a regular sparse grid via the combination technique.
    */
   sgpp::combigrid::CombinationGrid combiGrid =
-      sgpp::combigrid::CombinationGrid::fromRegular(dim, n, basis, hasBoundary);
+      sgpp::combigrid::CombinationGrid::fromRegularSparse(dim, n, basis, hasBoundary);
 
   /**
    * We obtain the grid points of the regular sparse grid by combining the grid points of all

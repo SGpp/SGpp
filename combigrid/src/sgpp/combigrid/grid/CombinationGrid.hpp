@@ -48,7 +48,7 @@ class CombinationGrid {
    * @param hasBoundary   whether the sparse grid has points on the boundary
    * @return CombinationGrid corresponding to the combination technique for the regular sparse grid
    */
-  static CombinationGrid fromRegular(size_t dim, level_t n, const HeterogeneousBasis& basis,
+  static CombinationGrid fromRegularSparse(size_t dim, level_t n, const HeterogeneousBasis& basis,
       bool hasBoundary = true);
 
   /**

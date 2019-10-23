@@ -70,7 +70,7 @@ basis = pysgpp.HeterogeneousBasis(dim, basis1d)
 ## An sgpp::combigrid::CombinationGrid is a collection of full grids (nodal subspaces) together
 ## with scalar-valued coefficients. Here, we construct an sgpp::combigrid::CombinationGrid object
 ## for a regular sparse grid via the combination technique.
-combiGrid = pysgpp.CombinationGrid.fromRegular(dim, n, basis, hasBoundary)
+combiGrid = pysgpp.CombinationGrid.fromRegularSparse(dim, n, basis, hasBoundary)
 
 ## We obtain the grid points of the regular sparse grid by combining the grid points of all
 ## full grids that are contained in the combination grid.
