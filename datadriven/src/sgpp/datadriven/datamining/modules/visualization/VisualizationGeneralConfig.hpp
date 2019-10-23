@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -19,9 +20,9 @@ struct VisualizationGeneralConfig {
   bool execute = false;
 
   /**
-  * The name of the algorithm to use in the visualization Module
+  * The list of algorithms to use in the visualization Module
   */
-  std::string algorithm = "";
+  std::vector<std::string> algorithm = std::vector<std::string>();
 
   /**
   * The filetype in which to store the output of the visualization module
