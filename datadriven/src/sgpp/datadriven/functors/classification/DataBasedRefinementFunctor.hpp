@@ -34,6 +34,7 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
    *
    * @param grids Vector of grids. current_grid_index specifies the grid to be refined
    * @param alphas Vector of surpluses related to the grids
+   * @param priors Vector of priors related to the classificator
    * @param data The data used to compute the sets H_k
    * @param targets The classes for data
    * @param refinements_num Maximum number of refinements done
@@ -43,6 +44,7 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
    */
   DataBasedRefinementFunctor(std::vector<base::Grid*> grids,
                              std::vector<base::DataVector*> alphas,
+                             std::vector<double> priors,
                              base::DataMatrix* data,
                              base::DataVector* targets,
                              size_t refinements_num = 1,
@@ -88,6 +90,7 @@ class DataBasedRefinementFunctor : public MultiGridRefinementFunctor {
  protected:
   std::vector<base::Grid*> grids;
   std::vector<base::DataVector*> alphas;
+  std::vector<double> priors;
 
   /**
    * Evaluations of data points are cached here

@@ -15,7 +15,7 @@ void OperationMultipleEvalMatrix::mult(base::DataVector &alpha, base::DataVector
 }
 
 void OperationMultipleEvalMatrix::multTranspose(base::DataVector &alpha, base::DataVector &result) {
-  sgpp::base::DataMatrix trans{this->dataset};
+  sgpp::base::DataMatrix trans(this->dataset);
   trans.transpose();
   trans.mult(alpha, result);
 }

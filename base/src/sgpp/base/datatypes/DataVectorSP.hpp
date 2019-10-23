@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <initializer_list>
 #include <string>
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
@@ -26,8 +26,38 @@ namespace base {
  * for single precision floating point numbers in order to
  * increase support for GPUs.
  */
-class DataVectorSP {
+class DataVectorSP : public std::vector<float> {
  public:
+  /**
+   * Create an empty DataVectorSP.
+   */
+  DataVectorSP();
+
+  /**
+   * Copy constructor.
+   */
+  DataVectorSP(const DataVectorSP&) = default;
+
+  /**
+   * Move constructor
+   */
+  DataVectorSP(DataVectorSP&&) = default;
+
+  /**
+   * Copy assignment operator
+   */
+  DataVectorSP& operator=(const DataVectorSP&) = default;
+
+  /**
+   * Move assignment operator
+   */
+  DataVectorSP& operator=(DataVectorSP&&) = default;
+
+  /**
+   * Destructor
+   */
+  ~DataVectorSP() = default;
+
   /**
    * Create a DataVectorSP with @em size elements (uninitialized values).
    *
@@ -45,13 +75,6 @@ class DataVectorSP {
   DataVectorSP(size_t size, float value);
 
   /**
-   * Create a new DataVectorSP that is a copy of vec.
-   *
-   * @param vec Reference to another instance of DataVectorSP
-   */
-  DataVectorSP(const DataVectorSP& vec);
-
-  /**
    * Create a new DataVectorSP from a float array with size elements.
    *
    * @param input float array that contains the data
@@ -67,21 +90,22 @@ class DataVectorSP {
   explicit DataVectorSP(std::vector<float> input);
 
   /**
+   * Create a new DataVector from a std::initializer_list<float>.
+   *
+   * @param input std::initializer_list<float> that contains the data
+   */
+  explicit DataVectorSP(std::initializer_list<float> input);
+
+  /**
    * Create a new DataVectorSP from a std::vector<int>.
    *
    * @param input std::vector<int> that contains the data
    */
   explicit DataVectorSP(std::vector<int> input);
 
-  /**
-   * Resizes the DataVectorSP to size elements.
-   * All new additional entries are uninitialized.
-   * If nrows is smaller than the current number of rows,
-   * all superfluous entries are removed.
-   *
-   * @param size New number of elements of the DataVectorSP
-   */
-  void resize(size_t size);
+  static DataVectorSP fromFile(const std::string& fileName);
+
+  static DataVectorSP fromString(const std::string& serializedVector);
 
   /**
    * Resizes the DataVectorSP to size elements.
@@ -102,20 +126,14 @@ class DataVectorSP {
   void restructure(std::vector<size_t>& remainingIndex);
 
   /**
-   * Add add potentially new elements to the DataVectorSP. The size remains unchanged
-   * Reserves memory for potentially inc_elems new elements;
-   * the actual number of elements remains unchanged.
-   * Corresponds to a resize to size+inc_elems new elements while leaving
-   * the current vector's size unchanged.
+   * Removes indexes form the vector. Throws an exception if the boundaries are violated
    *
-   * @param inc_elems Number of additional elements for which storage is to be reserved.
+   * @param indexesToRemove a vector if indexes that will be removed from the vector
    */
-  void addSize(size_t inc_elems);
+  void remove(std::vector<size_t>& indexesToRemove);
 
   /**
    * Appends a new element and returns index of it.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @return Index of new element
    */
@@ -123,8 +141,6 @@ class DataVectorSP {
 
   /**
    * Appends a new element and returns index of new element.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @param value Value of new element
    * @return Index of new element
@@ -133,8 +149,6 @@ class DataVectorSP {
 
   /**
    * Inserts a new element at the given index.
-   * If the new element does not fit into the reserved memory,
-   * reserves memory for getInc() additional elements.
    *
    * @param index Index of new element
    * @param value Value of new element
@@ -149,6 +163,22 @@ class DataVectorSP {
   void setAll(float value);
 
   /**
+   * Returns the i-th element.
+   *
+   * @param i position of the element
+   * @return data[i]
+   */
+  inline float get(size_t i) const { return (*this)[i]; }
+
+  /**
+   * Sets the element at index i to value.
+   *
+   * @param i Index
+   * @param value New value for element
+   */
+  void set(size_t i, float value);
+
+  /**
    * Copies the data from another DataVectorSP vec.
    * Disregards the number of entries set for the two vectors,
    * i.e., just copies the data entry by entry.
@@ -161,59 +191,23 @@ class DataVectorSP {
   void copyFrom(const DataVectorSP& vec);
 
   /**
-   * Copies the data from another DataVectorSP.
-   * Dimensions have to match.
-   *
-   * @param vec the DataVectorSP containing the data
-   * @return *this
-   */
-  DataVectorSP& operator=(const DataVectorSP& vec);
-
-  /**
-   * Returns a reference to the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline float& operator[](size_t i) {
-    return data[i];
-  }
-
-  /**
-   * Returns a constant reference to the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline const float& operator[](size_t i) const {
-    return data[i];
-  }
-
-  /**
-   * Returns the i-th element.
-   *
-   * @param i position of the element
-   * @return data[i]
-   */
-  inline float get(size_t i) const {
-    return data[i];
-  }
-
-  /**
-   * Sets the element at index i to value.
-   *
-   * @param i Index
-   * @param value New value for element
-   */
-  void set(size_t i, float value);
-
-  /**
    * Adds the values from another DataVectorSP to the current values.
    * Modifies the current values.
    *
    * @param vec The DataVectorSP which is added to the current values
    */
   void add(const DataVectorSP& vec);
+
+  /***
+   * Accumulation (summation) of vectors using Kahan's summation formula
+   * for better precision.
+   *
+   * All vectors need to be added to one for the summation formula to work. It
+   * will not work in a tree-like summation pattern.
+   *
+   * @param vec The DataVectorSP that will be added to the current one
+   */
+  void accumulate(const DataVectorSP& vec);
 
   /**
    * Subtracts the values from another DataVectorSP of the current values.
@@ -249,6 +243,15 @@ class DataVectorSP {
    * @param vec the DataVectorSP which the current DataVectorSP is divided by
    */
   void componentwise_div(const DataVectorSP& vec);
+
+  /**
+   * Returns the dot product of the two vectors.
+   *
+   * @param vec Reference to another vector
+   *
+   * @return The dot-product
+   */
+  float dotProduct(const DataVectorSP& vec) const;
 
   /**
    * multiplies all elements by a constant factor
@@ -337,15 +340,6 @@ class DataVectorSP {
   void axpy(float a, DataVectorSP& x);
 
   /**
-   * Returns the dot product of the two vectors.
-   *
-   * @param vec Reference to another vector
-   *
-   * @return The dot-product
-   */
-  float dotProduct(const DataVectorSP& vec) const;
-
-  /**
    * gets a pointer to the data array
    *
    * @return pointer to the data array
@@ -361,21 +355,11 @@ class DataVectorSP {
 
   /**
    * gets the elements stored in the vector
+   * \deprecated in favour of the equivalent size() method
    *
    * @return elements stored in the vector
    */
-  inline size_t getSize() const {
-    return size;
-  }
-
-  /**
-   * Returns the number of unused elements.
-   *
-   * @return number of unused elements
-   */
-  inline size_t getUnused() const {
-    return unused;
-  }
+  inline size_t getSize() const { return this->size(); }
 
   /**
    * Determines the number of non-zero elements in the vector.
@@ -383,27 +367,6 @@ class DataVectorSP {
    * @return The number of non-zero elements
    */
   size_t getNumberNonZero() const;
-
-  /**
-   * Get the current number of elements by which the DataVectorSP is extended,
-   * if append() or insert() is called and no unused rows are left
-   *
-   * @return Increment
-   */
-  inline size_t getInc() const {
-    return inc_elems;
-  }
-
-  /**
-   * Sets the current number of elements by which the DataVectorSP is extended,
-   * if append() or insert() is called and no unused elements are left.
-   * Defaults to 100.
-   *
-   * @param inc_elems Increment
-   */
-  void setInc(size_t inc_elems) {
-    this->inc_elems = inc_elems;
-  }
 
   /**
    * Partitions vector into two classes using a choosen border.
@@ -439,23 +402,12 @@ class DataVectorSP {
    */
   std::string toString() const;
 
-  /**
-   * Destructor
-   */
-  virtual ~DataVectorSP();
+  void toFile(const std::string& fileName) const;
 
  private:
-  /// Array to store the data
-  float* data;
-  /// Number of elements of the data vector
-  size_t size;
-  /// Number of additional rows for which memory has already been reserved
-  size_t unused;
-  /**
-   * Number of elements by which the reserved memory is increased,
-   * if adding a row would exceed the storage reserved so far.
-   */
-  size_t inc_elems;
+  using std::vector<float>::insert;
+  /// Corrections for Kahan's summation in accumulate()
+  std::vector<float> correction;
 };
 
 }  // namespace base
