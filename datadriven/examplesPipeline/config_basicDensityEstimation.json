@@ -32,5 +32,21 @@
             "densityEstimationType": "decomposition",
             "matrixDecompositionType": "chol"
         }
+    },
+    "visualization": {
+        "generalConfig": {
+            "algorithm": ["tsne", "heatmaps"],
+            "targetDirectory": "./output",
+            "targetFileType": "json",
+            "numBatches": 1
+        },
+        "parameters": {
+            "perplexity": 30,
+            "theta": 0.5,
+            "seed": 150,
+            "maxNumberIterations": 1000,
+            "targetDimension": 2,
+            "numberCores": 1
+        }
     }
 }

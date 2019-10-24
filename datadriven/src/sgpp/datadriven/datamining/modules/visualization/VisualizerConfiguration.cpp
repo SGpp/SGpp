@@ -10,6 +10,8 @@
 #include <ctime>
 #include <cstdlib>
 #include <iostream>
+#include <string>
+#include <vector>
 
 
 namespace sgpp {
@@ -19,7 +21,7 @@ void VisualizerConfiguration::setupDefaults() {
   srand(static_cast<unsigned int>(time(NULL)));
 
   std::cout << "Setting up defaults parameters for Visualizer" << std::endl;
-  generalConfig.algorithm = "tsne";
+  generalConfig.algorithm = std::vector<std::string>({"tsne", "heatmaps", "linearcuts"});
   generalConfig.targetDirectory = "./output";
   generalConfig.targetFileType = VisualizationFileType::CSV;
   generalConfig.numBatches = 1;
