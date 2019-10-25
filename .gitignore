@@ -118,3 +118,6 @@ GSYMS
 GTAGS
 custom.py
 gmon.out
+
+#ignore ide files
+.vscode/
