@@ -973,6 +973,19 @@ void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
               << std::endl;
     config.rosenblattConfig = defaults.rosenblattConfig;
   }
+
+  // If type Normalization parse Normalizationconfig
+    if (config.type == DataTransformationType::NORMALIZATION){
+      auto normalizationTransformationConfig == static_cast<DictNode *>(
+  	&(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
+      parseNormalizationTransformation(*normalizationTransformationConfig, config.normalizationConfig,
+  				     defaults.normalizationConfig, "normalizationConfig");
+    } else {
+      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
+                   "[normalizationConfig]. Falling back to default values."
+  	      << std::endl;
+      config.normalizationConfig = defaults.normalizationConfig;
+     }
 }
 
 void DataMiningConfigParser::parseRosenblattTransformationConfig(
@@ -986,6 +999,14 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
   config.solverEps = parseDouble(dict, "solverEps", defaults.solverEps, parentNode);
   config.solverThreshold =
       parseDouble(dict, "solverThreshold", defaults.solverThreshold, parentNode);
+}
+
+void DataMiningConfigParser::parseNormalizationTransformationConfig(
+    DictNode &dict, NormalizationTransformationConfig &config,
+    const NormalizationTransformationConfig &defaults, const std::string &parentNode) const {
+  config.method = parseString (dict, "method", defaults.method, parentNode);
+  config.manualInput = parseBoolean (dict, "method", defaults.manualInput, parentNode);
+  config.minmaxInput_1 = parseDoubleArray (dict, "minmaxInput_1", defaults,minmaxINput_1, parentNode);
 }
 
 

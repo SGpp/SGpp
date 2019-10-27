@@ -188,6 +188,10 @@ class DataMiningConfigParser {
     RosenblattTransformationConfig &config, const RosenblattTransformationConfig &defaults,
                            const std::string &parentNode) const;
 
+  void parseNormalizationTransformationConfig(json::JSON::DictNode &dict,
+      NormalizationTransformationConfig &config, const NormalizationTransformationConfig &defaults,
+                             const std::string &parentNode) const;
+
   template <typename Enumeration>
   int asInteger(Enumeration const value) const {
     return static_cast<int>(value);
