@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/datasets/chess/chess_5d_2000.arff",
+		"filePath": "../datasets/chess/chess_5d_2000.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 2,
@@ -11,7 +11,6 @@
 			"rosenblattConfig": {
 				"numSamples": 100,
 				"gridLevel": 2,
-				"lambda": 1e-4,
 				"solverMaxIterations": 1000
 			}
 		}

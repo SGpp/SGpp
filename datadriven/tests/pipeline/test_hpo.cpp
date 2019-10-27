@@ -113,7 +113,7 @@ class HarmonicaTester : public sgpp::datadriven::Harmonica {
 
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // using actual files for (dummy) data and config
-  std::string path("datadriven/tests/hpo_testconfig.json");
+  std::string path("datadriven/tests/pipeline/config_hpo.json");
   sgpp::datadriven::DataMiningConfigParser parser(path);
   // sgpp::datadriven::DataSourceBuilder builder;
   // sgpp::datadriven::DataSourceConfig config;
