@@ -47,6 +47,7 @@ using sgpp::datadriven::VisualizationParameters;
 using sgpp::datadriven::VisualizationGeneralConfig;
 using sgpp::datadriven::CrossvalidationConfiguration;
 using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::datadriven::ClusteringConfiguration;
 
 namespace sgpp {
 namespace datadriven {
@@ -408,6 +409,29 @@ bool DataMiningConfigParser::getFitterCrossvalidationConfig(
     config = defaults;
   }
   return hasFitterCrossvalidationConfig;
+}
+
+bool DataMiningConfigParser::getFitterClusteringConfig(ClusteringConfiguration &config,
+    const ClusteringConfiguration &defaults) const {
+  bool hasClusteringConfig =
+      hasFitterConfig() ? (*configFile)[fitter].contains("clusteringConfig") : false;
+
+  if (hasClusteringConfig) {
+    auto clusteringConfig = static_cast<DictNode *> (&(*configFile)[fitter]["clusteringConfig"]);
+
+    config.noNearestNeighbors = parseUInt(*clusteringConfig, "kNearestNeighbors",
+        defaults.noNearestNeighbors, "clusteringConfig");
+
+    config.densityThreshold = parseDouble(*clusteringConfig, "densityThreshold",
+                                          defaults.densityThreshold, "clusteringConfig");
+  } else {
+    std::cout
+        << "# Could not find specification  of fitter[clusteringConfig]. Falling Back to "
+           "default values."
+        << std::endl;
+    config = defaults;
+  }
+  return hasClusteringConfig;
 }
 
 bool DataMiningConfigParser::getFitterDensityEstimationConfig(

@@ -76,6 +76,10 @@
 			"processColumns": 1,
 			"rowBlockSize": 64,
 			"columnBlockSize": 128
+		},
+		"clusteringConfig" : {
+			"kNearestNeighbors": 20,
+			"densityThreshold": 0.6
 		}
 	},
     "visualization":{

@@ -10,13 +10,18 @@
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ClassificationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/ClusteringFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClustering.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <string>
 
@@ -42,6 +47,10 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
     FitterConfigurationClassification config{};
     config.readParams(parser);
     model = new ModelFittingClassification(config);
+  } else if (fType == FitterType::Clustering) {
+    FitterConfigurationClustering config {};
+    config.readParams(parser);
+    model = new ModelFittingClustering(config);
   }
   return model;
 }
@@ -58,16 +67,30 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     fitfac = new LeastSquaresRegressionFitterFactory(parser);
   } else if (fType == FitterType::Classification) {
     fitfac = new ClassificationFitterFactory(parser);
+  } else if(fType == FitterType::Clustering) {
+    fitfac = new ClusteringFitterFactory(parser);
   }
   return fitfac;
 }
 
 Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const {
+  Visualizer* visualizer = nullptr;
+
   VisualizerConfiguration config;
 
   config.readParams(parser);
-
-  return new VisualizerDummy();
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+  if (fType == FitterType::DensityEstimation) {
+    visualizer = new VisualizerDensityEstimation(config);
+  } else if (fType == FitterType::RegressionLeastSquares) {
+    visualizer = new VisualizerDummy();
+  } else if (fType == FitterType::Classification) {
+    visualizer = new VisualizerClassification(config);
+  } else if (fType == FitterType::Clustering) {
+    visualizer = new VisualizerClustering(config);
+  }
+  return visualizer;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
