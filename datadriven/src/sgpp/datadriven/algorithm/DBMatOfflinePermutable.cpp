@@ -25,27 +25,6 @@ sgpp::base::GeneralGridConfiguration PermutationUtil::getNormalizedConfig(
   return normalizedConfig;
 }
 
-std::vector<size_t> PermutationUtil::permuteVector(std::vector<size_t> vector,
-                                                   std::vector<size_t> currentGridLevel,
-                                                   std::vector<size_t> desiredGridLevel) {
-  std::vector<size_t> output(vector.size(), 1);
-  for (size_t i = 0; i < desiredGridLevel.size(); i++) {
-    size_t oldIndex = -1;
-    for (size_t j = 0; j < currentGridLevel.size(); j++) {
-      if (currentGridLevel[j] == desiredGridLevel[i]) {
-        oldIndex = j;
-        currentGridLevel[j] = 0;
-        break;
-      }
-    }
-    if (oldIndex == -1)
-      throw sgpp::base::algorithm_exception("No permuation.");
-    else {
-      output[i] = vector[oldIndex];
-    }
-  }
-  return output;
-}
 
 bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t> vec2) {
   // only vectors with same dimesion can be permutations

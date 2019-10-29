@@ -18,17 +18,6 @@ namespace PermutationUtil {
 std::vector<size_t> deleteOnesFromLevelVec(std::vector<size_t> vectorWithOnes);
 
 /**
- * @brief Permutes a vector according to a permutation suitable to transform newU into oldU.
- *
- * @param vector
- * @param oldU
- * @param newU
- * @return std::vector<size_t>
- */
-std::vector<size_t> permuteVector(std::vector<size_t> vector, std::vector<size_t> currentGridLevel,
-                                  std::vector<size_t> desiredGridLevel);
-
-/**
  * @brief Returns a grid configuration with level vector without elements equal to 1 and adjusted
  * dimension.
  *
