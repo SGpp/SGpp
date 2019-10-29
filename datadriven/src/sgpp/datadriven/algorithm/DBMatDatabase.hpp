@@ -90,7 +90,7 @@ class DBMatDatabase {
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-      sgpp::base::GeneralGridConfiguration baseGridConfig);
+      sgpp::base::GeneralGridConfiguration& baseGridConfig);
 
   /**
    * Puts a filepath for a given configuration in the database. The filepath refers to the matrix
