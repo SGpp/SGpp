@@ -62,6 +62,8 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
 
+
+%feature("flatnested");
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatObjectStore.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
