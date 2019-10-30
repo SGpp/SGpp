@@ -1,5 +1,13 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -11,7 +19,7 @@ DBMatPermutationFactory::DBMatPermutationFactory(std::shared_ptr<DBMatObjectStor
 
 DBMatPermutationFactory::DBMatPermutationFactory(std::shared_ptr<DBMatObjectStore> store,
                                                  const std::string& dbFilePath)
-    : store(store), dbFilePath(dbFilePath), hasDataBase(true) {}
+    : store(store), hasDataBase(true), dbFilePath(dbFilePath) {}
 
 DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
@@ -40,7 +48,7 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
                                  densityEstimationConfig, dbGridConfig);
         // build offline object
         DBMatOfflinePermutable* newBaseObject =
-            (DBMatOfflinePermutable*)DBMatOfflineFactory::buildFromFile(objectFile);
+            dynamic_cast<DBMatOfflinePermutable*>(DBMatOfflineFactory::buildFromFile(objectFile));
         // grid config with 1 elemts remove from level vector                    onst must be
         baseGridConfig = PermutationUtil::getNormalizedConfig(dbGridConfig);
         // permutate base object to match cleaned level vec
@@ -52,9 +60,7 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
         this->store->putObject(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                densityEstimationConfig, baseObject);
       }
-    }
-    // if the object is not available, build it
-    else {
+    } else {  // if the object is not available, build it
       // remove 1 elements
       baseGridConfig = PermutationUtil::getNormalizedConfig(gridConfig);
 
@@ -64,8 +70,8 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
       }
       // Instanciate base offline object
       DBMatOfflinePermutable* newBaseObject =
-          (DBMatOfflinePermutable*)DBMatOfflineFactory::buildOfflineObject(
-              baseGridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
+          dynamic_cast<DBMatOfflinePermutable*>(DBMatOfflineFactory::buildOfflineObject(
+              baseGridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig));
 
       // build grid with geometry config
       std::unique_ptr<Grid> grid;

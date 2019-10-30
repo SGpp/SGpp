@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -201,47 +202,6 @@ bool DBMatDatabase::baseGridConfigurationMatches(
   return PermutationUtil::isPermutation(
       PermutationUtil::deleteOnesFromLevelVec(levelVec),
       PermutationUtil::deleteOnesFromLevelVec(gridConfig.levelVector_));
-
-  /* // Maps a level to its number of occurences
-   std::map<int, int> levelMap;
-   // Set to check wether a level counter has already been initialized, to avoid looking up non
-   // existing map entries
-   std::set<int> levelSet;
-   // Level vector from json file
-   json::ListNode* entryLevelVector = (json::ListNode*)(&(*node)[keyGridLevel]);
-
-   // Loop over the level vector and fill out the levelMap
-   for (uint64_t i = 0; i < nodeGridDimension; i++) {
-     json::Node* indexLevelNode = (json::Node*)(&((*entryLevelVector)[i]));
-     int indexLevelInt = indexLevelNode->getInt();
-     if (indexLevelInt != 1) {
-       if (levelSet.find(indexLevelInt) != levelSet.end()) {
-         levelMap[indexLevelInt] = levelMap[indexLevelInt] + 1;
-       } else {
-         levelMap[indexLevelInt] = 1;
-         levelSet.insert(indexLevelInt);
-       }
-     }
-   }
-
-   if (node->contains(keyGridLevel)) {
-     for (size_t i = 0; i < gridConfig.dim_; i++) {
-       int configLevel = gridConfig.levelVector_.at(i);
-       // entries euqal to 1 can be ignored
-       if (configLevel == 1) continue;
-       // If given config config contains a level entry that does not exist in the json object,
-       // the json object can not be used a base
-       if (levelSet.find(configLevel) == levelSet.end()) return false;
-       levelMap[configLevel] = levelMap[configLevel] - 1;
-       // If the counter decreases to 0, the entry can be deleted
-       if (levelMap[configLevel] == 0) {
-         levelMap.erase(configLevel);
-         levelSet.erase(configLevel);
-       }
-     }
-   }
-
-   return levelSet.empty();*/
 }
 
 bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,

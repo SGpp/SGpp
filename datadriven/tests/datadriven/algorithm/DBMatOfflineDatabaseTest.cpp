@@ -5,10 +5,12 @@
 
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
+
 #include <cstdio>
 #include <iostream>
-#include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <string>
+#include <vector>
 
 using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::GeneralGridConfiguration;

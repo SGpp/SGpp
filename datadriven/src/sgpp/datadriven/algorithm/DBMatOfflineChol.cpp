@@ -38,8 +38,9 @@ DBMatOffline* DBMatOfflineChol::clone() const { return new DBMatOfflineChol{*thi
 
 bool DBMatOfflineChol::isRefineable() { return true; }
 
-void DBMatOfflineChol::decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
-                                       const DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineChol::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {

@@ -135,6 +135,8 @@ class DBMatDatabase {
    * @param adaptivityConfig the adaptivity configuration the matrix matches
    * @param regularizationConfig the regularization configuration the matrix matches
    * @param densityEstimationConfig the density estimation configuration the matrix matches
+   * @param findBaseConfig Flag to specify whether it should be searched for a suitable base object
+   * for the permutation and blow-up approach
    * @return the index of the entry that matches the configuration or -1 if not entry matches
    */
   int entryIndexByConfiguration(

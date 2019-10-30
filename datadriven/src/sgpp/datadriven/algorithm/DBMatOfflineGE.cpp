@@ -5,10 +5,10 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #ifdef USE_GSL
@@ -23,10 +23,10 @@
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::operation_exception;
-using sgpp::base::application_exception;
 using sgpp::base::algorithm_exception;
+using sgpp::base::application_exception;
 using sgpp::base::DataMatrix;
+using sgpp::base::operation_exception;
 
 DBMatOfflineGE::DBMatOfflineGE() : DBMatOffline() {}
 
@@ -73,8 +73,8 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
 #endif /* USE_GSL */
 }
 
-
-void DBMatOfflineGE::buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) {
+void DBMatOfflineGE::buildMatrix(Grid* grid,
+                                 const RegularizationConfiguration& regularizationConfig) {
   // build matrix
   DBMatOffline::buildMatrix(grid, regularizationConfig);
 

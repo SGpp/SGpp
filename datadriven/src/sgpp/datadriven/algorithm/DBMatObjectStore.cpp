@@ -1,3 +1,8 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <assert.h>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
@@ -5,6 +10,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+
+#include <string>
 #include <vector>
 
 namespace sgpp {
@@ -22,7 +29,7 @@ int DBMatObjectStore::getObjectContainerIndex(
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool searchBase) {
   // Iterate over objects to find match
-  for (int i = 0; i < this->objects.size(); i++) {
+  for (size_t i = 0; i < this->objects.size(); i++) {
     // Check whether configuration of the container matches
     if (this->objects[i].configMatches(gridConfig, geometryConfig, adaptivityConfig,
                                        regularizationConfig, densityEstimationConfig, searchBase))
@@ -46,7 +53,9 @@ const DBMatOffline* DBMatObjectStore::getObject(
   int index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
                                             regularizationConfig, densityEstimationConfig);
   // If no suitable object is found, return nullptr
-  if (index == -1) return nullptr;
+  if (index == -1) {
+    return nullptr;
+  }
   // If suitable object is found, return pointer to the object
   else {
     return &this->getObjectContainer(index).getOfflineObject();

@@ -116,7 +116,6 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   void reset() override;
 
  private:
- 
   /**
    * @brief The instances offline object store
    *

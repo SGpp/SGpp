@@ -1,5 +1,14 @@
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
+
+#include <set>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -25,7 +34,6 @@ sgpp::base::GeneralGridConfiguration PermutationUtil::getNormalizedConfig(
   return normalizedConfig;
 }
 
-
 bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t> vec2) {
   // only vectors with same dimesion can be permutations
   if (vec1.size() != vec2.size()) return false;
@@ -40,12 +48,11 @@ bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t
     for (size_t i = 0; i < vec2.size(); i++) {
       auto l_ = vec2[i];
       // if suitable elemet is found, remove it from the base vector by setting it to -1.
+       // Else if no suitable element has been found yet, base level vec is no permutation
       if (l == l_) {
         vec2[i] = -1;
         break;
-      }
-      // If no suitable element has been found yet, base level vec is no permutation
-      else if (i == vec2.size() - 1) {
+      } else if (i == vec2.size() - 1) {
         return false;
         break;
       }
@@ -81,17 +88,17 @@ std::vector<size_t> DBMatOfflinePermutable::computePermutation(std::vector<size_
   // result vector
   std::vector<size_t> output(vec1.size(), 0);
   for (size_t i = 0; i < vec1.size(); i++) {
-    size_t oldIndex = -1;
+    size_t oldIndex = SIZE_MAX;
     for (size_t j = 0; j < vec2.size(); j++) {
       if (vec2.at(j) == vec1.at(i)) {
         oldIndex = j;
-        vec2.at(j) = 0;
+        vec2.at(j) = SIZE_MAX;
         break;
       }
     }
-    if (oldIndex == -1)
+    if (oldIndex == SIZE_MAX) {
       throw sgpp::base::algorithm_exception("No permuation.");
-    else {
+    } else {
       output.at(i) = oldIndex;
     }
   }
@@ -210,7 +217,7 @@ void DBMatOfflinePermutable::permuteMatrix(
   for (size_t dim = 0; dim < desiredLevelVec.size(); dim++) {
     size_t currentSize = points.size();
     // Iterate over all current points
-    for (int p = 0; p < currentSize; p++) {
+    for (size_t p = 0; p < currentSize; p++) {
       bool first = true;
       for (size_t l = 1; l <= desiredLevelVec[dim]; l++) {
         for (size_t i = 1; i < static_cast<size_t>(1 << l); i += 2) {

@@ -110,9 +110,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
         config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
         config->getRegularizationConfig(), config->getDensityEstimationConfig());
     offline->interactions = getInteractions(geometryConfig);
-  }
-  // Intialize database if it is provided
-  else if (!databaseConfig.filepath.empty()) {
+  } else if (!databaseConfig.filepath.empty()) {  // Intialize database if it is provided
     datadriven::DBMatDatabase database(databaseConfig.filepath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,

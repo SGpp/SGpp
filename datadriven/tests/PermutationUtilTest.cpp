@@ -7,6 +7,8 @@
 #include <boost/test/unit_test_suite.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 
+#include <vector>
+
 BOOST_AUTO_TEST_SUITE(PermutationUtilTest)
 
 BOOST_AUTO_TEST_CASE(IsPermutationTest) {

@@ -9,6 +9,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
+#include <vector>
+
 BOOST_AUTO_TEST_SUITE(DBMatOfflinePermutableTest)
 
 class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
