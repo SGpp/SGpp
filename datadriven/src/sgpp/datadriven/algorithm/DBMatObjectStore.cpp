@@ -55,9 +55,7 @@ const DBMatOffline* DBMatObjectStore::getObject(
   // If no suitable object is found, return nullptr
   if (index == -1) {
     return nullptr;
-  }
-  // If suitable object is found, return pointer to the object
-  else {
+  } else {  // If suitable object is found, return pointer to the object
     return &this->getObjectContainer(index).getOfflineObject();
   }
 }
@@ -75,11 +73,10 @@ const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
   // If no suitable base object is found, return nullptr
   if (index == -1) {
     return nullptr;
-    // If suitable base object is found, return pointer to the object and base config
-  } else {
+  } else {  // If suitable base object is found, return pointer to the object and base config
     const DBMatObjectStore::ObjectContainer& result = this->getObjectContainer(index);
     baseGridConfig = result.getGridConfig();
-    return (const DBMatOfflinePermutable*)&result.getOfflineObject();
+    return dynamic_cast<const DBMatOfflinePermutable*>(&result.getOfflineObject());
   }
 }
 

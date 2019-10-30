@@ -102,20 +102,20 @@ std::string& DBMatDatabase::getBaseDataMatrix(
         "decomposition");
   } else {
     // Get grid config of database entry
-    json::DictNode* entry = (json::DictNode*)(&((*database)[entry_index]));
-    json::DictNode* gridConfigNode = (json::DictNode*)(&(*entry)[keyGridConfiguration]);
+    json::DictNode& entry = dynamic_cast<json::DictNode&>((*database)[entry_index]);
+    json::DictNode& gridConfigNode = dynamic_cast<json::DictNode&>(entry[keyGridConfiguration]);
     // Get grid dimension
-    baseGridConfig.dim_ = (*gridConfigNode)[keyGridDimension].getUInt();
-    json::ListNode* entryLevelVector = (json::ListNode*)(&(*gridConfigNode)[keyGridLevel]);
+    baseGridConfig.dim_ = gridConfigNode[keyGridDimension].getUInt();
+    json::ListNode& entryLevelVector = dynamic_cast<json::ListNode&>(gridConfigNode[keyGridLevel]);
     // Intialize level vector
     baseGridConfig.levelVector_.clear();
     // Fill out level vector
     for (size_t i = 0; i < baseGridConfig.dim_; i++) {
-      json::Node* levelNode = dynamic_cast<json::Node*>(&((*entryLevelVector)[i]));
-      baseGridConfig.levelVector_.push_back(levelNode->getUInt());
+      json::Node& levelNode = dynamic_cast<json::Node&>(entryLevelVector[i]);
+      baseGridConfig.levelVector_.push_back(levelNode.getUInt());
     }
     // Return file path of serialized offline object
-    std::string& filepath = (*entry)[keyFilepath].get();
+    std::string& filepath = entry[keyFilepath].get();
     return filepath;
   }
 }

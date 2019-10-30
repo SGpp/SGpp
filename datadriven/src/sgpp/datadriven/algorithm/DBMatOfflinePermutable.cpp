@@ -48,13 +48,12 @@ bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t
     for (size_t i = 0; i < vec2.size(); i++) {
       auto l_ = vec2[i];
       // if suitable elemet is found, remove it from the base vector by setting it to -1.
-       // Else if no suitable element has been found yet, base level vec is no permutation
+      // Else if no suitable element has been found yet, base level vec is no permutation
       if (l == l_) {
         vec2[i] = -1;
         break;
       } else if (i == vec2.size() - 1) {
         return false;
-        break;
       }
     }
   }
@@ -133,7 +132,6 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   while (lStar >= 0) {
     if (lStar == 0) {
       result += ((1 << (level[0] - 1)) - 2 + ((index[0] + 1) >> 1)) * mult;
-
       break;
     }
     size_t prod = preComputations.at(lStar - 1);

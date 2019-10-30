@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   desiredOff->decomposeMatrix(regConfig, densConfig);
   // get permuted base object from factory
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> permOff(
-      (sgpp::datadriven::DBMatOfflineOrthoAdapt *)factory.getPermutedObject(
-          desiredGridConfig, gc, adaptivityConfig, regConfig, densConfig));
+      dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(factory.getPermutedObject(
+          desiredGridConfig, gc, adaptivityConfig, regConfig, densConfig)));
 
   // build online objects
   std::unique_ptr<sgpp::datadriven::DBMatOnlineDEOrthoAdapt> online1{
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   for (size_t i = 0; i < 100; i++) {
     sgpp::base::DataVector vec(desiredGridConfig.dim_);
     for (size_t j = 0; j < desiredGridConfig.dim_; j++) {
-      vec.at(j) = (double)std::rand() / RAND_MAX;
+      vec.at(j) = static_cast<double>(std::rand() / RAND_MAX);
     }
     samples.setRow(i, vec);
   }

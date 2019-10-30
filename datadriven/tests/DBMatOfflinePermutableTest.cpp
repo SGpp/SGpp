@@ -25,7 +25,7 @@ class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) override {}
 
-  DBMatOffline* clone() const { return new DBMatOfflineTest(); }
+  DBMatOffline* clone() const override { return new DBMatOfflineTest(); }
 
   bool isRefineable() override { return false; }
 
