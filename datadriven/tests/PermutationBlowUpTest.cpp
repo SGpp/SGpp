@@ -11,6 +11,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 
 #include <vector>
 
@@ -111,6 +113,62 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {}
+/*BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
+  // config
+  sgpp::base::GeneralGridConfiguration gridConfig;
+  gridConfig.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  gridConfig.type_ = sgpp::base::GridType::Linear;
+  gridConfig.dim_ = 10;
+  gridConfig.level_ = 3;
+
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.numRefinements_ = 0;
+
+  sgpp::datadriven::RegularizationConfiguration regConfig;
+  regConfig.lambda_ = 0;
+
+  sgpp::datadriven::DensityEstimationConfiguration densConfig;
+  densConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+
+  sgpp::datadriven::FitterConfigurationDensityEstimation config;
+  config.getGridConfig() = gridConfig;
+  config.getRefinementConfig() = adaptivityConfig;
+  config.getDensityEstimationConfig() = densConfig;
+  config.getRegularizationConfig() = regConfig;
+
+  // generate samples
+  sgpp::base::DataMatrix samples(1000, gridConfig.dim_);
+  for (int i = 0; i < 1000; i++) {
+    sgpp::base::DataVector vec(gridConfig.dim_);
+    for (int j = 0; j < gridConfig.dim_; j++) {
+      vec.at(j) = (double)std::rand() / RAND_MAX;
+    }
+    samples.setRow(i, vec);
+  }
+
+  std::shared_ptr<sgpp::datadriven::DBMatObjectStore> store(
+      new sgpp::datadriven::DBMatObjectStore());
+
+  sgpp::datadriven::ModelFittingDensityEstimationCombi modelWithPerm(config, store);
+  modelWithPerm.fit(samples);
+
+  // turn off offline permutation
+  config.getDensityEstimationConfig().useOfflinePermutation = false;
+  sgpp::datadriven::ModelFittingDensityEstimationCombi modelConventional(config);
+  modelConventional.fit(samples);
+
+  // check result
+  for (size_t i = 0; i < 1000; i++) {
+    sgpp::base::DataVector p(gridConfig.dim_);
+    for (int j = 0; j < gridConfig.dim_; j++) {
+      p.at(j) = (double)std::rand() / RAND_MAX;
+    }
+    double check1 = modelConventional.evaluate(p);
+    double check2 = modelWithPerm.evaluate(p);
+
+    BOOST_CHECK(std::abs(check1 - check2) / std::abs(check1) < 0.001);
+  }
+}*/
 
 BOOST_AUTO_TEST_SUITE_END()
