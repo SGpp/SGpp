@@ -132,6 +132,7 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   while (lStar >= 0) {
     if (lStar == 0) {
       result += ((1 << (level[0] - 1)) - 2 + ((index[0] + 1) >> 1)) * mult;
+
       break;
     }
     size_t prod = preComputations.at(lStar - 1);

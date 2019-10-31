@@ -120,3 +120,4 @@ BOOST_AUTO_TEST_CASE(LhsMatrixPermutationTest) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+

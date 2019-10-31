@@ -11,8 +11,6 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 
 #include <vector>
 
@@ -95,7 +93,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   for (size_t i = 0; i < 100; i++) {
     sgpp::base::DataVector vec(desiredGridConfig.dim_);
     for (size_t j = 0; j < desiredGridConfig.dim_; j++) {
-      vec.at(j) = static_cast<double>(std::rand() / RAND_MAX);
+      vec.at(j) = static_cast<double>(std::rand()) / RAND_MAX;
     }
     samples.setRow(i, vec);
   }
