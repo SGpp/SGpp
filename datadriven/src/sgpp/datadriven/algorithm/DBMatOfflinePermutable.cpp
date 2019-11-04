@@ -143,9 +143,9 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
 
     // determine new lStar
     size_t lStar_ = SIZE_MAX;
-    for (size_t i = lStar - 1; i >= 0; i--) {
-      if (level[i] > 1) {
-        lStar_ = i;
+    for (size_t i = 0; i < lStar; i++) {
+      if (level[lStar - 1 - i] > 1) {
+        lStar_ = lStar - 1 - i;
         break;
       }
     }
