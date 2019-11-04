@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 
 #include <vector>
 
@@ -111,7 +112,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   }
 }
 
-/*BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
+BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
   // config
   sgpp::base::GeneralGridConfiguration gridConfig;
   gridConfig.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
@@ -137,10 +138,10 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
 
   // generate samples
   sgpp::base::DataMatrix samples(1000, gridConfig.dim_);
-  for (int i = 0; i < 1000; i++) {
+  for (size_t i = 0; i < 1000; i++) {
     sgpp::base::DataVector vec(gridConfig.dim_);
-    for (int j = 0; j < gridConfig.dim_; j++) {
-      vec.at(j) = (double)std::rand() / RAND_MAX;
+    for (size_t j = 0; j < gridConfig.dim_; j++) {
+      vec.at(j) = static_cast<double>(std::rand()) / RAND_MAX;
     }
     samples.setRow(i, vec);
   }
@@ -160,13 +161,13 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   for (size_t i = 0; i < 1000; i++) {
     sgpp::base::DataVector p(gridConfig.dim_);
     for (int j = 0; j < gridConfig.dim_; j++) {
-      p.at(j) = (double)std::rand() / RAND_MAX;
+      p.at(j) = static_cast<double>(std::rand()) / RAND_MAX;
     }
     double check1 = modelConventional.evaluate(p);
     double check2 = modelWithPerm.evaluate(p);
 
     BOOST_CHECK(std::abs(check1 - check2) / std::abs(check1) < 0.001);
   }
-}*/
+}
 
 BOOST_AUTO_TEST_SUITE_END()
