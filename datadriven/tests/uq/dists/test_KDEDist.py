@@ -8,7 +8,7 @@ import numpy as np
 
 from matplotlib import rc
 
-from pysgpp import DataVector, DataMatrix, IndexVector
+from pysgpp import DataVector, DataMatrix, SizeVector
 from pysgpp import KernelType_EPANECHNIKOV, KernelDensityEstimator
 import pysgpp.extensions.datadriven.uq.dists as dists
 from pysgpp.extensions.datadriven.uq.dists import J, Normal, KDEDist
@@ -54,7 +54,7 @@ class KDEDistTest(unittest.TestCase):
 
         fig = plt.figure()
         sample = DataVector(kde.getDim())
-        skipElements = IndexVector(1)
+        skipElements = SizeVector(1)
         yhs = np.ndarray(len(hs))
         for k, h in enumerate(hs):
             bandwidths[0] = h

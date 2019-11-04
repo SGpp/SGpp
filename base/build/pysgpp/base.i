@@ -33,19 +33,19 @@
 
 namespace std {
     %template(IntVector) vector<int>;
-    %template(IntIntVector) vector< vector<int> >;
+    %template(IntVectorVector) vector< vector<int> >;
     %template(BoolVector) vector<bool>;
     %template(DoubleVector) vector<double>;
     %template(FloatVector) vector<float>;
-    %template(IndexVector) vector<size_t>;
-    %template(IndexValPair) pair<size_t, double>;
-    %template(IndexValVector) vector<pair<size_t, double> >;
-    %template(IndexList) list<size_t>;
+    %template(SizeVector) vector<size_t>;
+    %template(SizeDoublePair) pair<size_t, double>;
+    %template(SizeDoublePairVector) vector<pair<size_t, double> >;
+    %template(SizeList) list<size_t>;
     // For OnlinePredictiveRefinementDimension
     %template(refinement_key) std::pair<size_t, unsigned int>;
     %template(refinement_map) std::map<std::pair<size_t, unsigned int>, double>;
     // For interaction-term-aware sparse grids.
-    %template(VecVecSizeT) vector< vector<size_t> >;
+    %template(SizeVectorVector) vector< vector<size_t> >;
     %template(DataVectorVector) vector<sgpp::base::DataVector>;
     %template(DataMatrixVector) vector<sgpp::base::DataMatrix>;
 }
@@ -64,11 +64,15 @@ namespace std {
 
 %include "base/src/sgpp/base/grid/LevelIndexTypes.hpp"
 
+%ignore sgpp::base::DataVectorSP::DataVectorSP(DataVectorSP&&);
 %ignore sgpp::base::DataVectorSP::DataVectorSP(std::vector<float> input);
+%ignore sgpp::base::DataVectorSP::DataVectorSP(std::initializer_list<float>);
 %ignore sgpp::base::DataVectorSP::operator=;
 %ignore sgpp::base::DataVectorSP::operator[];
 %ignore sgpp::base::DataVectorSP::toString(std::string& text) const;
 %include "base/src/sgpp/base/datatypes/DataVectorSP.hpp"
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(DataMatrixSP&&);
+%ignore sgpp::base::DataMatrixSP::DataMatrixSP(std::initializer_list<float>, size_t);
 %ignore sgpp::base::DataMatrixSP::operator=;
 %ignore sgpp::base::DataMatrixSP::operator[];
 %ignore sgpp::base::DataMatrixSP::toString(std::string& text) const;
@@ -224,19 +228,19 @@ const bool UMFPACK_ENABLED;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
-    
+
 #ifdef USEEIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
-    
+
 #ifdef USEGMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
-    
+
 #ifdef USEUMFPACK
     const bool UMFPACK_ENABLED = true;
 #else

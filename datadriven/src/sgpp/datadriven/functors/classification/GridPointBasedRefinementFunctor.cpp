@@ -23,11 +23,12 @@ namespace datadriven {
   GridPointBasedRefinementFunctor::
   GridPointBasedRefinementFunctor(std::vector<base::Grid*> grids,
                                   std::vector<base::DataVector*> alphas,
+                                  std::vector<double> priors,
                                   size_t r_num,
                                   bool level_penalize,
                                   bool pre_compute,
                                   double thresh) :
-    grids(grids), alphas(alphas), current_grid_index(0),
+    grids(grids), alphas(alphas), priors(priors), current_grid_index(0),
     refinements_num(r_num), threshold(thresh),
     level_penalize(level_penalize),
     pre_compute(pre_compute),
@@ -60,7 +61,7 @@ namespace datadriven {
       for (size_t i = 0; i < grids.size(); i++) {
         std::unique_ptr<base::OperationEval>
           opEval(op_factory::createOperationEval(*grids.at(i)));
-        gridEvals.push_back(opEval->eval(*alphas.at(i), p));
+        gridEvals.push_back((opEval->eval(*alphas.at(i), p))*priors.at(i));
       }
     }
 
@@ -104,7 +105,7 @@ namespace datadriven {
           key = p.toString();
           // Does the key already exist?
           if (pre_comp_evals.at(i).count(key) == 0) {
-            v = opEval->eval(*alphas.at(i), p);
+            v = (opEval->eval(*alphas.at(i), p))*priors.at(i);
             pre_comp_evals.at(i).insert(std::pair<std::string, double>(key,
                                                                        v));
           }

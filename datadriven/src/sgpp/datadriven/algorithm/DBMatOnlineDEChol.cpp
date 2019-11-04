@@ -35,7 +35,7 @@ void DBMatOnlineDEChol::solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
   cholsolver->solve(lhsMatrix, alpha, b, lambda, lambda);
 
   //  DBMatDMSChol myCholSolver;
-  //  DataVector myAlpha{alpha.getSize()};
+  //  DataVector myAlpha(alpha.getSize());
   //  myCholSolver.solve(lhsMatrix, myAlpha, b, old_lambda, lambda);
   //
   //  myAlpha.sub(alpha);

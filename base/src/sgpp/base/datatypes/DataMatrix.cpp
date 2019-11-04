@@ -32,6 +32,12 @@ DataMatrix::DataMatrix(size_t nrows, size_t ncols, double value) : nrows(nrows),
 DataMatrix::DataMatrix(const double* input, size_t nrows, size_t ncols)
     : std::vector<double>(input, input + nrows * ncols), nrows(nrows), ncols(ncols) {}
 
+DataMatrix::DataMatrix(std::vector<double> input, size_t nrows)
+    : DataMatrix(input.data(), nrows, input.size() / nrows) {}
+
+DataMatrix::DataMatrix(std::initializer_list<double> input, size_t nrows)
+    : std::vector<double>(input), nrows(nrows), ncols(input.size() / nrows) {}
+
 DataMatrix DataMatrix::fromFile(const std::string& fileName) {
   std::ifstream f(fileName, std::ifstream::in);
   f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
@@ -136,14 +142,13 @@ void DataMatrix::resizeQuadratic(size_t size) {
     return;
   }
 
-  DataMatrix newMatrix(size, size);
+  DataMatrix oldMatrix(*this);
 
   size_t min_size = std::min(this->ncols, size);
+  this->resize(size, size);
   for (size_t i = 0; i < min_size; ++i) {
-    std::copy(this->row_begin(i), this->row_begin(i) + min_size, newMatrix.row_begin(i));
+    std::copy(oldMatrix.row_begin(i), oldMatrix.row_begin(i) + min_size, this->row_begin(i));
   }
-
-  this->operator=(std::move(newMatrix));
 }
 
 void DataMatrix::resizeZero(size_t nrows) { this->resizeRows(nrows); }
@@ -162,17 +167,16 @@ void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, siz
   }
 
   // create new matrix
-  DataMatrix newMatrix(0, col_2 - col_1 + 1);
-  newMatrix.reserveAdditionalRows(row_2 - row_1 + 1);
+  DataMatrix oldMatrix(*this);
+  this->resize(0, col_2 - col_1 +1);
+  this->reserveAdditionalRows(row_2 - row_1 + 1);
 
-  auto regionBegin = this->begin() + (row_1 - 1) * this->ncols + (col_1 - 1);
-  auto regionEnd = this->begin() + (row_2) * this->ncols + (col_1 - 1);
-  for (auto it = regionBegin; it < regionEnd; it += this->ncols) {
-    newMatrix.insert(newMatrix.end(), it, it + (col_2 - col_1 + 1));
-    ++newMatrix.nrows;
+  auto regionBegin = oldMatrix.begin() + (row_1 - 1) * oldMatrix.ncols + (col_1 - 1);
+  auto regionEnd = oldMatrix.begin() + (row_2) * oldMatrix.ncols + (col_1 - 1);
+  for (auto it = regionBegin; it < regionEnd; it += oldMatrix.ncols) {
+    this->insert(this->end(), it, it + (col_2 - col_1 + 1));
+    ++this->nrows;
   }
-
-  this->operator=(std::move(newMatrix));
 }
 
 void DataMatrix::reserveAdditionalRows(size_t inc_nrows) {
@@ -196,13 +200,13 @@ void DataMatrix::transpose() {
       }
     }
   } else {
-    DataMatrix newMatrix(this->ncols, this->nrows);
-    for (size_t i = 0; i < this->nrows; ++i) {
-      for (size_t j = 0; j < this->ncols; ++j) {
-        newMatrix(j, i) = (*this)(i, j);
+    DataMatrix oldMatrix(*this);
+    this->resize(this->ncols, this->nrows);
+    for (size_t i = 0; i < oldMatrix.nrows; ++i) {
+      for (size_t j = 0; j < oldMatrix.ncols; ++j) {
+        (*this)(j, i) = oldMatrix(i, j);
       }
     }
-    this->operator=(std::move(newMatrix));
   }
 }
 
@@ -376,7 +380,8 @@ void DataMatrix::addReduce(DataVector& reduction) {
 
 void DataMatrix::addReduce(DataVector& reduction, DataVector& beta, size_t start_beta) {
   if (this->nrows != reduction.getSize()) {
-    throw sgpp::base::data_exception("DataMatrix::addReduce : Dimensions do not match (reduction)");
+    throw sgpp::base::data_exception(
+      "DataMatrix::addReduce : Dimensions do not match (reduction)");
   }
 
   if (this->ncols + start_beta > beta.getSize()) {
@@ -438,7 +443,7 @@ void DataMatrix::mult(double scalar) {
   }
 }
 
-void DataMatrix::mult(const DataVector& x, DataVector& y) {
+void DataMatrix::mult(const DataVector& x, DataVector& y) const {
   if (ncols != x.getSize()) {
     throw sgpp::base::data_exception("DataMatrix::mult : Dimensions do not match (x)");
   }
@@ -478,7 +483,7 @@ void DataMatrix::abs() {
   size_t n = nrows * ncols;
 
   for (size_t i = 0; i < n; ++i) {
-    (*this)[i] = std::fabs((*this)[i]);
+    (*this)[i] = std::abs((*this)[i]);
   }
 }
 
@@ -507,7 +512,7 @@ void DataMatrix::normalizeDimension(size_t d, double border) {
   double xmin, xmax;
   minmax(d, &xmin, &xmax);
 
-  double delta = (xmax - xmin) / (1 - 2 * border);
+  double delta = (xmax - xmin) / (1.0 - 2.0 * border);
 
   if (delta == 0.0) {
     for (size_t i = d; i < n; i += ncols) {
@@ -672,7 +677,7 @@ size_t DataMatrix::getNumberNonZero() const {
   size_t nonZero = 0;
 
   for (size_t i = 0; i < n; ++i) {
-    if (fabs((*this)[i]) > 0.0) {
+    if (std::abs((*this)[i]) > 0.0) {
       ++nonZero;
     }
   }

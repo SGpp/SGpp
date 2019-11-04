@@ -65,12 +65,20 @@ void VisualizerDensityEstimation::runVisualization(ModelFittingBase &model, Data
   {
     #pragma omp section
     {
-      getLinearCuts(model, currentDirectory, cutMatrix);
+      if (std::find(config.getGeneralConfig().algorithm.begin(),
+          config.getGeneralConfig().algorithm.end(), "linearcuts") !=
+          config.getGeneralConfig().algorithm.end()) {
+        getLinearCuts(model, currentDirectory, cutMatrix);
+      }
     }
 
     #pragma omp section
     {
-      getHeatmap(model, currentDirectory, heatMapMatrix);
+      if (std::find(config.getGeneralConfig().algorithm.begin(),
+                   config.getGeneralConfig().algorithm.end(), "heatmaps") !=
+                   config.getGeneralConfig().algorithm.end()) {
+        getHeatmap(model, currentDirectory, heatMapMatrix);
+      }
     }
 
     /*#pragma omp section

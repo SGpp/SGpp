@@ -47,7 +47,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    */
   void getHeatmapsClassification(ModelFittingBase &model, std::string currentDirectory,
     DataMatrix &classMatrix);
-  /*
+  /**
    * Method which generates the classification heatmap
    * of models of 4 or more dimensions
    * @param model The model used to evaluate the heatmap
@@ -56,7 +56,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    */
   void getHeatmapMore4DClassification(ModelFittingBase &model, std::string currentDirectory,
     DataMatrix &classMatrix);
-  /*
+  /**
    * Method which generates the classification heatmap
    * of models of 2 dimensions
    * @param model The model used to evaluate the heatmap
@@ -65,7 +65,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    */
   void getHeatmap2DClassification(ModelFittingBase &model, std::string currentDirectory,
     DataMatrix &classMatrix);
-  /*
+  /**
    * Method which generates the classification heatmap
    * of models of 3 sdimensions
    * @param model The model used to evaluate the heatmap

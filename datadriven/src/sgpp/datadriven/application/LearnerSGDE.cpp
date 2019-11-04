@@ -647,16 +647,22 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         // (for zero-crossings refinement, data-based refinement)
         std::vector<sgpp::base::Grid*> refGrids;
         std::vector<sgpp::base::DataVector*> refAlphas;
+        std::vector<double> refPriors;
         for (auto& g : grids) {
           refGrids.push_back(&*(g.second));
           refAlphas.push_back(&*(alphas.at(g.first)));
+          if (usePrior) {
+            refPriors.push_back(priors.at(g.first));
+          } else {
+            refPriors.push_back(1.0);
+          }
         }
         bool levelPenalize = false;  // multiplies penalzing term for fine levels
         bool preCompute = true;      // precomputes and caches evals for zrcr
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(
-            refGrids, refAlphas, adaptivityConfig.noPoints_, levelPenalize, preCompute);
+            refGrids, refAlphas, refPriors, adaptivityConfig.noPoints_, levelPenalize, preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
         // to be marked relevant). Cross-validation or similar can/should be
@@ -668,7 +674,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         base::DataMatrix* refTrainData = trainData.get();
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
-            refGrids, refAlphas, refTrainData, refTrainLabels, adaptivityConfig.noPoints_,
+            refGrids, refAlphas, refPriors, refTrainData, refTrainLabels,
+            adaptivityConfig.noPoints_,
             levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
