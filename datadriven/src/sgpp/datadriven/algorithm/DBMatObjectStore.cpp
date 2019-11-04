@@ -21,7 +21,7 @@ DBMatObjectStore::DBMatObjectStore() : hasDatabase(false) {}
 DBMatObjectStore::DBMatObjectStore(const std::string& filePath)
     : dbFilePath(filePath), hasDatabase(true) {}
 
-int DBMatObjectStore::getObjectContainerIndex(
+size_t DBMatObjectStore::getObjectContainerIndex(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
@@ -35,11 +35,11 @@ int DBMatObjectStore::getObjectContainerIndex(
                                        regularizationConfig, densityEstimationConfig, searchBase))
       return i;
   }
-  // If no object matches, return -1
-  return -1;
+  // If no object matches, return SIZQE_MAX
+  return SIZE_MAX;
 }
 
-const DBMatObjectStore::ObjectContainer& DBMatObjectStore::getObjectContainer(int index) const {
+const DBMatObjectStore::ObjectContainer& DBMatObjectStore::getObjectContainer(size_t index) const {
   return this->objects.at(index);
 }
 
@@ -50,10 +50,10 @@ const DBMatOffline* DBMatObjectStore::getObject(
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Search for suitable offline object
-  int index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
+  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
                                             regularizationConfig, densityEstimationConfig);
   // If no suitable object is found, return nullptr
-  if (index == -1) {
+  if (index == SIZE_MAX) {
     return nullptr;
   } else {  // If suitable object is found, return pointer to the object
     return &this->getObjectContainer(index).getOfflineObject();
@@ -68,10 +68,10 @@ const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Search for suitable base offline object
-  int index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
+  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
                                             regularizationConfig, densityEstimationConfig, true);
   // If no suitable base object is found, return nullptr
-  if (index == -1) {
+  if (index == SIZE_MAX) {
     return nullptr;
   } else {  // If suitable base object is found, return pointer to the object and base config
     const DBMatObjectStore::ObjectContainer& result = this->getObjectContainer(index);

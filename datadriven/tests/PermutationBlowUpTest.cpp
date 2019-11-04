@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
   // check result
   for (size_t i = 0; i < 1000; i++) {
     sgpp::base::DataVector p(gridConfig.dim_);
-    for (int j = 0; j < gridConfig.dim_; j++) {
+    for (size_t j = 0; j < gridConfig.dim_; j++) {
       p.at(j) = static_cast<double>(std::rand()) / RAND_MAX;
     }
     double check1 = modelConventional.evaluate(p);

@@ -172,7 +172,7 @@ class DBMatObjectStore {
   /**
    * @brief Returns the index to a suitable offline object.
    * If searchBase = true, a suitable base object for the permutation and blow-up approach is
-   * searched for. If no suitable object exists, -1 is returned.
+   * searched for. If no suitable object exists, SIZE_MAX is returned.
    *
    * @param gridConfig Grid configuration
    * @param geometryConfig Geometry configuration for geometry aware sparse grids
@@ -183,7 +183,7 @@ class DBMatObjectStore {
    * is to be searched
    * @return int
    */
-  int getObjectContainerIndex(
+  size_t getObjectContainerIndex(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
@@ -197,7 +197,7 @@ class DBMatObjectStore {
    * @param index Index of the object container
    * @return const ObjectContainer&
    */
-  const ObjectContainer& getObjectContainer(int index) const;
+  const ObjectContainer& getObjectContainer(size_t index) const;
 };
 
 }  // namespace datadriven

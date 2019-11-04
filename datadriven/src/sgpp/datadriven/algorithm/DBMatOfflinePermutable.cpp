@@ -38,7 +38,7 @@ bool PermutationUtil::isPermutation(std::vector<size_t> vec1, std::vector<size_t
   // only vectors with same dimesion can be permutations
   if (vec1.size() != vec2.size()) return false;
 
-  std::vector<int> vec2_(vec1.size(), 0);
+  std::vector<size_t> vec2_(vec1.size(), 0);
   for (size_t i = 0; i < vec2.size(); i++) {
     vec2_[i] = vec2[i];
   }
@@ -122,14 +122,14 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
   if (!(level.size() == index.size() && index.size() == gridLevel.size()))
     throw sgpp::base::algorithm_exception("Vector dimensions do not match");
   // Iterate over vectors. Start with most right element unequal 1
-  int lStar = -1;
+  size_t lStar = SIZE_MAX;
   for (size_t i = 0; i < level.size(); i++) {
     if (level[i] != 1) lStar = i;
   }
 
   size_t result = 1;
   size_t mult = 1;
-  while (lStar >= 0) {
+  while (lStar != SIZE_MAX) {
     if (lStar == 0) {
       result += ((1 << (level[0] - 1)) - 2 + ((index[0] + 1) >> 1)) * mult;
 
@@ -142,8 +142,8 @@ size_t DBMatOfflinePermutable::getMatrixIndexForPoint(std::vector<size_t> level,
     mult *= (1 << gridLevel[lStar]) - 2;
 
     // determine new lStar
-    int lStar_ = -1;
-    for (int i = lStar - 1; i >= 0; i--) {
+    size_t lStar_ = SIZE_MAX;
+    for (size_t i = lStar - 1; i >= 0; i--) {
       if (level[i] > 1) {
         lStar_ = i;
         break;
@@ -261,18 +261,26 @@ void DBMatOfflinePermutable::dimensionBlowUp(
     const sgpp::base::GeneralGridConfiguration& desiredGridConfig,
     sgpp::base::DataMatrix& baseMatrix, bool matrixIsInverse) {
   auto& gridType = desiredGridConfig.type_;
-  int dimDelta = desiredGridConfig.dim_ - baseGridConfig.dim_;
+  size_t dimDelta;
+  bool inv;
+  if (desiredGridConfig.dim_ >= baseGridConfig.dim_) {
+    dimDelta = desiredGridConfig.dim_ - baseGridConfig.dim_;
+    inv = false;
+  } else {
+    dimDelta = baseGridConfig.dim_ - desiredGridConfig.dim_;
+    inv = true;
+  }
   // no dimension blow-up needs to be applied
   if (dimDelta == 0) return;
   if (gridType == sgpp::base::GridType::Linear) {
-    double dimFactor = std::pow(3, std::abs(dimDelta));
+    double dimFactor = std::pow(3, dimDelta);
     if (matrixIsInverse) {
-      if (dimDelta > 0)
+      if (!inv)
         baseMatrix.mult(dimFactor);
       else
         baseMatrix.mult(1.0 / dimFactor);
     } else {
-      if (dimDelta > 0)
+      if (!inv)
         baseMatrix.mult(1.0 / dimFactor);
       else
         baseMatrix.mult(dimFactor);

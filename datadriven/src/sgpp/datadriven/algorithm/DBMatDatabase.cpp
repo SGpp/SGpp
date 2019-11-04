@@ -252,7 +252,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
       }
       for (size_t i = 0; i < gridConfig.dim_; i++) {
         json::Node* indexLevelNode = dynamic_cast<json::Node*>(&((*entryLevelVector)[i]));
-        if (indexLevelNode->getInt() != gridConfig.levelVector_.at(i)) {
+        if (indexLevelNode->getUInt() != gridConfig.levelVector_.at(i)) {
           return false;
         }
       }
