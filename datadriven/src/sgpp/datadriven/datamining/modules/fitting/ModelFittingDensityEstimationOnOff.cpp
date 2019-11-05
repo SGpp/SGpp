@@ -94,6 +94,16 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // If the permutation and blow-up approach is applicable to the decomposition type, an object
   // store is given and the offline permutation method is configured, the offline object is obtained
   // from the permutation factory
+  if (this->hasObjectStore) {
+    const DBMatOffline* objectFromStore =
+        this->objectStore->getObject(gridConfig, geometryConfig, refinementConfig,
+                                     regularizationConfig, densityEstimationConfig);
+
+    if (objectFromStore != nullptr) {
+      offline = objectFromStore->clone();
+    }
+  }
+
   if (DBMatOfflinePermutable::PermutableDecompositions.find(
           densityEstimationConfig.decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end() &&
@@ -129,6 +139,10 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
+    if (this->hasObjectStore) {
+      this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
+                                   regularizationConfig, densityEstimationConfig, offline->clone());
+    }
   }
 
   // todo(): non-parallel version of regularization here?
