@@ -13,6 +13,8 @@
 #include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
 #include <sgpp/base/grid/generation/functors/VectorSurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -66,6 +68,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
     means.resize(numRes, 777);
     variances.resize(numRes, -1);
     computedMeanFlag = false;
+    computedCoefficientsFlag = false;
     unitLBounds = sgpp::base::DataVector(numDim, 0.0);
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
     if (gridType == sgpp::base::GridType::Bspline) {
@@ -188,6 +191,20 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
                        bool verbose = false);
 
   /**
+   *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   *@param verbose        print information on the refine points
+   */
+  void refineSurplusAdaptive(size_t refinementsNum, bool verbose = false);
+
+  /**
+   * refines the grid surplus adaptive but does not recalculate interpolation coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   *@param verbose        print information on the refine points
+   */
+  void nextSurplusAdaptiveGrid(size_t refinementsNum, bool verbose = false);
+
+  /**
    * creates an adaptive grid based on Ritter-Novak
    * this is favourable for optimization
    *
@@ -282,6 +299,11 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    */
   sgpp::base::DataVector getUpperBounds() { return ub; }
 
+  /**
+   * @return the degree of the B-splines
+   */
+  size_t getDegree() { return degree; }
+
  private:
   // objective function
   std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc;
@@ -309,14 +331,26 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   sgpp::base::DataVector variances;
   // mean computation flag for variance computation
   bool computedMeanFlag;
+  // coefficients computationi flag indicating whether the coefficients for the current grid have
+  // already been calculated
+  bool computedCoefficientsFlag;
   sgpp::base::DataVector unitLBounds;
   sgpp::base::DataVector unitUBounds;
 
   /**
-   *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
-   *@param refinementsNum	number of grid points which should be refined
+   * summarizes the children of a grid point that will be refined
+   * This is basically a copy of HashRefinementsBoundaries refineGridpoint1D routine
+   * used for verbosity of the grid generation
+   *
+   * @param storage   grid storage of the grid that will be refined
+   * @param point     point which will be refined
+   * @param d         dimension (loop over this)
+   * @param futurePoints  matrix returned by reference, rows are the future grid points
+   *
+   * @return          true if children will be added, false if not
    */
-  void refineSurplusAdaptive(size_t refinementsNum);
+  bool getRefineGridpoint1D(sgpp::base::GridStorage& storage, sgpp::base::GridPoint& point,
+                            size_t d, sgpp::base::DataMatrix& futurePoints);
 
   /**
    * calculates the interpolation coefficients on a given grid

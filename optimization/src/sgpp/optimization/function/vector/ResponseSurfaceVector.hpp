@@ -19,7 +19,8 @@ namespace sgpp {
 namespace optimization {
 
 /**
- * General response surface. Represents an approximation of some function. Usually the approximation
+ * General response surface. Represents an approximation of some
+ * function with vector valued output. Usually the approximation
  * is created via interpolation. (But could also be regression for example)
  */
 class ResponseSurfaceVector {

@@ -42,13 +42,56 @@ void SparseGridResponseSurfaceBsplineVector::surplusAdaptive(size_t maxNumGridPo
                                                              size_t refinementsNum, bool verbose) {
   regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
-    refineSurplusAdaptive(refinementsNum);
-    if (verbose)
-      std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
+    refineSurplusAdaptive(refinementsNum, verbose);
   }
   interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
   interpolantGradients =
       std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+}
+
+void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refinementsNum,
+                                                                   bool verbose) {
+  if (computedCoefficientsFlag == true) {
+    nextSurplusAdaptiveGrid(refinementsNum, verbose);
+    if (verbose)
+      std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
+  }
+  calculateInterpolationCoefficients();
+}
+
+/**
+ * refines the grid surplus adaptive but does not recalculate interpolation coefficients
+ *@param refinementsNum	number of grid points which should be refined
+ *@param verbose        print information on the refine points
+ */
+void SparseGridResponseSurfaceBsplineVector::nextSurplusAdaptiveGrid(size_t refinementsNum,
+                                                                     bool verbose) {
+  sgpp::base::VectorSurplusRefinementFunctor functor(coefficients, refinementsNum);
+
+  // basically recreates what HashRefinementBoundaries will do upon
+  // calling grid->getGenerator().refine
+
+  // if (verbose == true) {
+  //   double threshold = functor.getRefinementThreshold();
+  //   sgpp::base::GridStorage& storage = grid->getStorage();
+  //   sgpp::base::AbstractRefinement::refinement_container_type collection;
+  //   sgpp::base::HashRefinementBoundaries hashrefineInstance;
+  //   sgpp::base::DataVector coordinates;
+  //   hashrefineInstance.collectRefinablePoints(storage, functor, collection);
+  //   sgpp::base::DataMatrix futurePoints1D;
+  //   sgpp::base::DataVector futurePoint;
+  //   for (sgpp::base::AbstractRefinement::refinement_pair_type& pair : collection) {
+  //     std::cout << "\nThe following grid point was chosen for refinement:\n";
+  //     if (pair.second >= threshold) {
+  //       sgpp::base::GridPoint point(storage[pair.first->getSeq()]);
+  //       point.getStandardCoordinates(coordinates);
+  //       std::cout << coordinates.toString() << "\n";
+  //     }
+  //   }
+  // }
+
+  grid->getGenerator().refine(functor);
+  computedCoefficientsFlag = false;
 }
 
 // void SparseGridResponseSurfaceBsplineVector::ritterNovak(size_t maxNumGridPoints, double gamma,
@@ -167,10 +210,51 @@ std::string SparseGridResponseSurfaceBsplineVector::serializeGrid() {
 
 // ----------------- auxiliary routines -----------
 
-void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refinementsNum) {
-  sgpp::base::VectorSurplusRefinementFunctor functor(coefficients, refinementsNum);
-  grid->getGenerator().refine(functor);
-  calculateInterpolationCoefficients();
+bool SparseGridResponseSurfaceBsplineVector::getRefineGridpoint1D(
+    sgpp::base::GridStorage& storage, sgpp::base::GridPoint& point, size_t d,
+    sgpp::base::DataMatrix& futurePoints) {
+  bool newPoints = false;
+  futurePoints.resizeZero(0, numDim);
+
+  unsigned int source_index;
+  unsigned int source_level;
+  point.get(d, source_level, source_index);
+  sgpp::base::DataVector coordinates;
+
+  if (source_level == 0) {
+    // we only have one child on level 1
+    point.set(d, 1, 1);
+
+    if (!storage.isContaining(point)) {
+      point.getStandardCoordinates(coordinates);
+      size_t index = futurePoints.appendRow();
+      futurePoints.setRow(index, coordinates);
+      newPoints = true;
+    }
+  } else {
+    // generate left child, if necessary
+    point.set(d, source_level + 1, 2 * source_index - 1);
+
+    if (!storage.isContaining(point)) {
+      point.getStandardCoordinates(coordinates);
+      size_t index = futurePoints.appendRow();
+      futurePoints.setRow(index, coordinates);
+      newPoints = true;
+    }
+
+    // generate right child, if necessary
+    point.set(d, source_level + 1, 2 * source_index + 1);
+
+    if (!storage.isContaining(point)) {
+      point.getStandardCoordinates(coordinates);
+      size_t index = futurePoints.appendRow();
+      futurePoints.setRow(index, coordinates);
+      newPoints = true;
+    }
+  }
+
+  point.set(d, source_level, source_index);
+  return newPoints;
 }
 
 void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients() {
@@ -190,6 +274,7 @@ void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients(
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
+  computedCoefficientsFlag = true;
 }
 
 }  // namespace optimization
