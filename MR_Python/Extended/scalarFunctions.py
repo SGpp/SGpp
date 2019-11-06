@@ -15,15 +15,15 @@ except:
 
 # Okushiri
 import sys
-sys.path.append('/home/rehmemk/git/SGpp/MR_Python/Vector/Okushiri')
-from sgppOkushiri import maxOkushiri
+sys.path.append('/home/rehmemk/git/anugasgpp/Okushiri')   # nopep8
+from sgppOkushiri import maxOkushiri1Out
 
 # MALTE: Er nimmt als schwierige Funktion immer sin(sin(x))
 # Extrem schwierig: sin(1/x), oszilliert enorm am linken Rand
 
 
 # Functions are evaluated in a point given as DataVector.
-def getFunction(model, dim=1, scalarModelParameter=3):
+def getFunction(model, dim=1, scalarModelParameter=16):
     if model == 'test':
         return test()
     elif model == 'monomial':
@@ -121,7 +121,7 @@ def getFunction(model, dim=1, scalarModelParameter=3):
 
     # Steves tsunami Code ANUGA, Okushiri Benchmark
     elif model == 'maxOkushiri':
-        return maxOkushiri(dim)
+        return maxOkushiri1Out(dim, gridResolution = scalarModelParameter)
 
 
 ####################### auxiliary functions #######################
@@ -189,6 +189,9 @@ class objFuncSGppSign(pysgpp.ScalarFunction):
 
     def getVar(self):
         return self.objFunc.getVar()
+    
+    def cleanUp(self):
+        self.objFunc.cleanUp()
 
 
 # unnormalizes the value x in [lN,uN]^d to [lb,ub] where lN,uN,lb,rb are DataVectors
@@ -257,10 +260,10 @@ def mcVar(model, dim, numPoints, numSteps):
 class test():
 
     def __init__(self):
-        self.dim = 5
+        self.dim = 1
         self.pdfs = pysgpp.DistributionsVector()
         for d in range(self.dim):
-            self.pdfs.push_back(pysgpp.DistributionUniform(0., 1.))
+            self.pdfs.push_back(pysgpp.DistributionUniform(-10., 10.))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.dim)
@@ -278,20 +281,16 @@ class test():
         return self.dim
 
     def eval(self, v):
-        prod = 1
-        for d in range(self.dim):
-            if v[d] < 0.5:
-                prod *= np.exp(v[d]**2)
-            else:
-                prod *= np.exp((1-v[d])**2)
-
-        return prod
+        if v[0] < 0.5:
+            return np.sin(2*np.pi*v[0])
+        else:
+            return np.cos(2*np.pi*v[0])
 
     def getDistributions(self):
         return self.pdfs
 
     def getMean(self):
-        return (2*0.544987104183622)**self.dim 
+        return 0
 
     def getVar(self):
         return -1

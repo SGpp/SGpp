@@ -14,12 +14,12 @@ matplotlib.use("TkAgg")
 
 def getStyle(style):
     if style == 'paper':
-        xticklabelsize = 16
-        yticklabelsize = 16
-        legendfontsize = 16
-        titlefontsize = 18
-        ylabelsize = 16
-        xlabelsize = 18
+        xticklabelsize = 18
+        yticklabelsize = 18
+        legendfontsize = 24
+        titlefontsize = 22
+        ylabelsize = 20
+        xlabelsize = 22
     elif style == 'presentation':
         xticklabelsize = 18
         yticklabelsize = 18
@@ -46,7 +46,8 @@ def decodeArgs(gridType, degree, refineType):
     elif args.gridType == 'nakexbound':
         gridTypes = ['nakbsplineextended', 'nakbsplineboundary']
     elif args.gridType == 'nakexmodbound':
-        gridTypes = ['nakbsplineextended','nakbsplinemodified', 'nakbsplineboundary']
+        gridTypes = ['nakbsplineextended',
+                     'nakbsplinemodified', 'nakbsplineboundary']
     else:
         gridTypes = [gridType]
 
@@ -132,25 +133,25 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
         '/home/rehmemk/git/SGpp/MR_Python/Extended/data/', model, objFunc.getName())
     plt.tight_layout()
     if refineType == 'regular':
-        saveName = '{}_{}_{}_ {}'.format(
+        saveName = '{}{}{}{}'.format(
             objFunc.getName(), refineType, maxLevel, qoi)
     elif refineType == 'surplus':
-        saveName = '{}_{}_{}_ {}'.format(
+        saveName = '{}{}{}{}'.format(
             objFunc.getName(), refineType, maxPoints, qoi)
     elif refineType == 'regularAndSurplus':
-        saveName = '{}_{}_{}_ {}'.format(
+        saveName = '{}{}{}{}'.format(
             objFunc.getName(), refineType, maxPoints, qoi)
     elif refineType == 'regularLevelAndSurplus':
-        saveName = '{}_regular{}_surplus{}_ {}'.format(
+        saveName = '{}regular{}surplus{}{}'.format(
             objFunc.getName(), maxLevel, maxPoints, qoi)
     elif refineType == 'surplusAndMC':
-        saveName = '{}_{}_{}_ {}'.format(
+        saveName = '{}{}{}{}'.format(
             objFunc.getName(), refineType, maxPoints, qoi)
     elif refineType == 'regularAndSurplusAndMC':
-        saveName = '{}_regular{}_surplusAndMC{}_ {}'.format(
+        saveName = '{}regular{}surplusAndMC{}{}'.format(
             objFunc.getName(), maxLevel, maxPoints, qoi)
 
-    figname = os.path.join(saveDirectory, saveName + '_' + style)
+    figname = os.path.join(saveDirectory, saveName + style)
     plt.savefig(figname + '.pdf', dpi=300, bbox_inches='tight', format='pdf')
     print('saved fig to {}'.format(figname + '.pdf'))
     # rearrange legend order and save legends in individual files.
@@ -241,6 +242,7 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
         linestyle = '-'
     if qoi == 'l2':
         interpolErrors = data['interpolErrors']
+        print(interpolErrors)
 
         if refineType != 'mc':
             plt.plot(gridSizes, interpolErrors, label=label,
@@ -279,8 +281,6 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
             # in contrast to 'log', 'symlog' allows
             plt.gca().set_yscale('symlog', linthreshy=1e-16)
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-#         if degree == 1:
-#             plt.ylabel(r'$\Vert u - \tilde{u} \Vert_2$', fontsize=ylabelsize)
             plt.ylabel("NRMSE", fontsize=ylabelsize)
 
     elif qoi == 'meanErr':
@@ -308,54 +308,20 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
 #         DakotaIshigamiMeans = [ 3.4978568899629017e+00 , 3.4999999999995932e+00, 3.4999999999995905e+00]
 #         DakotaIshigamiMeanErrors = [abs((mean - realMean) / realMean) for mean in DakotaIshigamiMeans]
 #         plt.loglog([31, 111, 303], DakotaIshigamiMeanErrors,marker='*', label='DAKOTA Ishigami')
+
+        # DakotaTempMeans = [1.5209137956100287e+00, 1.5626744853578001e+00, 1.5596710620679262e+00, 1.5303141312774367e+00]
+        # DakotaTempMeanErrors = [abs((mean - realMean) / realMean) for mean in DakotaTempMeans]
+        # plt.loglog([351, 1391, 4623, 13343], DakotaTempMeanErrors, color = 'k', marker='*', label='DAKOTA')
+
         ###############################
 
-        if model == "boreholeUQ" and refineType == "surplus":
-            dakotaPCEgridSizes = [18, 177, 1260, 7169]  # , 34290]
-            dakotaPCEmeans = [6.5632828919103816e-03, 6.5768859155912159e-03,
-                              6.5770271305317547e-03, 6.5770283342825135e-03]  # , 6.5770283458260678e-03]
-            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
-            # To compare the two, we rescale dakota's mean with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
-            dakotaPCEmeanErrs = [
-                abs((realMean - mean * 0.9960008520179663) / realMean) for mean in dakotaPCEmeans]
-            plt.loglog(dakotaPCEgridSizes, dakotaPCEmeanErrs,
-                       color='#7f7f7f', marker='h', label='PCE')
-
     elif qoi == 'varErr':
-        if model == "boreholeUQ" and refineType == "surplus":
-            meanSGpp = 0.00655072585279
-            meanSquareSGpp = 5.127443183386146e-05
-            varSGpp = 8.36242263552e-06
-            scalingFactor = 0.9960008520179663
-            realVar = meanSquareSGpp / scalingFactor - \
-                (meanSGpp / scalingFactor) ** 2
-
-            dakotaPCEgridSizes = [18, 177, 1260, 7169]  # , 34290]
-            dakotaPCEstdvs = [2.6322104837547540e-03, 2.8567031011856765e-03,
-                              2.8672908560281080e-03, 2.8675734257209411e-03]  # , 2.8675785527979727e-03]
-            dakotaPCEvars = [stdv ** 2 for stdv in dakotaPCEstdvs]
-            dakotaPCEvarErrs = [abs((realVar - var) / realVar)
-                                for var in dakotaPCEvars]
-            plt.loglog(dakotaPCEgridSizes, dakotaPCEvarErrs,
-                       color='#7f7f7f', marker='h', label='PCE')
-
-            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
-            # To compare the two, we rescale SG++'s var with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
-            means = data['means']
-            meanSquares = data['meanSquares']
-            variances = data['vars']
-            varErrors = np.zeros(np.shape(means))
-            for i in range(len(means)):
-                    var = meanSquares[i] / scalingFactor - \
-                        means[i] ** 2 / scalingFactor ** 2
-                    varErrors[i] = abs((var - realVar) / realVar)
-        else:
-            realVar = objFunc.getVar()
-            # varErrors = data['varErrors']
-            variances = data['vars']
-            varErrors = np.zeros(np.shape(variances))
-            for i in range(len(variances)):
-                varErrors[i] = abs((variances[i] - realVar) / realVar)
+        realVar = objFunc.getVar()
+        # varErrors = data['varErrors']
+        variances = data['vars']
+        varErrors = np.zeros(np.shape(variances))
+        for i in range(len(variances)):
+            varErrors[i] = abs((variances[i] - realVar) / realVar)
 
         plt.loglog(gridSizes, varErrors, label=label, color=color,
                    marker=marker, linestyle=linestyle)
@@ -384,8 +350,8 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
     # plt.ylim([ 10 ** (-9), 3])
 
     plt.xlabel('number of grid points', fontsize=xlabelsize)
-    plt.locator_params(axis='x', numticks=5)
-    plt.locator_params(axis='y', numticks=5)
+    # plt.locator_params(axis='x', numticks=5)
+    # plt.locator_params(axis='y', numticks=5)
     for tick in plt.gca().xaxis.get_major_ticks():
         tick.label.set_fontsize(xticklabelsize)
     for tick in plt.gca().yaxis.get_major_ticks():
@@ -396,21 +362,21 @@ def plotter(qoi, data, objFunc, model, xticklabelsize, yticklabelsize, legendfon
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--qoi', default='nrmse',
+    parser.add_argument('--qoi', default='nrmse',  # nrmse
                         type=str, help='what to plot')
-    parser.add_argument('--model', default='boreholeUQ', type=str,
+    parser.add_argument('--model', default='maxOkushiri', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=6, type=int,
+    parser.add_argument('--dim', default=4, type=int,
                         help='the problems dimensionality')
-    parser.add_argument('--scalarModelParameter', default=0, type=int,
+    parser.add_argument('--scalarModelParameter', default=128, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nak',
+    parser.add_argument('--gridType', default='nakbsplineboundary',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=5,
+    parser.add_argument('--degree', default=135,
                         type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regularAndSurplus',
+    parser.add_argument('--refineType', default='regular',  # regularAndSurplusAndMC
                         type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=10, type=int,
+    parser.add_argument('--maxLevel', default=5, type=int,
                         help='maximum level for regualr refinement')
     parser.add_argument('--maxPoints', default=10000, type=int,
                         help='maximum number of points used')
@@ -443,6 +409,56 @@ if __name__ == '__main__':
                                 args.maxPoints, args.maxLevel, degree, objFunc)
                 plotter(args.qoi, data, objFunc, args.model,
                         xticklabelsize, yticklabelsize, legendfontsize, titlefontsize, ylabelsize, xlabelsize)
+
+    # Dakota results for borehole
+    if args.model == 'boreholeUQ':
+        if args.qoi == 'nrmse':
+            dakotaL2 = [0.0018437190513304993, 0.0003620416680053157,
+                        5.1841152914107856e-05, 5.826151568684384e-06, 5.514209162156573e-07]
+            dakotaNRMSE = [0.04545935604349859, 0.008926620938563766,
+                           0.0012782128743135904, 0.00014365154947717384, 1.3596019275274222e-05]
+            dakotaGridSizes = [18, 177, 1260, 7169, 34290]
+            plt.loglog(dakotaGridSizes, dakotaNRMSE,
+                       color='#7f7f7f', marker='h', label='PCE')
+        elif args.qoi == 'meanErr':
+            realMean = objFunc.getMean()
+            dakotaPCEgridSizes = [18, 177, 1260, 7169]  # , 34290]
+            dakotaPCEmeans = [6.5632828919103816e-03, 6.5768859155912159e-03,
+                              6.5770271305317547e-03, 6.5770283342825135e-03]  # , 6.5770283458260678e-03]
+            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
+            # To compare the two, we rescale dakota's mean with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
+            dakotaPCEmeanErrs = [
+                abs((realMean - mean * 0.9960008520179663) / realMean) for mean in dakotaPCEmeans]
+            plt.loglog(dakotaPCEgridSizes, dakotaPCEmeanErrs,
+                       color='#7f7f7f', marker='h', label='PCE')
+        elif args.qoi == 'varErr':
+            realVar = objFunc.getVar()
+            meanSGpp = 0.00655072585279
+            meanSquareSGpp = 5.127443183386146e-05
+            varSGpp = 8.36242263552e-06
+            scalingFactor = 0.9960008520179663
+            realVar = meanSquareSGpp / scalingFactor - \
+                (meanSGpp / scalingFactor) ** 2
+
+            dakotaPCEgridSizes = [18, 177, 1260, 7169]  # , 34290]
+            dakotaPCEstdvs = [2.6322104837547540e-03, 2.8567031011856765e-03,
+                              2.8672908560281080e-03, 2.8675734257209411e-03]  # , 2.8675785527979727e-03]
+            dakotaPCEvars = [stdv ** 2 for stdv in dakotaPCEstdvs]
+            dakotaPCEvarErrs = [abs((realVar - var) / realVar)
+                                for var in dakotaPCEvars]
+            plt.loglog(dakotaPCEgridSizes, dakotaPCEvarErrs,
+                       color='#7f7f7f', marker='h', label='PCE')
+
+            # dakota automatically scales pdf's s.t. they integrate to one, if they are cut off. SG++ does not do so.
+            # To compare the two, we rescale SG++'s var with the mean of f(x) = 1 calculated with SG++ w.r.t the pdf's
+            means = data['means']
+            meanSquares = data['meanSquares']
+            variances = data['vars']
+            varErrors = np.zeros(np.shape(means))
+            for i in range(len(means)):
+                var = meanSquares[i] / scalingFactor - \
+                    means[i] ** 2 / scalingFactor ** 2
+                varErrors[i] = abs((var - realVar) / realVar)
 
     if args.saveFig == 1:
         saveFigure(args.model, objFunc, args.refineType, args.qoi,

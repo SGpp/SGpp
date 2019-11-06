@@ -44,11 +44,16 @@ def decodeArgs(gridType, degree, refineType):
         gridTypes = ['nakbsplinemodified', 'nakbsplineextended']
     elif args.gridType == 'nakexbound':
         gridTypes = ['nakbsplineextended', 'nakbsplineboundary']
+    elif args.gridType == 'nakexmodbound':
+        gridTypes = ['nakbsplineextended',
+                     'nakbsplineboundary', 'nakbsplinemodified']
     else:
         gridTypes = [gridType]
 
     if degree == 135:
         degrees = [1, 3, 5]
+    elif degree == 13:
+        degrees = [1, 3]
     elif degree == 35:
         degrees = [3, 5]
     else:
@@ -124,7 +129,16 @@ def getColorAndMarker(gridType, refineType):
     return[color, marker, label]
 
 
-def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
+def saveFigure(model,
+               objFunc,
+               gridType,
+               degree,
+               refineType,
+               qoi,
+               maxLevel,
+               maxPoints,
+               style,
+               legendstyle='external'):
     saveDirectory = os.path.join(
         '/home/rehmemk/git/SGpp/MR_Python/Vector/plots/', model, objFunc.getName())
     plt.tight_layout()
@@ -150,12 +164,14 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
     if not os.path.exists(saveDirectory):
         os.makedirs(saveDirectory)
 
-    figname = os.path.join(saveDirectory, saveName + '_' + style)
-    plt.savefig(figname + '.pdf', dpi=300, bbox_inches='tight', format='pdf')
-    print('saved fig to {}'.format(figname + '.pdf'))
+    figname = os.path.join(saveDirectory, saveName +
+                           '_{}{}_{}'.format(gridType, degree, style))
     # rearrange legend order and save legends in individual files.
-    legendstyle = 'external'
     if legendstyle == 'external':
+        plt.savefig(figname + '.pdf', dpi=1000,
+                    bbox_inches='tight', format='pdf')
+        print('saved fig to {}'.format(figname + '.pdf'))
+
         ax = plt.gca()
         handles, labels = ax.get_legend_handles_labels()
         ncol = 4
@@ -171,12 +187,17 @@ def saveFigure(model, objFunc, refineType, qoi, maxLevel, maxPoints, style):
         legendname = os.path.join(figname + '_legend')
         # cut off whitespace
         plt.subplots_adjust(left=0.0, right=1.0, top=0.6, bottom=0.4)
-        plt.savefig(legendname + '.pdf', dpi=300,
+        plt.savefig(legendname + '.pdf', dpi=1000,
                     bbox_inches='tight', pad_inches=0.0, format='pdf')
     elif legendstyle == 'none':
-        pass
+        plt.savefig(figname + '.pdf', dpi=1000,
+                    bbox_inches='tight', format='pdf')
+        print('saved fig to {}'.format(figname + '.pdf'))
     else:
-        plt.legend(ncol=4)
+        plt.gca().legend()
+        plt.savefig(figname + '.pdf', dpi=1000,
+                    bbox_inches='tight', format='pdf')
+        print('saved fig to {}'.format(figname + '.pdf'))
 
 
 def plotConvergenceOrder(order, start, length):
@@ -227,27 +248,70 @@ def plotter(qoi,
         linestyle = '--'
     else:
         linestyle = '-'
-    if qoi == 'l2':
-        totalL2Errors = data['totalL2Errors']
+
+    if qoi == 'averageNRMSE':
+        averageNRMSE = data['averageNRMSE']
+        print(averageNRMSE)
+        minNRMSE = data['minNRMSE']
+        maxNRMSE = data['maxNRMSE']
 
         if refineType != 'mc':
-            plt.plot(gridSizes, totalL2Errors, label=label,
+            plt.plot(gridSizes, averageNRMSE, label=label,
+                     color=color, marker=marker, linestyle=linestyle)
+            # plt.plot(gridSizes, minNRMSE, label=label,
+            #          color='k', marker=marker, linestyle=linestyle)
+            # plt.plot(gridSizes, maxNRMSE, label=label,
+            #          color='k', marker=marker, linestyle=linestyle)
+
+            # in contrast to 'log', 'symlog' allows
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+            plt.xlabel('number of grid points', fontsize=xlabelsize)
+            # plt.ylabel('average NRMSE over all time steps', fontsize=ylabelsize)
+
+    elif qoi == 'averageL2':
+        averageL2Errors = data['averageL2Errors']
+        minL2Errors = data['minL2Errors']
+        maxL2Errors = data['maxL2Errors']
+
+        print(averageL2Errors)
+
+        if refineType != 'mc':
+            plt.plot(gridSizes, averageL2Errors, label=label,
+                     color=color, marker=marker, linestyle=linestyle)
+            # plt.plot(gridSizes, minL2Errors, label=label,
+            #          color='k', marker=marker, linestyle=linestyle)
+            # plt.plot(gridSizes, maxL2Errors, label=label,
+            #          color='k', marker=marker, linestyle=linestyle)
+
+            # in contrast to 'log', 'symlog' allows
+            plt.gca().set_yscale('symlog', linthreshy=1e-16)
+            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
+            plt.xlabel('number of grid points', fontsize=xlabelsize)
+            # plt.ylabel('average error over all time steps', fontsize=ylabelsize)
+
+    elif qoi == 'outwiseNRMSE':
+        componentwiseNRMSEs = data['componentwiseNRMSEs']
+        numGrids, numOut = np.shape(componentwiseNRMSEs)
+        for t in range(numOut):
+            # varied_color = color_variant(color, brightness_offset=t*25)
+            plt.plot(gridSizes, componentwiseNRMSEs[:, t], label=label + ' f{}'.format(t),
+                     marker=marker, linestyle=linestyle)  # color=varied_color
+        plt.gca().set_xscale('log')
+        plt.gca().set_yscale('log')
+
+    elif qoi == 'averageGradientL2':
+        averageJacobianL2Errors = data['averageJacobianL2Errors']
+        minJacobianL2Errors = data['minJacobianL2Errors']
+        maxJacobianL2Errors = data['maxJacobianL2Errors']
+        if refineType != 'mc':
+            plt.plot(gridSizes, averageJacobianL2Errors, label=label,
                      color=color, marker=marker, linestyle=linestyle)
             # in contrast to 'log', 'symlog' allows
             plt.gca().set_yscale('symlog', linthreshy=1e-16)
             plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-            # plt.ylabel('l2 error', fontsize=ylabelsize)
-
-    elif qoi == 'gradientL2':
-        totalJacobianL2Errors = data['totalJacobianL2Errors']
-
-        if refineType != 'mc':
-            plt.plot(gridSizes, totalJacobianL2Errors, label=label,
-                     color=color, marker=marker, linestyle=linestyle)
-            # in contrast to 'log', 'symlog' allows
-            plt.gca().set_yscale('symlog', linthreshy=1e-16)
-            plt.gca().set_xscale('log')  # value 0 through small linearly scaled interval around 0
-            # plt.ylabel('l2 error', fontsize=ylabelsize)
+            # plt.xlabel('number of grid points', fontsize=xlabelsize)
+            # plt.ylabel('average gradient error over all time steps', fontsize=ylabelsize)
 
     # error in each derivative df/dx_i as l2 error over all df_t/dx_i
     # ATTENTION: If f HAS TOO MANY PARAMETERS THE COLOR_VARIANT CODE WILL TURN TO WHITE
@@ -266,7 +330,7 @@ def plotter(qoi,
         plt.gca().set_xscale('log')
         plt.gca().set_yscale('log')
 
-    # error in eachcomponent df_t/dx as l2 error over all df_t/dx_i
+    # error in each component df_t/dx as l2 error over all df_t/dx_i
     # ATTENTION: If f HAS TOO MANY OUTPUTS THE COLOR_VARIANT CODE WILL TURN TO WHITE
     elif qoi == 'outwiseJacobianErrors':
         componentwiseJacobianErrors = data['componentwiseJacobianErrors']
@@ -286,8 +350,8 @@ def plotter(qoi,
     else:
         print("qoi '{}' not supported".format(qoi))
     plt.xlabel('number of grid points', fontsize=xlabelsize)
-    plt.locator_params(axis='x', numticks=5)
-    plt.locator_params(axis='y', numticks=5)
+    #plt.locator_params(axis='x', numticks=5)
+    #plt.locator_params(axis='y', numticks=5)
     for tick in plt.gca().xaxis.get_major_ticks():
         tick.label.set_fontsize(xticklabelsize)
     for tick in plt.gca().yaxis.get_major_ticks():
@@ -301,31 +365,27 @@ def plotter(qoi,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--qoi', default='parameterwiseJacobianErrors',
-                        type=str, help='what to plot')
-    parser.add_argument('--model', default='dc_motor_I', type=str,
-                        help='define which test case should be executed')
-    parser.add_argument('--dim', default=6, type=int,
-                        help='the problems dimensionality')
-    parser.add_argument('--out', default=101, type=int,
-                        help='the problems output dimensionality')
-    parser.add_argument('--scalarModelParameter', default=0, type=int,
-                        help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakexbound',
-                        type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=135,
-                        type=int, help='spline degree')
-    parser.add_argument('--refineType', default='surplus',
-                        type=str, help='surplus (adaptive) or regular')
-    parser.add_argument('--maxLevel', default=8, type=int,
-                        help='maximum level for regualr refinement')
-    parser.add_argument('--maxPoints', default=1000, type=int,
-                        help='maximum number of points used')
-    parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Vector/data', type=str,
-                        help='path were results are stored and precalculated data is stored')
-    parser.add_argument('--saveFig', default=1, type=int, help='save figure')
-    parser.add_argument('--style', default='paper', type=str,
-                        help='style of the plot, paper or presentation')
+    # QOI
+    parser.add_argument('--qoi', default='averageNRMSE', type=str, help='what to plot: averageL2, outwiseL2, averageGradientL2, parameterwiseJacobianErrors,outwiseJacobianErrors')  # nopep8
+    # MODEL
+    parser.add_argument('--model', default='okushiri', type=str, help='define which test case should be executed')  # nopep8
+    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')  # nopep8
+    parser.add_argument('--out', default=451, type=int, help='the problems output dimensionality')  # nopep8
+    parser.add_argument('--scalarModelParameter', default=128, type=int, help='purpose depends on actual model. For monomial its the degree')  # nopep8
+    # BASIS
+    parser.add_argument('--gridType', default='nakbsplineboundary', type=str, help='gridType(s) to use')  # nopep8
+    parser.add_argument('--degree', default=135, type=int, help='spline degree')  # nopep8
+    # REFINETYPE
+    parser.add_argument('--refineType', default='regular', type=str, help='surplus (adaptive) or regular')  # nopep8
+    # REGULAR
+    parser.add_argument('--maxLevel', default=5, type=int, help='maximum level for regualr refinement')  # nopep8
+    # ADAPTIVE
+    parser.add_argument('--maxPoints', default=450, type=int, help='maximum number of points used')  # nopep8
+    # MISC
+    parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Vector/data', type=str, help='path were results are stored and precalculated data is stored')  # nopep8
+    parser.add_argument('--saveFig', default=0, type=int, help='save figure')  # nopep8
+    parser.add_argument('--style', default='paper', type=str, help='style of the plot, paper or presentation')  # nopep8
+    parser.add_argument('--legendstyle', default='internal', type=str, help='internal, external or none legend')  # nopep8
     args = parser.parse_args()
 
     gridTypes, degrees, refineTypes = decodeArgs(
@@ -348,6 +408,8 @@ if __name__ == '__main__':
     for degree in degrees:
         fig.add_subplot(1, len(degrees), l)
         l += 1
+        if len(degrees) > 1:
+            plt.title(degree, fontsize=titlefontsize)
         for refineType in refineTypes:
             for gridType in gridTypes:
                 data = loadData(loadPath, gridType, args.model, refineType,
@@ -356,8 +418,8 @@ if __name__ == '__main__':
                         yticklabelsize, titlefontsize, ylabelsize, xlabelsize)
 
     if args.saveFig == 1:
-        saveFigure(args.model, objFunc, args.refineType, args.qoi,
-                   args.maxLevel, args.maxPoints, args.style)
+        saveFigure(args.model, objFunc, args.gridType, args.degree, args.refineType, args.qoi,
+                   args.maxLevel, args.maxPoints, args.style, args.legendstyle)
     else:
         plt.legend()
         plt.show()

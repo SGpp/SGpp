@@ -1,21 +1,56 @@
 import os
 import pickle
-import sympy
 import numpy as np
 import matplotlib.pyplot as plt
 import pysgpp
+from scipy.integrate import odeint
+import time
+import sys
 
-def getFunction(model, dim=1, out=1, scalarModelParameter=3):
+# Bosch DC Motor
+from dc_motor import dc_motor_analytical_I
+from dc_motor import dc_motor_analytical_W
+from dc_motor import dc_motor_ode_I
+from dc_motor import dc_motor_ode_W
+
+# ANUGA Okushiri Benchmark
+sys.path.append('/home/rehmemk/git/anugasgpp/Okushiri')   # nopep8
+from sgppOkushiri import okushiri  # nopep8
+sys.path.append('/home/rehmemk/git/anugasgpp/Okushiri/investigation')   # nopep8
+from sgppOkushiri_noResidual import okushiri_noResidual    # nopep8
+
+
+def getFunction(model, dim=1, out=1, scalarModelParameter=16):
     if model == 'demo':
         return demo()
 
-    elif model == 'dc_motor_I':
-        return dc_motor_I(dim, numTimeSteps=out)
+    # Bosch DC Motor
+    elif model == 'dc_motor_analytical_I':
+        return dc_motor_analytical_I(dim, numTimeSteps=out)
+    elif model == 'dc_motor_analytical_W':
+        return dc_motor_analytical_W(dim, numTimeSteps=out)
+    elif model == 'dc_motor_ode_I':
+        return dc_motor_ode_I(dim, numTimeSteps=out)
+    elif model == 'dc_motor_ode_W':
+        return dc_motor_ode_W(dim, numTimeSteps=out)
+    elif model == 'lotkaVolterraHare':
+        return lotkaVolterraHare(dim, numTimeSteps=out)
+
+    # ANUGA Okushiri Benchmark
+    elif model == 'okushiri':
+        return okushiri(dim, numTimeSteps=out, gridResolution=scalarModelParameter)
+    elif model == 'maxOkushiri':
+        return maxOkushiri(dim)
+    elif model == 'okushiri_noResidual':
+        return okushiri_noResidual(dim, numTimeSteps=out)
 
 ####################### auxiliary functions #######################
+
+
 class vectorObjFuncSGpp(pysgpp.VectorFunction):
-# wraps the objective function for SGpp
-# NOTE: If we want to optimize we have to introduce an objFuncSGppSigned as in scalarFunction.py!
+    # wraps the objective function for SGpp
+    # NOTE: If we want to optimize we have to introduce an
+    #       objFuncSGppSigned as in scalarFunction.py!
 
     # input dimension dim
     # output dimension out
@@ -60,6 +95,12 @@ class vectorObjFuncSGpp(pysgpp.VectorFunction):
     def getVar(self):
         return self.objFunc.getVar()
 
+    def cleanUp(self):
+        self.objFunc.cleanUp()
+
+    def getPrecalcDataPath(self):
+        return self.objFunc.getPrecalcDataPath()
+
 
 def randomPoint(lb, ub):
     dim = len(lb)
@@ -69,11 +110,45 @@ def randomPoint(lb, ub):
     return point
 
 
-def createJacobianErrorDataSet(model, path, numMCPoints, dim=1, out=1, scalarModelParameter=3):
+def createErrorDataSet(model, path, numMCPoints, dim=1, out=1, scalarModelParameter=3):
+    # precalcultes evaluations of an objective function and stores them
+    # so that they can be used for Monte carlo error calculations
+    start = time.time()
     objFunc = getFunction(model, dim, out, scalarModelParameter)
     lb, ub = objFunc.getDomain()
-    # print(lb.toString())
-    # print(ub.toString())
+    points = np.ndarray((numMCPoints, dim))
+    evaluations = np.ndarray((out, numMCPoints))
+
+    np.random.seed()
+    for n in range(numMCPoints):
+        sth = randomPoint(lb, ub)
+        points[n, :] = sth
+        this = objFunc.eval(points[n, :])
+        evaluations[:, n] = this
+        print("{} of {} points processed".format(n+1, numMCPoints))
+
+    objFuncDataPath = os.path.join(path, objFunc.getName())
+    if not os.path.exists(objFuncDataPath):
+        os.makedirs(objFuncDataPath)
+    pointsPath = os.path.join(
+        objFuncDataPath, 'evaluationPoints.pkl')
+    with open(pointsPath, 'wb') as fp:
+        pickle.dump(points, fp)
+        print('saved points to {}'.format(pointsPath))
+    jacobianPath = os.path.join(
+        objFuncDataPath, 'evaluations.pkl')
+    with open(jacobianPath, 'wb') as fp:
+        pickle.dump(evaluations, fp)
+        print('saved evaluations to {}'.format(jacobianPath))
+    print("precalculating {} values took {}s".format(
+        numMCPoints, time.time()-start))
+
+
+def createJacobianErrorDataSet(model, path, numMCPoints, dim=1, out=1, scalarModelParameter=3):
+    # precalcultes evaluations of the jacobian of an objective function
+    # and stores them so that they can be used for Monte carlo error calculations
+    objFunc = getFunction(model, dim, out, scalarModelParameter)
+    lb, ub = objFunc.getDomain()
     points = np.ndarray((numMCPoints, dim))
     jacobianEvaluations = np.ndarray((out, dim, numMCPoints))
 
@@ -83,7 +158,7 @@ def createJacobianErrorDataSet(model, path, numMCPoints, dim=1, out=1, scalarMod
         points[n, :] = sth
         this = objFunc.evalJacobian(points[n, :])
         jacobianEvaluations[:, :, n] = this
-        print("{} of {} points processed".format(n+1,numMCPoints))
+        print("{} of {} points processed".format(n+1, numMCPoints))
 
         # print(points[n, :])
         # print(jacobianEvaluations[:, :, n])
@@ -101,6 +176,7 @@ def createJacobianErrorDataSet(model, path, numMCPoints, dim=1, out=1, scalarMod
     with open(jacobianPath, 'wb') as fp:
         pickle.dump(jacobianEvaluations, fp)
         print('saved jacobian evaluations to {}'.format(jacobianPath))
+
 
 #########################################################
 #####################   functions   #####################
@@ -174,38 +250,50 @@ class demo():
         return integrals
 
 
-class dc_motor_I():
-    # the academic dc_motor model we use in cooperation with Bosch
-    # Input:
-    # R: resistance (default constant value = 9.0)
-    # L: inductance (default constant value = 0.11)
-    # cm: motor constant 1 (default constant value = 0.5)
-    # cg: motor constant 2 (default constant value = 3.0)
-    # J: torque of inertia (default constant value = 0.1)
-    # d: friction (default constant value = 0.1)
-    # Output: current I/x_1 and torque W/x_2
-    #    L * \dot{x}_1 &= -R x_1 - c_m * x_2 + 12
-    #    J * \dot{x}_2 &= c_g * x_1 - d * x_2.
-    def __init__(self, dim, numTimeSteps):
+class lotkaVolterraHare():
+    # The Lotka-Volterra model from the pymc3 example
+    # https://docs.pymc.io/notebooks/ODE_parameter_estimation.html
+    # Here we study how well the solution is approximated by our surrogate.
+    # The model results in values for the hare and the lynx population.
+    # This function only returns hare
+
+    def __init__(self, dim, numTimeSteps=21):
         self.dim = dim
-        self.numTimeSteps = numTimeSteps
-        self.pdfs = pysgpp.DistributionsVector()
-        # parameter order 'sobolfive' cg, R, cm, L, J, d
-        # -> parameter intervals are true values +/- 5%
-        cg_true = 3.0; R_true = 9.0; cm_true = 0.5; L_true = 0.11; J_true = 0.1; d_true = 0.1
+        self.out = numTimeSteps
+        self.times = np.arange(0, numTimeSteps)
+
+        # true values from the traceplot of the original example
+        # extracted very inaccurate by eyesight, but here only used
+        # to determine meaningful parameter ranges
+        alpha_true = 0.55
+        beta_true = 0.0265
+        gamma_true = 0.775
+        delta_true = 0.0225
+        Xt0_true = 32.5
+        Yt0_true = 5.8
         paramDeviation = 0.05
         lDev = 1 - paramDeviation
         rDev = 1 + paramDeviation
-        self.pdfs.push_back(pysgpp.DistributionUniform(lDev * cg_true, rDev * cg_true))
-        self.pdfs.push_back(pysgpp.DistributionUniform(lDev * R_true, rDev * R_true))
+
+        self.pdfs = pysgpp.DistributionsVector()
+
+        self.pdfs.push_back(pysgpp.DistributionUniform(0.25, 1.1))
+        # lDev*alpha_true, rDev*alpha_true))
+        if dim > 1:
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.01, 0.06))
+            # lDev*beta_true, rDev*beta_true))
         if dim > 2:
-            self.pdfs.push_back(pysgpp.DistributionUniform(lDev * cm_true, rDev * cm_true))
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.45, 1.35))
+            # lDev*gamma_true, rDev*gamma_true))
         if dim > 3:
-            self.pdfs.push_back(pysgpp.DistributionUniform(lDev * L_true, rDev * L_true))
+            self.pdfs.push_back(pysgpp.DistributionUniform(0.01, 0.06))
+            # lDev*delta_true, rDev*delta_true))
         if dim > 4:
-            self.pdfs.push_back(pysgpp.DistributionUniform(lDev * J_true, rDev * J_true))
+            self.pdfs.push_back(pysgpp.DistributionUniform(9.0, 47.5))
+            # lDev*Xt0_true, rDev*Xt0_true))
         if dim > 5:
-            self.pdfs.push_back(pysgpp.DistributionUniform(lDev * d_true, rDev * d_true))
+            self.pdfs.push_back(pysgpp.DistributionUniform(4.0, 11.0))
+            # lDev*Yt0_true, rDev*Yt0_true))
 
     def getDomain(self):
         lb = pysgpp.DataVector(self.dim)
@@ -217,126 +305,55 @@ class dc_motor_I():
         return lb, ub
 
     def getName(self):
-        return "dc_motor{}D_{}T".format(self.getDim(), self.getOut())
+        return "lotkaVolterraHare{}D{}T".format(self.getDim(), self.getOut())
 
     def getDim(self):
         return self.dim
 
     def getOut(self):
-        return self.numTimeSteps
+        return self.out
 
-    # Analytical solution for the ODE system, from the Master thesis of Livia Stohrer
     def eval(self, x):
-        #true parameters are overwritten, depending on the desired dimensionality
-        cm = 0.5
-        L = 0.11
-        J = 0.1
-        d = 0.1
-
-        cg = x[0]
-        R = x[1]
+        alpha = x[0]
+        beta = 0.0265
+        gamma = 0.775
+        delta = 0.0225
+        Xt0 = 32.5
+        Yt0 = 5.8
+        if self. dim > 1:
+            beta = x[1]
         if self.dim > 2:
-            cm = x[2]
+            gamma = x[2]
         if self.dim > 3:
-            L = x[3]
+            delta = x[3]
         if self.dim > 4:
-            J = x[4]
+            Xt0 = x[4]
         if self.dim > 5:
-            d = x[5]
+            Yt0 = x[5]
+        parameters = [alpha, beta, gamma, delta, Xt0, Yt0]
 
-        tStart = 0.0
-        tEnd = 1.0
-        dt = ((tEnd - tStart) / (self.numTimeSteps-1))
-        timeSteps = np.arange(tStart, tEnd+dt, dt)
+        def r(y, t, p):
+            X, Y = y
+            dX_dt = alpha*X - beta*X*Y
+            dY_dt = -gamma*Y + delta*X*Y
+            return dX_dt, dY_dt
 
-        V = 12
-        mu = np.sqrt((J*R-L*d)**2-4*cm*cg*J*L)
-        lambda1 = -(L*d-mu+J*R)/(2*J*L)
-        lambda2 = -(L*d+mu+J*R)/(2*J*L)
-        v1 = [d/cg-(L*d-mu+J*R)/(2*L*cg), 1]
-        v2 = [d/cg-(L*d+mu+J*R)/(2*L*cg), 1]
-        c1 = -V/(L*lambda1*(v2[0]-v1[0]))
-        c2 = V/(L*lambda2*(v2[0]-v1[0]))
-
-        I = np.zeros(self.numTimeSteps)
-        for i, t in enumerate(timeSteps):
-            I[i] = c1 * np.exp(lambda1*t)*v1[0]+c2*np.exp(lambda2*t)*v2[0]+(V*(lambda1*v2[0]-lambda2*v1[0]))/(L*lambda1*lambda2*(v1[0]-v2[0]))
-        return I
+        # The rtol and atol parameters determine the quality of the ODE solution
+        # By default they are ca 1e-8.
+        # With this the B-spline surrogate error stagnates at ca 1000 points at
+        # around 1e-6. If we want a better surrogate with more grid points,
+        # smaller rtol and atol have to be used.
+        # A quick check showed 50% increase in runtime when using 1e-10 instead
+        # of default 1e-8
+        values = odeint(r, [Xt0, Yt0], self.times,
+                        (parameters,))  # , rtol=1e-10, atol=1e-10)
+        hare = values[:, 0]
+        lynx = values[:, 1]
+        return hare
 
     def evalJacobian(self, x):
-        #define gradients
-        R = sympy.Symbol('R', real=True)
-        L = sympy.Symbol('L', real=True)
-        cm = sympy.Symbol('cm', real=True)
-        cg = sympy.Symbol('cg', real=True)
-        J = sympy.Symbol('J', real=True)
-        d = sympy.Symbol('d', real=True)
-
-        t = sympy.Symbol('t', real=True)
-        V = 12
-
-        mu = sympy.sqrt((J*R-L*d)**2-4*cm*cg*J*L)
-
-        lambda1 = -(L*d-mu+J*R)/(2*J*L)
-        lambda2 = -(L*d+mu+J*R)/(2*J*L)
-        v11 = d/cg - (L*d-mu+J*R)/(2*L*cg)
-        v21 = d/cg - (L*d+mu+J*R)/(2*L*cg)
-        c1 = -V/(L*lambda1*(v21-v11))
-        c2 = V/(L*lambda2*(v21-v11))
-
-        I = c1 * sympy.exp(lambda1*t)*v11+c2*sympy.exp(lambda2*t)*v21 + \
-            (V*(lambda1*v21-lambda2*v11))/(L*lambda1*lambda2*(v11-v21))
-
-        dIdR = I.diff(R)
-        dIdL = I.diff(L)
-        dIdcm = I.diff(cm)
-        dIdcg = I.diff(cg)
-        dIdJ = I.diff(J)
-        dIdd = I.diff(d)
-
-        # evaluate
-        tStart = 0.0
-        tEnd = 1.0
-        dt = ((tEnd - tStart) / (self.numTimeSteps-1))
-        timeSteps = np.arange(tStart, tEnd+dt, dt)
-
-        #true parameters are overwritten, depending on the desired dimensionality
-        cm_eval = 0.5
-        L_eval = 0.11
-        J_eval = 0.1
-        d_eval = 0.1
-
-        cg_eval = x[0]
-        R_eval = x[1]
-        if self.dim > 2:
-            cm_eval = x[2]
-        if self.dim > 3:
-            L_eval = x[3]
-        if self.dim > 4:
-            J_eval = x[4]
-        if self.dim > 5:
-            d_eval = x[5]
-
-        jacobian = np.zeros((self.numTimeSteps, self.getDim()))
-        for j, time in enumerate(timeSteps):
-            dIdcg_eval = dIdcg.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-            jacobian[j, 0] = float(sympy.N(dIdcg_eval))
-            dIdR_eval = dIdR.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-            jacobian[j, 1] = float(sympy.N(dIdR_eval))
-            if self.dim > 2:
-                dIdcm_eval = dIdcm.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-                jacobian[j, 2] = float(sympy.N(dIdcm_eval))
-            if self.dim > 3:
-                dIdL_eval = dIdL.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-                jacobian[j, 3] = float(sympy.N(dIdL_eval))
-            if self.dim > 4:
-                dIdJ_eval = dIdJ.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-                jacobian[j, 4] = float(sympy.N(dIdJ_eval))
-            if self.dim > 5:
-                dIdd_eval = dIdd.subs({t: time, cg: cg_eval, R: R_eval, cm: cm_eval, L: L_eval, J: J_eval, d: d_eval})
-                jacobian[j, 5] = float(sympy.N(dIdd_eval))
-
-        return jacobian
+        print('Jacobian unknown')
+        return 0
 
     def getDistributions(self):
         return self.pdfs

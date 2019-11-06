@@ -6,6 +6,9 @@ def createFileName(gridType, model, refineType, maxPoints, maxLevel, degree, obj
     if refineType == 'regular':
         saveName = '{}_{}{}_{}{}.pkl'.format(
             objFunc.getName(), refineType, maxLevel, gridType, degree)
+    if refineType == 'regularByPoints':
+        saveName = '{}_{}{}_{}{}.pkl'.format(
+            objFunc.getName(), refineType, maxPoints, gridType, degree)
     elif refineType == 'mc':
         saveName = '{}_mc_{}.pkl'.format(objFunc.getName(), maxPoints)
     elif refineType == 'surplus':

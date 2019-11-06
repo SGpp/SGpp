@@ -30,7 +30,15 @@ def histogram(trace, val, true_value, meanPosterior, sdPosterior, numBins=50, li
     sigma = sdPosterior
     y = ((1 / (np.sqrt(2 * np.pi) * sigma)) *
          np.exp(-0.5 * (1 / sigma * (bin_edges - mu))**2))
-    plt.plot(bin_edges, y, color='C1', linewidth=2, label='distribution')
+    plt.plot(bin_edges, y, color='C1', linewidth=2,
+             label='posterior distribution')
+
+    # add 5 and 95 percentiles calculated over ALL chains
+    fifth, ninetyfifth = np.percentile(val, [5, 95])
+    plt.plot(np.ones(2)*fifth, [0, np.max(hist)],
+             'C7', label='5%, 95% percentiles')
+    plt.plot(np.ones(2)*ninetyfifth, [0, np.max(hist)], 'C7')
+
     # plot true value and posterior mean
     plt.plot(np.ones(2)*true_value, [0, np.max(hist)], 'k', label='true value')
     plt.plot(np.ones(2)*meanPosterior,
@@ -100,4 +108,3 @@ def ppc(trace,
         handles, labels = plt.gca().get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
         plt.legend(by_label.values(), by_label.keys())
-        plt.legend()
