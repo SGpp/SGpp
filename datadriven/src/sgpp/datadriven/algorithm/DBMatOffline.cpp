@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_matrix_double.h>
@@ -244,7 +245,7 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
     auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
     opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
-    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitModLinear();
     opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else {
     throw algorithm_exception(

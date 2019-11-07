@@ -42,9 +42,9 @@
 			"beta" : 1.0
 		}
 	},
-	 "visualization": {
+	"visualization": {
     "generalConfig": {
-      "algorithm":"tsne",
+      "algorithm":["tsne", "heatmaps"],
       "targetFile":"./output",
       "targetFileType":"csv",
       "numBatches":1
@@ -53,7 +53,7 @@
       "perplexity":30,
       "theta":0.5,
       "seed":150,
-      "maxNumberIterations":1000,
+      "maxNumberIterations":500,
       "numberCores":1
     }
   }

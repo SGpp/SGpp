@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationGeneralConfig defaults;
 
-  defaults.algorithm = "otherAlgorithm";
+  defaults.algorithm = std::vector<std::string>({"otherAlgorithm"});
   defaults.targetDirectory = "./targetDirectory";
   defaults.targetFileType = VisualizationFileType::json;
   defaults.numBatches = 5;
@@ -312,14 +312,17 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   VisualizationGeneralConfig config;
   bool hasConfig;
   bool hasGeneralVisualizationConfig;
+  std::vector<std::string> expectedAlgorithm = std::vector<std::string>({"tsne", "heatmaps"});
 
   hasGeneralVisualizationConfig = parser.hasVisualizationGeneralConfig();
+
   hasConfig = parser.getVisualizationGeneralConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
-  BOOST_CHECK_EQUAL(std::strcmp(config.algorithm.c_str(), "tsne"), 0);
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
+      expectedAlgorithm.begin(), expectedAlgorithm.end());
   BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
     static_cast<int>(VisualizationFileType::json));
