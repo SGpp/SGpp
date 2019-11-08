@@ -16,6 +16,7 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -219,7 +220,7 @@ class DBMatOffline {
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)
-  std::vector<std::vector<size_t>> interactions;
+  std::set<std::set<size_t>> interactions;
 
  protected:
   /**
@@ -228,7 +229,7 @@ class DBMatOffline {
    * @param interactions the interactions to populate
    */
   void parseInter(const std::string& fileName,
-                  std::vector<std::vector<size_t>>& interactions) const;
+                  std::set<std::set<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven
