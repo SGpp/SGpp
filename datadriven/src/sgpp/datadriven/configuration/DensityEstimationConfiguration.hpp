@@ -20,8 +20,10 @@ enum class DensityEstimationType { CG, Decomposition };
 enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
-  DensityEstimationType type_ = DensityEstimationType::Decomposition; // Type of density estimation
-  MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt; // Type of matrix decomposition
+  // Type of density estimation
+  DensityEstimationType type_ = DensityEstimationType::Decomposition;
+  // Type of matrix decomposition
+  MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt;
 
   // flag for normalization in DBMatOnlineDE
   bool normalize_ = false;

@@ -104,7 +104,7 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
 
 void FitterConfiguration::setupDefaults() {
   // (Sebastian Kreisel) The comments "mirrors struct default" are no longer
-  // applicable since all structs now have default values that (should) 
+  // applicable since all structs now have default values that (should)
   // match the ones set here. The comments are kept for history / debugging.
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
