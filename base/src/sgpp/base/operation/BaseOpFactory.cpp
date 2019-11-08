@@ -239,6 +239,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <cstring>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -537,7 +538,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
 }
 
 base::OperationMultipleEval* createOperationMultipleEvalInter(
-    base::Grid& grid, base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions) {
+    base::Grid& grid, base::DataMatrix& dataset, std::set<std::set<size_t>> interactions) {
   if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationMultipleEvalInterModLinear(grid, dataset, interactions);
   } else {

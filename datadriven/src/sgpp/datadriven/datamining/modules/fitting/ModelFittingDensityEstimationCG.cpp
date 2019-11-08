@@ -62,9 +62,10 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
 
   // Setup new grid
   auto& gridConfig = this->config->getGridConfig();
+  auto& geometryConfig = this->config->getGeometryConfig();
   gridConfig.dim_ = newDataset.getNcols();
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
-  grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
+  grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
   // build surplus vector
   alpha = DataVector(grid->getSize());
 

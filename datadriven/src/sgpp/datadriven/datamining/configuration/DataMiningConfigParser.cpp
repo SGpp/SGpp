@@ -752,6 +752,33 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
   }
 }
 
+std::vector<std::vector<int64_t>> DataMiningConfigParser::parseArrayOfIntArrays(
+    DictNode &dict, const std::string &key, std::vector<std::vector<int64_t>> defaultValue,
+    const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<std::vector<int64_t>> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        std::vector<int64_t> entry;
+        for (size_t j = 0; j < dict[key][i].size(); j++) {
+          entry.push_back(dict[key][i][j].getInt());
+        }
+
+        array.push_back(entry);
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse array of integer arrays" + parentNode + "[" + key +
+                             "] from string" + dict[key].get() + ": " + e.what();
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
+    return defaultValue;
+  }
+}
+
 // (Sebastian) Adapted from parseIntArray without much thought
 std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, const std::string &key,
                                                              std::vector<double> defaultValue,
@@ -1034,19 +1061,59 @@ bool DataMiningConfigParser::getGeometryConfig(
     std::cout << "Has geometry config" << std::endl;
     auto geometryConfig = static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
-    config.dim = parseIntArray(*geometryConfig, "dim", defaults.dim, "geometryConfig");
+    config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim, "geometryConfig");
 
-    // parse  density estimation type
-    if (geometryConfig->contains("stencil")) {
-      config.stencilType = GeometryConfigurationParser::parse(
-          (*geometryConfig)["stencil"].get());
+    // check if global color available
+    int64_t colorIndexDefault = parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
+    std::vector<size_t> layerDefault;
+    for (size_t i = 0; i < config.dim.size(); i++) {
+      layerDefault.push_back(i);
+    }
+
+    config.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
+
+    if ((*geometryConfig).contains("stencils")) {
+      size_t nStencils = (*geometryConfig)["stencils"].size();
+      for (size_t i = 0; i < nStencils; ++i) {
+        StencilConfiguration stencil;
+        auto stencilConfig = static_cast<DictNode *>(&(*geometryConfig)["stencils"][i]);
+        stencil.applyOnLayers =
+            parseUIntArray(*stencilConfig, "applyOnLayers", layerDefault, "stencils");
+        stencil.colorIndex = parseInt(*stencilConfig, "colorIndex", colorIndexDefault, "stencils");
+        stencil.stencilType = GeometryConfigurationParser::parseStencil(
+            (*geometryConfig)["stencils"][i]["stencil"].get());
+        if (stencil.stencilType == sgpp::datadriven::StencilType::Block) {
+          stencil.blockLenght = parseInt(*stencilConfig, "blockLenght", 2, "stencils");
+        } else {
+          stencil.blockLenght = 0;
+        }
+        config.stencils.push_back(stencil);
+      }
     } else {
-      std::cout << "# Did not find geometryConfig[stencil]."
-                   " Setting default value ";
-      config.stencilType = defaults.stencilType;
+      config.stencils = defaults.stencils;
+    }
+
+    // Validate configuration
+    size_t numberOfLayers = config.dim.size();
+    if (numberOfLayers > 0) {
+      size_t numberOfAxes = config.dim[0].size();
+      for (const std::vector<int64_t> &res : config.dim) {
+        if (numberOfAxes != res.size())
+          throw data_exception("Each layer has to have identical number of axes");
+      }
+      for (const sgpp::datadriven::StencilConfiguration &stencilConf : config.stencils) {
+        if (stencilConf.colorIndex != -1 &&
+            static_cast<size_t>(stencilConf.colorIndex) >= numberOfAxes) {
+          throw data_exception("ColorIndex is not a valid index for an axis:");
+        }
+        for (size_t layerIndex : stencilConf.applyOnLayers) {
+          if (layerIndex >= numberOfAxes) {
+            throw data_exception("There is an invalid index contained in ApplyOnLayers");
+          }
+        }
+      }
     }
   }
-
 
   return hasGeometryConfig;
 }
