@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_GSL
+
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
@@ -171,3 +173,5 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif // USE_GSL
