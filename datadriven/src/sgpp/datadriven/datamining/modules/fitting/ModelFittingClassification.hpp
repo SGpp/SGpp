@@ -130,6 +130,8 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   size_t labelToIdx(double label);
 
+  std::vector<double> getClassPriors() const;
+
   /**
    * Returns the refinement functor suitable for the model settings.
    * @param grids vector of pointers to grids for each class

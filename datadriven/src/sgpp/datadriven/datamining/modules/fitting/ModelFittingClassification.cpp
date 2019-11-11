@@ -22,7 +22,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <limits>
 #include <fstream>
 #include <iostream>
 
@@ -66,7 +66,6 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
     std::string errorMessage = "Prediction impossible! No models were trained!";
     throw application_exception(errorMessage.c_str());
   } else {
-    auto& learnerConfig = this->config->getLearnerConfig();
     double prediction = 0.0, maxDensity = 0.0;
 
     // Pre compute the total number of instances
@@ -77,6 +76,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
     }
 
     bool evaluatedModel = false;
+    std::vector<double> priors = getClassPriors();
     for (auto& p : classIdx) {
       double label = p.first;
       size_t idx = p.second;
@@ -85,15 +85,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
         continue;
       }
       double classConditionalDensity = models[idx]->evaluate(sample);
-      double prior;
-      if (learnerConfig.usePrior) {
-        // Prior is realtive frequency of instances of this class
-        prior = static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
-      } else {
-        // Uniform prior
-        prior = 1.0;
-      }
-      double density = prior * classConditionalDensity;
+      double density = priors[idx] * classConditionalDensity;
 
       if (!evaluatedModel || density > maxDensity) {
         maxDensity = density;
@@ -106,6 +98,11 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
 }
 
 void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& results) {
+  if (models.size() == 0) {
+    std::string errorMessage = "Prediction impossible! No models were trained!";
+    throw application_exception(errorMessage.c_str());
+  }
+
 #ifdef USE_SCALAPACK
   auto& parallelConfig = this->config->getParallelConfig();
   if (parallelConfig.scalapackEnabled_) {
@@ -128,12 +125,51 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
   }
 #endif  // USE_SCALAPACK
 
-#pragma omp parallel for
-  for (size_t i = 0; i < samples.getNrows(); i++) {
-    DataVector tmp(samples.getNcols());
-    samples.getRow(i, tmp);
-    results.set(i, evaluate(tmp));
+  std::vector<double> priors = getClassPriors();
+  std::vector<DataVector> classResults(models.size());
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    DataVector results(samples.getNrows());
+    models[idx]->evaluate(samples, results);
+    results.mult(priors[idx]);
+    classResults[idx] = results;
   }
+  for (size_t j = 0; j < samples.getNrows(); j++) {
+    double maxDensity = std::numeric_limits<double>::lowest();
+    double prediction = 0.0;
+    for (auto& p : classIdx) {
+      size_t idx = p.second;
+      if (maxDensity < classResults[idx][j]) {
+        maxDensity = classResults[idx][j];
+        prediction = p.first;
+      }
+    }
+    results.set(j, prediction);
+  }
+}
+
+std::vector<double> ModelFittingClassification::getClassPriors() const {
+  auto& learnerConfig = this->config->getLearnerConfig();
+  size_t numInstances = 0;
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    numInstances += classNumberInstances[idx];
+  }
+
+  std::vector<double> priors(models.size());
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    if (learnerConfig.usePrior) {
+      // Prior is realtive frequency of instances of this class
+      priors[idx] =
+          static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
+    } else {
+      // Uniform prior
+      priors[idx] = 1.0;
+    }
+  }
+
+  return priors;
 }
 
 void ModelFittingClassification::fit(Dataset& newDataset) {
@@ -300,7 +336,13 @@ bool ModelFittingClassification::refine() {
           func->setGridIndex(idx);
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by the functor
-          grids[idx]->getGenerator().refine(*func);
+          GeometryConfiguration geoConf = config->getGeometryConfig();
+          if (!geoConf.stencils.empty()) {
+            GridFactory gridFactory;
+            grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf));
+          } else {
+            grids[idx]->getGenerator().refine(*func);
+          }
         }
       }
 
