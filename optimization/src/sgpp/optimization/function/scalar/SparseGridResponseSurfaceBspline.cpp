@@ -95,8 +95,8 @@ double SparseGridResponseSurfaceBspline::getIntegral() {
 double SparseGridResponseSurfaceBspline::getMean(sgpp::base::DistributionsVector pdfs,
                                                  size_t quadOrder) {
   sgpp::base::OperationWeightedQuadrature* opWQuad =
-      sgpp::op_factory::createOperationWeightedQuadrature(*grid);
-  mean = opWQuad->doWeightedQuadrature(coefficients, pdfs, quadOrder);
+      sgpp::op_factory::createOperationWeightedQuadrature(*grid, quadOrder);
+  mean = opWQuad->doWeightedQuadrature(coefficients, pdfs);
   computedMeanFlag = true;
   return mean;
 }

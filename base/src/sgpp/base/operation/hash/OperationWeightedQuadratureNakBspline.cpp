@@ -9,14 +9,14 @@ namespace sgpp {
 namespace base {
 
 double OperationWeightedQuadratureNakBspline::doWeightedQuadrature(
-    DataVector& alpha, sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
+    DataVector& alpha, sgpp::base::DistributionsVector pdfs) {
   double mean = 0;
   for (size_t i = 0; i < storage.getSize(); i++) {
     double mean1D = 1;
 
     for (size_t d = 0; d < storage.getDimension(); d++) {
       mean1D *= base.getMean(storage.getPointLevel(i, d), storage.getPointIndex(i, d), pdfs.get(d),
-                             quadOrder);
+                             quadCoordinates, quadWeights);
     }
     mean += alpha[i] * mean1D;
   }

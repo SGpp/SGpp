@@ -53,10 +53,9 @@ void SparseGridResponseSurfaceBsplineVector::refineSurplusAdaptive(size_t refine
                                                                    bool verbose) {
   if (computedCoefficientsFlag == true) {
     nextSurplusAdaptiveGrid(refinementsNum, verbose);
-    if (verbose)
-      std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
+    if (verbose) std::cout << "Refined to a grid with " << grid->getSize() << " points.\n";
   }
-  calculateInterpolationCoefficients();
+  calculateInterpolationCoefficients(verbose);
 }
 
 /**
@@ -140,8 +139,8 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getIntegrals() {
   sgpp::base::OperationQuadrature* opQuad = sgpp::op_factory::createOperationQuadrature(*grid);
   sgpp::base::DataVector integrals(numRes);
   double vol = domainVolume();
+  sgpp::base::DataVector coefficients_t(grid->getSize());
   for (size_t t = 0; t < numRes; t++) {
-    sgpp::base::DataVector coefficients_t(grid->getSize());
     coefficients.getColumn(t, coefficients_t);
     integrals[t] = opQuad->doQuadrature(coefficients_t);
     integrals[t] *= vol;
@@ -149,14 +148,19 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getIntegrals() {
   return integrals;
 }
 
-// double SparseGridResponseSurfaceBsplineVector::getMeans(sgpp::base::DistributionsVector pdfs,
-//                                                        size_t quadOrder) {
-//   sgpp::base::OperationWeightedQuadrature* opWQuad =
-//       sgpp::op_factory::createOperationWeightedQuadrature(*grid);
-//   mean = opWQuad->doWeightedQuadrature(coefficients, pdfs, quadOrder);
-//   computedMeanFlag = true;
-//   return mean;
-// }
+sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getMeans(
+    sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
+  sgpp::base::OperationWeightedQuadrature* opWQuad =
+      sgpp::op_factory::createOperationWeightedQuadrature(*grid, quadOrder);
+  means.resizeZero(numRes);
+  sgpp::base::DataVector coefficients_t(grid->getSize());
+  for (size_t t = 0; t < numRes; t++) {
+    coefficients.getColumn(t, coefficients_t);
+    means[t] = opWQuad->doWeightedQuadrature(coefficients_t, pdfs);
+  }
+  computedMeanFlag = true;
+  return means;
+}
 
 // sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getVariances(
 //     sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
@@ -257,7 +261,10 @@ bool SparseGridResponseSurfaceBsplineVector::getRefineGridpoint1D(
   return newPoints;
 }
 
-void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients() {
+void SparseGridResponseSurfaceBsplineVector::calculateInterpolationCoefficients(bool verbose) {
+  if (verbose == true) {
+    std::cout << "Calculating coefficients.\n";
+  }
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   functionValues.resizeZero(gridStorage.getSize(), numRes);
   for (size_t i = 0; i < gridStorage.getSize(); i++) {

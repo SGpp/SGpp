@@ -78,7 +78,8 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid);
  * @param grid Grid which is to be used for quadrature
  * @return Pointer to the new OperationWeightedQuadrature for the Grid grid
  */
-base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid);
+base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid,
+                                                                     size_t quadOrder);
 /**
  * Factory method, returning an OperationFirstMoment for the grid at hand.
  * Note: object has to be freed after use.

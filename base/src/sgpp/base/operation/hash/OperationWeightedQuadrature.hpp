@@ -37,8 +37,7 @@ class OperationWeightedQuadrature {
    * @param pdf			probability density function
    * @parm quadOrder	order for the Gauss Legendre quadrature
    */
-  virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
-                                      size_t quadOrder) = 0;
+  virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs) = 0;
 };
 
 }  // namespace base

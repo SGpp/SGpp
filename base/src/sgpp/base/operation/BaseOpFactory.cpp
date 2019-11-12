@@ -375,19 +375,23 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   }
 }
 
-base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid) {
+base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid,
+                                                                     size_t quadOrder) {
   if (grid.getType() == base::GridType::NakBspline) {
     return new base::OperationWeightedQuadratureNakBspline(
-        grid.getStorage(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree(), quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineModified) {
     return new base::OperationWeightedQuadratureNakBsplineModified(
-        grid.getStorage(), dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree(),
+        quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineExtended) {
     return new base::OperationWeightedQuadratureNakBsplineExtended(
-        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(),
+        quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationWeightedQuadratureNakBsplineBoundary(
-        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(),
+        quadOrder);
   } else {
     throw base::factory_exception(
         "createOperationWeightedQuadrature is not implemented for this grid type.");

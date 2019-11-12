@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <memory>
 
 namespace sgpp {
 namespace base {
@@ -473,7 +474,8 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @return      		mean of basis function
    */
   inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
-                        base::DataVector quadCoordinates, base::DataVector quadWeights) {
+                        std::shared_ptr<sgpp::base::DataVector> quadCoordinates,
+                        std::shared_ptr<sgpp::base::DataVector> quadWeights) {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
@@ -519,7 +521,8 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   }
 
   double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
-                   base::DataVector quadCoordinates, base::DataVector quadWeights,
+                   std::shared_ptr<sgpp::base::DataVector> quadCoordinates,
+                   std::shared_ptr<sgpp::base::DataVector> quadWeights,
                    std::shared_ptr<sgpp::base::Distribution> pdf) {
     sgpp::base::DataVector bounds = pdf->getBounds();
     double left = bounds[0];
@@ -529,12 +532,12 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
     // loop over the segments the B-spline is defined on
     for (size_t n = start; n <= stop; n++) {
       // loop over quadrature points
-      for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
+      for (size_t c = 0; c < quadCoordinates->getSize(); c++) {
         // transform  the quadrature points to the segment on which the Bspline is
         // evaluated and the support of the pdf
-        double x = offset + hik * (quadCoordinates[c] + static_cast<double>(n));
+        double x = offset + hik * (quadCoordinates->get(c) + static_cast<double>(n));
         double scaledX = left + (right - left) * x;
-        temp_res += quadWeights[c] * this->eval(l, i, x) * pdf->eval(scaledX);
+        temp_res += quadWeights->get(c) * this->eval(l, i, x) * pdf->eval(scaledX);
       }
     }
     return temp_res * (right - left);

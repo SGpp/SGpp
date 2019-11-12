@@ -9,11 +9,8 @@ namespace sgpp {
 namespace base {
 
 double OperationWeightedQuadratureNakBsplineExtended::doWeightedQuadrature(
-    DataVector& alpha, sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
+    DataVector& alpha, sgpp::base::DistributionsVector pdfs) {
   double mean = 0;
-  base::DataVector quadCoordinates, quadWeights;
-  base::GaussLegendreQuadRule1D gauss;
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
   //#pragma omp parallel for firstprivate(storage, base, alpha, pdfs, quadCoordinates, quadWeights)
   // reduction(+ : mean)
   for (size_t i = 0; i < storage.getSize(); i++) {

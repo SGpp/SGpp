@@ -239,11 +239,11 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * return the mean of the response surface w.r.t. a probability density function
    *
    * @param 	pdf			the probability density function
-   * @param     quadOrder	order of the Gauss Legendre quadrature
+   * @param   quadOrder	order of the Gauss Legendre quadrature
    *
    * @return vector containing the means
    */
-  // sgpp::base::DataVector getMeans(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
+  sgpp::base::DataVector getMeans(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
 
   /**
    * return the variance of the response surface w.r.t. a probability density function
@@ -355,7 +355,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   /**
    * calculates the interpolation coefficients on a given grid
    */
-  void calculateInterpolationCoefficients();
+  void calculateInterpolationCoefficients(bool verbose = false);
 };  // namespace optimization
 
 }  // namespace optimization

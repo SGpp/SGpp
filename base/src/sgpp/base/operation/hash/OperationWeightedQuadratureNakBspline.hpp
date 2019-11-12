@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <memory>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedQuadrature.hpp>
@@ -26,8 +27,14 @@ class OperationWeightedQuadratureNakBspline : public OperationWeightedQuadrature
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
    */
-  OperationWeightedQuadratureNakBspline(GridStorage& storage, size_t degree)
-      : storage(storage), base(degree) {}
+  OperationWeightedQuadratureNakBspline(GridStorage& storage, size_t degree, size_t quadOrder)
+      : storage(storage), base(degree), quadOrder(quadOrder) {
+    base::DataVector temp_quadCoordinates, temp_quadWeights;
+    base::GaussLegendreQuadRule1D gauss;
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, temp_quadCoordinates, temp_quadWeights);
+    quadCoordinates = std::make_shared<sgpp::base::DataVector>(temp_quadCoordinates);
+    quadWeights = std::make_shared<sgpp::base::DataVector>(temp_quadWeights);
+  }
 
   ~OperationWeightedQuadratureNakBspline() override {}
 
@@ -38,14 +45,19 @@ class OperationWeightedQuadratureNakBspline : public OperationWeightedQuadrature
    * @param pdf			probability density function
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
-  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
-                              size_t quadOrder);
+  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs);
 
  protected:
   // Pointer to the grid's GridStorage object
   GridStorage& storage;
   /// NakBsplineCombigrid Basis object
   SNakBsplineBase base;
+  /// quadrature rule order
+  size_t quadOrder;
+  /// quadrature rule coordinates
+  std::shared_ptr<base::DataVector> quadCoordinates;
+  /// quadrature rule weights
+  std::shared_ptr<base::DataVector> quadWeights;
 };
 
 }  // namespace base
