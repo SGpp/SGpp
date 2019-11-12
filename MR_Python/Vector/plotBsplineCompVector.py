@@ -366,10 +366,10 @@ if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
     # QOI
-    parser.add_argument('--qoi', default='averageNRMSE', type=str, help='what to plot: averageL2, outwiseL2, averageGradientL2, parameterwiseJacobianErrors,outwiseJacobianErrors')  # nopep8
+    parser.add_argument('--qoi', default='averageL2', type=str, help='what to plot: averageL2, outwiseL2, averageGradientL2, parameterwiseJacobianErrors,outwiseJacobianErrors')  # nopep8
     # MODEL
-    parser.add_argument('--model', default='okushiri', type=str, help='define which test case should be executed')  # nopep8
-    parser.add_argument('--dim', default=3, type=int, help='the problems dimensionality')  # nopep8
+    parser.add_argument('--model', default='okushiri_g9', type=str, help='define which test case should be executed')  # nopep8
+    parser.add_argument('--dim', default=4, type=int, help='the problems dimensionality')  # nopep8
     parser.add_argument('--out', default=451, type=int, help='the problems output dimensionality')  # nopep8
     parser.add_argument('--scalarModelParameter', default=128, type=int, help='purpose depends on actual model. For monomial its the degree')  # nopep8
     # BASIS
@@ -383,7 +383,7 @@ if __name__ == '__main__':
     parser.add_argument('--maxPoints', default=450, type=int, help='maximum number of points used')  # nopep8
     # MISC
     parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Vector/data', type=str, help='path were results are stored and precalculated data is stored')  # nopep8
-    parser.add_argument('--saveFig', default=0, type=int, help='save figure')  # nopep8
+    parser.add_argument('--saveFig', default=1, type=int, help='save figure')  # nopep8
     parser.add_argument('--style', default='paper', type=str, help='style of the plot, paper or presentation')  # nopep8
     parser.add_argument('--legendstyle', default='internal', type=str, help='internal, external or none legend')  # nopep8
     args = parser.parse_args()

@@ -82,9 +82,7 @@ def NRMSEFromData(reSurf,
     componentwiseNRMSE = np.zeros((objFunc.getOut()))
     errorVec = np.zeros(6)
 
-    precalcPath = objFunc.getPrecalcDataPath()
-    with open(precalcPath, 'rb') as fp:
-        precalcData = pickle.load(fp, encoding='latin1')
+    precalcData = objFunc.getPrecalcData()
 
     # 2D matrix containing the objective function evaluated at the evaluation
     # points xi_0, xi_1, ...
@@ -114,13 +112,14 @@ def NRMSEFromData(reSurf,
     # for each timestep find max and min value and normalize error
     trueEvaluations = np.array(list(precalcData.values()))
     for t in range(out):
-        minValue = np.min(trueEvaluations[:,t])
-        maxValue = np.max(trueEvaluations[:,t])
+        minValue = np.min(trueEvaluations[:, t])
+        maxValue = np.max(trueEvaluations[:, t])
         # print("{} - {} = {}".format(maxValue, minValue, maxValue-minValue))
         if (maxValue-minValue) != 0:
             componentwiseNRMSE[t] /= (maxValue-minValue)
         else:
-            print('Warning NRMSE tried to divide by Zero ({})'.format(t))
+            #print('Warning NRMSE tried to divide by Zero ({})'.format(t))
+            pass
 
     errorVec[0] = np.average(componentwiseNRMSE)
     errorVec[1] = np.min(componentwiseNRMSE)
@@ -222,10 +221,10 @@ def interpolateAndError(degree,
         sampleRange = [int(s) for s in np.unique(np.logspace(
             np.log10(minPoints), np.log10(maxPoints), num=numSteps))]
 
-    
     if ('boundary' in gridType) or ('Boundary' in gridType):
         initialLevelwithOffset = initialLevel - 1
-        print(f"recognized boundary grid. Using initial level {initialLevelwithOffset} instead of {initialLevel} for adaptivity")
+        print(
+            f"recognized boundary grid. Using initial level {initialLevelwithOffset} instead of {initialLevel} for adaptivity")
         if refineType == 'regular':
             sampleRange = range(0, maxLevel + 1)
     else:
@@ -283,11 +282,11 @@ def interpolateAndError(degree,
         # else:
 
         reSurf = pysgpp.SparseGridResponseSurfaceBsplineVector(objFunc, lb, ub,
-                                                                pysgpp.Grid.stringToGridType(
-                                                                    gridType),
-                                                                degree)
+                                                               pysgpp.Grid.stringToGridType(
+                                                                   gridType),
+                                                               degree)
         start = time.time()
-        verbose = True #False
+        verbose = True  # False
         if refineType == 'regular':
             level = numPoints  # numPoints is an ugly wrapper for level. Improve this
             reSurf.regular(level)
@@ -348,8 +347,8 @@ def interpolateAndError(degree,
 
         if calculateJacobianErrorFromData:
             averageJacobianError, minJacobianError, maxJacobianError, componentwiseJacobianError, jacobianNumErrPoints = jacobianErrorFromData(reSurf,
-                                                                                                                                                model,
-                                                                                                                                                dataPath, objFunc.getDim(), objFunc.getOut())
+                                                                                                                                               model,
+                                                                                                                                               dataPath, objFunc.getDim(), objFunc.getOut())
             averageJacobianL2Errors[j] = averageJacobianError
             minJacobianL2Errors[j] = minJacobianError
             maxJacobianL2Errors[j] = maxJacobianError
@@ -384,7 +383,6 @@ def interpolateAndError(degree,
         runTimes[j] = time.time() - start
 
 #                 plot2DGrid(reSurf)
-
 
         data = {'gridType': gridType,
                 'averageNRMSE': averageNRMSE,
@@ -422,14 +420,14 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input')
     # MODEL
     parser.add_argument('--model', default='okushiri', type=str, help='define which test case should be executed')  # nopep8
-    parser.add_argument('--dim', default=4, type=int, help='the problems input dimensionality')  # nopep8
+    parser.add_argument('--dim', default=3, type=int, help='the problems input dimensionality')  # nopep8
     parser.add_argument('--out', default=451, type=int, help='the problems output dimensionality')  # nopep8
     parser.add_argument('--scalarModelParameter', default=128, type=int, help='purpose depends on actual model.')  # nopep8
     # BASIS
     parser.add_argument('--gridType', default='nakbsplineboundary', type=str, help='gridType(s) to use')  # nopep8
     parser.add_argument('--degree', default=135, type=int, help='spline degree')  # nopep8
     # REFINETYPE
-    parser.add_argument('--refineType', default='surplus', type=str, help='surplus or regular or mc for Monte Carlo')  # nopep8
+    parser.add_argument('--refineType', default='regular', type=str, help='surplus or regular or mc for Monte Carlo')  # nopep8
     # REGULAR
     parser.add_argument('--maxLevel', default=5, type=int, help='maximum level for regular refinement')  # nopep8
     # ADAPTIVE
@@ -500,19 +498,19 @@ if __name__ == '__main__':
     for degree in degrees:
         for gridType in gridTypes:
             data = interpolateAndError(degree, args.maxLevel, args.minPoints, args.maxPoints, args.numSteps,
-                                   args.numErrPoints, objFunc, gridType, args.refineType, args.dataPath,
-                                   args.error, args.errorFromData, args.calculateJacobianErrorFromData, args.mean, args.var,
-                                   args.quadOrder, args.initialLevel, args.numRefine, args.saveDataFlag,
-                                   args.model)
+                                       args.numErrPoints, objFunc, gridType, args.refineType, args.dataPath,
+                                       args.error, args.errorFromData, args.calculateJacobianErrorFromData, args.mean, args.var,
+                                       args.quadOrder, args.initialLevel, args.numRefine, args.saveDataFlag,
+                                       args.model)
 
             try:
                 pyFunc.cleanUp()
             except:
                 pass
 
-        if saveDataFlag == 1:
-            savePath = os.path.join(dataPath, 'results')
-            saveData(data, savePath, gridType, model, refineType,
-                    maxPoints, maxLevel, degree, objFunc)
+        if args.saveDataFlag == 1:
+            savePath = os.path.join(args.dataPath, 'results')
+            saveData(data, savePath, gridType, args.model, args.refineType,
+                     args.maxPoints, args.maxLevel, degree, objFunc)
         else:
             print("Data was not saved")

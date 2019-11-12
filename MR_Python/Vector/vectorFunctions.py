@@ -16,6 +16,9 @@ from dc_motor import dc_motor_ode_W
 # ANUGA Okushiri Benchmark
 sys.path.append('/home/rehmemk/git/anugasgpp/Okushiri')   # nopep8
 from sgppOkushiri import okushiri  # nopep8
+from sgppOkushiri import okushiri_g5  # nopep8
+from sgppOkushiri import okushiri_g7  # nopep8
+from sgppOkushiri import okushiri_g9  # nopep8
 sys.path.append('/home/rehmemk/git/anugasgpp/Okushiri/investigation')   # nopep8
 from sgppOkushiri_noResidual import okushiri_noResidual    # nopep8
 
@@ -39,6 +42,12 @@ def getFunction(model, dim=1, out=1, scalarModelParameter=16):
     # ANUGA Okushiri Benchmark
     elif model == 'okushiri':
         return okushiri(dim, numTimeSteps=out, gridResolution=scalarModelParameter)
+    elif model == 'okushiri_g5':
+        return okushiri_g5(dim, numTimeSteps=out, gridResolution=scalarModelParameter)
+    elif model == 'okushiri_g7':
+        return okushiri_g7(dim, numTimeSteps=out, gridResolution=scalarModelParameter)
+    elif model == 'okushiri_g9':
+        return okushiri_g9(dim, numTimeSteps=out, gridResolution=scalarModelParameter)
     elif model == 'maxOkushiri':
         return maxOkushiri(dim)
     elif model == 'okushiri_noResidual':
@@ -98,8 +107,8 @@ class vectorObjFuncSGpp(pysgpp.VectorFunction):
     def cleanUp(self):
         self.objFunc.cleanUp()
 
-    def getPrecalcDataPath(self):
-        return self.objFunc.getPrecalcDataPath()
+    def getPrecalcData(self):
+        return self.objFunc.getPrecalcData()
 
 
 def randomPoint(lb, ub):
