@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(PermutationBlowUpTest)
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   // build grids
   std::cout << "Build Grid" << std::endl;
   sgpp::datadriven::GridFactory gridFactory;
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
   std::unique_ptr<sgpp::base::Grid> desiredGrid{
       gridFactory.createGrid(desiredGridConfig, interactions)};
 
@@ -66,7 +67,6 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   // sgpp::datadriven::DBMatBaseObjectStore store2(adaptivityConfig, regConfig, densConfig);
   // Add base to store
   sgpp::datadriven::GeometryConfiguration gc;
-  gc.stencilType = sgpp::datadriven::StencilType::None;
   sgpp::datadriven::DBMatPermutationFactory factory(store);
   // put base object into store
   factory.getPermutedObject(baseGridConfig, gc, adaptivityConfig, regConfig, densConfig);
@@ -174,4 +174,4 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif // USE_GSL
+#endif  // USE_GSL

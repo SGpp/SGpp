@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(DBMatOfflinePermutableTest)
@@ -101,7 +102,7 @@ BOOST_AUTO_TEST_CASE(LhsMatrixPermutationTest) {
   desiredConfig.levelVector_ = std::vector<size_t>{3, 2, 1, 1, 2};
 
   sgpp::datadriven::GridFactory gridFactory;
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
   std::unique_ptr<sgpp::base::Grid> baseGrid{gridFactory.createGrid(baseConfig, interactions)};
   std::unique_ptr<sgpp::base::Grid> desiredGrid{
       gridFactory.createGrid(desiredConfig, interactions)};
@@ -120,4 +121,3 @@ BOOST_AUTO_TEST_CASE(LhsMatrixPermutationTest) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-

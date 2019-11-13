@@ -1058,10 +1058,6 @@ bool DataMiningConfigParser::getGeometryConfig(
 
     config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim, "geometryConfig");
 
-    // parse  density estimation type
-    if (geometryConfig->contains("stencil")) {
-      config.stencilType = GeometryConfigurationParser::parse((*geometryConfig)["stencil"].get());
-
     // check if global color available
     int64_t colorIndexDefault = parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
     std::vector<size_t> layerDefault;

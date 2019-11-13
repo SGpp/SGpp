@@ -6,6 +6,7 @@
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -76,17 +77,15 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
       // build grid with geometry config
       std::unique_ptr<Grid> grid;
       sgpp::datadriven::GridFactory gridFactory;
-      sgpp::datadriven::StencilType stencilType = geometryConfig.stencilType;
-      std::vector<int64_t> dim = geometryConfig.dim;
 
       // a regular sparse grid is created, if no geometryConfig is defined,
-      if (stencilType == sgpp::datadriven::StencilType::None) {
+      if (geometryConfig.stencils.empty()) {
         // interaction with size 0
-        std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+        std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
         grid = std::unique_ptr<Grid>{gridFactory.createGrid(baseGridConfig, interactions)};
       } else {
         grid = std::unique_ptr<Grid>{
-            gridFactory.createGrid(baseGridConfig, gridFactory.getInteractions(stencilType, dim))};
+            gridFactory.createGrid(baseGridConfig, gridFactory.getInteractions(geometryConfig))};
       }
 
       // build matrix
