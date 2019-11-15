@@ -101,9 +101,11 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid);
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used for quadrature
+ * @param quadOrder quadrature order
  * @return Pointer to the new OperationSecondMoment for the Grid grid
  */
-base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid);
+base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid,
+                                                                         size_t quadOrder);
 /**
  * Factory method, returning an OperationConvert for the grid at hand.
  * Note: object has to be freed after use.

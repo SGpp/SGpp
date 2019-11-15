@@ -27,12 +27,9 @@ std::shared_ptr<sgpp::base::SBasis> OperationWeightedSecondMomentNak::initialize
   }
 }
 
-double OperationWeightedSecondMomentNak::doWeightedQuadrature(DataVector& alpha,
-                                                              sgpp::base::DistributionsVector pdfs,
-                                                              size_t quadOrder) {
+double OperationWeightedSecondMomentNak::doWeightedQuadrature(
+    DataVector& alpha, sgpp::base::DistributionsVector pdfs) {
   //  std::cout << "alpha: " << alpha.toString() << "\n";
-  base::GaussLegendreQuadRule1D gauss;
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   double weightedSP = 0.0;
   size_t dim = storage.getDimension();
   size_t numPoints = alpha.getSize();

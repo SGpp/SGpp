@@ -472,22 +472,24 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   }
 }
 
-base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid) {
+base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid,
+                                                                         size_t quadOrder) {
   if (grid.getType() == base::GridType::NakBspline) {
     return new base::OperationWeightedSecondMomentNak(
-        grid.getStorage(), grid.getType(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree());
+        grid.getStorage(), grid.getType(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree(),
+        quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationWeightedSecondMomentNak(
         grid.getStorage(), grid.getType(),
-        dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree());
+        dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineModified) {
     return new base::OperationWeightedSecondMomentNak(
         grid.getStorage(), grid.getType(),
-        dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree());
+        dynamic_cast<base::NakBsplineModifiedGrid*>(&grid)->getDegree(), quadOrder);
   } else if (grid.getType() == base::GridType::NakBsplineExtended) {
     return new base::OperationWeightedSecondMomentNak(
         grid.getStorage(), grid.getType(),
-        dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
+        dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), quadOrder);
   } else {
     throw base::factory_exception(
         "createOperationWeightedSecondMoment is not implemented for this grid type.");

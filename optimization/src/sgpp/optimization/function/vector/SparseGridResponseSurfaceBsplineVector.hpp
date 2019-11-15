@@ -254,11 +254,11 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
    * @param   meanSquares reference to return the meanSquares used to calculate the variances
    *
    * @return	vector containing the variances
-   * compute it
+
    */
-  // sgpp::base::DataVector getVariances(sgpp::base::DistributionsVector pdfs, size_t quadOrder,
-  //                                     sgpp::base::DataVector& means,
-  //                                     sgpp::base::DataVector& meanSquares);
+  sgpp::base::DataVector getVariances(sgpp::base::DistributionsVector pdfs, size_t quadOrder,
+                                      sgpp::base::DataVector& means,
+                                      sgpp::base::DataVector& meanSquares);
 
   /**
    * calculates the minimimum with gradient descent

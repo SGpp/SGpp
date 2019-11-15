@@ -107,8 +107,8 @@ sgpp::base::DataVector SparseGridResponseSurfaceBspline::getVariance(
     double dummy = getMean(pdfs, quadOrder);
   }
   sgpp::base::OperationWeightedSecondMoment* opWSM =
-      sgpp::op_factory::createOperationWeightedSecondMoment(*grid);
-  double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs, quadOrder);
+      sgpp::op_factory::createOperationWeightedSecondMoment(*grid, quadOrder);
+  double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs);
   std::cout << std::setprecision(16) << "Variance Calculation. Mean: " << mean
             << " meanSquare: " << meanSquare << "\n";
   double variance = meanSquare - mean * mean;

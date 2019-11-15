@@ -38,9 +38,12 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
    */
-  OperationWeightedSecondMomentNak(GridStorage& storage, GridType gridType, size_t degree)
+  OperationWeightedSecondMomentNak(GridStorage& storage, GridType gridType, size_t degree,
+                                   size_t quadOrder)
       : storage(storage), degree(degree) {
     basis = initializeBasis(gridType, degree);
+    base::GaussLegendreQuadRule1D gauss;
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, coordinates, weights);
   }
 
   ~OperationWeightedSecondMomentNak() override {}
@@ -60,8 +63,7 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
    * @param pdfs			probability density functions
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
-  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs,
-                              size_t quadOrder);
+  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs);
 
  private:
   // Pointer to the grid's GridStorage object

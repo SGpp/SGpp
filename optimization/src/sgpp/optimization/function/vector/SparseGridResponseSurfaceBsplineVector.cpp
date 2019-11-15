@@ -162,23 +162,27 @@ sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getMeans(
   return means;
 }
 
-// sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getVariances(
-//     sgpp::base::DistributionsVector pdfs, size_t quadOrder) {
-//   if (!computedMeanFlag) {
-//     double dummy = getMean(pdfs, quadOrder);
-//   }
-//   sgpp::base::OperationWeightedSecondMoment* opWSM =
-//       sgpp::op_factory::createOperationWeightedSecondMoment(*grid);
-//   double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs, quadOrder);
-//   std::cout << std::setprecision(16) << "Variance Calculation. Mean: " << mean
-//             << " meanSquare: " << meanSquare << "\n";
-//   double variance = meanSquare - mean * mean;
-//   sgpp::base::DataVector returnVec(3);
-//   returnVec[0] = variance;
-//   returnVec[1] = meanSquare;
-//   returnVec[2] = mean;
-//   return returnVec;
-// }
+sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::getVariances(
+    sgpp::base::DistributionsVector pdfs, size_t quadOrder, sgpp::base::DataVector& means,
+    sgpp::base::DataVector& meanSquares) {
+  if (!computedMeanFlag) {
+    sgpp::base::DataVector dummy = getMeans(pdfs, quadOrder);
+  }
+  means = this->means;
+  meanSquares.resizeZero(numRes);
+  variances = sgpp::base::DataVector(numRes);
+  sgpp::base::DataVector coefficients_t(grid->getSize());
+  sgpp::base::OperationWeightedSecondMoment* opWSM =
+      sgpp::op_factory::createOperationWeightedSecondMoment(*grid, quadOrder);
+  for (size_t t = 0; t < numRes; t++) {
+    coefficients.getColumn(t, coefficients_t);
+    meanSquares[t] = opWSM->doWeightedQuadrature(coefficients_t, pdfs);
+    // std::cout << std::setprecision(16) << "Variance Calculation. Mean: " << mean
+    //           << " meanSquare: " << meanSquare << "\n";
+    variances[t] = meanSquares[t] - means[t] * means[t];
+  }
+  return variances;
+}
 
 // sgpp::base::DataVector SparseGridResponseSurfaceBsplineVector::optimize() {
 //   /**
