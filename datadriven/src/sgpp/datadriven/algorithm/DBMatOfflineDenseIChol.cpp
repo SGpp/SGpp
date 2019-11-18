@@ -21,10 +21,11 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol() : DBMatOfflineChol() {}
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
+DBMatOffline* DBMatOfflineDenseIChol::clone() const { return new DBMatOfflineDenseIChol{*this}; }
 
-void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineDenseIChol::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       return;
@@ -55,9 +56,9 @@ void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regula
   }
 }
 
-void DBMatOfflineDenseIChol::choleskyModification(Grid& grid,
-    datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
-    std::list<size_t> deletedPoints, double lambda) {
+void DBMatOfflineDenseIChol::choleskyModification(
+    Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    size_t newPoints, std::list<size_t> deletedPoints, double lambda) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
 

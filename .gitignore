@@ -7,6 +7,9 @@
 !*/examples*/*/
 !*/examples*/*.*
 
+#ignoring ide files
+*.vscode/
+
 #ignoring c++ build files
 *.o
 *.os

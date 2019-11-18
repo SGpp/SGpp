@@ -79,7 +79,8 @@ class MinerFactory {
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
 
-  /* Factory method to build a visualizer instance base on a configuration file.
+  /**
+   * Factory method to build a visualizer instance base on a configuration file.
    * @param parser the datamining configuration parser instance to create the scorer from
    * @return the scorer instance
    */

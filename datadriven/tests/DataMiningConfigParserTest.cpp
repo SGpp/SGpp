@@ -6,6 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
@@ -17,6 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
 #include <string>
 #include <vector>
 
@@ -67,7 +69,6 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.validationPortion = 0.1;
   defaults.randomSeed = 1337;
 
-
   defaults.testFilePath = "something/testFalse";
   defaults.testFileType = DataSourceFileType::NONE;
   defaults.testNumBatches = 1;
@@ -94,8 +95,7 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(),
-                    "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.testNumBatches, 2);
@@ -246,21 +246,34 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   sgpp::datadriven::GeometryConfiguration defaults;
-  defaults.dim = std::vector<int64_t>();
-  defaults.stencilType = sgpp::datadriven::StencilType::None;
+  defaults.dim = std::vector<std::vector<int64_t>>();
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
-  std::vector<int64_t> dim = std::vector<int64_t>();
-  dim.push_back(1);
-  dim.push_back(1);
+  std::vector<std::vector<int64_t>> dim = {{1, 2}, {3, 4}};
 
   hasConfig = parser.getGeometryConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
-                    static_cast<int>(sgpp::datadriven::StencilType::DN));
-  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(),
-      dim.begin(), dim.end());
+
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers.size(), 2);
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[1], 1);
+  BOOST_CHECK_EQUAL(config.stencils[0].colorIndex, 0);
+
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(1).stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::Block));
+  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers.size(), 1);
+  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils[1].colorIndex, 1);
+  BOOST_CHECK_EQUAL(config.stencils[1].blockLenght, 2);
+
+  BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
+  for (size_t i = 0; i < config.dim.size(); i++) {
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(),
+                                  dim[i].begin(), dim[i].end());
+  }
 }
 
 BOOST_AUTO_TEST_CASE(testParallelConfig) {
@@ -290,7 +303,7 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationGeneralConfig defaults;
 
-  defaults.algorithm = "otherAlgorithm";
+  defaults.algorithm = std::vector<std::string>({"otherAlgorithm"});
   defaults.targetDirectory = "./targetDirectory";
   defaults.targetFileType = VisualizationFileType::json;
   defaults.numBatches = 5;
@@ -299,14 +312,17 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   VisualizationGeneralConfig config;
   bool hasConfig;
   bool hasGeneralVisualizationConfig;
+  std::vector<std::string> expectedAlgorithm = std::vector<std::string>({"tsne", "heatmaps"});
 
   hasGeneralVisualizationConfig = parser.hasVisualizationGeneralConfig();
+
   hasConfig = parser.getVisualizationGeneralConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
-  BOOST_CHECK_EQUAL(std::strcmp(config.algorithm.c_str(), "tsne"), 0);
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
+      expectedAlgorithm.begin(), expectedAlgorithm.end());
   BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
     static_cast<int>(VisualizationFileType::json));

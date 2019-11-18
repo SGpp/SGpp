@@ -40,10 +40,21 @@
 		},
 		"geometryConfig": {
 			"dim":[
-				1,
-				1
+				[1,2],
+				[3,4]
 			],
-			"stencil": "DN"
+			"stencils": [
+				{
+					"stencil": "DirectNeighbour"
+				},
+				{
+					"stencil": "Block",
+					"blockLenght": 2,
+					"colorIndex": 1,
+					"applyOnLayers": [0]
+				}
+			],
+			"colorIndex": 0
 		},
 		"adaptivityConfig": {
 			"numRefinements": 0,
@@ -80,7 +91,7 @@
 	},
     "visualization":{
         "generalConfig":{
-            "algorithm":"tsne",
+            "algorithm":["tsne", "heatmaps"],
             "targetDirectory":"./output"
             
         },
