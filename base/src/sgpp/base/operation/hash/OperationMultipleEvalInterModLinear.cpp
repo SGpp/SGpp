@@ -11,6 +11,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -40,7 +41,7 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
     for (size_t j = 0; j < dataset.getNrows(); j++) {
       dataset.getRow(j, line);
       // iterate over all interactions
-      for (std::vector<size_t> in : interactions) {
+      for (const std::set<size_t>& in : interactions) {
         bool pointComputed = true;
         bool lvlComplete = false;
         size_t relLvl = 0;
@@ -56,16 +57,17 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
             working.push(d, 1, 1);
           }
 
-          for (size_t i = 0; i < in.size(); i++) {
-            level_t lvl = static_cast<level_t> (2 + level[i]);
+          size_t index = 0;
+          for (size_t i : in) {
+            level_t lvl = static_cast<level_t> (2 + level[index]);
             index_t idx = static_cast<index_t>(std::min(1+2*
-              floor(line[in.at(i)] * static_cast<double>(1 << (lvl-1))),
+              floor(line[i] * static_cast<double>(1 << (lvl-1))),
               static_cast<double>(1 << lvl)-1.));
             // only hash for last element
-            if (i == in.size()-1)
-              working.set(in.at(i), lvl, idx);
+            if (index++ == in.size()-1)
+              working.set(i, lvl, idx);
             else
-              working.push(in.at(i), lvl, idx);
+              working.push(i, lvl, idx);
           }
 
           // hash first dimension if there was no element in the interaction
@@ -77,9 +79,9 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
             double value = alpha[seq];
             index_t work_index;
             level_t work_level;
-            for (size_t i = 0; i < in.size(); i++) {
-              working.get(in.at(i), work_level, work_index);
-              value *= basis.eval(work_level, work_index, line[in.at(i)]);
+            for (size_t i : in) {
+              working.get(i, work_level, work_index);
+              value *= basis.eval(work_level, work_index, line[i]);
             }
             privateResult[j] += value;
             pointComputed = true;
@@ -126,7 +128,6 @@ void OperationMultipleEvalInterModLinear::mult(DataVector& alpha, DataVector& re
 void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, DataVector& result) {
   result.setAll(0.0);
 
-
   #pragma omp parallel
   {
     DataVector line(dataset.getNcols());
@@ -142,7 +143,7 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
     for (size_t j = 0; j < dataset.getNrows(); j++) {
       dataset.getRow(j, line);
       // iterate over all interactions
-      for (std::vector<size_t> in : interactions) {
+      for (const std::set<size_t>& in : interactions) {
         bool pointComputed = true;
         bool lvlComplete = false;
         size_t relLvl = 0;
@@ -158,15 +159,16 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
             working.push(d, 1, 1);
           }
 
-          for (size_t i=0; i < in.size(); i++) {
-            level_t lvl = static_cast<level_t> (2 + level[i]);
+          size_t index = 0;
+          for (size_t i : in) {
+            level_t lvl = static_cast<level_t> (2 + level[index]);
             index_t idx = static_cast<index_t>(std::min(1+2*
-              floor(line[in.at(i)] * static_cast<double>(1 << (lvl-1))),
+              floor(line[i] * static_cast<double>(1 << (lvl-1))),
               static_cast<double>(1 << lvl)-1.));
             // only hash for last element
-            if (i == in.size()-1) working.set(in.at(i), lvl, idx);
+            if (index++ == in.size()-1) working.set(i, lvl, idx);
             else
-              working.push(in.at(i), lvl, idx);
+              working.push(i, lvl, idx);
           }
 
           // hash first dimension if there was no element in the interaction
@@ -178,9 +180,9 @@ void OperationMultipleEvalInterModLinear::multTranspose(DataVector& source, Data
             double value = source[j];
             index_t work_index;
             level_t work_level;
-            for (size_t i = 0; i < in.size(); i++) {
-              working.get(in.at(i), work_level, work_index);
-              value *= basis.eval(work_level, work_index, line[in.at(i)]);
+            for (size_t i : in) {
+              working.get(i, work_level, work_index);
+              value *= basis.eval(work_level, work_index, line[i]);
             }
             privateResult[seq] += value;
             pointComputed = true;

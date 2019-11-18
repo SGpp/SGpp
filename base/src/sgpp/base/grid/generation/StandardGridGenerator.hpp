@@ -11,6 +11,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -36,7 +37,7 @@ class StandardGridGenerator : public GridGenerator {
 
   void regular(size_t level) override;
   void regular(size_t level, double T) override;
-  void regularInter(size_t level, const std::vector<std::vector<size_t>>& terms, double T) override;
+  void regularInter(size_t level, const std::set<std::set<size_t>>& terms, double T) override;
   void cliques(size_t level, size_t clique_size) override;
   void cliques(size_t level, size_t clique_size, double T) override;
   void full(size_t level) override;
@@ -45,7 +46,7 @@ class StandardGridGenerator : public GridGenerator {
   void refineInter(RefinementFunctor& func,
                    const std::unordered_set<std::vector<bool>>& interactions);
   void refineInter(RefinementFunctor& func,
-                   const std::vector<std::vector<size_t>>& interactions) override;
+                   const std::set<std::set<size_t>>& interactions) override;
   size_t getNumberOfRefinablePoints() override;
 
   void coarsen(CoarseningFunctor& func, DataVector& alpha) override;

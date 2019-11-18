@@ -35,7 +35,7 @@ class DBMatOfflineLU : public DBMatOfflineGE {
 
   ~DBMatOfflineLU() override = default;
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object
@@ -56,8 +56,8 @@ class DBMatOfflineLU : public DBMatOfflineGE {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Apply permutation vector to the LU factors
