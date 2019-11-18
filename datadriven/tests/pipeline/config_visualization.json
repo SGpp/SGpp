@@ -1,0 +1,62 @@
+{
+    "dataSource": {
+        "filePath": "datadriven/datasets/visualization/3D_Classification_Visualization.csv",
+        "hasTargets" : true,
+        "validationPortion" : 0.2,
+        "epochs" : 2,
+        "shuffling" : "random",
+        "randomSeed" : 50,
+        "readinCutoff": -1,
+        "readinClasses": [1, 2],
+        "readinColumns": [0, 1, 2]
+    },
+    "scorer": {
+        "metric": "Accuracy"
+    },
+    "fitter": {
+        "type": "classification",
+        "gridConfig": {
+            "gridType": "linear",
+            "level": 4
+        },
+        "adaptivityConfig": {
+            "numRefinements": 10,
+            "threshold": 0.001,
+            "maxLevelType": false,
+            "noPoints": 10,
+            "refinementIndicator" : "DataBased",
+            "errorBasedRefinement" : true,
+            "errorMinInterval" : 1,
+            "errorBufferSize" : 2,
+            "errorConvergenceThreshold" : 0.001
+        },
+        "regularizationConfig": {
+            "lambda": 1e-2
+        },
+        "densityEstimationConfig" : {
+            "densityEstimationType" : "decomposition",
+            "matrixDecompositionType" : "chol"
+        },
+        "learner" : {
+            "usePrior" : true,
+            "learningRate" : 1.0
+        }
+    },
+    "visualization": {
+        "generalConfig": {
+            "algorithm":["tsne", "heatmaps"],
+            "targetFile":"./output",
+            "targetFileType":"csv",
+            "numBatches":1
+        },
+        "parameters": {
+            "perplexity":30,
+            "theta":0.5,
+            "seed":150,
+            "maxNumberIterations":500,
+            "numberCores":1
+        }
+    }
+}
+
+

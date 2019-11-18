@@ -77,7 +77,7 @@
     },
     "visualization":{
         "generalConfig":{
-            "algorithm":["tsne", "heatmaps"],
+            "algorithm": ["tsne", "heatmaps"],
             "targetDirectory":"./output"
         },
         "parameters":{
