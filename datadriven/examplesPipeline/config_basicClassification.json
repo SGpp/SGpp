@@ -14,14 +14,13 @@
     "fitter": {
         "type": "classification",
         "gridConfig": {
-            "gridType": "linear",
+            "gridType": "modlinear",
             "level": 5
         },
         "adaptivityConfig": {
-            "numRefinements": 10,
-            "threshold": 0.001,
+            "numRefinements": 100,
             "noPoints": 10,
-            "refinementIndicator": "dataBased",
+            "refinementIndicator": "classification",
             "penalizeLevels": true,
             "errorBasedRefinement": true,
             "errorMinInterval": 1,

@@ -284,12 +284,10 @@ bool ModelFittingClassification::refine() {
         MultipleClassRefinementFunctor* multifunc =
             dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
-        delete multifunc;
       } else if (refinementConfig.refinementFunctorType == RefinementFunctorType::Classification) {
           ClassificationRefinementFunctor* classfunc =
             dynamic_cast<ClassificationRefinementFunctor*>(func);
             classfunc->refineAllGrids();
-            delete classfunc;
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {

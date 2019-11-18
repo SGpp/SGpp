@@ -68,7 +68,7 @@ namespace datadriven {
         initialNeighbors.emplace_back(left, right);
     }
     // start recursion to collect all neighbors
-    stepDown(dim, 1, root, initialNeighbors);
+    stepDown(dim, 0, root, initialNeighbors);
 
     total_grid.recalcLeafProperty();
 
