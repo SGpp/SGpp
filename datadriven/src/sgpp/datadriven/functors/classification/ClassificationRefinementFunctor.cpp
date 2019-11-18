@@ -105,7 +105,7 @@ namespace datadriven {
     }
 
     // Score neighbor relations
-    std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>> classMaps(dim);
+    std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>> classMaps(numClasses);
     for (auto const& neighborRel : neighborRels) {
         size_t leafSeqNumber = std::get<0>(neighborRel);
         size_t neighborSeqNumber = std::get<1>(neighborRel);
