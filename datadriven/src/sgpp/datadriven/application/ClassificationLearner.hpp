@@ -45,7 +45,7 @@ class ClassificationLearner {
                         sgpp::solver::SLESolverConfiguration solverConfig,
                         sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig,
-                        std::vector<std::vector<size_t>> terms);
+                        std::set<std::set<size_t>> terms);
   /**
    * @brief ClassificationLearner
    * @param gridConfig
@@ -101,7 +101,7 @@ class ClassificationLearner {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   RegularizationConfiguration regularizationConfig;
-  std::vector<std::vector<size_t>> terms;
+  std::set<std::set<size_t>> terms;
 
   std::vector<learner_t> learners;
   std::set<class_t> uniqueClasses;

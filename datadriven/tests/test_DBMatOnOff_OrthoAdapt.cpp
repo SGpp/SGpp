@@ -25,6 +25,7 @@
 
 #include <list>
 #include <string>
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(OrthoAdapt_tests)
@@ -46,7 +47,8 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
+    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
+  };
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
   off_object.buildMatrix(grid.get(), regularizationConfig);
@@ -175,7 +177,8 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
+    gridFactory.createGrid(gridConfig, std::set<std::set <size_t>>())
+  };
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
@@ -195,7 +198,8 @@ BOOST_AUTO_TEST_CASE(online_object) {
   // creating offline object of one bigger lvl as source for points to refine
   gridConfig.level_++;
   std::unique_ptr<sgpp::base::Grid> grid_source = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector<size_t>>())};
+    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
+  };
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source;
   offline_source.buildMatrix(&(*grid_source), regularizationConfig);
 

@@ -25,6 +25,7 @@
 #include <cassert>
 #include <limits>
 #include <random>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -35,7 +36,7 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
                                      solver::SLESolverConfiguration solverConfig,
                                      solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig,
-                                     std::vector<std::vector<size_t>> terms)
+                                     std::set<std::set<size_t>> terms)
     : gridConfig(gridConfig),
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
@@ -54,8 +55,8 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
       adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
-      regularizationConfig(regularizationConfig) {
-  terms = std::vector<std::vector<size_t>>();
+      regularizationConfig(regularizationConfig),
+      terms() {
   initializeGrid(gridConfig);
 }
 

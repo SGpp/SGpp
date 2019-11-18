@@ -3,18 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
+#include <boost/test/unit_test_suite.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
-#include <iostream>
-#include <cstdio>
-#include <string>
 
-using sgpp::base::GeneralGridConfiguration;
+#include <cstdio>
+#include <iostream>
+#include <string>
+#include <vector>
+
 using sgpp::base::AdaptivityConfiguration;
-using sgpp::datadriven::RegularizationConfiguration;
-using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::base::GeneralGridConfiguration;
 using sgpp::datadriven::DBMatDatabase;
+using sgpp::datadriven::DensityEstimationConfiguration;
+using sgpp::datadriven::RegularizationConfiguration;
 
 BOOST_AUTO_TEST_SUITE(DBMatDatabaseTest)
 
@@ -28,23 +30,18 @@ std::string createEmptyDatabase() {
   return filepath;
 }
 
-void removeDatabase(std::string& path) {
-  remove(path.c_str());
-}
+void removeDatabase(std::string& path) { remove(path.c_str()); }
 
-void initializeStandardConfiguration(
-    GeneralGridConfiguration &gridConfig,
-    AdaptivityConfiguration& adaptivityConfig,
-    RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig
-    ) {
+void initializeStandardConfiguration(GeneralGridConfiguration& gridConfig,
+                                     AdaptivityConfiguration& adaptivityConfig,
+                                     RegularizationConfiguration& regularizationConfig,
+                                     DensityEstimationConfiguration& densityEstimationConfig) {
   gridConfig.dim_ = 5;
   gridConfig.level_ = 3;
   regularizationConfig.lambda_ = 1e-2;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
 }
-
 
 BOOST_AUTO_TEST_CASE(TestInitialization) {
   // Create a empty database
@@ -62,13 +59,13 @@ BOOST_AUTO_TEST_CASE(TestPutgMatrix) {
   RegularizationConfiguration regularizationConfig;
   DensityEstimationConfiguration densityEstimationConfig;
   initializeStandardConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig);
+                                  densityEstimationConfig);
   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig, "testfilepath");
+                         densityEstimationConfig, "testfilepath");
 
   // Assert that the database holds a matrix
   BOOST_CHECK(database.hasDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig));
+                                     densityEstimationConfig));
   removeDatabase(filepath);
 }
 
@@ -84,16 +81,16 @@ BOOST_AUTO_TEST_CASE(TestGetMatrix) {
   std::string path = "testfilepathGetMatrix";
 
   initializeStandardConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig);
+                                  densityEstimationConfig);
   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig, path);
+                         densityEstimationConfig, path);
 
   // Assert that the database holds a matrix
   BOOST_CHECK(database.hasDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig));
+                                     densityEstimationConfig));
 
-  std::string& pathFromDatabase = database.getDataMatrix(gridConfig, adaptivityConfig,
-      regularizationConfig, densityEstimationConfig);
+  std::string& pathFromDatabase = database.getDataMatrix(
+      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
 
   // Assert the retrieved string equals the string passed
   BOOST_CHECK(path.compare(pathFromDatabase) == 0);
@@ -101,7 +98,7 @@ BOOST_AUTO_TEST_CASE(TestGetMatrix) {
   // Modify the configuration and assert the database does not hold the string
   regularizationConfig.lambda_ *= 2.0;
   BOOST_CHECK(!database.hasDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig));
+                                      densityEstimationConfig));
   removeDatabase(filepath);
 }
 
@@ -117,16 +114,16 @@ BOOST_AUTO_TEST_CASE(TestOverwriteMatrix) {
   std::string path = "testfilepathGetMatrix";
 
   initializeStandardConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig);
+                                  densityEstimationConfig);
   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig, path);
+                         densityEstimationConfig, path);
 
   // Assert that the database holds a matrix
   BOOST_CHECK(database.hasDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-      densityEstimationConfig));
+                                     densityEstimationConfig));
 
-  std::string& pathFromDatabase = database.getDataMatrix(gridConfig, adaptivityConfig,
-      regularizationConfig, densityEstimationConfig);
+  std::string& pathFromDatabase = database.getDataMatrix(
+      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig);
 
   // Assert the retrieved string equals the string passed
   BOOST_CHECK(path.compare(pathFromDatabase) == 0);
@@ -134,13 +131,115 @@ BOOST_AUTO_TEST_CASE(TestOverwriteMatrix) {
   // Change the path associated with the configuration
   std::string newpath = "newpathGetMatrix";
   database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
-       densityEstimationConfig, newpath, true);
+                         densityEstimationConfig, newpath, true);
 
-  pathFromDatabase = database.getDataMatrix(gridConfig, adaptivityConfig,
-        regularizationConfig, densityEstimationConfig);
+  pathFromDatabase = database.getDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+                                            densityEstimationConfig);
 
   // Assert the path was overwritten
   BOOST_CHECK(newpath.compare(pathFromDatabase) == 0);
+  removeDatabase(filepath);
+}
+
+BOOST_AUTO_TEST_CASE(TestBaseMatrix) {
+  std::string filepath = createEmptyDatabase();
+  DBMatDatabase database(filepath);
+
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.numRefinements_ = 0;
+
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 0;
+
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+
+  sgpp::base::GeneralGridConfiguration baseGridConfig1;
+  baseGridConfig1.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  baseGridConfig1.type_ = sgpp::base::GridType::Linear;
+  baseGridConfig1.levelVector_ = std::vector<size_t>{2, 3, 3};
+  baseGridConfig1.dim_ = 3;
+
+  std::string testPath1 = "testFilePathBaseMatrix1";
+
+  database.putDataMatrix(baseGridConfig1, adaptivityConfig, regularizationConfig,
+                         densityEstimationConfig, testPath1);
+
+  sgpp::base::GeneralGridConfiguration baseGridConfig2;
+  baseGridConfig2.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  baseGridConfig2.type_ = sgpp::base::GridType::Linear;
+  baseGridConfig2.levelVector_ = std::vector<size_t>{2, 2, 3};
+  baseGridConfig2.dim_ = 3;
+
+  std::string testPath2 = "testFilePathBaseMatrix2";
+
+  database.putDataMatrix(baseGridConfig2, adaptivityConfig, regularizationConfig,
+                         densityEstimationConfig, testPath2);
+
+  // Test case: Permutation
+  sgpp::base::GeneralGridConfiguration testGridConfig1;
+  testGridConfig1.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  testGridConfig1.type_ = sgpp::base::GridType::Linear;
+  testGridConfig1.levelVector_ = std::vector<size_t>{3, 2, 3};
+  testGridConfig1.dim_ = 3;
+
+  BOOST_CHECK(database.hasBaseDataMatrix(testGridConfig1, adaptivityConfig, regularizationConfig,
+                                         densityEstimationConfig));
+
+  sgpp::base::GeneralGridConfiguration obtainedBaseGridConfig;
+
+  std::string obtainedPath =
+      database.getBaseDataMatrix(testGridConfig1, adaptivityConfig, regularizationConfig,
+                                 densityEstimationConfig, obtainedBaseGridConfig);
+
+  BOOST_CHECK(obtainedPath.compare(testPath1) == 0);
+  BOOST_CHECK(baseGridConfig1.levelVector_ == obtainedBaseGridConfig.levelVector_ &&
+              baseGridConfig1.dim_ == obtainedBaseGridConfig.dim_);
+
+  // Test case: Blow-up
+  sgpp::base::GeneralGridConfiguration testGridConfig2;
+  testGridConfig2.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  testGridConfig2.type_ = sgpp::base::GridType::Linear;
+  testGridConfig2.levelVector_ = std::vector<size_t>{2, 2, 3, 1, 1, 1, 1, 1};
+  testGridConfig2.dim_ = 8;
+
+  BOOST_CHECK(database.hasBaseDataMatrix(testGridConfig2, adaptivityConfig, regularizationConfig,
+                                         densityEstimationConfig));
+
+  obtainedPath = database.getBaseDataMatrix(testGridConfig2, adaptivityConfig, regularizationConfig,
+                                            densityEstimationConfig, obtainedBaseGridConfig);
+
+  BOOST_CHECK(obtainedPath.compare(testPath2) == 0);
+  BOOST_CHECK(baseGridConfig2.levelVector_ == obtainedBaseGridConfig.levelVector_ &&
+              baseGridConfig2.dim_ == obtainedBaseGridConfig.dim_);
+
+  // Test case: Permutation and blow-up
+  sgpp::base::GeneralGridConfiguration testGridConfig3;
+  testGridConfig3.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  testGridConfig3.type_ = sgpp::base::GridType::Linear;
+  testGridConfig3.levelVector_ = std::vector<size_t>{3, 3, 2, 1, 1, 1, 1, 1};
+  testGridConfig3.dim_ = 8;
+
+  BOOST_CHECK(database.hasBaseDataMatrix(testGridConfig3, adaptivityConfig, regularizationConfig,
+                                         densityEstimationConfig));
+
+  obtainedPath = database.getBaseDataMatrix(testGridConfig3, adaptivityConfig, regularizationConfig,
+                                            densityEstimationConfig, obtainedBaseGridConfig);
+
+  BOOST_CHECK(obtainedPath.compare(testPath1) == 0);
+  BOOST_CHECK(baseGridConfig1.levelVector_ == obtainedBaseGridConfig.levelVector_ &&
+              baseGridConfig1.dim_ == obtainedBaseGridConfig.dim_);
+
+  // Test case: No base
+  sgpp::base::GeneralGridConfiguration testGridConfig4;
+  testGridConfig3.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+  testGridConfig3.type_ = sgpp::base::GridType::Linear;
+  testGridConfig3.levelVector_ = std::vector<size_t>{3, 3, 3, 1, 1, 1, 1, 1};
+  testGridConfig3.dim_ = 8;
+
+  BOOST_CHECK(!database.hasBaseDataMatrix(testGridConfig3, adaptivityConfig, regularizationConfig,
+                                          densityEstimationConfig));
   removeDatabase(filepath);
 }
 

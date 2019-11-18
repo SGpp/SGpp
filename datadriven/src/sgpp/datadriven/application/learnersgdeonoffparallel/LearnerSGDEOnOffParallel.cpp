@@ -31,6 +31,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
+#include <set>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 using sgpp::base::Grid;
@@ -91,7 +92,7 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
   for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
     // Create a grid
     std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
     std::unique_ptr<DBMatOffline> offlineCloned =
         std::unique_ptr<DBMatOffline>{offline->clone()};

@@ -20,6 +20,11 @@ enum class DensityEstimationType { CG, Decomposition };
 enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
+  /**
+   * Defines whether offline permutation should be used if decomposition allows it.
+   */
+  bool useOfflinePermutation = true;
+
   DensityEstimationType type_;             // Type of density estimation
   MatrixDecompositionType decomposition_;  // Type of matrix decomposition
 
