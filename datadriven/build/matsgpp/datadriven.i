@@ -48,6 +48,7 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp"
 %rename (getConstOfflineObject) sgpp::datadriven::DBMatOnline::getOfflineObject() const;
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
@@ -55,8 +56,11 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
 
+%feature("flatnested");
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatObjectStore.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"

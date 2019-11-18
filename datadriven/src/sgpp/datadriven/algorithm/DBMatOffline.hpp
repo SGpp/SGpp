@@ -77,7 +77,7 @@ class DBMatOffline {
    * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
    * the caller.
    */
-  virtual DBMatOffline* clone() = 0;
+  virtual DBMatOffline* clone() const = 0;
 
   /**
    * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined
@@ -140,7 +140,7 @@ class DBMatOffline {
    * @param grid The grid object the matrix is based on
    * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  virtual void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  virtual void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
@@ -148,8 +148,8 @@ class DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                               DensityEstimationConfiguration& densityEstimationConfig) = 0;
+  virtual void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                               const DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
    * The parallel/distributed version of decomposeMatrix(...)

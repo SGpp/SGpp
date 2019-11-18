@@ -15,7 +15,7 @@
 namespace sgpp {
 namespace datadriven {
 
-DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
+DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOfflinePermutable() {
   this->q_ortho_matrix_ = sgpp::base::DataMatrix(1, 1, 1.0);
   this->t_tridiag_inv_matrix_ = sgpp::base::DataMatrix(1, 1);
   // Deprecated
@@ -23,7 +23,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt() : DBMatOffline() {
 }
 
 DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
-    : DBMatOffline(fileName) {
+    : DBMatOfflinePermutable(fileName) {
   // Read grid size from header (number of rows in lhsMatrix)
   std::ifstream filestream(fileName, std::istream::in);
   // Read configuration
@@ -76,12 +76,12 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
 #endif /* USE_GSL */
 }
 
-DBMatOffline* DBMatOfflineOrthoAdapt::clone() { return new DBMatOfflineOrthoAdapt{*this}; }
+DBMatOffline* DBMatOfflineOrthoAdapt::clone() const { return new DBMatOfflineOrthoAdapt{*this}; }
 
 bool DBMatOfflineOrthoAdapt::isRefineable() { return true; }
 
 void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
-                                         RegularizationConfiguration& regularizationConfig) {
+                                         const RegularizationConfiguration& regularizationConfig) {
   DBMatOffline::buildMatrix(grid, regularizationConfig);
   size_t dim_a = grid->getStorage().getSize();
 
@@ -90,9 +90,26 @@ void DBMatOfflineOrthoAdapt::buildMatrix(Grid* grid,
   // isConstructed = true, set by parent call
 }
 
+void DBMatOfflineOrthoAdapt::permuteDecomposition(
+    const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+    const sgpp::base::GeneralGridConfiguration& desiredGridConfig) {
+  // If sequence of level vector elements unequal to 1 is equal, no permutation has to be applied
+  if (PermutationUtil::deleteOnesFromLevelVec(baseGridConfig.levelVector_) !=
+      PermutationUtil::deleteOnesFromLevelVec(desiredGridConfig.levelVector_)) {
+    // new Q
+    sgpp::base::DataMatrix newQ(this->q_ortho_matrix_.getNrows(), this->q_ortho_matrix_.getNcols());
+    // Permutate rows
+    permuteMatrix(baseGridConfig, desiredGridConfig, this->q_ortho_matrix_, newQ, true);
+    // Reassign Q
+    this->q_ortho_matrix_ = newQ;
+  }
+  // Multiply dimension blow-up factor to T^-1
+  dimensionBlowUp(baseGridConfig, desiredGridConfig, this->t_tridiag_inv_matrix_, true);
+}
+
 void DBMatOfflineOrthoAdapt::decomposeMatrix(
-    RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (!isConstructed) {
     throw sgpp::base::algorithm_exception(
