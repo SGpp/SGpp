@@ -109,6 +109,7 @@
 
 %include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"

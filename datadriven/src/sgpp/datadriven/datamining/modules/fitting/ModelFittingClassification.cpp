@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
@@ -229,6 +230,11 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
                                                 refinementConfig.noPoints_, 0,
                                                 refinementConfig.threshold_);
     }
+    case RefinementFunctorType::Classification: {
+      return new ClassificationRefinementFunctor(grids, surpluses, priors,
+                                                refinementConfig.noPoints_, true,
+                                                refinementConfig.threshold_);
+    }
   }
 
   return nullptr;
@@ -278,6 +284,12 @@ bool ModelFittingClassification::refine() {
         MultipleClassRefinementFunctor* multifunc =
             dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
+        delete multifunc;
+      } else if (refinementConfig.refinementFunctorType == RefinementFunctorType::Classification) {
+          ClassificationRefinementFunctor* classfunc =
+            dynamic_cast<ClassificationRefinementFunctor*>(func);
+            classfunc->refineAllGrids();
+            delete classfunc;
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
