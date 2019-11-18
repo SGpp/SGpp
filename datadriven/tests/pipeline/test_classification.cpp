@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(testOnOffParallelChol) {
     "datadriven/tests/pipeline/config_gmmOnOffCholParallel.json";
   double accuracyParallel = testModel(configFileParallel);
 
-  std::string configFile = "datadriven/tests/config_gmmOnOffChol.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffChol.json";
   double accuracy = testModel(configFile);
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(accuracyParallel > 0.7);
