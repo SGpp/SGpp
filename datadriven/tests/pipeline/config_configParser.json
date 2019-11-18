@@ -39,8 +39,19 @@
             "fileName": ""
         },
         "geometryConfig": {
-            "dim":[ 1, 1 ],
-            "stencil": "DN"
+            "dim": [[1,2],[3,4]],
+            "stencils": [
+                {
+                    "stencil": "DirectNeighbour"
+                },
+                {
+                    "stencil": "block",
+                    "blockLength": 2,
+                    "colorIndex": 1,
+                    "applyOnLayers": [0]
+                }
+            ],
+            "colorIndex": 0
         },
         "adaptivityConfig": {
             "numRefinements": 0,
