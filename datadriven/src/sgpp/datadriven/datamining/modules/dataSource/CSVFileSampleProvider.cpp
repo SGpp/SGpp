@@ -99,7 +99,7 @@ Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
   base::DataMatrix& destSamples = tmpDataset->getData();
   base::DataVector& destTargets = tmpDataset->getTargets();
 
-  base::DataVector tmpRow{srcSamples.getNcols()};
+  base::DataVector tmpRow(srcSamples.getNcols());
 
   // copy "size" rows beginning from "counter" to the new dataset.
   for (size_t i = counter; i < counter + size; ++i) {

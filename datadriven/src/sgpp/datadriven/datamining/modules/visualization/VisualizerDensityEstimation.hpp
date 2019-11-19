@@ -42,7 +42,7 @@ class VisualizerDensityEstimation:public Visualizer {
     size_t fold, size_t batch) override;
 
  protected:
-  /*
+  /**
    * Method which starts the heatmap generation for Density Estimation Models
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
@@ -50,7 +50,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getHeatmap(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which starts the linear cut generation for Density Estimation Models
    * @param model The model used to evaluate the linear cuts
    * @param currentDirectory The current directory to store the linear cuts results
@@ -58,7 +58,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getLinearCuts(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which stores the coordinates of the grid points
    * of a Density Estimation model
    * @param model The model from where the grid is obtained
@@ -66,15 +66,16 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void storeGrid(ModelFittingBase &model, std::string currentDirectory);
 
-  /*
+  /**
    * Method which generates the linear cuts graphs for models of 3 or more dimensions
    * @param model the model used to evaluate the linear cuts
    * @param currentDirectory The current directory to store the linear cuts results
+   * @param matrix The matrix containing the points to evaluate the cuts
    */
   void getLinearCutsMore3D(ModelFittingBase &model, std::string currentDirectory,
     DataMatrix &matrix);
 
-  /*
+  /**
    * Method which generates the linear cuts graphs for models of 1 dimension
    * @param model the model used to evaluate the linear cuts
    * @param currentDirectory The current directory to store the linear cuts results
@@ -82,7 +83,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getLinearCuts1D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which generates the linear cuts graphs for models of 2 dimensions
    * @param model the model used to evaluate the linear cuts
    * @param currentDirectory The current directory to store the linear cuts results
@@ -90,7 +91,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getLinearCuts2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which generates the heatmap of models of 4 or more dimensions
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
@@ -98,7 +99,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getHeatmapMore4D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which generates the heatmap of models of 3 dimensions
    * @param model The model used to evaluate the heatmap
    * @param currentDirectory The current directory to store the heatmap results
@@ -106,23 +107,23 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void getHeatmap3D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which generates the heatmap of models of 2 dimensions
-   * @model The model used to evaluate the heatmap
-   * @currentDirectory The current directory to store the heatmap results
+   * @param model The model used to evaluate the heatmap
+   * @param currentDirectory The current directory to store the heatmap results
    * @param matrix The matrix containing the points to evaluate the heatmap
    */
   void getHeatmap2D(ModelFittingBase &model, std::string currentDirectory, DataMatrix &matrix);
 
-  /*
+  /**
    * Method which shifts one position the columns of a matrix from left to right
    * in a circular fashion until the column given by the parameters maxColumns
    * @param matrix The matrix to be shifted
-   * @param maxColumn The max number of columns used when shifting
+   * @param maxColumns The max number of columns used when shifting
    */
   void translateColumns(DataMatrix &matrix, size_t maxColumns);
 
-  /*
+  /**
    * Method which shifts the columns given by the vector indexes
    * of a matrix from left to right
    * in a circular fashion. If indexes are <1,3,6> Then column 1 will be shifted to
@@ -132,7 +133,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void translateColumnsRight(DataMatrix &matrix, std::vector<size_t> indexes);
 
-  /*
+  /**
    * Method which shifts the columns given by the vector indexes
    * of a matrix from right to left
    * in a circular fashion. If indexes are <1,3,6> Then column 1 will be shifted to
@@ -142,7 +143,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void translateColumnsLeft(DataMatrix &matrix, std::vector<size_t> indexes);
 
-  /*
+  /**
    * Method to update the columns indexes to be shifted when generating
    * the linear cuts
    * @param columnIndexes Vector to update
@@ -150,7 +151,7 @@ class VisualizerDensityEstimation:public Visualizer {
    */
   void updateIndexesCuts(std::vector<size_t> &columnIndexes, DataMatrix &matrix);
 
-  /*
+  /**
    * Method to update the columns indexes to be shifted when generating
    * the heatmap
    * @param columnIndexes Vector to update
