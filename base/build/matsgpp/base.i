@@ -236,25 +236,25 @@ const bool GMMPP_ENABLED;
 const bool UMFPACK_ENABLED;
 
 %{
-#ifdef USEARMADILLO
+#ifdef USE_ARMADILLO
     const bool ARMADILLO_ENABLED = true;
 #else
     const bool ARMADILLO_ENABLED = false;
 #endif
 
-#ifdef USEEIGEN
+#ifdef USE_EIGEN
     const bool EIGEN_ENABLED = true;
 #else
     const bool EIGEN_ENABLED = false;
 #endif
 
-#ifdef USEGMMPP
+#ifdef USE_GMMPP
     const bool GMMPP_ENABLED = true;
 #else
     const bool GMMPP_ENABLED = false;
 #endif
 
-#ifdef USEUMFPACK
+#ifdef USE_UMFPACK
     const bool UMFPACK_ENABLED = true;
 #else
     const bool UMFPACK_ENABLED = false;

@@ -51,7 +51,7 @@ bool GaussianElimination::solve(SLE& system, DataVector& b, DataVector& x) const
 
     // search for pivot entry = maximum of the absolute values
     // of the entries w_{l,l}, ..., w_{n,l}
-    double maxEntry = 0;
+    double maxEntry = 0.0;
     // row index of maximal absolute value
     size_t i = l;
 
@@ -65,7 +65,7 @@ bool GaussianElimination::solve(SLE& system, DataVector& b, DataVector& x) const
     }
 
     // all entries are zero ==> matrices W and A are rank deficient
-    if (maxEntry == 0) {
+    if (maxEntry == 0.0) {
       Printer::getInstance().printStatusEnd("error: Could not solve linear system!");
       return false;
     }
