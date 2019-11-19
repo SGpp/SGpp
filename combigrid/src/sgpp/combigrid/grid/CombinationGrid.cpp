@@ -16,21 +16,6 @@
 namespace sgpp {
 namespace combigrid {
 
-namespace {
-class HashLevelVector {
- public:
-  size_t operator()(const LevelVector& level) const {
-    size_t seed = level.size();
-
-    for (const level_t& l : level) {
-      seed ^= (l + 0x9e3779b9 + (seed << 6) + (seed >> 2));
-    }
-
-    return seed;
-  }
-};
-}  // namespace
-
 CombinationGrid::CombinationGrid() : fullGrids(), coefficients() {
 }
 
@@ -74,7 +59,6 @@ CombinationGrid CombinationGrid::fromSubspaces(
     const std::vector<LevelVector>& subspaceLevels, const HeterogeneousBasis& basis,
     bool hasBoundary) {
   const size_t dim = basis.getDimension();
-  std::unordered_map<LevelVector, double, HashLevelVector> coefficientMap;
   LevelVector offsetMinIndex(dim, 0);
   LevelVector offsetMaxIndex(dim, 1);
   LevelVector level(dim);
