@@ -420,16 +420,16 @@ if __name__ == '__main__':
     parser = ArgumentParser(description='Get a program and run it with input')
     # MODEL
     parser.add_argument('--model', default='okushiri', type=str, help='define which test case should be executed')  # nopep8
-    parser.add_argument('--dim', default=3, type=int, help='the problems input dimensionality')  # nopep8
+    parser.add_argument('--dim', default=4, type=int, help='the problems input dimensionality')  # nopep8
     parser.add_argument('--out', default=451, type=int, help='the problems output dimensionality')  # nopep8
     parser.add_argument('--scalarModelParameter', default=128, type=int, help='purpose depends on actual model.')  # nopep8
     # BASIS
     parser.add_argument('--gridType', default='nakbsplineboundary', type=str, help='gridType(s) to use')  # nopep8
-    parser.add_argument('--degree', default=135, type=int, help='spline degree')  # nopep8
+    parser.add_argument('--degree', default=3, type=int, help='spline degree')  # nopep8
     # REFINETYPE
     parser.add_argument('--refineType', default='regular', type=str, help='surplus or regular or mc for Monte Carlo')  # nopep8
     # REGULAR
-    parser.add_argument('--maxLevel', default=5, type=int, help='maximum level for regular refinement')  # nopep8
+    parser.add_argument('--maxLevel', default=1, type=int, help='maximum level for regular refinement')  # nopep8
     # ADAPTIVE
     parser.add_argument('--minPoints', default=1, type=int, help='minimum number of points used')  # nopep8
     parser.add_argument('--maxPoints', default=400, type=int, help='maximum number of points used')  # nopep8

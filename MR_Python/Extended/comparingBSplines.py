@@ -265,35 +265,36 @@ def interpolateAndError(degree,
 if __name__ == '__main__':
     # parse the input arguments
     parser = ArgumentParser(description='Get a program and run it with input')
-    parser.add_argument('--model', default='maxOkushiri', type=str,
+    # FOR BOREHOLE UQ SET THE CORRECT DISTRIBUTION BOUNDS!
+    parser.add_argument('--model', default='boreholeUQ', type=str,
                         help='define which test case should be executed')
-    parser.add_argument('--dim', default=4, type=int,
+    parser.add_argument('--dim', default=8, type=int,
                         help='the problems dimensionality')
     parser.add_argument('--scalarModelParameter', default=128, type=int,
                         help='purpose depends on actual model. For monomial its the degree')
-    parser.add_argument('--gridType', default='nakbsplineboundary',
+    parser.add_argument('--gridType', default='nakbsplineextended',
                         type=str, help='gridType(s) to use')
-    parser.add_argument('--degree', default=135,
+    parser.add_argument('--degree', default=3,
                         type=int, help='spline degree')
-    parser.add_argument('--refineType', default='regular',
+    parser.add_argument('--refineType', default='surplus',
                         type=str, help='surplus or regular or mc for Monte Carlo')
     parser.add_argument('--maxLevel', default=6, type=int,
                         help='maximum level for regular refinement')
     parser.add_argument('--minPoints', default=1, type=int,
                         help='minimum number of points used')
-    parser.add_argument('--maxPoints', default=700, type=int,
+    parser.add_argument('--maxPoints', default=1000, type=int,
                         help='maximum number of points used')
-    parser.add_argument('--numSteps', default=7, type=int,
+    parser.add_argument('--numSteps', default=5, type=int,
                         help='number of steps in the [minPoints maxPoints] range')
     parser.add_argument('--initialLevel', default=1, type=int,
                         help='initial regular level for adaptive sparse grids')
     parser.add_argument('--numRefine', default=25, type=int,
                         help='max number of grid points added in refinement steps for sparse grids')
-    parser.add_argument('--error', default=0, type=int,
+    parser.add_argument('--error', default=1, type=int,
                         help='calculate l2 error')
     parser.add_argument('--numErrPoints', default=100000,
                         type=int, help='number of MC samples for l2 and nrmse')
-    parser.add_argument('--errorFromData', default=1, type=int,
+    parser.add_argument('--errorFromData', default=0, type=int,
                         help='calculate l2 error from precalculated data')
     parser.add_argument('--dataPath', default='/home/rehmemk/git/SGpp/MR_Python/Extended/data', type=str,
                         help='path were results are stored and precalculated data is stored')
