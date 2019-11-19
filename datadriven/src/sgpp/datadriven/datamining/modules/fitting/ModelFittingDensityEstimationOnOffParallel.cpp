@@ -119,14 +119,11 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
 
     // add supported parallel version of offline decompositions here
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::OrthoAdapt ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::Chol ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-      // Note: do NOT compute the explicit inverse here for SMW_ decompositions, as regularization
-      // needs to be done first
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig, processGrid,
                                        parallelConfig);
+      // Note: do NOT compute the explicit inverse here for SMW_ decompositions, as regularization
+      // needs to be done first
     } else {
       offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     }
