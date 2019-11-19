@@ -504,13 +504,8 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
 
   // B - (A^-1 + B) X (I + E^t (A^-1 + B) X)^-1 E^t (A^-1 + B)
   DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AXINVEtA, false, 1.0, 1.0);
-  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
+  this->b_adapt_matrix_distributed_.toLocalDataMatrixBroadcast(this->b_adapt_matrix_);
 
-  free(AX);
-  free(EtA);
-  free(INVp);
-  free(AXINV);
-  free(AXINVEtA);
   /************************************************************
    *
    * Phase 2: B = B~ - (A^-1 + B~) E (I + X^t (A^-1 + B~) E)^-1 X^t (A^-1 + B~)
@@ -601,6 +596,11 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
   // effectively stores final values of Phase 2 in b_adapt_matrix_
   DataMatrixDistributed::sub(b_adapt_matrix_distributed_, *AEINVXtA, false, 1.0, 1.0);
 
+  free(AX);
+  free(EtA);
+  free(INVp);
+  free(AXINV);
+  free(AXINVEtA);
   free(AE);
   free(XtA);
   free(INV2p);
@@ -613,7 +613,7 @@ void DBMatOnlineDE_SMW::smw_adapt_parallel(DataMatrixDistributed& X, size_t newP
    *
    *****/
 
-  this->b_adapt_matrix_distributed_.toLocalDataMatrix(this->b_adapt_matrix_);
+  this->b_adapt_matrix_distributed_.toLocalDataMatrixBroadcast(this->b_adapt_matrix_);
 
   // If points were coarsened the b_adapt_matrix will now have empty rows and columns
   // on the indices of the coarsened points. In the following algorithm, the symmetry
