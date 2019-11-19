@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
 
   DataMatrix points({0.625, 0.375, 0.625, 0.375}, 2);
   DataVector result;
-  op.eval(surpluses, points, result);
+  op.multiEval(surpluses, points, result);
   BOOST_CHECK_EQUAL(result[0], -3.9375);
   BOOST_CHECK_EQUAL(result[1], -3.9375);
 }

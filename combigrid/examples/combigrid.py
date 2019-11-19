@@ -34,7 +34,7 @@ def plotFunction(opEval, surpluses, X):
 
   # evaluate interpolant at meshgrid
   YY = pysgpp.DataVector(0)
-  opEval.eval(surpluses, XX, YY)
+  opEval.multiEval(surpluses, XX, YY)
 
   # convert resulting sgpp::base::DataVector to NumPy array
   YY = np.reshape(np.array([YY[k] for k in range(YY.getSize())]), XX0.shape)

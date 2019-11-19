@@ -31,7 +31,7 @@ double OperationEvalCombinationGrid::eval(const std::vector<base::DataVector>& s
   return grid.combineValues(values);
 }
 
-void OperationEvalCombinationGrid::eval(const std::vector<base::DataVector>& surpluses,
+void OperationEvalCombinationGrid::multiEval(const std::vector<base::DataVector>& surpluses,
     const base::DataMatrix& points, base::DataVector& result) {
   const std::vector<FullGrid>& fullGrids = grid.getFullGrids();
   base::DataMatrix values(points.getNrows(), fullGrids.size());
@@ -40,7 +40,7 @@ void OperationEvalCombinationGrid::eval(const std::vector<base::DataVector>& sur
 
   for (size_t i = 0; i < fullGrids.size(); i++) {
     operationEvalFullGrid.setGrid(fullGrids[i]);
-    operationEvalFullGrid.eval(surpluses[i], points, curValues);
+    operationEvalFullGrid.multiEval(surpluses[i], points, curValues);
     values.setColumn(i, curValues);
   }
 

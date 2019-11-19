@@ -53,8 +53,8 @@ class OperationEvalFullGrid : public base::OperationEval {
    *                        (every row corresponds to one point)
    * @param[out] result     values of the full grid function at the given points
    */
-  void eval(const base::DataVector& surpluses, const base::DataMatrix& points,
-      base::DataVector& result) override;
+  virtual void multiEval(const base::DataVector& surpluses, const base::DataMatrix& points,
+      base::DataVector& result);
 
   /**
    * @return full grid

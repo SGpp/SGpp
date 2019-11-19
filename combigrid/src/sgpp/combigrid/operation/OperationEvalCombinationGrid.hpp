@@ -51,7 +51,7 @@ class OperationEvalCombinationGrid {
    *                        (every row corresponds to one point)
    * @param[out] result     values of the combination grid function at the given points
    */
-  void eval(const std::vector<base::DataVector>& surpluses,
+  void multiEval(const std::vector<base::DataVector>& surpluses,
       const base::DataMatrix& points, base::DataVector& result);
 
   /**

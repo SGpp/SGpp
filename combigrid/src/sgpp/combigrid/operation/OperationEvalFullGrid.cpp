@@ -35,8 +35,8 @@ double OperationEvalFullGrid::eval(const base::DataVector& surpluses,
   return result;
 }
 
-void OperationEvalFullGrid::eval(const base::DataVector& surpluses, const base::DataMatrix& points,
-    base::DataVector& result) {
+void OperationEvalFullGrid::multiEval(const base::DataVector& surpluses,
+    const base::DataMatrix& points, base::DataVector& result) {
   const LevelVector& level = grid.getLevel();
   const HeterogeneousBasis& basis = grid.getBasis();
   const size_t n = points.getNrows();
