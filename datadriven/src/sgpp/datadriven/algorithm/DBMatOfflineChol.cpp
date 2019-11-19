@@ -34,12 +34,13 @@ DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
 DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
 
-DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
+DBMatOffline* DBMatOfflineChol::clone() const { return new DBMatOfflineChol{*this}; }
 
 bool DBMatOfflineChol::isRefineable() { return true; }
 
-void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                                       DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineChol::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {

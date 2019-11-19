@@ -144,6 +144,8 @@ void FitterConfiguration::setupDefaults() {
   // to have all of the default value config in this file.
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::Chol;
+  // Offline permutation is used per default
+  densityEstimationConfig.useOfflinePermutation = true;
 
   densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default;
   densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default;
@@ -177,8 +179,9 @@ void FitterConfiguration::setupDefaults() {
   learnerConfig.usePrior = false;  // mirrors struct default
 
   // configure geometry configuration
-  geometryConfig.stencilType = sgpp::datadriven::StencilType::None;
-  geometryConfig.dim = std::vector<int64_t>();
+  geometryConfig.dim = std::vector<std::vector<int64_t>>();
+
+  geometryConfig.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
 }
 }  // namespace datadriven
 }  // namespace sgpp

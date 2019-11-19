@@ -14,15 +14,24 @@ namespace datadriven {
 
 using sgpp::base::data_exception;
 
-StencilType GeometryConfigurationParser::parse(const std::string &input) {
+StencilType GeometryConfigurationParser::parseStencil(const std::string &input) {
   auto inputLower = input;
   std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
-  if (inputLower.compare("dn") == 0) {
-    return sgpp::datadriven::StencilType::DN;
+  if (inputLower.compare("directneighbour") == 0) {
+    return sgpp::datadriven::StencilType::DirectNeighbour;
+  } else if (inputLower.compare("allhierarchicalparent") == 0) {
+    return sgpp::datadriven::StencilType::AllHierarchicalParent;
+  } else if (inputLower.compare("nexthierarchicalparent") == 0) {
+    return sgpp::datadriven::StencilType::NextHierarchicalParent;
+  } else if (inputLower.compare("block") == 0) {
+    return sgpp::datadriven::StencilType::Block;
+  } else if (inputLower.compare("none") == 0) {
+    return sgpp::datadriven::StencilType::None;
   } else {
-    std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
-        "StencilType";
+    std::string errorMsg = "Failed to convert string \"" + input +
+                           "\" to any known "
+                           "StencilType";
     throw data_exception(errorMsg.c_str());
   }
 }
