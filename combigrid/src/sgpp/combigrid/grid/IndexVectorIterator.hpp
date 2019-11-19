@@ -87,7 +87,7 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
   }
 
   /**
-   * @param sequenceNumber   arbitrary sequence number
+   * @param rhs   arbitrary sequence number
    * @return reference to index corresponding to given sequence number
    */
   IndexVector& operator[](size_t rhs) {
