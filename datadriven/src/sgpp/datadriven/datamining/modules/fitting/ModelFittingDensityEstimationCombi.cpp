@@ -17,9 +17,9 @@
 #include <utility>
 #include <vector>
 
-using std::vector;
-using std::unique_ptr;
 using sgpp::base::application_exception;
+using std::unique_ptr;
+using std::vector;
 
 namespace sgpp {
 namespace datadriven {
@@ -27,12 +27,32 @@ namespace datadriven {
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi() {}
 
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
-    FitterConfigurationDensityEstimation& config)
+    const FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation{} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
+  // If no object store is passed but the offline permutation is configured and the decomposition
+  // type allows offline permutation, an object store is instanciated
+  if (config.getDensityEstimationConfig().useOfflinePermutation &&
+      DBMatOfflinePermutable::PermutableDecompositions.find(
+          config.getDensityEstimationConfig().decomposition_) !=
+          DBMatOfflinePermutable::PermutableDecompositions.end()) {
+    this->objectStore = std::make_shared<DBMatObjectStore>();
+    this->hasObjectStore = true;
+  } else {
+    this->hasObjectStore = false;
+  }
+}
+
+ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<DBMatObjectStore> objectStore)
+    : ModelFittingDensityEstimationCombi(config) {
+
+  this->hasObjectStore = true;
+  this->objectStore = objectStore;
 }
 
 void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
@@ -49,13 +69,17 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   for (size_t i = 0; i < componentConfigs.size(); i++) {
     FitterConfigurationDensityEstimation newFitterConfig{};
     newFitterConfig.setupDefaults();
+    newFitterConfig.getRegularizationConfig().lambda_ =
+        this->getFitterConfiguration().getRegularizationConfig().lambda_;
+    newFitterConfig.getGridConfig().generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
+    newFitterConfig.getDensityEstimationConfig().decomposition_ =
+        this->getFitterConfiguration().getDensityEstimationConfig().decomposition_;
     newFitterConfig.getDensityEstimationConfig().type_ = config->getDensityEstimationConfig().type_;
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
     newFitterConfig.getGridConfig().levelVector_.clear();
     for (auto v : componentConfigs.at(i).first) {
       newFitterConfig.getGridConfig().levelVector_.push_back(v);
     }
-    newFitterConfig.getGridConfig().generalType_ = config->getGridConfig().generalType_;
 
     components.at(i) = createNewModel(newFitterConfig);
     fitted.at(i) = 0;
@@ -220,7 +244,12 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
     case DensityEstimationType::Decomposition: {
-      return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+      if (this->hasObjectStore) {
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
+                                                                    objectStore);
+      } else {
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+      }
     }
   }
 

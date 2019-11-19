@@ -12,6 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -21,8 +22,8 @@
 #include <list>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -45,6 +46,15 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
+   * Constuctor with offline object store.
+   *
+   * @param config Configuration object that specifies grid, refinement, and regularization.
+   * @param objectStore Offline object store
+   */
+  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
+                                              std::shared_ptr<DBMatObjectStore> objectStore);
+
+  /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
@@ -65,7 +75,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) override;
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 
@@ -106,6 +116,18 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   void reset() override;
 
  private:
+  /**
+   * @brief The instances offline object store
+   *
+   */
+  std::shared_ptr<DBMatObjectStore> objectStore;
+
+  /**
+   * @brief True if instnce has an offline object store
+   *
+   */
+  bool hasObjectStore;
+
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

@@ -147,6 +147,8 @@ void FitterConfiguration::setupDefaults() {
   // to have all of the default value config in this file.
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  // Offline permutation is used per default
+  densityEstimationConfig.useOfflinePermutation = true;
 
   densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default;
   densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default;

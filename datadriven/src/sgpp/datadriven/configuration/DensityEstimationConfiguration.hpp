@@ -24,6 +24,10 @@ struct DensityEstimationConfiguration {
   DensityEstimationType type_ = DensityEstimationType::Decomposition;
   // Type of matrix decomposition
   MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt;
+  /**
+   * Defines whether offline permutation should be used if decomposition allows it.
+   */
+  bool useOfflinePermutation = true;
 
   // flag for normalization in DBMatOnlineDE
   bool normalize_ = false;
