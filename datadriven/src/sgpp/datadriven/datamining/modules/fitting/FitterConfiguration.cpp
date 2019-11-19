@@ -183,7 +183,6 @@ void FitterConfiguration::setupDefaults() {
 
   // configure geometry configuration
   geometryConfig.dim = std::vector<std::vector<int64_t>>();
-
   geometryConfig.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
 }
 }  // namespace datadriven
