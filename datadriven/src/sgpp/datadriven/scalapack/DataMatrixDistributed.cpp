@@ -594,7 +594,7 @@ void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
         // for the sender, directly copy the block into the local matrix
         for (size_t i = 0; i < colsToSend; i++) {
           double* submatrix = &localMatrix.getPointer()[((col + i) * globalRows) + row];
-          std::copy_n(localBlock, rowsToSend * colsToSend, submatrix);
+          std::copy_n(localBlock, rowsToSend, submatrix);
 
           localBlock += localRows;
         }
