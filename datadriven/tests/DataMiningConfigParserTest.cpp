@@ -11,7 +11,6 @@
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/ClusteringConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
@@ -37,7 +36,6 @@ using sgpp::datadriven::DataSourceShufflingType;
 using sgpp::datadriven::DataTransformationType;
 using sgpp::datadriven::FitterType;
 using sgpp::datadriven::ParallelConfiguration;
-using sgpp::datadriven::ClusteringConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::RegularizationType;
 using sgpp::datadriven::ScorerConfiguration;
@@ -299,23 +297,6 @@ BOOST_AUTO_TEST_CASE(testParallelConfig) {
   BOOST_CHECK_EQUAL(config.processCols_, 1);
   BOOST_CHECK_EQUAL(config.rowBlockSize_, 64);
   BOOST_CHECK_EQUAL(config.columnBlockSize_, 128);
-}
-
-BOOST_AUTO_TEST_CASE(testClusteringConfig) {
-    DataMiningConfigParser parser{datasetPath};
-
-    ClusteringConfiguration defaults;
-
-    defaults.noNearestNeighbors = 3;
-    defaults.densityThreshold = 0.8;
-    ClusteringConfiguration config;
-    bool hasConfig;
-
-    hasConfig = parser.getFitterClusteringConfig(config, defaults);
-
-    BOOST_CHECK_EQUAL(hasConfig, true);
-    BOOST_CHECK_EQUAL(config.noNearestNeighbors, 20);
-    BOOST_CHECK_EQUAL(config.densityThreshold, 0.6);
 }
 
 BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
