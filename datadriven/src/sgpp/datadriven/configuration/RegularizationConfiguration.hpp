@@ -14,14 +14,14 @@ namespace datadriven {
 enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, GroupLasso };
 
 struct RegularizationConfiguration {
-  RegularizationType type_;
-  double lambda_;
-  double lamda_start_;
-  double lambda_end_;
-  double lambda_steps_;
-  bool lambda_log_scale_;
-  double l1Ratio_;
-  double exponentBase_;
+  RegularizationType type_ = RegularizationType::Identity;
+  double lambda_ = 0.01;
+  double l1Ratio_ = 0.0;
+  double exponentBase_ = 1.0;
+  double lamda_start_ = 0.01;
+  double lambda_end_ = 0.01;
+  double lambda_steps_ = 0;
+  bool lambda_log_scale_ = false;
 };
 }  // namespace datadriven
 }  // namespace sgpp

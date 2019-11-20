@@ -31,7 +31,6 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"

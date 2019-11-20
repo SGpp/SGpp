@@ -121,7 +121,6 @@
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/datadriven/configuration/BatchConfiguration.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
