@@ -9,7 +9,6 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/ClusteringConfiguration.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
@@ -28,7 +27,7 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares, DensityEstimation, Classification, Clustering };
+enum class FitterType { RegressionLeastSquares, DensityEstimation, Classification };
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -95,12 +94,6 @@ class FitterConfiguration {
    * @return immutable CrossvalidationConfiguration
    */
   const datadriven::CrossvalidationConfiguration &getCrossvalidationConfig() const;
-
-  /**
-   * Get how the clustering should behave.
-   * @return immutable ClusteringConfiguration
-   */
-  const datadriven::ClusteringConfiguration &getClusteringConfig() const;
 
   /**
    * Get how the density estimation should behave.
@@ -239,12 +232,6 @@ class FitterConfiguration {
    * Configure how the density estimation should behave.
    */
   datadriven::DensityEstimationConfiguration densityEstimationConfig;
-
-  /**
-   * Configure the hyperameters for the density based clustering
-   */
-
-  datadriven::ClusteringConfiguration clusteringConfig;
 
   /**
    * Configure where the lhs datamatrix decomposition database is stored
