@@ -20,8 +20,8 @@ struct ParallelConfiguration {
 
   int processRows_ = -1;
   int processCols_ = -1;
-  size_t rowBlockSize_ = 128;
-  size_t columnBlockSize_ = 128;
+  size_t rowBlockSize_ = 64;
+  size_t columnBlockSize_ = 64;
 };
 
 }  // namespace datadriven

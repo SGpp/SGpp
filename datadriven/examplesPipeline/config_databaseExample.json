@@ -28,7 +28,7 @@
             "matrixDecompositionType": "chol"
         },
         "database": {
-            "filepath": "./database.json"
+            "filePath": "./database.json"
         }
     }
 }

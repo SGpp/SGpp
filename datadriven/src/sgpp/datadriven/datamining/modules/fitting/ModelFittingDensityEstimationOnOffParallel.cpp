@@ -101,8 +101,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   DBMatOffline* offline = nullptr;
 
   // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  if (!databaseConfig.filePath.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -151,7 +151,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
 #endif /* USE_SCALAPACK */
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 

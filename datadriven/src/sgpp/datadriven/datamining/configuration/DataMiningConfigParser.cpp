@@ -1020,11 +1020,11 @@ bool DataMiningConfigParser::getFitterDatabaseConfig(
     auto databaseConfig = static_cast<DictNode *>(&(*configFile)[fitter]["database"]);
 
     // Parse filepath
-    if (databaseConfig->contains("filepath")) {
-      config.filepath = (*databaseConfig)["filepath"].get();
+    if (databaseConfig->contains("filePath")) {
+      config.filePath = (*databaseConfig)["filePath"].get();
     } else {
       std::cout << "# Did not find databaseConfig[filepath]. No database loaded" << std::endl;
-      config.filepath = defaults.filepath;
+      config.filePath = defaults.filePath;
     }
   }
 
@@ -1039,8 +1039,10 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   if (hasLearnerConfig) {
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
-    config.beta = parseDouble(*learnerConfig, "beta", defaults.beta, "learnerConfig");
-    config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior, "learnerConfig");
+    config.learningRate = parseDouble(*learnerConfig, "learningRate",
+        defaults.learningRate, "learnerConfig");
+    config.usePrior = parseBool(*learnerConfig, "usePrior",
+        defaults.usePrior, "learnerConfig");
   }
 
   return hasLearnerConfig;
