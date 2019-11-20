@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 
@@ -55,7 +56,7 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
   void setGridIndex(size_t grid_index) override;
   size_t getNumGrids() override;
   void preComputeEvaluations() override;
-  
+
   /**
    * Refine all grids of the model
    */
@@ -71,7 +72,7 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
   double threshold;
 
   base::GridStorage total_grid;
-  
+
   std::vector<std::tuple<size_t, size_t, size_t, bool, base::GridPoint::level_type>> neighborRels;
 
   /**
@@ -95,13 +96,12 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
    */
   void stepDown(size_t d, size_t minDim, base::HashGridPoint& gp,
               std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> &neighbors);
-  
+
   /**
    * Stores the relation of two found neighbors
    */
   void collectNeighbors(base::HashGridPoint leaf, base::HashGridPoint neighbor,
                         size_t dim, bool isLeft);
-
 };
 }  // namespace datadriven
 }  // namespace sgpp
