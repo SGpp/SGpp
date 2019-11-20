@@ -216,10 +216,9 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
-                                                 refinementConfig.levelPenalize,
-                                                 refinementConfig.precomputeEvaluations,
-                                                 refinementConfig.threshold_);
+      return new GridPointBasedRefinementFunctor(
+          grids, surpluses, refinementConfig.noPoints_, refinementConfig.levelPenalize,
+          refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
     }
     case RefinementFunctorType::MultipleClass: {
       return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
@@ -326,6 +325,12 @@ void ModelFittingClassification::reset() {
   refinementsPerformed = 0;
 }
 
+void ModelFittingClassification::updateRegularization(double lambda) {
+  for (auto& model : models) {
+    model->updateRegularization(lambda);
+  }
+}
+
 void ModelFittingClassification::storeClassificator() {
   std::cout << "Storing Classificator..." << std::endl;
 
@@ -370,14 +375,12 @@ void ModelFittingClassification::storeClassificator() {
   }
 }
 
-std::vector<std::unique_ptr<ModelFittingDensityEstimation>>* ModelFittingClassification::
-getModels() {
+std::vector<std::unique_ptr<ModelFittingDensityEstimation>>*
+ModelFittingClassification::getModels() {
   return &(models);
 }
 
-std::map<double, size_t> ModelFittingClassification::getClassIdx() {
-  return this->classIdx;
-}
+std::map<double, size_t> ModelFittingClassification::getClassIdx() { return this->classIdx; }
 #ifdef USE_SCALAPACK
 std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() const {
   return processGrid;

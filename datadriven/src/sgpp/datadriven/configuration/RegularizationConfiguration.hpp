@@ -22,6 +22,11 @@ struct RegularizationConfiguration {
   bool lambda_log_scale_;
   double l1Ratio_;
   double exponentBase_;
+  bool optimizeLambda_;
+  double optimizerTolerance_;
+  double convergenceThreshold_;
+  double intervalA_;
+  double intervalB_;
 };
 }  // namespace datadriven
 }  // namespace sgpp

@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -77,6 +78,34 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix &validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::computeResidual() is not implemented!");
+  };
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param double the new lambda parameter
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::updateRegularization() is not implemented!");
+  }
 
  private:
   /**

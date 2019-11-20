@@ -7,6 +7,7 @@
 #include <sgpp/datadriven/datamining/modules/scoring/MSE.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/NegativeLogLikelihood.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Accuracy.hpp>
+#include <sgpp/datadriven/datamining/modules/scoring/ResidualScore.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -17,6 +18,8 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
     return new NegativeLogLikelihood{};
   } else if (config == ScorerMetricType::accuracy) {
     return new Accuracy{};
+  } else if (config == ScorerMetricType::residual) {
+    return new ResidualScore{};
   } else {
     // (Sebastian Kreisel) This case should never occur, because
     // ScorerConfiguration sets up a default value: ScorerMetricType:accuracy
@@ -33,7 +36,6 @@ Scorer* ScorerFactory::buildScorer(const DataMiningConfigParser& parser) {
   auto metric = buildMetric(config.metric);
   return new Scorer(metric);
 }
-
 
 } /* namespace datadriven */
 } /* namespace sgpp */

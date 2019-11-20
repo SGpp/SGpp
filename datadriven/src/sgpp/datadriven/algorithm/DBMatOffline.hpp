@@ -92,6 +92,20 @@ class DBMatOffline {
   DataMatrix& getDecomposedMatrix();
 
   /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  virtual const DataMatrix& getUnmodifiedR() = 0;
+
+  /**
+   * Modifies the decomposition to update the regularization parameter lambda
+   *
+   * @param lambda New lambda value
+   */
+  virtual void updateRegularization(double lambda) = 0;
+
+  /**
    * Get a reference to the inverse matrix
    *
    * @return inverse matrix

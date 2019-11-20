@@ -5,15 +5,14 @@
 
 #pragma once
 
+#include <list>
+#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-
-#include <list>
-#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -122,6 +121,28 @@ class DBMatOnlineDE : public DBMatOnline {
                                       bool save_b = false, bool do_cv = false,
                                       std::list<size_t>* deletedPoints = nullptr,
                                       size_t newPoints = 0);
+
+  /**
+   * Computes/updates the b vector for the given batch of data
+   *
+   * @param m the matrix that contains the data points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   */
+  DataVector computeBFromBatch(DataMatrix& m, Grid& grid,
+                               DensityEstimationConfiguration& densityEstimationConfig);
+
+  /**
+   * Computes/updates the b vector for the given batch of data in parallel using ScaLAPACK
+   *
+   * @param m the matrix that contains the data points, currently every process has to have the data
+   * points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   */
+  DataVector computeBFromBatchParallel(DataMatrix& m, Grid& grid,
+                                       const ParallelConfiguration& parallelConfig,
+                                       std::shared_ptr<BlacsProcessGrid> processGrid);
 
   /**
    * Evaluates the density function at a certain point

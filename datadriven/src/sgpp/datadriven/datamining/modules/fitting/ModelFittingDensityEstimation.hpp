@@ -68,6 +68,23 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   bool refine() override;
 
   /**
+   * Computes a residual to evaluate the fit of the model.
+   *
+   * This is useful for density estimation, because other Scores cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   */
+  double computeResidual(DataMatrix& validationData) const override = 0;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param double the new lambda parameter
+   */
+  void updateRegularization(double lambda) override = 0;
+
+  /**
    * Returns the refinement functor suitable for the model settings.
    * @return pointer to a refinement functor that suits the model settings
    */

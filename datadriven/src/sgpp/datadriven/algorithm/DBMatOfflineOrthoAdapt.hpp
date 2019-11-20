@@ -48,6 +48,20 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrix& getUnmodifiedR() override;
+
+  /**
+   * Modifies the decomposition to update the regularization parameter lambda
+   *
+   * @param lambda New lambda value
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Builds the left hand side matrix without the regularization term
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
@@ -141,6 +155,10 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
  protected:
   sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix of decomposition
   sgpp::base::DataMatrix t_tridiag_inv_matrix_;  // inverse of the tridiag matrix of decomposition
+
+  // Save the original t_diag and t_subdiag vectors in order to change the lambda value later
+  sgpp::base::DataVector t_diag_;
+  sgpp::base::DataVector t_subdiag_;
 
   // distributed matrices, only initialized if scalapack is used
   DataMatrixDistributed q_ortho_matrix_distributed_;

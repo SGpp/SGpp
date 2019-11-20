@@ -14,6 +14,14 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
+#ifdef USE_GSL
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
+
 #include <list>
 #include <string>
 #include <vector>
@@ -166,6 +174,35 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
     if (this->config->getDensityEstimationConfig().normalize_) {
       online->normalize(alpha, *grid);
     }
+  }
+}
+
+double ModelFittingDensityEstimationOnOff::computeResidual(DataMatrix& validationData) const {
+  DataVector bValidation =
+      online->computeBFromBatch(validationData, *grid, this->config->getDensityEstimationConfig());
+
+  DataMatrix rMatrix = online->getOfflineObject().getUnmodifiedR();
+
+#ifdef USE_GSL
+
+  gsl_matrix_view R_view =
+      gsl_matrix_view_array(rMatrix.getPointer(), rMatrix.getNrows(), rMatrix.getNcols());
+  gsl_vector_const_view alpha_view =
+      gsl_vector_const_view_array(alpha.getPointer(), alpha.getSize());
+  gsl_vector_view b_view = gsl_vector_view_array(bValidation.getPointer(), bValidation.getSize());
+
+  // R * alpha - b_val
+  gsl_blas_dgemv(CblasNoTrans, 1.0, &R_view.matrix, &alpha_view.vector, -1.0, &b_view.vector);
+#else
+  throw base::not_implemented_exception("built withot GSL");
+#endif /* USE_GSL */
+
+  return bValidation.l2Norm();
+}
+
+void ModelFittingDensityEstimationOnOff::updateRegularization(double lambda) {
+  if (grid != nullptr) {
+    this->online->getOfflineObject().updateRegularization(lambda);
   }
 }
 

@@ -12,7 +12,8 @@ namespace datadriven {
 
 Metric *MSE::clone() const { return new MSE(*this); }
 
-double MSE::measure(const DataVector &predictedValues, const DataVector &trueValues) const {
+double MSE::measure(const DataVector &predictedValues, const DataVector &trueValues,
+                    const ModelFittingBase &model, Dataset &testDataset) const {
   DataVector tmp(predictedValues);
   tmp.sub(trueValues);
   // std::cout << "Predicted " << predictedValues.toString() << std::endl;

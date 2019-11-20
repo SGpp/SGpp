@@ -172,6 +172,11 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.lambda_log_scale_ = false;
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
+  regularizationConfig.optimizeLambda_ = false;
+  regularizationConfig.optimizerTolerance_ = 1e-15;
+  regularizationConfig.convergenceThreshold_ = 1e-15;
+  regularizationConfig.intervalA_ = 1e-15;
+  regularizationConfig.intervalB_ = 1.0;
 
   learnerConfig.beta = 1.0;        // mirrors struct default
   learnerConfig.usePrior = false;  // mirrors struct default

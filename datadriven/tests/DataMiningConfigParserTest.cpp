@@ -67,7 +67,6 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   defaults.validationPortion = 0.1;
   defaults.randomSeed = 1337;
 
-
   defaults.testFilePath = "something/testFalse";
   defaults.testFileType = DataSourceFileType::NONE;
   defaults.testNumBatches = 1;
@@ -94,8 +93,7 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(),
-                    "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.testNumBatches, 2);
@@ -259,8 +257,7 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(static_cast<int>(config.stencilType),
                     static_cast<int>(sgpp::datadriven::StencilType::DN));
-  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(),
-      dim.begin(), dim.end());
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.dim.begin(), config.dim.end(), dim.begin(), dim.end());
 }
 
 BOOST_AUTO_TEST_CASE(testParallelConfig) {
@@ -309,7 +306,7 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   BOOST_CHECK_EQUAL(std::strcmp(config.algorithm.c_str(), "tsne"), 0);
   BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
-    static_cast<int>(VisualizationFileType::json));
+                    static_cast<int>(VisualizationFileType::json));
   BOOST_CHECK_EQUAL(defaults.numBatches, 5);
   BOOST_CHECK_EQUAL(defaults.crossValidation, false);
 }

@@ -12,7 +12,8 @@ namespace datadriven {
 
 Metric* Accuracy::clone() const { return new Accuracy(*this); }
 
-double Accuracy::measure(const DataVector& predictedValues, const DataVector& trueValues) const {
+double Accuracy::measure(const DataVector& predictedValues, const DataVector& trueValues,
+                         const ModelFittingBase& model, Dataset& testDataset) const {
   size_t correct = 0;
   for (size_t i = 0; i < predictedValues.size(); i++) {
     if (predictedValues.get(i) == trueValues.get(i)) {

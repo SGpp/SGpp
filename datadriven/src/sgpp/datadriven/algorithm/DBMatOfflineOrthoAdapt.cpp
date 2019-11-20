@@ -112,6 +112,12 @@ void DBMatOfflineOrthoAdapt::decomposeMatrix(
   // decomposing: lhs = Q * T * Q^t
   this->hessenberg_decomposition(diag, subdiag);
 
+  // save copies of the unmodified diagonal and subdiagonal of T
+  this->t_diag_ = sgpp::base::DataVector(diag.getSize());
+  this->t_subdiag_ = sgpp::base::DataVector(subdiag.getSize());
+  this->t_diag_.copyFrom(diag);
+  this->t_subdiag_.copyFrom(subdiag);
+
   // adding configuration parameter lambda to diag before inverting T
   for (size_t i = 0; i < dim_a; i++) {
     diag.set(i, diag.get(i) + regularizationConfig.lambda_);
@@ -400,5 +406,29 @@ void DBMatOfflineOrthoAdapt::compute_inverse_parallel(std::shared_ptr<BlacsProce
 sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 }
+
+const DataMatrix& DBMatOfflineOrthoAdapt::getUnmodifiedR() {
+  // lhs = Q * T * Q^T
+  return this->lhsMatrix;
+}
+
+void DBMatOfflineOrthoAdapt::updateRegularization(double lambda) {
+  size_t dim_a = lhsMatrix.getNrows();
+
+  // create copies of diag and subdiag, as the inverse methods modifies its input
+  DataVector diag(this->t_diag_.getSize());
+  DataVector subdiag(this->t_subdiag_.getSize());
+  diag.copyFrom(this->t_diag_);
+  subdiag.copyFrom(this->t_subdiag_);
+
+  // add the new lambda value to T
+  for (size_t i = 0; i < dim_a; i++) {
+    diag.set(i, diag.get(i) + lambda);
+  }
+
+  // update the inverse representation
+  invert_symmetric_tridiag(diag, subdiag);
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

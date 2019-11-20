@@ -7,6 +7,7 @@
 #pragma once
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 
 #include <gsl/gsl_permutation.h>
 
@@ -44,6 +45,26 @@ class DBMatOfflineLU : public DBMatOfflineGE {
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrix& getUnmodifiedR() override {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineLU::getUnmodifiedR() is not implemented!");
+  }
+
+  /**
+   * Modifies the decomposition to update the regularization parameter lambda
+   *
+   * @param lambda New lambda value
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineLU::updateRegularization() is not implemented!");
+  }
+
+  /**
    * This decomposition type is not refineable.
    * @return always returns false;
    */
@@ -57,7 +78,7 @@ class DBMatOfflineLU : public DBMatOfflineGE {
    * @param densityEstimationConfig the density estimation configuration
    */
   void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+                       DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Apply permutation vector to the LU factors

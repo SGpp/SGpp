@@ -65,7 +65,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints) override;
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 
@@ -92,6 +92,24 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * the current model.
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
+
+  /**
+   * Computes the residual
+   *
+   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param double the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
 
   /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not

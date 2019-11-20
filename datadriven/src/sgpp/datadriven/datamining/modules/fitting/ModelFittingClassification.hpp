@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
@@ -15,7 +16,6 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
-
 
 #include <map>
 #include <memory>
@@ -75,6 +75,31 @@ class ModelFittingClassification : public ModelFittingBase {
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCombi::computeResidual() is not implemented!");
+  };
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param double the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
@@ -93,8 +118,9 @@ class ModelFittingClassification : public ModelFittingBase {
    * obtain the index mapping for each label class. To be used in VisualizerClassification
    */
   std::map<double, size_t> getClassIdx();
+
 #ifdef USE_SCALAPACK
-    /**
+  /**
    * @returns the BLACS process grid
    */
   std::shared_ptr<BlacsProcessGrid> getProcessGrid() const override;

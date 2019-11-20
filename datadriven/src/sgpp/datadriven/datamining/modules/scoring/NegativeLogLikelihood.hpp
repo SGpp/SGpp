@@ -29,12 +29,14 @@ class NegativeLogLikelihood : public Metric {
    *
    * @param predictedValues probabilites calculated by the model for testing data
    * @param trueValues ignored
+   * @param model reference to the model
+   * @param testDataset dataset with test data
    * @return the negative log likelihood of the predicted probabilities
    */
-  double measure(const DataVector &predictedValues, const DataVector &trueValues) const override;
+  double measure(const DataVector &predictedValues, const DataVector &trueValues,
+                 const ModelFittingBase &model, Dataset &testDataset) const override;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
-
 
 #endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_DATAMINING_MODULES_SCORING_NEGATIVELOGLIKELIHOOD_HPP_ */

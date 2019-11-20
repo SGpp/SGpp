@@ -25,7 +25,7 @@ double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
   DataVector predictedValues(testDataset.getNumberInstances());
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
-  return metric->measure(predictedValues, testDataset.getTargets());
+  return metric->measure(predictedValues, testDataset.getTargets(), model, testDataset);
 }
 
 double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
@@ -38,7 +38,7 @@ double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
   double score = 0.0;
   auto processGrid = model.getProcessGrid();
   if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
-    score = metric->measure(predictedValues, testDataset.getTargets());
+    score = metric->measure(predictedValues, testDataset.getTargets(), model, testDataset);
     Cdgebs2d(processGrid->getContextHandle(), "All", "T", 1, 1, &score, 1);
   } else if (processGrid->isProcessInGrid()) {
     Cdgebr2d(processGrid->getContextHandle(), "All", "T", 1, 1, &score, 1, 0, 0);

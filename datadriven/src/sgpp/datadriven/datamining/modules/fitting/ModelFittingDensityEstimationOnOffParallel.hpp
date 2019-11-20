@@ -117,6 +117,34 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   bool isRefinable() override;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationOnOffParallel::computeResidual() is not implemented!");
+  };
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param double the new lambda parameter
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationOnOffParallel::updateRegularization() is not implemented!");
+  }
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;

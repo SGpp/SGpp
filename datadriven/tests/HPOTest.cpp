@@ -6,6 +6,7 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BOConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
@@ -16,7 +17,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
-
 
 #include <string>
 #include <vector>
@@ -53,8 +53,16 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
   double evaluate(const DataVector &sample) override { return -420; }
 
-  void evaluate(DataMatrix &samples, DataVector &results) override {
-    results[0] = sqrt(value);
+  void evaluate(DataMatrix &samples, DataVector &results) override { results[0] = sqrt(value); }
+
+  double computeResidual(DataMatrix &validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingTester::computeResidual() not implemented!");
+  }
+
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingTester::updateRegularization() not implemented!");
   }
 
   double value;
@@ -71,8 +79,7 @@ class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
     // making model from parameter values directly
-    return new ModelFittingTester(conpar["x"].getValue(),
-                                  dispar["y"].getValue(),
+    return new ModelFittingTester(conpar["x"].getValue(), dispar["y"].getValue(),
                                   catpar["c"].getValue());
   }
 };
@@ -85,9 +92,7 @@ class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
     }
   }
 
-  sgpp::datadriven::ModelFittingBase *buildFitter() override {
-    return nullptr;
-  }
+  sgpp::datadriven::ModelFittingBase *buildFitter() override { return nullptr; }
 
   void getConfigBits(std::vector<ConfigurationBit *> &configBits) override {
     for (auto &exconfBit : exconfBits) {
@@ -110,7 +115,6 @@ class HarmonicaTester : public sgpp::datadriven::Harmonica {
  * dummy set account for validation
  */
 
-
 BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // using actual files for (dummy) data and config
   std::string path("datadriven/tests/hpo_testconfig.json");
@@ -119,10 +123,10 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // sgpp::datadriven::DataSourceConfig config;
   // parser.getDataSourceConfig(config, config);
   sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac{};
-  sgpp::datadriven::BoHyperparameterOptimizer
-      bohpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
-  sgpp::datadriven::HarmonicaHyperparameterOptimizer
-      harmhpo(minfac.buildMiner(path), new FitterFactoryTester(), parser);
+  sgpp::datadriven::BoHyperparameterOptimizer bohpo(minfac.buildMiner(path),
+                                                    new FitterFactoryTester(), parser);
+  sgpp::datadriven::HarmonicaHyperparameterOptimizer harmhpo(minfac.buildMiner(path),
+                                                             new FitterFactoryTester(), parser);
   double res1 = bohpo.run(false);
   double res2 = harmhpo.run(false);
   // testing arbitrary performance lower bound
@@ -140,15 +144,14 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
   bool testar[4096];
   int oldidar[4096];
   int nIDs = 4096;
-  std::vector<sgpp::datadriven::ModelFittingBase*> fitters(1);
+  std::vector<sgpp::datadriven::ModelFittingBase *> fitters(1);
   std::vector<std::string> configStrings(1);
   std::vector<sgpp::datadriven::ConfigurationRestriction> constraints{};
 
   for (int i = 0; i < 3; ++i) {
     harmonica.prepareConfigs(fitters, 33, configStrings);
-    std::uniform_int_distribution<int> distcons(0,
-                                                static_cast<int>(harmonica.getParityrow().size()
-                                                    - 1));
+    std::uniform_int_distribution<int> distcons(
+        0, static_cast<int>(harmonica.getParityrow().size() - 1));
     std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  // not completely safe but okay
     std::uniform_int_distribution<int> distbias(0, 1);
     for (int k = 0; k < 4096; ++k) {
@@ -279,7 +282,6 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
     initialConfigs[i].setScore(scores[i]);
   }
 
-
   // single point not possible because of normalize
   sgpp::datadriven::BayesianOptimization bo(initialConfigs);
 
@@ -301,8 +303,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   DataVector dscores(scores);
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
@@ -335,8 +336,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
   }
 
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     // << " | Max Norm: " << avscales.maxNorm() << " | size ratio: " << sizeratio << std::endl;
     if (j > 90) {
       // difference is allowed to rise with the squareroot of the dimensionality
-      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar()+1)) * 0.25);
+      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar() + 1)) * 0.25);
     }
     avscales.add(scales);
   }
