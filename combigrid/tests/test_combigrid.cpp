@@ -4,313 +4,504 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE SGPPCombigridModule
+#define BOOST_TEST_MODULE SGppCombigridModule
+
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+
+#include <sgpp/combigrid/LevelIndexTypes.hpp>
+#include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
+#include <sgpp/combigrid/grid/CombinationGrid.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
+#include <sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp>
+#include <sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp>
+#include <sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp>
+#include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
+#include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
 
 #include <boost/test/unit_test.hpp>
 
-#include <sgpp/combigrid/integration/MCIntegrator.hpp>
-#include <sgpp/combigrid/operation/CombigridMultiOperation.hpp>
-#include <sgpp/combigrid/operation/CombigridOperation.hpp>
-#include <sgpp/combigrid/storage/tree/CombigridTreeStorage.hpp>
-#include <sgpp/combigrid/utils/Stopwatch.hpp>
-#include <sgpp/combigrid/utils/Utils.hpp>
-#include <sgpp/globaldef.hpp>
-
-#include <cmath>
-#include <iostream>
+#include <algorithm>
 #include <memory>
-#include <random>
-#include <string>
-#include <utility>
+#include <numeric>
 #include <vector>
 
+using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::combigrid::AbstractMultiStorage;
-using sgpp::combigrid::FloatArrayVector;
-using sgpp::combigrid::CombigridMultiOperation;
-using sgpp::combigrid::MultiFunction;
-using sgpp::combigrid::Stopwatch;
-using sgpp::combigrid::MCIntegrator;
+using sgpp::combigrid::CombinationGrid;
+using sgpp::combigrid::FullGrid;
+using sgpp::combigrid::HeterogeneousBasis;
+using sgpp::combigrid::IndexVector;
+using sgpp::combigrid::IndexVectorRange;
+using sgpp::combigrid::LevelVector;
+using sgpp::combigrid::OperationEvalCombinationGrid;
+using sgpp::combigrid::OperationPole;
+using sgpp::combigrid::OperationPoleHierarchisationGeneral;
+using sgpp::combigrid::OperationPoleHierarchisationLinear;
+using sgpp::combigrid::OperationPoleNodalisationBspline;
+using sgpp::combigrid::OperationPoleNodalisationLinear;
+using sgpp::combigrid::OperationUPCombinationGrid;
+using sgpp::combigrid::OperationUPFullGrid;
 
-double testFunction(DataVector const &coordinates) {
-  double prod = 1.0;
+// fix for clang (from https://stackoverflow.com/a/33755176)
+#ifdef __clang__
+#include <string>
 
-  for (size_t i = 0; i < coordinates.getSize(); ++i) {
-    double x = coordinates[i];
-    prod *= std::exp(-x * x / static_cast<double>((i + 1) * (i + 1)));
-  }
+namespace boost {
+namespace unit_test {
+namespace ut_detail {
 
-  return prod;
+std::string normalize_test_case_name(const_string name) {
+  return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1) :
+                             std::string(name.begin(), name.size()));
 }
 
-double testFunction2(DataVector const &coordinates) {
-  double prod = 1.0;
+}  // namespace ut_detail
+}  // namespace unit_test
+}  // namespace boost
+#endif
 
-  for (size_t i = 0; i < coordinates.getSize(); ++i) {
-    double x = coordinates[i];
-    prod *= std::cos(-x * x / static_cast<double>((i + 1) * (i + 1)));
-  }
+BOOST_AUTO_TEST_CASE(testFullGrid) {
+  BOOST_CHECK_EQUAL(FullGrid().getDimension(), 0);
 
-  return prod;
+  sgpp::base::SBsplineBase basis1d;
+  const HeterogeneousBasis basis(3, basis1d);
+  const FullGrid fullGrid({2, 3, 2}, basis);
+
+  BOOST_CHECK(fullGrid == FullGrid({2, 3, 2}, basis));
+  BOOST_CHECK(!(fullGrid == FullGrid({2, 2, 2}, basis)));
+
+  BOOST_CHECK(fullGrid != FullGrid({2, 2, 2}, basis));
+  BOOST_CHECK(!(fullGrid != FullGrid({2, 3, 2}, basis)));
+
+  BOOST_CHECK_EQUAL(fullGrid.getMinIndex(0), 0);
+  BOOST_CHECK_EQUAL(fullGrid.getMinIndex(1), 0);
+  BOOST_CHECK_EQUAL(fullGrid.getMinIndex(2), 0);
+
+  BOOST_CHECK_EQUAL(fullGrid.getMaxIndex(0), 4);
+  BOOST_CHECK_EQUAL(fullGrid.getMaxIndex(1), 8);
+  BOOST_CHECK_EQUAL(fullGrid.getMaxIndex(2), 4);
+
+  BOOST_CHECK_EQUAL(fullGrid.getNumberOfIndexVectors(0), 5);
+  BOOST_CHECK_EQUAL(fullGrid.getNumberOfIndexVectors(1), 9);
+  BOOST_CHECK_EQUAL(fullGrid.getNumberOfIndexVectors(2), 5);
+  BOOST_CHECK_EQUAL(fullGrid.getNumberOfIndexVectors(), 225);
 }
 
-double testFunction3(DataVector const &coordinates) {
-  double prod = 1.0;
+BOOST_AUTO_TEST_CASE(testHeterogeneousBasis) {
+  sgpp::base::SBsplineBase basis1d1(1);
+  sgpp::base::SBsplineBase basis1d3(3);
+  sgpp::base::SBsplineBase basis1d5(5);
 
-  for (size_t i = 0; i < coordinates.getSize(); ++i) {
-    double x = coordinates[i];
-    prod *= (x * x) / (1 + x * x);
+  BOOST_CHECK(HeterogeneousBasis(3, basis1d3) ==
+      HeterogeneousBasis({&basis1d3, &basis1d3, &basis1d3}));
+
+  {
+    sgpp::combigrid::level_t level;
+    sgpp::combigrid::index_t index;
+
+    level = 6;
+    index = 0;
+    HeterogeneousBasis::hierarchizeLevelIndex(level, index);
+    BOOST_CHECK_EQUAL(level, 0);
+    BOOST_CHECK_EQUAL(index, 0);
+
+    level = 4;
+    index = 16;
+    HeterogeneousBasis::hierarchizeLevelIndex(level, index);
+    BOOST_CHECK_EQUAL(level, 0);
+    BOOST_CHECK_EQUAL(index, 1);
+
+    level = 4;
+    index = 12;
+    HeterogeneousBasis::hierarchizeLevelIndex(level, index);
+    BOOST_CHECK_EQUAL(level, 2);
+    BOOST_CHECK_EQUAL(index, 3);
+
+    level = 6;
+    index = 11;
+    HeterogeneousBasis::hierarchizeLevelIndex(level, index);
+    BOOST_CHECK_EQUAL(level, 6);
+    BOOST_CHECK_EQUAL(index, 11);
   }
 
-  return prod;
+  const HeterogeneousBasis basisHierarchical({&basis1d1, &basis1d3, &basis1d5}, true);
+  const HeterogeneousBasis basisNodal({&basis1d1, &basis1d3, &basis1d5}, false);
+
+  // 0.8 * 0.53866667 * 0.53037333 = 0.2285555
+  BOOST_CHECK_CLOSE(basisHierarchical.eval({1, 2, 3}, {1, 2, 6}, DataVector({0.6, 0.7, 0.8})),
+      0.2285555, 1e-4);
+  // 0.8 * 0.28266667 * 0.47554667 = 0.1075370
+  BOOST_CHECK_CLOSE(basisNodal.eval({1, 2, 3}, {1, 2, 6}, DataVector({0.6, 0.7, 0.8})),
+      0.1075370, 1e-4);
 }
 
-double testFunction4(DataVector const &coordinates) {
-  double prod = 1.0;
+BOOST_AUTO_TEST_CASE(testCombinationGrid) {
+  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithBoundary(3, 5).size(), 21);
+  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithoutBoundary(3, 7).size(), 15);
 
-  for (size_t i = 0; i < coordinates.getSize(); ++i) {
-    double x = coordinates[i];
-    prod *= exp(-x * x);
-  }
+  sgpp::base::SBsplineBase basis1d;
+  HeterogeneousBasis basis(3, basis1d);
 
-  return prod;
-}
+  for (bool hasBoundary : {true, false}) {
+    std::vector<LevelVector> subspaceLevels;
 
-double testFunction5(DataVector const &x) {
-  std::vector<double> k;
-  for (size_t i = 0; i < x.getSize(); ++i) {
-    double root = std::sqrt(static_cast<double>(i) +
-                            6405.0);  // 6400 ist Wurzel von 80, die naechste Quadratzahl ist
-                                      // 6561, also 161 mal Nachkommastellen ungleich 0
-    double decimals = root - std::floor(root);
-    k.push_back(static_cast<double>(i % 2 == 0 ? 1 : -1) * 100 * decimals *
-                std::tan(static_cast<double>(i)));
-  }
-
-  double sum = 0.0;
-
-  for (size_t i = 0; i < x.getSize(); ++i) {
-    double tmp = 1;
-    for (size_t j = 0; j < k.size(); ++j) {
-      tmp *= std::sin((-1) * k[j] * (1 - x[i]) * static_cast<double>(i)) -
-             sgpp::combigrid::pow(cos(k[k.size() - 1 - i] * x[i] * k[j]), 3) +
-             std::sin((1 - x[i]) * (1 - x[i]) + x[x.getSize() - 1 - i]);
+    if (hasBoundary) {
+      subspaceLevels = {
+          {0, 0, 5}, {0, 1, 4}, {0, 2, 3}, {0, 3, 2}, {0, 4, 1}, {0, 5, 0},
+          {1, 0, 4}, {1, 1, 3}, {1, 2, 2}, {1, 3, 1}, {1, 4, 0},
+          {2, 0, 3}, {2, 1, 2}, {2, 2, 1}, {2, 3, 0},
+          {3, 0, 2}, {3, 1, 1}, {3, 2, 0},
+          {4, 0, 1}, {4, 1, 0},
+          {5, 0, 0},
+          {0, 0, 4}, {0, 1, 3}, {0, 2, 2}, {0, 3, 1}, {0, 4, 0},
+          {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 0},
+          {2, 0, 2}, {2, 1, 1}, {2, 2, 0},
+          {3, 0, 1}, {3, 1, 0},
+          {4, 0, 0},
+          {0, 0, 3}, {0, 1, 2}, {0, 2, 1}, {0, 3, 0},
+          {1, 0, 2}, {1, 1, 1}, {1, 2, 0},
+          {2, 0, 1}, {2, 1, 0},
+          {3, 0, 0},
+          {0, 0, 2}, {0, 1, 1}, {0, 2, 0},
+          {1, 0, 1}, {1, 1, 0},
+          {2, 0, 0},
+          {0, 0, 1}, {0, 1, 0},
+          {1, 0, 0},
+          {0, 0, 0}};
+    } else {
+      subspaceLevels = {
+          {1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1},
+          {2, 1, 4}, {2, 2, 3}, {2, 3, 2}, {2, 4, 1},
+          {3, 1, 3}, {3, 2, 2}, {3, 3, 1},
+          {4, 1, 2}, {4, 2, 1},
+          {5, 1, 1},
+          {1, 1, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 1},
+          {2, 1, 3}, {2, 2, 2}, {2, 3, 1},
+          {3, 1, 2}, {3, 2, 1},
+          {4, 1, 1},
+          {1, 1, 3}, {1, 2, 2}, {1, 3, 1},
+          {2, 1, 2}, {2, 2, 1},
+          {3, 1, 1},
+          {1, 1, 2}, {1, 2, 1},
+          {2, 1, 1},
+          {1, 1, 1}};
     }
-    sum += tmp;
-  }
 
-  return sum;
-}
+    std::vector<CombinationGrid> combinationGrids = {
+        CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary),
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary)};
 
-double testFunction6(DataVector const &x) { return 1; }
-
-double testFunction7(DataVector const &x) { return x[0]; }
-
-double testFunctionAtan(DataVector const &x) {
-  return std::atan(50 * (x[0] - .35)) + M_PI / 2 +
-         4 * std::pow(x[1], 2);  // + exp(x[0] * x[1] - 1);
-}
-
-double testFunction8(DataVector const &coordinates) {
-  double ans = 0.0;
-
-  for (size_t i = 0; i < coordinates.getSize(); ++i) {
-    ans += coordinates[i];
-  }
-
-  return ans;
-}
-
-/*
- void printCTResults(size_t d, size_t q) {
- const size_t samples = 10;
- auto ctInterpolator = CombigridOperation::createExpClenshawCurtisPolynomialInterpolation(d,
- testFunction);
- auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0,
- 1.0));
-
- MCIntegrator integrator([&](DataVector const &x) -> double {
- double diff = testFunction(x) - ctInterpolator->evaluate(q, x);
- return diff * diff;
- });
-
- std::cout << "d = " << d << ", q = " << q << ": " << std::sqrt(integrator.average(domain,
- samples)) << std::endl;
- }
- */
-
-void printDifferences(size_t d, std::shared_ptr<AbstractMultiStorage<FloatArrayVector>> storage) {
-  auto it = storage->getStoredDataIterator();
-
-  std::cout << "Differences: \n";
-  while (it->isValid()) {
-    std::cout << "Level (";
-    for (size_t i = 0; i < d - 1; ++i) {
-      std::cout << it->indexAt(i);
-      std::cout << ", ";
+    for (const CombinationGrid& combinationGrid : combinationGrids) {
+      BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
+          (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
+      sgpp::base::GridStorage gridStorage(3);
+      combinationGrid.combinePoints(gridStorage);
+      BOOST_CHECK_EQUAL(gridStorage.getSize(), (hasBoundary ? 705 : 351));
     }
-    std::cout << it->indexAt(d - 1) << "): ";
 
-    std::cout << it->value().norm() << "\n";
+    const std::vector<FullGrid>& fullGrids0 = combinationGrids[0].getFullGrids();
+    const std::vector<FullGrid>& fullGrids1 = combinationGrids[1].getFullGrids();
+    const DataVector& coefficients0 = combinationGrids[0].getCoefficients();
+    const DataVector& coefficients1 = combinationGrids[1].getCoefficients();
 
-    it->moveToNext();
+    for (size_t i = 0; i < fullGrids1.size(); i++) {
+      const FullGrid& fullGrid = fullGrids1[i];
+      auto it = std::find(fullGrids0.begin(), fullGrids0.end(), fullGrid);
+      BOOST_CHECK(it != fullGrids0.end());
+      BOOST_CHECK_EQUAL(coefficients0[it - fullGrids0.begin()], coefficients1[i]);
+    }
   }
-}
 
-void computeL2Error(size_t d, size_t q, std::shared_ptr<CombigridMultiOperation> ctInterpolator,
-                    MultiFunction &func) {
-  const size_t samples = 100;
-  auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
+  CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 2, basis);
+  BOOST_CHECK_EQUAL(combinationGrid.combineValues(DataVector({1.0, 0.5, -0.5, -2.0, 4.0})), -1.0);
 
-  MCIntegrator integrator(
-      [&ctInterpolator, q, func](std::vector<DataVector> const &params) -> DataVector {
-        auto result = ctInterpolator->evaluate(q, params);
-        // auto result = ctInterpolator->evaluateAdaptive(q * number, params);
+  sgpp::base::GridStorage gridStorage(2);
+  combinationGrid.combinePoints(gridStorage);
+  BOOST_CHECK_EQUAL(gridStorage.getSize(), 17);
+  const std::vector<DataVector> values = {
+      // 31013
+      // |   |
+      // |   |
+      // |   |
+      // 23221
+      DataVector({2.0, 3.0, 2.0, 2.0, 1.0, 3.0, 1.0, 0.0, 1.0, 3.0}),
+      // 2-2-1
+      // |   |
+      // 0 2 1
+      // |   |
+      // 2-1-0
+      DataVector({2.0, 1.0, 0.0, 0.0, 2.0, 1.0, 2.0, 2.0, 1.0}),
+      // 1---0
+      // 3   0
+      // 5   3
+      // 0   1
+      // 1---2
+      DataVector({1.0, 2.0, 0.0, 1.0, 5.0, 3.0, 3.0, 0.0, 1.0, 0.0}),
+      // 0-1-1
+      // |   |
+      // |   |
+      // |   |
+      // 3-1-1
+      DataVector({3.0, 1.0, 1.0, 0.0, 1.0, 1.0}),
+      // 2---0
+      // |   |
+      // 2   1
+      // |   |
+      // 2---1
+      DataVector({2.0, 1.0, 2.0, 1.0, 2.0, 0.0})};
+  // 41113
+  // 3   0
+  // 3 2 3
+  // 0   1
+  // 03221
+  const DataVector correctResult({0.0, 3.0, 2.0, 2.0, 1.0, 0.0, 1.0, 3.0, 2.0, 3.0, 3.0, 0.0,
+      4.0, 1.0, 1.0, 1.0, 3.0});
+  const std::vector<DataVector> correctDistributedValues = {
+      // 41113
+      // |   |
+      // |   |
+      // |   |
+      // 03221
+      DataVector({0.0, 3.0, 2.0, 2.0, 1.0, 4.0, 1.0, 1.0, 1.0, 3.0}),
+      // 4-1-3
+      // |   |
+      // 3 2 3
+      // |   |
+      // 0-2-1
+      DataVector({0.0, 2.0, 1.0, 3.0, 2.0, 3.0, 4.0, 1.0, 3.0}),
+      // 4---3
+      // 3   0
+      // 3   3
+      // 0   1
+      // 0---1
+      DataVector({0.0, 1.0, 0.0, 1.0, 3.0, 3.0, 3.0, 0.0, 4.0, 3.0}),
+      // 4-1-3
+      // |   |
+      // |   |
+      // |   |
+      // 0-2-1
+      DataVector({0.0, 2.0, 1.0, 4.0, 1.0, 3.0}),
+      // 4---3
+      // |   |
+      // 3   3
+      // |   |
+      // 0---1
+      DataVector({0.0, 1.0, 3.0, 3.0, 4.0, 3.0})};
 
-        // printDifferences(d, ctInterpolator->getDifferences());
+  DataVector result;
+  combinationGrid.combineSparseGridValues(gridStorage, values, result);
 
-        for (size_t i = 0; i < params.size(); ++i) {
-          double diff = func(params[i]) - result[i];
-          result[i] = diff * diff;
+  std::vector<size_t> order(gridStorage.getSize());
+  std::iota(order.begin(), order.end(), 0);
+  std::sort(order.begin(), order.end(), [&gridStorage](size_t a, size_t b) {
+        const double a1 = gridStorage.getPoint(a).getStandardCoordinate(1);
+        const double b1 = gridStorage.getPoint(b).getStandardCoordinate(1);
+
+        if (a1 != b1) {
+          return (a1 < b1);
+        } else {
+          const double a0 = gridStorage.getPoint(a).getStandardCoordinate(0);
+          const double b0 = gridStorage.getPoint(b).getStandardCoordinate(0);
+          return (a0 < b0);
         }
-
-        return result;
       });
 
-  std::cout << "d = " << d << ", q = " << q
-            << ": err_l2 = " << std::sqrt(integrator.average(domain, samples)) << std::endl;
-}
-
-void computeQuadratureError(size_t d, size_t q,
-                            std::shared_ptr<CombigridMultiOperation> ctInterpolator,
-                            MultiFunction &func) {
-  const size_t numSamples = 1e4;
-  auto domain = std::vector<std::pair<double, double>>(d, std::pair<double, double>(0.0, 1.0));
-  static std::default_random_engine generator(
-      std::mt19937_64::default_seed);  // TODO(holzmudd): deterministic
-
-  double result = 0.0;
-  sgpp::base::DataVector coordinates(domain.size());
-  for (size_t i = 0; i < numSamples; ++i) {
-    for (size_t dim = 0; dim < domain.size(); ++dim) {
-      std::uniform_real_distribution<double> distribution(domain[dim].first, domain[dim].second);
-      coordinates[dim] = distribution(generator);
-    }
-    result += func(coordinates);
+  for (size_t k = 0; k < gridStorage.getSize(); k++) {
+    BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]);
   }
 
-  result /= static_cast<double>(numSamples);
+  std::vector<DataVector> distributedValues;
+  combinationGrid.distributeValuesToFullGrids(gridStorage, result, distributedValues);
+  BOOST_CHECK_EQUAL(distributedValues.size(), correctDistributedValues.size());
 
-  std::cout << "d = " << d << ", q = " << q
-            << ": err_quad = " << std::abs(result - ctInterpolator->evaluate(q)[0]) << std::endl;
-}
-
-BOOST_AUTO_TEST_SUITE(testInterpolation)
-
-BOOST_AUTO_TEST_CASE(testLinearInterpolation) {
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "Linear Interpolation" << std::endl;
-  auto func = MultiFunction(testFunction3);
-  for (size_t d = 2; d <= 5; ++d) {
-    auto ctInterpolator =
-        CombigridMultiOperation::createExpUniformBoundaryLinearInterpolation(d, func);
-    std::cout << "- - - - - - - - - - - - - - " << std::endl;
-    for (size_t w = 2; w <= 8; ++w) {
-      Stopwatch stopwatch;
-      computeL2Error(d, w, ctInterpolator, func);
-      // stopwatch.log();
-    }
-  }
-  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
-      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
-  std::vector<DataVector> input(1, DataVector(0));
-  auto result = quadrature->evaluate(3, input);
-  std::cout << "Quadrature result: " << result[0] << "\n";
-}
-
-BOOST_AUTO_TEST_CASE(testExpChebyshevPolynomialInterpolation) {
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "Chebyshev Polynomial Interpolation" << std::endl;
-  auto func = MultiFunction(testFunction3);
-  for (size_t d = 2; d <= 5; ++d) {
-    auto ctInterpolator =
-        CombigridMultiOperation::createExpChebyshevPolynomialInterpolation(d, func);
-    std::cout << "- - - - - - - - - - - - - - " << std::endl;
-    for (size_t w = 2; w <= 8; ++w) {
-      Stopwatch stopwatch;
-      computeL2Error(d, w, ctInterpolator, func);
-      // stopwatch.log();
-    }
-  }
-
-  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
-      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
-  std::vector<DataVector> input(1, DataVector(0));
-  auto result = quadrature->evaluate(3, input);
-  std::cout << "Quadrature result: " << result[0] << "\n";
-}
-
-BOOST_AUTO_TEST_CASE(testPolynomialInterpolation) {
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "Polynomial Interpolation" << std::endl;
-  auto func = MultiFunction(testFunctionAtan);
-  for (size_t d = 2; d <= 5; ++d) {
-    std::cout << "- - - - - - - - - - - - - - " << std::endl;
-    auto ctInterpolator =
-        CombigridMultiOperation::createExpClenshawCurtisPolynomialInterpolation(d, func);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeL2Error(d, w, ctInterpolator, func);
-    }
-    auto ctQuadrature = CombigridMultiOperation::createExpClenshawCurtisQuadrature(d, func);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeQuadratureError(d, w, ctQuadrature, func);
-    }
-  }
-
-  auto quadrature = CombigridMultiOperation::createLinearLejaQuadrature(
-      3, MultiFunction([](sgpp::base::DataVector const &x) { return 1.0; }));
-  std::vector<DataVector> input(1, DataVector(0));
-  auto result = quadrature->evaluate(3, input);
-  std::cout << "Quadrature result: " << result[0] << "\n";
-}
-
-BOOST_AUTO_TEST_CASE(testLinearL2LejaPolynomialInterpolation) {
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "L2 Leja Polynomial Interpolation" << std::endl;
-  auto func = MultiFunction(testFunction3);
-  for (size_t d = 2; d <= 5; ++d) {
-    std::cout << "- - - - - - - - - - - - - - " << std::endl;
-    auto ctInterpolator =
-        CombigridMultiOperation::createLinearL2LejaPolynomialInterpolation(d, func, 2);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeL2Error(d, w, ctInterpolator, func);
-    }
-    auto ctQuadrature = CombigridMultiOperation::createLinearL2LejaQuadrature(d, func, 2);
-    for (size_t w = 2; w <= 8; ++w) {
-      computeQuadratureError(d, w, ctQuadrature, func);
-    }
+  for (size_t i = 0; i < distributedValues.size(); i++) {
+    BOOST_CHECK_EQUAL_COLLECTIONS(distributedValues[i].begin(), distributedValues[i].end(),
+        correctDistributedValues[i].begin(), correctDistributedValues[i].end());
   }
 }
 
-BOOST_AUTO_TEST_CASE(testBsplinedeg3Interpolation) {
-  std::cout << "-------------------------------------------" << std::endl;
-  std::cout << "B-Spline Interpolation, degree=3\n" << std::endl;
-  auto func = MultiFunction(testFunction3);
-  for (size_t d = 2; d <= 5; ++d) {
-    std::cout << "- - - - - - - - - - - - - - " << std::endl;
-    size_t degree = 3;
-    auto ctInterpolator =
-        CombigridMultiOperation::createExpUniformBoundaryBsplineInterpolation(d, func, degree);
-    for (size_t w = 2; w <= 6; ++w) {
-      computeL2Error(d, w, ctInterpolator, func);
+BOOST_AUTO_TEST_CASE(testIndexVectorRangeIterator) {
+  sgpp::base::SBsplineBase basis1d;
+  const HeterogeneousBasis basis(2, basis1d);
+  const FullGrid fullGrid({1, 2}, basis);
+
+  for (size_t j = 0; j < 2; j++) {
+    IndexVectorRange range;
+    std::vector<IndexVector> correctIndices;
+
+    if (j == 0) {
+      range = IndexVectorRange(fullGrid);
+      correctIndices = {
+          {0, 0}, {1, 0}, {2, 0},
+          {0, 1}, {1, 1}, {2, 1},
+          {0, 2}, {1, 2}, {2, 2},
+          {0, 3}, {1, 3}, {2, 3},
+          {0, 4}, {1, 4}, {2, 4}};
+      BOOST_CHECK_EQUAL(range.find({2, 1}), 5);
+    } else {
+      range = IndexVectorRange({3, 6, 1}, {6, 8, 2});
+      correctIndices = {
+          {3, 6, 1}, {4, 6, 1}, {5, 6, 1}, {6, 6, 1},
+          {3, 7, 1}, {4, 7, 1}, {5, 7, 1}, {6, 7, 1},
+          {3, 8, 1}, {4, 8, 1}, {5, 8, 1}, {6, 8, 1},
+          {3, 6, 2}, {4, 6, 2}, {5, 6, 2}, {6, 6, 2},
+          {3, 7, 2}, {4, 7, 2}, {5, 7, 2}, {6, 7, 2},
+          {3, 8, 2}, {4, 8, 2}, {5, 8, 2}, {6, 8, 2}};
+      BOOST_CHECK_EQUAL(range.find({5, 7, 2}), 18);
     }
 
-    auto ctQuadrature =
-        CombigridMultiOperation::createExpUniformBoundaryBsplineQuadrature(d, func, degree);
-    for (size_t w = 2; w <= 6; ++w) {
-      computeQuadratureError(d, w, ctQuadrature, func);
+    BOOST_CHECK_EQUAL(range.end() - range.begin(), correctIndices.size());
+    size_t i = 0;
+
+    for (const IndexVector& index : range) {
+      BOOST_CHECK_EQUAL_COLLECTIONS(index.begin(), index.end(),
+          correctIndices[i].begin(), correctIndices[i].end());
+      i++;
+    }
+  }
+
+  DataMatrix points;
+  IndexVectorRange::getPoints(fullGrid, points);
+  const DataMatrix correctPoints({
+      0.0, 0.0, 0.5, 0.0, 1.0, 0.0,
+      0.0, 0.25, 0.5, 0.25, 1.0, 0.25,
+      0.0, 0.5, 0.5, 0.5, 1.0, 0.5,
+      0.0, 0.75, 0.5, 0.75, 1.0, 0.75,
+      0.0, 1.0, 0.5, 1.0, 1.0, 1.0}, 15);
+  BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(),
+      correctPoints.begin(), correctPoints.end());
+}
+
+BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
+  sgpp::base::SLinearBase basis1d;
+  const HeterogeneousBasis basis(2, basis1d, false);
+  const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 2, basis, false);
+  OperationEvalCombinationGrid op(combinationGrid);
+  const std::vector<DataVector> surpluses = {
+      DataVector{1.0, -2.0, -1.0}, DataVector{-0.5, 0.5, 1.0}, DataVector{5.0}};
+  DataVector point({0.625, 0.375});
+  // 1 * (1.0*(0*0.75) + -2.0*(0.5*0.75) + -1.0*(0.5*0.75))
+  // + 1 * (-0.5*(0.75*0.5) + 0.5*(0.75*0.5) + 1.0*(0.75*0))
+  // + (-1) * 5.0*0.75*0.75
+  // = (0 - 0.75 - 0.375) + (-0.1875 + 0.1875 + 0) - 2.8125 = -1.125 + 0 - 2.8125 = -3.9375
+  BOOST_CHECK_EQUAL(op.eval(surpluses, point), -3.9375);
+
+  DataMatrix points({0.625, 0.375, 0.625, 0.375}, 2);
+  DataVector result;
+  op.multiEval(surpluses, points, result);
+  BOOST_CHECK_EQUAL(result[0], -3.9375);
+  BOOST_CHECK_EQUAL(result[1], -3.9375);
+}
+
+BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
+  sgpp::base::SLinearBase basis1d;
+  const HeterogeneousBasis basis(2, basis1d);
+  const FullGrid fullGrid({2, 1}, basis);
+  OperationPoleHierarchisationLinear operationPole;
+  OperationUPFullGrid operation(fullGrid, operationPole);
+  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+      -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+  operation.apply(values);
+  const DataVector correctSurpluses{-0.5, 3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
+      -2.1875, 1.0, 2.0, -2.5, 0.5, -2.0, -1.0};
+
+  for (size_t i = 0; i < values.size(); i++) {
+    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
+  for (bool isBasisHierarchical : {true, false}) {
+    sgpp::base::SBsplineBase basis1d(3);
+    const HeterogeneousBasis basis(2, basis1d, isBasisHierarchical);
+    const FullGrid fullGrid({2, 1}, basis);
+    std::vector<std::unique_ptr<OperationPole>> operationPole;
+    OperationPoleHierarchisationGeneral::fromHeterogenerousBasis(basis, operationPole);
+    OperationUPFullGrid operation(fullGrid, operationPole);
+    DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+                      -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+    operation.apply(values);
+    DataVector correctSurpluses;
+
+    if (isBasisHierarchical) {
+      correctSurpluses = DataVector{-4.34548191029053, 11.29388598889826, -0.45638469432632633,
+          8.30837174457185, -3.402942074462426, -4.7579856595053664, 10.752772401474628,
+          4.220642134584388, -8.117821514507945, 5.795370207225638, 8.991769884961288,
+          -15.38082204309674, 3.036651517372788, -7.852574819533291, -3.5702774351738715};
+    } else {
+      correctSurpluses = DataVector{-2.860096153846154, 5.333241758241758, -3.044299450549451,
+          3.4689560439560445, -3.4386675824175827, -1.101923076923078, 10.83626373626374,
+          4.042582417582418, -4.506593406593407, 2.4123626373626372, 5.998557692307693,
+          -7.601373626373627, 3.8355082417582422, -4.365659340659341, -1.4800137362637362};
+    }
+
+    for (size_t i = 0; i < values.size(); i++) {
+      BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
     }
   }
 }
 
-BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
+  sgpp::base::SBsplineBase basis1d;
+  const HeterogeneousBasis basis(2, basis1d);
+  const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 1, basis);
+  const std::vector<DataVector> originalValues = {
+      DataVector{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0}, DataVector{5.0, 2.5, -1.5, 0.0, 2.0, -1.0},
+      DataVector{1.0, -2.0, -1.0, 0.5}};
+
+  {
+    OperationPoleNodalisationBspline operationPole(3);
+    OperationUPCombinationGrid operation(combinationGrid, operationPole);
+    std::vector<DataVector> values = originalValues;
+
+    operation.apply(values);
+
+    BOOST_CHECK_CLOSE(values[0][0], -3.83571429, 1e-6);
+    BOOST_CHECK_CLOSE(values[0][1], 9.34285714, 1e-6);
+    BOOST_CHECK_CLOSE(values[0][2], -2.33571429, 1e-6);
+    BOOST_CHECK_CLOSE(values[0][3], 2.96785714, 1e-6);
+    BOOST_CHECK_CLOSE(values[0][4], -5.87142857, 1e-6);
+    BOOST_CHECK_CLOSE(values[0][5], 3.71785714, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][0], 12.66428571, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][1], 2.7, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][2], -8.65714286, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][3], 1.2, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][4], 7.56428571, 1e-6);
+    BOOST_CHECK_CLOSE(values[1][5], -3.9, 1e-6);
+    BOOST_CHECK_CLOSE(values[2][0], 4.56, 1e-6);
+    BOOST_CHECK_CLOSE(values[2][1], -6.24, 1e-6);
+    BOOST_CHECK_CLOSE(values[2][2], -3.84, 1e-6);
+    BOOST_CHECK_CLOSE(values[2][3], 3.36, 1e-6);
+  }
+
+  {
+    OperationPoleNodalisationLinear operationPole;
+    OperationUPCombinationGrid operation(combinationGrid, operationPole);
+    std::vector<DataVector> values = originalValues;
+
+    operation.apply(values);
+
+    BOOST_CHECK_EQUAL(values[0][0], -0.5);
+    BOOST_CHECK_EQUAL(values[0][1], 3.0);
+    BOOST_CHECK_EQUAL(values[0][2], 0.25);
+    BOOST_CHECK_EQUAL(values[0][3], 0.5);
+    BOOST_CHECK_EQUAL(values[0][4], -1.0);
+    BOOST_CHECK_EQUAL(values[0][5], 1.0);
+    BOOST_CHECK_EQUAL(values[1][0], 5.0);
+    BOOST_CHECK_EQUAL(values[1][1], 2.5);
+    BOOST_CHECK_EQUAL(values[1][2], -1.5);
+    BOOST_CHECK_EQUAL(values[1][3], 0.0);
+    BOOST_CHECK_EQUAL(values[1][4], 2.0);
+    BOOST_CHECK_EQUAL(values[1][5], -1.0);
+    BOOST_CHECK_EQUAL(values[2][0], 1.0);
+    BOOST_CHECK_EQUAL(values[2][1], -2.0);
+    BOOST_CHECK_EQUAL(values[2][2], -1.0);
+    BOOST_CHECK_EQUAL(values[2][3], 0.5);
+  }
+}
