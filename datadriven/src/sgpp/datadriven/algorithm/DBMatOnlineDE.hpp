@@ -247,6 +247,7 @@ class DBMatOnlineDE : public DBMatOnline {
   // pointer to distributed b total points
   std::unique_ptr<DataVectorDistributed> bTotalPointsDistributed;
 
+  // Note(Sebastian Kreisel) In the learner config this is called learningRate
   double beta;
   size_t totalPoints;
   DataMatrix *testMat, *testMatRes;

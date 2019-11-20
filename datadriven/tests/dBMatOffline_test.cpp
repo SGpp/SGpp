@@ -20,6 +20,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(dBMatOffline_test)
@@ -41,7 +42,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
   };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -124,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -171,7 +172,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -218,7 +219,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{

@@ -18,6 +18,7 @@
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <memory>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -215,8 +216,13 @@ class ModelFittingBase {
    * @param geometryConfig from configuration file
    * @return interactions
    */
-  std::vector<std::vector<size_t>> getInteractions(
-      const GeometryConfiguration &geometryConfig) const;
+  std::set<std::set<size_t>> getInteractions(
+      const GeometryConfiguration &geometryConfig);
+
+  /*
+   * The set of interactions
+   */
+  std::unique_ptr<std::set<std::set<size_t>>> interactions;
 
   /**
    * Configuration object for the fitter.

@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -47,6 +48,15 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
+  this->hasObjectStore = false;
+}
+
+ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<DBMatObjectStore> objectStore)
+    : ModelFittingDensityEstimationOnOff(config) {
+  this->objectStore = objectStore;
+  this->hasObjectStore = true;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -72,13 +82,14 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
 
   // clear model
   reset();
 
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
-  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
+  // std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
@@ -88,9 +99,37 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
 
-  // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  // If the permutation and blow-up approach is applicable to the decomposition type, an object
+  // store is given and the offline permutation method is configured, the offline object is obtained
+  // from the permutation factory
+  if (this->hasObjectStore) {
+    const DBMatOffline* objectFromStore =
+        this->objectStore->getObject(gridConfig, geometryConfig, refinementConfig,
+                                     regularizationConfig, densityEstimationConfig);
+
+    if (objectFromStore != nullptr) {
+      offline = objectFromStore->clone();
+    }
+  }
+
+  if (DBMatOfflinePermutable::PermutableDecompositions.find(
+          densityEstimationConfig.decomposition_) !=
+          DBMatOfflinePermutable::PermutableDecompositions.end() &&
+      this->hasObjectStore && useOfflinePermutation) {
+    // Initialize the permutation factory. If a database path is specified, the path is pased to the
+    // permutation factory
+    DBMatPermutationFactory permutationFactory;
+    if (databaseConfig.filePath.empty()) {
+      permutationFactory = DBMatPermutationFactory(this->objectStore);
+    } else {
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+    }
+    offline = permutationFactory.getPermutedObject(
+        config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
+        config->getRegularizationConfig(), config->getDensityEstimationConfig());
+    offline->interactions = getInteractions(geometryConfig);
+  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -108,6 +147,10 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
+    if (this->hasObjectStore) {
+      this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
+                                   regularizationConfig, densityEstimationConfig, offline->clone());
+    }
   }
 
   // todo(): non-parallel version of regularization here?
@@ -125,7 +168,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,
                                  this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);

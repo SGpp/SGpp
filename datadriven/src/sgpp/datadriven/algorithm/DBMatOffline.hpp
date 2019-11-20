@@ -16,6 +16,7 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -76,7 +77,7 @@ class DBMatOffline {
    * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
    * the caller.
    */
-  virtual DBMatOffline* clone() = 0;
+  virtual DBMatOffline* clone() const = 0;
 
   /**
    * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined
@@ -153,7 +154,7 @@ class DBMatOffline {
    * @param grid The grid object the matrix is based on
    * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  virtual void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  virtual void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
@@ -161,8 +162,8 @@ class DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                               DensityEstimationConfiguration& densityEstimationConfig) = 0;
+  virtual void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                               const DensityEstimationConfiguration& densityEstimationConfig) = 0;
 
   /**
    * The parallel/distributed version of decomposeMatrix(...)
@@ -233,7 +234,7 @@ class DBMatOffline {
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)
-  std::vector<std::vector<size_t>> interactions;
+  std::set<std::set<size_t>> interactions;
 
  protected:
   /**
@@ -242,7 +243,7 @@ class DBMatOffline {
    * @param interactions the interactions to populate
    */
   void parseInter(const std::string& fileName,
-                  std::vector<std::vector<size_t>>& interactions) const;
+                  std::set<std::set<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

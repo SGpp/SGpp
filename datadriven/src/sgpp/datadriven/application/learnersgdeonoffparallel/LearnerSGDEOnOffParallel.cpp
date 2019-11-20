@@ -31,6 +31,7 @@
 #include <utility>
 #include <list>
 #include <numeric>
+#include <set>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 using sgpp::base::Grid;
@@ -91,7 +92,7 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
   for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
     // Create a grid
     std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
     std::unique_ptr<DBMatOffline> offlineCloned =
         std::unique_ptr<DBMatOffline>{offline->clone()};
@@ -372,13 +373,16 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
 
   // Copy the vector of grids for typecasting
   std::vector<Grid*> gridVector;
+  std::vector<double> priorVector;
   gridVector.reserve(grids.size());
   for (size_t idx = 0; idx < grids.size(); idx++) {
     gridVector.push_back(&(*(grids[idx])));
+    priorVector.push_back(prior.at(classLabels[idx]));
   }
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, adaptivityConfig.noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, priorVector,
+                                         adaptivityConfig.noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -392,7 +396,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-    gridVector, alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
+    gridVector, alphas, priorVector, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {

@@ -14,14 +14,14 @@
 #endif /* USE_GSL */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-class DBMatOfflineOrthoAdapt : public DBMatOffline {
+class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
  public:
   /**
    * Constructor
@@ -37,7 +37,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   explicit DBMatOfflineOrthoAdapt(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   bool isRefineable() override;
 
@@ -66,7 +66,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
+  void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
@@ -76,8 +76,20 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
+
+  /**
+   * @brief First permutes the rows of the orthogonal matrix Q.
+   * I.e. Q' T (Q')^T = (PQ) T (PQ)^T where P is the permutation matrix obtained from the
+   * permutation approach.
+   * In the second step, the dimension blow-up factor is multiplied to T^{-1}.
+   *
+   * @param baseGridConfig Grid configuration of the base object
+   * @param desiredGridConfig Grid configuration of the desired object
+   */
+  void permuteDecomposition(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                            const sgpp::base::GeneralGridConfiguration& desiredGridConfig) override;
 
   /**
    * The parallel/distributed version of decomposeMatrix(...)

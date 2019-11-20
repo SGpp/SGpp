@@ -10,11 +10,12 @@
       			"level": "3"
     		},
 		"geometryConfig": {
-			"dim":[
-				1,
-				1
-			],
-			"stencil": "DN"
+			"dim":[[1,1]],
+			"stencils": [
+				{
+					"stencil": "DirectNeighbour"
+				}
+			]
 		},
     		"regularizationConfig":{
 			"regularizationType": "Identity",

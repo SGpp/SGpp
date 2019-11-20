@@ -9,6 +9,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
@@ -40,6 +41,15 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param config configuration object that specifies grid, refinement, and regularization
    */
   explicit ModelFittingClassification(const FitterConfigurationClassification& config);
+
+  /**
+   * @brief Constructor with specified object store.
+   *
+   * @param config Configuration object that specifies grid, refinement, and regularization
+   * @param objectStore Offline object store for already decomposed offline objects.
+   */
+  explicit ModelFittingClassification(const FitterConfigurationClassification& config,
+                                      std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
    * Fits the models for all classes based on the data given in the dataset parameter
@@ -128,6 +138,18 @@ class ModelFittingClassification : public ModelFittingBase {
 
  private:
   /**
+   * @brief Offline object store for already decomposed offline objects.
+   *
+   */
+  std::shared_ptr<DBMatObjectStore> objectStore;
+
+  /**
+   * @brief Flag to specify whether the instance has an object store.
+   *
+   */
+  bool hasObjectStore;
+
+  /**
    * Translates a class label to an index for the models vector. If the class is not present
    * it will create a new index for this class
    * @param label the label the translate
@@ -135,14 +157,18 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   size_t labelToIdx(double label);
 
+  std::vector<double> getClassPriors() const;
+
   /**
    * Returns the refinement functor suitable for the model settings.
    * @param grids vector of pointers to grids for each class
-   * @param surpluses vector of pointers to the suprluses for each class
+   * @param surpluses vector of pointers to the surpluses for each class
+   * @param priors vector of priors for each class
    * @return pointer to a refinement functor that suits the model settings
    */
   MultiGridRefinementFunctor* getRefinementFunctor(std::vector<Grid*> grids,
-                                                   std::vector<DataVector*> surpluses);
+                                                   std::vector<DataVector*> surpluses,
+                                                   std::vector<double> priors);
 
   /**
    * Creates a density estimation model that fits the model settings.

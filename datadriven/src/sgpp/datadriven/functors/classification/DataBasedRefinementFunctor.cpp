@@ -21,13 +21,14 @@ namespace datadriven {
   DataBasedRefinementFunctor::
   DataBasedRefinementFunctor(std::vector<base::Grid*> grids,
                              std::vector<base::DataVector*> alphas,
+                             std::vector<double> priors,
                              base::DataMatrix* data,
                              base::DataVector* targets,
                              size_t refinements_num,
                              bool levelPen,
                              std::vector<double> coeff_a,
                              double thresh) :
-    grids(grids), alphas(alphas), evals(0, 0),
+    grids(grids), alphas(alphas), priors(priors), evals(0, 0),
     data(data), targets(targets), h(grids.size()),
     means(), coeff_a(coeff_a), current_grid_index(0),
     refinements_num(refinements_num),
@@ -102,7 +103,7 @@ namespace datadriven {
       opEval->eval(*alphas.at(i), evalVec);
       evals.setColumn(i, evalVec);
       means.push_back(evalVec.sum() *
-                      (1.0 / static_cast<double>(data->getNrows())));
+                      (priors.at(i) / static_cast<double>(data->getNrows())));
     }
 
     // Compute the sets H_k by pairwise H_kl for all class combiniations

@@ -28,7 +28,7 @@ class DBMatOfflineEigen : public DBMatOffline {
 
   explicit DBMatOfflineEigen(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object
@@ -69,8 +69,8 @@ class DBMatOfflineEigen : public DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
 };
 
 } /* namespace datadriven */
