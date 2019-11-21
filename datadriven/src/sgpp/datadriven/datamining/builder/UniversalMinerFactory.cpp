@@ -17,6 +17,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <string>
 
@@ -63,11 +65,22 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
 }
 
 Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const {
+  Visualizer* visualizer = nullptr;
+
   VisualizerConfiguration config;
 
   config.readParams(parser);
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+  if (fType == FitterType::DensityEstimation) {
+    visualizer = new VisualizerDensityEstimation(config);
+  } else if (fType == FitterType::RegressionLeastSquares) {
+    visualizer = new VisualizerDummy();
+  } else if (fType == FitterType::Classification) {
+    visualizer = new VisualizerClassification(config);
+  }
 
-  return new VisualizerDummy();
+  return visualizer;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */
