@@ -29,6 +29,8 @@ RefinementFunctorType RefinementFunctorTypeParser::parse(const std::string& inpu
     return RefinementFunctorType::GridPointBased;
   } else if (inputLower == "multipleclass") {
     return RefinementFunctorType::MultipleClass;
+  } else if (inputLower == "classification") {
+    return RefinementFunctorType::Classification;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
         "RefinementFunctorType";
@@ -47,7 +49,8 @@ RefinementFunctorTypeParser::refinementFunctorTypeMap = []() {
       std::make_pair(RefinementFunctorType::ZeroCrossing, "ZeroCrossing"),
       std::make_pair(RefinementFunctorType::DataBased, "DataBased"),
       std::make_pair(RefinementFunctorType::GridPointBased, "GridPointBased"),
-      std::make_pair(RefinementFunctorType::MultipleClass, "MultipleClass")
+      std::make_pair(RefinementFunctorType::MultipleClass, "MultipleClass"),
+      std::make_pair(RefinementFunctorType::Classification, "Classification")
   };
 }();
 
