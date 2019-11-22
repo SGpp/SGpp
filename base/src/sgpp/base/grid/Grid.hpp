@@ -82,21 +82,22 @@ enum class GeneralGridType {
  */
 struct GeneralGridConfiguration {
   // Grid "super" types
-  GeneralGridType generalType_;
+  GeneralGridType generalType_ = GeneralGridType::RegularSparseGrid;
   /// Grid Type, see enum
   sgpp::base::GridType type_ = GridType::Linear;
   /// number of dimensions
-  size_t dim_;
+  size_t dim_ = 0;
   /// number of levels
-  int level_;
+  int level_ = 3;
   /// vector of levels for each dimension
+  /// TODO(Sebastian Kreisel): initialize with some default value!
   std::vector<size_t> levelVector_;
   /// max. polynomial degree for poly basis
   size_t maxDegree_ = 1;
   /// level of boundary grid
   level_t boundaryLevel_ = 0;
   /// string to serialized grid
-  std::string filename_;
+  std::string filename_ = "";
   /// subgrid selection value t
   double t_ = 0.0;
   /// virtual destructor, since GeneralGridConfiguration is used as base class
@@ -129,13 +130,13 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
  */
 struct AdaptivityConfiguration {
   /// number of refinements
-  size_t numRefinements_;
+  size_t numRefinements_ = 1;
   /// refinement threshold for surpluses
-  double threshold_;
+  double threshold_ = 0.0;
   /// refinement type: false: classic, true: maxLevel
-  bool maxLevelType_;
+  bool maxLevelType_ = false;
   /// max. number of points to be refined
-  size_t noPoints_;
+  size_t noPoints_ = 5;
   /// max. percent of points to be refined
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results

@@ -29,6 +29,11 @@ using sgpp::datadriven::DBMatDatabase;
  * Use this example with a config that includes a database attribute in the
  * fitter config as well as an explicit dim in the gridConfig.
  * You may for example use config_databaseExample.json.
+ *
+ * From datadriven/examplesPipeline:
+ * $ ./ExampleDatabase config_databaseExample.json out.txt
+ *
+ * writes the database to out.txt.
  */
 
 int main(int argc, char** argv) {
@@ -68,7 +73,7 @@ int main(int argc, char** argv) {
    * The database has to be initialized. This is done by passing the file to the json
    * database file to the constructor of the DBMatDatabase class.
    */
-  DBMatDatabase database(databaseConfig.filepath);
+  DBMatDatabase database(databaseConfig.filePath);
 
   /**
    * Before the matrix can be initialized the underlying grid needs to be created

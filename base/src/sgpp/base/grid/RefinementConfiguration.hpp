@@ -16,7 +16,8 @@ enum class RefinementFunctorType {
   DataBased,
   ZeroCrossing,
   GridPointBased,
-  MultipleClass
+  MultipleClass,
+  Classification
 };
 
 /**

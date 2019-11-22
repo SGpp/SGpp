@@ -38,22 +38,27 @@ RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
     }
     case RefinementFunctorType::DataBased : {
       std::string errorMessage = "Unsupported refinement functor type DataBased "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::ZeroCrossing : {
       std::string errorMessage = "Unsupported refinement functor type ZeroCrossing "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::MultipleClass : {
       std::string errorMessage = "Unsupported refinement functor type MultipleClass "
-          "for classification!";
+          "for density estimation!";
+      throw new application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::Classification : {
+      std::string errorMessage = "Unsupported refinement functor type Classification "
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased : {
       std::string errorMessage = "Unsupported refinement functor type GridPointBased "
-          "for classification!";
+          "for density estimation!";
       throw new application_exception(errorMessage.c_str());
     }
   }

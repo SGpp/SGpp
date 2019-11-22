@@ -111,17 +111,17 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     // Initialize the permutation factory. If a database path is specified, the path is pased to the
     // permutation factory
     DBMatPermutationFactory permutationFactory;
-    if (databaseConfig.filepath.empty()) {
+    if (databaseConfig.filePath.empty()) {
       permutationFactory = DBMatPermutationFactory(this->objectStore);
     } else {
-      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filepath);
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
     }
     offline = permutationFactory.getPermutedObject(
         config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
         config->getRegularizationConfig(), config->getDensityEstimationConfig());
     offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filepath.empty()) {  // Intialize database if it is provided
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -160,7 +160,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,
                                  this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);

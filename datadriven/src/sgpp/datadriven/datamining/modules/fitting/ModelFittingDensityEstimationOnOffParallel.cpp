@@ -101,8 +101,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   DBMatOffline* offline = nullptr;
 
   // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  if (!databaseConfig.filePath.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -120,14 +120,11 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
 
     // add supported parallel version of offline decompositions here
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::OrthoAdapt ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::Chol ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-      // Note: do NOT compute the explicit inverse here for SMW_ decompositions, as regularization
-      // needs to be done first
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       offline->decomposeMatrixParallel(regularizationConfig, densityEstimationConfig, processGrid,
                                        parallelConfig);
+      // Note: do NOT compute the explicit inverse here for SMW_ decompositions, as regularization
+      // needs to be done first
     } else {
       offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     }
@@ -154,7 +151,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
 #endif /* USE_SCALAPACK */
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 

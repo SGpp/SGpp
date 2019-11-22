@@ -40,8 +40,6 @@
             "learningRate": 1.0
         },
         "parallelConfig": {
-            "rowBlockSize": 32,
-            "columnBlockSize": 32
         }
     }
 }

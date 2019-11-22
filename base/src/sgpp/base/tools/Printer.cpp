@@ -142,7 +142,7 @@ void Printer::printStatusEnd(const std::string& msg) {
   if (!statusPrintingEnabled) {
     // status printing disabled
     return;
-  } else if (statusLevel > verbose) {
+  } else if (statusLevel - 1 > verbose) {
     // verbose level too low
     statusLevel--;
     return;
