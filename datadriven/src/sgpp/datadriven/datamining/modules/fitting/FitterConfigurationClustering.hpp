@@ -7,7 +7,7 @@
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -15,7 +15,7 @@ namespace datadriven {
 /**
  * Configuration for fitter scenarios using clustring
  */
-class FitterConfigurationClustering : public FitterConfigurationDensityEstimation {
+class FitterConfigurationClustering : public FitterConfigurationClassification {
  public:
   FitterConfigurationClustering() = default;
 

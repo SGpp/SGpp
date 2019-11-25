@@ -39,7 +39,8 @@ ModelFittingBase::ModelFittingBase()
       interactions{nullptr},
       config{nullptr},
       dataset{nullptr},
-      solver{nullptr} {}
+      solver{nullptr},
+      firstEpoch (true){}
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
@@ -100,6 +101,10 @@ void ModelFittingBase::reconfigureSolver(SLESolver &solver,
 
 Dataset *ModelFittingBase::getDataset() {
   return dataset;
+}
+
+void ModelFittingBase::switchFirstEpochFlag() {
+  firstEpoch = false;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -24,6 +24,10 @@ const datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossval
   return crossvalidationConfig;
 }
 
+const datadriven::ClusteringConfiguration &FitterConfiguration::getClusteringConfig() const {
+  return clusteringConfig;
+}
+
 const datadriven::DensityEstimationConfiguration &FitterConfiguration::getDensityEstimationConfig()
     const {
   return densityEstimationConfig;
@@ -155,7 +159,10 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default;
   densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default;
 
-  databaseConfig.filePath = "";
+  clusteringConfig.noNearestNeighbors = 10;
+  clusteringConfig.densityThreshold = 0.1;
+
+  databaseConfig.filepath = "";
 
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.eps_ = 1e-12;

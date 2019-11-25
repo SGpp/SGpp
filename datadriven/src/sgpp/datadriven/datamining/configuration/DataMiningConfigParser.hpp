@@ -172,6 +172,7 @@ class DataMiningConfigParser {
   std::vector<std::string> parseStringArray(json::JSON::DictNode &dict, const std::string &key,
                                      std::vector<std::string> defaultValue,
                                      const std::string &parentNode) const;
+
   std::vector<size_t> parseUIntArray(json::JSON::DictNode &dict, const std::string &key,
                                      std::vector<size_t> defaultValue,
                                      const std::string &parentNode) const;

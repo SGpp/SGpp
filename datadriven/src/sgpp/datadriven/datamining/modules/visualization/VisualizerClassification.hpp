@@ -119,8 +119,6 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    */
   void initializeMatrices(ModelFittingBase &model, DataMatrix &classMatrix);
 
-
- private:
   /**
    * List of colors to add to the grids per class in high dimensional cases
    */

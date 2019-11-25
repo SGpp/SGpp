@@ -125,6 +125,9 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
         }
         iteration++;
       }
+      if (epoch == 0) {
+        fitter->switchFirstEpochFlag();
+      }
     }
     // Evaluate the final score on the validation data
     dataSource->reset();

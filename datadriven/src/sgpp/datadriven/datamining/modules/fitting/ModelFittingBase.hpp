@@ -153,6 +153,8 @@ class ModelFittingBase {
 
   Dataset* getDataset();
 
+  void switchFirstEpochFlag();
+
  protected:
   /**
    * Factory member function that generates a grid from configuration.
@@ -214,6 +216,11 @@ class ModelFittingBase {
    * Solver for the learning problem
    */
   std::unique_ptr<SLESolver> solver;
+
+  /**
+   * Flag to determine if the pipeline is execusting the first epoch.
+   */
+  bool firstEpoch = true;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

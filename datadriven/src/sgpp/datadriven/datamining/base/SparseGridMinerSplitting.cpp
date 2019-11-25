@@ -90,6 +90,9 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       }
       iteration++;
     }
+    if (epoch == 0) {
+      fitter->switchFirstEpochFlag();
+    }
   }
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }  // namespace datadriven

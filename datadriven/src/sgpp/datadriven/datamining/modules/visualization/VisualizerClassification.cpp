@@ -82,7 +82,7 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
                    config.getGeneralConfig().algorithm.end()) {
         DataMatrix heatMapClassificationMatrix;
         initializeMatrices(model, heatMapClassificationMatrix);
-        getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
+        getHeatmapsClassification(model, currentDirectory+"/Classification", heatMapClassificationMatrix);
       }
     }
     /* To be added after tsne is functioning again
@@ -245,7 +245,7 @@ void VisualizerClassification::getHeatmapsClassification(ModelFittingBase &model
 // 9° Repeat until the last column index exceeds the number of dimensions
 void VisualizerClassification::getHeatmapMore4DClassification(
 ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) {
-  std::string outputDir(currentDirectory+"/Classification"+
+  std::string outputDir(currentDirectory+
     "/Heatmaps/");
 
   std::vector <size_t> variableColumnIndexes = {0, 1, 2, 3};
@@ -320,7 +320,7 @@ ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) 
 // 4° Repeat steps 1 to 3 two more times
 void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &model,
   std::string currentDirectory, DataMatrix &classMatrix) {
-  std::string outputDir(currentDirectory+"/Classification/");
+  std::string outputDir(currentDirectory);
 
   // Dummy to reutilize the storejson method
   std::vector <size_t> variableColumnIndexes = {0, 1, 2};
@@ -352,20 +352,19 @@ void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &mode
 }
 void VisualizerClassification::getHeatmap2DClassification(
   ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) {
-  std::string outputDir(currentDirectory+"/Classification/");
+  std::string outputDir(currentDirectory);
 
   DataMatrix heatMapResults(classMatrix);
   DataVector evaluation(classMatrix.getNrows());
-
   model.evaluate(classMatrix, evaluation);
-
   heatMapResults.appendCol(evaluation);
 
   if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
-  CSVTools::writeMatrixToCSVFile(outputDir+"ClassificationModel", heatMapResults);
+  CSVTools::writeMatrixToCSVFile(outputDir+"/ClassificationModel", heatMapResults);
   } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+    std::cout << "Storing json" <<std::endl;
     storeHeatmapJsonClassification(heatMapResults,
-    model, outputDir+"ClassificationModel");
+    model, outputDir+"/ClassificationModel");
   }
 }
 
@@ -418,7 +417,7 @@ void VisualizerClassification::storeTsneJson(DataMatrix &matrix, ModelFittingBas
   jsonOutput["layout"]["title"].addIDAttr("text", "\"TSNE Compression\"");
   jsonOutput["layout"]["title"].addIDAttr("x", 0.5);
 
-  jsonOutput.serialize(currentDirectory + "/Classification/tsneCompression.json");
+  jsonOutput.serialize(currentDirectory + "/tsneCompression.json");
 }
 
 void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix,
@@ -430,6 +429,7 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
 
   ModelFittingClassification* classificationModel =
     dynamic_cast<ModelFittingClassification*>(&model);
+
 
   auto models = classificationModel->getModels();
 
