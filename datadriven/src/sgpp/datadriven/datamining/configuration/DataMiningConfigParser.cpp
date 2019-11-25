@@ -752,6 +752,34 @@ std::vector<int64_t> DataMiningConfigParser::parseIntArray(DictNode &dict, const
   }
 }
 
+//(Niklas) Adapted from parseArrayOfIntArrays
+std::vector<std::vector<double>> DataMiningConfigParser::parseArrayOfDoubleArrays(
+    DictNode &dict, const std::string &key, std::vector<std::vector<double>> defaultValue,
+    const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<std::vector<double>> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        std::vector<double> entry;
+        for (size_t j = 0; j < dict[key][i].size(); j++) {
+          entry.push_back(dict[key][i][j].getDouble());
+        }
+
+        array.push_back(entry);
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse array of double arrays" + parentNode + "[" + key +
+                             "] from string" + dict[key].get() + ": " + e.what();
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
+    return defaultValue;
+  }
+}
+
 // (Sebastian) Adapted from parseIntArray without much thought
 std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, const std::string &key,
                                                              std::vector<double> defaultValue,
@@ -967,24 +995,18 @@ void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
         &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
     parseRosenblattTransformationConfig(*rosenblattTransformationConfig, config.rosenblattConfig,
                                         defaults.rosenblattConfig, "rosenblattConfig");
-  } else {
-    std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
-                 "[rosenblattConfig]. Falling back to default values."
-              << std::endl;
-    config.rosenblattConfig = defaults.rosenblattConfig;
   }
-
   // If type Normalization parse Normalizationconfig
-    if (config.type == DataTransformationType::NORMALIZATION){
-      auto normalizationTransformationConfig == static_cast<DictNode *>(
-  	&(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
-      parseNormalizationTransformation(*normalizationTransformationConfig, config.normalizationConfig,
-  				     defaults.normalizationConfig, "normalizationConfig");
+  else if (config.type == DataTransformationType::NORMALIZATION){
+    auto normalizationTransformationConfig = static_cast<DictNode *>(
+  	    &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
+    parseNormalizationTransformationConfig(*normalizationTransformationConfig,
+    		                               config.normalizationConfig, defaults.normalizationConfig,
+										   "normalizationConfig");
     } else {
       std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
-                   "[normalizationConfig]. Falling back to default values."
-  	      << std::endl;
-      config.normalizationConfig = defaults.normalizationConfig;
+                   "Using default values."
+  	  << std::endl;
      }
 }
 
@@ -1004,9 +1026,11 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
 void DataMiningConfigParser::parseNormalizationTransformationConfig(
     DictNode &dict, NormalizationTransformationConfig &config,
     const NormalizationTransformationConfig &defaults, const std::string &parentNode) const {
-  config.method = parseString (dict, "method", defaults.method, parentNode);
-  config.manualInput = parseBoolean (dict, "method", defaults.manualInput, parentNode);
-  config.minmaxInput_1 = parseDoubleArray (dict, "minmaxInput_1", defaults,minmaxINput_1, parentNode);
+  config.method = parseString(dict, "method", defaults.method, parentNode);
+  config.manualInput = parseBool(dict, "manualInput", defaults.manualInput, parentNode);
+  config.minmaxInput = parseArrayOfDoubleArrays(dict, "minmaxInput", defaults.minmaxInput, parentNode);
+  config.searchPortion = parseDouble(dict, "searchPortion", defaults.searchPortion, parentNode);
+  config.minmaxStdDeviation = parseInt(dict, "minmaxStdDeviation", defaults.minmaxStdDeviation, parentNode);
 }
 
 

@@ -37,6 +37,22 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
+Dataset* DataSource::getTransformedSamples(Dataset* dataset){
+
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+    if (!dataTransformation->initialized){
+      SampleProvider* initializationSampleProvider = sampleProvider->clone();
+      initializationSampleProvider->reset();
+      Dataset* datasetInitialization = initializationSampleProvider->getAllSamples();
+      dataTransformation->initialize(datasetInitialization, config.dataTransformationConfig);
+      dataTransformation->initialized = true;
+    }
+    return dataTransformation->doTransformation(dataset);
+  } else {
+    return dataset;
+  }
+}
+
 Dataset* DataSource::getAllSamples() {
   Dataset* dataset = nullptr;
 
@@ -48,12 +64,7 @@ Dataset* DataSource::getAllSamples() {
 
   sampleProvider->getNextSamples(currentIteration*config.batchSize);
   // Transform dataset if wanted
-  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-    dataTransformation->initialize(dataset, config.dataTransformationConfig);
-    return dataTransformation->doTransformation(dataset);
-  } else {
-    return dataset;
-  }
+  return this->getTransformedSamples(dataset);
 }
 
 Dataset* DataSource::getNextSamples() {
@@ -65,29 +76,19 @@ Dataset* DataSource::getNextSamples() {
     dataset = sampleProvider->getAllSamples();
 
     // Transform dataset if wanted
-    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-      dataTransformation->initialize(dataset, config.dataTransformationConfig);
-      return dataTransformation->doTransformation(dataset);
-    } else {
-      return dataset;
-    }
+    return this->getTransformedSamples(dataset);
     // several iterations
   } else {
     dataset = sampleProvider->getNextSamples(config.batchSize);
     currentIteration++;
-
     // If data transformation wanted and first batch -> initialize transformation
-    if (currentIteration == 1 &&
-        !(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-      dataTransformation->initialize(dataset, config.dataTransformationConfig);
-      return dataTransformation->doTransformation(dataset);
+    if (currentIteration == 1) {
+      return this->getTransformedSamples(dataset);
     }
-
     // Transform dataset if wanted
-    if (!(config.dataTransformationConfig.type == DataTransformationType::NONE))
-      return dataTransformation->doTransformation(dataset);
-    else
-      return dataset;
+    else {
+      return this->getTransformedSamples(dataset);
+    }
   }
 }
 

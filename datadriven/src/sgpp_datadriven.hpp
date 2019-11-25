@@ -157,6 +157,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformationConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorFactory.hpp>
@@ -172,6 +173,7 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/FileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>

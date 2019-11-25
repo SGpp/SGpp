@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformationConfig.hpp>
 
 #include <string>
 
@@ -15,7 +16,7 @@ namespace datadriven {
 /**
  * Supported transformation types for sgpp::datadriven::DataTransformation
  */
-enum class DataTransformationType { NONE, ROSENBLATT };
+enum class DataTransformationType { NONE, ROSENBLATT, NORMALIZATION };
 
 struct DataTransformationConfig {
   /*
@@ -24,6 +25,8 @@ struct DataTransformationConfig {
   DataTransformationType type = DataTransformationType::NONE;
 
   RosenblattTransformationConfig rosenblattConfig;
+
+  NormalizationTransformationConfig normalizationConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

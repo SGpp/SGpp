@@ -147,11 +147,13 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/GzipFileSampleDecorator.hpp"
 #endif /* ZLIB */
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformationConfig.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformationConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationConfig.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp"
 %ignore sgpp::datadriven::DataTransformation::DataTransformation(DataTransformation &&);
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformation.hpp"
 
 %ignore sgpp::datadriven::DataSource::begin;
 %ignore sgpp::datadriven::DataSource::end;

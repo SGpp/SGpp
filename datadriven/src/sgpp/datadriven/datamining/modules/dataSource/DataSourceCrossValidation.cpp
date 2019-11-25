@@ -34,6 +34,7 @@ void DataSourceCrossValidation::reset() {
   delete validationData;
   size_t validationSize = shuffling->getCurrentFoldSize(sampleProvider->getNumSamples());
   validationData = sampleProvider->getNextSamples(validationSize);
+  validationData = DataSource::getTransformedSamples(validationData);
 }
 
 void DataSourceCrossValidation::setFold(size_t foldIdx) {

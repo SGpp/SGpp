@@ -17,7 +17,11 @@ DataTransformationType DataTransformationTypeParser::parse(const std::string &in
 
   if (inputLower.compare("rosenblatt") == 0) {
     return DataTransformationType::ROSENBLATT;
-  } else {
+  }
+  if (inputLower.compare("normalization") == 0) {
+      return DataTransformationType::NORMALIZATION;
+    }
+  else {
     return DataTransformationType::NONE;
   }
 }
@@ -30,7 +34,9 @@ const DataTransformationTypeParser::TransformationTypeMap_t
     DataTransformationTypeParser::transformationTypeMap = []() {
   return DataTransformationTypeParser::TransformationTypeMap_t{
       std::make_pair(DataTransformationType::NONE, "None"),
-      std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt")};
+      std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt"),
+  	  std::make_pair(DataTransformationType::NORMALIZATION, "Normalization")
+  };
 }();
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -160,6 +160,11 @@ class DataMiningConfigParser {
     const std::string &defaultValue, const std::string &parentNode) const;
   double parseDouble(json::JSON::DictNode &dict, const std::string &key, double defaultValue,
                      const std::string &parentNode) const;
+
+  std::vector<std::vector<double>> parseArrayOfDoubleArrays(json::JSON::DictNode &dict,
+		         const std::string &key, std::vector<std::vector<double>> defaultValue,
+				 const std::string &parentNode) const;
+
   std::vector<double> parseDoubleArray(json::JSON::DictNode &dict, const std::string &key,
                                        std::vector<double> defaultValue,
                                        const std::string &parentNode) const;
