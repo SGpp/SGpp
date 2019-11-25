@@ -167,6 +167,12 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
       this->lhsMatrix.getPointer(), processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_,
       parallelConfig.columnBlockSize_);
 
+  // copy the lhsDistributed matrix to preserve the original undecomposed system matrix
+  DataMatrixDistributed lhsCopyDistributed =
+      DataMatrixDistributed(lhsDistributed.getProcessGrid(), lhsDistributed.getGlobalRows(),
+                            lhsDistributed.getGlobalCols(), lhsDistributed.getRowBlockSize(),
+                            lhsDistributed.getColumnBlockSize());
+
   if (dim_a <= 1) {
     this->q_ortho_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
         this->q_ortho_matrix_.getPointer(), processGrid, this->q_ortho_matrix_.getNrows(),
@@ -196,23 +202,23 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
   double* work = new double[1];
   int info;
   // ask pdsytrd_ how much workspace it needs
-  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+  pdsytrd_("L", dim_a, lhsCopyDistributed.getLocalPointer(), 1, 1,
+           lhsCopyDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
            work, lwork, info);
   lwork = static_cast<int>(work[0]);
   work = new double[lwork];
   // pdsytrd_ amounts to hessenberg_decomposition of non-parallel version
-  pdsytrd_("L", dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
+  pdsytrd_("L", dim_a, lhsCopyDistributed.getLocalPointer(), 1, 1,
+           lhsCopyDistributed.getDescriptor(), d.getPointer(), sd.getPointer(), tau.getPointer(),
            work, lwork, info);
   free(work);
 
   // collect diag, subdiag, and tau
   for (size_t i = 0; i < dim_a; i++) {
-    d.set(i, lhsDistributed.get(i, i));
+    d.set(i, lhsCopyDistributed.get(i, i));
   }
   for (size_t i = 0; i < dim_a - 1; i++) {
-    sd.set(i, lhsDistributed.get(i + 1, i));
+    sd.set(i, lhsCopyDistributed.get(i + 1, i));
   }
 
   // inverting middle matrix with added lambda: T <~ (T + lambda*I)^-1
@@ -238,15 +244,15 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
   // ask pdormtr_ how much workspace it needs
   double* work2 = new double[1];
   lwork = -1;
-  pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), tau.getPointer(),
+  pdormtr_("L", "L", "N", dim_a, dim_a, lhsCopyDistributed.getLocalPointer(), 1, 1,
+           lhsCopyDistributed.getDescriptor(), tau.getPointer(),
            this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
            this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
   lwork = static_cast<int>(work2[0]);
   work2 = new double[lwork];
   // pdormtr_ is used on Q (=identity) to obtain Q by overwriting Id*Q into it
-  pdormtr_("L", "L", "N", dim_a, dim_a, this->lhsDistributed.getLocalPointer(), 1, 1,
-           this->lhsDistributed.getDescriptor(), tau.getPointer(),
+  pdormtr_("L", "L", "N", dim_a, dim_a, lhsCopyDistributed.getLocalPointer(), 1, 1,
+           lhsCopyDistributed.getDescriptor(), tau.getPointer(),
            this->q_ortho_matrix_distributed_.getLocalPointer(), 1, 1,
            this->q_ortho_matrix_distributed_.getDescriptor(), work2, lwork, info);
   free(work2);
@@ -264,8 +270,12 @@ void DBMatOfflineOrthoAdapt::hessenberg_decomposition(sgpp::base::DataVector& di
 #ifdef USE_GSL
   size_t dim_a = lhsMatrix.getNrows();
 
+  // copy the lhsMatrix to preserve the original undecomposed system matrix
+  DataMatrix lhsCopy = DataMatrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
+  lhsCopy.copyFrom(lhsMatrix);
+
   gsl_vector* tau = gsl_vector_alloc(dim_a - 1);
-  gsl_matrix_view gsl_lhs = gsl_matrix_view_array(lhsMatrix.getPointer(), dim_a, dim_a);
+  gsl_matrix_view gsl_lhs = gsl_matrix_view_array(lhsCopy.getPointer(), dim_a, dim_a);
   gsl_matrix_view gsl_q = gsl_matrix_view_array(q_ortho_matrix_.getPointer(), dim_a, dim_a);
   gsl_vector_view gsl_diag = gsl_vector_view_array(diag.getPointer(), dim_a);
   gsl_vector_view gsl_subdiag = gsl_vector_view_array(subdiag.getPointer(), dim_a - 1);
@@ -422,9 +432,10 @@ sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositi
   return sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 }
 
-const DataMatrix& DBMatOfflineOrthoAdapt::getUnmodifiedR() {
-  // lhs = Q * T * Q^T
-  return this->lhsMatrix;
+const DataMatrix& DBMatOfflineOrthoAdapt::getUnmodifiedR() { return this->lhsMatrix; }
+
+const DataMatrixDistributed& DBMatOfflineOrthoAdapt::getUnmodifiedRDistributed() {
+  return this->lhsDistributed;
 }
 
 void DBMatOfflineOrthoAdapt::updateRegularization(double lambda) {

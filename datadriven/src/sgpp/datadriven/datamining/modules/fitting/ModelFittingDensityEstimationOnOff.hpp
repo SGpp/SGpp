@@ -133,6 +133,13 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   void reset() override;
 
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the offline object and grid.
+   */
+  void resetTraining() override;
+
  private:
   /**
    * @brief The instances offline object store

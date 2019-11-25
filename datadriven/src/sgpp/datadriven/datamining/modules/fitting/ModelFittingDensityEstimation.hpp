@@ -85,6 +85,13 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void updateRegularization(double lambda) override = 0;
 
   /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * The decomposition from the offline phase is kept so that it can be reused.
+   */
+  void resetTraining() override = 0;
+
+  /**
    * Returns the refinement functor suitable for the model settings.
    * @return pointer to a refinement functor that suits the model settings
    */

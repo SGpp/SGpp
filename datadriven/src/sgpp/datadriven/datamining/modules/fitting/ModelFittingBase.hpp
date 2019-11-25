@@ -152,6 +152,11 @@ class ModelFittingBase {
   virtual void reset() = 0;
 
   /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  virtual void resetTraining() = 0;
+
+  /**
    * @returns the BLACS process grid, useful if the fitter uses ScaLAPACK
    */
   virtual std::shared_ptr<BlacsProcessGrid> getProcessGrid() const {
@@ -216,8 +221,7 @@ class ModelFittingBase {
    * @param geometryConfig from configuration file
    * @return interactions
    */
-  std::set<std::set<size_t>> getInteractions(
-      const GeometryConfiguration &geometryConfig);
+  std::set<std::set<size_t>> getInteractions(const GeometryConfiguration &geometryConfig);
 
   /*
    * The set of interactions

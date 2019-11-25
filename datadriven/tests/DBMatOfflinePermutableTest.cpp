@@ -8,6 +8,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
+#include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
 #include <set>
 #include <vector>
@@ -29,6 +30,21 @@ class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
   DBMatOffline* clone() const override { return new DBMatOfflineTest(); }
 
   bool isRefineable() override { return false; }
+
+  const DataMatrix& getUnmodifiedR() {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineTest::getUnmodifiedR() not implemented!");
+  }
+
+  const sgpp::datadriven::DataMatrixDistributed& getUnmodifiedRDistributed() {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineTest::getUnmodifiedRDistributed() not implemented!");
+  }
+
+  void updateRegularization(double lambda) {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineTest::updateRegularization() not implemented!");
+  }
 
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override {
     return sgpp::datadriven::MatrixDecompositionType::Chol;

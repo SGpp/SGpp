@@ -103,6 +103,13 @@ class ModelFittingClassification : public ModelFittingBase {
   };
 
   /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Decompositions are not discarded, but can be reused.
+   */
+  void resetTraining() override;
+
+  /**
    * Updates the regularization parameter lambda of the underlying model.
    *
    * @param double the new lambda parameter

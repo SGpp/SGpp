@@ -26,5 +26,12 @@ double NegativeLogLikelihood::measure(const DataVector &predictedValues,
   }
   return -ll;
 }
+
+double NegativeLogLikelihood::measureLowerIsBetter(const DataVector &predictedValues,
+                                                   const DataVector &trueValues,
+                                                   const ModelFittingBase &model,
+                                                   Dataset &testDataset) const {
+  return measure(predictedValues, trueValues, model, testDataset);
+}
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -55,6 +55,13 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
   const DataMatrix& getUnmodifiedR() override;
 
   /**
+   * Get the unmodified (without added lambda) distributed system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrixDistributed& getUnmodifiedRDistributed() override;
+
+  /**
    * Modifies the decomposition to update the regularization parameter lambda
    *
    * @param lambda New lambda value

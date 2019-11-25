@@ -47,6 +47,16 @@ class DBMatOfflineEigen : public DBMatOffline {
   }
 
   /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrixDistributed& getUnmodifiedRDistributed() override {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineEigen::getUnmodifiedRDistributed() is not implemented!");
+  }
+
+  /**
    * Modifies the decomposition to update the regularization parameter lambda
    *
    * @param lambda New lambda value

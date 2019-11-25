@@ -129,9 +129,17 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    *
    * @param double the new lambda parameter
    */
-   void updateRegularization(double lambda) override {
+  void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
         "ModelFittingDensityEstimationCombi::updateRegularization() is not implemented!");
+  }
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  void resetTraining() override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCombi::resetTraining() is not implemented!");
   }
 
  protected:

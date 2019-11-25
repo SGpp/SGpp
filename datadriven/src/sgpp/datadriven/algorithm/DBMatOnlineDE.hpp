@@ -139,10 +139,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
+   * @param parallelConfig ScaLAPACK configuration
+   * @param processGrid process grid for ScaLAPACK
    */
-  DataVector computeBFromBatchParallel(DataMatrix& m, Grid& grid,
-                                       const ParallelConfiguration& parallelConfig,
-                                       std::shared_ptr<BlacsProcessGrid> processGrid);
+  DataVectorDistributed computeBFromBatchParallel(
+      DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid);
 
   /**
    * Evaluates the density function at a certain point
@@ -219,6 +221,11 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
+
+  /**
+   * Resets the training state of the model.
+   */
+  void resetTraining();
 
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,

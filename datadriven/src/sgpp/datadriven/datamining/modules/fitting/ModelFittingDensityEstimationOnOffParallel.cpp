@@ -231,6 +231,28 @@ void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) 
   }
 }
 
+double ModelFittingDensityEstimationOnOffParallel::computeResidual(
+    DataMatrix& validationData) const {
+  DataVectorDistributed bValidation = online->computeBFromBatchParallel(
+      validationData, *grid, this->config->getDensityEstimationConfig(),
+      this->config->getParallelConfig(), this->processGrid);
+
+  DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed();
+
+#ifdef USE_SCALAPACK
+  // R * alpha - b_val
+  rMatrix.mult(alphaDistributed, bValidation, false, 1.0, -1.0);
+#else
+  throw base::not_implemented_exception("built withot ScaLAPACK");
+#endif /* USE_SCALAPACK */
+}
+
+void ModelFittingDensityEstimationOnOffParallel::updateRegularization(double lambda) {
+  if (grid != nullptr) {
+    this->online->getOfflineObject().updateRegularization(lambda);
+  }
+}
+
 bool ModelFittingDensityEstimationOnOffParallel::isRefinable() {
   if (grid != nullptr) {
     return online->getOfflineObject().isRefineable();
@@ -242,6 +264,13 @@ void ModelFittingDensityEstimationOnOffParallel::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+void ModelFittingDensityEstimationOnOffParallel::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
 }
 
 std::shared_ptr<BlacsProcessGrid> ModelFittingDensityEstimationOnOffParallel::getProcessGrid()

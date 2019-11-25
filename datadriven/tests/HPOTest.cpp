@@ -51,6 +51,8 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
   void reset() override {}
 
+  void resetTraining() override {}
+
   double evaluate(const DataVector &sample) override { return -420; }
 
   void evaluate(DataMatrix &samples, DataVector &results) override { results[0] = sqrt(value); }

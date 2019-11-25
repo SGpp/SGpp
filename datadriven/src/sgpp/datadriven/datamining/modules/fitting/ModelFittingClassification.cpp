@@ -394,6 +394,12 @@ void ModelFittingClassification::reset() {
   refinementsPerformed = 0;
 }
 
+void ModelFittingClassification::resetTraining() {
+  for (auto& model : models) {
+    model->resetTraining();
+  }
+}
+
 void ModelFittingClassification::updateRegularization(double lambda) {
   for (auto& model : models) {
     model->updateRegularization(lambda);

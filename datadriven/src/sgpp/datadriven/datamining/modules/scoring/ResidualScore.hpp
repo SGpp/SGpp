@@ -29,6 +29,18 @@ class ResidualScore : public Metric {
    */
   double measure(const DataVector &predictedValues, const DataVector &trueValues,
                  const ModelFittingBase &model, Dataset &testDataset) const override;
+
+  /**
+   * Measure the quality of the trained model. Gives the metric access to the trained model, as this
+   * is required for some scores.
+   *
+   * @param predictedValues ignored
+   * @param trueValues ignored
+   * @param model reference to the model
+   * @param testDataset dataset with test data
+   */
+  double measureLowerIsBetter(const DataVector &predictedValues, const DataVector &trueValues,
+                              const ModelFittingBase &model, Dataset &testDataset) const override;
 };
 
 } /* namespace datadriven */

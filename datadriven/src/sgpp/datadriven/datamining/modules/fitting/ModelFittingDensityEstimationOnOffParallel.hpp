@@ -129,25 +129,26 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    *
    * @returns the residual score
    */
-  double computeResidual(DataMatrix& validationData) const override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationOnOffParallel::computeResidual() is not implemented!");
-  };
+  double computeResidual(DataMatrix& validationData) const override;
 
   /**
    * Updates the regularization parameter lambda of the underlying model.
    *
    * @param double the new lambda parameter
    */
-  void updateRegularization(double lambda) override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationOnOffParallel::updateRegularization() is not implemented!");
-  }
+  void updateRegularization(double lambda) override;
 
   /**
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the decomposition and the grid.
+   */
+  void resetTraining() override;
 
   /**
    * @returns the BLACS process grid

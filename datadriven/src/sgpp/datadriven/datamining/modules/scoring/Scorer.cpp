@@ -16,19 +16,23 @@ namespace datadriven {
 
 Scorer::Scorer(Metric* metric) : metric{std::unique_ptr<Metric>{metric}} {}
 
-double Scorer::test(ModelFittingBase& model, Dataset& testDataset) {
+double Scorer::test(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter) {
 #ifdef USE_SCALAPACK
   if (model.getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
-    return testDistributed(model, testDataset);
+    return testDistributed(model, testDataset, lowerIsBetter);
   }
 #endif
   DataVector predictedValues(testDataset.getNumberInstances());
   model.evaluate(testDataset.getData(), predictedValues);
   // set score
+  if (lowerIsBetter) {
+    return metric->measureLowerIsBetter(predictedValues, testDataset.getTargets(), model,
+                                        testDataset);
+  }
   return metric->measure(predictedValues, testDataset.getTargets(), model, testDataset);
 }
 
-double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
+double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter) {
 #ifdef USE_SCALAPACK
   DataVector predictedValues(testDataset.getNumberInstances());
   model.evaluate(testDataset.getData(), predictedValues);
@@ -38,7 +42,12 @@ double Scorer::testDistributed(ModelFittingBase& model, Dataset& testDataset) {
   double score = 0.0;
   auto processGrid = model.getProcessGrid();
   if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
-    score = metric->measure(predictedValues, testDataset.getTargets(), model, testDataset);
+    if (lowerIsBetter) {
+      score = metric->measureLowerIsBetter(predictedValues, testDataset.getTargets(), model,
+                                           testDataset);
+    } else {
+      score = metric->measure(predictedValues, testDataset.getTargets(), model, testDataset);
+    }
     Cdgebs2d(processGrid->getContextHandle(), "All", "T", 1, 1, &score, 1);
   } else if (processGrid->isProcessInGrid()) {
     Cdgebr2d(processGrid->getContextHandle(), "All", "T", 1, 1, &score, 1, 0, 0);

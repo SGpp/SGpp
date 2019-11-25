@@ -22,5 +22,11 @@ double MSE::measure(const DataVector &predictedValues, const DataVector &trueVal
   const double error = tmp.l2Norm();
   return (error * error / static_cast<double>(tmp.getSize()));
 }
+
+double MSE::measureLowerIsBetter(const DataVector &predictedValues, const DataVector &trueValues,
+                                 const ModelFittingBase &model, Dataset &testDataset) const {
+  return measure(predictedValues, trueValues, model, testDataset);
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

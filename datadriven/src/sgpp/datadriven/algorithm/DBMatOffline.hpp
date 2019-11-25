@@ -100,6 +100,14 @@ class DBMatOffline {
   virtual const DataMatrix& getUnmodifiedR() = 0;
 
   /**
+   * Get the distributed version of the unmodified (without added lambda) system matrix R.
+   * Only possible in the ScaLAPACK version.
+   *
+   * @return Matrix R
+   */
+  virtual const DataMatrixDistributed& getUnmodifiedRDistributed() = 0;
+
+  /**
    * Modifies the decomposition to update the regularization parameter lambda
    *
    * @param lambda New lambda value
@@ -242,8 +250,7 @@ class DBMatOffline {
    * @param fileName path of the serialized DBMatOffline object
    * @param interactions the interactions to populate
    */
-  void parseInter(const std::string& fileName,
-                  std::set<std::set<size_t>>& interactions) const;
+  void parseInter(const std::string& fileName, std::set<std::set<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

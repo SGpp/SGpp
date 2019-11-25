@@ -20,5 +20,12 @@ double ResidualScore::measure(const DataVector &predictedValues, const DataVecto
   return score;
 }
 
+double ResidualScore::measureLowerIsBetter(const DataVector &predictedValues,
+                                           const DataVector &trueValues,
+                                           const ModelFittingBase &model,
+                                           Dataset &testDataset) const {
+  return measure(predictedValues, trueValues, model, testDataset);
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

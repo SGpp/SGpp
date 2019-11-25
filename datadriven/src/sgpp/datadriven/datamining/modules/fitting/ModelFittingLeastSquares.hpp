@@ -80,6 +80,14 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
   void reset() override;
 
   /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  void resetTraining() override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::resetTraining() is not implemented!");
+  }
+
+  /**
    * Should compute some kind of Residual to evaluate the fit of the model.
    *
    * In the case of density estimation, this is

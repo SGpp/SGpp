@@ -160,7 +160,7 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
       std::ostringstream out;
       out << "###############"
           << "Lambda optimizer iteration #" << (optimizerIteration) << std::endl
-          << "a: " << a << "b: " << b << "c: " << c << "d: " << d;
+          << "a: " << a << " b: " << b << " c: " << c << " d: " << d;
       print(out);
     }
     optimizerIteration++;
@@ -200,27 +200,17 @@ double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
       // The source does not provide any more samples
       break;
     }
-    if (verbose) {
-      /*std::ostringstream out;
-      out << "###############"
-          << "Iteration #" << (iteration) << std::endl
-          << "Batch size: " << numInstances;
-      print(out);*/
-    }
+
     // Train model on new batch
     fitter->update(*dataset);
-
-    if (verbose) {
-      // print("###############Iteration finished.");
-    }
     iteration++;
   }
 
   // score the model
-  double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
+  double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()), true);
 
   // reset the fitter (but only the online part) -> new method needed? is the reset() method right?
-  fitter->reset();
+  fitter->resetTraining();
 
   return scoreVal;
 }
