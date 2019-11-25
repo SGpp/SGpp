@@ -764,7 +764,6 @@ std::vector<std::vector<double>> DataMiningConfigParser::parseArrayOfDoubleArray
         for (size_t j = 0; j < dict[key][i].size(); j++) {
           entry.push_back(dict[key][i][j].getDouble());
         }
-
         array.push_back(entry);
       }
       return array;
