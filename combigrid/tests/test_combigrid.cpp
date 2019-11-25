@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
@@ -324,7 +325,220 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
   for (size_t i = 0; i < distributedValues.size(); i++) {
     BOOST_CHECK_EQUAL_COLLECTIONS(distributedValues[i].begin(), distributedValues[i].end(),
-        correctDistributedValues[i].begin(), correctDistributedValues[i].end());
+                                  correctDistributedValues[i].begin(),
+                                  correctDistributedValues[i].end());
+  }
+}
+
+BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
+  sgpp::base::SLinearBoundaryBase basis1d;
+  HeterogeneousBasis basis(3, basis1d);
+
+  CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 3, basis);
+
+  sgpp::base::GridStorage gridStorage(2);
+  combinationGrid.combinePoints(gridStorage);
+  BOOST_CHECK_EQUAL(gridStorage.getSize(), 37);
+  for (size_t i = 0; combinationGrid.getFullGrids().size(); ++i){
+    auto& fg = combinationGrid.getFullGrids()[i];
+    std::cout << fg.getLevel(0) << fg.getLevel(1) << combinationGrid.getCoefficients()[i] << std::endl;
+  }
+  const std::vector<DataVector> values = {
+      // 111111111
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // 111111111
+      DataVector(18, 1.0),
+      // 1 1 1 1 1
+      // |       |
+      // |       |
+      // |       |
+      // 1 1 1 1 1
+      // |       |
+      // |       |
+      // |       |
+      // 1 1 1 1 1
+      DataVector(15, 1.0),
+      // 0   0   0
+      // |       |
+      // 0   8   0
+      // |       |
+      // 0   0   0
+      // |       |
+      // 0   0   0
+      // |       |
+      // 0   0   0
+      DataVector({0.0, 0.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}),
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      // 1       1
+      DataVector(18, 1.0),
+      // 1 1 1 1 1
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // 1 1 1 1 1
+      DataVector(10, 1.0),
+      // 1   1   1
+      // |       |
+      // |       |
+      // |       |
+      // 1   1   1
+      // |       |
+      // |       |
+      // |       |
+      // 1   1   1
+      DataVector(9, 1.0),
+      // 1       1
+      // |       |
+      // 1       1
+      // |       |
+      // 1       1
+      // |       |
+      // 1       1
+      // |       |
+      // 1       1
+      DataVector(10, 1.0)};
+  // 000000000
+  // 0       0
+  // 0   8   0
+  // 0       0
+  // 0 0 0 0 0
+  // 0       0
+  // 0   0   0
+  // 0       0
+  // 000000000
+  const DataVector correctResult({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.0,
+                                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
+  //TODO(pollinta): calculate correct hierarchical surplusses
+  const std::vector<DataVector> correctDistributedValues = {
+      // 0000a0000
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // 0000a0000
+      DataVector(18, 0.0),
+      // 0 0 b 0 0
+      // |       |
+      // |       |
+      // |       |
+      // 0 0 b 0 0
+      // |       |
+      // |       |
+      // |       |
+      // 0 0 0 0 0
+      DataVector(15, 0.0),
+      // 0   0   0
+      // |       |
+      // 0   8   0
+      // |       |
+      // 0   0   0
+      // |       |
+      // 0   0   0
+      // |       |
+      // 0   0   0
+      DataVector({0.0, 0.0, 0.0, 0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}),
+      // 0       0
+      // 0       0
+      // d       d
+      // 0       0
+      // 0       0
+      // 0       0
+      // 0       0
+      // 0       0
+      // 0       0
+      DataVector(18, 0.0),
+      // 0 0 e 0 0
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // |       |
+      // 0 0 e 0 0
+      DataVector(10, 0.0),
+      // 0   f   0
+      // |       |
+      // |       |
+      // |       |
+      // 0   f   0
+      // |       |
+      // |       |
+      // |       |
+      // 0   0   0
+      DataVector(9, 0.0),
+      // 0       0
+      // |       |
+      // g       g
+      // |       |
+      // 0       0
+      // |       |
+      // 0       0
+      // |       |
+      // 0       0
+      DataVector(10, 0.0)};
+
+  BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(), values.size());
+
+  DataVector result;
+  // std::cout << result.toString() << std::endl;
+  combinationGrid.combineSparseGridValues(gridStorage, values, result);
+  std::cout << result.toString() << std::endl;
+
+  std::vector<size_t> order(gridStorage.getSize());
+  std::iota(order.begin(), order.end(), 0);
+  std::sort(order.begin(), order.end(), [&gridStorage](size_t a, size_t b) {
+    const double a1 = gridStorage.getPoint(a).getStandardCoordinate(1);
+    const double b1 = gridStorage.getPoint(b).getStandardCoordinate(1);
+
+    if (a1 != b1) {
+      return (a1 < b1);
+    } else {
+      const double a0 = gridStorage.getPoint(a).getStandardCoordinate(0);
+      const double b0 = gridStorage.getPoint(b).getStandardCoordinate(0);
+      return (a0 < b0);
+    }
+  });
+
+  for (size_t k = 0; k < gridStorage.getSize(); k++) {
+    BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]);
+  }
+
+  std::vector<DataVector> distributedValues;
+  combinationGrid.distributeValuesToFullGrids(gridStorage, result, distributedValues);
+  BOOST_CHECK_EQUAL(distributedValues.size(), correctDistributedValues.size());
+
+  // std::vector<DataVector> distributedValuesQP(distributedValues);
+  combinationGrid.distributeValuesToFullGridsQuantityPreserving(gridStorage, result,
+                                                                distributedValues);
+  BOOST_CHECK_EQUAL(distributedValues.size(), correctDistributedValues.size());
+
+  for (size_t i = 0; i < distributedValues.size(); i++) {
+    std::cout << i << std::endl;
+    std::cout << distributedValues[i].toString() << std::endl;
+    // BOOST_CHECK_EQUAL_COLLECTIONS(distributedValuesQP[i].begin(), distributedValuesQP[i].end(),
+    //     correctDistributedValuesQP[i].begin(), correctDistributedValuesQP[i].end());
   }
 }
 

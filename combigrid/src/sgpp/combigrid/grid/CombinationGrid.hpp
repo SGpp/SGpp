@@ -141,7 +141,25 @@ class CombinationGrid {
    *                          points of the full grid (the order is given by IndexVectorRange)
    */
   void distributeValuesToFullGrid(const base::GridStorage& gridStorage,
-      const base::DataVector& values, const FullGrid& fullGrid, base::DataVector& result) const;
+                                  const base::DataVector& values, const FullGrid& fullGrid,
+                                  base::DataVector& result) const;
+
+  /**
+   * Distribute values given on the combined grid to a specific full grid
+   * (which should be contained in this combination grid) in a "volume"-preserving manner.
+   * This is interesting in scenarios where conservation of the represented quantity is more
+   * important (e.g. PDEs) than exact function representation (e.g. interpolation).
+   *
+   * @param[in] gridStorage   GridStorage containing the combined grid
+   * @param[in] values        vector of values on the combined grid, same size as \c gridStorage
+   * @param[in] fullGrid      full grid, should be contained in this combination grid
+   * @param[out] result       vector of values on the full grid, same size as the number of grid
+   *                          points of the full grid (the order is given by IndexVectorRange)
+   */
+  void distributeValuesToFullGridQuantityPreserving(const base::GridStorage& gridStorage,
+                                                    const base::DataVector& values,
+                                                    const FullGrid& fullGrid,
+                                                    base::DataVector& result) const;
 
   /**
    * Distribute values given on the combined grid to the full grids contained in this combination
@@ -156,7 +174,24 @@ class CombinationGrid {
    *                          IndexVectorRange)
    */
   void distributeValuesToFullGrids(const base::GridStorage& gridStorage,
-      const base::DataVector& values, std::vector<base::DataVector>& result) const;
+                                   const base::DataVector& values,
+                                   std::vector<base::DataVector>& result) const;
+
+  /**
+   * Distribute values given on the combined grid to the full grids contained in this combination
+   * grid, using the quantity preserving distribution.
+   *
+   * @param[in] gridStorage   GridStorage containing the combined grid
+   * @param[in] values        vector of values on the combined grid, same size as \c gridStorage
+   * @param[out] result       vector of vectors with values on the full grids, every vector
+   *                          corresponds to one full grid of the combination grid, every vector
+   *                          has the same size as the number of grid points of the respective
+   *                          full grid (the order of DataVector entries is given by
+   *                          IndexVectorRange)
+   */
+  void distributeValuesToFullGridsQuantityPreserving(const base::GridStorage& gridStorage,
+                                                     const base::DataVector& values,
+                                                     std::vector<base::DataVector>& result) const;
 
   /**
    * @return dimensionality
