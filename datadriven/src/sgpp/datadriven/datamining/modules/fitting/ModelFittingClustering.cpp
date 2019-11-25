@@ -28,7 +28,8 @@ namespace datadriven {
 
 ModelFittingClustering::ModelFittingClustering(
   const FitterConfigurationClustering& config)
-  : refinementsPerformed{0} {
+  : ModelFittingBase(), refinementsPerformed{0} {
+  this->verboseSolver = true;
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationClustering>(config));
 
@@ -62,7 +63,7 @@ void ModelFittingClustering::update(Dataset& newDataset) {
   std::vector<size_t> deletedNodes;
   applyDensityThresholds(deletedNodes);
   //labeledSamples.resize(vpTree->getStoredItems().getNrows(), vpTree->getStoredItems().getNcols());
-  //detectComponentsAndLabel(deletedNodes);
+  detectComponentsAndLabel(deletedNodes);
   //std::cout<<labeledSamples.toString();
 }
 

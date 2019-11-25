@@ -98,8 +98,8 @@ namespace datadriven {
 
           VisualizerDensityEstimation::getHeatmap(**densityEstimationModel, outputDirectory,
                                                   heatMapMatrixDE);
-         // VisualizerClassification::getHeatmapsClassification(**classificationModel,
-          //    outputDirectory, heatMapMatrixCls);
+         VisualizerClassification::getHeatmapsClassification(**classificationModel,
+              outputDirectory, heatMapMatrixCls);
 
         }
       }
