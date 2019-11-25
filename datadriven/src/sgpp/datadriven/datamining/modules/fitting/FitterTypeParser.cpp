@@ -25,6 +25,8 @@ FitterType FitterTypeParser::parse(const std::string &input) {
     return FitterType::DensityEstimation;
   } else if (inputLower == "classification") {
     return FitterType::Classification;
+  } else if (inputLower == "clustering") {
+    return FitterType::Clustering;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known FitterType";
     throw data_exception(errorMsg.c_str());
@@ -37,7 +39,8 @@ const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
   return FitterTypeParser::FitterTypeMap_t{
       std::make_pair(FitterType::RegressionLeastSquares, "ModelFittingLeastSquares"),
       std::make_pair(FitterType::DensityEstimation, "ModelFittingDensityEstimation"),
-      std::make_pair(FitterType::Classification, "ModelFittingClassification")};
+      std::make_pair(FitterType::Classification, "ModelFittingClassification"),
+      std::make_pair(FitterType::Clustering, "ModelFittingClustering")};
 }();
 } /* namespace datadriven */
 } /* namespace sgpp */

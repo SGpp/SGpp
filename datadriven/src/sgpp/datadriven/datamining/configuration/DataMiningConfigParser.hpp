@@ -84,6 +84,8 @@ class DataMiningConfigParser {
               const base::AdaptivityConfiguration &defaults) const;
   bool getFitterCrossvalidationConfig(CrossvalidationConfiguration &config,
               const CrossvalidationConfiguration &defaults) const;
+  bool getFitterClusteringConfig(ClusteringConfiguration &config,
+              const ClusteringConfiguration &defaults) const;
   bool getFitterDensityEstimationConfig(DensityEstimationConfiguration &config,
               const DensityEstimationConfiguration &defaults) const;
   bool getFitterSolverRefineConfig(solver::SLESolverConfiguration &config,
