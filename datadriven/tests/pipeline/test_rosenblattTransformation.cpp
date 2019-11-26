@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   DataSourceConfig defaults;
 
   // Config for "automatic" transformation
-  std::string path = "datadriven/tests/test_Rosenblatt_in_Pipeline.json";
+  std::string path = "datadriven/tests/pipeline/config_rosenblattTransformation.json";
   DataSourceBuilder builder;
   DataMiningConfigParser parser(path);
   parser.getDataSourceConfig(config, defaults);
