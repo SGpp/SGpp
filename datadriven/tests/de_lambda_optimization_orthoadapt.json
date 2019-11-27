@@ -1,0 +1,43 @@
+{
+  "dataSource": {
+    "filePath": "datadriven/datasets/densityEstimation/2D_StroSkewB2.csv",
+    "hasTargets": false,
+    "batchSize": 50,
+    "validationPortion": 0.2,
+    "epochs": 3,
+    "shuffling": "random",
+    "randomSeed": 150419
+  },
+  "scorer": {
+    "metric": "Residual"
+  },
+  "fitter": {
+    "type": "densityEstimation",
+    "gridConfig": {
+      "gridType": "linear",
+      "level": 7
+    },
+    "adaptivityConfig": {
+      "numRefinements": 3,
+      "threshold": 0.001,
+      "maxLevelType": false,
+      "noPoints": 10,
+      "refinementIndicator": "DataBased",
+      "errorBasedRefinement": true,
+      "errorMinInterval": 0,
+      "errorBufferSize": 5,
+      "errorConvergenceThreshold": 0.001
+    },
+    "regularizationConfig": {
+      "optimizeLambda": true
+    },
+    "densityEstimationConfig": {
+      "densityEstimationType": "decomposition",
+      "matrixDecompositionType": "orthoadapt"
+    },
+    "learner": {
+      "usePrior": true,
+      "beta": 1.0
+    }
+  }
+}

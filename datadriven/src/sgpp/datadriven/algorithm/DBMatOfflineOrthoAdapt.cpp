@@ -434,7 +434,13 @@ sgpp::datadriven::MatrixDecompositionType DBMatOfflineOrthoAdapt::getDecompositi
 
 const DataMatrix& DBMatOfflineOrthoAdapt::getUnmodifiedR() { return this->lhsMatrix; }
 
-const DataMatrixDistributed& DBMatOfflineOrthoAdapt::getUnmodifiedRDistributed() {
+const DataMatrixDistributed& DBMatOfflineOrthoAdapt::getUnmodifiedRDistributed(
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
+  if (this->lhsDistributed.getGlobalRows() == 0) {
+    lhsDistributed = DataMatrixDistributed::fromSharedData(
+        lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
+        parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  }
   return this->lhsDistributed;
 }
 

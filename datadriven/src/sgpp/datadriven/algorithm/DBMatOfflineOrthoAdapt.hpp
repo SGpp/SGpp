@@ -59,7 +59,9 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
    *
    * @return Matrix R
    */
-  const DataMatrixDistributed& getUnmodifiedRDistributed() override;
+  const DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Modifies the decomposition to update the regularization parameter lambda

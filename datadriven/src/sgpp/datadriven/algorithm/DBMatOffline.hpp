@@ -103,9 +103,13 @@ class DBMatOffline {
    * Get the distributed version of the unmodified (without added lambda) system matrix R.
    * Only possible in the ScaLAPACK version.
    *
+   * @param processGrid BLACS process grid
+   * @param parallelConfig config options for ScaLAPACK
    * @return Matrix R
    */
-  virtual const DataMatrixDistributed& getUnmodifiedRDistributed() = 0;
+  virtual const DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) = 0;
 
   /**
    * Modifies the decomposition to update the regularization parameter lambda

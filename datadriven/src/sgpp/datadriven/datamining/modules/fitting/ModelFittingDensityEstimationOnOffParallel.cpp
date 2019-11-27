@@ -237,11 +237,16 @@ double ModelFittingDensityEstimationOnOffParallel::computeResidual(
       validationData, *grid, this->config->getDensityEstimationConfig(),
       this->config->getParallelConfig(), this->processGrid);
 
-  DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed();
+  DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed(
+      this->processGrid, this->config->getParallelConfig());
 
 #ifdef USE_SCALAPACK
   // R * alpha - b_val
   rMatrix.mult(alphaDistributed, bValidation, false, 1.0, -1.0);
+
+  DataVector result = bValidation.toLocalDataVectorBroadcast();
+
+  return result.l2Norm();
 #else
   throw base::not_implemented_exception("built withot ScaLAPACK");
 #endif /* USE_SCALAPACK */

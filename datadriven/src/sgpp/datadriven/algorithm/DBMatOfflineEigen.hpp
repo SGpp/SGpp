@@ -51,7 +51,9 @@ class DBMatOfflineEigen : public DBMatOffline {
    *
    * @return Matrix R
    */
-  const DataMatrixDistributed& getUnmodifiedRDistributed() override {
+  const DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineEigen::getUnmodifiedRDistributed() is not implemented!");
   }

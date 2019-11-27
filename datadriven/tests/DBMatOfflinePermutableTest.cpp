@@ -9,6 +9,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 
 #include <set>
 #include <vector>
@@ -36,7 +38,9 @@ class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
         "DBMatOfflineTest::getUnmodifiedR() not implemented!");
   }
 
-  const sgpp::datadriven::DataMatrixDistributed& getUnmodifiedRDistributed() {
+  const sgpp::datadriven::DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<sgpp::datadriven::BlacsProcessGrid> processGrid,
+      const sgpp::datadriven::ParallelConfiguration& parallelConfig) {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineTest::getUnmodifiedRDistributed() not implemented!");
   }
