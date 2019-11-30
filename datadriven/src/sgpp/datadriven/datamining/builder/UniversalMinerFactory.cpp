@@ -21,7 +21,6 @@
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClustering.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <string>
 
@@ -88,7 +87,7 @@ Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser
   } else if (fType == FitterType::Classification) {
     visualizer = new VisualizerClassification(config);
   } else if (fType == FitterType::Clustering) {
-    visualizer = new VisualizerClustering(config);
+    visualizer = new VisualizerDummy();
   }
   return visualizer;
 }
