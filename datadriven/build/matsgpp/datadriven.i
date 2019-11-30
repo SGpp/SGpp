@@ -159,6 +159,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClustering.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(assign) sgpp::datadriven::ModelFittingBase::operator =;
@@ -169,6 +170,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
@@ -210,6 +212,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/ClusteringMinerFactory.hpp"
 
 
 //TODO(lettrich): parser not wrapable because of unwrapped JSON

@@ -4,6 +4,9 @@
 // sgpp.sparsegrids.org
 
 // Based on the implementation of Van de Laurens for the t-SNE algortithm
+
+#pragma once
+
 #include <sgpp/datadriven/tools/vpTree/VpNode.hpp>
 #include <sgpp/datadriven/tools/vpTree/VpHeapItem.hpp>
 

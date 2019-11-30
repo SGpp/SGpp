@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ClusteringFitterFactory.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClustering.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 
 #include <string>
 
@@ -38,7 +38,7 @@ const {
 
   config.readParams(parser);
 
-  return new VisualizerClustering(config);
+  return new VisualizerDummy();
 }
 
 } /* namespace datadriven */
