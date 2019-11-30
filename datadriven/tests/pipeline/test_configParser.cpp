@@ -23,7 +23,7 @@
 #include <string>
 #include <vector>
 
-const auto datasetPath = "datadriven/tests/dataminingConfig.json";
+const auto datasetPath = "datadriven/tests/pipeline/config_configParser.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 

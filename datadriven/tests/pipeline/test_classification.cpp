@@ -67,35 +67,36 @@ bool testVisualization(std::string configFile) {
 BOOST_AUTO_TEST_SUITE(testClassification)
 
 BOOST_AUTO_TEST_CASE(testOnOff) {
-  std::string configFile = "datadriven/tests/gmm_on_off.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOff.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
 BOOST_AUTO_TEST_CASE(testCG) {
-  std::string configFile = "datadriven/tests/gmm_cg.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmCg.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy > 0.7);
 }
 BOOST_AUTO_TEST_CASE(testGeo) {
-  std::string configFile = "datadriven/tests/geometryAwareSparseGrid_Test.json";
+  std::string configFile = "datadriven/tests/pipeline/config_geometryAware.json";
   double accuracy = testModel(configFile);
   std::cout << "Accuracy " << accuracy << std::endl;
   BOOST_CHECK(accuracy >= 0);
 }
 
 BOOST_AUTO_TEST_CASE(visualization) {
-  std::string configFile = "datadriven/tests/visualizationConfig.json";
+  std::string configFile = "datadriven/tests/pipeline/config_visualization.json";
   BOOST_CHECK(testVisualization(configFile));
 }
 
 #ifdef USE_SCALAPACK
 BOOST_AUTO_TEST_CASE(testOnOffParallelChol) {
-  std::string configFileParallel = "datadriven/tests/gmm_on_off_parallel_chol.json";
+  std::string configFileParallel =
+    "datadriven/tests/pipeline/config_gmmOnOffCholParallel.json";
   double accuracyParallel = testModel(configFileParallel);
 
-  std::string configFile = "datadriven/tests/gmm_on_off_chol.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffChol.json";
   double accuracy = testModel(configFile);
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(accuracyParallel > 0.7);
@@ -104,10 +105,11 @@ BOOST_AUTO_TEST_CASE(testOnOffParallelChol) {
 }
 
 BOOST_AUTO_TEST_CASE(testOnOffParallelOrthoadapt) {
-  std::string configFileParallel = "datadriven/tests/gmm_on_off_parallel_orthoadapt.json";
+  std::string configFileParallel =
+    "datadriven/tests/pipeline/config_gmmOnOffOrthoadaptParallel.json";
   double accuracyParallel = testModel(configFileParallel);
 
-  std::string configFile = "datadriven/tests/gmm_on_off_orthoadapt.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffOrthoadapt.json";
   double accuracy = testModel(configFile);
 
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
