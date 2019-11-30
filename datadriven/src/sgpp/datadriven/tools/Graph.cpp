@@ -6,8 +6,11 @@
 #include <sgpp/datadriven/tools/Graph.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/graph_traits.hpp>
+
 #include <iostream>
 #include <ctime>
+#include <queue>
+#include <map>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -17,38 +20,31 @@ namespace datadriven {
 
 Graph::Graph(size_t vertices) {
   this->graph = new UndirectedGraph(vertices);
-  // initialize the vertex_index property values
-  /*boost::property_map<UndirectedGraph, boost::vertex_index_t>::type
-      index = get(boost::vertex_index, *graph);
-  boost::graph_traits<UndirectedGraph>::vertex_iterator vi, vend;
-  boost::graph_traits<UndirectedGraph>::vertices_size_type cnt = 0;
-  for(boost::tie(vi,vend) = boost::vertices(*graph); vi != vend; ++vi) {
-    boost::put(index, *vi, cnt++);
-  }*/
 }
 
 
 void Graph::addVertex() {
-  //size_t currentIndex = boost::num_vertices(*graph);
-  auto vertex_descriptor = boost::add_vertex(*graph);
-  /*boost::put(get(boost::vertex_index, *graph), vertex_descriptor, currentIndex);*/
+  boost::add_vertex(*graph);
 }
 
-void Graph::disconnectVertex(size_t vertex) {
+void Graph::removeVertex(size_t vertex) {
   auto vertex_descriptor = boost::vertex(vertex, *graph);
   boost::clear_vertex(vertex_descriptor, *graph);
   boost::remove_vertex(vertex_descriptor, *graph);
-
 }
 
 size_t Graph::getConnectedComponents(
     std::map<UndirectedGraph::vertex_descriptor, size_t> &componentMap) {
 
+  /*
+   * This index has to be created in order for the connected components to work
+   * while using lists as a vertex conatiner
+   */
   boost::property_map<UndirectedGraph, boost::vertex_index_t>::type
       index = get(boost::vertex_index, *graph);
   boost::graph_traits<UndirectedGraph>::vertex_iterator vi, vend;
   boost::graph_traits<UndirectedGraph>::vertices_size_type cnt = 0;
-  for(boost::tie(vi,vend) = boost::vertices(*graph); vi != vend; ++vi) {
+  for (boost::tie(vi, vend) = boost::vertices(*graph); vi != vend; ++vi) {
     boost::put(index, *vi, cnt++);
   }
 
@@ -56,8 +52,9 @@ size_t Graph::getConnectedComponents(
       boost::make_assoc_property_map(componentMap));
   return numberComponents;
 }
+
 void Graph::createEdges(size_t vertex, std::priority_queue<VpHeapItem> nearestNeighbors) {
-  while(!nearestNeighbors.empty()) {
+  while (!nearestNeighbors.empty()) {
     addEdge(vertex, nearestNeighbors.top().index);
     nearestNeighbors.pop();
   }
@@ -71,10 +68,8 @@ void Graph::deleteEdge(size_t vertex1, size_t vertex2) {
   boost::remove_edge(boost::vertex(vertex1, *graph), boost::vertex(vertex2, *graph), *graph);
 }
 
-
 UndirectedGraph* Graph::getGraph() {
   return graph;
 }
-
-}
-}
+}  // namespace datadriven
+}  // namespace sgpp

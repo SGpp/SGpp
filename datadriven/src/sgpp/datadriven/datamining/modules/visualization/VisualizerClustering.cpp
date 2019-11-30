@@ -6,15 +6,18 @@
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClustering.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/DictNode.hpp>
+
 #include <omp.h>
 #include <math.h>
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <string>
+#include <queue>
 
 
 namespace sgpp {
@@ -25,7 +28,7 @@ namespace datadriven {
 
   void VisualizerClustering::runVisualization(ModelFittingBase &model, DataSource &dataSource,
       size_t fold, size_t batch) {
-    model.getDataset()->getDimension();
+    /*model.getDataset()->getDimension();
     if (batch % config.getGeneralConfig().numBatches != 0 ||
         !config.getGeneralConfig().execute) {
       return;
@@ -61,17 +64,17 @@ namespace datadriven {
       createFolder(currentDirectory);
     }
 
+    std::string outputDirectory = currentDirectory + "/Clustering";
+    createFolder(outputDirectory);
 
     omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
 
-
+    DataMatrix points = clusteringModel->getLabeledPoints();
+    storeTsneJson(points, model, outputDirectory);
     #pragma omp parallel sections
     {
       #pragma omp section
       {
-        std::string outputDirectory = currentDirectory + "/Clustering";
-        createFolder(outputDirectory);
-
         auto densityEstimationModel = clusteringModel->getDensityEstimationModel();
         auto classificationModel = clusteringModel->getClassificationModel();
 
@@ -95,12 +98,10 @@ namespace datadriven {
         if (std::find(config.getGeneralConfig().algorithm.begin(),
                       config.getGeneralConfig().algorithm.end(), "heatmaps") !=
             config.getGeneralConfig().algorithm.end()) {
-
           VisualizerDensityEstimation::getHeatmap(**densityEstimationModel, outputDirectory,
                                                   heatMapMatrixDE);
-         VisualizerClassification::getHeatmapsClassification(**classificationModel,
-              outputDirectory, heatMapMatrixCls);
-
+          VisualizerClassification::getHeatmapsClassification(**classificationModel,
+                outputDirectory, heatMapMatrixCls);
         }
       }
 
@@ -129,9 +130,90 @@ namespace datadriven {
             }
           }
         }
-      }*/
+      }
+    } */
+  }
 
-    }
+  void VisualizerClustering::storeTsneJson(DataMatrix &matrix, ModelFittingBase &model,
+      std::string currentDirectory) {
+    json::JSON jsonOutput;
+
+    ModelFittingClustering *clusteringModel =
+        dynamic_cast<ModelFittingClustering *>(&model);
+
+    jsonOutput.addListAttr("data");
+
+    // Trace for the data points
+    jsonOutput["data"].addDictValue();
+    jsonOutput["data"][0].addIDAttr("type", "\"scatter\"");
+    jsonOutput["data"][0].addIDAttr("mode", "\"markers\"");
+
+    DataVector xCol(matrix.getNrows());
+
+    matrix.getColumn(0, xCol);
+
+    jsonOutput["data"][0].addIDAttr("x", xCol.toString());
+
+    DataVector yCol(matrix.getNrows());
+
+    matrix.getColumn(1, yCol);
+    jsonOutput["data"][0].addIDAttr("y", yCol.toString());
+
+    // Trace for the edges
+    jsonOutput["data"].addDictValue();
+    jsonOutput["data"][1].addIDAttr("type", "\"scatter\"");
+    jsonOutput["data"][1].addIDAttr("mode", "\"lines\"");
+    jsonOutput["data"][1].addDictAttr("line");
+    jsonOutput["data"][1]["line"].addIDAttr("width", 0.5);
+
+
+    DataVector source(matrix.getNcols());
+    DataVector sink(matrix.getNcols());
+
+    jsonOutput["data"][1].addListAttr("x");
+    jsonOutput["data"][1].addListAttr("y");
+
+    /*for (size_t index = 0; index < matrix.getNrows(); index++) {
+      matrix.getRow(index, source);
+      std::priority_queue<VpHeapItem> heap2(nearestNeighbors[index]);
+      while (!heap2.empty()) {
+        jsonOutput["data"][1]["x"].addIdValue(source.get(0));
+        jsonOutput["data"][1]["y"].addIdValue(source.get(1));
+        matrix.getRow(heap2.top().index, sink);
+        jsonOutput["data"][1]["x"].addIdValue(sink.get(0));
+        jsonOutput["data"][1]["y"].addIdValue(sink.get(1));
+        heap2.pop();
+        jsonOutput["data"][1]["x"].addIdValue("\"None\"\n");
+        jsonOutput["data"][1]["y"].addIdValue("\"None\"\n");
+      }
+    }*/
+    /*
+    DataVector zCol(matrix.getNrows());
+
+    matrix.getColumn(2, zCol);
+     jsonOutput["data"][0]["marker"].addIDAttr("color", zCol.toString());
+
+    jsonOutput["data"][0]["marker"].addIDAttr("colorscale", "\"Viridis\"");
+
+    jsonOutput["data"][0]["marker"].addIDAttr("opacity", 0.8);
+
+    jsonOutput["data"][0]["marker"].addIDAttr("showscale", true);
+
+    jsonOutput["data"][0]["marker"].addDictAttr("colorbar");
+
+    jsonOutput["data"][0]["marker"]["colorbar"].addDictAttr("title");
+    jsonOutput["data"][0]["marker"]["colorbar"]["title"].addIDAttr("text", "\"Class \"");
+    jsonOutput["data"][0]["marker"]["colorbar"].addIDAttr("tickmode", "\"array\"");
+    jsonOutput["data"][0]["marker"]["colorbar"].addIDAttr("tickvals", classes.toString());*/
+
+    jsonOutput.addDictAttr("layout");
+
+    jsonOutput["layout"].addDictAttr("title");
+
+    jsonOutput["layout"]["title"].addIDAttr("text", "\"Nearest Neighbors Graph\"");
+    jsonOutput["layout"]["title"].addIDAttr("x", 0.5);
+
+    jsonOutput.serialize(currentDirectory + "/Graph.json");
   }
 }  // namespace datadriven
 }  // namespace sgpp

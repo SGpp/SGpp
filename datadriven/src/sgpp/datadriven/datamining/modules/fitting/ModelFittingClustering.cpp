@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 
-
+#include <map>
 #include <iostream>
 #include <ctime>
 #include <queue>
@@ -62,9 +62,7 @@ void ModelFittingClustering::update(Dataset& newDataset) {
   }
   std::vector<size_t> deletedNodes;
   applyDensityThresholds(deletedNodes);
-  //labeledSamples.resize(vpTree->getStoredItems().getNrows(), vpTree->getStoredItems().getNcols());
   detectComponentsAndLabel(deletedNodes);
-  //std::cout<<labeledSamples.toString();
 }
 
 double ModelFittingClustering::evaluate(const DataVector &sample) {
@@ -76,12 +74,10 @@ void ModelFittingClustering::evaluate(DataMatrix& samples, DataVector& results) 
 }
 
 bool ModelFittingClustering::refine() {
- // densityEstimationModel->refine();
-  //std::vector<size_t> deletedNodes;
-  //applyDensityThresholds(deletedNodes);
-  //labeledSamples.resize(vpTree->getStoredItems().getNrows(), vpTree->getStoredItems().getNcols());
-  //detectComponentsAndLabel(deletedNodes);
-
+  densityEstimationModel->refine();
+  std::vector<size_t> deletedNodes;
+  applyDensityThresholds(deletedNodes);
+  detectComponentsAndLabel(deletedNodes);
   return true;
 }
 
@@ -111,7 +107,6 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClustering::createNew
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
   }
-
   throw application_exception("Unknown density estimation type");
 }
 
@@ -125,85 +120,42 @@ void ModelFittingClustering::generateSimilarityGraph(Dataset &dataset) {
     graph = std::make_shared<Graph>(dataset.getData().getNrows());
     DataVector currrentRow(dataset.getData().getNcols());
 
-    for (size_t index = 0; index < dataset.getData().getNrows(); index++) {
-      dataset.getData().getRow(index, currrentRow);
+    for (size_t index = 0; index < vpTree->getStoredItems().getNrows(); index++) {
+      vpTree->getStoredItems().getRow(index, currrentRow);
       auto nearestNeighbors = vpTree->getNearestNeighbors(currrentRow,
           config->getClusteringConfig().noNearestNeighbors);
-      currentNearestNeighbors.push_back(nearestNeighbors);
       graph->createEdges(index, nearestNeighbors);
     }
-    std::cout << "Num of vertices: " << boost::num_vertices(*(graph->getGraph()))<<std::endl;
-    std::cout << "Num of edges " << boost::num_edges(*(graph->getGraph()))<<std::endl;
+    std::cout << "Num of vertices: " << boost::num_vertices(*(graph->getGraph())) << std::endl;
+    std::cout << "Num of edges " << boost::num_edges(*(graph->getGraph())) << std::endl;
 
   } else {
-    updateGraphOnline(dataset.getData());
-    //updateHard(dataset.getData());
+    updateGraph(dataset.getData());
   }
 }
 
-void ModelFittingClustering::updateHard(DataMatrix &newDataset) {
+void ModelFittingClustering::updateGraph(DataMatrix &newDataset) {
   clock_t start = std::clock();
-  vpTree->updateHard(newDataset);
-  currentNearestNeighbors.clear();
+  vpTree->update(newDataset);
   DataVector currrentRow(newDataset.getNcols());
   graph = std::make_shared<Graph>(vpTree->getStoredItems().getNrows());
 
-  for (size_t index = 0; index<vpTree->getStoredItems().getNrows(); index++) {
+  for (size_t index = 0; index < vpTree->getStoredItems().getNrows(); index++) {
     vpTree->getStoredItems().getRow(index, currrentRow);
     auto nearestNeighbors = vpTree->getNearestNeighbors(currrentRow,
         config->getClusteringConfig().noNearestNeighbors);
-    currentNearestNeighbors.push_back(nearestNeighbors);
     graph->createEdges(index, nearestNeighbors);
   }
   clock_t end = std::clock();
-  std::cout << "Vertices in *graph: " << boost::num_vertices(*graph->getGraph())<<std::endl;
-  std::cout << "Edges in *graph: " << boost::num_edges(*graph->getGraph())<<std::endl;
+  std::cout << "Vertices in *graph: " << boost::num_vertices(*graph->getGraph()) << std::endl;
+  std::cout << "Edges in *graph: " << boost::num_edges(*graph->getGraph()) << std::endl;
   std::cout << "Graph updated the 'hard' way in  " <<
             std::to_string(static_cast<double>(end - start) / CLOCKS_PER_SEC) << " seconds"
             << std::endl;
 }
 
-void ModelFittingClustering::updateGraphOnline(DataMatrix &newDataset) {
-  clock_t start = std::clock();
-  DataVector currrentRow(newDataset.getNcols());
-  DataVector currentHeapVector(newDataset.getNcols());
-
-  size_t lastIndex = currentNearestNeighbors.size();
-  vpTree->update(newDataset);
-  std::cout<<"Adding vertexes online"<<std::endl;
-  for (size_t index = 0; index<newDataset.getNrows(); index++) {
-    graph->addVertex();
-  }
-
-  for (size_t index = 0; index<newDataset.getNrows(); index++) {
-    newDataset.getRow(index, currrentRow);
-    auto nearestNeighbors = vpTree->getNearestNeighbors(currrentRow,
-        config->getClusteringConfig().noNearestNeighbors);
-    currentNearestNeighbors.push_back(nearestNeighbors);
-    graph->createEdges(lastIndex+index, nearestNeighbors);
-    for (size_t indexHeaps = 0; indexHeaps < lastIndex; indexHeaps++ ) {
-      vpTree->getStoredItems().getRow(currentNearestNeighbors[indexHeaps].top().index, currentHeapVector);
-      double distance = vpTree->euclideanDistance(currrentRow, currentHeapVector);
-      if (distance < currentNearestNeighbors[indexHeaps].top().distance) {
-        graph->deleteEdge(indexHeaps, currentNearestNeighbors[indexHeaps].top().index);
-        currentNearestNeighbors[indexHeaps].pop();
-        currentNearestNeighbors[indexHeaps].push(
-            VpHeapItem(lastIndex+index, distance));
-        graph->addEdge(indexHeaps, lastIndex+index);
-      }
-    }
-  }
-
-  std::cout << "Vertices in graph: " << boost::num_vertices(*(graph->getGraph()))<<std::endl;
-  std::cout << "Edges in graph: " << boost::num_edges(*(graph->getGraph()))<<std::endl;
-  clock_t end = std::clock();
-  std::cout << "Graph updated in " <<
-            std::to_string(static_cast<double>(end - start) / CLOCKS_PER_SEC) << " seconds"
-            << std::endl;
-}
 
 void ModelFittingClustering::applyDensityThresholds(std::vector<size_t> &deletedNodes) {
-
   prunedGraph = std::make_shared<Graph>(*graph);
   DataVector evaluation(vpTree->getStoredItems().getNrows());
 
@@ -212,7 +164,7 @@ void ModelFittingClustering::applyDensityThresholds(std::vector<size_t> &deleted
 
   for (size_t index = 0; index < evaluation.size(); index++) {
     if (evaluation.get(index) < config->getClusteringConfig().densityThreshold) {
-      prunedGraph->disconnectVertex(index-deletedNodes.size());
+      prunedGraph->removeVertex(index-deletedNodes.size());
       deletedNodes.push_back(index);
     }
   }
@@ -220,43 +172,41 @@ void ModelFittingClustering::applyDensityThresholds(std::vector<size_t> &deleted
   std::cout << "Number of deleted vertices: " << deletedNodes.size() <<std::endl;
   std::cout << "Remaining vertices: " <<
   boost::num_vertices(*(prunedGraph->getGraph())) <<std::endl;
-
 }
 
 void ModelFittingClustering::detectComponentsAndLabel(std::vector<size_t> &deletedNodes) {
-
   std::map<UndirectedGraph::vertex_descriptor, size_t> componentsMap;
   auto numberComponents = prunedGraph->getConnectedComponents(componentsMap);
   std::cout << "Number of found components: "<< numberComponents <<std::endl;
 
   std::map<int, size_t> numbersPerCluster;
 
-
   Dataset* classificationDataSet = new Dataset(vpTree->getStoredItems().getNrows(),
       vpTree->getStoredItems().getNcols());
 
-  vpTree->getStoredItems() = classificationDataSet->getData();
+  DataMatrix& samples = classificationDataSet->getData();
   DataVector& labels = classificationDataSet->getTargets();
 
+  samples.copyFrom(vpTree->getStoredItems());
+
   for (size_t index = 0, graphIndex = 0; index < vpTree->getStoredItems().getNrows(); index++) {
-    //size_t index = boost::get(boost::vertex_index, *(prunedGraph->getGraph()), p.first);
-    if(std::find(deletedNodes.begin(), deletedNodes.end(), index) != deletedNodes.end()) {
-      // labels for deleted nodes
-      labels.set(index, -1);
+    if (std::find(deletedNodes.begin(), deletedNodes.end(), index) != deletedNodes.end()) {
+      labels.set(index, static_cast<double>(-1));
       numbersPerCluster[-1]++;
     } else {
       auto vertex_descriptor = boost::vertex(graphIndex++, *(prunedGraph->getGraph()));
-      labels.set(index, componentsMap[vertex_descriptor]);
-      numbersPerCluster[componentsMap[vertex_descriptor]]++;
+      labels.set(index, static_cast<double>(componentsMap[vertex_descriptor]));
+      numbersPerCluster[static_cast<int>(componentsMap[vertex_descriptor])]++;
     }
   }
 
-  for(auto&cluster: numbersPerCluster) {
-    std::cout << "Label "<<cluster.first << ": "<< cluster.second <<std::endl;
+  for (auto&cluster : numbersPerCluster) {
+    std::cout << "Label " << cluster.first << ": " << cluster.second <<std::endl;
   }
 
   classificationModel->fit(*classificationDataSet);
 }
+
 std::unique_ptr<ModelFittingDensityEstimation>*
     ModelFittingClustering::getDensityEstimationModel() {
   return &densityEstimationModel;
@@ -267,5 +217,8 @@ std::unique_ptr<ModelFittingClassification>*
   return &classificationModel;
 }
 
+DataMatrix &ModelFittingClustering::getLabeledPoints() {
+  return vpTree->getStoredItems();
+}
 }  // namespace datadriven
 }  // namespace sgpp

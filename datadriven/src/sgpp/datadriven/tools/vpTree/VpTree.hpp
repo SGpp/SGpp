@@ -12,7 +12,11 @@
 #include <queue>
 namespace sgpp {
 namespace datadriven {
-
+/**
+ * Class for the Vanatage Point Tree.
+ * Based on the code by Steve Hanov's great tutorial
+ * at http://stevehanov.ca/blog/index.php?id=130
+ */
 class VpTree {
  public:
   /**
@@ -23,7 +27,9 @@ class VpTree {
   explicit VpTree(sgpp::base::DataMatrix matrix);
 
   // Destructor
-  ~VpTree();
+  ~VpTree() {
+    delete root;
+  }
 
   std::priority_queue<VpHeapItem>  getNearestNeighbors(sgpp::base::DataVector &target,
       size_t noNearestNeighbors);

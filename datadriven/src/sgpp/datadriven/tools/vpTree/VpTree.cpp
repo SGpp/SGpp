@@ -25,10 +25,6 @@ VpTree::VpTree(DataMatrix matrix) {
 }
 
 
-VpTree::~VpTree() {
-  delete root;
-}
-
 // Function that uses the tree to find the k nearest neighbors of target
 std::priority_queue<VpHeapItem> VpTree::getNearestNeighbors(DataVector &target,
     size_t noNearestNeighbors) {
@@ -54,10 +50,13 @@ void VpTree::searchRecursively(VpNode* &node, DataVector &target, size_t noNeare
 
   storedItems.getRow(node->index, currentVector);
 
+
   double distance = euclideanDistance(currentVector, target);
 
-  if (distance < tau && distance != 0) { // the second condition is to skip the same point
+  if (distance <= tau && distance != 0) {  // the second condition is to skip the same point
     if (heap.size() == noNearestNeighbors) {
+      DataVector popVector(target.size());
+      storedItems.getRow(heap.top().index, popVector);
       heap.pop();
     }
     heap.push(VpHeapItem(node->index, distance));
@@ -104,12 +103,11 @@ void VpTree::update(DataMatrix &matrix) {
     storedItems.appendRow(newRow);
     insertNewNode(lastIndex + index);
   }
-
 }
 
 void VpTree::updateHard(sgpp::base::DataMatrix &matrix) {
   DataVector newRow(matrix.getNcols());
-  size_t lastIndex = storedItems.getNrows();
+
   for (size_t index = 0; index < matrix.getNrows() ; index++) {
     matrix.getRow(index, newRow);
     storedItems.appendRow(newRow);
@@ -138,8 +136,8 @@ VpNode* VpTree::buildRecursively(size_t startIndex, size_t endIndex)  {
 
       node->threshold = euclideanDistance(vector1, vector2);
 
-      node->left = buildRecursively(startIndex + 1, median+1);
-      node->right = buildRecursively(median+1, endIndex);
+      node->left = buildRecursively(startIndex + 1, median);
+      node->right = buildRecursively(median, endIndex);
     }
 
     return node;
@@ -202,22 +200,10 @@ double VpTree::euclideanDistance(DataVector point1, DataVector point2) {
   return point1.l2Norm();
 }
 
-void VpTree::swap(size_t index1, size_t index2) {
-  DataVector vector1(storedItems.getNcols());
-  storedItems.getRow(index1, vector1);
-
-  DataVector vector2(storedItems.getNcols());
-  storedItems.getRow(index2, vector2);
-
-  storedItems.setRow(index1, vector2);
-  storedItems.setRow(index2, vector1);
-}
-
 std::vector<std::pair <size_t, double>>  VpTree::getDistances(size_t startIndex, size_t endIndex) {
   DataVector vantagePoint(storedItems.getNcols());
   storedItems.getRow(startIndex, vantagePoint);
   DataVector currentRow(storedItems.getNcols());
-
   std::vector<std::pair <size_t, double>> distances;
 
   for (size_t index = startIndex+1; index < endIndex ; index++) {
@@ -236,18 +222,17 @@ void VpTree::sortByDistances(size_t index1, size_t index2) {
     return pair1.second < pair2.second;
   });
 
-  std::vector<size_t> visitedIndexes;
+  DataMatrix temp(0, storedItems.getNcols());
+  DataVector currentRow(storedItems.getNcols());
 
-  for (size_t index = 0; index< index2-index1-1; index++) {
-    if (visitedIndexes.size()==index2-index1-1) {
-      return;
-    }
-    if (std::find(visitedIndexes.begin(), visitedIndexes.end(), distances[index].first) != visitedIndexes.end()) {
-      continue;
-    }
-    visitedIndexes.push_back(index1+index+1);
-    visitedIndexes.push_back(distances[index].first);
-    swap(index1+index+1, distances[index].first);
+  for (size_t index = 0; index < distances.size(); index++) {
+    storedItems.getRow(distances[index].first, currentRow);
+    temp.appendRow(currentRow);
+  }
+
+  for (size_t index=0; index < temp.getNrows(); index++) {
+    temp.getRow(index, currentRow);
+    storedItems.setRow(index1+index+1, currentRow);
   }
 }
 
@@ -258,9 +243,9 @@ DataMatrix &VpTree::getStoredItems() {
 void VpTree::printPreorder() {
   printPreorder(root);
 }
-void VpTree::printPreorder(VpNode* node) {
 
-  if(node == nullptr) {
+void VpTree::printPreorder(VpNode* node) {
+  if (node == nullptr) {
     return;
   }
   DataVector currentNode(storedItems.getNcols());
@@ -270,7 +255,6 @@ void VpTree::printPreorder(VpNode* node) {
 
   printPreorder(node->left);
   printPreorder(node->right);
-
 }
 }  // namespace datadriven
 }  // namespace sgpp

@@ -17,6 +17,8 @@
 #include <sgpp/datadriven/tools/Graph.hpp>
 
 #include<list>
+#include <queue>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -35,31 +37,54 @@ class ModelFittingClustering : public ModelFittingBase {
   explicit ModelFittingClustering(const FitterConfigurationClustering& config);
 
   /**
-   * Runs the series of stepes to obtain the clustering of the dataset based on the
+   * Runs the series of stpes to obtain the clustering model of the dataset based on the
    * algorithm using a density estimation model.
    * Requires only data samples and no targets (since those are irrelevant for the clustering)
-   * Labeles for each cluster are generated during the fitting
    * @param newDataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& newDataset) override;
 
+  /**
+   * Updates the model with new samples
+   * @param newDataset Training datasetused to update the model
+   */
   void update(Dataset& newDataset) override;
 
   double evaluate(const DataVector& sample) override;
 
+  /**
+   * Evaluates a series of samples and assign them a cluster according to the
+   * classification model
+   * @param samples Samples to evaluate
+   * @param results Labels assigned to the samples
+   */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
    * @return if the grid was refined (true)
    */
-  bool refine() override ;
+  bool refine() override;
 
+  /**
+   * Clears the model
+   */
   void reset() override;
 
+  /**
+   * Returns the pointer to the pointer pointing to the density estimation model
+   * @return Pointer of the unique pointer of the density estimation model
+   */
   std::unique_ptr<ModelFittingDensityEstimation>* getDensityEstimationModel();
 
+    /**
+   * Returns the pointer to the pointer pointing to the classification estimation model
+   * @return Pointer of the unique pointer of the classification estimation model
+   */
   std::unique_ptr<ModelFittingClassification>* getClassificationModel();
+
+
+  DataMatrix &getLabeledPoints();
 
  protected:
   /**
@@ -74,21 +99,19 @@ class ModelFittingClustering : public ModelFittingBase {
   std::unique_ptr<ModelFittingDensityEstimation> densityEstimationModel;
 
   /**
-   * VpTree to do neareast neigbors queries
+   * VpTree to do nearest neighbors queries
    */
   std::unique_ptr<VpTree> vpTree;
 
-  std::vector<std::priority_queue<VpHeapItem>> currentNearestNeighbors;
   /**
    * Nearest Neighbors' Graph
    */
-
   std::shared_ptr<Graph> graph;
 
-    /**
-   * Graph structure to store the nearest neighbors graph
+  /**
+   * Graph that keeps a copy of the nearest neighbors graph and on which the pruning is done
    */
-   std::shared_ptr<Graph> prunedGraph;
+  std::shared_ptr<Graph> prunedGraph;
 
   /**
    * Classification Model
@@ -96,13 +119,10 @@ class ModelFittingClustering : public ModelFittingBase {
   std::unique_ptr<ModelFittingClassification> classificationModel;
 
   /**
-   * Matrix to store the current labeled samples
+   * Method which updates the nearest neighbors graph.
+   * @param newDataset New dataset to be added
    */
-  sgpp::base::DataMatrix labeledSamples;
-
-  void updateGraphOnline(DataMatrix &newDataset);
-
-  void updateHard(DataMatrix &newDataset);
+  void updateGraph(DataMatrix &newDataset);
 
   /**
    * Method that generates the density estimation model of the unlabeled dataset
@@ -117,17 +137,18 @@ class ModelFittingClustering : public ModelFittingBase {
    */
   void generateSimilarityGraph(Dataset &dataset);
 
-
   /**
    * Method that deletes from the graphs all of the points that do not have the minimun
-   * density given by the user as an hyperparameter inthe configuration
-   * @params deletedPoints Matrix to store all of the deleted points for further labelling
+   * density given by the user as an hyperparameter in the configuration
+   * @params deletedNodes Matrix to store all of the indexes of the
+   * deleted points for further labelling
    */
   void applyDensityThresholds(std::vector<size_t> &deletedNodes);
 
   /**
    * Method that detects all of the disconected components from the graph and assigns a label
    * to each of its corresponding points
+   * @params deletedNodes List of nodes which were deleted from the graph
    */
   void detectComponentsAndLabel(std::vector<size_t> &deletedNodes);
 
@@ -139,9 +160,13 @@ class ModelFittingClustering : public ModelFittingBase {
    */
   void generateClassificationModel(DataMatrix &labeledSamples);
 
+  /**
+   * Creates a density estimation model that fits the model settings.
+   * @param densityEstimationConfig configuration for the density estimation
+   * @return a new density estimation model
+   */
   std::unique_ptr<ModelFittingDensityEstimation> createNewDensityModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
-
 };
 }  // namespace datadriven
 }  // namespace sgpp

@@ -67,7 +67,7 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     fitfac = new LeastSquaresRegressionFitterFactory(parser);
   } else if (fType == FitterType::Classification) {
     fitfac = new ClassificationFitterFactory(parser);
-  } else if(fType == FitterType::Clustering) {
+  } else if (fType == FitterType::Clustering) {
     fitfac = new ClusteringFitterFactory(parser);
   }
   return fitfac;
