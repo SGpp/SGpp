@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-// Based on the implementation of Van de Laurens for the t-SNE algortithm
-
 #pragma once
 
 #include <sgpp/datadriven/tools/vpTree/VpNode.hpp>
@@ -16,7 +14,7 @@
 namespace sgpp {
 namespace datadriven {
 /**
- * Class for the Vanatage Point Tree.
+ * Class for the Vantage Point Tree.
  * Based on the code by Steve Hanov's great tutorial
  * at http://stevehanov.ca/blog/index.php?id=130
  */
