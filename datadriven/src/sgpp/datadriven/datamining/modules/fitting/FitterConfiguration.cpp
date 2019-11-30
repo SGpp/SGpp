@@ -162,7 +162,7 @@ void FitterConfiguration::setupDefaults() {
   clusteringConfig.noNearestNeighbors = 10;
   clusteringConfig.densityThreshold = 0.1;
 
-  //databaseConfig.filepath = "";
+  databaseConfig.filepath = "";
 
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.eps_ = 1e-12;
