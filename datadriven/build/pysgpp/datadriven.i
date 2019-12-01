@@ -173,7 +173,6 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
-
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
@@ -212,6 +211,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ClusteringMinerFactory.hpp"
+
 
 //TODO(lettrich) : parser not wrapable because of unwrapped JSON, but json parsing inside python is easy.
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"

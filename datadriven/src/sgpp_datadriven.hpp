@@ -136,12 +136,11 @@
  * ************************/
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-
+#include <sgpp/datadriven/datamining/builder/ClusteringMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
-#include <sgpp/datadriven/datamining/builder/ClusteringMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
