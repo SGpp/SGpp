@@ -71,6 +71,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
   void updateRegularization(double lambda) override;
 
   /**
+   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   *
+   * @param lambda New lambda value
+   */
+  void updateRegularizationParallel(double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
+                                    const ParallelConfiguration& parallelConfig) override;
+
+  /**
    * Builds the left hand side matrix without the regularization term
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed

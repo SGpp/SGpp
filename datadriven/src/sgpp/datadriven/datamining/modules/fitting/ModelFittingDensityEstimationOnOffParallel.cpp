@@ -133,9 +133,6 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   alphaDistributed =
       DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
-  // todo(): parallel version of regularization here?
-  // but no access to path
-
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
@@ -254,7 +251,18 @@ double ModelFittingDensityEstimationOnOffParallel::computeResidual(
 
 void ModelFittingDensityEstimationOnOffParallel::updateRegularization(double lambda) {
   if (grid != nullptr) {
-    this->online->getOfflineObject().updateRegularization(lambda);
+    auto& regularizationConfig = this->config->getRegularizationConfig();
+    auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+    auto& parallelConfig = this->config->getParallelConfig();
+
+    this->online->getOfflineObject().updateRegularizationParallel(lambda, this->processGrid,
+                                                                  parallelConfig);
+
+    // in case of SMW decomposition type, the inverse of the matrix needs to be computed also
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      online->getOfflineObject().compute_inverse_parallel(processGrid, parallelConfig);
+    }
   }
 }
 

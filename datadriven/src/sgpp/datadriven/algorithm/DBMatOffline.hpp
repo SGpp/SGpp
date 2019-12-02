@@ -119,6 +119,15 @@ class DBMatOffline {
   virtual void updateRegularization(double lambda) = 0;
 
   /**
+   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   *
+   * @param lambda New lambda value
+   */
+  virtual void updateRegularizationParallel(double lambda,
+                                            std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig) = 0;
+
+  /**
    * Get a reference to the inverse matrix
    *
    * @return inverse matrix

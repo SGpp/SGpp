@@ -221,6 +221,12 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
     sd.set(i, lhsCopyDistributed.get(i + 1, i));
   }
 
+  // save copies of the unmodified diagonal and subdiagonal of T
+  this->t_diag_ = sgpp::base::DataVector(d.getSize());
+  this->t_subdiag_ = sgpp::base::DataVector(sd.getSize());
+  this->t_diag_.copyFrom(d);
+  this->t_subdiag_.copyFrom(sd);
+
   // inverting middle matrix with added lambda: T <~ (T + lambda*I)^-1
   for (size_t i = 0; i < dim_a; i++) {
     d.set(i, d.get(i) + regularizationConfig.lambda_);
@@ -460,6 +466,31 @@ void DBMatOfflineOrthoAdapt::updateRegularization(double lambda) {
 
   // update the inverse representation
   invert_symmetric_tridiag(diag, subdiag);
+}
+
+void DBMatOfflineOrthoAdapt::updateRegularizationParallel(
+    double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
+    const ParallelConfiguration& parallelConfig) {
+  size_t dim_a = lhsMatrix.getNrows();
+
+  // create copies of diag and subdiag, as the inverse methods modifies its input
+  DataVector diag(this->t_diag_.getSize());
+  DataVector subdiag(this->t_subdiag_.getSize());
+  diag.copyFrom(this->t_diag_);
+  subdiag.copyFrom(this->t_subdiag_);
+
+  // add the new lambda value to T
+  for (size_t i = 0; i < dim_a; i++) {
+    diag.set(i, diag.get(i) + lambda);
+  }
+
+  // update the inverse representation
+  invert_symmetric_tridiag(diag, subdiag);
+
+  this->t_tridiag_inv_matrix_distributed_ = DataMatrixDistributed::fromSharedData(
+      this->t_tridiag_inv_matrix_.getPointer(), processGrid, this->t_tridiag_inv_matrix_.getNrows(),
+      this->t_tridiag_inv_matrix_.getNcols(), parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
 }
 
 }  // namespace datadriven

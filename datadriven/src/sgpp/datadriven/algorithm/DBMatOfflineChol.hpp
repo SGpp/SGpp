@@ -69,6 +69,17 @@ class DBMatOfflineChol : public DBMatOfflineGE {
   }
 
   /**
+   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   *
+   * @param lambda New lambda value
+   */
+  void updateRegularizationParallel(double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
+                                    const ParallelConfiguration& parallelConfig) override {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineChol::updateRegularizationParallel() is not implemented!");
+  }
+
+  /**
    * Decomposes the matrix according to the chosen decomposition type.
    * The number of rows of the stored result depends on the decomposition type.
    * @param regularizationConfig the regularization configuration

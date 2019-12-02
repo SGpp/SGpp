@@ -209,7 +209,7 @@ double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
   // score the model
   double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()), true);
 
-  // reset the fitter (but only the online part) -> new method needed? is the reset() method right?
+  // reset the fitter (but only the online part)
   fitter->resetTraining();
 
   return scoreVal;

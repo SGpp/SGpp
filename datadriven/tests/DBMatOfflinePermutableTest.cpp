@@ -50,6 +50,13 @@ class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
         "DBMatOfflineTest::updateRegularization() not implemented!");
   }
 
+  void updateRegularizationParallel(
+      double lambda, std::shared_ptr<sgpp::datadriven::BlacsProcessGrid> processGrid,
+      const sgpp::datadriven::ParallelConfiguration& parallelConfig) override {
+    throw sgpp::base::not_implemented_exception(
+        "DBMatOfflineTest::updateRegularizationParallel() is not implemented!");
+  }
+
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override {
     return sgpp::datadriven::MatrixDecompositionType::Chol;
   }

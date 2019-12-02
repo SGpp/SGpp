@@ -153,9 +153,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     }
   }
 
-  // todo(): non-parallel version of regularization here?
-  // but not access to path
-
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
 
@@ -245,7 +242,15 @@ double ModelFittingDensityEstimationOnOff::computeResidual(DataMatrix& validatio
 
 void ModelFittingDensityEstimationOnOff::updateRegularization(double lambda) {
   if (grid != nullptr) {
+    auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+
     this->online->getOfflineObject().updateRegularization(lambda);
+
+    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      online->getOfflineObject().compute_inverse();
+    }
   }
 }
 

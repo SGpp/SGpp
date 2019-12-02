@@ -93,6 +93,8 @@ class ModelFittingClassification : public ModelFittingBase {
    * This is useful for unsupervised learning models, where normal evaluation cannot be used as
    * there are no targets.
    *
+   * For classification, this is not implemented, as accuracy should be used in this case.
+   *
    * @param validationData Matrix for validation data
    *
    * @returns the residual score
