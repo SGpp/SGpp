@@ -39,7 +39,16 @@
             "fileName": ""
         },
         "geometryConfig": {
-            "dim": [[1,2],[3,4]],
+            "dim": [
+                [
+                    1,
+                    2
+                ],
+                [
+                    3,
+                    4
+                ]
+            ],
             "stencils": [
                 {
                     "stencil": "DirectNeighbour"
@@ -48,7 +57,9 @@
                     "stencil": "block",
                     "blockLength": 2,
                     "colorIndex": 1,
-                    "applyOnLayers": [0]
+                    "applyOnLayers": [
+                        0
+                    ]
                 }
             ],
             "colorIndex": 0
@@ -77,7 +88,12 @@
             "regularizationType": "Identity",
             "lambda": 1e-6,
             "exponentBase": 3.0,
-            "l1Ratio": 4.0
+            "l1Ratio": 4.0,
+            "optimizeLambda": true,
+            "optimizerTolerance": 1e-10,
+            "convergenceThreshold": 1e-11,
+            "intervalA": 1e-3,
+            "intervalB": 0.5
         },
         "parallelConfig": {
             "processRows": 4,
@@ -86,17 +102,20 @@
             "columnBlockSize": 128
         }
     },
-    "visualization":{
-        "generalConfig":{
-            "algorithm": ["tsne", "heatmaps"],
-            "targetDirectory":"./output"
+    "visualization": {
+        "generalConfig": {
+            "algorithm": [
+                "tsne",
+                "heatmaps"
+            ],
+            "targetDirectory": "./output"
         },
-        "parameters":{
-            "perplexity":30,
-            "theta":0.5,
-            "targetDimension":2,
-            "seed":150,
-            "maxNumberIterations":500
+        "parameters": {
+            "perplexity": 30,
+            "theta": 0.5,
+            "targetDimension": 2,
+            "seed": 150,
+            "maxNumberIterations": 500
         }
     }
 }

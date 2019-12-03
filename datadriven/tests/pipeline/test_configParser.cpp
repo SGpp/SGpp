@@ -229,7 +229,7 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   defaults.lambda_ = 1;
   defaults.exponentBase_ = 2;
   defaults.l1Ratio_ = 3;
-  defaults.optimizeLambda_ = true;
+  defaults.optimizeLambda_ = false;
   defaults.optimizerTolerance_ = 1.0;
   defaults.convergenceThreshold_ = 1.0;
   defaults.intervalA_ = 1.0;
@@ -245,11 +245,11 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   BOOST_CHECK_CLOSE(config.lambda_, 1e-6, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
-  BOOST_CHECK_EQUAL(config.optimizeLambda_, false);
-  BOOST_CHECK_CLOSE(config.optimizerTolerance_, 1e-15, tolerance);
-  BOOST_CHECK_CLOSE(config.convergenceThreshold_, 1e-15, tolerance);
-  BOOST_CHECK_CLOSE(config.intervalA_, 1e-15, tolerance);
-  BOOST_CHECK_CLOSE(config.intervalB_, 1.0, tolerance);
+  BOOST_CHECK_EQUAL(config.optimizeLambda_, true);
+  BOOST_CHECK_CLOSE(config.optimizerTolerance_, 1e-10, tolerance);
+  BOOST_CHECK_CLOSE(config.convergenceThreshold_, 1e-11, tolerance);
+  BOOST_CHECK_CLOSE(config.intervalA_, 1e-3, tolerance);
+  BOOST_CHECK_CLOSE(config.intervalB_, 0.5, tolerance);
 }
 
 BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
