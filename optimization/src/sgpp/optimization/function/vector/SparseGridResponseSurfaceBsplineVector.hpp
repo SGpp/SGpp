@@ -41,7 +41,6 @@ namespace optimization {
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  * for a vector valued objective function (in particular time dependent objective functions, where
  * the return values are the time series)
- * todo (rehmemk): THINK OF A ADAPTIVE REFINEMENT CRITERION! CURRENTLY ONLY REGULAR IMPLEMENTED.
  */
 class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
  public:
@@ -120,23 +119,20 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   /**
    * Constructor loading an already calculated response surface from serialized grid
    * and coefficients
+   * (gridFile must be created by Grid::serialize, coeff file by DataMatrix::ToFile)
    *
-   * @param objectiveFunc		objective Function
    * @param lb              lower parameter boundaries
    * @param ub              upper parameter boundaries
-   * @param gridStr			    string containing a serialized grid
+   * @param gridFilename		path to the file with stored grid data
    * @param degree          basis degree
-   * @param coefficients		interpolatino
+   * @param coeffFileName		path to the file with stored coefficients
    */
-  SparseGridResponseSurfaceBsplineVector(std::shared_ptr<sgpp::base::VectorFunction> objectiveFunc,
-                                         sgpp::base::DataVector lb, sgpp::base::DataVector ub,
-                                         std::string gridStr, size_t degree,
-                                         sgpp::base::DataMatrix coefficients)
-      : ResponseSurfaceVector(objectiveFunc->getNumberOfParameters(),
-                              objectiveFunc->getNumberOfComponents()),
-        objectiveFunc(objectiveFunc),
-        degree(degree),
-        coefficients(coefficients) {
+  // ToDo (rehmemk) Check if coefficients shape matches gridSize x numOut
+  SparseGridResponseSurfaceBsplineVector(size_t numDim, size_t numRes, sgpp::base::DataVector lb,
+                                         sgpp::base::DataVector ub, std::string gridFilename,
+                                         size_t degree, std::string coeffFileName)
+      : ResponseSurfaceVector(numDim, numRes), degree(degree) {
+    coefficients = sgpp::base::DataMatrix::fromFile(coeffFileName);
     this->lb = lb;
     this->ub = ub;
     // dummy values for mean and variance
@@ -145,11 +141,7 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
     computedMeanFlag = false;
     unitLBounds = sgpp::base::DataVector(numDim, 0.0);
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
-    std::istringstream gridStream;
-    gridStream.str(gridStr);
-    std::string gridtype;
-    gridStream >> gridtype;
-    grid.reset(sgpp::base::Grid::unserialize(gridStr));
+    grid.reset(sgpp::base::Grid::unserializeFromFile(gridFilename));
     interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
     interpolantGradients =
         std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);

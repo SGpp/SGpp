@@ -46,8 +46,8 @@
 %newobject sgpp::base::Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree);
 
-
-
+                             
+%newobject sgpp::base::Grid::unserializeFromFile(std::string filename);
 %newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
 %newobject sgpp::base::Grid::clone();
@@ -171,6 +171,7 @@ public:
   static Grid* createNakBsplineModifiedGrid(size_t dim, size_t degree);
   static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
 
+  static Grid* unserializeFromFile(std::string filename);
   static Grid* unserialize(const std::string& istr);
 
   static sgpp::base::GridType stringToGridType(const std::string& gridType);

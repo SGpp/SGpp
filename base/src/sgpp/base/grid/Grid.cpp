@@ -474,6 +474,11 @@ GridType Grid::getZeroBoundaryType() {
 
 std::string Grid::getTypeAsString() { return typeVerboseMap()[getType()]; }
 
+Grid* Grid::unserializeFromFile(std::string filename) {
+  std::ifstream istr(filename);
+  return Grid::unserialize(istr);
+}
+
 Grid* Grid::unserialize(const std::string& istr) {
   std::istringstream istream;
   istream.str(istr);

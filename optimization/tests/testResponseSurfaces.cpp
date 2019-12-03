@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
   double epsilon = 1e-14;
   size_t dim = 3;
   size_t m = 2;
-  size_t level = 3;
+  size_t level = 1;  // small level to keep I/O operatiosn quick
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   size_t degree = 3;
@@ -238,11 +238,16 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
                                                                     degree);
   reSurf.regular(level);
 
+  // serialize
   std::string gridStr = reSurf.serializeGrid();
   DataMatrix coeffs = reSurf.getCoefficients();
+  coeffs.toFile("testCoefffs.dat");
+  std::ofstream out("testGrid.dat");
+  out << gridStr;
+  out.close();
 
-  sgpp::optimization::SparseGridResponseSurfaceBsplineVector loadedReSurf(testFunction, lb, ub,
-                                                                          gridStr, degree, coeffs);
+  sgpp::optimization::SparseGridResponseSurfaceBsplineVector loadedReSurf(
+      dim, m, lb, ub, "testGrid.dat", degree, "testCoefffs.dat");
 
   DataVector point(dim, 0.337);
   DataVector reSurfEval = reSurf.eval(point);

@@ -33,6 +33,7 @@
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
 
+%newobject sgpp::base::Grid::unserializeFromFile(std::string filename);
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::clone();
 
@@ -130,6 +131,7 @@ public:
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
 	
+  static Grid* unserializeFromFile(std::string filename);
   static Grid* unserialize(std::string& istr);
 	
 protected:
