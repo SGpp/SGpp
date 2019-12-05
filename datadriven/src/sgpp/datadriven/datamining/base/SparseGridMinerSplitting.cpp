@@ -134,8 +134,6 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
 
   double valueC = evaluateLambda(c, verbose);
   double valueD = evaluateLambda(d, verbose);
-  double prevValueC = valueC;
-  double prevValueD = valueD;
 
   int optimizerIteration = 0;
 
@@ -147,6 +145,11 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
       interval = interval * phiInversed;
       c = a + phiInversedSquared * interval;
       valueC = evaluateLambda(c, verbose);
+
+      // check for convergence
+      if (std::abs(valueC - valueD) < convergenceThreshold) {
+        return a;
+      }
     } else {
       a = c;
       c = d;
@@ -154,6 +157,11 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
       interval = interval * phiInversed;
       d = a + phiInversed * interval;
       valueD = evaluateLambda(d, verbose);
+
+      // check for convergence
+      if (std::abs(valueD - valueC) < convergenceThreshold) {
+        return b;
+      }
     }
 
     if (verbose) {
@@ -164,19 +172,6 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
       print(out);
     }
     optimizerIteration++;
-
-    // check for convergence
-    if (valueC < valueD) {
-      if (std::abs(valueC - prevValueC) < convergenceThreshold) {
-        return a;
-      }
-    } else {
-      if (std::abs(valueD - prevValueD) < convergenceThreshold) {
-        return c;
-      }
-    }
-    prevValueC = valueC;
-    prevValueD = valueD;
   }
 
   if (valueC < valueD) {

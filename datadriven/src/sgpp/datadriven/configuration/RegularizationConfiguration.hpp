@@ -24,7 +24,7 @@ struct RegularizationConfiguration {
   bool lambda_log_scale_ = false;
   bool optimizeLambda_ = false;
   double optimizerTolerance_ = 1e-15;
-  double convergenceThreshold_ = 1e-15;
+  double convergenceThreshold_ = 1e-5;
   double intervalA_ = 1e-15;
   double intervalB_ = 1.0;
 };

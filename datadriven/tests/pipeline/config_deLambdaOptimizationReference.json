@@ -17,28 +17,17 @@
       "gridType": "linear",
       "level": 7
     },
-    "adaptivityConfig": {
-      "numRefinements": 3,
-      "threshold": 0.001,
-      "maxLevelType": false,
-      "noPoints": 10,
-      "refinementIndicator": "DataBased",
-      "errorBasedRefinement": true,
-      "errorMinInterval": 0,
-      "errorBufferSize": 5,
-      "errorConvergenceThreshold": 0.001
-    },
     "regularizationConfig": {
-      "optimizeLambda": true
+      "lambda": 0.2,
+      "optimizeLambda": false
     },
     "densityEstimationConfig": {
       "densityEstimationType": "decomposition",
-      "matrixDecompositionType": "SMW_ortho"
+      "matrixDecompositionType": "orthoadapt"
     },
     "learner": {
       "usePrior": true,
       "beta": 1.0
-    },
-    "parallelConfig": {}
+    }
   }
 }

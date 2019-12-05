@@ -167,6 +167,8 @@ void DBMatOfflineOrthoAdapt::decomposeMatrixParallel(
       this->lhsMatrix.getPointer(), processGrid, dim_a, dim_a, parallelConfig.rowBlockSize_,
       parallelConfig.columnBlockSize_);
 
+  lhsDistributedSynced = true;
+
   // copy the lhsDistributed matrix to preserve the original undecomposed system matrix
   DataMatrixDistributed lhsCopyDistributed =
       DataMatrixDistributed(lhsDistributed.getProcessGrid(), lhsDistributed.getGlobalRows(),
@@ -442,10 +444,11 @@ const DataMatrix& DBMatOfflineOrthoAdapt::getUnmodifiedR() { return this->lhsMat
 
 const DataMatrixDistributed& DBMatOfflineOrthoAdapt::getUnmodifiedRDistributed(
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
-  if (this->lhsDistributed.getGlobalRows() == 0) {
+  if (!lhsDistributedSynced) {
     lhsDistributed = DataMatrixDistributed::fromSharedData(
         lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
         parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+    lhsDistributedSynced = true;
   }
   return this->lhsDistributed;
 }

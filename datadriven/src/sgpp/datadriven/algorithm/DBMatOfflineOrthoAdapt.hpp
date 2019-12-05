@@ -192,6 +192,8 @@ class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
   // distributed matrices, only initialized if scalapack is used
   DataMatrixDistributed q_ortho_matrix_distributed_;
   DataMatrixDistributed t_tridiag_inv_matrix_distributed_;
+
+  bool lhsDistributedSynced = false;
 };
 }  // namespace datadriven
 }  // namespace sgpp
