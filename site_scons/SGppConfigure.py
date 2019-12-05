@@ -464,10 +464,15 @@ def configureGNUCompiler(config):
   # add this as the very first LIBPATH.
   # Note, that this code also disables OpenMP if the mitigation command did not produce an
   # adequate path.
-  import platform
-  linuxDist = platform.dist()
-  if ((linuxDist[0] == "Ubuntu") and
-      (linuxDist[1] in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"])):
+  ubuntuVersion = None
+
+  try:
+    match = re.search(r"Ubuntu ([0-9]{2}\.[0-9]{2})", getOutput(["lsb_release", "-d"]))
+    if match is not None: ubuntuVersion = match.group(1)
+  except OSError:
+    pass
+
+  if ubuntuVersion in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"]:
     output = getOutput([config.env["CXX"], "-v", "-fopenmp", "-xc", "/dev/null"])
     match = re.search(r"LIBRARY_PATH=(.*?):", output)
     firstLibPath = (match.group(1) if match is not None else None)
