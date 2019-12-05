@@ -251,7 +251,6 @@ double ModelFittingDensityEstimationOnOffParallel::computeResidual(
 
 void ModelFittingDensityEstimationOnOffParallel::updateRegularization(double lambda) {
   if (grid != nullptr) {
-    auto& regularizationConfig = this->config->getRegularizationConfig();
     auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
     auto& parallelConfig = this->config->getParallelConfig();
 

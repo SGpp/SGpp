@@ -18,7 +18,19 @@
       "level": 7
     },
     "regularizationConfig": {
-      "optimizeLambda": true
+      "optimizeLambda": true,
+      "regularizationMetric": "Accuracy"
+    },
+    "adaptivityConfig": {
+      "numRefinements": 10,
+      "threshold": 0.001,
+      "maxLevelType": false,
+      "noPoints": 10,
+      "refinementIndicator": "DataBased",
+      "errorBasedRefinement": true,
+      "errorMinInterval": 0,
+      "errorBufferSize": 5,
+      "errorConvergenceThreshold": 0.001
     },
     "densityEstimationConfig": {
       "densityEstimationType": "decomposition",

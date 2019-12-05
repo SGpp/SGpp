@@ -38,6 +38,7 @@ using sgpp::datadriven::FitterType;
 using sgpp::datadriven::ParallelConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::RegularizationType;
+using sgpp::datadriven::RegularizationMetricType;
 using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::ScorerMetricType;
 using sgpp::solver::SLESolverConfiguration;
@@ -250,6 +251,8 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   BOOST_CHECK_CLOSE(config.convergenceThreshold_, 1e-11, tolerance);
   BOOST_CHECK_CLOSE(config.intervalA_, 1e-3, tolerance);
   BOOST_CHECK_CLOSE(config.intervalB_, 0.5, tolerance);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.regularizationMetric_),
+                    static_cast<int>(RegularizationMetricType::accuracy));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {

@@ -61,7 +61,7 @@ double testModelDE(std::string configFile) {
 
   // Test
   CSVFileSampleProvider csv;
-  csv.readFile("datadriven/datasets/densityEstimation/2D_StroSkewB2F.csv", true);
+  csv.readFile("datadriven/datasets/densityEstimation/2D_StroSkewB2.csv", true);
   auto testDataset = *(csv.getAllSamples());
   DataVector predictions(testDataset.getNumberInstances());
   model->evaluate(testDataset.getData(), predictions);
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationParallelOrthoadapt) {
 
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(mseLambdaOptimization < 5e-2);
-    BOOST_CHECK(mseLambdaOptimization < mse);
+    BOOST_CHECK(mseLambdaOptimization <= mse);
   }
 }
 
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationParallelOrthoadaptSMW) {
 
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(mseLambdaOptimization < 5e-2);
-    BOOST_CHECK(mseLambdaOptimization < mse);
+    BOOST_CHECK(mseLambdaOptimization <= mse);
   }
 }
 #endif /* USE_SCALAPACK */
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationOrthoadapt) {
   double mse = testModelDE(configFile);
 
   BOOST_CHECK(mseLambdaOptimization < 5e-2);
-  BOOST_CHECK(mseLambdaOptimization < mse);
+  BOOST_CHECK(mseLambdaOptimization <= mse);
 }
 
 BOOST_AUTO_TEST_CASE(testLambdaOptimizationOrthoadaptSMW) {
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationOrthoadaptSMW) {
   double mse = testModelDE(configFile);
 
   BOOST_CHECK(mseLambdaOptimization < 5e-2);
-  BOOST_CHECK(mseLambdaOptimization < mse);
+  BOOST_CHECK(mseLambdaOptimization <= mse);
 }
 
 #endif /* USE_GSL */

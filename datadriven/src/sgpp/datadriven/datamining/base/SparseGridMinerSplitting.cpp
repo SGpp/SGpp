@@ -9,6 +9,7 @@
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 #include <iostream>
 
@@ -111,6 +112,11 @@ double SparseGridMinerSplitting::learn(bool verbose) {
 }
 
 double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
+  // init the scorer
+  std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
+  lambdaOptimizationScorer = std::unique_ptr<Scorer>(factory->buildRegularizationScorer(
+      fitter->getFitterConfiguration().getRegularizationConfig()));
+
   // 1 / phi
   double phiInversed = (std::sqrt(5) - 1) / 2;
 

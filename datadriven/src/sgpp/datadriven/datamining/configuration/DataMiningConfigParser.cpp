@@ -542,6 +542,16 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
                                     "regularizationConfig");
     config.intervalB_ = parseDouble(*regularizationConfig, "intervalB", defaults.intervalB_,
                                     "regularizationConfig");
+
+    if (regularizationConfig->contains("regularizationMetric")) {
+      config.regularizationMetric_ = ScorerMetricTypeParser::parseRegularizationMetric(
+          (*regularizationConfig)["regularizationMetric"].get());
+    } else {
+      std::cout << "# Did not find scorer[metric]. Setting default value "
+                << ScorerMetricTypeParser::regularizationMetricToString(
+                       defaults.regularizationMetric_)
+                << "." << std::endl;
+    }
   }
 
   return hasRegularizationConfig;

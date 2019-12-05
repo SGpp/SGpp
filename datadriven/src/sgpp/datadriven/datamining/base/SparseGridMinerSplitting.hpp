@@ -90,6 +90,11 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * validate and assess model robustness.
    */
   std::unique_ptr<DataSourceSplitting> dataSource;
+
+  /**
+   * Scorer object that is only initzialized and used for lambda optimization
+   */
+  std::unique_ptr<Scorer> lambdaOptimizationScorer;
 };
 
 } /* namespace datadriven */

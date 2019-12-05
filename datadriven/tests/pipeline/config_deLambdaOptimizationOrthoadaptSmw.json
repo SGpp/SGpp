@@ -4,12 +4,10 @@
     "hasTargets": false,
     "batchSize": 50,
     "validationPortion": 0.2,
-    "epochs": 3,
-    "shuffling": "random",
-    "randomSeed": 150419
+    "epochs": 3
   },
   "scorer": {
-    "metric": "Residual"
+    "metric": "mse"
   },
   "fitter": {
     "type": "densityEstimation",
@@ -18,7 +16,8 @@
       "level": 7
     },
     "regularizationConfig": {
-      "optimizeLambda": true
+      "optimizeLambda": true,
+      "regularizationMetric": "residual"
     },
     "densityEstimationConfig": {
       "densityEstimationType": "decomposition",

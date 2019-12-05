@@ -93,7 +93,8 @@
             "optimizerTolerance": 1e-10,
             "convergenceThreshold": 1e-11,
             "intervalA": 1e-3,
-            "intervalB": 0.5
+            "intervalB": 0.5,
+            "regularizationMetric": "accuracy"
         },
         "parallelConfig": {
             "processRows": 4,
