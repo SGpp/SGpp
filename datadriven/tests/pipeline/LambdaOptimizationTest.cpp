@@ -79,11 +79,11 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationClassificationParallelOrthoadapt) {
       "datadriven/tests/pipeline/config_gmmLambdaOptimizationParallelOrthoadapt.json";
   double accuracyLambdaOptimization = testModelClassification(configFileParallel);
 
-  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffOrthoadapt.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmLambdaOptimizationReference.json";
   double accuracy = testModelClassification(configFile);
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(accuracyLambdaOptimization > 0.7);
-    BOOST_CHECK(accuracyLambdaOptimization > accuracy);
+    BOOST_CHECK(accuracyLambdaOptimization >= accuracy);
   }
 }
 
@@ -92,12 +92,12 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationClassificationParallelOrthoadaptSMW) 
       "datadriven/tests/pipeline/config_gmmLambdaOptimizationParallelOrthoadaptSmw.json";
   double accuracyLambdaOptimization = testModelClassification(configFileParallel);
 
-  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffOrthoadapt.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmLambdaOptimizationReference.json";
   double accuracy = testModelClassification(configFile);
 
   if (BlacsProcessGrid::getCurrentProcess() == 0) {
     BOOST_CHECK(accuracyLambdaOptimization > 0.7);
-    BOOST_CHECK(accuracyLambdaOptimization > accuracy);
+    BOOST_CHECK(accuracyLambdaOptimization >= accuracy);
   }
 }
 
@@ -137,11 +137,11 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationClassificationOrthoadapt) {
       "datadriven/tests/pipeline/config_gmmLambdaOptimizationOrthoadapt.json";
   double accuracyLambdaOptimization = testModelClassification(configFileLambdaOptimization);
 
-  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffOrthoadapt.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmLambdaOptimizationReference.json";
   double accuracy = testModelClassification(configFile);
 
   BOOST_CHECK(accuracyLambdaOptimization > 0.7);
-  BOOST_CHECK(accuracyLambdaOptimization > accuracy);
+  BOOST_CHECK(accuracyLambdaOptimization >= accuracy);
 }
 
 BOOST_AUTO_TEST_CASE(testLambdaOptimizationClassificationOrthoadaptSMW) {
@@ -149,11 +149,11 @@ BOOST_AUTO_TEST_CASE(testLambdaOptimizationClassificationOrthoadaptSMW) {
       "datadriven/tests/pipeline/config_gmmLambdaOptimizationOrthoadaptSmw.json";
   double accuracyLambdaOptimization = testModelClassification(configFileLambdaOptimization);
 
-  std::string configFile = "datadriven/tests/pipeline/config_gmmOnOffOrthoadapt.json";
+  std::string configFile = "datadriven/tests/pipeline/config_gmmLambdaOptimizationReference.json";
   double accuracy = testModelClassification(configFile);
 
   BOOST_CHECK(accuracyLambdaOptimization > 0.7);
-  BOOST_CHECK(accuracyLambdaOptimization > accuracy);
+  BOOST_CHECK(accuracyLambdaOptimization >= accuracy);
 }
 
 BOOST_AUTO_TEST_CASE(testLambdaOptimizationOrthoadapt) {
