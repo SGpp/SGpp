@@ -175,7 +175,7 @@ namespace datadriven {
   void ClassificationRefinementFunctor::stepDown(
       size_t d, size_t minDim, base::HashGridPoint& gp,
       std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> &neighbors) {
-          for (size_t j = minDim; j < d; j++) {
+          for (size_t j = 0; j < d; j++) {
               base::GridPoint::level_type level;
               base::GridPoint::index_type index;
               gp.get(j, level, index);
@@ -183,7 +183,10 @@ namespace datadriven {
               index = index << 1;
               base::HashGridPoint left(gp);
               left.set(j, level, index - 1);
-              if (total_grid.isContaining(left)) {
+              if (!total_grid.isContaining(left)) {
+                  collectNeighbors(gp, neighbors.at(j).first, j, true);
+              }
+              else if (j >= minDim) {
                   std::vector<std::pair<base::HashGridPoint,
                       base::HashGridPoint>> leftNeighbors(neighbors);
                   for (size_t i = 0; i < leftNeighbors.size(); i++) {
@@ -192,12 +195,13 @@ namespace datadriven {
                   leftNeighbors.at(j) = std::pair<base::HashGridPoint,
                       base::HashGridPoint>(neighbors.at(j).first, gp);
                   stepDown(d, j, left, leftNeighbors);
-              } else {
-                  collectNeighbors(gp, neighbors.at(j).first, j, true);
               }
               base::HashGridPoint right(gp);
               right.set(j, level, index + 1);
-              if (total_grid.isContaining(right)) {
+              if (!total_grid.isContaining(right)) {
+                  collectNeighbors(gp, neighbors.at(j).second, j, false);
+              }
+              else if (j >= minDim) {
                   std::vector<std::pair<base::HashGridPoint,
                      base::HashGridPoint>> rightNeighbors(neighbors);
                   for (size_t i = 0; i < rightNeighbors.size(); i++) {
@@ -206,8 +210,6 @@ namespace datadriven {
                   rightNeighbors.at(j) = std::pair<base::HashGridPoint,
                      base::HashGridPoint>(gp, neighbors.at(j).second);
                   stepDown(d, j, right, rightNeighbors);
-              } else {
-                  collectNeighbors(gp, neighbors.at(j).second, j, false);
               }
           }
       }
