@@ -11,6 +11,7 @@
 #include <limits>
 #include <valarray>
 #include <cmath>
+#include <chrono>
 
 namespace sgpp {
 namespace datadriven {
@@ -18,74 +19,121 @@ namespace datadriven {
 NormalizationTransformation::NormalizationTransformation()
     : datasetTransformed(nullptr), datasetInvTransformed(nullptr) {}
 
-
 void NormalizationTransformation::initialize(Dataset *dataset, DataTransformationConfig config) {
   this->nmConfig = config.normalizationConfig;
   // if MinMax not given by user, p determination
-  if (!nmConfig.manualInput){
-	  base::DataMatrix& searchData = dataset->getData();
-	  std::valarray<double> mean(dataset->getDimension());
+  if (!nmConfig.manualInput) {
+    base::DataMatrix& searchData = dataset->getData();
+    std::valarray<double> mean(dataset->getDimension());
   // initialize vector
-    for (unsigned int d = 0; d < dataset->getDimension(); d++){
+    for (unsigned int d = 0; d < dataset->getDimension(); d++) {
       nmConfig.minmaxInput.push_back({std::numeric_limits<double>::infinity(),
       -std::numeric_limits<double>::infinity()});
     }
-    //determine minmax and mean
-    for (unsigned int d = 0; d < dataset->getDimension(); d++){
-      for (size_t i = d; i < nmConfig.searchPortion*(dataset->getDimension() *
-           dataset->getNumberInstances()); i += dataset->getDimension()){
-    	     mean[d] +=searchData[i];
-             if (searchData[i] < nmConfig.minmaxInput.at(d).at(0)){
-               nmConfig.minmaxInput.at(d).at(0) = searchData[i];
-             }
-             if (searchData[i] > nmConfig.minmaxInput.at(d).at(1)){
-               nmConfig.minmaxInput.at(d).at(1) = searchData[i];
-             }
+    // determine minmax and mean
+    if (nmConfig.searchInstances == 0) {
+        for (size_t i = 0; i < dataset->getNumberInstances() * dataset->getDimension();
+             i += dataset->getDimension()) {
+               for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+                 if (searchData[i+d] < nmConfig.minmaxInput.at(d).at(0)) {
+                   nmConfig.minmaxInput.at(d).at(0) = searchData[i+d];
+                 }
+                 if (searchData[i+d] > nmConfig.minmaxInput.at(d).at(1)) {
+                   nmConfig.minmaxInput.at(d).at(1) = searchData[i+d];
+                 }
+            }
         }
+    } else {
+      for (size_t i = 0; i < nmConfig.searchInstances * dataset->getDimension();
+           i += dataset->getDimension()) {
+             for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+               mean[d] +=searchData[i+d];
+               if (searchData[i+d] < nmConfig.minmaxInput.at(d).at(0)) {
+                 nmConfig.minmaxInput.at(d).at(0) = searchData[i+d];
+               }
+               if (searchData[i+d] > nmConfig.minmaxInput.at(d).at(1)) {
+                 nmConfig.minmaxInput.at(d).at(1) = searchData[i+d];
+               }
+             }
+      }
     }
-    //determine standard deviation (remove if clause, since only useful if whole data is in dataset
-    if (nmConfig.searchPortion != 1){
-        mean = mean/(nmConfig.searchPortion * dataset->getNumberInstances());
-        std::valarray<double> stdDeviation(dataset->getDimension());
-
-    	for (unsigned int d = 0; d < dataset->getDimension(); d++){
-    	  for (size_t i = d; i < nmConfig.searchPortion*(dataset->getDimension() *
-               dataset->getNumberInstances()); i += dataset->getDimension()){
-    	         stdDeviation[d] += pow(searchData[i], 2);
-    	  }
-          stdDeviation = stdDeviation / (nmConfig.searchPortion * dataset->getNumberInstances() - 1);
-          stdDeviation = sqrt(stdDeviation);
-          nmConfig.minmaxInput.at(d).at(0) = nmConfig.minmaxInput.at(d).at(0) -
-          nmConfig.minmaxStdDeviation * stdDeviation[d];
-          nmConfig.minmaxInput.at(d).at(1) = nmConfig.minmaxInput.at(d).at(1) +
-          nmConfig.minmaxStdDeviation * stdDeviation[d];
-    	}
+    // determine standard deviation or deviation heuristic
+    if ((nmConfig.searchInstances != 0) &&
+        (nmConfig.searchInstances < dataset->getNumberInstances())) {
+          mean = mean / static_cast<double>(nmConfig.searchInstances);
+          std::valarray<double> stdDeviation(dataset->getDimension());
+          if (nmConfig.stdDeviationHeuristic == false) {
+            std::vector<double>stdDeviationTmp(dataset->getDimension());
+            for (size_t i = 0; i < nmConfig.searchInstances * dataset->getDimension();
+                 i += dataset->getDimension()) {
+                   for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+                     stdDeviationTmp[d] += ((searchData[i+d] - mean[d]) *
+                     (searchData[i+d] - mean[d]));
+                   }
+            }
+            for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+              stdDeviation[d] = stdDeviationTmp[d];
+            }
+            stdDeviation = stdDeviation / double
+            (nmConfig.searchInstances - 1);
+            stdDeviation = sqrt(stdDeviation);
+            } else {
+              for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+                stdDeviation[d] = (nmConfig.minmaxInput.at(d).at(1) -
+                nmConfig.minmaxInput.at(d).at(0)) / nmConfig.deviationHeuristic;
+              }
+            }
+          for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+            nmConfig.minmaxInput.at(d).at(0) = nmConfig.minmaxInput.at(d).at(0) -
+            nmConfig.minmaxStdDeviation * stdDeviation[d];
+            nmConfig.minmaxInput.at(d).at(1) = nmConfig.minmaxInput.at(d).at(1) +
+            nmConfig.minmaxStdDeviation * stdDeviation[d];
+     }
     }
+    std::cout << "Normalization transformation initialized" << std::endl;
   }
-  std::cout << "Normalization transformation initialized" << std::endl;
 }
 
-Dataset *NormalizationTransformation::doTransformation(Dataset *dataset){
-  datasetTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
+Dataset *NormalizationTransformation::doTransformation(Dataset *dataset) {
+  datasetTransformed = new Dataset{0, dataset->getDimension()};
   base::DataMatrix& data = dataset->getData();
-  base::DataMatrix& datatransformed = datasetTransformed->getData();
-  datasetTransformed->getTargets() = dataset->getTargets();
-
-  //MinMaxNormalization
-  if (nmConfig.method == "minmax"){
-    for (unsigned int d = 0; d < dataset->getDimension(); d++){
-      for (size_t i = d; i < (dataset->getDimension() * dataset->getNumberInstances());
-           i += dataset->getDimension()){
-             datatransformed[i] = (data[i]  - nmConfig.minmaxInput.at(d).at(0)) /
-  	       	 (nmConfig.minmaxInput.at(d).at(1) - nmConfig.minmaxInput.at(d).at(0));
-             if ((datatransformed[i] < 0) || (datatransformed[i] > 1)){
-               std::cout << "Dimension: " << d << std::endl;
-               throw sgpp::base::data_exception("Min or max was not determined correctly");
+  base::DataMatrix& dataTransformed = datasetTransformed->getData();
+  base::DataVector& targets = dataset->getTargets();
+  base::DataVector& targetsTransformed = datasetTransformed -> getTargets();
+  // MinMaxNormalization
+  if (nmConfig.method == "minmax") {
+    size_t outOfBoundC = 0;
+    for (size_t i = 0; i < (dataset->getDimension() * dataset->getNumberInstances());
+         i += dataset->getDimension()) {
+           base::DataVector tmp;
+           for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+             if ((data[i+d] < nmConfig.minmaxInput.at(d).at(0)) ||
+                 (data[i+d] > nmConfig.minmaxInput.at(d).at(1))) {
+                   outOfBoundC += 1;
+                   if (nmConfig.outOfBound == "abort") {
+                     std::cout << "Dimension: " << d << std::endl;
+                     throw sgpp::base::data_exception("Min or max was not determined correctly");
+                   } else if (nmConfig.outOfBound == "discard") {
+                     break;
+                   } else if (nmConfig.outOfBound == "setToBorder") {
+                    if (data[i+d] < nmConfig.minmaxInput.at(d).at(0)) {
+                      tmp.append(0);
+                    } else {
+                      tmp.append(1);
+                      }
+                   }
+             } else {
+               tmp.append((data[i+d]  - nmConfig.minmaxInput.at(d).at(0)) /
+               (nmConfig.minmaxInput.at(d).at(1) - nmConfig.minmaxInput.at(d).at(0)));
              }
            }
-      }
+           if (tmp.size() == dataset->getDimension()) {
+             dataTransformed.appendRow(tmp);
+             targetsTransformed.append(targets[i / dataset->getDimension()]);
+           }
+    }
+    std::cout << outOfBoundC << " instances were out of bound." << std::endl;
   }
-
   return datasetTransformed;
 }
 
@@ -96,14 +144,14 @@ Dataset *NormalizationTransformation::doInverseTransformation(Dataset *dataset) 
   base::DataMatrix& datatransformed = datasetTransformed->getData();
   datasetInvTransformed->getTargets() = dataset->getTargets();
 
-  if (nmConfig.method == "minmax"){
-      for (unsigned int d = 0; d < dataset->getDimension(); d++){
-       for (unsigned int i = d; i < (dataset->getDimension() * dataset->getNumberInstances());
-                i += dataset->getDimension()){
-                  datatransformed[i] =
-                  data[i] * (nmConfig.minmaxInput.at(d).at(1) - nmConfig.minmaxInput.at(d).at(0))
+  if (nmConfig.method == "minmax") {
+      for (size_t i = 0; i < (dataset->getDimension() * dataset->getNumberInstances());
+           i += dataset->getDimension()) {
+             for (unsigned int d = 0; d < dataset->getDimension(); d++) {
+                  datatransformed[i+d] =
+                  data[i+d] * (nmConfig.minmaxInput.at(d).at(1) - nmConfig.minmaxInput.at(d).at(0))
                   + nmConfig.minmaxInput.at(d).at(0);
-       }
+             }
       }
   }
   return datasetInvTransformed;
