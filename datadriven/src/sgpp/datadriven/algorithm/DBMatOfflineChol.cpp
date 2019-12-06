@@ -34,19 +34,20 @@ DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
 DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
 
-DBMatOffline* DBMatOfflineChol::clone() { return new DBMatOfflineChol{*this}; }
+DBMatOffline* DBMatOfflineChol::clone() const { return new DBMatOfflineChol{*this}; }
 
 bool DBMatOfflineChol::isRefineable() { return true; }
 
-void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                                       DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineChol::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
 #ifdef USE_GSL
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
       return;
     } else {
-      auto begin = std::chrono::high_resolution_clock::now();
+      // auto begin = std::chrono::high_resolution_clock::now();
 
       size_t n = lhsMatrix.getNrows();
       gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
@@ -64,10 +65,10 @@ void DBMatOfflineChol::decomposeMatrix(RegularizationConfiguration& regularizati
         }
       }
       isDecomposed = true;
-      auto end = std::chrono::high_resolution_clock::now();
-      std::cout << "Chol decomp took "
-                << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
-                << "ms" << std::endl;
+      // auto end = std::chrono::high_resolution_clock::now();
+      // std::cout << "Chol decomp took "
+      //          << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+      //          << "ms" << std::endl;
     }
   } else {
     throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
@@ -105,7 +106,7 @@ void DBMatOfflineChol::decomposeMatrixParallel(
   lhsDistributed = lhsDistributed.transpose();
 
   // sync non-distri and distri matrices
-  this->lhsDistributed.toLocalDataMatrix(this->lhsMatrix);
+  this->lhsDistributed.toLocalDataMatrixBroadcast(this->lhsMatrix);
 
   this->isDecomposed = true;
 

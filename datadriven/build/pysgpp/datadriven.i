@@ -31,7 +31,6 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/BatchConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
@@ -55,14 +54,19 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineGE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnline.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp"
 
+
+%feature("flatnested");
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatObjectStore.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDatabase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/GridFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp"
 
 #ifdef USE_GSL
 %include "datadriven/src/sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp"
@@ -109,6 +113,7 @@
 
 %include "datadriven/src/sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp"
+%include "datadriven/src/sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp"
 %include "datadriven/src/sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp"

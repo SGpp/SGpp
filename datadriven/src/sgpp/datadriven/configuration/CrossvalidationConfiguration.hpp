@@ -18,19 +18,19 @@ struct CrossvalidationConfiguration {
   // parameters for cross-validation
   bool enable_ = false;   // enables cross-validation
   size_t kfold_ = 5;  // number of batches for cross validation
-  int seed_;      // seed for randomized k-fold
-  bool shuffle_;  // randomized/sequential k-fold
-  bool silent_;   // verbosity
+  int seed_ = 0;      // seed for randomized k-fold
+  bool shuffle_ = 0;  // randomized/sequential k-fold
+  bool silent_ = 1;   // verbosity
 
   // regularization parameter optimization
-  double lambda_;       // regularization parameter
-  double lambdaStart_;  // lower bound for lambda search range
-  double lambdaEnd_;    // upper bound for lambda search range
+  double lambda_ = 1e-3;       // regularization parameter
+  double lambdaStart_ = 1e-3;  // lower bound for lambda search range
+  double lambdaEnd_ = 1e-3;    // upper bound for lambda search range
   // number of lambdas to be tested within the range defined by lambdaStart and
   // lambdaEdns;
   // must be > 1
-  size_t lambdaSteps_;
-  bool logScale_;  // search the optimization interval on a log-scale
+  size_t lambdaSteps_ = 0;
+  bool logScale_ = false;  // search the optimization interval on a log-scale
 };
 
 }  // namespace datadriven
