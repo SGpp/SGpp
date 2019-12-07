@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
@@ -20,6 +21,7 @@
 #include <string>
 
 using sgpp::datadriven::ArffFileSampleProvider;
+using sgpp::datadriven::SampleProvider;
 using sgpp::datadriven::DataSourceBuilder;
 using sgpp::datadriven::DataSourceConfig;
 using sgpp::datadriven::Dataset;
@@ -90,12 +92,15 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   arffsp.readFile("datadriven/datasets/chess/chess_5d_2000.arff", true);
   Dataset* dataset1 = arffsp.getNextSamples(1000);
   Dataset* dataset2 = arffsp.getNextSamples(1000);
+  SampleProvider* initializationSampleProvider = arffsp.clone();
+  initializationSampleProvider->reset();
+  Dataset* datasetInitialization = initializationSampleProvider->getAllSamples();
 
   // "manual" transformation
   DataTransformationBuilder dataTrBuilder;
   DataTransformation* dataTransformation =
         dataTrBuilder.buildTransformation(config.dataTransformationConfig);
-  dataTransformation->initialize(dataset1, config.dataTransformationConfig);
+  dataTransformation->initialize(datasetInitialization, config.dataTransformationConfig);
 
   Dataset* datasetMan1 = dataTransformation->doTransformation(dataset1);
   Dataset* datasetMan2 = dataTransformation->doTransformation(dataset2);
