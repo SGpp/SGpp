@@ -31,6 +31,7 @@ void NormalizationTransformation::initialize(Dataset *dataset, DataTransformatio
       -std::numeric_limits<double>::infinity()});
     }
     // determine minmax and mean
+    // full search
     if (nmConfig.searchInstances == 0) {
         for (size_t i = 0; i < dataset->getNumberInstances() * dataset->getDimension();
              i += dataset->getDimension()) {
@@ -43,7 +44,16 @@ void NormalizationTransformation::initialize(Dataset *dataset, DataTransformatio
                  }
             }
         }
+    // partly search with random instances
     } else {
+      std::mt19937 generator;
+      std::uniform_real_distribution<double> distr(
+        0, static_cast<double>(dataset->getNumberInstances() - 1));
+      DataVector currSample(dataset->getDimension());
+      for (unsigned int i = 0; i < nmConfig.searchInstances; i++) {
+        dataset->getData().getRow(static_cast<size_t>(distr(generator)), currSample);
+        searchData.setRow(i, currSample);
+        }
       for (size_t i = 0; i < nmConfig.searchInstances * dataset->getDimension();
            i += dataset->getDimension()) {
              for (unsigned int d = 0; d < dataset->getDimension(); d++) {
@@ -95,17 +105,18 @@ void NormalizationTransformation::initialize(Dataset *dataset, DataTransformatio
 }
 
 Dataset *NormalizationTransformation::doTransformation(Dataset *dataset) {
-  datasetTransformed = new Dataset{0, dataset->getDimension()};
+  Dataset datasetTmp = Dataset{dataset->getNumberInstances(), dataset->getDimension()};
   base::DataMatrix& data = dataset->getData();
-  base::DataMatrix& dataTransformed = datasetTransformed->getData();
+  base::DataMatrix& dataTransformed = datasetTmp.getData();
+  base::DataVector targetsTransformed = base::DataVector();
   base::DataVector& targets = dataset->getTargets();
-  base::DataVector& targetsTransformed = datasetTransformed -> getTargets();
+  base::DataVector tmp;
+  size_t outOfBoundC = 0;
   // MinMaxNormalization
   if (nmConfig.method == "minmax") {
-    size_t outOfBoundC = 0;
     for (size_t i = 0; i < (dataset->getDimension() * dataset->getNumberInstances());
          i += dataset->getDimension()) {
-           base::DataVector tmp;
+           tmp.resizeZero(0);
            for (unsigned int d = 0; d < dataset->getDimension(); d++) {
              if ((data[i+d] < nmConfig.minmaxInput.at(d).at(0)) ||
                  (data[i+d] > nmConfig.minmaxInput.at(d).at(1))) {
@@ -128,12 +139,21 @@ Dataset *NormalizationTransformation::doTransformation(Dataset *dataset) {
              }
            }
            if (tmp.size() == dataset->getDimension()) {
-             dataTransformed.appendRow(tmp);
+             dataTransformed.setRow((i - outOfBoundC) / dataset->getDimension(), tmp);
              targetsTransformed.append(targets[i / dataset->getDimension()]);
            }
     }
     std::cout << outOfBoundC << " instances were out of bound." << std::endl;
   }
+  if (nmConfig.outOfBound == "discard") {
+    dataTransformed.resize(dataset->getNumberInstances() - outOfBoundC);
+    datasetTransformed = new Dataset{dataset->getNumberInstances()-outOfBoundC,
+                                     dataset->getDimension()};
+  } else {
+    datasetTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
+  }
+  datasetTransformed->getTargets() = targetsTransformed;
+  datasetTransformed->getData() = dataTransformed;
   return datasetTransformed;
 }
 
