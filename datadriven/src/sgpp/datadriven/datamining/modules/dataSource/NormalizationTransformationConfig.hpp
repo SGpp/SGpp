@@ -24,8 +24,8 @@ struct NormalizationTransformationConfig {
   std::vector<std::vector<double>>  minmaxInput = {};
   unsigned int searchInstances = 100;
   bool stdDeviationHeuristic = true;
-  unsigned int minmaxStdDeviation = 3;
   double deviationHeuristic = 3.5;
+  unsigned int minmaxStdDeviation = 3;
   std::string outOfBound = "abort";
 };
 } /* namespace datadriven */
