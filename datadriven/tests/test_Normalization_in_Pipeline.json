@@ -12,7 +12,8 @@
 	    "method": "minmax",
 	    "manualInput": false,
             "searchInstances": 100,
-            "stdDeviationHeuristic":3.5,
+            "stdDeviationHeuristic": true,
+            "deviationHeuristic": 3.5,
             "minmaxStdDeviation": 3,
             "outOfBound": "abort"
 	   } 

@@ -43,9 +43,10 @@ BOOST_AUTO_TEST_CASE(testNormalizationWrapper) {
   config.dataTransformationConfig.type = DataTransformationType::NORMALIZATION;
 
 
-  Dataset* dataset = new Dataset {10,0};
+  Dataset* dataset = new Dataset {100, 2};
   DataMatrix& data = dataset->getData();
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 200; i++) {
+    data[i] = i;
   }
 
   // do transformations
@@ -71,9 +72,10 @@ BOOST_AUTO_TEST_CASE(testNormalizationWrapper) {
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }
+  delete dataset;
 }
 
- BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
+BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   double tolerance = 1e-10;
   DataSourceConfig config;
   DataSourceConfig defaults;
