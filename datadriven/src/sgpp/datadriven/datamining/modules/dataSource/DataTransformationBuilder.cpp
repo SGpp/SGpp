@@ -19,8 +19,7 @@ DataTransformation *DataTransformationBuilder::buildTransformation(
   if (config.type == DataTransformationType::NORMALIZATION) {
       NormalizationTransformation *normalizationTransformation = new NormalizationTransformation;
       return static_cast<DataTransformation *>(normalizationTransformation);
-  }
-  else {
+  } else {
     return nullptr;
   }
 }

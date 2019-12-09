@@ -55,7 +55,6 @@ class NormalizationTransformation : public DataTransformation {
   Dataset *doInverseTransformation(Dataset *dataset) override;
 
  private:
-
   /**
    * Pointer to #sgpp::datadriven::NormalizationTransformationConfig
    */
@@ -70,7 +69,6 @@ class NormalizationTransformation : public DataTransformation {
    * Pointer to #sgpp::datadriven::Dataset
    */
   Dataset *datasetInvTransformed;
-
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

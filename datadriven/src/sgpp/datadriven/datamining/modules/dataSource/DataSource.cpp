@@ -37,10 +37,10 @@ DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
 
-Dataset* DataSource::getTransformedSamples(Dataset* dataset){
- //Initializes DataTransformation if not already initialized and does transformation if selected
+Dataset* DataSource::getTransformedSamples(Dataset* dataset) {
+  // Initializes DataTransformation if not already initialized and does transformation if selected
   if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
-    if (!dataTransformation->initialized){
+    if (!dataTransformation->initialized) {
       SampleProvider* initializationSampleProvider = sampleProvider->clone();
       initializationSampleProvider->reset();
       Dataset* datasetInitialization = initializationSampleProvider->getAllSamples();

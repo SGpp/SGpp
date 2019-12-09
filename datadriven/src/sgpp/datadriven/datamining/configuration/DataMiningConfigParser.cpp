@@ -798,7 +798,7 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(DictNode &dict, con
     return defaultValue;
   }
 }
-  
+
 // (Niklas) Adapted from parseArrayOfIntArrays
 std::vector<std::vector<double>> DataMiningConfigParser::parseArrayOfDoubleArrays(
     DictNode &dict, const std::string &key, std::vector<std::vector<double>> defaultValue,
@@ -1022,7 +1022,7 @@ void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
     auto normalizationTransformationConfig = static_cast<DictNode *>(
   	    &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
     parseNormalizationTransformationConfig(*normalizationTransformationConfig,
-                                           config.normalizationConfig, 
+                                           config.normalizationConfig,
                                            defaults.normalizationConfig, "normalizationConfig");
     } else {
       std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
@@ -1050,12 +1050,13 @@ void DataMiningConfigParser::parseNormalizationTransformationConfig(
   config.manualInput = parseBool(dict, "manualInput", defaults.manualInput, parentNode);
   config.minmaxInput = parseArrayOfDoubleArrays(dict, "minmaxInput", defaults.minmaxInput,
                                                 parentNode);
-  config.searchInstances = parseInt(dict, "searchInstances", defaults.searchInstances, parentNode);
+  config.searchInstances = static_cast<unsigned int>(parseInt(dict, "searchInstances",
+                                                     defaults.searchInstances, parentNode));
   config.stdDeviationHeuristic = parseBool(dict, "stdDeviationHeuristic",
                                            defaults.stdDeviationHeuristic, parentNode);
   config.deviationHeuristic = parseDouble(dict, "deviationHeuristic", defaults.deviationHeuristic,
                                           parentNode);
-  config.minmaxStdDeviation = parseInt(dict, "minmaxStdDeviation", defaults.minmaxStdDeviation,
+  config.minmaxStdDeviation = parseDouble(dict, "minmaxStdDeviation", defaults.minmaxStdDeviation,
                                        parentNode);
   config.outOfBound = parseString(dict, "outOfBound", defaults.outOfBound, parentNode);
 }
