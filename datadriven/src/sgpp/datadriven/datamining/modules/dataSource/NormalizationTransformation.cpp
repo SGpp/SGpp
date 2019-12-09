@@ -161,7 +161,7 @@ Dataset *NormalizationTransformation::doInverseTransformation(Dataset *dataset) 
   std::cout << "Performing Denormalization transformation" << std::endl;
   datasetInvTransformed = new Dataset{dataset->getNumberInstances(), dataset->getDimension()};
   base::DataMatrix& data = dataset->getData();
-  base::DataMatrix& datatransformed = datasetTransformed->getData();
+  base::DataMatrix& datatransformed = datasetInvTransformed->getData();
   datasetInvTransformed->getTargets() = dataset->getTargets();
 
   if (nmConfig.method == "minmax") {
