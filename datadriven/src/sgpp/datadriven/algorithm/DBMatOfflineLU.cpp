@@ -22,35 +22,34 @@ namespace sgpp {
 namespace datadriven {
 
 using sgpp::base::algorithm_exception;
-using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;
+using sgpp::base::DataVector;
 
 DBMatOfflineLU::DBMatOfflineLU() : DBMatOfflineGE{}, permutation{nullptr} {}
 
 DBMatOfflineLU::DBMatOfflineLU(const DBMatOfflineLU& rhs)
     : DBMatOfflineGE(rhs), permutation(nullptr) {
   size_t gridSize = rhs.lhsMatrix.getNrows();
-  permutation =
-      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
+  permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
   gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
 }
 
 DBMatOfflineLU& DBMatOfflineLU::operator=(const DBMatOfflineLU& rhs) {
   size_t gridSize = rhs.lhsMatrix.getNrows();
   DBMatOffline::operator=(rhs);
-  permutation =
-      std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
+  permutation = std::unique_ptr<gsl_permutation>{gsl_permutation_alloc(gridSize)};
   gsl_permutation_memcpy(permutation.get(), rhs.permutation.get());
 
   return *this;
 }
 
-DBMatOffline* DBMatOfflineLU::clone() { return new DBMatOfflineLU{*this}; }
+DBMatOffline* DBMatOfflineLU::clone() const { return new DBMatOfflineLU{*this}; }
 
 bool DBMatOfflineLU::isRefineable() { return false; }
 
-void DBMatOfflineLU::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineLU::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing
@@ -118,7 +117,6 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
   lhsMatrix = DataMatrix(matrix->data, matrix->size1, matrix->size2);
   gsl_matrix_free(matrix);
 }
-
 
 void DBMatOfflineLU::permuteVector(DataVector& b) {
   if (isDecomposed) {

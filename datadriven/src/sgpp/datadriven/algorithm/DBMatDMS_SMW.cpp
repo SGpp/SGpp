@@ -86,7 +86,7 @@ void DBMatDMS_SMW::solveParallel(DataMatrixDistributed& A_inv, DataMatrixDistrib
   DataVectorDistributed tmp(processGrid, A_inv.getGlobalRows(), alpha.getBlockSize());
 
   // alpha = A^-1 * b (result saved in part of alpha)
-  DataMatrixDistributed::mult(A_inv, b, alpha, true);
+  DataMatrixDistributed::mult(A_inv, b, alpha);
 
   // if B should not be considered (i.e. prior to refinement)
   if (A_inv.getGlobalCols() < B.getGlobalCols()) {

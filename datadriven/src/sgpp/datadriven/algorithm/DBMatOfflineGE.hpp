@@ -25,7 +25,7 @@ class DBMatOfflineGE : public DBMatOffline {
    * @param grid The grid object the matrix is based on
    * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) override;
+  void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) override;
 
  protected:
   DBMatOfflineGE();

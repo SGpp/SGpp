@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
@@ -15,7 +16,6 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
-
 
 #include <map>
 #include <memory>
@@ -40,6 +40,15 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param config configuration object that specifies grid, refinement, and regularization
    */
   explicit ModelFittingClassification(const FitterConfigurationClassification& config);
+
+  /**
+   * @brief Constructor with specified object store.
+   * 
+   * @param config Configuration object that specifies grid, refinement, and regularization
+   * @param objectStore Offline object store for already decomposed offline objects.
+   */
+  explicit ModelFittingClassification(const FitterConfigurationClassification& config,
+                                      std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
    * Fits the models for all classes based on the data given in the dataset parameter
@@ -94,7 +103,7 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   std::map<double, size_t> getClassIdx();
 #ifdef USE_SCALAPACK
-    /**
+  /**
    * @returns the BLACS process grid
    */
   std::shared_ptr<BlacsProcessGrid> getProcessGrid() const override;
@@ -102,12 +111,26 @@ class ModelFittingClassification : public ModelFittingBase {
 
  private:
   /**
+   * @brief Offline object store for already decomposed offline objects.
+   *
+   */
+  std::shared_ptr<DBMatObjectStore> objectStore;
+
+  /**
+   * @brief Flag to specify whether the instance has an object store.
+   *
+   */
+  bool hasObjectStore;
+
+  /**
    * Translates a class label to an index for the models vector. If the class is not present
    * it will create a new index for this class
    * @param label the label the translate
    * @return the index of this class label
    */
   size_t labelToIdx(double label);
+
+  std::vector<double> getClassPriors() const;
 
   /**
    * Returns the refinement functor suitable for the model settings.
