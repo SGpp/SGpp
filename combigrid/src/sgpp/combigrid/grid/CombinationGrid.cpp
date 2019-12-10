@@ -193,20 +193,37 @@ void CombinationGrid::distributeValuesToFullGrid(const base::GridStorage& gridSt
 
 // cf. https://www.geeksforgeeks.org/position-of-rightmost-set-bit/
 template <typename T>
-T getNumberOfRightmostZeros(T n) { return static_cast<T>(std::log2(n & -n)); }
+T getNumberOfRightmostZeros(T n) {
+  return static_cast<T>(std::log2(n & -n));
+}
 
 // in the SG++ counting scheme of levels and indices:
 // TODO(pollinta): this is probably already implemented nicely somewhere else
 template <typename T>
-T getLevelOfNeighbor(T ourLevel, T neighborFullgridIndex) {
-  return ourLevel - getNumberOfRightmostZeros(neighborFullgridIndex);
+T getHierarchicalLevel(T fullgridLevel, T fullgridIndex) {
+  return fullgridLevel - getNumberOfRightmostZeros(fullgridIndex);
 }
 template <typename T>
-T getIndexOfNeighbor(T neighborFullgridIndex) {
-  return neighborFullgridIndex >> getNumberOfRightmostZeros(neighborFullgridIndex);
+T getSparseGridIndex(T fullgridIndex) {
+  return fullgridIndex >> getNumberOfRightmostZeros(fullgridIndex);
+}
+// cf.
+// https://stackoverflow.com/questions/37089904/how-to-get-all-the-possible-combinations-of-vector-c
+void permute_impl(size_t d, IndexVector const& firstRow, IndexVector const& secondRow,
+                  size_t column, std::vector<index_t>& prefix, std::vector<IndexVector>& result) {
+  if (column < d) {
+    prefix.push_back(firstRow[column]);
+    permute_impl(d, firstRow, secondRow, column + 1, prefix, result);
+    prefix.pop_back();
+    prefix.push_back(secondRow[column]);
+    permute_impl(d, firstRow, secondRow, column + 1, prefix, result);
+    prefix.pop_back();
+  } else {
+    result.push_back(prefix);
+  }
 }
 
-void CombinationGrid::distributeValuesToFullGridQuantityPreserving(
+void CombinationGrid::distributeValuesToFullGridQuantityPreservingBox(
     const base::GridStorage& gridStorage, const base::DataVector& values, const FullGrid& fullGrid,
     base::DataVector& result) const {
   const size_t dim = getDimension();
@@ -215,13 +232,10 @@ void CombinationGrid::distributeValuesToFullGridQuantityPreserving(
   IndexVectorRange range(fullGrid);
   result.resize(fullGrid.getNumberOfIndexVectors());
   result.setAll(0.0);
-
-  // std::cout << "full grid " << fullGrid.getLevel(0) << fullGrid.getLevel(1) << std::endl;
+  const auto fullLevel = fullGrid.getLevel();
 
   for (size_t k = 0; k < N; k++) {
-      // std::cout << "sparse grid point " << k << std::endl;
     const auto gp = gridStorage[k];
-    // auto l = gp.getLevel();
     if (findGridPointInFullGrid(fullGrid, gp, index)) {
       result[range.find(index)] += values[k];
     } else {
@@ -229,49 +243,56 @@ void CombinationGrid::distributeValuesToFullGridQuantityPreserving(
       // TODO(pollinta): only implemented for linear boundary bases on regular grids at this point
       assert(fullGrid.hasBoundary());
       // get in how many dimensions we have neighbors
-      size_t numNeighborDims = dim;  // - std::count(l.begin(), l.end(), 0);
+      size_t numNeighborDims = dim;
       // how much surplus do we have to distribute?
-      double integral = 0.;
+      double integral = 1.;
       const auto bases = fullGrid.getBasis().getBases1d();
       for (size_t d = 0; d < dim; ++d) {
-        if (gp.getLevel(d) == 0) {
+        auto l_d = gp.getLevel(d);
+        if (l_d == 0) {
           numNeighborDims -= 1;
         }
         index[d] = gp.getIndex(d);
         auto basis = bases[d];
         assert(basis->getDegree() == 1);
-        integral += basis->getIntegral(gp.getLevel(d), gp.getIndex(d));
+        integral *= basis->getIntegral(l_d, gp.getIndex(d));
       }
       const auto volumeToDistributeInEachDirection =
           values[k] * integral / std::pow(2.0, numNeighborDims);
-      // ... and this is where it goes
-      for (size_t d = 0; d < dim; ++d) {
-        if (gp.getLevel(d) > 0) {
-          // find and deal with the neighbors
+      // ... and this is where it goes: gp potentially lies within a box spanned by nodes
+      // of the full grid -- we find this box by an upper and lower bound
           auto lowerNeighborIndex = index, upperNeighborIndex = index;
-          lowerNeighborIndex[d] -= 1;
-          upperNeighborIndex[d] += 1;
-          // get neighbor point's basis' integral: former integral, scaled in this dimension
+      for (size_t d = 0; d < dim; ++d) {
           auto l_d = gp.getLevel(d);
-          // std::cout << d << " l_d " << l_d << std::endl;
-          // std::cout << index[0] << " idx " << index[1] << std::endl;
-          // std::cout << lowerNeighborIndex[0] << " lower " << lowerNeighborIndex[1] << " " << upperNeighborIndex[0] << " upper " << upperNeighborIndex[1] << std::endl;
-          auto integralInAllOtherDirections = integral / bases[d]->getIntegral(l_d, gp.getIndex(d));
-          auto lowerNeighborIntegral =
-              integralInAllOtherDirections *
-              bases[d]->getIntegral(getLevelOfNeighbor(l_d, lowerNeighborIndex[d]),
-                                    getIndexOfNeighbor(lowerNeighborIndex[d]));
-          auto upperNeighborIntegral =
-              integralInAllOtherDirections *
-              bases[d]->getIntegral(getLevelOfNeighbor(l_d, upperNeighborIndex[d]),
-                                    getIndexOfNeighbor(upperNeighborIndex[d]));
-          std::cout << lowerNeighborIntegral << " n " << upperNeighborIntegral << std::endl;
-          // add volume to points
-          result[range.find(lowerNeighborIndex)] +=
-              volumeToDistributeInEachDirection / lowerNeighborIntegral;
-          result[range.find(upperNeighborIndex)] +=
-              volumeToDistributeInEachDirection / upperNeighborIntegral;
+        auto l_fg = fullLevel[d];
+        if (l_d > l_fg) {
+          // find neighbors to gp that exist on this full grid, neighbor indices w.r.t. l_fg
+          lowerNeighborIndex[d] >>= (l_d - l_fg);
+          upperNeighborIndex[d] = lowerNeighborIndex[d] + 1;
+        } else if (l_d < l_fg) {
+          lowerNeighborIndex[d] <<= (l_fg - l_d);
+          upperNeighborIndex[d] = lowerNeighborIndex[d];
+        }  // else, l_d==l_fg and we have the same index; nothing to be done
+      }
+      // iterate all corners of this (potentially flat) hypercube
+      std::vector<index_t> prefix;
+      prefix.reserve(dim);
+      std::vector<IndexVector> combinations;
+      combinations.reserve(std::pow(2, dim));
+      permute_impl(dim, lowerNeighborIndex, upperNeighborIndex, 0, prefix, combinations);
+      for (auto& combination : combinations) {
+        // get neighbor point's basis' integral
+        double neighborIntegral = 1.0;
+        for (size_t d = 0; d < dim; ++d) {
+          auto l_fg = fullLevel[d];
+          auto i_fg = combination[d];
+          auto hierarchicalLevel = getHierarchicalLevel(l_fg, i_fg);
+          neighborIntegral *= bases[d]->getIntegral(hierarchicalLevel, i_fg);
+          // std::cout << std::endl << d << l_fg << i_fg << hierarchicalLevel;
         }
+        // std::cout << " integral " << neighborIntegral << std::endl;
+        // add volume to point
+        result[range.find(combination)] += volumeToDistributeInEachDirection / neighborIntegral;
       }
     }
   }
@@ -301,12 +322,10 @@ void CombinationGrid::distributeValuesToFullGrids(const base::GridStorage& gridS
   }
 }
 
-
-void CombinationGrid::distributeValuesToFullGridsQuantityPreserving(const base::GridStorage& gridStorage,
-                                                  const base::DataVector& values,
+void CombinationGrid::distributeValuesToFullGridsQuantityPreserving(
+    const base::GridStorage& gridStorage, const base::DataVector& values,
                                                   std::vector<base::DataVector>& result) const {
-  for (size_t i = 0; i < fullGrids.size(); ++i){
-    std::cout << "full grids " << i << std::endl;
+  for (size_t i = 0; i < fullGrids.size(); ++i) {
     distributeValuesToFullGridQuantityPreserving(gridStorage, values, fullGrids[i], result[i]);
   }
 }

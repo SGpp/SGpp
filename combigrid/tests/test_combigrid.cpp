@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   sgpp::base::GridStorage gridStorage(2);
   combinationGrid.combinePoints(gridStorage);
   BOOST_CHECK_EQUAL(gridStorage.getSize(), 37);
-  for (size_t i = 0; combinationGrid.getFullGrids().size(); ++i){
+  for (size_t i = 0; i < combinationGrid.getFullGrids().size(); ++i){
     auto& fg = combinationGrid.getFullGrids()[i];
     std::cout << fg.getLevel(0) << fg.getLevel(1) << combinationGrid.getCoefficients()[i] << std::endl;
   }
@@ -502,7 +502,6 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(), values.size());
 
   DataVector result;
-  // std::cout << result.toString() << std::endl;
   combinationGrid.combineSparseGridValues(gridStorage, values, result);
   std::cout << result.toString() << std::endl;
 
@@ -522,7 +521,7 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   });
 
   for (size_t k = 0; k < gridStorage.getSize(); k++) {
-    BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]);
+    BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]); //TODO(pollinta): why does it not return the expected combined values?
   }
 
   std::vector<DataVector> distributedValues;
@@ -530,7 +529,7 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   BOOST_CHECK_EQUAL(distributedValues.size(), correctDistributedValues.size());
 
   // std::vector<DataVector> distributedValuesQP(distributedValues);
-  combinationGrid.distributeValuesToFullGridsQuantityPreserving(gridStorage, result,
+  combinationGrid.distributeValuesToFullGridsQuantityPreservingBox(gridStorage, result,
                                                                 distributedValues);
   BOOST_CHECK_EQUAL(distributedValues.size(), correctDistributedValues.size());
 

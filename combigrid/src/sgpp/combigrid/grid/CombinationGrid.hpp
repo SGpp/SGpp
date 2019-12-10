@@ -179,7 +179,8 @@ class CombinationGrid {
 
   /**
    * Distribute values given on the combined grid to the full grids contained in this combination
-   * grid, using the quantity preserving distribution.
+   * grid, using a quantity preserving distribution which distributes to a box surrounding the
+   * origin of the volume.
    *
    * @param[in] gridStorage   GridStorage containing the combined grid
    * @param[in] values        vector of values on the combined grid, same size as \c gridStorage
@@ -189,8 +190,8 @@ class CombinationGrid {
    *                          full grid (the order of DataVector entries is given by
    *                          IndexVectorRange)
    */
-  void distributeValuesToFullGridsQuantityPreserving(const base::GridStorage& gridStorage,
-                                                     const base::DataVector& values,
+  void distributeValuesToFullGridsQuantityPreservingBox(
+      const base::GridStorage& gridStorage, const base::DataVector& values,
                                                      std::vector<base::DataVector>& result) const;
 
   /**
