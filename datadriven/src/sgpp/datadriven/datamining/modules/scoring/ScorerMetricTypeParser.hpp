@@ -37,7 +37,7 @@ class ScorerMetricTypeParser {
    * representation
    * @param input case insensitive string representation of a
    * #sgpp::datadriven::RegularizatioMetricType.
-   * @return the corresponding #sgpp::datadriven::RegularizatioMetricType.
+   * @return the corresponding #sgpp::datadriven::RegularizationMetricType.
    */
   static RegularizationMetricType parseRegularizationMetric(const std::string &input);
 

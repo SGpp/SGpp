@@ -12,7 +12,7 @@ namespace sgpp {
 namespace datadriven {
 /**
  * Metric that is based on a residual score of the model. For density estimation, this is
- * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+ * || R * alpha_lambda - b_val ||_2
  */
 class ResidualScore : public Metric {
  public:

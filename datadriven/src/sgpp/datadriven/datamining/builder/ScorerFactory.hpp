@@ -39,8 +39,7 @@ class ScorerFactory {
 
   /**
    * Assemble a #sgpp::datadriven::Scorer for regularization optimization based on the configuration
-   * @param parser Instance of #sgpp::datadriven::DataMiningConfigParser that reads the required
-   * data from the config file.
+   * @param config regularization config
    * @return Fully configured instance of a  #sgpp::datadriven::Scorer object.
    */
   Scorer* buildRegularizationScorer(const RegularizationConfiguration& config);

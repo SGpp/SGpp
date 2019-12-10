@@ -106,7 +106,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   /**
    * Computes the residual
    *
-   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   * || R * alpha_lambda - b_val ||_2
    *
    * @param validationData Matrix for validation data
    *
@@ -117,7 +117,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   /**
    * Updates the regularization parameter lambda of the underlying model.
    *
-   * @param double the new lambda parameter
+   * @param lambda the new lambda parameter
    */
   void updateRegularization(double lambda) override;
 

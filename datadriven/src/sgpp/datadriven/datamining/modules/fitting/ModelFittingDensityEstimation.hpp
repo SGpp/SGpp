@@ -80,7 +80,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   /**
    * Updates the regularization parameter lambda of the underlying model.
    *
-   * @param double the new lambda parameter
+   * @param lambda the new lambda parameter
    */
   void updateRegularization(double lambda) override = 0;
 

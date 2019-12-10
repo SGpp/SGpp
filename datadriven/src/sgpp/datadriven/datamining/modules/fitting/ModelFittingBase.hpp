@@ -128,7 +128,7 @@ class ModelFittingBase {
    * Should compute some kind of Residual to evaluate the fit of the model.
    *
    * In the case of density estimation, this is
-   * \NORM{\MAT{R}\VEC{\alpha}_\lambda - \VEC{b}_\texttt{validation}}{2}
+   * || R * alpha_lambda - b_val ||_2
    *
    * This is useful for unsupervised learning models, where normal evaluation cannot be used as
    * there are no targets.
@@ -142,7 +142,7 @@ class ModelFittingBase {
   /**
    * Updates the regularization parameter lambda of the underlying model.
    *
-   * @param double the new lambda parameter
+   * @param lambda the new lambda parameter
    */
   virtual void updateRegularization(double lambda) = 0;
 

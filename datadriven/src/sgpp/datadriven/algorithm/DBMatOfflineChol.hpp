@@ -72,6 +72,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * Modifies the parallel decomposition to update the regularization parameter lambda.
    *
    * @param lambda New lambda value
+   * @param processGrid ScaLAPACK process grid
+   * @param parallelConfig Configuration for ScaLAPACK
    */
   void updateRegularizationParallel(double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
                                     const ParallelConfiguration& parallelConfig) override {
