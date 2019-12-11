@@ -185,12 +185,12 @@ namespace datadriven {
               left.set(j, level, index - 1);
               if (!total_grid.isContaining(left)) {
                   collectNeighbors(gp, neighbors.at(j).first, j, true);
-              }
-              else if (j >= minDim) {
+              } else if (j >= minDim) {
                   std::vector<std::pair<base::HashGridPoint,
                       base::HashGridPoint>> leftNeighbors(neighbors);
                   for (size_t i = 0; i < leftNeighbors.size(); i++) {
-                      leftNeighbors.at(i).first.set(j, level, index);
+                      leftNeighbors.at(i).first.set(j, level, index - 1);
+                      leftNeighbors.at(i).second.set(j, level, index - 1);
                   }
                   leftNeighbors.at(j) = std::pair<base::HashGridPoint,
                       base::HashGridPoint>(neighbors.at(j).first, gp);
@@ -200,12 +200,12 @@ namespace datadriven {
               right.set(j, level, index + 1);
               if (!total_grid.isContaining(right)) {
                   collectNeighbors(gp, neighbors.at(j).second, j, false);
-              }
-              else if (j >= minDim) {
+              } else if (j >= minDim) {
                   std::vector<std::pair<base::HashGridPoint,
                      base::HashGridPoint>> rightNeighbors(neighbors);
                   for (size_t i = 0; i < rightNeighbors.size(); i++) {
-                      rightNeighbors.at(i).first.set(j, level, index);
+                      rightNeighbors.at(i).first.set(j, level, index + 1);
+                      rightNeighbors.at(i).second.set(j, level, index + 1);
                   }
                   rightNeighbors.at(j) = std::pair<base::HashGridPoint,
                      base::HashGridPoint>(gp, neighbors.at(j).second);
