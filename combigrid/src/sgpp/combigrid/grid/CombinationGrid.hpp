@@ -156,7 +156,7 @@ class CombinationGrid {
    * @param[out] result       vector of values on the full grid, same size as the number of grid
    *                          points of the full grid (the order is given by IndexVectorRange)
    */
-  void distributeValuesToFullGridQuantityPreserving(const base::GridStorage& gridStorage,
+  void distributeValuesToFullGridQuantityPreservingBox(const base::GridStorage& gridStorage,
                                                     const base::DataVector& values,
                                                     const FullGrid& fullGrid,
                                                     base::DataVector& result) const;

@@ -339,11 +339,12 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   sgpp::base::GridStorage gridStorage(2);
   combinationGrid.combinePoints(gridStorage);
   BOOST_CHECK_EQUAL(gridStorage.getSize(), 37);
-  for (size_t i = 0; i < combinationGrid.getFullGrids().size(); ++i){
+  for (size_t i = 0; i < combinationGrid.getFullGrids().size(); ++i) {
     auto& fg = combinationGrid.getFullGrids()[i];
-    std::cout << fg.getLevel(0) << fg.getLevel(1) << combinationGrid.getCoefficients()[i] << std::endl;
+    std::cout << fg.getLevel(0) << fg.getLevel(1) << combinationGrid.getCoefficients()[i]
+              << std::endl;
   }
-  const std::vector<DataVector> values = {
+  std::vector<DataVector> values = {
       // 111111111
       // |       |
       // |       |
@@ -423,10 +424,25 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   // 0   0   0
   // 0       0
   // 000000000
+  // mit hierarchisierung kommt gerade das hier raus:
+  // 000000000
+  // 0       0
+  // -0.1875   8   -0.1875
+  // 0.25    0.25
+  // -0.53125 0 -4 0 -0.53125
+  // 1       1
+  // 0   0   0
+  // 1       1
+  // 000000000
   const DataVector correctResult({0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 8.0,
                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                                   0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0});
-  //TODO(pollinta): calculate correct hierarchical surplusses
+  // const DataVector correctResult({01.0, 02.0, 03.0, 04.0, 05.0, 06.0, 07.0, 08.0, 09.0,
+  // 10.0, 11.0, 12.0, 13.0,
+  //                                 14.0, 15.0, 16.0, 17.0, 18.0, 19.0, 20.0, 21.0, 22.0,
+  //                                 23.0, 24.0, 25.0, 26.0, 27.0, 28.0, 29.0 ,30.0, 31.0,
+  //                                 32.0, 32.0, 33.0, 34.0, 35.0, 36.0});
+  // TODO(pollinta): calculate correct hierarchical surplusses
   const std::vector<DataVector> correctDistributedValues = {
       // 0000a0000
       // |       |
@@ -501,8 +517,19 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
 
   BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(), values.size());
 
+  // hierarchize the coefficients to combine
+  OperationPoleHierarchisationLinear operationPoleHierarchisation;
+  for (size_t i = 0; i < values.size(); ++i) {
+    OperationUPFullGrid operationHierarchisation(combinationGrid.getFullGrids()[i],
+                                                 operationPoleHierarchisation);
+    operationHierarchisation.apply(values[i]);
+    std::cout << i << " " << values[i].toString() << std::endl;
+    // TODO(pollinta): looks like there are unreasonable values on grids 2, 3 and 6
+  }
+
   DataVector result;
   combinationGrid.combineSparseGridValues(gridStorage, values, result);
+  std::cout << correctResult.toString() << std::endl;
   std::cout << result.toString() << std::endl;
 
   std::vector<size_t> order(gridStorage.getSize());
@@ -521,7 +548,9 @@ BOOST_AUTO_TEST_CASE(testDistributionPreserving) {
   });
 
   for (size_t k = 0; k < gridStorage.getSize(); k++) {
-    BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]); //TODO(pollinta): why does it not return the expected combined values?
+    BOOST_CHECK_EQUAL(
+        result[order[k]],
+        correctResult[k]);  // TODO(pollinta): why does it not return the expected combined values?
   }
 
   std::vector<DataVector> distributedValues;

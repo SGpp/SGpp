@@ -322,11 +322,11 @@ void CombinationGrid::distributeValuesToFullGrids(const base::GridStorage& gridS
   }
 }
 
-void CombinationGrid::distributeValuesToFullGridsQuantityPreserving(
+void CombinationGrid::distributeValuesToFullGridsQuantityPreservingBox(
     const base::GridStorage& gridStorage, const base::DataVector& values,
                                                   std::vector<base::DataVector>& result) const {
   for (size_t i = 0; i < fullGrids.size(); ++i) {
-    distributeValuesToFullGridQuantityPreserving(gridStorage, values, fullGrids[i], result[i]);
+    distributeValuesToFullGridQuantityPreservingBox(gridStorage, values, fullGrids[i], result[i]);
   }
 }
 
