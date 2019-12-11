@@ -103,7 +103,7 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
   double computeResidual(DataMatrix &validationData) const override {
     throw sgpp::base::not_implemented_exception(
         "ModelFittingLeastSquares::computeResidual() is not implemented!");
-  };
+  }
 
   /**
    * Updates the regularization parameter lambda of the underlying model.

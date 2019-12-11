@@ -102,7 +102,7 @@ class ModelFittingClassification : public ModelFittingBase {
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
         "ModelFittingDensityEstimationCombi::computeResidual() is not implemented!");
-  };
+  }
 
   /**
    * Resets any trained representations of the model, but does not reset the entire state.

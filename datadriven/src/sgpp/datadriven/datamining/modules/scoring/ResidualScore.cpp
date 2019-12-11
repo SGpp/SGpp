@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ResidualScore.hpp>
+
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 
 namespace sgpp {
 namespace datadriven {

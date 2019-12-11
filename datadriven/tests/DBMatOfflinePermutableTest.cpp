@@ -33,19 +33,19 @@ class DBMatOfflineTest : public sgpp::datadriven::DBMatOfflinePermutable {
 
   bool isRefineable() override { return false; }
 
-  const DataMatrix& getUnmodifiedR() {
+  const DataMatrix& getUnmodifiedR() override {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineTest::getUnmodifiedR() not implemented!");
   }
 
   const sgpp::datadriven::DataMatrixDistributed& getUnmodifiedRDistributed(
       std::shared_ptr<sgpp::datadriven::BlacsProcessGrid> processGrid,
-      const sgpp::datadriven::ParallelConfiguration& parallelConfig) {
+      const sgpp::datadriven::ParallelConfiguration& parallelConfig) override {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineTest::getUnmodifiedRDistributed() not implemented!");
   }
 
-  void updateRegularization(double lambda) {
+  void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineTest::updateRegularization() not implemented!");
   }

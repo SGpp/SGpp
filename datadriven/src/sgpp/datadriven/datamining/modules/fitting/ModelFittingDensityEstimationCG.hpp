@@ -123,7 +123,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
         "ModelFittingDensityEstimationCG::computeResidual() is not implemented!");
-  };
+  }
 
   /**
    * Updates the regularization parameter lambda of the underlying model.
