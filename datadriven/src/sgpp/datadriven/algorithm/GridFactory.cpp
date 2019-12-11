@@ -33,6 +33,8 @@ sgpp::base::Grid* GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
     tmpGrid = Grid::createLinearBoundaryGrid(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::ModLinear) {
     tmpGrid = Grid::createModLinearGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::KinkLinear) {
+    tmpGrid = Grid::createKinkLinearGrid(gridConfig.dim_);
   } else {
     throw algorithm_exception("LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }

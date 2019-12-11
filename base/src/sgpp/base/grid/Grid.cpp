@@ -11,6 +11,7 @@
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
+#include <sgpp/base/grid/type/KinkLinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -95,6 +96,8 @@ Grid* Grid::createModLinearClenshawCurtisGrid(size_t dim) {
 }
 
 Grid* Grid::createModLinearGrid(size_t dim) { return new ModLinearGrid(dim); }
+
+Grid* Grid::createKinkLinearGrid(size_t dim) { return new KinkLinearGrid(dim); }
 
 Grid* Grid::createPolyGrid(size_t dim, size_t degree) { return new PolyGrid(dim, degree); }
 
@@ -220,6 +223,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearTruncatedBoundaryGrid(gridConfig.dim_);
       case GridType::ModLinear:
         return Grid::createModLinearGrid(gridConfig.dim_);
+      case GridType::KinkLinear:
+        return Grid::createKinkLinearGrid(gridConfig.dim_);
       case GridType::Poly:
         return Grid::createPolyGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::PolyBoundary:
@@ -332,6 +337,9 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       break;
     case GridType::ModLinear:
       newGrid = Grid::createModLinearGrid(numDims);
+      break;
+    case GridType::KinkLinear:
+      newGrid = Grid::createKinkLinearGrid(numDims);
       break;
     case GridType::Poly:
       degree = dynamic_cast<PolyGrid*>(this)->getDegree();
@@ -496,6 +504,7 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::LinearBoundary:
     case GridType::LinearTruncatedBoundary:
     case GridType::ModLinear:
+    case GridType::KinkLinear:
     case GridType::SquareRoot:
     case GridType::Periodic:
     case GridType::LinearStencil:
@@ -664,6 +673,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(
         std::pair<std::string, Grid::Factory>("fundamentalNakSplineBoundary",
         FundamentalNakSplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("kinklinear", KinkLinearGrid::unserialize));
 #else
     tMap->insert(std::make_pair("nullptr", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -717,6 +727,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                 FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalNakSplineBoundary",
                                 FundamentalNakSplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("kinklinear", KinkLinearGrid::unserialize));
 #endif
   }
 
@@ -805,6 +816,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalNakSplineBoundary,
         "fundamentalNakSplineBoundary"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::KinkLinear, "kinklinear"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -864,6 +877,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::FundamentalNakSplineBoundary,
                        "fundamentalNakSplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::KinkLinear, "kinklinear"));
 #endif
   }
 
@@ -968,6 +982,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::LinearTruncatedBoundary;
   } else if (gridType.compare("modlinear") == 0) {
     return sgpp::base::GridType::ModLinear;
+  } else if (gridType.compare("kinklinear") == 0) {
+    return sgpp::base::GridType::KinkLinear;
   } else if (gridType.compare("modLinearClenshawCurtis") == 0) {
     return sgpp::base::GridType::ModLinearClenshawCurtis;
   } else if (gridType.compare("poly") == 0) {

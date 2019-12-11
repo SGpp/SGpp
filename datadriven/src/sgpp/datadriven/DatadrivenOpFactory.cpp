@@ -123,6 +123,7 @@
 #ifdef USE_SCALAPACK
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalKinkLinearDistributed.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -510,6 +511,15 @@ base::OperationMultipleEval* createOperationMultipleEval(
     } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
 #ifdef USE_SCALAPACK
       return new datadriven::OperationMultipleEvalModLinearDistributed(grid, dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalKinkLinearDistributed(grid, dataset);
 #else
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");

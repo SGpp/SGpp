@@ -9,6 +9,7 @@
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/base/grid/type/KinkLinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -16,6 +17,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitKinkLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 
 #ifdef USE_GSL
@@ -248,6 +250,9 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
   } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
     auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitModLinear();
     opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else if (grid->getType() == sgpp::base::GridType::KinkLinear) {
+    auto opLTwoKinkLin = new sgpp::pde::OperationMatrixLTwoDotExplicitKinkLinear();
+    opLTwoKinkLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else {
     throw algorithm_exception(
         "in DBMatOffline::compute_L2_refine_vectors, gridType is not supported.");

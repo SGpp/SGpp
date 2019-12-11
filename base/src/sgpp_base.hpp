@@ -29,6 +29,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/LinearKinkedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
@@ -123,6 +124,7 @@
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/KinkLinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
