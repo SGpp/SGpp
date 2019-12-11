@@ -97,6 +97,17 @@ class VisualizerClassification:public VisualizerDensityEstimation {
   std::string filepath);
 
   /**
+   * Method to generate and store in json format for the
+   * plotly library the output of the tikz classification
+   * heatmaps for models of 2 dimensions
+   * @param matrix Matrix with the content to be stored
+   * @param model The model used when evaluating the heatmaps
+   * @param filepath The current directory to store the json file
+   */
+  void storeHeatmapTikzClassification(DataMatrix &matrix, ModelFittingBase &model,
+  std::string filepath);
+
+  /**
    * Method to generate and store in json  format for the
    * plotly library the output of the classification heatmaps for models of 2 dimensions
    * @param matrix Matrix with the content to be stored

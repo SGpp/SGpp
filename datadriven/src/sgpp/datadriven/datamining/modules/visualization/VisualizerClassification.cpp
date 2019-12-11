@@ -366,6 +366,8 @@ void VisualizerClassification::getHeatmap2DClassification(
   } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
     storeHeatmapJsonClassification(heatMapResults,
     model, outputDir+"ClassificationModel");
+    storeHeatmapTikzClassification(heatMapResults,
+    model, outputDir+"ClassificationModelTikz");
   }
 }
 
@@ -893,6 +895,72 @@ void VisualizerClassification::storeHeatmapJsonClassification(DataMatrix &matrix
   jsonOutput["layout"].addDictAttr("legend");
   jsonOutput["layout"]["legend"].addIDAttr("x", -0.15);
   jsonOutput["layout"]["legend"].addIDAttr("y", 1.0);
+
+  std::cout << "Writing file " << filepath + ".json" << std::endl;
+  jsonOutput.serialize(filepath + ".json");
+}
+
+void VisualizerClassification::storeHeatmapTikzClassification(DataMatrix &matrix,
+  ModelFittingBase &model, std::string filepath) {
+  ModelFittingClassification* classificationModel =
+     dynamic_cast<ModelFittingClassification*>(&model);
+
+  auto models = classificationModel->getModels();
+
+  unsigned int graphIndex = 0;
+
+  json::JSON jsonOutput;
+  jsonOutput.addListAttr("data");
+
+  // Adding ordered data
+  jsonOutput["data"].addDictValue();
+  jsonOutput["data"][graphIndex].addIDAttr("type", "\"coordmap\"");
+  DataVector row(matrix.getNcols());
+  for (size_t i = 0; i < matrix.getNrows(); i++) {
+      matrix.getRow(i, row);
+      jsonOutput["data"][graphIndex].addIDAttr("v"+std::to_string(i), row.toString());
+  }
+
+  DataVector evaluation(originalData.getNrows());
+
+  classificationModel->evaluate(originalData, evaluation);
+
+  DataMatrix evaluatedData(originalData.getNrows(), originalData.getNcols());
+
+  evaluatedData.copyFrom(originalData);
+
+  evaluatedData.appendCol(evaluation);
+
+  graphIndex++;
+  // Adding the data points
+  for (size_t i = 0; i < classes.size() ; i++) {
+    jsonOutput["data"].addDictValue();
+    size_t count = 0;
+    for (size_t index = 0; index < evaluatedData.getNrows(); index++) {
+      DataVector row(evaluatedData.getNcols());
+      evaluatedData.getRow(index, row);
+      if (row.get(row.getSize()-1) == classes.at(i)) {
+        jsonOutput["data"][graphIndex].addIDAttr("d"+std::to_string(count), row.toString());
+        count++;
+      }
+    }
+    jsonOutput["data"][graphIndex].addIDAttr("name", "\"Data Class " +
+      std::to_string(static_cast<int>(classes.at(i)))+"\"");
+
+    graphIndex++;
+  }
+  // Adding the sparse grids
+  for (size_t i = 0; i < models->size(); i++) {
+    jsonOutput["data"].addDictValue();
+    for (size_t seq = 0; seq < models->at(i)->getGrid().getSize(); seq++) {
+        jsonOutput["data"][graphIndex].addIDAttr(
+        "g"+std::to_string(seq), models->at(i)->getGrid().getStorage().getPoint(seq).toString());
+    }
+
+    jsonOutput["data"][graphIndex].addIDAttr("name", "\"Grid Class " +
+      std::to_string(static_cast<int>(classes.at(i)))+"\"");
+    graphIndex++;
+  }
 
   std::cout << "Writing file " << filepath + ".json" << std::endl;
   jsonOutput.serialize(filepath + ".json");
