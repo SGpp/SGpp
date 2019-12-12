@@ -25,34 +25,7 @@ CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
 
 CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
     const HeterogeneousBasis& basis, bool hasBoundary) {
-  std::vector<size_t> binomialCoefficients((dim+1)/2);
-  binomialCoefficients[0] = 1.0;
-
-  // binomial(dim-1, d)
-  // = ((dim-1) * (dim-2) * ... * (dim-d)) / (1 * 2 * ... * d)
-  // = binomial(dim-1, d-1) * (dim-d) / d
-  for (size_t q = 1; q < (dim+1)/2; q++) {
-    binomialCoefficients[q] = binomialCoefficients[q-1] * (dim-q) / q;
-  }
-
-  std::vector<FullGrid> fullGrids;
-  base::DataVector coefficients;
-  const level_t maxLevelSum = (hasBoundary ? n : static_cast<level_t>(n+dim-1));
-
-  for (size_t q = 0; q < dim; q++) {
-    const std::vector<LevelVector> levels = (hasBoundary ?
-        enumerateLevelsWithSumWithBoundary(dim, maxLevelSum-static_cast<level_t>(q)) :
-        enumerateLevelsWithSumWithoutBoundary(dim, maxLevelSum-static_cast<level_t>(q)));
-    const double coefficient = ((q % 2 == 0) ? 1.0 : -1.0) *
-        static_cast<double>(binomialCoefficients[((q < (dim+1)/2) ? q : (dim-q-1))]);
-
-    for (const LevelVector& level : levels) {
-      fullGrids.emplace_back(level, basis, hasBoundary);
-      coefficients.push_back(coefficient);
-    }
-  }
-
-  return CombinationGrid(fullGrids, coefficients);
+  return fromRegularSparseTruncated(dim, LevelVector(dim, 0), n, basis, hasBoundary);
 }
 
 CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVector l_min, level_t n,
@@ -80,7 +53,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
         static_cast<double>(binomialCoefficients[((q < (dim+1)/2) ? q : (dim-q-1))]);
 
     for (LevelVector& level : levels) {
-      // difference to the regular combination technique: offset by the minimum level
+      // difference between truncated and regular combination technique: offset by the minimum level
       for (size_t d = 0; d < dim; ++d) {
         level[d] += l_min[d];
       }
