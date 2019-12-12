@@ -29,7 +29,7 @@ class VisualizerDensityEstimation:public Visualizer {
   /**
    * Default destructor
    */
-  ~VisualizerDensityEstimation() = default;
+  ~VisualizerDensityEstimation() override = default;
 
   /**
    * Method to run the visualization process for a given batch and fold
