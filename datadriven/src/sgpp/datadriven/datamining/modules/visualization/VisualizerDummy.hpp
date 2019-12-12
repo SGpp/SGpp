@@ -22,7 +22,7 @@ class VisualizerDummy:public Visualizer {
   /**
    * Default destructor
    */
-  ~VisualizerDummy() = default;
+  ~VisualizerDummy() override = default;
   /**
    * Method to run the visualization process for a given batch and fold
    * @param model The model used to evaluate the visualization
