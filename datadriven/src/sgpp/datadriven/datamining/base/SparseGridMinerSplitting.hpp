@@ -33,7 +33,7 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    * to visualize the model and its results
    */
   SparseGridMinerSplitting(DataSourceSplitting* dataSource, ModelFittingBase* fitter,
-      Scorer* scorer, Visualizer* visualizer);
+                           Scorer* scorer, Visualizer* visualizer);
 
   /**
    * Copy constructor deleted - not all members can be copied or cloned .
@@ -72,12 +72,29 @@ class SparseGridMinerSplitting : public SparseGridMiner {
    */
   double learn(bool verbose) override;
 
+  /**
+   * Optimizes the lambda value for regularization. In order to do this, multiple alpha vecotrs are
+   * created with different lambda values and Golden section search is used to quickly find the
+   * optimum.
+   */
+  double optimizeLambda(bool verbose);
+
+  /**
+   * Fit the model using a specific lambda value and return a score for this lambda.
+   */
+  double evaluateLambda(double lambda, bool verbose);
+
  private:
   /**
    * DataSource provides samples that will be used by fitter to generalize data and scorer to
    * validate and assess model robustness.
    */
   std::unique_ptr<DataSourceSplitting> dataSource;
+
+  /**
+   * Scorer object that is only initzialized and used for lambda optimization
+   */
+  std::unique_ptr<Scorer> lambdaOptimizationScorer;
 };
 
 } /* namespace datadriven */

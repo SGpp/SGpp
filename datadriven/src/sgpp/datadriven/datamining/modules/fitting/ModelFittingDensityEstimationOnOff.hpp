@@ -104,6 +104,24 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Computes the residual
+   *
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement)
    * @return whether the model is refinable
@@ -114,6 +132,13 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the offline object and grid.
+   */
+  void resetTraining() override;
 
  private:
   /**

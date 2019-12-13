@@ -117,9 +117,38 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   bool isRefinable() override;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the decomposition and the grid.
+   */
+  void resetTraining() override;
 
   /**
    * @returns the BLACS process grid
