@@ -27,7 +27,7 @@ class VisualizerClassification:public VisualizerDensityEstimation {
    */
   explicit VisualizerClassification(VisualizerConfiguration config);
 
-  ~VisualizerClassification() = default;
+  ~VisualizerClassification() override = default;
   /**
    * Method to run the visualization process for a given batch and fold
    * @param model The model used to evaluate the visualization
