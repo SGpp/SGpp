@@ -17,6 +17,7 @@
 #include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPoleDehierarchisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
 #include <sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp>
@@ -41,6 +42,7 @@ using sgpp::combigrid::IndexVectorRange;
 using sgpp::combigrid::LevelVector;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
+using sgpp::combigrid::OperationPoleDehierarchisationLinear;
 using sgpp::combigrid::OperationPoleHierarchisationGeneral;
 using sgpp::combigrid::OperationPoleHierarchisationLinear;
 using sgpp::combigrid::OperationPoleNodalisationBspline;
@@ -403,16 +405,25 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
   sgpp::base::SLinearBase basis1d;
   const HeterogeneousBasis basis(2, basis1d);
   const FullGrid fullGrid({2, 1}, basis);
-  OperationPoleHierarchisationLinear operationPole;
-  OperationUPFullGrid operation(fullGrid, operationPole);
-  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
+  OperationPoleHierarchisationLinear operationPoleHierarchisation;
+  OperationUPFullGrid operationHierarchisation(fullGrid, operationPoleHierarchisation);
+  DataVector origValues{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
       -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
-  operation.apply(values);
+  DataVector curValues(origValues);
+  operationHierarchisation.apply(curValues);
   const DataVector correctSurpluses{-0.5, 3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
       -2.1875, 1.0, 2.0, -2.5, 0.5, -2.0, -1.0};
 
-  for (size_t i = 0; i < values.size(); i++) {
-    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+  for (size_t i = 0; i < curValues.size(); i++) {
+    BOOST_CHECK_CLOSE(curValues[i], correctSurpluses[i], 1e-8);
+  }
+
+  OperationPoleDehierarchisationLinear operationPoleDehierarchisation;
+  OperationUPFullGrid operationDehierarchisation(fullGrid, operationPoleDehierarchisation);
+  operationDehierarchisation.apply(curValues);
+
+  for (size_t i = 0; i < curValues.size(); i++) {
+    BOOST_CHECK_CLOSE(curValues[i], origValues[i], 1e-8);
   }
 }
 
