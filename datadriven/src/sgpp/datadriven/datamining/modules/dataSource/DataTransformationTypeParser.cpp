@@ -34,7 +34,7 @@ const DataTransformationTypeParser::TransformationTypeMap_t
   return DataTransformationTypeParser::TransformationTypeMap_t{
       std::make_pair(DataTransformationType::NONE, "None"),
       std::make_pair(DataTransformationType::ROSENBLATT, "Rosenblatt"),
-  	   std::make_pair(DataTransformationType::NORMALIZATION, "Normalization")
+      std::make_pair(DataTransformationType::NORMALIZATION, "Normalization")
   };
 }();
 } /* namespace datadriven */

@@ -1020,11 +1020,11 @@ void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
   // If type Normalization parse Normalizationconfig
   } else if (config.type == DataTransformationType::NORMALIZATION) {
     auto normalizationTransformationConfig = static_cast<DictNode *>(
-  	    &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
+      &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
     parseNormalizationTransformationConfig(*normalizationTransformationConfig,
                                            config.normalizationConfig,
                                            defaults.normalizationConfig, "normalizationConfig");
-    } else {
+  } else {
       std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
                    "Using default values." << std::endl;
      }
