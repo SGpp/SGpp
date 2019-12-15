@@ -2,7 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-
+#ifdef USE_BOOST_GRAPH
 #include <sgpp/datadriven/datamining/modules/hpo/ClusteringFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp>
 
@@ -40,3 +40,4 @@ namespace datadriven {
   }
 }  // namespace datadriven
 }  // namespace sgpp
+#endif

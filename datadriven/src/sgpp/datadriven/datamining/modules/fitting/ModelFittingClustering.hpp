@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_BOOST_GRAPH
 #pragma once
 
 #include <sgpp/globaldef.hpp>
@@ -70,6 +71,33 @@ class ModelFittingClustering : public ModelFittingBase {
    * Clears the model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  void resetTraining() override;
+
+  /**
+  * Should compute some kind of Residual to evaluate the fit of the model.
+  *
+  * In the case of density estimation, this is
+  * || R * alpha_lambda - b_val ||_2
+  *
+  * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+  * there are no targets.
+  *
+  * @param validationData Matrix for validation data
+  *
+  * @returns the residual score
+  */
+  double computeResidual(DataMatrix &validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
 
   /**
    * Returns the pointer to the pointer pointing to the density estimation model
@@ -170,3 +198,5 @@ class ModelFittingClustering : public ModelFittingBase {
 };
 }  // namespace datadriven
 }  // namespace sgpp
+
+#endif

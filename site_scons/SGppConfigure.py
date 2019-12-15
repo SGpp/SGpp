@@ -274,6 +274,7 @@ def checkBoostTests(config):
 
     if not config.CheckHeader(os.path.join("boost", "test", "unit_test.hpp"), language="c++"):
       config.env["COMPILE_BOOST_TESTS"] = False
+
       Helper.printWarning("****************************************************",
                           "No Boost Unit Test Headers found. Omitting Boost unit tests.",
                           "Please install the corresponding package, e.g., on Ubuntu",
@@ -288,6 +289,13 @@ def checkBoostTests(config):
                           "> sudo apt-get install libboost-test-dev",
                           "****************************************************")
 
+    if not config.CheckLib("boost_graph", autoadd=0, language="c++"):
+      config.env["USE_BOOST_GRAPH"] = False
+      Helper.printWarning("****************************************************",
+                          "No Boost Graph found. Omitting Boost Graph related files.",
+                          "Please install the corresponding package, e.g., on Ubuntu",
+                          "> sudo apt-get install libboost-graph-dev",
+                          "****************************************************")
 def checkSWIG(config):
   if config.env["SG_PYTHON"] or config.env["SG_JAVA"]:
     # check whether swig installed

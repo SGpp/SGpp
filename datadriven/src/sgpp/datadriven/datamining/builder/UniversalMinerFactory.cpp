@@ -18,7 +18,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#ifdef USE_BOOST_GRAPH
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp>
+#endif
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
@@ -53,11 +55,14 @@ ModelFittingBase *UniversalMinerFactory::createFitter(const DataMiningConfigPars
     FitterConfigurationClassification config{};
     config.readParams(parser);
     model = new ModelFittingClassification(config);
-  } else if (fType == FitterType::Clustering) {
+  }
+  #ifdef USE_BOOST_GRAPH
+  else if (fType == FitterType::Clustering) {
     FitterConfigurationClustering config {};
     config.readParams(parser);
     model = new ModelFittingClustering(config);
   }
+  #endif
   return model;
 }
 
@@ -73,9 +78,12 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     fitfac = new LeastSquaresRegressionFitterFactory(parser);
   } else if (fType == FitterType::Classification) {
     fitfac = new ClassificationFitterFactory(parser);
-  } else if (fType == FitterType::Clustering) {
+  }
+  #ifdef USE_BOOST_GRAPH
+  else if (fType == FitterType::Clustering) {
     fitfac = new ClusteringFitterFactory(parser);
   }
+  #endif
   return fitfac;
 }
 
@@ -93,9 +101,12 @@ Visualizer *UniversalMinerFactory::createVisualizer(const DataMiningConfigParser
     visualizer = new VisualizerDummy();
   } else if (fType == FitterType::Classification) {
     visualizer = new VisualizerClassification(config);
-  } else if (fType == FitterType::Clustering) {
+  }
+  #ifdef USE_BOOST_GRAPH
+  else if (fType == FitterType::Clustering) {
     visualizer = new VisualizerDummy();
   }
+  #endif
   return visualizer;
 }
 } /* namespace datadriven */

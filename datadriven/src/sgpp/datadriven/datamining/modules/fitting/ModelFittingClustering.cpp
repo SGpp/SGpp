@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
+#ifdef USE_BOOST_GRAPH
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClustering.hpp>
@@ -66,11 +66,11 @@ void ModelFittingClustering::update(Dataset& newDataset) {
 }
 
 double ModelFittingClustering::evaluate(const DataVector &sample) {
-  return 0.0;
+  return classificationModel->evaluate(sample);
 }
 
-void ModelFittingClustering::evaluate(DataMatrix& samples, DataVector& results) {
-  return;
+void ModelFittingClustering::evaluate(DataMatrix &samples, DataVector &results) {
+  classificationModel->evaluate(samples, results);
 }
 
 bool ModelFittingClustering::refine() {
@@ -85,6 +85,19 @@ void ModelFittingClustering::reset() {
   densityEstimationModel->reset();
   classificationModel->reset();
   graph = nullptr;
+}
+
+double ModelFittingClustering::computeResidual(DataMatrix &validationData) const  {
+throw sgpp::base::not_implemented_exception(
+  "ModelFittingClustering::computeResidual() is not implemented!");
+}
+
+void ModelFittingClustering::resetTraining() {
+  densityEstimationModel->resetTraining();
+}
+
+void ModelFittingClustering::updateRegularization(double lambda) {
+  densityEstimationModel->updateRegularization(lambda);
 }
 
 std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClustering::createNewDensityModel(
@@ -222,3 +235,4 @@ DataMatrix &ModelFittingClustering::getLabeledPoints() {
 }
 }  // namespace datadriven
 }  // namespace sgpp
+#endif

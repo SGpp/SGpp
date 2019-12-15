@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#ifdef USE_BOOST_GRAPH
+
 #pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -100,3 +102,5 @@ class Graph {
 };
 }  // namespace datadriven
 }  // namspace sgpp
+
+#endif
