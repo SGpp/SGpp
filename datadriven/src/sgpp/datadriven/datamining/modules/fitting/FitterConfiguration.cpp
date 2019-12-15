@@ -123,8 +123,8 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.threshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
   adaptivityConfig.noPoints_ = 1;
-  adaptivityConfig.percent_ = 1.0;  // mirrors struct default
-  adaptivityConfig.errorBasedRefinement = false;  // mirrors struct default
+  adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
+  adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
   adaptivityConfig.errorBufferSize = 3;                // mirrors struct default
   adaptivityConfig.errorMinInterval = 0;               // mirrors struct default
@@ -184,9 +184,14 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.lambda_log_scale_ = false;
   regularizationConfig.l1Ratio_ = 0.0;
   regularizationConfig.exponentBase_ = 1.0;
+  regularizationConfig.optimizeLambda_ = false;
+  regularizationConfig.optimizerTolerance_ = 1e-15;
+  regularizationConfig.convergenceThreshold_ = 1e-5;
+  regularizationConfig.intervalA_ = 1e-15;
+  regularizationConfig.intervalB_ = 1.0;
 
-  learnerConfig.learningRate = 1.0;        // mirrors struct default
-  learnerConfig.usePrior = false;  // mirrors struct default
+  learnerConfig.learningRate = 1.0;  // mirrors struct default
+  learnerConfig.usePrior = false;    // mirrors struct default
 
   // configure geometry configuration
   geometryConfig.dim = std::vector<std::vector<int64_t>>();

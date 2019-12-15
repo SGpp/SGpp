@@ -56,9 +56,10 @@ class Scorer {
    *
    * @param model model to be fitted based on the train dataset.
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @param lowerIsBetter sets up the metric so that a lower score indicates a better result
    * @return accuracy of the fit.
    */
-  double test(ModelFittingBase& model, Dataset& testDataset);
+  double test(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter = false);
 
  private:
   /**
@@ -67,9 +68,10 @@ class Scorer {
    *
    * @param model model to be fitted based on the train dataset.
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @param lowerIsBetter sets up the metric so that a lower score indicates a better result
    * @return accuracy of the fit.
    */
-  double testDistributed(ModelFittingBase& model, Dataset& testDataset);
+  double testDistributed(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter = false);
 
   /**
    * #sgpp::datadriven::Metric to be used to quantify accuracy of the fit.

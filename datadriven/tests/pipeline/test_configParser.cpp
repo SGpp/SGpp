@@ -40,6 +40,7 @@ using sgpp::datadriven::ParallelConfiguration;
 using sgpp::datadriven::ClusteringConfiguration;
 using sgpp::datadriven::RegularizationConfiguration;
 using sgpp::datadriven::RegularizationType;
+using sgpp::datadriven::RegularizationMetricType;
 using sgpp::datadriven::ScorerConfiguration;
 using sgpp::datadriven::ScorerMetricType;
 using sgpp::solver::SLESolverConfiguration;
@@ -231,6 +232,11 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   defaults.lambda_ = 1;
   defaults.exponentBase_ = 2;
   defaults.l1Ratio_ = 3;
+  defaults.optimizeLambda_ = false;
+  defaults.optimizerTolerance_ = 1.0;
+  defaults.convergenceThreshold_ = 1.0;
+  defaults.intervalA_ = 1.0;
+  defaults.intervalB_ = 0.0;
   RegularizationConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
@@ -242,6 +248,13 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   BOOST_CHECK_CLOSE(config.lambda_, 1e-6, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
+  BOOST_CHECK_EQUAL(config.optimizeLambda_, true);
+  BOOST_CHECK_CLOSE(config.optimizerTolerance_, 1e-10, tolerance);
+  BOOST_CHECK_CLOSE(config.convergenceThreshold_, 1e-11, tolerance);
+  BOOST_CHECK_CLOSE(config.intervalA_, 1e-3, tolerance);
+  BOOST_CHECK_CLOSE(config.intervalB_, 0.5, tolerance);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.regularizationMetric_),
+                    static_cast<int>(RegularizationMetricType::accuracy));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
@@ -273,8 +286,8 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
   for (size_t i = 0; i < config.dim.size(); i++) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(),
-                                  dim[i].begin(), dim[i].end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(), dim[i].begin(),
+                                  dim[i].end());
   }
 }
 
@@ -341,10 +354,10 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
   BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
-      expectedAlgorithm.begin(), expectedAlgorithm.end());
+                                expectedAlgorithm.begin(), expectedAlgorithm.end());
   BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
-    static_cast<int>(VisualizationFileType::json));
+                    static_cast<int>(VisualizationFileType::json));
   BOOST_CHECK_EQUAL(defaults.numBatches, 5);
   BOOST_CHECK_EQUAL(defaults.crossValidation, false);
 }

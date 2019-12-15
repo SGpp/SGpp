@@ -44,6 +44,8 @@ ModelFittingBase::ModelFittingBase()
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
+FitterConfiguration &ModelFittingBase::getFitterConfiguration() { return *config; }
+
 Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig) const {
   GridFactory gridFactory;
 
@@ -99,9 +101,7 @@ void ModelFittingBase::reconfigureSolver(SLESolver &solver,
   solver.setEpsilon(sleConfig.eps_);
 }
 
-Dataset *ModelFittingBase::getDataset() {
-  return dataset;
-}
+Dataset *ModelFittingBase::getDataset() { return dataset; }
 
 void ModelFittingBase::switchFirstEpochFlag() {
   firstEpoch = false;

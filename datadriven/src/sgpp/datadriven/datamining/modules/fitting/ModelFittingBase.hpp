@@ -15,7 +15,6 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <memory>
@@ -126,9 +125,36 @@ class ModelFittingBase {
   virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  virtual double computeResidual(DataMatrix &validationData) const = 0;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  virtual void updateRegularization(double lambda) = 0;
+
+  /**
    * Resets the state of the entire model
    */
   virtual void reset() = 0;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  virtual void resetTraining() = 0;
 
   /**
    * @returns the BLACS process grid, useful if the fitter uses ScaLAPACK
@@ -143,6 +169,11 @@ class ModelFittingBase {
    */
   const FitterConfiguration &getFitterConfiguration() const;
 
+  /** Get or set the configuration of the fitter object.
+   * @return configuration of the fitter object
+   */
+  FitterConfiguration &getFitterConfiguration();
+
   /**
    * Whether the Solver produces output or not.
    */
@@ -151,7 +182,7 @@ class ModelFittingBase {
   // virtual std::string& storeFitter();
   // void storeClassificator();
 
-  Dataset* getDataset();
+  Dataset *getDataset();
 
   void switchFirstEpochFlag();
 
@@ -164,11 +195,11 @@ class ModelFittingBase {
   Grid *buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig) const;
 
   /**
-     * Factory member function that generates a grid from configuration.
-     * @param gridConfig configuration for the grid object
-     * @param geometryConfig configuration for the geometry parameters
-     * @return new grid object that is owned by the caller.
-     */
+   * Factory member function that generates a grid from configuration.
+   * @param gridConfig configuration for the grid object
+   * @param geometryConfig configuration for the geometry parameters
+   * @return new grid object that is owned by the caller.
+   */
   Grid *buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig,
                   const GeometryConfiguration &geometryConfig) const;
 
@@ -192,8 +223,7 @@ class ModelFittingBase {
    * @param geometryConfig from configuration file
    * @return interactions
    */
-  std::set<std::set<size_t>> getInteractions(
-      const GeometryConfiguration &geometryConfig);
+  std::set<std::set<size_t>> getInteractions(const GeometryConfiguration &geometryConfig);
 
   /*
    * The set of interactions

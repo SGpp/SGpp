@@ -10,6 +10,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -77,6 +78,42 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  void resetTraining() override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::resetTraining() is not implemented!");
+  }
+
+  /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix &validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::computeResidual() is not implemented!");
+  }
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingLeastSquares::updateRegularization() is not implemented!");
+  }
 
  private:
   /**
