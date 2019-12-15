@@ -5,43 +5,43 @@
 
 #pragma once
 
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Metric.hpp>
 
 namespace sgpp {
 namespace datadriven {
 /**
- * Metric that quantifies the difference between predicted values and actual values in terms of mean
- * squared error (MSE). MSE is defined strictly positive such that smaller values are better.
+ * Metric that is based on a residual score of the model. For density estimation, this is
+ * || R * alpha_lambda - b_val ||_2
  */
-class MSE : public Metric {
+class ResidualScore : public Metric {
  public:
   Metric *clone() const override;
 
   /**
-   * Quantify the difference between predicted values and actual values in terms of mean
-   * squared error.
+   * Measure the quality of the trained model. Gives the metric access to the trained model, as this
+   * is required for some scores.
    *
-   * @param predictedValues values calculated by the model for testing data
-   * @param trueValues actual values as taken from the dataset.
+   * @param predictedValues ignored
+   * @param trueValues ignored
    * @param model reference to the model
    * @param testDataset dataset with test data
-   * @return mean squared error (MSE) - strictly positive such that smaller values are better.
    */
   double measure(const DataVector &predictedValues, const DataVector &trueValues,
                  const ModelFittingBase &model, Dataset &testDataset) const override;
 
   /**
-   * Quantify the difference between predicted values and actual values in terms of mean
-   * squared error.
+   * Measure the quality of the trained model. Gives the metric access to the trained model, as this
+   * is required for some scores.
    *
-   * @param predictedValues values calculated by the model for testing data
-   * @param trueValues actual values as taken from the dataset.
+   * @param predictedValues ignored
+   * @param trueValues ignored
    * @param model reference to the model
    * @param testDataset dataset with test data
-   * @return mean squared error (MSE) - strictly positive such that smaller values are better.
    */
   double measureLowerIsBetter(const DataVector &predictedValues, const DataVector &trueValues,
                               const ModelFittingBase &model, Dataset &testDataset) const override;
 };
+
 } /* namespace datadriven */
 } /* namespace sgpp */

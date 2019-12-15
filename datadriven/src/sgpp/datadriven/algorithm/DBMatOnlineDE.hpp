@@ -124,6 +124,30 @@ class DBMatOnlineDE : public DBMatOnline {
                                       size_t newPoints = 0);
 
   /**
+   * Computes/updates the b vector for the given batch of data
+   *
+   * @param m the matrix that contains the data points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   */
+  DataVector computeBFromBatch(DataMatrix& m, Grid& grid,
+                               DensityEstimationConfiguration& densityEstimationConfig);
+
+  /**
+   * Computes/updates the b vector for the given batch of data in parallel using ScaLAPACK
+   *
+   * @param m the matrix that contains the data points, currently every process has to have the data
+   * points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   * @param parallelConfig ScaLAPACK configuration
+   * @param processGrid process grid for ScaLAPACK
+   */
+  DataVectorDistributed computeBFromBatchParallel(
+      DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid);
+
+  /**
    * Evaluates the density function at a certain point
    *
    * @param alpha the vector of surplusses
@@ -198,6 +222,11 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
+
+  /**
+   * Resets the training state of the model.
+   */
+  void resetTraining();
 
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
