@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
@@ -247,7 +248,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
           std::string errorMessage =
               "Not enough scaling coefficients were given for the amount"
               "of classes";
-          throw new application_exception(errorMessage.c_str());
+          throw application_exception(errorMessage.c_str());
         } else if (refinementConfig.scalingCoefficients.size() > models.size()) {
           std::cout << "Did not train on at least one sample for every class. Data based "
                     << "refinement not possible in this iteration..." << std::endl;
@@ -263,7 +264,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       std::string errorMessage =
           "Unsupported refinement functor type SurplusVolume "
           "for classification!";
-      throw new application_exception(errorMessage.c_str());
+      throw application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
       return new GridPointBasedRefinementFunctor(
@@ -273,6 +274,10 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     case RefinementFunctorType::MultipleClass: {
       return new MultipleClassRefinementFunctor(
           grids, surpluses, priors, refinementConfig.noPoints_, 0, refinementConfig.threshold_);
+    }
+    case RefinementFunctorType::Classification: {
+      return new ClassificationRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.noPoints_, true, refinementConfig.threshold_);
     }
   }
 
@@ -323,6 +328,10 @@ bool ModelFittingClassification::refine() {
         MultipleClassRefinementFunctor* multifunc =
             dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
+      } else if (refinementConfig.refinementFunctorType == RefinementFunctorType::Classification) {
+        ClassificationRefinementFunctor* classfunc =
+            dynamic_cast<ClassificationRefinementFunctor*>(func);
+        classfunc->refineAllGrids();
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
@@ -392,6 +401,18 @@ void ModelFittingClassification::reset() {
   classNumberInstances.clear();
   classIdx.clear();
   refinementsPerformed = 0;
+}
+
+void ModelFittingClassification::resetTraining() {
+  for (auto& model : models) {
+    model->resetTraining();
+  }
+}
+
+void ModelFittingClassification::updateRegularization(double lambda) {
+  for (auto& model : models) {
+    model->updateRegularization(lambda);
+  }
 }
 
 void ModelFittingClassification::storeClassificator() {

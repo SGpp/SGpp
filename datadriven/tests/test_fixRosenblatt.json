@@ -1,6 +1,6 @@
 {
 	"dataSource": {
-		"filePath": "datadriven/datasets/chess/chess_5d_2000.arff",
+		"filePath": "../datasets/chess/chess_5d_2000.arff",
 		"fileType": "arff",
 		"compression": false,
 		"numBatches": 2,

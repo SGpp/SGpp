@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
@@ -43,7 +44,7 @@ class ModelFittingClassification : public ModelFittingBase {
 
   /**
    * @brief Constructor with specified object store.
-   * 
+   *
    * @param config Configuration object that specifies grid, refinement, and regularization
    * @param objectStore Offline object store for already decomposed offline objects.
    */
@@ -84,6 +85,40 @@ class ModelFittingClassification : public ModelFittingBase {
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * For classification, this is not implemented, as accuracy should be used in this case.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCombi::computeResidual() is not implemented!");
+  }
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Decompositions are not discarded, but can be reused.
+   */
+  void resetTraining() override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
@@ -102,6 +137,7 @@ class ModelFittingClassification : public ModelFittingBase {
    * obtain the index mapping for each label class. To be used in VisualizerClassification
    */
   std::map<double, size_t> getClassIdx();
+
 #ifdef USE_SCALAPACK
   /**
    * @returns the BLACS process grid

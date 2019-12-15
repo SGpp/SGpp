@@ -15,17 +15,18 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-
-ModelFittingBase *UniversalMinerFactory::createFitter(
-    const DataMiningConfigParser &parser) const {
+ModelFittingBase *UniversalMinerFactory::createFitter(const DataMiningConfigParser &parser) const {
   ModelFittingBase *model = nullptr;
 
   FitterType fType = FitterType::RegressionLeastSquares;
@@ -33,7 +34,15 @@ ModelFittingBase *UniversalMinerFactory::createFitter(
   if (fType == FitterType::DensityEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
+#ifdef USE_SCALAPACK
+    if (parser.hasParallelConfig()) {
+      model = new ModelFittingDensityEstimationOnOffParallel(config);
+    } else {
+      model = new ModelFittingDensityEstimationOnOff(config);
+    }
+#else
     model = new ModelFittingDensityEstimationOnOff(config);
+#endif /* USE_SCALAPACK */
   } else if (fType == FitterType::RegressionLeastSquares) {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);
@@ -50,7 +59,7 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
-  FitterFactory* fitfac = nullptr;
+  FitterFactory *fitfac = nullptr;
 
   if (fType == FitterType::DensityEstimation) {
     fitfac = new DensityEstimationFitterFactory(parser);
@@ -62,12 +71,23 @@ FitterFactory *UniversalMinerFactory::createFitterFactory(
   return fitfac;
 }
 
-Visualizer* UniversalMinerFactory::createVisualizer(const DataMiningConfigParser& parser) const {
+Visualizer *UniversalMinerFactory::createVisualizer(const DataMiningConfigParser &parser) const {
+  Visualizer *visualizer = nullptr;
+
   VisualizerConfiguration config;
 
   config.readParams(parser);
+  FitterType fType = FitterType::RegressionLeastSquares;
+  parser.getFitterConfigType(fType, fType);
+  if (fType == FitterType::DensityEstimation) {
+    visualizer = new VisualizerDensityEstimation(config);
+  } else if (fType == FitterType::RegressionLeastSquares) {
+    visualizer = new VisualizerDummy();
+  } else if (fType == FitterType::Classification) {
+    visualizer = new VisualizerClassification(config);
+  }
 
-  return new VisualizerDummy();
+  return visualizer;
 }
 } /* namespace datadriven */
 } /* namespace sgpp */

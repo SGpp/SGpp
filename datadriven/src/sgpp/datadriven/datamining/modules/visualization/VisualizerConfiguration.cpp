@@ -18,7 +18,7 @@ namespace sgpp {
 namespace datadriven {
 
 void VisualizerConfiguration::setupDefaults() {
-  srand(static_cast<unsigned int>(time(NULL)));
+  srand(static_cast<unsigned int>(time(nullptr)));
 
   std::cout << "Setting up defaults parameters for Visualizer" << std::endl;
   generalConfig.algorithm = std::vector<std::string>({"tsne", "heatmaps", "linearcuts"});

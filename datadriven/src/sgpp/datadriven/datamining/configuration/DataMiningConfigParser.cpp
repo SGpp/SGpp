@@ -527,6 +527,31 @@ bool DataMiningConfigParser::getFitterRegularizationConfig(
 
     config.l1Ratio_ =
         parseDouble(*regularizationConfig, "l1Ratio", defaults.l1Ratio_, "regularizationConfig");
+
+    config.optimizeLambda_ = parseBool(*regularizationConfig, "optimizeLambda",
+                                       defaults.optimizeLambda_, "regularizationConfig");
+
+    config.optimizerTolerance_ = parseDouble(*regularizationConfig, "optimizerTolerance",
+                                             defaults.optimizerTolerance_, "regularizationConfig");
+
+    config.convergenceThreshold_ =
+        parseDouble(*regularizationConfig, "convergenceThreshold", defaults.convergenceThreshold_,
+                    "regularizationConfig");
+
+    config.intervalA_ = parseDouble(*regularizationConfig, "intervalA", defaults.intervalA_,
+                                    "regularizationConfig");
+    config.intervalB_ = parseDouble(*regularizationConfig, "intervalB", defaults.intervalB_,
+                                    "regularizationConfig");
+
+    if (regularizationConfig->contains("regularizationMetric")) {
+      config.regularizationMetric_ = ScorerMetricTypeParser::parseRegularizationMetric(
+          (*regularizationConfig)["regularizationMetric"].get());
+    } else {
+      std::cout << "# Did not find scorer[metric]. Setting default value "
+                << ScorerMetricTypeParser::regularizationMetricToString(
+                       defaults.regularizationMetric_)
+                << "." << std::endl;
+    }
   }
 
   return hasRegularizationConfig;
@@ -1039,10 +1064,9 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   if (hasLearnerConfig) {
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
-    config.learningRate = parseDouble(*learnerConfig, "learningRate",
-        defaults.learningRate, "learnerConfig");
-    config.usePrior = parseBool(*learnerConfig, "usePrior",
-        defaults.usePrior, "learnerConfig");
+    config.learningRate =
+        parseDouble(*learnerConfig, "learningRate", defaults.learningRate, "learnerConfig");
+    config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior, "learnerConfig");
   }
 
   return hasLearnerConfig;

@@ -26,35 +26,45 @@ namespace datadriven {
 ModelFittingDensityEstimation::ModelFittingDensityEstimation() : refinementsPerformed{0} {}
 
 RefinementFunctor *ModelFittingDensityEstimation::getRefinementFunctor() {
-  sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
+  sgpp::base::AdaptivityConfiguration &refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
-    case RefinementFunctorType::Surplus : {
+    case RefinementFunctorType::Surplus: {
       return new SurplusRefinementFunctor(alpha, config->getRefinementConfig().noPoints_,
-                                             config->getRefinementConfig().threshold_);
+                                          config->getRefinementConfig().threshold_);
     }
-    case RefinementFunctorType::SurplusVolume : {
+    case RefinementFunctorType::SurplusVolume: {
       return new SurplusVolumeRefinementFunctor(alpha, config->getRefinementConfig().noPoints_,
-          config->getRefinementConfig().threshold_);
+                                                config->getRefinementConfig().threshold_);
     }
-    case RefinementFunctorType::DataBased : {
-      std::string errorMessage = "Unsupported refinement functor type DataBased "
-          "for classification!";
-      throw new application_exception(errorMessage.c_str());
+    case RefinementFunctorType::DataBased: {
+      std::string errorMessage =
+          "Unsupported refinement functor type DataBased "
+          "for density estimation!";
+      throw application_exception(errorMessage.c_str());
     }
-    case RefinementFunctorType::ZeroCrossing : {
-      std::string errorMessage = "Unsupported refinement functor type ZeroCrossing "
-          "for classification!";
-      throw new application_exception(errorMessage.c_str());
+    case RefinementFunctorType::ZeroCrossing: {
+      std::string errorMessage =
+          "Unsupported refinement functor type ZeroCrossing "
+          "for density estimation!";
+      throw application_exception(errorMessage.c_str());
     }
-    case RefinementFunctorType::MultipleClass : {
-      std::string errorMessage = "Unsupported refinement functor type MultipleClass "
-          "for classification!";
-      throw new application_exception(errorMessage.c_str());
+    case RefinementFunctorType::MultipleClass: {
+      std::string errorMessage =
+          "Unsupported refinement functor type MultipleClass "
+          "for density estimation!";
+      throw application_exception(errorMessage.c_str());
     }
-    case RefinementFunctorType::GridPointBased : {
-      std::string errorMessage = "Unsupported refinement functor type GridPointBased "
-          "for classification!";
-      throw new application_exception(errorMessage.c_str());
+    case RefinementFunctorType::Classification: {
+      std::string errorMessage =
+          "Unsupported refinement functor type Classification "
+          "for density estimation!";
+      throw application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::GridPointBased: {
+      std::string errorMessage =
+          "Unsupported refinement functor type GridPointBased "
+          "for density estimation!";
+      throw application_exception(errorMessage.c_str());
     }
   }
   return nullptr;
@@ -80,7 +90,7 @@ bool ModelFittingDensityEstimation::refine() {
         std::cout << "New number points " << newNoPoints << std::endl;
         if (newNoPoints != oldNoPoints) {
           // TODO(roehner) enable coarsening
-          std::list<size_t> deletedGridPoints {};
+          std::list<size_t> deletedGridPoints{};
           this->refine(newNoPoints, &deletedGridPoints);
           refinementsPerformed++;
           return true;
