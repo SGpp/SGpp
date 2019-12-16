@@ -126,15 +126,12 @@ sgpp::base::DataVector SparseGridResponseSurfaceBspline::optimize() {
    */
   sgpp::base::DataVector x0(numDim);
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
-
   // index of grid point with minimal function value
   size_t x0Index =
       std::distance(functionValues.getPointer(),
                     std::min_element(functionValues.getPointer(),
                                      functionValues.getPointer() + functionValues.getSize()));
-
   x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
-
   sgpp::optimization::optimizer::GradientDescent gradientDescent(*interpolant,
                                                                  *interpolantGradient);
   gradientDescent.setStartingPoint(x0);

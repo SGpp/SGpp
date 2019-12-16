@@ -165,6 +165,12 @@ class SparseGridResponseSurfaceBsplineVector : public ResponseSurfaceVector {
   void regular(size_t level);
 
   /**
+   * creates a regualar full grid interpolant
+   * @param level	level of the regular full grid
+   */
+  void full(size_t level);
+
+  /**
    * creates a regular grid of the lowest level with more grid points than specified
    *
    * @param numPoints	desired number of grid points

@@ -18,6 +18,14 @@ void SparseGridResponseSurfaceBsplineVector::regular(size_t level) {
       std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
 }
 
+void SparseGridResponseSurfaceBsplineVector::full(size_t level) {
+  grid->getGenerator().full(level);
+  calculateInterpolationCoefficients();
+  interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
+  interpolantGradients =
+      std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+}
+
 void SparseGridResponseSurfaceBsplineVector::regularByPoints(size_t numPoints, bool verbose) {
   // set initial level
   size_t level = 1;

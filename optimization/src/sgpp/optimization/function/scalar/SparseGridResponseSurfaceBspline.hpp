@@ -106,6 +106,71 @@ class SparseGridResponseSurfaceBspline : public ResponseSurface {
   }
 
   /**
+   * Constructor
+   *
+   * @param objectiveFunc		objective Function
+   * @param gridType			type of the interpolants grid/basis
+   * @param degree				degree of the interpolants basis
+   */
+  SparseGridResponseSurfaceBspline(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
+                                   std::shared_ptr<sgpp::base::Grid> grid,
+                                   sgpp::base::DataVector lb, sgpp::base::DataVector ub,
+                                   size_t degree = 3)
+      : ResponseSurface(objectiveFunc->getNumberOfParameters()),
+        objectiveFunc(objectiveFunc),
+        degree(degree),
+        grid(grid) {
+    this->lb = lb;
+    this->ub = ub;
+    // dummy values for mean and variance
+    mean = 777;
+    variance = -1;
+    computedMeanFlag = false;
+    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
+    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
+    gridType = grid->getType();
+    if (gridType == sgpp::base::GridType::Bspline) {
+      basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+      basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModBspline) {
+      basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
+      basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
+      basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
+      basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBspline) {
+      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      boundary = false;
+    } else {
+      throw sgpp::base::generation_exception(
+          "SparseGridResponseSurfaceBspline: gridType not supported.");
+    }
+    calculateInterpolationCoefficients();
+    interpolant =
+        std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+        *grid, coefficients);
+  }
+
+  /**
    * Destructor
    */
   ~SparseGridResponseSurfaceBspline() {}
