@@ -53,16 +53,20 @@ class CombinationGrid {
 
   /**
    * Factory method to create a CombinationGrid corresponding to the truncated combination technique
-   * for a regular sparse grid, given a minimal level l_min
+   * for a regular sparse grid, given a truncation level
    *
    * @param dim           dimensionality
-   * @param n             sparse grid level
+   * @param truncationLevel minimum level for each full component grid
+   * @param levelSumDistance regular level in analogy to `fromRegularSparse`, the result is
+   *                      a regular sparse grid of level `n` with each level shifted by
+   *                      `truncationLevel`
    * @param basis         basis of the sparse grid (will be the same for all full grids;
    *                      this can be changed)
    * @param hasBoundary   whether the sparse grid has points on the boundary
    * @return CombinationGrid corresponding to the combination technique for the regular sparse grid
    */
-  static CombinationGrid fromRegularSparseTruncated(size_t dim, LevelVector l_min, level_t n,
+  static CombinationGrid fromRegularSparseTruncated(size_t dim, LevelVector truncationLevel,
+                                                    level_t levelSumDistance,
                                                     const HeterogeneousBasis& basis,
                                                     bool hasBoundary = true);
 

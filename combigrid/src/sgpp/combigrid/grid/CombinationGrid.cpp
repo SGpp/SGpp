@@ -28,7 +28,7 @@ CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
   return fromRegularSparseTruncated(dim, LevelVector(dim, 0), n, basis, hasBoundary);
 }
 
-CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVector l_min, level_t n,
+CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVector truncationLevel, level_t levelSumDistance,
     const HeterogeneousBasis& basis, bool hasBoundary) {
   std::vector<size_t> binomialCoefficients((dim+1)/2);
   binomialCoefficients[0] = 1.0;
@@ -42,12 +42,12 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
 
   std::vector<FullGrid> fullGrids;
   base::DataVector coefficients;
-  const level_t maxLevelSum = (hasBoundary ? n : static_cast<level_t>(n+dim-1));
+  const level_t maxLevelDifference = (hasBoundary ? levelSumDistance : static_cast<level_t>(levelSumDistance+dim-1));
 
   for (size_t q = 0; q < dim; q++) {
     std::vector<LevelVector> levels = (hasBoundary ?
-        enumerateLevelsWithSumWithBoundary(dim, maxLevelSum-static_cast<level_t>(q)) :
-        enumerateLevelsWithSumWithoutBoundary(dim, maxLevelSum-static_cast<level_t>(q)));
+        enumerateLevelsWithSumWithBoundary(dim, maxLevelDifference-static_cast<level_t>(q)) :
+        enumerateLevelsWithSumWithoutBoundary(dim, maxLevelDifference-static_cast<level_t>(q)));
 
     const double coefficient = ((q % 2 == 0) ? 1.0 : -1.0) *
         static_cast<double>(binomialCoefficients[((q < (dim+1)/2) ? q : (dim-q-1))]);
@@ -55,7 +55,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
     for (LevelVector& level : levels) {
       // difference between truncated and regular combination technique: offset by the minimum level
       for (size_t d = 0; d < dim; ++d) {
-        level[d] += l_min[d];
+        level[d] += truncationLevel[d];
       }
       fullGrids.emplace_back(level, basis, hasBoundary);
       coefficients.push_back(coefficient);
