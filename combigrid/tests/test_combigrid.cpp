@@ -197,7 +197,9 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
     std::vector<CombinationGrid> combinationGrids = {
         CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary),
-        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary)};
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary),
+        CombinationGrid::fromRegularSparseTruncated(3, LevelVector(3, 0), 5, basis, hasBoundary),
+        };
 
     for (const CombinationGrid& combinationGrid : combinationGrids) {
       BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
@@ -325,6 +327,177 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   for (size_t i = 0; i < distributedValues.size(); i++) {
     BOOST_CHECK_EQUAL_COLLECTIONS(distributedValues[i].begin(), distributedValues[i].end(),
         correctDistributedValues[i].begin(), correctDistributedValues[i].end());
+  }
+}
+
+
+BOOST_AUTO_TEST_CASE(testCombinationGridTruncated) {
+  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithBoundary(3, 0).size(), 1);
+  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithoutBoundary(3, 0).size(), 0);
+
+  sgpp::base::SBsplineBase basis1d;
+  HeterogeneousBasis basis(3, basis1d);
+
+  for (bool hasBoundary : {true, false}) {
+    std::vector<LevelVector> subspaceLevels;
+
+    // like testCombinationGrid, but shifted by {0,1,3} => maximum level is {5,6,8}
+    if (hasBoundary) {
+      subspaceLevels = {
+          {0, 1, 8}, {0, 2, 7}, {0, 3, 6}, {0, 4, 5}, {0, 5, 4}, {0, 6, 3},
+          {1, 1, 7}, {1, 2, 6}, {1, 3, 5}, {1, 4, 4}, {1, 5, 3},
+          {2, 1, 6}, {2, 2, 5}, {2, 3, 4}, {2, 4, 3},
+          {3, 1, 5}, {3, 2, 4}, {3, 3, 3},
+          {4, 1, 4}, {4, 2, 3},
+          {5, 1, 3},
+          {0, 1, 7}, {0, 2, 6}, {0, 3, 5}, {0, 4, 4}, {0, 5, 3},
+          {1, 1, 6}, {1, 2, 5}, {1, 3, 4}, {1, 4, 3},
+          {2, 1, 5}, {2, 2, 4}, {2, 3, 3},
+          {3, 1, 4}, {3, 2, 3},
+          {4, 1, 3},
+          {0, 1, 6}, {0, 2, 5}, {0, 3, 4}, {0, 4, 3},
+          {1, 1, 5}, {1, 2, 4}, {1, 3, 3},
+          {2, 1, 4}, {2, 2, 3},
+          {3, 1, 3},
+          {0, 1, 5}, {0, 2, 4}, {0, 3, 3},
+          {1, 1, 4}, {1, 2, 3},
+          {2, 1, 3},
+          {0, 1, 4}, {0, 2, 3},
+          {1, 1, 3},
+          {0, 1, 3}};
+          // this here would be all hierarchical subspaces;
+          // however for the truncation we do not want to consider the lower levels,
+          // only those larger than the truncation level
+          //          , {0, 1, 8}, {0, 2, 7}, {0, 3, 6}, {0, 4, 5}, {0, 5, 4}, {0, 6, 3},
+          // {1, 0, 8}, {1, 1, 7}, {1, 2, 6}, {1, 3, 5}, {1, 4, 4}, {1, 5, 3}, {1, 6, 2},
+          // {2, 0, 7}, {2, 1, 6}, {2, 2, 5}, {2, 3, 4}, {2, 4, 3}, {2, 5, 2}, {2, 6, 1},
+          // {3, 0, 6}, {3, 1, 5}, {3, 2, 4}, {3, 3, 3}, {3, 4, 2}, {3, 5, 1}, {3, 6, 0},
+          // {4, 0, 5}, {4, 1, 4}, {4, 2, 3}, {4, 3, 2}, {4, 4, 1}, {4, 5, 0},
+          // {5, 0, 4}, {5, 1, 3}, {5, 2, 2}, {5, 3, 1}, {5, 4, 0},
+          // {0, 0, 8}, {0, 1, 7}, {0, 2, 6}, {0, 3, 5}, {0, 4, 4}, {0, 5, 3}, {0, 6, 2},
+          // {1, 0, 7}, {1, 1, 6}, {1, 2, 5}, {1, 3, 4}, {1, 4, 3}, {1, 5, 2}, {1, 6, 1},
+          // {2, 0, 6}, {2, 1, 5}, {2, 2, 4}, {2, 3, 3}, {2, 4, 2}, {2, 5, 1}, {2, 6, 0}
+          // {3, 0, 5}, {3, 1, 4}, {3, 2, 3}, {3, 3, 2}, {3, 4, 1}, {4, 5, 0}
+          // {4, 0, 4}, {4, 1, 3}, {4, 2, 2}, {4, 3, 1}, {4, 4, 0}
+          // {5, 0, 3}, {5, 1, 2}, {5, 2, 1}, {5, 3, 0}
+          // {0, 0, 7}, {0, 1, 6}, {0, 2, 5}, {0, 3, 4}, {0, 4, 3}, {0, 5, 2}, {0, 6, 1},
+          // {1, 0, 6}, {1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1}, {1, 6, 0},
+          // {2, 0, 5}, {2, 1, 4}, {2, 2, 3}, {2, 3, 2}, {2, 4, 1}, {2, 5, 0},
+          // {3, 0, 4}, {3, 1, 3}, {3, 2, 2}, {3, 3, 1}, {3, 4, 0},
+          // {4, 0, 3}, {4, 1, 2}, {4, 2, 1}, {4, 3, 0}
+          // {5, 0, 2}, {5, 1, 1}, {5, 2, 0},
+          // {0, 0, 6}, {0, 1, 5}, {0, 2, 4}, {0, 3, 3}, {0, 4, 2}, {0, 5, 1}, {0, 6, 0},
+          // {1, 0, 5}, {1, 1, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 1}, {1, 5, 0},
+          // {2, 0, 4}, {2, 1, 3}, {2, 2, 2}, {2, 3, 1}, {2, 4, 0},
+          // {3, 0, 3}, {3, 1, 2}, {3, 2, 1}, {3, 3, 0},
+          // {4, 0, 2}, {4, 1, 1}, {4, 2, 0},
+          // {5, 0, 1}, {5, 1, 0},
+          // {0, 0, 5}, {0, 1, 4}, {0, 2, 3}, {0, 3, 2}, {0, 4, 1}, {0, 5, 0},
+          // {1, 0, 4}, {1, 1, 3}, {1, 2, 2}, {1, 3, 1}, {1, 4, 0},
+          // {2, 0, 3}, {2, 1, 2}, {2, 2, 1}, {2, 3, 0},
+          // {3, 0, 2}, {3, 1, 1}, {3, 2, 0},
+          // {4, 0, 1}, {4, 1, 0},
+          // {5, 0, 0}
+          // {0, 0, 4}, {0, 1, 3}, {0, 2, 2}, {0, 3, 1}, {0, 4, 0}
+          // {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 0},
+          // {2, 0, 2}, {2, 1, 1}, {2, 2, 0},
+          // {3, 0, 1}, {3, 1, 0},
+          // {4, 0, 0},
+          // {0, 0, 3}, {0, 1, 2}, {0, 2, 1}, {0, 3, 0},
+          // {1, 0, 2}, {1, 1, 1}, {1, 2, 0},
+          // {2, 0, 1}, {2, 1, 0},
+          // {3, 0, 0},
+          // {0, 0, 2}, {0, 1, 1}, {0, 2, 0},
+          // {1, 0, 1}, {1, 1, 0},
+          // {2, 0, 0},
+          // {0, 0, 1}, {0, 1, 0},
+          // {1, 0, 0},
+          // {0, 0, 0},
+    } else {
+      subspaceLevels = {
+          {1, 2, 8}, {1, 3, 7}, {1, 4, 6}, {1, 5, 5}, {1, 6, 4},
+          {2, 2, 7}, {2, 3, 6}, {2, 4, 5}, {2, 5, 4},
+          {3, 2, 6}, {3, 3, 5}, {3, 4, 4},
+          {4, 2, 5}, {4, 3, 4},
+          {5, 2, 4},
+          {1, 2, 7}, {1, 3, 6}, {1, 4, 5}, {1, 5, 4},
+          {2, 2, 6}, {2, 3, 5}, {2, 4, 4},
+          {3, 2, 5}, {3, 3, 4},
+          {4, 2, 4},
+          {1, 2, 6}, {1, 3, 5}, {1, 4, 4},
+          {2, 2, 5}, {2, 3, 4},
+          {3, 2, 4},
+          {1, 2, 5}, {1, 3, 4},
+          {2, 2, 4},
+          {1, 2, 4}};
+          // this here would be all hierarchical subspaces;
+          // however for the truncation in full grid space we do not want to consider the lower levels
+          //          , {1, 2, 8}, {1, 3, 7}, {1, 4, 6}, {1, 5, 5}, {1, 6, 4},
+          // {2, 1, 8}, {2, 2, 7}, {2, 3, 6}, {2, 4, 5}, {2, 5, 4}, {2, 6, 3},
+          // {3, 1, 7}, {3, 2, 6}, {3, 3, 5}, {3, 4, 4}, {3, 5, 3}, {3, 6, 2}
+          // {4, 1, 6}, {4, 2, 5}, {4, 3, 4}, {4, 4, 3}, {4, 5, 2}, {4, 6, 1}
+          // {5, 1, 5}, {5, 2, 4}, {5, 3, 3}, {5, 4, 2}, {5, 5, 1},
+          // {1, 1, 8}, {1, 2, 7}, {1, 3, 6}, {1, 4, 5}, {1, 5, 4}, {1, 6, 3},
+          // {2, 1, 7}, {2, 2, 6}, {2, 3, 5}, {2, 4, 4}, {2, 5, 3}, {2, 6, 2},
+          // {3, 1, 6}, {3, 2, 5}, {3, 3, 4}, {3, 4, 3}, {3, 5, 2}, {3, 6, 1},
+          // {4, 1, 5}, {4, 2, 4}, {4, 3, 3}, {4, 4, 2}, {4, 5, 1},
+          // {5, 1, 4}, {5, 2, 3}, {5, 3, 2}, {5, 4, 1},
+          // {1, 1, 7}, {1, 2, 6}, {1, 3, 5}, {1, 4, 4}, {1, 5, 3}, {1, 6, 2},
+          // {2, 1, 6}, {2, 2, 5}, {2, 3, 4}, {2, 4, 3}, {2, 5, 2}, {2, 6, 1},
+          // {3, 1, 5}, {3, 2, 4}, {3, 3, 3}, {3, 4, 2}, {3, 5, 1},
+          // {4, 1, 4}, {4, 2, 3}, {4, 3, 2}, {4, 4, 1},
+          // {5, 1, 3}, {5, 2, 2}, {5, 3, 1},
+          // {1, 1, 6}, {1, 2, 5}, {1, 3, 4}, {1, 4, 3}, {1, 5, 2}, {1, 6, 1},
+          // {2, 1, 5}, {2, 2, 4}, {2, 3, 3}, {2, 4, 2}, {2, 5, 1},
+          // {3, 1, 4}, {3, 2, 3}, {3, 3, 2}, {3, 2, 1},
+          // {4, 1, 3}, {4, 2, 2}, {4, 3, 1}
+          // {5, 1, 2}, {5, 2, 1},
+          // {1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1},
+          // {2, 1, 4}, {2, 2, 3}, {2, 3, 2}, {2, 4, 1},
+          // {3, 1, 3}, {3, 2, 2}, {3, 3, 1},
+          // {4, 1, 2}, {4, 2, 1},
+          // {5, 1, 1},
+          // {1, 1, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 1},
+          // {2, 1, 3}, {2, 2, 2}, {2, 3, 1},
+          // {3, 1, 2}, {3, 2, 1},
+          // {4, 1, 1},
+          // {1, 1, 3}, {1, 2, 2}, {1, 3, 1},
+          // {2, 1, 2}, {2, 2, 1},
+          // {3, 1, 1},
+          // {1, 1, 2}, {1, 2, 1},
+          // {2, 1, 1},
+          // {1, 1, 1}
+          // total number of points:
+          // 28 * 2^9 + 27 * 2^8 + 24 * 2^7 + 20 * 2^6 + 15 * 2^5 + 10 * 2^4 + 6 * 2^3 + 3 * 2^2 + 2 * 2^1 + 1 * 2^0
+          // = 26305 //TODO this seems like way too many points -- what went wrong here?
+    }
+
+    std::vector<CombinationGrid> combinationGrids = {
+        CombinationGrid::fromRegularSparseTruncated(3, LevelVector({0,1,3}), 5, basis, hasBoundary),
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary),
+        // CombinationGrid::fromRegularSparseTruncated(3, LevelVector(3, 0), 0, basis, hasBoundary),
+        };
+
+    for (const CombinationGrid& combinationGrid : combinationGrids) {
+      // std::cout << combinationGrid.getFullGrids() << std::endl;
+      BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
+          (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
+      sgpp::base::GridStorage gridStorage(3);
+      combinationGrid.combinePoints(gridStorage);
+      BOOST_CHECK_EQUAL(gridStorage.getSize(), (hasBoundary ? 705 : 26305));
+    }
+
+    const std::vector<FullGrid>& fullGrids0 = combinationGrids[0].getFullGrids();
+    const std::vector<FullGrid>& fullGrids1 = combinationGrids[1].getFullGrids();
+    const DataVector& coefficients0 = combinationGrids[0].getCoefficients();
+    const DataVector& coefficients1 = combinationGrids[1].getCoefficients();
+
+    for (size_t i = 0; i < fullGrids1.size(); i++) {
+      const FullGrid& fullGrid = fullGrids1[i];
+      auto it = std::find(fullGrids0.begin(), fullGrids0.end(), fullGrid);
+      BOOST_CHECK(it != fullGrids0.end());
+      BOOST_CHECK_EQUAL(coefficients0[it - fullGrids0.begin()], coefficients1[i]);
+    }
   }
 }
 
