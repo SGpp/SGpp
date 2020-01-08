@@ -75,7 +75,7 @@ void createInstance() {
     sgpp::base::AdaptivityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 2;
     adaptConfig.noPoints_ = 7;
-    adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
+    adaptConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
     sgpp::datadriven::Dataset trainData(TEST_DATASET_SIZE, TEST_DIMENSION);
     sgpp::datadriven::Dataset testData(TEST_DATASET_SIZE, TEST_DIMENSION);

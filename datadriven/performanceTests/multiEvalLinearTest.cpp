@@ -36,7 +36,8 @@
 // #define REFINEMENT_POINTS 100
 
 // std::vector<std::string> fileNames = { "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz",
-//        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", "datadriven/datasets/DR5/DR5_train.arff.gz" };
+//        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz",
+//        "datadriven/datasets/DR5/DR5_train.arff.gz" };
 //
 // std::vector<std::string> datasetNames = { "Friedman 4d", "Friedman 10d", "DR5" };
 //
@@ -181,7 +182,7 @@ void prepareGrid(std::string fileName, sgpp::base::GridType gridType, size_t lev
   adaptConfig.noPoints_ = 200;
   adaptConfig.numRefinements_ = 10;  // 6
   adaptConfig.percent_ = 100.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   // Set solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -195,10 +196,10 @@ void prepareGrid(std::string fileName, sgpp::base::GridType gridType, size_t lev
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
-  std::string metaInformation = "refine: " + std::to_string(adaptConfig.numRefinements_) +
-                                " points: " + std::to_string(adaptConfig.noPoints_) +
-                                " iterations: " +
-                                std::to_string(SLESolverConfigRefine.maxIterations_);
+  std::string metaInformation =
+      "refine: " + std::to_string(adaptConfig.numRefinements_) +
+      " points: " + std::to_string(adaptConfig.noPoints_) +
+      " iterations: " + std::to_string(SLESolverConfigRefine.maxIterations_);
 
   double lambda = 0.000001;
 
@@ -523,7 +524,7 @@ BOOST_AUTO_TEST_CASE(StreamingDefault) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -555,7 +556,7 @@ BOOST_AUTO_TEST_CASE(StreamingSubspaceLinear) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
@@ -576,7 +577,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::DEFAULT,
@@ -597,7 +598,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -629,7 +630,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLBlocking) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -665,7 +666,7 @@ BOOST_AUTO_TEST_CASE(StreamingBase) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::DEFAULT,
@@ -686,7 +687,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCL) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -718,7 +719,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLFast) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);
@@ -752,7 +753,7 @@ BOOST_AUTO_TEST_CASE(StreamingOCLMask) {
   //    adaptConfig.maxLevelType_ = false;
   //    adaptConfig.noPoints_ = REFINEMENT_POINTS;
   //    adaptConfig.percent_ = 200.0;
-  //    adaptConfig.threshold_ = 0.0;
+  //    adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters;
   parameters.addIDAttr("OCL_MANAGER_VERBOSE", false);

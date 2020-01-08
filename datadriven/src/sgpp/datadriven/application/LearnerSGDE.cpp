@@ -391,9 +391,8 @@ double LearnerSGDE::optimizeLambdaCV() {
 
   for (size_t i = 0; i < crossvalidationConfig.lambdaSteps_; i++) {
     // compute current lambda
-    curLambda = lambdaStart +
-                static_cast<double>(i) * (lambdaEnd - lambdaStart) /
-                    static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
+    curLambda = lambdaStart + static_cast<double>(i) * (lambdaEnd - lambdaStart) /
+                                  static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
 
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
@@ -505,7 +504,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
       }
 
       base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
-                                         adaptivityConfig.threshold_);
+                                         adaptivityConfig.refinementThreshold_);
       gridGen.refine(srf);
 
       if (!crossvalidationConfig.silent_) {
@@ -675,8 +674,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
             refGrids, refAlphas, refPriors, refTrainData, refTrainLabels,
-            adaptivityConfig.noPoints_,
-            levelPenalize, coeffA);
+            adaptivityConfig.noPoints_, levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
         } else if (refType == "data") {
@@ -701,7 +699,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
             }
 
             base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
-                                               adaptivityConfig.threshold_);
+                                               adaptivityConfig.refinementThreshold_);
             // base::SurplusRefinementFunctor srf(
             //  *alpha, adaptivityConfig.noPoints_,
             //  adaptivityConfig.threshold_);

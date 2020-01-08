@@ -133,7 +133,7 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
 
   // Refine the grid using the weighted errors.
   auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
-                                                      adaptivityConfig.threshold_);
+                                                      adaptivityConfig.refinementThreshold_);
   if (terms.size() > 0) {
     grid->getGenerator().refineInter(refineFunctor, terms);
   } else {
@@ -217,8 +217,8 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
   using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
-      return Solver(std::make_unique<solver::ConjugateGradients>(
-          solverConfig.maxIterations_, solverConfig.eps_));
+      return Solver(std::make_unique<solver::ConjugateGradients>(solverConfig.maxIterations_,
+                                                                 solverConfig.eps_));
     case SLESolverType::BiCGSTAB:
       return Solver(
           std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_));

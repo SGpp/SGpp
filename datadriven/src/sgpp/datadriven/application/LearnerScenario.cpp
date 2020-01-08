@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerScenario.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 #include <string>
 #include <vector>
@@ -54,9 +54,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setTestsetConfiguration(testsetConfig);
 }
 
-bool LearnerScenario::isInitialized() const {
-  return initialized;
-}
+bool LearnerScenario::isInitialized() const { return initialized; }
 
 void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
   (*this).replaceTextAttr("datasetFileName", datasetFileName);
@@ -195,12 +193,11 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
 void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints",
-                                      static_cast<uint64_t>(adaptConfig.noPoints_));
+  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.noPoints_));
   (*this)["adaptivity"].replaceIDAttr("numRefinements",
                                       static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
-  (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.threshold_);
+  (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.refinementThreshold_);
 }
 
 base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
@@ -209,7 +206,7 @@ base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
   adaptConfig.noPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
   adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
   adaptConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
-  adaptConfig.threshold_ = (*this)["adaptivity"]["threshold"].getDouble();
+  adaptConfig.refinementThreshold_ = (*this)["adaptivity"]["threshold"].getDouble();
   return adaptConfig;
 }
 

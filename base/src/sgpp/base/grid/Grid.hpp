@@ -6,6 +6,7 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <sgpp/base/grid/CoarseningConfiguration.hpp>
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
@@ -25,46 +26,46 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                             //  0
-  LinearStretched,                    //  1
-  LinearL0Boundary,                   //  2
-  LinearBoundary,                     //  3
-  LinearStretchedBoundary,            //  4
-  LinearTruncatedBoundary,            //  5
-  ModLinear,                          //  6
-  Poly,                               //  7
-  PolyBoundary,                       //  8
-  ModPoly,                            //  9
-  ModWavelet,                         // 10
-  ModBspline,                         // 11
-  Prewavelet,                         // 12
-  SquareRoot,                         // 13
-  Periodic,                           // 14
-  LinearClenshawCurtisBoundary,       // 15
-  Bspline,                            // 16
-  BsplineBoundary,                    // 17
-  BsplineClenshawCurtis,              // 18
-  Wavelet,                            // 19
-  WaveletBoundary,                    // 20
-  FundamentalSpline,                  // 21
-  ModFundamentalSpline,               // 22
-  ModBsplineClenshawCurtis,           // 23
-  LinearStencil,                      // 24
-  ModLinearStencil,                   // 25
-  PolyClenshawCurtisBoundary,         // 26
-  PolyClenshawCurtis,                 // 27
-  LinearClenshawCurtis,               // 28
-  ModPolyClenshawCurtis,              // 29
-  ModLinearClenshawCurtis,            // 30
-  NakBsplineBoundaryCombigrid,        // 31
-  NaturalBsplineBoundary,             // 32
-  NakBsplineBoundary,            // 33
-  ModNakBspline,                 // 34
-  WeaklyFundamentalSplineBoundary,             // 35
-  WeaklyFundamentalNakSplineBoundary,     // 36
-  ModWeaklyFundamentalNakSpline,          // 37
-  FundamentalSplineBoundary,          // 38
-  FundamentalNakSplineBoundary,  // 39
+  Linear,                              //  0
+  LinearStretched,                     //  1
+  LinearL0Boundary,                    //  2
+  LinearBoundary,                      //  3
+  LinearStretchedBoundary,             //  4
+  LinearTruncatedBoundary,             //  5
+  ModLinear,                           //  6
+  Poly,                                //  7
+  PolyBoundary,                        //  8
+  ModPoly,                             //  9
+  ModWavelet,                          // 10
+  ModBspline,                          // 11
+  Prewavelet,                          // 12
+  SquareRoot,                          // 13
+  Periodic,                            // 14
+  LinearClenshawCurtisBoundary,        // 15
+  Bspline,                             // 16
+  BsplineBoundary,                     // 17
+  BsplineClenshawCurtis,               // 18
+  Wavelet,                             // 19
+  WaveletBoundary,                     // 20
+  FundamentalSpline,                   // 21
+  ModFundamentalSpline,                // 22
+  ModBsplineClenshawCurtis,            // 23
+  LinearStencil,                       // 24
+  ModLinearStencil,                    // 25
+  PolyClenshawCurtisBoundary,          // 26
+  PolyClenshawCurtis,                  // 27
+  LinearClenshawCurtis,                // 28
+  ModPolyClenshawCurtis,               // 29
+  ModLinearClenshawCurtis,             // 30
+  NakBsplineBoundaryCombigrid,         // 31
+  NaturalBsplineBoundary,              // 32
+  NakBsplineBoundary,                  // 33
+  ModNakBspline,                       // 34
+  WeaklyFundamentalSplineBoundary,     // 35
+  WeaklyFundamentalNakSplineBoundary,  // 36
+  ModWeaklyFundamentalNakSpline,       // 37
+  FundamentalSplineBoundary,           // 38
+  FundamentalNakSplineBoundary,        // 39
 };
 
 /**
@@ -132,7 +133,9 @@ struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_ = 1;
   /// refinement threshold for surpluses
-  double threshold_ = 0.0;
+  double refinementThreshold_ = 0.0;
+  /// coarsening threshold for surpluses
+  double coarseningThreshold_ = 0.0;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_ = false;
   /// max. number of points to be refined
@@ -160,6 +163,8 @@ struct AdaptivityConfiguration {
   bool levelPenalize = false;
   /// in case of data based refinements: determines the scaling coefficients for each class
   std::vector<double> scalingCoefficients = std::vector<double>();
+  /// coarsening indicator
+  CoarseningFunctorType coarseningFunctorType = CoarseningFunctorType::Surplus;
 };
 
 /**
@@ -213,7 +218,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createLinearGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createLinearGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createLinearGrid_C2J-small.png" "Hierarchical basis functions up to level
+   * 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -226,7 +232,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createLinearStretchedGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createLinearStretchedGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createLinearStretchedGrid_C2J-small.png" "Hierarchical basis functions up
+   * to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -237,10 +244,12 @@ class Grid {
   /**
    * creates a linear boundary grid
    * <table border="0"><tr>
-   * <td>\image html "createLinearBoundaryGrid_C2,_0J-small.png" "Level 4 sparse grid with boundaryLevel = 0"</td>
-   * <td>\image html "createLinearBoundaryGrid_C2,_1J-small.png" "Level 4 sparse grid with boundaryLevel = 1"</td>
-   * <td>\image html "createLinearBoundaryGrid_C2,_2J-small.png" "Level 4 sparse grid with boundaryLevel = 2"</td>
-   * <td>\image html "hiba_createLinearGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "createLinearBoundaryGrid_C2,_0J-small.png" "Level 4 sparse grid with
+   * boundaryLevel = 0"</td> <td>\image html "createLinearBoundaryGrid_C2,_1J-small.png" "Level 4
+   * sparse grid with boundaryLevel = 1"</td> <td>\image html
+   * "createLinearBoundaryGrid_C2,_2J-small.png" "Level 4 sparse grid with boundaryLevel = 2"</td>
+   * <td>\image html "hiba_createLinearGrid_C2J-small.png" "Hierarchical basis functions up to level
+   * 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -258,7 +267,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createLinearStretchedBoundaryGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createLinearStretchedBoundaryGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createLinearStretchedBoundaryGrid_C2J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -279,7 +289,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createLinearClenshawCurtisGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createLinearClenshawCurtisGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createLinearClenshawCurtisGrid_C2J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -300,7 +311,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createModLinearGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModLinearGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createModLinearGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -313,7 +325,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createPolyGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createPolyGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createPolyGrid_C2,_3J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -327,7 +340,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createPolyBoundaryGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createPolyBoundaryGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createPolyBoundaryGrid_C2,_3J-small.png" "Hierarchical basis functions up
+   * to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -375,7 +389,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createModPolyGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModPolyGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createModPolyGrid_C2,_3J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -389,7 +404,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createWaveletGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createWaveletGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createWaveletGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -402,7 +418,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createWaveletBoundaryGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createWaveletBoundaryGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createWaveletBoundaryGrid_C2J-small.png" "Hierarchical basis functions up
+   * to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -420,7 +437,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createModWaveletGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModWaveletGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createModWaveletGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -433,7 +451,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createBsplineGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createBsplineGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createBsplineGrid_C2,_3J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -447,7 +466,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createBsplineBoundaryGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createBsplineBoundaryGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createBsplineBoundaryGrid_C2,_3J-small.png" "Hierarchical basis functions
+   * up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -466,7 +486,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createBsplineClenshawCurtisGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createBsplineClenshawCurtisGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createBsplineClenshawCurtisGrid_C2,_3J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -486,7 +507,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createModBsplineGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModBsplineGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createModBsplineGrid_C2,_3J-small.png" "Hierarchical basis functions up
+   * to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -499,8 +521,9 @@ class Grid {
    * creates a modified B-spline Clenshaw-Curtis grid
    *
    * <table border="0"><tr>
-   * <td>\image html "createModBsplineClenshawCurtisGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModBsplineClenshawCurtisGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "createModBsplineClenshawCurtisGrid_C2,_3J-small.png" "Level 4 sparse
+   * grid"</td> <td>\image html "hiba_createModBsplineClenshawCurtisGrid_C2,_3J-small.png"
+   * "Hierarchical basis functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -514,7 +537,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createFundamentalSplineGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createFundamentalSplineGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createFundamentalSplineGrid_C2,_3J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -528,7 +552,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createModFundamentalSplineGrid_C2,_3J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createModFundamentalSplineGrid_C2,_3J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createModFundamentalSplineGrid_C2,_3J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -542,7 +567,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createPrewaveletGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createPrewaveletGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createPrewaveletGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -555,7 +581,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createSquareRootGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createSquareRootGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createSquareRootGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -569,7 +596,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createLinearTruncatedBoundaryGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createLinearTruncatedBoundaryGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createLinearTruncatedBoundaryGrid_C2J-small.png" "Hierarchical basis
+   * functions up to level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -582,7 +610,8 @@ class Grid {
    *
    * <table border="0"><tr>
    * <td>\image html "createPeriodicGrid_C2J-small.png" "Level 4 sparse grid"</td>
-   * <td>\image html "hiba_createPeriodicGrid_C2J-small.png" "Hierarchical basis functions up to level 3"</td>
+   * <td>\image html "hiba_createPeriodicGrid_C2J-small.png" "Hierarchical basis functions up to
+   * level 3"</td>
    * </tr></table>
    *
    * @param dim the grid's dimension
@@ -591,28 +620,27 @@ class Grid {
   static Grid* createPeriodicGrid(size_t dim);
 
   /**
-    * creates a not a knot B-Spline boundary grid
-    *
-    * @param dim the grid's dimension
-    * @param degree the B-spline degree
-    * @return grid
-    */
+   * creates a not a knot B-Spline boundary grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
-  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree,
-                                                 level_t boundaryLevel = 1);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
   static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
-                                                level_t boundaryLevel = 1);
+                                                         level_t boundaryLevel = 1);
   static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
-                                                        level_t boundaryLevel = 1);
+                                                            level_t boundaryLevel = 1);
   static Grid* createModWeaklyFundamentalNakSplineGrid(size_t dim, size_t degree);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
                                                    level_t boundaryLevel = 1);
-  static Grid* createFundamentalNakSplineBoundaryGrid(
-      size_t dim, size_t degree, level_t boundaryLevel = 1);
+  static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
+                                                      level_t boundaryLevel = 1);
 
   /**
    * reads a grid out of a string

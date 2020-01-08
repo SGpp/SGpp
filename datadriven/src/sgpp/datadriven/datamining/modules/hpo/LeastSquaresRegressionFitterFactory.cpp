@@ -3,14 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory
-    (const DataMiningConfigParser &parser) : baseConfig() {
+LeastSquaresRegressionFitterFactory::LeastSquaresRegressionFitterFactory(
+    const DataMiningConfigParser &parser)
+    : baseConfig() {
   baseConfig.readParams(parser);
 
   parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);
@@ -42,7 +43,7 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
     config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
-    config->getRefinementConfig().threshold_ = conpar["threshold"].getValue();
+    config->getRefinementConfig().refinementThreshold_ = conpar["threshold"].getValue();
   }
   if (conpar.count("lambda")) {
     config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();

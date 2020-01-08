@@ -7,9 +7,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 #include <iostream>
 
@@ -100,7 +100,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
-        fitter->refine();
+        fitter->adapt();
       }
       if (verbose) {
         print("###############Iteration finished.");

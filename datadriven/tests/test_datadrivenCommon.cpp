@@ -122,7 +122,7 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
     sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -147,7 +147,7 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
     sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -208,7 +208,7 @@ double compareToReference(sgpp::base::GridType gridType, const std::string& file
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -286,7 +286,7 @@ double compareToReferenceTranspose(
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -366,7 +366,7 @@ double compareToReferenceDistributed(
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -452,7 +452,7 @@ double compareToReferenceTransposeDistributed(
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 

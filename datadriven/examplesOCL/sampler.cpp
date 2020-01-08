@@ -6,9 +6,9 @@
 #include <iostream>
 #include <string>
 
+#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char** argv) {
   //  int maxLevel = 9;
@@ -36,7 +36,7 @@ int main(int argc, char** argv) {
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   // Set solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -50,10 +50,10 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.threshold_ = -1.0;
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
-  std::string metaInformation = "refine: " + std::to_string(adaptConfig.numRefinements_) +
-                                " points: " + std::to_string(adaptConfig.noPoints_) +
-                                " iterations: " +
-                                std::to_string(SLESolverConfigRefine.maxIterations_);
+  std::string metaInformation =
+      "refine: " + std::to_string(adaptConfig.numRefinements_) +
+      " points: " + std::to_string(adaptConfig.noPoints_) +
+      " iterations: " + std::to_string(SLESolverConfigRefine.maxIterations_);
 
   double lambda = 0.000001;
 

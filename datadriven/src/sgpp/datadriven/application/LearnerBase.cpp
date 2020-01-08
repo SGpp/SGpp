@@ -12,9 +12,9 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
@@ -209,11 +209,11 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
         multTranspose(trainDataset, *residuals, *mseResiduals);
         mseResiduals->componentwise_mult(*alpha);
         sgpp::base::SurplusRefinementFunctor myRefineFunc(*mseResiduals, AdaptConfig.noPoints_,
-                                                          AdaptConfig.threshold_);
+                                                          AdaptConfig.refinementThreshold_);
         grid->getGenerator().refine(myRefineFunc);
       } else {
         sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.noPoints_,
-                                                          AdaptConfig.threshold_);
+                                                          AdaptConfig.refinementThreshold_);
         grid->getGenerator().refine(myRefineFunc);
       }
 
@@ -335,7 +335,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   AdaptConfig.noPoints_ = 0;
   AdaptConfig.numRefinements_ = 0;
   AdaptConfig.percent_ = 0.0;
-  AdaptConfig.threshold_ = 0.0;
+  AdaptConfig.refinementThreshold_ = 0.0;
 
   return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false,
                lambdaRegularization);

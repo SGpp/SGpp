@@ -57,7 +57,7 @@ int main() {
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset =
-        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
+          sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract train classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -66,7 +66,7 @@ int main() {
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset =
-        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
+          sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -133,7 +133,7 @@ int main() {
        */
       adaptConfig.numRefinements_ = 3;
       adaptConfig.noPoints_ = 5;
-      adaptConfig.threshold_ = 0.0;
+      adaptConfig.refinementThreshold_ = 0.0;
 
       // additional parameters:
 

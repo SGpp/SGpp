@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/globaldef.hpp"
 #include "sgpp/datadriven/application/MetaLearner.hpp"
 #include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
+#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace base {
@@ -164,7 +164,7 @@ int main(int argc, char* argv[]) {
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   // setup solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -221,18 +221,16 @@ int main(int argc, char* argv[]) {
           "adaptConfig.numRefinements",
           boost::program_options::value<size_t>(&adaptConfig.numRefinements_),
           "number of refinement steps")(
-          "adaptConfig.percent",
-          boost::program_options::value<double>(&adaptConfig.percent_),
+          "adaptConfig.percent", boost::program_options::value<double>(&adaptConfig.percent_),
           "maximum number of grid points in percent of the size of the grid "
           "that are considered for refinement")(
           "adaptConfig.threshold",
-          boost::program_options::value<double>(&adaptConfig.threshold_),
+          boost::program_options::value<double>(&adaptConfig.refinementThreshold_),
           "minimum surplus value for a grid point to be considered for "
           "refinement")
 
       // options for the solver during refinement
-      ("solverRefine.eps",
-       boost::program_options::value<double>(&SLESolverConfigRefine.eps_),
+      ("solverRefine.eps", boost::program_options::value<double>(&SLESolverConfigRefine.eps_),
        "error for early aborting training (set to 0 to disable)")(
           "solverRefine.maxIterations",
           boost::program_options::value<size_t>(&SLESolverConfigRefine.maxIterations_),

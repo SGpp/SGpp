@@ -50,7 +50,6 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
     const FitterConfigurationDensityEstimation& config,
     std::shared_ptr<DBMatObjectStore> objectStore)
     : ModelFittingDensityEstimationCombi(config) {
-
   this->hasObjectStore = true;
   this->objectStore = objectStore;
 }
@@ -155,7 +154,7 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVecto
   }
 }
 
-bool ModelFittingDensityEstimationCombi::refine() {
+bool ModelFittingDensityEstimationCombi::adapt() {
   if (componentConfigs.size() != components.size()) {
     throw base::application_exception("componentsConfig.size() != components.size()");
   }
@@ -225,8 +224,8 @@ bool ModelFittingDensityEstimationCombi::refine() {
   return false;
 }
 
-bool ModelFittingDensityEstimationCombi::refine(size_t newNoPoints,
-                                                std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationCombi::adapt(size_t newNoPoints,
+                                               std::list<size_t>* deletedGridPoints) {
   throw application_exception(
       "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
       "deletedGridPoints): not ready yet\n");

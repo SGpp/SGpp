@@ -14,6 +14,7 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
@@ -319,8 +320,10 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     auto adaptivityConfig = static_cast<DictNode *>(&(*configFile)[fitter]["adaptivityConfig"]);
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
-    config.threshold_ =
-        parseDouble(*adaptivityConfig, "threshold", defaults.threshold_, "adaptivityConfig");
+    config.refinementThreshold_ = parseDouble(*adaptivityConfig, "threshold",
+                                              defaults.refinementThreshold_, "adaptivityConfig");
+    config.coarseningThreshold_ = parseDouble(*adaptivityConfig, "coarseningThreshold",
+                                              defaults.coarseningThreshold_, "adaptivityConfig");
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_, "adaptivityConfig");
     config.noPoints_ =
@@ -362,6 +365,18 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
                 << "." << std::endl;
       config.refinementFunctorType = defaults.refinementFunctorType;
     }
+
+    // Parse coarsening indicator
+    if (adaptivityConfig->contains("coarseningIndicator")) {
+      config.coarseningFunctorType =
+          CoarseningFunctorTypeParser::parse((*adaptivityConfig)["coarseningIndicator"].get());
+    } else {
+      std::cout << "# Did not find adaptivityConfig[coarseningIndicator]. Setting default "
+                << "value " << CoarseningFunctorTypeParser::toString(defaults.coarseningFunctorType)
+                << "." << std::endl;
+      config.coarseningFunctorType = defaults.coarseningFunctorType;
+    }
+
   } else {
     std::cout << "# Could not find specification  of fitter[adaptivityConfig]. Falling Back to "
                  "default values."

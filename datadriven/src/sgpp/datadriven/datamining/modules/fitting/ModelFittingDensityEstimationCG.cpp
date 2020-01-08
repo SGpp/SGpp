@@ -3,30 +3,29 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <list>
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <string>
 #include <vector>
-#include <list>
 
-
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -34,8 +33,8 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityEstimationCG::ModelFittingDensityEstimationCG(
-    const FitterConfigurationDensityEstimation& config) : ModelFittingDensityEstimation{},
-        bNum{0}, bDenom{0} {
+    const FitterConfigurationDensityEstimation& config)
+    : ModelFittingDensityEstimation{}, bNum{0}, bDenom{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -79,9 +78,8 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   update(newDataset);
 }
 
-
-bool ModelFittingDensityEstimationCG::refine(size_t newNoPoints,
-    std::list<size_t> *deletedGridPoints) {
+bool ModelFittingDensityEstimationCG::adapt(size_t newNoPoints,
+                                            std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha and rhs b

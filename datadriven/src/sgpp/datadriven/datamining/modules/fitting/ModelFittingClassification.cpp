@@ -19,13 +19,13 @@
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
+#include <fstream>
+#include <iostream>
+#include <limits>
 #include <list>
 #include <map>
 #include <string>
 #include <vector>
-#include <limits>
-#include <fstream>
-#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -235,7 +235,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     case RefinementFunctorType::Surplus: {
       return new MultiSurplusRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
                                                refinementConfig.levelPenalize,
-                                               refinementConfig.threshold_);
+                                               refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::ZeroCrossing: {
       return new ZeroCrossingRefinementFunctor(grids, surpluses, priors, refinementConfig.noPoints_,
@@ -269,25 +269,28 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     case RefinementFunctorType::GridPointBased: {
       return new GridPointBasedRefinementFunctor(
           grids, surpluses, priors, refinementConfig.noPoints_, refinementConfig.levelPenalize,
-          refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
+          refinementConfig.precomputeEvaluations, refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::MultipleClass: {
-      return new MultipleClassRefinementFunctor(
-          grids, surpluses, priors, refinementConfig.noPoints_, 0, refinementConfig.threshold_);
+      return new MultipleClassRefinementFunctor(grids, surpluses, priors,
+                                                refinementConfig.noPoints_, 0,
+                                                refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::Classification: {
-      return new ClassificationRefinementFunctor(
-          grids, surpluses, priors, refinementConfig.noPoints_, true, refinementConfig.threshold_);
+      return new ClassificationRefinementFunctor(grids, surpluses, priors,
+                                                 refinementConfig.noPoints_, true,
+                                                 refinementConfig.refinementThreshold_);
     }
   }
 
   return nullptr;
 }
 
-bool ModelFittingClassification::refine() {
+bool ModelFittingClassification::adapt() {
+  std::vector<std::list<size_t>> deletedPoints(models.size());
   if (config->getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     for (size_t i = 0; i < models.size(); i++) {
-      models.at(i)->refine();
+      models.at(i)->adapt();
     }
     refinementsPerformed++;
     return true;
@@ -331,7 +334,7 @@ bool ModelFittingClassification::refine() {
       } else if (refinementConfig.refinementFunctorType == RefinementFunctorType::Classification) {
         ClassificationRefinementFunctor* classfunc =
             dynamic_cast<ClassificationRefinementFunctor*>(func);
-        classfunc->refineAllGrids();
+        deletedPoints = classfunc->adaptAllGrids();
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
@@ -357,9 +360,7 @@ bool ModelFittingClassification::refine() {
 
       // Apply changes to all models
       for (size_t idx = 0; idx < models.size(); idx++) {
-        // TODO(fuchsgdk): Coarsening for classification? Any criteria availible?
-        std::list<size_t> coarsened;
-        models[idx]->refine(grids[idx]->getSize(), &coarsened);
+        models[idx]->adapt(grids[idx]->getSize(), &deletedPoints.at(idx));
         std::cout << "Refined model for class index " << idx
                   << " (new size : " << (grids[idx]->getSize()) << ")" << std::endl;
       }

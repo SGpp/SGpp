@@ -5,32 +5,25 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
 
-BoundaryGridGenerator::BoundaryGridGenerator(GridStorage& storage,
-    level_t boundaryLevel) :
-  storage(storage),
-  boundaryLevel(boundaryLevel) {
-}
+BoundaryGridGenerator::BoundaryGridGenerator(GridStorage& storage, level_t boundaryLevel)
+    : storage(storage), boundaryLevel(boundaryLevel) {}
 
-BoundaryGridGenerator::~BoundaryGridGenerator() {
-}
+BoundaryGridGenerator::~BoundaryGridGenerator() {}
 
-level_t BoundaryGridGenerator::getBoundaryLevel() const {
-  return boundaryLevel;
-}
+level_t BoundaryGridGenerator::getBoundaryLevel() const { return boundaryLevel; }
 
 void BoundaryGridGenerator::setBoundaryLevel(level_t boundaryLevel) {
   this->boundaryLevel = boundaryLevel;
@@ -60,17 +53,17 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::coarsen(CoarseningFunctor& func,
-                                    DataVector& alpha) {
+void BoundaryGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
+                                    std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha);
+  coarsen.free_coarsen(this->storage, func, alpha, nullptr, removedSeq);
 }
 
-void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
-    DataVector& alpha,
-    size_t numFirstOnly) {
+void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
+                                              size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly, 0, nullptr, removedSeq);
 }
 
 size_t BoundaryGridGenerator::getNumberOfRemovablePoints() {
@@ -78,17 +71,14 @@ size_t BoundaryGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
-    size_t maxLevel) {
+void BoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func, size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   refine.refineToMaxLevel(this->storage, func, static_cast<level_t>(maxLevel));
 }
 
-size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
-  size_t maxLevel) {
+size_t BoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
-  return refine.getNumberOfRefinablePointsToMaxLevel(
-           this->storage, static_cast<level_t>(maxLevel));
+  return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<level_t>(maxLevel));
 }
 
 }  // namespace base

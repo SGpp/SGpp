@@ -35,8 +35,8 @@ void StandardGridGenerator::regular(size_t level, double T) {
   gen.regular(this->storage, static_cast<level_t>(level), T);
 }
 
-void StandardGridGenerator::regularInter(size_t level,
-                                         const std::set<std::set<size_t>>& terms, double T) {
+void StandardGridGenerator::regularInter(size_t level, const std::set<std::set<size_t>>& terms,
+                                         double T) {
   HashGenerator gen;
   gen.regularInter(this->storage, static_cast<level_t>(level), terms, T);
 }
@@ -91,15 +91,17 @@ size_t StandardGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void StandardGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha) {
+void StandardGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
+                                    std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha);
+  coarsen.free_coarsen(this->storage, func, alpha, nullptr, removedSeq);
 }
 
 void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                              size_t numFirstOnly) {
+                                              size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly, 0, nullptr, removedSeq);
 }
 
 size_t StandardGridGenerator::getNumberOfRemovablePoints() {

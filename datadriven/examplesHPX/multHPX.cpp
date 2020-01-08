@@ -50,7 +50,7 @@ int hpx_main(boost::program_options::variables_map& vm) {
   adaptConfig.noPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::ARFFTools arffTools;
   dataset = arffTools.readARFFFromFile(fileName);

@@ -13,7 +13,6 @@
 
 #include <vector>
 
-
 namespace sgpp {
 namespace base {
 
@@ -40,9 +39,10 @@ class StretchedBoundaryGridGenerator : public GridGenerator {
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                         size_t numFirstOnly) override;
+  void coarsen(CoarseningFunctor& func, DataVector& alpha,
+               std::vector<size_t>* removedSeq) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

@@ -3,22 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/pde/application/PDESolver.hpp>
-#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/tools/StdNormalDistribution.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/StdNormalDistribution.hpp>
+#include <sgpp/pde/application/PDESolver.hpp>
 
 #include <sgpp/globaldef.hpp>
 
-#include <sstream>
+#include <cmath>
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <fstream>
-#include <cmath>
 
 namespace sgpp {
 namespace pde {
@@ -44,8 +44,8 @@ void PDESolver::getGridNormalDistribution(sgpp::base::DataVector& alpha,
     sgpp::base::StdNormalDistribution myNormDistr;
 
     for (size_t i = 0; i < this->myGrid->getSize(); i++) {
-      std::string coords = this->myGridStorage->getCoordinates(
-          this->myGridStorage->getPoint(i)).toString();
+      std::string coords =
+          this->myGridStorage->getCoordinates(this->myGridStorage->getPoint(i)).toString();
       std::stringstream coordsStream(coords);
 
       value = 1.0;
@@ -161,12 +161,10 @@ void PDESolver::refineInitialGridSurplusSubDomain(sgpp::base::DataVector& alpha,
   }
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevel(
-    sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::level_t maxLevel) {
+void PDESolver::refineInitialGridSurplusToMaxLevel(sgpp::base::DataVector& alpha, double dThreshold,
+                                                   sgpp::base::level_t maxLevel) {
   if (bGridConstructed) {
-    size_t nRefinements =
-        myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
+    size_t nRefinements = myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
     sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, nRefinements, dThreshold);
     myGrid->getGenerator().refineMaxLevel(myRefineFunc, maxLevel);
@@ -178,13 +176,13 @@ void PDESolver::refineInitialGridSurplusToMaxLevel(
   }
 }
 
-void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(
-    sgpp::base::DataVector& alpha, double dThreshold,
-    sgpp::base::level_t maxLevel, std::vector<double>& norm_mu,
-    std::vector<double>& norm_sigma) {
+void PDESolver::refineInitialGridSurplusToMaxLevelSubDomain(sgpp::base::DataVector& alpha,
+                                                            double dThreshold,
+                                                            sgpp::base::level_t maxLevel,
+                                                            std::vector<double>& norm_mu,
+                                                            std::vector<double>& norm_sigma) {
   if (bGridConstructed) {
-    size_t nRefinements =
-        myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
+    size_t nRefinements = myGrid->getGenerator().getNumberOfRefinablePointsToMaxLevel(maxLevel);
 
     sgpp::base::DataVector stdNormDist(alpha.getSize());
 
@@ -211,7 +209,7 @@ void PDESolver::coarsenInitialGridSurplus(sgpp::base::DataVector& alpha, double 
     size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
     size_t originalGridSize = myGrid->getSize();
     sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
-    myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize);
+    myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize, nullptr);
   } else {
     throw sgpp::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");
@@ -269,8 +267,8 @@ void PDESolver::evaluateCuboid(sgpp::base::DataVector& alpha, sgpp::base::DataVe
           "evaluation points' vector!");
     }
 
-    sgpp::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)->
-        mult(alpha, OptionPrices);
+    sgpp::op_factory::createOperationMultipleEval(*myGrid, EvaluationPoints)
+        ->mult(alpha, OptionPrices);
   } else {
     throw sgpp::base::application_exception(
         "PDESolver::evaluateCuboid : A grid wasn't constructed before!");

@@ -172,7 +172,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOff::refine(size_t newNoPoints,
+bool ModelFittingDensityEstimationOnOff::adapt(size_t newNoPoints,
                                                 std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {

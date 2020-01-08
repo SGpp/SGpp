@@ -51,7 +51,7 @@ const DBMatOffline* DBMatObjectStore::getObject(
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Search for suitable offline object
   size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
-                                            regularizationConfig, densityEstimationConfig);
+                                               regularizationConfig, densityEstimationConfig);
   // If no suitable object is found, return nullptr
   if (index == SIZE_MAX) {
     return nullptr;
@@ -69,7 +69,7 @@ const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Search for suitable base offline object
   size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
-                                            regularizationConfig, densityEstimationConfig, true);
+                                               regularizationConfig, densityEstimationConfig, true);
   // If no suitable base object is found, return nullptr
   if (index == SIZE_MAX) {
     return nullptr;
@@ -163,7 +163,9 @@ bool DBMatObjectStore::ObjectContainer::configMatches(
          adaptivityConfig.refinementFunctorType == this->adaptivityConfig.refinementFunctorType &&
          adaptivityConfig.refinementPeriod == this->adaptivityConfig.refinementPeriod &&
          adaptivityConfig.scalingCoefficients == this->adaptivityConfig.scalingCoefficients &&
-         adaptivityConfig.threshold_ == this->adaptivityConfig.threshold_ &&
+         adaptivityConfig.refinementThreshold_ == this->adaptivityConfig.refinementThreshold_ &&
+         adaptivityConfig.coarseningThreshold_ == this->adaptivityConfig.coarseningThreshold_ &&
+         adaptivityConfig.coarseningFunctorType == this->adaptivityConfig.coarseningFunctorType &&
          // remaining regularization config
          regularizationConfig.exponentBase_ == this->regularizationConfig.exponentBase_ &&
          regularizationConfig.l1Ratio_ == this->regularizationConfig.l1Ratio_ &&

@@ -7,8 +7,8 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
@@ -58,11 +58,12 @@ class ModelFittingClassification : public ModelFittingBase {
   void fit(Dataset& dataset) override;
 
   /**
-   * Improve the accuracy of the classification by refining the grids of each class
+   * Improve the accuracy of the classification by refining or coarsening the grids of each class.
+   * Coarsening is currently only implemented for RefinementFunctorType::Classification
    * @return true if refinement could be performed for any grid based on the refinement
    * configuration, else false.
    */
-  bool refine() override;
+  bool adapt() override;
 
   /**
    * Updates the models for each class based on new data (streaming or batch learning)

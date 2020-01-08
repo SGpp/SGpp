@@ -147,8 +147,10 @@ class GridGenerator {
    *
    * @param func pointer to coarsening functor
    * @param alpha Pointer to DataVector containing the grid's coefficients
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
    */
-  virtual void coarsen(CoarseningFunctor& func, DataVector& alpha) = 0;
+  virtual void coarsen(CoarseningFunctor& func, DataVector& alpha,
+                       std::vector<size_t>* removedSeq) = 0;
 
   /**
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
@@ -157,9 +159,10 @@ class GridGenerator {
    * @param func pointer to coarsening functor
    * @param alpha Pointer to DataVector containing the grid's coefficients
    * @param numFirstOnly max. number grid points to be coarsened
+   * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
    */
-  virtual void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                 size_t numFirstOnly) = 0;
+  virtual void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnl,
+                                 std::vector<size_t>* removedSeqy) = 0;
 
   /**
    * Returns the number of points on the grid that can be refined in the next iteration

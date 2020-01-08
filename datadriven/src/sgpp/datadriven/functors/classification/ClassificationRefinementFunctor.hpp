@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 
 #include <map>
@@ -16,7 +15,6 @@
 #include <tuple>
 #include <utility>
 #include <vector>
-
 
 namespace sgpp {
 namespace datadriven {
@@ -37,17 +35,16 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
    * @param priors Vector of priors related to the classificator
    * @param refinements_num Maximum number of refinements done
    * @param level_penalize If a level penalizing is multiplied to the score (2^{|l|_1})
-   * @param threshold Threshold for refinement scores
+   * @param refinementThreshold Threshold for refinement scores
+   * @param coarseningThreshold Threshold for coarsening scores
    */
   ClassificationRefinementFunctor(std::vector<base::Grid*> grids,
-                                std::vector<base::DataVector*> alphas,
-                                std::vector<double> priors,
-                                size_t refinements_num = 1,
-                                bool level_penalize = true,
-                                double threshold = 0.0);
+                                  std::vector<base::DataVector*> alphas, std::vector<double> priors,
+                                  size_t refinements_num = 1, bool level_penalize = true,
+                                  double refinementThreshold = 0.0,
+                                  double coarseningThreshold = 1.0);
 
-  double operator()(base::GridStorage& storage,
-                    size_t seq) const override;
+  double operator()(base::GridStorage& storage, size_t seq) const override;
   double start() const override;
   size_t getRefinementsNum() const override;
   double getRefinementThreshold() const override;
@@ -58,9 +55,10 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
   void preComputeEvaluations() override;
 
   /**
-   * Refine all grids of the model
+   * Refine and Coarsen all grids of the model.
+   * @returns vector that for each class contains a list of indices of deleted grid points
    */
-  void refineAllGrids();
+  std::vector<std::list<size_t>> adaptAllGrids();
 
  protected:
   std::vector<base::Grid*> grids;
@@ -69,7 +67,8 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
 
   size_t refinements_num;
   bool level_penalize;
-  double threshold;
+  double refinementThreshold;
+  double coarseningThreshold;
 
   base::GridStorage total_grid;
 
@@ -95,13 +94,21 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
    * Iterate through the sparse grid tree
    */
   void stepDown(size_t d, size_t minDim, base::HashGridPoint& gp,
-              std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> &neighbors);
+                std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>& neighbors);
 
   /**
    * Stores the relation of two found neighbors
    */
-  void collectNeighbors(base::HashGridPoint leaf, base::HashGridPoint neighbor,
-                        size_t dim, bool isLeft);
+  void collectNeighbors(base::HashGridPoint leaf, base::HashGridPoint neighbor, size_t dim,
+                        bool isLeft);
+
+  /**
+   * Checks if a refinement candidate should be inserted into the map of candidates.
+   */
+  void insertCoarseningCandidate(
+      size_t y,
+      std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>>& classMapsCoarsening,
+      size_t leafSeqNumber, double score, std::tuple<size_t, size_t, bool> candidate);
 };
 }  // namespace datadriven
 }  // namespace sgpp

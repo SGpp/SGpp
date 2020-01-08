@@ -157,8 +157,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
-                                                        std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationOnOffParallel::adapt(size_t newNoPoints,
+                                                       std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha
