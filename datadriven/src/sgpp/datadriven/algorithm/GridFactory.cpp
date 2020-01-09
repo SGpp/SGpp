@@ -47,11 +47,8 @@ sgpp::base::Grid* GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
   if (interactions.size() == 0) {
     tmpGrid->getGenerator().regular(gridConfig.level_);
   } else {
-    std::cout << "Creating geometry aware sparse grid..." << std::endl;
     tmpGrid->getGenerator().regularInter(gridConfig.level_, interactions, 0.0);
-    std::cout << "Interactions set!" << std::endl;
   }
-  std::cout << "Grid Size: " << tmpGrid->getSize() << std::endl;
   return tmpGrid;
 }
 
