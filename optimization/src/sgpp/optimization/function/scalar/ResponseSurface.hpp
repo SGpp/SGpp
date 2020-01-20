@@ -4,9 +4,7 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-// #ifdef USE_EIGEN
-#include <eigen3/Eigen/Dense>
-// #endif /* USE_EIGEN */
+
 #include <iostream>
 #include <memory>
 #include <string>
@@ -138,5 +136,3 @@ class ResponseSurface {
 
 }  // namespace optimization
 }  // namespace sgpp
-
-// #endif /* USE_EIGEN */

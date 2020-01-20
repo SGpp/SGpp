@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-// #ifdef USE_EIGEN
-
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 
 #include <string>
@@ -141,5 +139,3 @@ double ResponseSurface::domainVolume() {
 
 }  // namespace optimization
 }  // namespace sgpp
-
-// #endif /* USE_EIGEN */
