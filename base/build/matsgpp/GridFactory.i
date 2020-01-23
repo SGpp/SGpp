@@ -32,17 +32,23 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserializeFromFile(std::string filename);
-%newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
 %include "typemaps.i"
 
-//%apply std::string *OUTPUT { std::string& ostr };
-//%apply std::string *INPUT { std::string& istr };
-
+%apply std::string *OUTPUT { std::string& ostr };
+%apply std::string *INPUT { std::string& istr };
 
 using namespace sgpp;
 namespace sgpp
@@ -97,7 +103,16 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
+  ModLinearStencil,             // 25
+  PolyClenshawCurtisBoundary,   // 26
+  PolyClenshawCurtis,           // 27
+  LinearClenshawCurtis,         // 28
+  ModPolyClenshawCurtis,        // 29
+  ModLinearClenshawCurtis,      // 30
+  NakBsplineBoundary,           // 31
+  NakBsplineBoundaryCombigrid,  // 32
+  NakBsplineModified,           // 33
+  NakBsplineExtended            // 34
 };
 
 class Grid
@@ -130,10 +145,19 @@ public:
   static Grid* createLinearGridStencil(size_t dim);
   static Grid* createModLinearGridStencil(size_t dim);
   static Grid* createPeriodicGrid(size_t dim);
+  static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
+  static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineModifiedGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
 	
   static Grid* unserializeFromFile(std::string filename);
-  static Grid* unserialize(std::string& istr);
+  static Grid* unserialize(const std::string& istr);
 	
+  static sgpp::base::GridType stringToGridType(const std::string& gridType);
+
 protected:
   Grid();
   Grid(Grid& o);
@@ -153,6 +177,8 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
+
+  std::string getTypeAsString();
   
   Grid* clone();
 };
