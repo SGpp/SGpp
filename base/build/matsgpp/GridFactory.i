@@ -93,7 +93,7 @@ enum class GridType {
   Prewavelet,                   // 12
   SquareRoot,                   // 13
   Periodic,                     // 14
-  LinearClenshawCurtis,         // 15
+  LinearClenshawCurtisBoundary, // 15
   Bspline,                      // 16
   BsplineBoundary,              // 17
   BsplineClenshawCurtis,        // 18
