@@ -570,6 +570,13 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearTruncatedBoundary",
                                                        LinearTruncatedBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakbsplineboundary",
+                                                       NakBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakbsplinemodified",
+                                                       NakBsplineModifiedGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakbsplineextended",
+                                                       NakBsplineExtendedGrid::unserialize));
+
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
