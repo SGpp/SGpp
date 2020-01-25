@@ -58,7 +58,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix(
 
 void DBMatOfflineDenseIChol::choleskyModification(
     Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    size_t newPoints, std::list<size_t> deletedPoints, double lambda) {
+    size_t newPoints, std::list<size_t> deletedPoints, double lambda, double c) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
 

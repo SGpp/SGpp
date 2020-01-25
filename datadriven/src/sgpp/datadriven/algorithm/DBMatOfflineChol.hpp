@@ -68,7 +68,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    */
   virtual void choleskyModification(
       Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-      size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+      size_t newPoints, std::list<size_t> deletedPoints, double lambda, double c = 0.0);
 
   /*
    * explicitly computes the inverse

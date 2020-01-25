@@ -199,10 +199,10 @@ class DBMatOnlineDE : public DBMatOnline {
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
 
- protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
                         DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
 
+ protected:
   virtual void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
                                 DensityEstimationConfiguration& densityEstimationConfig,
                                 bool do_cv = 0) = 0;

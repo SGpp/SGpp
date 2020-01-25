@@ -7,7 +7,7 @@
 
 #include <sgpp/datadriven/algorithm/DBMatDMSBackSub.hpp>
 
-#include <ctime>
+//#include <ctime>
 #include <iostream>
 
 namespace sgpp {
@@ -25,9 +25,9 @@ void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
   clock_t end;
   clock_t begin;
 
-  double elapsed_secs;
+  //double elapsed_secs;
 
-  begin = clock();
+  //begin = clock();
 
   // Forward Substitution:
   sgpp::base::DataVector y(resultSize);
@@ -49,9 +49,9 @@ void DBMatDMSBackSub::solve(sgpp::base::DataMatrix& DecompMatrix,
     alpha[i] /= DecompMatrix.get(i, i);
   }
 
-  end = clock();
-  elapsed_secs = static_cast<double>(end - begin) / CLOCKS_PER_SEC;
-  std::cout << "Solve LU: " << elapsed_secs;
+  //end = clock();
+  //elapsed_secs = static_cast<double>(end - begin) / CLOCKS_PER_SEC;
+  //std::cout << "Solve LU: " << elapsed_secs;
 }
 
 }  // namespace datadriven

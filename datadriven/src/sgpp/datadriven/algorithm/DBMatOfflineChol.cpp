@@ -180,7 +180,7 @@ void DBMatOfflineChol::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid
 
 void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
                                             size_t newPoints, std::list<size_t> deletedPoints,
-                                            double lambda) {
+                                            double lambda, double c) {
 #ifdef USE_GSL
 
   // Start coarsening
@@ -192,7 +192,7 @@ void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstim
     // 'c' is the threshold to decide what kind of Cholesky modification should
     // be performed to take
     // account for the removed grid points
-    double c = static_cast<double>(old_size) / 10;
+    // double c = static_cast<double>(old_size) / 10;
     // Indicates which permutation to perform
     bool start1 = false;
     size_t index_coarse = 0;

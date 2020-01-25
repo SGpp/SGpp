@@ -55,7 +55,7 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
   void choleskyModification(Grid& grid,
                             datadriven::DensityEstimationConfiguration& densityEstimationConfig,
                             size_t newPoints, std::list<size_t> deletedPoints,
-                            double lambda) override;
+                            double lambda, double c = 0.0) override;
 
   /**
    * perform parlallel incomplete cholesky factorization of a matrix. This is an out of place
