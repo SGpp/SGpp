@@ -61,7 +61,13 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 }
 
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
-  scheme.initialize(newDataset.getNcols(), config->getGridConfig().level_);
+  GeometryConfiguration geoConf = config->getGeometryConfig();
+  if (!geoConf.stencils.empty()) {
+      scheme.initializeGaSG(newDataset.getNcols(), config->getGridConfig().level_, getInteractions(geoConf));
+  }
+  else {
+      scheme.initialize(newDataset.getNcols(), config->getGridConfig().level_);
+  }
   componentConfigs = scheme.getCombiScheme();
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());

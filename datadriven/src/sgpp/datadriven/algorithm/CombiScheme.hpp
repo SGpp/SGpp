@@ -43,6 +43,14 @@ class CombiScheme {
   void initialize(size_t dim, size_t level);
 
   /**
+   * Initialize the combigrid scheme for the GaSG setting
+   * @param dim dimension
+   * @param level level
+   * @param interactions interactions for the GaSG case
+   */
+  void initializeGaSG(size_t dim, size_t level, const std::set<std::set<size_t>>& interactions);
+
+  /**
    * check if the component of levelvec is refinable
    * @param levelvec vector for the component in question
    * @return whether we can refine the scheme
@@ -82,6 +90,31 @@ class CombiScheme {
    * Initialize the index set
    */
   void initIndexSet();
+
+  /**
+   * Initialize the index set for GaSG
+   */
+  void initIndexSetGaSG(const std::set<std::set<size_t>>& interactions);
+
+  /**
+   * GaSG helper function
+   */
+  void getArrangements(std::vector<std::vector<size_t>>& arrangements, size_t size, size_t minDim, std::vector<size_t>& curArr, size_t freeLevels);
+
+  /**
+   * GaSG helper function
+   */
+  void insertParents(std::vector<size_t>& levelvec, const std::set<std::set<size_t>>& interactions, std::set<size_t>& prevInter);
+
+  /**
+   * GaSG helper function
+   */
+  void refineSchemeGaSG(size_t dim, std::vector<size_t> levelvec, const std::set<std::set<size_t>>& interactions);
+
+  /**
+   * GaSG helper function
+   */
+  bool refineComponentGaSG(std::vector<size_t> levelvec, const std::set<std::set<size_t>>& interactions);
 
   /**
    * This method computes recursively all possible level vectors of dimension
