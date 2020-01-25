@@ -133,9 +133,6 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   alphaDistributed =
       DataVectorDistributed(processGrid, grid->getSize(), parallelConfig.rowBlockSize_);
 
-  // todo(): parallel version of regularization here?
-  // but no access to path
-
   // online phase
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
@@ -231,6 +228,43 @@ void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) 
   }
 }
 
+double ModelFittingDensityEstimationOnOffParallel::computeResidual(
+    DataMatrix& validationData) const {
+  DataVectorDistributed bValidation = online->computeBFromBatchParallel(
+      validationData, *grid, this->config->getDensityEstimationConfig(),
+      this->config->getParallelConfig(), this->processGrid);
+
+  DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed(
+      this->processGrid, this->config->getParallelConfig());
+
+#ifdef USE_SCALAPACK
+  // R * alpha - b_val
+  rMatrix.mult(alphaDistributed, bValidation, false, 1.0, -1.0);
+
+  DataVector result = bValidation.toLocalDataVectorBroadcast();
+
+  return result.l2Norm();
+#else
+  throw base::not_implemented_exception("built withot ScaLAPACK");
+#endif /* USE_SCALAPACK */
+}
+
+void ModelFittingDensityEstimationOnOffParallel::updateRegularization(double lambda) {
+  if (grid != nullptr) {
+    auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+    auto& parallelConfig = this->config->getParallelConfig();
+
+    this->online->getOfflineObject().updateRegularizationParallel(lambda, this->processGrid,
+                                                                  parallelConfig);
+
+    // in case of SMW decomposition type, the inverse of the matrix needs to be computed also
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      online->getOfflineObject().compute_inverse_parallel(processGrid, parallelConfig);
+    }
+  }
+}
+
 bool ModelFittingDensityEstimationOnOffParallel::isRefinable() {
   if (grid != nullptr) {
     return online->getOfflineObject().isRefineable();
@@ -242,6 +276,13 @@ void ModelFittingDensityEstimationOnOffParallel::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+void ModelFittingDensityEstimationOnOffParallel::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
 }
 
 std::shared_ptr<BlacsProcessGrid> ModelFittingDensityEstimationOnOffParallel::getProcessGrid()

@@ -162,6 +162,7 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp"
 %ignore  sgpp::datadriven::ModelFittingBase::operator=(ModelFittingBase&&);
 %rename(assign) sgpp::datadriven::ModelFittingBase::operator =;
+%rename (getConstFitterConfiguration) sgpp::datadriven::ModelFittingBase::getFitterConfiguration() const;
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"

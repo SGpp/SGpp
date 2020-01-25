@@ -9,12 +9,12 @@
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 #include <iostream>
 
 namespace sgpp {
 namespace datadriven {
-
 
 SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
                                                    ModelFittingBase* fitter, Scorer* scorer,
@@ -36,6 +36,25 @@ double SparseGridMinerSplitting::learn(bool verbose) {
   RefinementMonitorFactory monitorFactory;
   RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
+
+  // optimize lambda
+  if (fitter->getFitterConfiguration().getRegularizationConfig().optimizeLambda_) {
+    if (verbose) {
+      std::ostringstream out;
+      out << "Optimizing lambda";
+      print(out);
+    }
+
+    double lambda = this->optimizeLambda(verbose);
+    this->fitter->getFitterConfiguration().getRegularizationConfig().lambda_ = lambda;
+    this->fitter->updateRegularization(lambda);
+
+    if (verbose) {
+      std::ostringstream out;
+      out << "Final lambda: " << lambda;
+      print(out);
+    }
+  }
 
   for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
     if (verbose) {
@@ -64,11 +83,9 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       // Train model on new batch
       fitter->update(*dataset);
 
-
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
       double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
-
 
       if (verbose) {
         std::ostringstream out;
@@ -92,6 +109,111 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     }
   }
   return scorer->test(*fitter, *(dataSource->getValidationData()));
-}  // namespace datadriven
+}
+
+double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
+  // init the scorer
+  std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
+  lambdaOptimizationScorer = std::unique_ptr<Scorer>(factory->buildRegularizationScorer(
+      fitter->getFitterConfiguration().getRegularizationConfig()));
+
+  // 1 / phi
+  double phiInversed = (std::sqrt(5) - 1) / 2;
+
+  // 1 / phi^2
+  double phiInversedSquared = (3 - std::sqrt(5)) / 2;
+
+  // get configuration parameters
+  double tolerance = fitter->getFitterConfiguration().getRegularizationConfig().optimizerTolerance_;
+  double convergenceThreshold =
+      fitter->getFitterConfiguration().getRegularizationConfig().convergenceThreshold_;
+  double a = fitter->getFitterConfiguration().getRegularizationConfig().intervalA_;
+  double b = fitter->getFitterConfiguration().getRegularizationConfig().intervalB_;
+
+  double interval = std::abs(a - b);
+
+  double c = a + phiInversedSquared * interval;
+  double d = a + phiInversed * interval;
+
+  // setup lambda for the first run
+  fitter->getFitterConfiguration().getRegularizationConfig().lambda_ = c;
+
+  double valueC = evaluateLambda(c, verbose);
+  double valueD = evaluateLambda(d, verbose);
+
+  int optimizerIteration = 0;
+
+  while (interval > tolerance) {
+    if (valueC < valueD) {
+      b = d;
+      d = c;
+      valueD = valueC;
+      interval = interval * phiInversed;
+      c = a + phiInversedSquared * interval;
+      valueC = evaluateLambda(c, verbose);
+
+      // check for convergence
+      if (std::abs(valueC - valueD) < convergenceThreshold) {
+        return a;
+      }
+    } else {
+      a = c;
+      c = d;
+      valueC = valueD;
+      interval = interval * phiInversed;
+      d = a + phiInversed * interval;
+      valueD = evaluateLambda(d, verbose);
+
+      // check for convergence
+      if (std::abs(valueD - valueC) < convergenceThreshold) {
+        return b;
+      }
+    }
+
+    if (verbose) {
+      std::ostringstream out;
+      out << "###############"
+          << "Lambda optimizer iteration #" << (optimizerIteration) << std::endl
+          << "a: " << a << " b: " << b << " c: " << c << " d: " << d;
+      print(out);
+    }
+    optimizerIteration++;
+  }
+
+  if (valueC < valueD) {
+    return a;
+  }
+  return b;
+}
+
+double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
+  // update lambda of model (this has no effect if this is the first run)
+  fitter->updateRegularization(lambda);
+
+  // train the model (update loop)
+  dataSource->reset();
+  // Process dataset iteratively
+  size_t iteration = 0;
+  while (true) {
+    std::unique_ptr<Dataset> dataset(dataSource->getNextSamples());
+    size_t numInstances = dataset->getNumberInstances();
+    if (numInstances == 0) {
+      // The source does not provide any more samples
+      break;
+    }
+
+    // Train model on new batch
+    fitter->update(*dataset);
+    iteration++;
+  }
+
+  // score the model
+  double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()), true);
+
+  // reset the fitter (but only the online part)
+  fitter->resetTraining();
+
+  return scoreVal;
+}
 }  // namespace datadriven
 }  // namespace sgpp
