@@ -83,6 +83,9 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
   bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
+  if (gridConfig.generalType_ != base::GeneralGridType::ComponentGrid) {
+      useOfflinePermutation = false;
+  }
 
   // clear model
   reset();
