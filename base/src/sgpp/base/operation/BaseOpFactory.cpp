@@ -110,6 +110,7 @@
 
 #include <sgpp/base/operation/hash/OperationConvertPrewavelet.hpp>
 
+#include <sgpp/base/operation/hash/OperationEvalKinkLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalLinearStretched.hpp>
@@ -121,6 +122,7 @@
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPrewavelet.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalKinkLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearStretched.hpp>
@@ -132,6 +134,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPrewavelet.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalInterKinkLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEvalBsplineBoundaryNaive.hpp>
@@ -481,6 +484,8 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
     return new base::OperationEvalLinearBoundary(grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationEvalModLinear(grid.getStorage());
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new base::OperationEvalKinkLinear(grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationEvalPoly(grid.getStorage(),
                                        dynamic_cast<base::PolyGrid*>(&grid)->getDegree());
@@ -514,6 +519,8 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
     return new base::OperationMultipleEvalLinearBoundary(grid, dataset);
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationMultipleEvalModLinear(grid, dataset);
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new base::OperationMultipleEvalKinkLinear(grid, dataset);
   } else if (grid.getType() == base::GridType::Poly) {
     return new base::OperationMultipleEvalPoly(
         grid, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), dataset);
@@ -541,6 +548,8 @@ base::OperationMultipleEval* createOperationMultipleEvalInter(
     base::Grid& grid, base::DataMatrix& dataset, std::set<std::set<size_t>> interactions) {
   if (grid.getType() == base::GridType::ModLinear) {
     return new base::OperationMultipleEvalInterModLinear(grid, dataset, interactions);
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new base::OperationMultipleEvalInterKinkLinear(grid, dataset, interactions);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalInter is not implemented for this grid type.");

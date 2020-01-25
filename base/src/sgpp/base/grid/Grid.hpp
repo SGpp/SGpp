@@ -65,6 +65,7 @@ enum class GridType {
   ModWeaklyFundamentalNakSpline,          // 37
   FundamentalSplineBoundary,          // 38
   FundamentalNakSplineBoundary,  // 39
+  KinkLinear,  // 40
 };
 
 /**
@@ -307,6 +308,14 @@ class Grid {
    * @return grid
    */
   static Grid* createModLinearGrid(size_t dim);
+
+  /**
+   * creates a kinked linear grid
+   *
+   * @param dim the grid's dimension
+   * @return grid
+   */
+  static Grid* createKinkLinearGrid(size_t dim);
 
   /**
    * creates a polynomial grid

@@ -15,6 +15,7 @@
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(size_t dim);
 %newobject sgpp::base::Grid::createLinearStretchedBoundaryGrid(sgpp::base::Stretching& BB);
 %newobject sgpp::base::Grid::createModLinearGrid(size_t dim);
+%newobject sgpp::base::Grid::createKinkLinearGrid(size_t dim);
 %newobject sgpp::base::Grid::createPolyGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createPolyBoundaryGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModPolyGrid(size_t dim, size_t degree);
@@ -96,8 +97,8 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
-};
+  ModLinearStencil,             // 25
+  KinkLinear                    // 26};
 
 class Grid
 {
@@ -111,6 +112,7 @@ public:
   static Grid* createModLinearClenshawCurtisGrid(size_t dim);
   static Grid* createLinearStretchedBoundaryGrid(size_t dim);
   static Grid* createModLinearGrid(size_t dim);
+  static Grid* createKinkLinearGrid(size_t dim);
   static Grid* createPolyGrid(size_t dim, size_t degree);
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModPolyGrid(size_t dim, size_t degree);

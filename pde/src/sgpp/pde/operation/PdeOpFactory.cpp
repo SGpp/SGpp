@@ -34,6 +34,7 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinearBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitKinkLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBsplineBoundary.hpp>
@@ -48,6 +49,7 @@
 
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotKinkLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotBspline.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotBsplineBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModBspline.hpp>
@@ -170,6 +172,8 @@ base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotPeriodic(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationMatrixLTwoDotModLinear(&grid);
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new pde::OperationMatrixLTwoDotKinkLinear(&grid);
   } else if (grid.getType() == base::GridType::Poly) {
     return new pde::OperationMatrixLTwoDotPoly(&grid);
   } else if (grid.getType() == base::GridType::PolyBoundary) {
@@ -205,6 +209,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(&grid);
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationMatrixLTwoDotExplicitModLinear(&grid);
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new pde::OperationMatrixLTwoDotExplicitKinkLinear(&grid);
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotExplicitPeriodic(&grid);
   } else if (grid.getType() == base::GridType::Bspline) {
@@ -242,6 +248,8 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base:
     return new pde::OperationMatrixLTwoDotExplicitLinearBoundary(m, &grid);
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationMatrixLTwoDotExplicitModLinear(m, &grid);
+  } else if (grid.getType() == base::GridType::KinkLinear) {
+    return new pde::OperationMatrixLTwoDotExplicitKinkLinear(m, &grid);
   } else if (grid.getType() == base::GridType::Periodic) {
     return new pde::OperationMatrixLTwoDotExplicitPeriodic(m, &grid);
   } else if (grid.getType() == base::GridType::Bspline) {

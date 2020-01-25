@@ -32,6 +32,8 @@ GridType GridTypeParser::parse(const std::string &input) {
     return sgpp::base::GridType::LinearTruncatedBoundary;
   } else if (inputLower.compare("modlinear") == 0) {
     return sgpp::base::GridType::ModLinear;
+  } else if (inputLower.compare("kinklinear") == 0) {
+    return sgpp::base::GridType::KinkLinear;
   } else if (inputLower.compare("poly") == 0) {
     return sgpp::base::GridType::Poly;
   } else if (inputLower.compare("polyboundary") == 0) {
@@ -91,6 +93,7 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::LinearStretchedBoundary, "LinearStretchedBoundary"),
       std::make_pair(GridType::LinearTruncatedBoundary, "LinearTruncatedBoundary"),
       std::make_pair(GridType::ModLinear, "ModLinear"),
+      std::make_pair(GridType::KinkLinear, "KinkLinear"),
       std::make_pair(GridType::Poly, "Poly"),
       std::make_pair(GridType::PolyBoundary, "PolyBoundary"),
       std::make_pair(GridType::ModPoly, "ModPoly"),
