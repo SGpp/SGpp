@@ -9,6 +9,7 @@
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 
 #include <string>
 
@@ -31,6 +32,7 @@ class DBMatDatabase {
   /**
    * Scans the entire database and checks weather any entry matches the configuration.
    * @param gridConfig the grid configuration the matrix must match
+   * @param geometryConfig the geometry-aware configuration the matrix must match
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
@@ -38,6 +40,7 @@ class DBMatDatabase {
    */
   bool hasDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
@@ -47,6 +50,7 @@ class DBMatDatabase {
    * match the configurations. A entry matches if all config properties except the gridConfig's
    * level vector are equal and level vector elements unequal 1 are set equal.
    * @param gridConfig the grid configuration the matrix must match
+   * @param geometryConfig the geometry-aware configuration the matrix must match
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
@@ -54,6 +58,7 @@ class DBMatDatabase {
    */
   bool hasBaseDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
@@ -61,6 +66,7 @@ class DBMatDatabase {
   /**
    * Scans the entire database and finds the first entry that matches the configurations.
    * @param gridConfig the grid configuration the matrix must match
+   * @param geometryConfig the geometry-aware configuration the matrix must match
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
@@ -69,6 +75,7 @@ class DBMatDatabase {
    */
   std::string& getDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
@@ -78,6 +85,7 @@ class DBMatDatabase {
    * configurations. A entry matches if all config properties except the gridConfig's level vector
    * are equal and level vector elements unequal 1 are set equal.
    * @param gridConfig the grid configuration the matrix must match
+   * @param geometryConfig the geometry-aware configuration the matrix must match
    * @param adaptivityConfig the adaptivity configuration the matrix must match
    * @param regularizationConfig the regularization configuration the matrix must match
    * @param densityEstimationConfig the density estimation configuration the matrix must match
@@ -87,6 +95,7 @@ class DBMatDatabase {
    */
   std::string& getBaseDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
@@ -97,6 +106,7 @@ class DBMatDatabase {
    * file. If for this configuration a filepath is already present in the database the filepath
    * is updated if and only if the overwriteEntry parameter is set (default = false).
    * @param gridConfig the grid configuration the matrix matches
+   * @param geometryConfig the geometry-aware configuration the matrix matches
    * @param adaptivityConfig the adaptivity configuration the matrix matches
    * @param regularizationConfig the regularization configuration the matrix matches
    * @param densityEstimationConfig the density estimation configuration the matrix matches
@@ -106,6 +116,7 @@ class DBMatDatabase {
    */
   void putDataMatrix(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
@@ -132,6 +143,7 @@ class DBMatDatabase {
    * Scans the entire database and finds the first entry that matches the configurations. Returns
    * the index of the entry in the database ListNode or -1 if no entry matches.
    * @param gridConfig the grid configuration the matrix matches
+   * @param geometryConfig the geometry-aware configuration the matrix matches
    * @param adaptivityConfig the adaptivity configuration the matrix matches
    * @param regularizationConfig the regularization configuration the matrix matches
    * @param densityEstimationConfig the density estimation configuration the matrix matches
@@ -141,6 +153,7 @@ class DBMatDatabase {
    */
   int entryIndexByConfiguration(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
@@ -169,6 +182,20 @@ class DBMatDatabase {
   bool baseGridConfigurationMatches(json::DictNode* node,
                                     const sgpp::base::GeneralGridConfiguration& gridConfig,
                                     size_t entry_num);
+
+  /**
+   * Checks weather the geometry-aware configuration of a json dict node representing a
+   * database entry root matches the geometry-aware configuration passed to the database.
+   * @param node the root node of the regularization configuration
+   * @param geometryConfig the configuration to check
+   * @param entry_num the index of the entry the root node belongs to
+   * @return if the passed regularization configuration matches the regularization configuration
+   * of the node
+   */
+  bool geometryConfigurationMatches(
+      json::DictNode* node,
+      const sgpp::datadriven::GeometryConfiguration& geometryConfig,
+      size_t entry_num);
 
   /**
    * Checks weather the regularization configuration of a json dict node representing a

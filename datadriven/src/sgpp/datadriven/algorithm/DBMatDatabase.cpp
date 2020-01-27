@@ -13,6 +13,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 
 #include <algorithm>
@@ -25,11 +27,19 @@ namespace datadriven {
 
 // Globally define all keys in a database entry
 const std::string keyGridConfiguration = "gridConfiguration";
+const std::string keyGeometryConfiguration = "geometryConfiguration";
 const std::string keyRegularizationConfiguration = "regularizationConfiguration";
 const std::string keyDensityEstimationConfiguration = "densityEstimationConfiguration";
-const std::string keyGridType = "type";
+const std::string keyGridType = "gridType";
+const std::string keyBasisType = "basisType";
 const std::string keyGridDimension = "dimension";
 const std::string keyGridLevel = "level";
+const std::string keyGeoDim = "dim";
+const std::string keyGeoStencils = "stencils";
+const std::string keyGeoStencil = "stencil";
+const std::string keyGeoApply = "applyOnLayers";
+const std::string keyGeoColor = "colorIndex";
+const std::string keyGeoBlockLength = "blockLength";
 const std::string keyRegularizationStrength = "lambda";
 const std::string keyDecompositionType = "decomposition";
 const std::string keyFilepath = "filepath";
@@ -48,30 +58,33 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
 
 bool DBMatDatabase::hasDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   return entry_index >= 0;
 }
 
 bool DBMatDatabase::hasBaseDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Call with base matrix flag
-  return entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+  return entryIndexByConfiguration(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                    densityEstimationConfig, true) >= 0;
 }
 
 std::string& DBMatDatabase::getDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   if (entry_index < 0) {
     // No decomposition in database
@@ -87,12 +100,13 @@ std::string& DBMatDatabase::getDataMatrix(
 
 std::string& DBMatDatabase::getBaseDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Get index of suitable base object if existing
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig, true);
   // If none is found throw exception
   if (entry_index < 0) {
@@ -122,12 +136,13 @@ std::string& DBMatDatabase::getBaseDataMatrix(
 
 void DBMatDatabase::putDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     const std::string filepath, bool overwriteEntry) {
   // Check if for this setting an entry is already definied
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   if (entry_index < 0) {
     // Create a new list node in the json object
@@ -137,6 +152,8 @@ void DBMatDatabase::putDataMatrix(
         dynamic_cast<json::DictNode&>(entry.addDictAttr(keyGridConfiguration));
     gridConfigEntry.addTextAttr(
         keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(gridConfig.generalType_));
+    gridConfigEntry.addTextAttr(
+        keyBasisType, sgpp::datadriven::GridTypeParser::toString(gridConfig.type_));
     gridConfigEntry.addIDAttr(keyGridDimension, static_cast<uint64_t>(gridConfig.dim_));
     if (gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid) {
       json::ListNode& level =
@@ -146,6 +163,31 @@ void DBMatDatabase::putDataMatrix(
       }
     } else {
       gridConfigEntry.addIDAttr(keyGridLevel, static_cast<int64_t>(gridConfig.level_));
+    }
+    // Add a geometry configuration entry
+    json::DictNode& geometryConfigEntry = 
+    dynamic_cast<json::DictNode&>(entry.addDictAttr(keyGeometryConfiguration));
+    json::ListNode& dims = 
+    dynamic_cast<json::ListNode&>(geometryConfigEntry.addListAttr(keyGeoDim));
+    for (const std::vector<int64_t>& dimension : geometryConfig.dim) {
+        json::ListNode& thisDims = dynamic_cast<json::ListNode&>(dims.addListValue());
+        for (const int64_t& thisDim: dimension) {
+            thisDims.addIdValue(thisDim);
+        }
+    }
+    json::ListNode& stencilsEntry = 
+    dynamic_cast<json::ListNode&>(geometryConfigEntry.addListAttr(keyGeoStencils));
+    for (sgpp::datadriven::StencilConfiguration stencil : geometryConfig.stencils) {
+        json::DictNode& stencilEntry = 
+        dynamic_cast<json::DictNode&>(stencilsEntry.addDictValue());
+        stencilEntry.addTextAttr(keyGeoStencil, sgpp::datadriven::GeometryConfigurationParser::toString(stencil.stencilType));
+        stencilEntry.addIDAttr(keyGeoBlockLength, static_cast<int64_t>(stencil.blockLenght));
+        stencilEntry.addIDAttr(keyGeoColor, static_cast<int64_t>(stencil.colorIndex));
+        json::ListNode& layersEntry =
+        dynamic_cast<json::ListNode&>(stencilEntry.addListAttr(keyGeoApply));
+        for (size_t i : stencil.applyOnLayers) {
+            layersEntry.addIdValue(i);
+        }
     }
     // Add a regularization configuration entry
     json::DictNode& regularizationConfigEntry =
@@ -192,6 +234,12 @@ bool DBMatDatabase::baseGridConfigurationMatches(
   }
 
   json::ListNode* entryLevelVector = dynamic_cast<json::ListNode*>((&(*node)[keyGridLevel]));
+  if (entryLevelVector == nullptr) {
+    return false;
+  }
+  if (entryLevelVector->size() != nodeGridDimension) {
+    return false;
+  }
   std::vector<size_t> levelVec;
 
   for (size_t i = 0; i < nodeGridDimension; i++) {
@@ -218,6 +266,18 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
   } else {
     std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGridConfiguration
               << "\" node does not contain \"" << keyGridType << "\" key and therefore is ignored!"
+              << std::endl;
+    return false;
+  }
+  if (node->contains(keyBasisType)) {
+    // Parse the basis type
+    std::string strBasisType = (*node)[keyBasisType].get();
+    sgpp::base::GridType basisType = sgpp::datadriven::GridTypeParser::parse(strBasisType);
+    // Check if the basis type matches
+    if (gridConfig.type_ != basisType) return false;
+  } else {
+    std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGridConfiguration
+              << "\" node does not contain \"" << keyBasisType << "\" key and therefore is ignored!"
               << std::endl;
     return false;
   }
@@ -272,6 +332,92 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
   return true;
 }
 
+bool DBMatDatabase::geometryConfigurationMatches(
+    json::DictNode* node, const sgpp::datadriven::GeometryConfiguration& geometryConfig,
+    size_t entry_num) {
+    
+  // Check if dims match
+  if (node->contains(keyGeoDim)) {
+    json::ListNode* entryDims = dynamic_cast<json::ListNode*>(&(*node)[keyGeoDim]);
+    if (entryDims->size() != geometryConfig.dim.size()) {
+        std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGeoDim
+                  << "\" size does not match and therefore is ignored!" << std::endl;
+        return false;
+    }
+    for (size_t i = 0; i < entryDims->size(); i++) {
+        json::ListNode* entryDim = dynamic_cast<json::ListNode*>(&((*entryDims)[i]));
+        if (entryDim->size() != geometryConfig.dim[i].size()) {
+            return false;
+        }
+        for (size_t j = 0; j < entryDim->size(); j++) {
+            json::Node* indexDimNode = dynamic_cast<json::Node*>(&((*entryDim)[j]));
+            if (indexDimNode->getInt() != geometryConfig.dim[i].at(j)) {
+                return false;
+            }
+        }
+    }
+  } else {
+    std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGeometryConfiguration 
+    << "\" node does not contain \"" << keyGeoDim << "\" key and therefore is ignored!"
+    << std::endl;
+    return false;
+  }
+  // Check if stencils match
+  if (node->contains(keyGeoStencils)) {
+    json::ListNode* entryStencils = dynamic_cast<json::ListNode*>(&(*node)[keyGeoStencils]);
+    if (entryStencils->size() != geometryConfig.stencils.size()) {
+        std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGeoStencils 
+        << "\" size does not match and therefore is ignored!" << std::endl;
+        return false;
+    }
+    for (size_t i = 0; i < entryStencils->size(); i++) {
+        json::DictNode* entryStencil = dynamic_cast<json::DictNode*>(&((*entryStencils)[i]));
+        if (entryStencil->contains(keyGeoColor)) {
+            int64_t colorIndex = (*entryStencil)[keyGeoColor].getInt();
+            if (geometryConfig.stencils[i].colorIndex != colorIndex) return false;
+        } else {
+            return false;
+        }
+        if (entryStencil->contains(keyGeoBlockLength)) {
+            if (geometryConfig.stencils[i].blockLenght != (*entryStencil)[keyGeoBlockLength].getUInt()) return false;
+        } else {
+            return false;
+        }
+        if (entryStencil->contains(keyGeoStencil)) {
+            // Parse stencil type
+            std::string strStencilType = (*entryStencil)[keyGeoStencil].get();
+            sgpp::datadriven::StencilType stencilType = 
+            sgpp::datadriven::GeometryConfigurationParser::parseStencil(strStencilType);
+            if (geometryConfig.stencils[i].stencilType != stencilType) return false;
+        } else {
+            return false;
+        }
+        if (entryStencil->contains(keyGeoApply)) {
+            json::ListNode* entryApply = dynamic_cast<json::ListNode*>(&(*entryStencil)[keyGeoApply]);
+            if (entryApply->size() != geometryConfig.stencils[i].applyOnLayers.size()) {
+                return false;
+            }
+            for (size_t j = 0; j < entryApply->size(); j++) {
+                json::Node* indexApplyNode = dynamic_cast<json::Node*>(&((*entryApply)[j]));
+                if (indexApplyNode->getUInt() != geometryConfig.stencils[i].applyOnLayers.at(j)) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+  } else {
+    std::cout << "DBMatDatabase: database entry # " << entry_num << ": \"" << keyGeometryConfiguration 
+    << "\" node does not contain \"" << keyGeoStencils << "\" key and therefore is ignored!"
+    << std::endl;
+    return false;
+  }
+  // Geometry Matches!
+  return true;
+}
+
+
 bool DBMatDatabase::regularizationConfigurationMatches(
     json::DictNode* node, const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     size_t entry_num) {
@@ -314,6 +460,7 @@ bool DBMatDatabase::densityEstimationConfigurationMatches(
 
 int DBMatDatabase::entryIndexByConfiguration(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
+    const sgpp::datadriven::GeometryConfiguration& geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
@@ -337,6 +484,18 @@ int DBMatDatabase::entryIndexByConfiguration(
     } else {
       std::cout << "DBMatDatabase: database entry # " << i << " does not contain a "
                 << "\"" << keyGridConfiguration << "\" key and therefore is ignored!" << std::endl;
+      continue;
+    }
+    // Check if the entry matches the geometry configuration
+    if (entry->contains(keyGeometryConfiguration)) {
+      json::DictNode* geometryConfigNode =
+          dynamic_cast<json::DictNode*>(&(*entry)[keyGeometryConfiguration]);
+      if (!geometryConfigurationMatches(geometryConfigNode, geometryConfig, i))
+        continue;
+    } else {
+      std::cout << "DBMatDatabase: database entry # " << i << " does not contain a "
+                << "\"" << keyGeometryConfiguration << "\" key and therefore is ignored!"
+                << std::endl;
       continue;
     }
     // Check if the entry matches the regularization configuration

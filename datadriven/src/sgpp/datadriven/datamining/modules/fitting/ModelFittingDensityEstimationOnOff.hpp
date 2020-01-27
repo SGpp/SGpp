@@ -43,7 +43,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
+   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
    * Constuctor with offline object store.
@@ -53,6 +53,14 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
                                               std::shared_ptr<DBMatObjectStore> objectStore);
+
+
+  /**
+   * Set Object store
+   *
+   * @param objectStore Offline object store
+   */
+  void setObjectStore(std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the

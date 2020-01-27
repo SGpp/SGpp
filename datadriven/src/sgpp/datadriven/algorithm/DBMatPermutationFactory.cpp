@@ -27,25 +27,27 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
     const sgpp::datadriven::GeometryConfiguration geometryConfig,
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
+    const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    const sgpp::datadriven::DatabaseConfiguration& databaseConfig) {
   // grid configuration of the base object
   sgpp::base::GeneralGridConfiguration baseGridConfig;
   // base object that will be transformed
   const DBMatOfflinePermutable* baseObject =
       this->store->getBaseObject(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                  densityEstimationConfig, baseGridConfig);
-
   if (baseObject == nullptr) {
     // if no suitable object exists locally, and a db path is given, search the db and store the
     // base object if found
+    bool ok = false;
     if (hasDataBase) {
       // contruct the database
       DBMatDatabase db(dbFilePath);
-      if (db.hasBaseDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+      if (db.hasBaseDataMatrix(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                densityEstimationConfig)) {
+        ok = true;
         sgpp::base::GeneralGridConfiguration dbGridConfig;
         std::string objectFile =
-            db.getBaseDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+            db.getBaseDataMatrix(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                  densityEstimationConfig, dbGridConfig);
         // build offline object
         DBMatOfflinePermutable* newBaseObject =
@@ -58,10 +60,11 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
         baseObject = newBaseObject;
 
         // store base objects. Ownership gets transfered to the object's ObjectContainer
-        this->store->putObject(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
+        this->store->putObject(baseGridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                                densityEstimationConfig, baseObject);
       }
-    } else {  // if the object is not available, build it
+    }
+    if (!ok) { // if the object is not available, build it
       // remove 1 elements
       baseGridConfig = PermutationUtil::getNormalizedConfig(gridConfig);
 
@@ -92,6 +95,24 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
       newBaseObject->buildMatrix(grid.get(), regularizationConfig);
       // decompose matrix
       newBaseObject->decomposeMatrix(regularizationConfig, densityEstimationConfig);
+
+      // if we have a database, store it there
+      if (!databaseConfig.filePath.empty() && !databaseConfig.storePath.empty()) {
+        auto randchar = []() -> char {
+            const char charset[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+            const size_t max_index = (sizeof(charset) - 1);
+            return charset[ rand() % max_index ];
+        };
+        std::string filename(15,0);
+        std::generate_n( filename.begin(), 15, randchar );
+        filename = databaseConfig.storePath+std::string("/")+filename+std::string(".offline");
+        newBaseObject->store(filename);
+        datadriven::DBMatDatabase database(databaseConfig.filePath);
+        database.putDataMatrix(baseGridConfig, geometryConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig, filename);
+      }
 
       baseObject = newBaseObject;
 

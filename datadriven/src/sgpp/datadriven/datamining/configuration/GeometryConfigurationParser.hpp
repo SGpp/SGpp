@@ -15,7 +15,7 @@ namespace datadriven {
 
 class GeometryConfigurationParser {
  public:
-  /*
+  /**
    * Convert strings to values #sgpp::datadriven::StencilType.
    * Throws if there is no valid representation
    * @param input case insensitive string representation of a
@@ -23,6 +23,22 @@ class GeometryConfigurationParser {
    * @return the corresponding #sgpp::datadriven::StencilType.
    */
   static StencilType parseStencil(const std::string &input);
+
+  /**
+   * generate string representations for values of #sgpp::base::StencilType.
+   * @param type enum value.
+   * @return string representation of a #sgpp::base::StencilType.
+   */
+  static const std::string &toString(StencilType type);
+
+ private:
+  typedef std::map<StencilType, std::string> StencilTypeMap_t;
+
+  /**
+   * Map containing all values of  #sgpp::base::StencilType and the corresponding
+   * string representation.
+   */
+  static const StencilTypeMap_t stencilTypeMap;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -48,7 +48,8 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
-  this->hasObjectStore = false;
+//  this->objectStore = std::make_shared<DBMatObjectStore>();
+//  this->hasObjectStore = true;
 }
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
@@ -57,6 +58,10 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimationOnOff(config) {
   this->objectStore = objectStore;
   this->hasObjectStore = true;
+}
+
+void ModelFittingDensityEstimationOnOff::setObjectStore(std::shared_ptr<DBMatObjectStore> objectStore) {
+  this->objectStore = objectStore;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -115,30 +120,37 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     }
   }
 
-  if (DBMatOfflinePermutable::PermutableDecompositions.find(
-          densityEstimationConfig.decomposition_) !=
-          DBMatOfflinePermutable::PermutableDecompositions.end() &&
-      this->hasObjectStore && useOfflinePermutation) {
-    // Initialize the permutation factory. If a database path is specified, the path is pased to the
-    // permutation factory
-    DBMatPermutationFactory permutationFactory;
-    if (databaseConfig.filePath.empty()) {
-      permutationFactory = DBMatPermutationFactory(this->objectStore);
-    } else {
-      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
-    }
-    offline = permutationFactory.getPermutedObject(
-        config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
-        config->getRegularizationConfig(), config->getDensityEstimationConfig());
-    offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
-    // Check if database holds a fitting lhs matrix decomposition
-    if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
-                               densityEstimationConfig)) {
-      std::string offlineFilepath = database.getDataMatrix(
-          gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
-      offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
+  if (offline == nullptr) {
+    if (DBMatOfflinePermutable::PermutableDecompositions.find(
+            densityEstimationConfig.decomposition_) !=
+            DBMatOfflinePermutable::PermutableDecompositions.end() &&
+        this->hasObjectStore && useOfflinePermutation) {
+      // Initialize the permutation factory. If a database path is specified, the path is pased to the
+      // permutation factory
+      DBMatPermutationFactory permutationFactory;
+      if (databaseConfig.filePath.empty()) {
+        permutationFactory = DBMatPermutationFactory(this->objectStore);
+      } else {
+        permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+      }
+      offline = permutationFactory.getPermutedObject(
+          config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
+          config->getRegularizationConfig(), config->getDensityEstimationConfig(), config->getDatabaseConfig());
+      if (offline != nullptr) {
+        offline->interactions = getInteractions(geometryConfig);
+      }
+    } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
+      datadriven::DBMatDatabase database(databaseConfig.filePath);
+      // Check if database holds a fitting lhs matrix decomposition
+      if (database.hasDataMatrix(gridConfig, geometryConfig, refinementConfig, regularizationConfig,
+                                 densityEstimationConfig)) {
+        std::string offlineFilepath = database.getDataMatrix(
+              gridConfig, geometryConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+        offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
+        if (this->hasObjectStore) {
+          this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig, regularizationConfig, densityEstimationConfig, offline->clone());
+        }
+      }
     }
   }
 
@@ -150,10 +162,30 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
+    std::cout << "MFDE1" << std::endl;
     if (this->hasObjectStore) {
       this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
                                    regularizationConfig, densityEstimationConfig, offline->clone());
     }
+    if (!databaseConfig.filePath.empty() && !databaseConfig.storePath.empty()) {
+        std::cout << "PF2" << std::endl;
+        auto randchar = []() -> char {
+            const char charset[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+            const size_t max_index = (sizeof(charset) - 1);
+            return charset[ rand() % max_index ];
+        };
+        std::string filename(15,0);
+        std::generate_n( filename.begin(), 15, randchar );
+        filename = databaseConfig.storePath+std::string("/")+filename+std::string(".offline");
+        offline->store(filename);
+        datadriven::DBMatDatabase database(databaseConfig.filePath);
+        database.putDataMatrix(gridConfig, geometryConfig, refinementConfig, regularizationConfig,
+                               densityEstimationConfig, filename);
+    }
+        
   }
 
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(

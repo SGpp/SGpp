@@ -20,6 +20,9 @@ std::vector<size_t> PermutationUtil::deleteOnesFromLevelVec(std::vector<size_t> 
   for (size_t i = 0; i < vectorWithOnes.size(); i++) {
     if (vectorWithOnes[i] != 1) output.push_back(vectorWithOnes[i]);
   }
+  if (output.size() == 0 && vectorWithOnes.size() != 0) {
+    output.push_back(1);
+  }
   return output;
 }
 

@@ -35,5 +35,16 @@ StencilType GeometryConfigurationParser::parseStencil(const std::string &input) 
     throw data_exception(errorMsg.c_str());
   }
 }
+
+const std::string &GeometryConfigurationParser::toString(StencilType type) { return stencilTypeMap.at(type); }
+
+const GeometryConfigurationParser::StencilTypeMap_t GeometryConfigurationParser::stencilTypeMap = []() {
+  return StencilTypeMap_t{
+      std::make_pair(StencilType::DirectNeighbour, "DirectNeighbour"),
+      std::make_pair(StencilType::AllHierarchicalParent, "AllHierarchicalParent"),
+      std::make_pair(StencilType::NextHierarchicalParent, "NextHierarchicalParent"),
+      std::make_pair(StencilType::Block, "Block"),
+      std::make_pair(StencilType::None, "None")};
+}();
 } /* namespace datadriven */
 } /* namespace sgpp */

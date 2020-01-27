@@ -33,17 +33,8 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
-  // If no object store is passed but the offline permutation is configured and the decomposition
-  // type allows offline permutation, an object store is instanciated
-  if (config.getDensityEstimationConfig().useOfflinePermutation &&
-      DBMatOfflinePermutable::PermutableDecompositions.find(
-          config.getDensityEstimationConfig().decomposition_) !=
-          DBMatOfflinePermutable::PermutableDecompositions.end()) {
-    this->objectStore = std::make_shared<DBMatObjectStore>();
-    this->hasObjectStore = true;
-  } else {
-    this->hasObjectStore = false;
-  }
+  this->objectStore = std::make_shared<DBMatObjectStore>();
+  this->hasObjectStore = true;
 }
 
 ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
@@ -86,6 +77,8 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     for (auto v : componentConfigs.at(i).first) {
       newFitterConfig.getGridConfig().levelVector_.push_back(v);
     }
+    newFitterConfig.getDatabaseConfig().filePath = this->getFitterConfiguration().getDatabaseConfig().filePath;
+    newFitterConfig.getDatabaseConfig().storePath = this->getFitterConfiguration().getDatabaseConfig().storePath;
 
     components.at(i) = createNewModel(newFitterConfig);
     fitted.at(i) = 0;
@@ -250,12 +243,12 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationComb
       return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
     case DensityEstimationType::Decomposition: {
-      if (this->hasObjectStore) {
+//      if (this->hasObjectStore) {
         return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
                                                                     objectStore);
-      } else {
-        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
-      }
+//      } else {
+//        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
+//      }
     }
   }
 
@@ -274,6 +267,8 @@ void ModelFittingDensityEstimationCombi::addNewModel(
     newFitterConfig.getGridConfig().levelVector_.push_back(v);
   }
   newFitterConfig.getGridConfig().generalType_ = this->config->getGridConfig().generalType_;
+  newFitterConfig.getDatabaseConfig().filePath = this->getFitterConfiguration().getDatabaseConfig().filePath;
+  newFitterConfig.getDatabaseConfig().storePath = this->getFitterConfiguration().getDatabaseConfig().storePath;
 
   components.push_back(createNewModel(newFitterConfig));
   fitted.push_back(0);

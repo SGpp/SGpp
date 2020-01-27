@@ -77,6 +77,11 @@ datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidatio
       static_cast<const FitterConfiguration &>(*this).getCrossvalidationConfig());
 }
 
+datadriven::DatabaseConfiguration &FitterConfiguration::getDatabaseConfig() {
+  return const_cast<datadriven::DatabaseConfiguration &>(
+      static_cast<const FitterConfiguration &>(*this).getDatabaseConfig());
+}
+
 datadriven::DensityEstimationConfiguration &FitterConfiguration::getDensityEstimationConfig() {
   return const_cast<datadriven::DensityEstimationConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getDensityEstimationConfig());
@@ -156,6 +161,7 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default;
 
   databaseConfig.filePath = "";
+  databaseConfig.storePath = "";
 
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.eps_ = 1e-12;

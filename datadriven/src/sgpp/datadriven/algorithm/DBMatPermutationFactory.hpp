@@ -6,6 +6,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
+#include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 
 #include <string>
 
@@ -38,7 +39,8 @@ class DBMatPermutationFactory {
       const sgpp::datadriven::GeometryConfiguration geometryConfig,
       const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
+      const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      const sgpp::datadriven::DatabaseConfiguration& databaseConfig);
 
  protected:
   std::shared_ptr<DBMatObjectStore> store;

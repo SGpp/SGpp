@@ -200,12 +200,8 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
                                                                             processGrid);
       }
 #endif  // USE_SCALAPACK
-      if (this->hasObjectStore) {
-        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
-                                                                    this->objectStore);
-      } else {
-        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
-      }
+      return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
+                                                                  this->objectStore);
     }
   }
 

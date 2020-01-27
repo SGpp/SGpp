@@ -57,7 +57,7 @@ int main(int argc, char** argv) {
    * refinement and coarsening (adaptivity). Also regularization and density estimation parameters
    * must be defined to identify a decomposition. This is done by parsing a configuration file which
    * should include all these settings.
-   * (gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig)
+   * (gridConfig, geometryConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig)
    */
   sgpp::datadriven::DataMiningConfigParser parser(configPath);
 
@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
   config.readParams(parser);
 
   auto& gridConfig = config.getGridConfig();
+  auto& geometryConfig = config.getGeometryConfig();
   auto& adaptivityConfig = config.getRefinementConfig();
   auto& regularizationConfig = config.getRegularizationConfig();
   auto& densityEstimationConfig = config.getDensityEstimationConfig();
@@ -124,7 +125,7 @@ int main(int argc, char** argv) {
    * the same configuration will be replaced with a new file path. Note that the database only
    * works on file paths, i.e. strings.
    */
-  database.putDataMatrix(gridConfig, adaptivityConfig, regularizationConfig,
+  database.putDataMatrix(gridConfig, geometryConfig, adaptivityConfig, regularizationConfig,
                          densityEstimationConfig, outputPath, true);
 
   return 0;

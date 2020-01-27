@@ -170,6 +170,12 @@ class FitterConfiguration {
   datadriven::CrossvalidationConfiguration &getCrossvalidationConfig();
 
   /**
+   * Get or set how the database should behave.
+   * @return DatabaseConfiguration
+   */
+  datadriven::DatabaseConfiguration &getDatabaseConfig();
+
+  /**
    * Get or set how the density estimation should behave.
    * @return DensityEstimationConfiguration
    */

@@ -104,10 +104,10 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   if (!databaseConfig.filePath.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
-    if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
+    if (database.hasDataMatrix(gridConfig, geometryConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
       std::string offlineFilepath = database.getDataMatrix(
-          gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+          gridConfig, geometryConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
       offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
     }
   }

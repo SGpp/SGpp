@@ -1051,6 +1051,12 @@ bool DataMiningConfigParser::getFitterDatabaseConfig(
       std::cout << "# Did not find databaseConfig[filepath]. No database loaded" << std::endl;
       config.filePath = defaults.filePath;
     }
+    if (databaseConfig->contains("storePath")) {
+      config.storePath = (*databaseConfig)["storePath"].get();
+    } else {
+      std::cout << "# Did not find databaseConfig[storePath]. Will not save decompositions" << std::endl;
+      config.storePath = defaults.storePath;
+    }
   }
 
   return hasDatabaseConfig;

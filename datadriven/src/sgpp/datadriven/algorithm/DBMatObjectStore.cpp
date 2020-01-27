@@ -147,7 +147,7 @@ bool DBMatObjectStore::ObjectContainer::configMatches(
   }
   // All other cofiguration entries have to be equal
   return configMatch && gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
-         gridConfig.type_ == this->gridConfig.type_ && gridConfig.type_ == this->gridConfig.type_ &&
+         gridConfig.type_ == this->gridConfig.type_ &&
          // adaptivity config
          adaptivityConfig.errorBasedRefinement == this->adaptivityConfig.errorBasedRefinement &&
          adaptivityConfig.errorBufferSize == this->adaptivityConfig.errorBufferSize &&

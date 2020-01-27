@@ -20,6 +20,7 @@ struct DatabaseConfiguration {
    * Filepath to the database
    */
   std::string filePath = "";
+  std::string storePath = "";
 };
 }  // namespace datadriven
 }  // namespace sgpp
