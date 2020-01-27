@@ -49,7 +49,7 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 //  this->objectStore = std::make_shared<DBMatObjectStore>();
-//  this->hasObjectStore = true;
+  this->hasObjectStore = false;
 }
 
 ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
@@ -162,13 +162,11 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
-    std::cout << "MFDE1" << std::endl;
     if (this->hasObjectStore) {
       this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
                                    regularizationConfig, densityEstimationConfig, offline->clone());
     }
     if (!databaseConfig.filePath.empty() && !databaseConfig.storePath.empty()) {
-        std::cout << "PF2" << std::endl;
         auto randchar = []() -> char {
             const char charset[] =
             "0123456789"
