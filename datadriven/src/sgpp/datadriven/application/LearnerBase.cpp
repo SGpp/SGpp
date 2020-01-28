@@ -3,24 +3,23 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/datadriven/application/LearnerBase.hpp>
+#include <sgpp/solver/sle/BiCGStab.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "sgpp/base/exception/application_exception.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/grid/type/LinearBoundaryGrid.hpp"
-#include "sgpp/base/grid/type/LinearGrid.hpp"
-#include "sgpp/base/grid/type/ModLinearGrid.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/GridPrinter.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/solver/sle/BiCGStab.hpp"
-#include "sgpp/solver/sle/ConjugateGradients.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -142,8 +141,8 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   double oldAcc = 0.0;
 
   // Construct Grid
-  //  if (alpha_ != NULL) delete alpha_;
-  //  if (grid_ != NULL) delete grid_;
+  //  if (alpha_ != nullptr) delete alpha_;
+  //  if (grid_ != nullptr) delete grid_;
 
   if (isTrained == true) isTrained = false;
 

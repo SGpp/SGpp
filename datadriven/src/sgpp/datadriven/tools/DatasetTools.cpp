@@ -2,12 +2,6 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-/*
- * DatasetTools.hpp
- *
- *  Created on: Jan 20, 2016
- *      Author: pfandedd
- */
 
 #include <sgpp/globaldef.hpp>
 

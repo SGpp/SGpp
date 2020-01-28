@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
@@ -18,9 +19,8 @@
 
 #include <sgpp/base/exception/application_exception.hpp>
 
-#include <sgpp/datadriven/algorithm/GridFactory.hpp>
-
 #include <memory>
+#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -35,10 +35,14 @@ using sgpp::solver::SLESolverConfiguration;
 namespace datadriven {
 
 /**
- * Base class for arbitrary machine learning models based on adaptive sparse grids. A model tries to
- * generalize high dimensional training data by using sparse grids. An underlying model can be
- * trained using training data, its accuracy can be improved by using the adaptivity of sparse
- * grids and the underlying grid(s) of a model can be retrained on other data. Once a model is
+ * Base class for arbitrary machine learning models based on adaptive sparse
+ * grids. A model tries to
+ * generalize high dimensional training data by using sparse grids. An
+ * underlying model can be
+ * trained using training data, its accuracy can be improved by using the
+ * adaptivity of sparse
+ * grids and the underlying grid(s) of a model can be retrained on other data.
+ * Once a model is
  * trained it can be evaluated on unseen data.
  */
 class ModelFittingBase {
@@ -96,7 +100,8 @@ class ModelFittingBase {
   virtual void fit(Dataset &datasetP, Dataset &datasetQ) = 0;
 
   /**
-   * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
+   * Improve accuracy of the model on the given training data by adaptive
+   * refinement of the grid.
    * @return true if refinement was performed, else false.
    */
   virtual bool refine() = 0;
@@ -116,23 +121,28 @@ class ModelFittingBase {
    */
   virtual double evaluate(const DataVector &sample) = 0;
 
-  // TODO(lettrich): this should be a const operation as well as the samples matrix as soon
+  // TODO(lettrich): this should be a const operation as well as the samples
+  // matrix as soon
   // operation multiple eval has been taken care of.
   /**
    * Evaluate the fitted model on a set of data points
-   * @param samples matrix where each row represents a sample and the columns contain the
+   * @param samples matrix where each row represents a sample and the columns
+   * contain the
    * coordinates in all dimensions of that sample.
-   * @param results vector where each row will contain the evaluation of the respective sample on
+   * @param results vector where each row will contain the evaluation of the
+   * respective sample on
    * the current model.
    */
   virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
 
   /**
    * Return the learned grid. Has to be rewritten to modify default behavior.
-   * Only available for single grid models. Otherwise, an error message is shown.
+   * Only available for single grid models. Otherwise, an error message is
+   * shown.
    */
   virtual Grid &getGrid() {
-    throw base::application_exception("This model does not support grid retrieval");
+    throw base::application_exception(
+        "This model does not support grid retrieval");
   }
 
   /**
@@ -142,6 +152,28 @@ class ModelFittingBase {
     throw base::application_exception(
         "This model does not support hierarchical surpluses retrieval");
   }
+  /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation
+   * cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  virtual double computeResidual(DataMatrix &validationData) const = 0;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  virtual void updateRegularization(double lambda) = 0;
 
   /**
    * Resets the state of the entire model
@@ -149,10 +181,17 @@ class ModelFittingBase {
   virtual void reset() = 0;
 
   /**
+   * Resets any trained representations of the model, but does not reset the
+   * entire state.
+   */
+  virtual void resetTraining() = 0;
+
+  /**
    * @returns the BLACS process grid, useful if the fitter uses ScaLAPACK
    */
   virtual std::shared_ptr<BlacsProcessGrid> getProcessGrid() const {
-    throw sgpp::base::not_implemented_exception("getProcessGrid() not implemented in this fitter");
+    throw sgpp::base::not_implemented_exception(
+        "getProcessGrid() not implemented in this fitter");
   }
 
   /**
@@ -161,6 +200,11 @@ class ModelFittingBase {
    */
   const FitterConfiguration &getFitterConfiguration() const;
 
+  /** Get or set the configuration of the fitter object.
+   * @return configuration of the fitter object
+   */
+  FitterConfiguration &getFitterConfiguration();
+
   /**
    * Whether the Solver produces output or not.
    */
@@ -168,6 +212,8 @@ class ModelFittingBase {
 
   // virtual std::string& storeFitter();
   // void storeClassificator();
+
+  Dataset *getDataset();
 
  protected:
   /**
@@ -187,7 +233,8 @@ class ModelFittingBase {
                   const GeometryConfiguration &geometryConfig) const;
 
   /**
-   * Factory member function to build the solver for the least squares regression problem according
+   * Factory member function to build the solver for the least squares
+   * regression problem according
    * to the config.
    * @param config configuratin for the solver object
    */
@@ -198,16 +245,23 @@ class ModelFittingBase {
    * @param solver the solver object to be modified.
    * @param config configuration updating the for the solver.
    */
-  void reconfigureSolver(SLESolver &solver, const SLESolverConfiguration &config) const;
+  void reconfigureSolver(SLESolver &solver,
+                         const SLESolverConfiguration &config) const;
 
   /*
-   * This method is used to pass the interactions for a geometry aware sparse grid to the offline
+   * This method is used to pass the interactions for a geometry aware sparse
+   * grid to the offline
    * object
    * @param geometryConfig from configuration file
    * @return interactions
    */
-  std::vector<std::vector<size_t>> getInteractions(
-      const GeometryConfiguration &geometryConfig) const;
+  std::set<std::set<size_t>> getInteractions(
+      const GeometryConfiguration &geometryConfig);
+
+  /*
+   * The set of interactions
+   */
+  std::unique_ptr<std::set<std::set<size_t>>> interactions;
 
   /**
    * Configuration object for the fitter.
@@ -215,8 +269,10 @@ class ModelFittingBase {
   std::unique_ptr<FitterConfiguration> config;
 
   /**
-   * Pointer to #sgpp::datadriven::Dataset. The initial grid is fitted on the given data. Adaptive
-   * refinement is then performed on the very same data. The used dataset used for refinement
+   * Pointer to #sgpp::datadriven::Dataset. The initial grid is fitted on the
+   * given data. Adaptive
+   * refinement is then performed on the very same data. The used dataset used
+   * for refinement
    * overwritten once either fit() or update() introduce a new dataset.
    */
   Dataset *dataset;

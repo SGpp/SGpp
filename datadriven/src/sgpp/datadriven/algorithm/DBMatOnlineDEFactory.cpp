@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOnlineDEFactory.cpp
- *
- *  Created on: Apr 8, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 
@@ -36,7 +30,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
-      break;
 
     case MatrixDecompositionType::LU:
 #ifdef USE_GSL
@@ -44,12 +37,10 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif /*USE_GSL*/
-      break;
 
     case MatrixDecompositionType::Chol:
     case MatrixDecompositionType::DenseIchol:
       return new DBMatOnlineDEChol(offline, grid, lambda, beta);
-      break;
 
     case MatrixDecompositionType::OrthoAdapt:
 #ifdef USE_GSL
@@ -57,7 +48,6 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif
-      break;
 
     case MatrixDecompositionType::SMW_chol:
     case MatrixDecompositionType::SMW_ortho:
@@ -66,10 +56,9 @@ DBMatOnlineDE* DBMatOnlineDEFactory::buildDBMatOnlineDE(DBMatOffline& offline, G
 #else
       throw factory_exception("built without GSL");
 #endif
-
-    default:
-      throw factory_exception{"Unknown decomposition type."};
   }
+
+  throw factory_exception{"Unknown decomposition type."};
 }
 
 } /* namespace datadriven */

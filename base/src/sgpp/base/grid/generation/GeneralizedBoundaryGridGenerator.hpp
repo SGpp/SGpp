@@ -47,10 +47,10 @@ class GeneralizedBoundaryGridGenerator : public GridGenerator {
    * @param l_user the number of fullgrids cut off from the boundaries.
    * */
   void truncated(size_t level, size_t l_user) override;
-  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override {}
+  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override {}
   size_t getNumberOfRefinablePoints() override {
     return 0;
-  };
+  }
 
   void coarsen(CoarseningFunctor& func, DataVector& alpha) override {}
   void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,

@@ -16,6 +16,7 @@
 
 #include <list>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -76,7 +77,7 @@ class DBMatOffline {
    * @return a copy of this very object as a pointer to a new DBMatOffline object which is owned by
    * the caller.
    */
-  virtual DBMatOffline* clone() = 0;
+  virtual DBMatOffline* clone() const = 0;
 
   /**
    * Only Offline objects based on Cholesky decomposition, or orthogonal adaptivity can be refined
@@ -90,6 +91,43 @@ class DBMatOffline {
    * @return decomposed matrix
    */
   DataMatrix& getDecomposedMatrix();
+
+  /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  virtual const DataMatrix& getUnmodifiedR() = 0;
+
+  /**
+   * Get the distributed version of the unmodified (without added lambda) system matrix R.
+   * Only possible in the ScaLAPACK version.
+   *
+   * @param processGrid BLACS process grid
+   * @param parallelConfig config options for ScaLAPACK
+   * @return Matrix R
+   */
+  virtual const DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) = 0;
+
+  /**
+   * Modifies the decomposition to update the regularization parameter lambda
+   *
+   * @param lambda New lambda value
+   */
+  virtual void updateRegularization(double lambda) = 0;
+
+  /**
+   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   *
+   * @param lambda New lambda value
+   * @param processGrid ScaLAPACK process grid
+   * @param parallelConfig Configuration for ScaLAPACK
+   */
+  virtual void updateRegularizationParallel(double lambda,
+                                            std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig) = 0;
 
   /**
    * Get a reference to the inverse matrix
@@ -106,6 +144,12 @@ class DBMatOffline {
   DataMatrixDistributed& getDecomposedMatrixDistributed();
 
   /**
+   * Get a reference to the distributed decomposed matrix, analogously to
+   * getDecomposedMatrixDistributed()
+   */
+  DataMatrixDistributed& getDecomposedInverseDistributed();
+
+  /**
    * Synchronizes the decomposed matrix.
    * Override if more matrices have to be synched.
    * @param processGrid process grid to distribute the matrix on
@@ -113,6 +157,14 @@ class DBMatOffline {
    */
   virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                             const ParallelConfiguration& parallelConfig);
+
+  /**
+   * Synchronizes the inverse matrix
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void syncDistributedInverse(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                      const ParallelConfiguration& parallelConfig);
 
   /**
    * Allows access to lhs matrix, which is meant ONLY FOR TESTING
@@ -125,7 +177,7 @@ class DBMatOffline {
    * @param grid The grid object the matrix is based on
    * @param regularizationConfig Configures the regularization which is incorporated into the lhs
    */
-  virtual void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  virtual void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig);
 
   /**
    * Decomposes the matrix according to the chosen decomposition type.
@@ -133,8 +185,20 @@ class DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  virtual void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                               DensityEstimationConfiguration& densityEstimationConfig) = 0;
+  virtual void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                               const DensityEstimationConfiguration& densityEstimationConfig) = 0;
+
+  /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                                       DensityEstimationConfiguration& densityEstimationConfig,
+                                       std::shared_ptr<BlacsProcessGrid> processGrid,
+                                       const ParallelConfiguration& parallelConfig);
 
   /**
    * Prints the matrix onto standard output
@@ -151,9 +215,16 @@ class DBMatOffline {
 
   /*
    * explicitly computes the inverse of the decomposed offline matrix
-   * @param inv the matrix to store the computed inverse
    */
   virtual void compute_inverse();
+
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  virtual void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                        const ParallelConfiguration& parallelConfig);
 
   /**
    * Serialize the DBMatOffline Object
@@ -182,10 +253,11 @@ class DBMatOffline {
 
   // distributed lhs, only initialized in ScaLAPACK version
   DataMatrixDistributed lhsDistributed;
+  DataMatrixDistributed lhsDistributedInverse;
 
  public:
   // vector of interactions (if size() == 0: a regular SG is created)
-  std::vector<std::vector<size_t>> interactions;
+  std::set<std::set<size_t>> interactions;
 
  protected:
   /**
@@ -193,8 +265,7 @@ class DBMatOffline {
    * @param fileName path of the serialized DBMatOffline object
    * @param interactions the interactions to populate
    */
-  void parseInter(const std::string& fileName,
-                  std::vector<std::vector<size_t>>& interactions) const;
+  void parseInter(const std::string& fileName, std::set<std::set<size_t>>& interactions) const;
 };
 
 }  // namespace datadriven

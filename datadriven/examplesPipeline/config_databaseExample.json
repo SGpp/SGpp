@@ -1,0 +1,34 @@
+{
+    "dataSource": {
+        "filePath": "../datasets/ripley/ripleyGarcke.train.arff"
+    },
+    "scorer": {
+        "metric": "mse"
+    },
+    "fitter": {
+        "type": "densityEstimation",
+        "gridConfig": {
+            "generalGridType": "regular",
+            "gridType": "linear",
+            "level": 5,
+            "dim": 2
+        },
+        "adaptivityConfig": {
+            "numRefinements": 10,
+            "threshold": 0.001,
+            "noPoints": 10,
+            "refinementIndicator": "surplus",
+            "errorBasedRefinement": false
+        },
+        "regularizationConfig": {
+            "lambda": 1e-2
+        },
+        "densityEstimationConfig": {
+            "densityEstimationType": "decomposition",
+            "matrixDecompositionType": "chol"
+        },
+        "database": {
+            "filePath": "./database.json"
+        }
+    }
+}

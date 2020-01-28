@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * LearnerConfiguration.hpp
- *
- *  Created on: Jun 19, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -23,7 +16,7 @@ struct LearnerConfiguration {
   * Weigting factor for older batches
   * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE and also not the CG Model
   */
-  double beta = 1.0;
+  double learningRate = 1.0;
 
   /**
    * Determine if the relative frequency of instances of a class should be used as prior

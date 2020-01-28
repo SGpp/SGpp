@@ -18,19 +18,19 @@ using sgpp::base::Grid;
 using sgpp::base::GridStorage;
 using sgpp::base::OperationMultipleEval;
 
-void genAllInteractions(std::vector<std::vector<size_t>> &inter, size_t d) {
-  std::vector<size_t> tmp;
-  inter.push_back(tmp);
+void genAllInteractions(std::set<std::set<size_t>> &inter, size_t d) {
+  std::set<size_t> tmp;
+  inter.emplace(tmp);
 
   size_t count = static_cast<size_t>(pow(2., static_cast<double>(d)));
   for (size_t i = 1; i < count; ++i) {
     tmp.clear();
     for (size_t j = 0; j < d; ++j) {
       if ((i & (1 << j)) > 0) {
-        tmp.push_back(j);
+        tmp.emplace(j);
       }
     }
-    inter.push_back(tmp);
+    inter.emplace(tmp);
   }
 }
 
@@ -40,7 +40,7 @@ int main() {
   size_t lvl_end = 5;
 
   for (auto const &d : dims) {
-    std::vector<std::vector<size_t>> interactions;
+    std::set<std::set<size_t>> interactions;
     genAllInteractions(interactions, d);
 
     /*std::cout << std::endl << "~~~" << std::endl << std::endl;

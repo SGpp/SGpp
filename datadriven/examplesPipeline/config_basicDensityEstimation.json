@@ -1,0 +1,52 @@
+{
+    "dataSource": {
+        "filePath": "../datasets/DR5/DR5_train.arff",
+        "hasTargets": false,
+        "validationPortion" : 0.5,
+        "readinCutoff": 10000,
+        "readinColumns": [2, 4],
+        "epochs": 2,
+        "batchSize": 1000
+    },
+    "scorer": {
+        "metric": "mse"
+    },
+    "fitter": {
+        "type": "densityEstimation",
+        "gridConfig": {
+            "gridType": "linear",
+            "level": 5
+        },
+        "adaptivityConfig": {
+            "numRefinements": 5,
+            "threshold": 0.0001,
+            "noPoints": 10,
+            "refinementIndicator": "surplus",
+            "errorBasedRefinement": false,
+            "refinementPeriod": 2
+        },
+        "regularizationConfig": {
+            "lambda": 1e-2
+        },
+        "densityEstimationConfig": {
+            "densityEstimationType": "decomposition",
+            "matrixDecompositionType": "chol"
+        }
+    },
+    "visualization": {
+        "generalConfig": {
+            "algorithm": ["tsne", "heatmaps"],
+            "targetDirectory": "./output",
+            "targetFileType": "json",
+            "numBatches": 1
+        },
+        "parameters": {
+            "perplexity": 30,
+            "theta": 0.5,
+            "seed": 150,
+            "maxNumberIterations": 1000,
+            "targetDimension": 2,
+            "numberCores": 1
+        }
+    }
+}

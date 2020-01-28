@@ -76,17 +76,17 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
     # beware: if symbols are missing that are actually required
     # (because the symbols don't reside in a shared library),
     # there will be no error during compilation
-    # the python binding (pysgpp) requires lpython and a flat namespace
     # also for the python binding, the library must be suffixed with '*.so' even
     # though it is a dynamiclib and not a bundle (see SConscript in src/pysgpp)
-    config.env.AppendUnique(LINKFLAGS=["-flat_namespace", "-undefined", "dynamic_lookup", "-lpython"])
+    config.env.AppendUnique(LINKFLAGS=["-undefined", "dynamic_lookup"])
     # The GNU assembler (GAS) is not supported in Mac OS X.
     # A solution that fixed this problem is by adding -Wa,-q to the compiler flags.
     # From the man pages for as (version 1.38):
     # -q Use the clang(1) integrated assembler instead of the GNU based system assembler.
     # Note that the CPPFLAG is exactly "-Wa,-q", where -Wa passes flags to the assembler and
     # -q is the relevant flag to make it use integrated assembler
-    config.env.AppendUnique(CPPFLAGS=["-Wa,-q"])
+    if config.env["COMPILER"] == "gcc":
+      config.env.AppendUnique(CPPFLAGS=["-Wa,-q"])
     config.env.AppendUnique(CPPPATH="/usr/local/include")
     config.env.AppendUnique(LIBPATH="/usr/local/lib")
     config.env["SHLIBSUFFIX"] = ".dylib"
@@ -120,7 +120,6 @@ def doConfigure(env, moduleFolders, languageWrapperFolders):
   detectGSL(config)
   detectZlib(config)
   detectScaLAPACK(config)
-  detectPythonAPI(config)
   checkDAKOTA(config)
   checkCGAL(config)
   checkBoostTests(config)
@@ -301,8 +300,8 @@ def checkSWIG(config):
         r"[0-9.]*[0-9]+", getOutput(["swig", "-version"]))[0]
 
     swigVersionTuple = config.env._get_major_minor_revision(swigVersion)
-    if swigVersionTuple < (3, 0, 3):
-      Helper.printErrorAndExit("SWIG version too old! At least 3.0.3 required.")
+    if swigVersionTuple < (3, 0, 4):
+      Helper.printErrorAndExit("SWIG version too old! At least 3.0.4 required.")
 
     Helper.printInfo("Using SWIG {}".format(swigVersion))
 
@@ -338,6 +337,9 @@ def checkPython(config):
       if config.env["RUN_PYTHON_TESTS"]:
         Helper.printWarning("Python unit tests were disabled because numpy is not available.")
         config.env["RUN_PYTHON_TESTS"] = False
+      if config.env["RUN_PYTHON_EXAMPLES"]:
+        Helper.printWarning("Python examples were disabled because numpy is not available.")
+        config.env["RUN_PYTHON_EXAMPLES"] = False
     else:
       config.env.AppendUnique(CPPPATH=[numpy_path])
       if not config.CheckCXXHeader(["Python.h", "pyconfig.h", "numpy/arrayobject.h"]):
@@ -396,16 +398,16 @@ def checkJava(config):
 def configureGNUCompiler(config):
 
   if config.env["RUN_ON_HAZELHEN"]:
-    config.env["CC"] = 'CC'
-    config.env["CXX"] = 'CC'
+    if "CC" not in config.env.arguments: config.env["CC"] = "CC"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "CC"
     config.env.Append(CPPPATH = [os.environ['BOOST_ROOT'] + '/include'])
     config.env.Append(LIBPATH = [os.environ['BOOST_ROOT'] + '/lib'])
     config.env.Append(CPPFLAGS=["-dynamic"])
     config.env.Append(LINKFLAGS=["-dynamic"])
   if config.env["COMPILER"] == "openmpi":
-    config.env["CC"] = ("mpicc")
-    config.env["LINK"] = ("mpicxx")
-    config.env["CXX"] = ("mpicxx")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpicc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpicxx"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpicxx"
     Helper.printInfo("Using openmpi.")
   elif config.env["COMPILER"] == "mpich":
     if config.env["CC"]:
@@ -413,9 +415,9 @@ def configureGNUCompiler(config):
     if config.env["CXX"]:
       config.env.Append(CPPFLAGS=["-cxx=" + config.env["CXX"]])
       config.env.Append(LINKFLAGS=["-cxx=" + config.env["CXX"]])
-    config.env["CC"] = ("mpicc.mpich")
-    config.env["LINK"] = ("mpicxx.mpich")
-    config.env["CXX"] = ("mpicxx.mpich")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpicc.mpich"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpicxx.mpich"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpicxx.mpich"
     Helper.printInfo("Using mpich.")
 
   versionString = getOutput([config.env["CXX"], "-dumpversion"])
@@ -441,7 +443,7 @@ def configureGNUCompiler(config):
       -Wno-unused-parameter".split(" ")
 
   if not config.env['USE_HPX']:
-    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic', '-Wswitch-default'])
+    allWarnings.append(['-Wswitch-enum', '-Wredundant-decls', '-pedantic'])
   else:
     allWarnings.append(['-Wno-conversion', '-Wno-format-nonliteral'])
 
@@ -453,9 +455,41 @@ def configureGNUCompiler(config):
   config.env.Append(CPPFLAGS=allWarnings + [
       "-fno-strict-aliasing",
       "-funroll-loops", "-mfpmath=sse"])
-#   if not config.env["USE_HPX"]:
-  config.env.Append(CPPFLAGS=["-fopenmp"])
-  config.env.Append(LINKFLAGS=["-fopenmp"])
+
+  # Mitigation for old Ubuntu (should probably be also applied to Debian?):
+  # Package 'libomp-dev' installs a symlink 'libgomp.so' to 'libomp.so' in /usr/lib/x86_64-linux.
+  # If this path is manually added (-L...), then ld uses this symlink and, thus, links against
+  # the wrong OpenMP library.
+  # The mitigation is to ask gcc for its LIBRARY_PATH in combination with -fopenmp and manually
+  # add this as the very first LIBPATH.
+  # Note, that this code also disables OpenMP if the mitigation command did not produce an
+  # adequate path.
+  ubuntuVersion = None
+
+  try:
+    match = re.search(r"Ubuntu ([0-9]{2}\.[0-9]{2})", getOutput(["lsb_release", "-d"]))
+    if match is not None: ubuntuVersion = match.group(1)
+  except OSError:
+    pass
+
+  if ubuntuVersion in ["16.04", "16.10", "17.04", "17.10", "18.04", "18.10"]:
+    output = getOutput([config.env["CXX"], "-v", "-fopenmp", "-xc", "/dev/null"])
+    match = re.search(r"LIBRARY_PATH=(.*?):", output)
+    firstLibPath = (match.group(1) if match is not None else None)
+    if (firstLibPath is None) or (not os.path.exists(firstLibPath)):
+      Helper.printWarning("Mitigation for old Ubuntu failed. Did not get libpath. "
+                          "Continuing WITHOUT OpenMP.")
+    else:
+      Helper.printInfo("Mitigation for old Ubuntu: Manually adding {} as first libpath.".format(
+          firstLibPath))
+      config.env.Append(LIBPATH=[firstLibPath])
+      # Safety first: Manually specity libgomp.so.1 as additional library before -fopenmp
+      config.env.Append(LINKFLAGS=["-l:libgomp.so.1", "-fopenmp"])
+      config.env.Append(CPPFLAGS=["-fopenmp"])
+  else:
+    config.env.Append(CPPFLAGS=["-fopenmp"])
+    config.env.Append(LINKFLAGS=["-fopenmp"])
+
 
   #   # limit the number of errors display to something reasonable (useful for templated code)
   #   config.env.Append(CPPFLAGS=["-fmax-errors=5"])
@@ -501,9 +535,9 @@ def configureGNUCompiler(config):
     config.env["SHLIBPREFIX"] = "lib"
 
 def configureClangCompiler(config):
-  config.env["CC"] = ("clang")
-  config.env["LINK"] = ("clang++")
-  config.env["CXX"] = ("clang++")
+  if "CC" not in config.env.arguments: config.env["CC"] = "clang"
+  if "LINK" not in config.env.arguments: config.env["LINK"] = "clang++"
+  if "CXX" not in config.env.arguments: config.env["CXX"] = "clang++"
 
   versionString = getOutput([config.env["CXX"], "--version"])
   try:
@@ -519,15 +553,19 @@ def configureClangCompiler(config):
   if not config.CheckCompiler():
     Helper.printErrorAndExit("Compiler found, but it is not working! (Hint: check flags)")
 
-  allWarnings = "-Wall -Wextra -Wno-unused-parameter".split(" ")
+  allWarnings = [
+    "-Wall", "-Wextra", "-Weverything", "-Wno-unknown-warning-option",
+    "-Wno-c++98-compat-local-type-template-args", "-Wno-c++98-compat-pedantic", "-Wno-deprecated",
+    "-Wno-disabled-macro-expansion", "-Wno-documentation", "-Wno-documentation-deprecated-sync",
+    "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
+    "-Wno-global-constructors", "-Wno-missing-noreturn", "-Wno-missing-prototypes", "-Wno-padded",
+    "-Wno-shadow", "-Wno-shadow-field", "-Wno-sign-conversion", "-Wno-undef",
+    "-Wno-unused-parameter", "-Wno-weak-vtables",
+  ]
+  config.env.Append(CPPFLAGS=allWarnings)
 
-  # -fno-strict-aliasing: http://www.swig.org/Doc1.3/Java.html or
-  #     http://www.swig.org/Release/CHANGES, 03/02/2006
-  #    "If you are going to use optimisations turned on with gcc > 4.0 (for example -O2),
-  #     ensure you also compile with -fno-strict-aliasing"
-#   if not config.env["USE_HPX"]:
-  config.env.Append(CPPFLAGS=["-fopenmp=libiomp5"])
-  config.env.Append(LINKFLAGS=["-fopenmp=libiomp5"])
+  config.env.Append(CPPFLAGS=["-fopenmp"])
+  config.env.Append(LINKFLAGS=["-fopenmp"])
 
   if config.env["BUILD_STATICLIB"]:
     config.env.Append(CPPFLAGS=["-D_BUILD_STATICLIB"])
@@ -559,14 +597,14 @@ def configureIntelCompiler(config):
                                     "-ansi-alias", "-fp-speculation=safe",
                                     "-qno-offload"])
   if config.env["COMPILER"] == "intel.mpi":
-    config.env["CC"] = ("mpiicc")
-    config.env["LINK"] = ("mpiicpc")
-    config.env["CXX"] = ("mpiicpc")
+    if "CC" not in config.env.arguments: config.env["CC"] = "mpiicc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "mpiicpc"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "mpiicpc"
     config.env["CPPDEFINES"]["USE_MPI"] = "1"
   else:
-    config.env["CC"] = ("icc")
-    config.env["LINK"] = ("icpc")
-    config.env["CXX"] = ("icpc")
+    if "CC" not in config.env.arguments: config.env["CC"] = "icc"
+    if "LINK" not in config.env.arguments: config.env["LINK"] = "icpc"
+    if "CXX" not in config.env.arguments: config.env["CXX"] = "icpc"
 
   versionString = getOutput([config.env["CXX"], "-dumpversion"])
   Helper.printInfo("Using {} {}".format(config.env["CXX"], versionString))
@@ -680,8 +718,3 @@ def detectScaLAPACK(config):
   else:
     config.env["USE_SCALAPACK"] = False
     Helper.printInfo("No ScaLAPACK version found, ScaLAPACK support disabled.")
-
-
-def detectPythonAPI(config):
-  if config.env["USE_PYTHON_EMBEDDING"]:
-    config.env["CPPDEFINES"]["USE_PYTHON_EMBEDDING"] = "1"

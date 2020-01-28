@@ -57,8 +57,8 @@ class HostDevPtr {
  public:
   /// Constructor does not allocate any memory
   HostDevPtr() {
-    _host = NULL;
-    _dev = NULL;
+    _host = nullptr;
+    _dev = nullptr;
     _size = 0;
     _ref = false;
   }
@@ -73,13 +73,13 @@ class HostDevPtr {
   void Free() {
     if (_host && !_ref) {
       delete[](_host);
-      _host = NULL;
+      _host = nullptr;
       _size = 0;
       _ref = false;
     }
     if (_dev) {
       cudaFree(_dev);
-      _dev = NULL;
+      _dev = nullptr;
     }
   }
 
@@ -97,7 +97,7 @@ class HostDevPtr {
     if (_host && !_ref) delete[](_host);
     if (_dev) {
       cudaFree(_dev);
-      _dev = NULL;
+      _dev = nullptr;
     }
     _host = new _dtype[size];
     _size = size;
@@ -108,7 +108,7 @@ class HostDevPtr {
     if (_host) delete[](_host);
     if (_dev) {
       cudaFree(_dev);
-      _dev = NULL;
+      _dev = nullptr;
     }
     _host = ptr;
     _size = size;

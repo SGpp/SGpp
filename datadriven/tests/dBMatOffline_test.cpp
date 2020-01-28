@@ -1,13 +1,8 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * test_DBMatOffline.cpp
- *
- * Created on: Apr 8, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #ifdef USE_GSL
 
 #define BOOST_TEST_DYN_LINK
@@ -25,6 +20,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <string>
+#include <set>
 #include <vector>
 
 BOOST_AUTO_TEST_SUITE(dBMatOffline_test)
@@ -46,7 +42,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
   };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -76,7 +72,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 
 
@@ -95,7 +91,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrixQ.getSize(), newMatrixQ.getSize());
 
   for (size_t i = 0; i < newMatrixQ.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrixQ[i], oldMatrixQ[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrixQ[i], oldMatrixQ[i], 1e-4);
   }
 
   // t_tridiag_inv
@@ -108,7 +104,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   BOOST_CHECK_EQUAL(oldMatrixTinv.getSize(), newMatrixTinv.getSize());
 
   for (size_t i = 0; i < newMatrixTinv.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrixTinv[i], oldMatrixTinv[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrixTinv[i], oldMatrixTinv[i], 1e-4);
   }
 }
 
@@ -129,7 +125,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -155,7 +151,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 
@@ -176,7 +172,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -202,7 +198,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 
@@ -223,7 +219,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 
   sgpp::datadriven::GridFactory gridFactory;
     std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
@@ -249,7 +245,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   BOOST_CHECK_EQUAL(oldMatrix.getSize(), newMatrix.getSize());
 
   for (size_t i = 0; i < newMatrix.getSize(); i++) {
-    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 10e-5);
+    BOOST_CHECK_CLOSE(newMatrix[i], oldMatrix[i], 1e-4);
   }
 }
 

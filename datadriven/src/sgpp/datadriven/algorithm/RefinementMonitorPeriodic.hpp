@@ -1,12 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- * RefinementMonitorPeriodic.hpp
- *
- *  Created on: Jun 30, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -35,7 +30,7 @@ class RefinementMonitorPeriodic : public RefinementMonitor {
   /**
    * Destructor.
    */
-  virtual ~RefinementMonitorPeriodic();
+  ~RefinementMonitorPeriodic() override;
 
   /**
    * Pushes a new iteration to the monitors state.

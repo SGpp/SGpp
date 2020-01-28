@@ -23,10 +23,11 @@ namespace sgpp {
 namespace datadriven {
 MultipleClassRefinementFunctor::MultipleClassRefinementFunctor(std::vector<base::Grid*> grids,
                                 std::vector<base::DataVector*> alphas,
+                                std::vector<double> priors,
                                 size_t refinements_num,
                                 size_t partCombined,
                                 double thresh) :
-                ZeroCrossingRefinementFunctor(grids, alphas, refinements_num,
+                ZeroCrossingRefinementFunctor(grids, alphas, priors, refinements_num,
                                 false, false, thresh), partCombined(partCombined) {
     // Set default values
     topPercent = 0.2;

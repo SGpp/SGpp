@@ -10,7 +10,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "common/basis/PolyModifiedClenshawCurtisBasis.hpp"
+#include <sgpp/base/operation/hash/common/basis/PolyModifiedClenshawCurtisBasis.hpp>
 
 namespace sgpp {
 namespace base {

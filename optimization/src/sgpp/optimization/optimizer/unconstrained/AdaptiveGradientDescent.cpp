@@ -5,43 +5,46 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/optimization/tools/Printer.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/AdaptiveGradientDescent.hpp>
+
+#include <limits>
+#include <vector>
 
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(
-    const ScalarFunction& f, const ScalarFunctionGradient& fGradient,
+AdaptiveGradientDescent::AdaptiveGradientDescent(const base::ScalarFunction& f,
+                                                 const base::ScalarFunctionGradient& fGradient,
     size_t maxItCount, double tolerance,
-    double stepSizeIncreaseFactor, double stepSizeDecreaseFactor, double lineSearchAccuracy)
-    : UnconstrainedOptimizer(f, maxItCount),
+                                                 double stepSizeIncreaseFactor,
+                                                 double stepSizeDecreaseFactor,
+                                                 double lineSearchAccuracy)
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor),
       rhoLs(lineSearchAccuracy) {
-  fGradient.clone(this->fGradient);
 }
 
-AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other) :
-    UnconstrainedOptimizer(other),
+AdaptiveGradientDescent::AdaptiveGradientDescent(const AdaptiveGradientDescent& other)
+    : UnconstrainedOptimizer(other),
     theta(other.theta),
     rhoAlphaPlus(other.rhoAlphaPlus),
     rhoAlphaMinus(other.rhoAlphaMinus),
     rhoLs(other.rhoLs) {
-  other.fGradient->clone(fGradient);
 }
 
 AdaptiveGradientDescent::~AdaptiveGradientDescent() {}
 
 void AdaptiveGradientDescent::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (adaptive gradient descent)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -59,26 +62,51 @@ void AdaptiveGradientDescent::optimize() {
   double alpha = 1.0;
   base::DataVector dir(d);
   bool inDomain;
+  std::vector<bool> isConstraintBinding(d, false);
 
   size_t breakIterationCounter = 0;
   const size_t BREAK_ITERATION_COUNTER_MAX = 10;
+  const double BINDING_TOLERANCE = 1e-6;
 
   while (k < N) {
     // calculate gradient and norm
     fx = fGradient->eval(x, gradFx);
     k++;
 
-    const double gradFxNorm = gradFx.l2Norm();
+    for (size_t t = 0; t < d; t++) {
+      // search direction (negated gradient)
+      dir[t] = -gradFx[t];
 
-    if (gradFxNorm == 0.0) {
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (dir[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (dir[t] > 0.0))) {
+        // discard variable by setting direction to zero
+        dir[t] = 0.0;
+
+        // was the constraint not binding in the previous iteration?
+        if (!isConstraintBinding[t]) {
+          // reset step size as it's most likely very small due to approach to the boundary
+          alpha = 1.0;
+          isConstraintBinding[t] = true;
+        }
+      } else {
+        isConstraintBinding[t] = false;
+      }
+    }
+
+    const double dirNorm = dir.l2Norm();
+
+    if (dirNorm == 0.0) {
       break;
     }
 
     inDomain = true;
 
     for (size_t t = 0; t < d; t++) {
-      // search direction (normalized negated gradient)
-      dir[t] = -gradFx[t] / gradFxNorm;
+      // normalize search direction
+      dir[t] /= dirNorm;
+
       // new point
       xNew[t] = x[t] + alpha * dir[t];
 
@@ -88,11 +116,15 @@ void AdaptiveGradientDescent::optimize() {
     }
 
     // evaluate at new point
-    fxNew = (inDomain ? f->eval(xNew) : INFINITY);
-    k++;
+    if (inDomain) {
+      fxNew = f->eval(xNew);
+      k++;
+    } else {
+      fxNew = std::numeric_limits<double>::infinity();
+    }
 
-    // inner product of gradient and search direction
-    const double gradFxTimesDir = -gradFxNorm;
+    // inner product of gradient (in free variables) and search direction
+    const double gradFxTimesDir = -dirNorm;
 
     // line search
     while ((fxNew > fx + rhoLs * alpha * gradFxTimesDir) && (alpha > 0.0)) {
@@ -110,8 +142,12 @@ void AdaptiveGradientDescent::optimize() {
       }
 
       // evaluate at new point
-      fxNew = (inDomain ? f->eval(xNew) : INFINITY);
+      if (inDomain) {
+        fxNew = f->eval(xNew);
       k++;
+      } else {
+        fxNew = std::numeric_limits<double>::infinity();
+      }
     }
 
     // after too many line search steps, alpha will be numerically zero
@@ -129,8 +165,8 @@ void AdaptiveGradientDescent::optimize() {
     alpha *= rhoAlphaPlus;
 
     // status printing
-    Printer::getInstance().printStatusUpdate(std::to_string(k) + " evaluations, x = " +
-                                             x.toString() + ", f(x) = " + std::to_string(fx));
+    base::Printer::getInstance().printStatusUpdate(
+        std::to_string(k) + " evaluations, x = " + x.toString() + ", f(x) = " + std::to_string(fx));
 
     // stopping criterion:
     // stop if alpha is smaller than tolerance theta
@@ -149,10 +185,8 @@ void AdaptiveGradientDescent::optimize() {
   xOpt.resize(d);
   xOpt = x;
   fOpt = fx;
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusEnd();
 }
-
-ScalarFunctionGradient& AdaptiveGradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double AdaptiveGradientDescent::getTolerance() const { return theta; }
 

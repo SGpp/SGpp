@@ -8,9 +8,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
 
 #include <vector>
 
@@ -33,7 +33,30 @@ class SquaredPenalty : public ConstrainedOptimizer {
   static constexpr double DEFAULT_PENALTY_INCREASE_FACTOR = 10.0;
 
   /**
-   * Constructor.
+   * Constructor with Nelder-Mead as optimization algorithm
+   * (gradient-free).
+   *
+   * @param f                     objective function
+   * @param g                     inequality constraint
+   * @param h                     equality constraint
+   * @param maxItCount            maximal number of function evaluations
+   * @param xTolerance            point tolerance
+   * @param constraintTolerance   constraint tolerance
+   * @param penaltyStartValue     penalty start value
+   * @param penaltyIncreaseFactor penalty increase factor
+   */
+  SquaredPenalty(const base::ScalarFunction& f,
+                 const base::VectorFunction& g,
+                 const base::VectorFunction& h,
+                 size_t maxItCount = DEFAULT_N,
+                 double xTolerance = DEFAULT_X_TOLERANCE,
+                 double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                 double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                 double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
+   * Constructor with adaptive gradient descent as optimization algorithm
+   * (gradient-based).
    *
    * @param f                     objective function
    * @param fGradient             objective function gradient
@@ -48,17 +71,42 @@ class SquaredPenalty : public ConstrainedOptimizer {
    * @param penaltyStartValue     penalty start value
    * @param penaltyIncreaseFactor penalty increase factor
    */
-  SquaredPenalty(const ScalarFunction& f,
-                 const ScalarFunctionGradient& fGradient,
-                 const VectorFunction& g,
-                 const VectorFunctionGradient& gGradient,
-                 const VectorFunction& h,
-                 const VectorFunctionGradient& hGradient,
+  SquaredPenalty(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
+                 const base::VectorFunction& g, const base::VectorFunctionGradient& gGradient,
+                 const base::VectorFunction& h, const base::VectorFunctionGradient& hGradient,
+                 size_t maxItCount = DEFAULT_N, double xTolerance = DEFAULT_X_TOLERANCE,
+                 double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
+                 double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
+                 double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
+  /**
+   * Constructor with custom unconstrained optimization algorithm
+   * (gradient-free or gradient-based).
+   *
+   * @param unconstrainedOptimizer  unconstrained optimization algorithm
+   * @param g                       inequality constraint
+   * @param gGradient               inequality constraint gradient
+   *                                (nullptr to omit)
+   * @param h                       equality constraint
+   * @param hGradient               equality constraint gradient
+   *                                (nullptr to omit)
+   * @param maxItCount              maximal number of function evaluations
+   * @param xTolerance              point tolerance
+   * @param constraintTolerance     constraint tolerance
+   * @param penaltyStartValue       penalty start value
+   * @param penaltyIncreaseFactor   penalty increase factor
+   */
+  SquaredPenalty(const UnconstrainedOptimizer& unconstrainedOptimizer,
+                 const base::VectorFunction& g,
+                 const base::VectorFunctionGradient* gGradient,
+                 const base::VectorFunction& h,
+                 const base::VectorFunctionGradient* hGradient,
                  size_t maxItCount = DEFAULT_N,
                  double xTolerance = DEFAULT_X_TOLERANCE,
                  double constraintTolerance = DEFAULT_CONSTRAINT_TOLERANCE,
                  double penaltyStartValue = DEFAULT_PENALTY_START_VALUE,
                  double penaltyIncreaseFactor = DEFAULT_PENALTY_INCREASE_FACTOR);
+
   /**
    * Copy constructor.
    *
@@ -72,21 +120,6 @@ class SquaredPenalty : public ConstrainedOptimizer {
   ~SquaredPenalty() override;
 
   void optimize() override;
-
-  /**
-   * @return objective function gradient
-   */
-  ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
-   * @return inequality constraint function gradient
-   */
-  VectorFunctionGradient& getInequalityConstraintGradient() const;
-
-  /**
-   * @return equality constraint function gradient
-   */
-  VectorFunctionGradient& getEqualityConstraintGradient() const;
 
   /**
    * @return point tolerance
@@ -147,12 +180,6 @@ class SquaredPenalty : public ConstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<ScalarFunctionGradient> fGradient;
-  /// inequality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> gGradient;
-  /// equality constraint function gradient
-  std::unique_ptr<VectorFunctionGradient> hGradient;
   /// point tolerance
   double theta;
   /// constraint tolerance

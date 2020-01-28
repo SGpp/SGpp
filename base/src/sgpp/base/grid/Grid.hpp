@@ -25,38 +25,46 @@ namespace base {
  *
  */
 enum class GridType {
-  Linear,                        //  0
-  LinearStretched,               //  1
-  LinearL0Boundary,              //  2
-  LinearBoundary,                //  3
-  LinearStretchedBoundary,       //  4
-  LinearTruncatedBoundary,       //  5
-  ModLinear,                     //  6
-  Poly,                          //  7
-  PolyBoundary,                  //  8
-  ModPoly,                       //  9
-  ModWavelet,                    // 10
-  ModBspline,                    // 11
-  Prewavelet,                    // 12
-  SquareRoot,                    // 13
-  Periodic,                      // 14
-  LinearClenshawCurtisBoundary,  // 15
-  Bspline,                       // 16
-  BsplineBoundary,               // 17
-  BsplineClenshawCurtis,         // 18
-  Wavelet,                       // 19
-  WaveletBoundary,               // 20
-  FundamentalSpline,             // 21
-  ModFundamentalSpline,          // 22
-  ModBsplineClenshawCurtis,      // 23
-  LinearStencil,                 // 24
-  ModLinearStencil,              // 25
-  PolyClenshawCurtisBoundary,    // 26
-  PolyClenshawCurtis,            // 27
-  LinearClenshawCurtis,          // 28
-  ModPolyClenshawCurtis,         // 29
-  ModLinearClenshawCurtis,       // 30
-  NakBsplineBoundaryCombigrid    // 31
+  Linear,                             //  0
+  LinearStretched,                    //  1
+  LinearL0Boundary,                   //  2
+  LinearBoundary,                     //  3
+  LinearStretchedBoundary,            //  4
+  LinearTruncatedBoundary,            //  5
+  ModLinear,                          //  6
+  Poly,                               //  7
+  PolyBoundary,                       //  8
+  ModPoly,                            //  9
+  ModWavelet,                         // 10
+  ModBspline,                         // 11
+  Prewavelet,                         // 12
+  SquareRoot,                         // 13
+  Periodic,                           // 14
+  LinearClenshawCurtisBoundary,       // 15
+  Bspline,                            // 16
+  BsplineBoundary,                    // 17
+  BsplineClenshawCurtis,              // 18
+  Wavelet,                            // 19
+  WaveletBoundary,                    // 20
+  FundamentalSpline,                  // 21
+  ModFundamentalSpline,               // 22
+  ModBsplineClenshawCurtis,           // 23
+  LinearStencil,                      // 24
+  ModLinearStencil,                   // 25
+  PolyClenshawCurtisBoundary,         // 26
+  PolyClenshawCurtis,                 // 27
+  LinearClenshawCurtis,               // 28
+  ModPolyClenshawCurtis,              // 29
+  ModLinearClenshawCurtis,            // 30
+  NakBsplineBoundaryCombigrid,        // 31
+  NaturalBsplineBoundary,             // 32
+  NakBsplineBoundary,            // 33
+  ModNakBspline,                 // 34
+  WeaklyFundamentalSplineBoundary,             // 35
+  WeaklyFundamentalNakSplineBoundary,     // 36
+  ModWeaklyFundamentalNakSpline,          // 37
+  FundamentalSplineBoundary,          // 38
+  FundamentalNakSplineBoundary,  // 39
 };
 
 /**
@@ -74,23 +82,26 @@ enum class GeneralGridType {
  */
 struct GeneralGridConfiguration {
   // Grid "super" types
-  GeneralGridType generalType_;
+  GeneralGridType generalType_ = GeneralGridType::RegularSparseGrid;
   /// Grid Type, see enum
   sgpp::base::GridType type_ = GridType::Linear;
   /// number of dimensions
-  size_t dim_;
+  size_t dim_ = 0;
   /// number of levels
-  int level_;
+  int level_ = 3;
   /// vector of levels for each dimension
+  /// TODO(Sebastian Kreisel): initialize with some default value!
   std::vector<size_t> levelVector_;
   /// max. polynomial degree for poly basis
   size_t maxDegree_ = 1;
   /// level of boundary grid
   level_t boundaryLevel_ = 0;
   /// string to serialized grid
-  std::string filename_;
+  std::string filename_ = "";
   /// subgrid selection value t
   double t_ = 0.0;
+  /// virtual destructor, since GeneralGridConfiguration is used as base class
+  virtual ~GeneralGridConfiguration() {}
 };
 
 /**
@@ -98,6 +109,7 @@ struct GeneralGridConfiguration {
  */
 struct RegularGridConfiguration : GeneralGridConfiguration {
   RegularGridConfiguration() { generalType_ = GeneralGridType::RegularSparseGrid; }
+  ~RegularGridConfiguration() override {}
 };
 
 /**
@@ -110,6 +122,7 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
     generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;
   }
+  ~CombiGridConfiguration() override {}
 };
 
 /**
@@ -117,13 +130,13 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
  */
 struct AdaptivityConfiguration {
   /// number of refinements
-  size_t numRefinements_;
+  size_t numRefinements_ = 1;
   /// refinement threshold for surpluses
-  double threshold_;
+  double threshold_ = 0.0;
   /// refinement type: false: classic, true: maxLevel
-  bool maxLevelType_;
+  bool maxLevelType_ = false;
   /// max. number of points to be refined
-  size_t noPoints_;
+  size_t noPoints_ = 5;
   /// max. percent of points to be refined
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
@@ -319,7 +332,11 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the polynom's max. degree
-   * @param boundaryLevel level at which boundary points are added
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
   static Grid* createPolyBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
@@ -389,8 +406,14 @@ class Grid {
    * </tr></table>
    *
    * @param dim the grid's dimension
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
+   * @return grid
    */
-  static Grid* createWaveletBoundaryGrid(size_t dim);
+  static Grid* createWaveletBoundaryGrid(size_t dim, level_t boundaryLevel = 1);
 
   /**
    * creates a modified wavelet grid
@@ -429,9 +452,14 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree);
+  static Grid* createBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * creates a B-spline Clenshaw-Curtis grid
@@ -443,9 +471,15 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel on which level the boundary grid points and
+   *                      basis functions should be added;
+   *                      the default is 1, which results in a grid with
+   *                      the same resolution on the boundary as on the
+   *                      main axis
    * @return grid
    */
-  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree);
+  static Grid* createBsplineClenshawCurtisGrid(size_t dim, size_t degree,
+                                               level_t boundaryLevel = 1);
 
   /**
    * creates a modified B-spline grid
@@ -564,6 +598,21 @@ class Grid {
     * @return grid
     */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
+
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
+                                                level_t boundaryLevel = 1);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree,
+                                                 level_t boundaryLevel = 1);
+  static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
+  static Grid* createWeaklyFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
+                                                level_t boundaryLevel = 1);
+  static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
+                                                        level_t boundaryLevel = 1);
+  static Grid* createModWeaklyFundamentalNakSplineGrid(size_t dim, size_t degree);
+  static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree,
+                                                   level_t boundaryLevel = 1);
+  static Grid* createFundamentalNakSplineBoundaryGrid(
+      size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * reads a grid out of a string

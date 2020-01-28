@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * OperationMultipleEvalDistributed.hpp
- *
- * Created on: Mar 25, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -76,14 +69,14 @@ class OperationMultipleEvalDistributed : public sgpp::base::OperationMultipleEva
   /**
    * Not implemented in distributed version.
    */
-  virtual void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) {
+  void mult(sgpp::base::DataVector& alpha, sgpp::base::DataVector& result) override {
     throw sgpp::base::not_implemented_exception("only distributed version of mult implemented");
   }
 
   /**
    * Not implemented in distributed version.
    */
-  virtual void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) {
+  void multTranspose(sgpp::base::DataVector& source, sgpp::base::DataVector& result) override {
     throw sgpp::base::not_implemented_exception("only distributed version of mult implemented");
   }
 };

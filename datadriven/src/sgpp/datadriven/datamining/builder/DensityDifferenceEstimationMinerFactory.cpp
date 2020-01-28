@@ -15,16 +15,19 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-// #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
-// #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-// #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+// #include
+// <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+// #include
+// <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting_TwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -34,17 +37,20 @@ SparseGridMiner *DensityDifferenceEstimationMinerFactory::buildMiner(
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
     // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser));
+    return new SparseGridMinerCrossValidation(
+        createDataSourceCrossValidation(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   } else {
-    return new SparseGridMinerSplitting_TwoDatasets(createDataSourceSplitting_TwoDatasets(parser),
-                                                    createFitter(parser), createScorer(parser));
+    return new SparseGridMinerSplitting_TwoDatasets(
+        createDataSourceSplitting_TwoDatasets(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   }
 }
 
-std::vector<DataSourceSplitting *> DensityDifferenceEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
+std::vector<DataSourceSplitting *>
+DensityDifferenceEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
     const DataMiningConfigParser &parser) const {
-  std::vector < DataSourceConfig > configs(2);
+  std::vector<DataSourceConfig> configs(2);
 
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
 
@@ -67,12 +73,23 @@ std::vector<DataSourceSplitting *> DensityDifferenceEstimationMinerFactory::crea
 
 ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
-  FitterConfigurationDensityEstimation config { };
+  FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  return new ModelFittingDensityDifferenceEstimationOnOff(config);
+
+  switch (config.getDensityEstimationConfig().type_) {
+    case (DensityEstimationType::CG):
+      std::cout << "\nCG\n";
+      return new ModelFittingDensityDifferenceEstimationCG(config);
+    case (DensityEstimationType::Decomposition):
+      std::cout << "\nDECOMPOSITION\n";
+      return new ModelFittingDensityDifferenceEstimationOnOff(config);
+  }
+
+  throw base::application_exception("Unknown density estimation type");
 }
 /*
- HyperparameterOptimizer *DensityDifferenceEstimationMinerFactory::buildHPO(const std::string &path)
+ HyperparameterOptimizer
+ *DensityDifferenceEstimationMinerFactory::buildHPO(const std::string &path)
  const {
  DataMiningConfigParser parser(path);
  if (parser.getHPOMethod("bayesian") == "harmonica") {
@@ -89,6 +106,14 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
  return new DensityEstimationFitterFactory(parser);
  }
  */
+
+Visualizer *DensityDifferenceEstimationMinerFactory::createVisualizer(
+    const DataMiningConfigParser &parser) const {
+  VisualizerConfiguration config;
+  config.readParams(parser);
+
+  return new VisualizerDensityEstimation(config);
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

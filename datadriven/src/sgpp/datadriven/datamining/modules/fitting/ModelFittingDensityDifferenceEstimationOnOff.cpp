@@ -35,32 +35,35 @@ using sgpp::base::application_exception;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingDensityDifferenceEstimationOnOff::ModelFittingDensityDifferenceEstimationOnOff(
-    const FitterConfigurationDensityEstimation& config)
+ModelFittingDensityDifferenceEstimationOnOff::
+    ModelFittingDensityDifferenceEstimationOnOff(
+        const FitterConfigurationDensityEstimation& config)
     : ModelFittingDensityEstimation() {
-  this->config = std::unique_ptr < FitterConfiguration
-      > (std::make_unique < FitterConfigurationDensityEstimation > (config));
+  this->config = std::unique_ptr<FitterConfiguration>(
+      std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityDifferenceEstimationOnOff::evaluate(const DataVector& sample) {
+double ModelFittingDensityDifferenceEstimationOnOff::evaluate(
+    const DataVector& sample) {
   return online->eval(alpha, sample, *grid);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityDifferenceEstimationOnOff::evaluate(DataMatrix& samples,
-                                                            DataVector& results) {
+void ModelFittingDensityDifferenceEstimationOnOff::evaluate(
+    DataMatrix& samples, DataVector& results) {
   online->eval(alpha, samples, results, *grid);
 }
 
-void ModelFittingDensityDifferenceEstimationOnOff::fit(Dataset& newDatasetP, Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationOnOff::fit(Dataset& newDatasetP,
+                                                       Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   fit(newDatasetP.getData(), newDatasetQ.getData());
 }
 
-void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
-                                                       DataMatrix& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationOnOff::fit(
+    DataMatrix& newDatasetP, DataMatrix& newDatasetQ) {
   // Get configurations
   auto& databaseConfig = this->config->getDatabaseConfig();
   auto& gridConfig = this->config->getGridConfig();
@@ -72,57 +75,73 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   reset();
 
   // build grid
-  gridConfig.dim_ = newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
+  gridConfig.dim_ =
+      newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
   std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass
   // interactions from config?)
   // grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
-  grid = std::unique_ptr<Grid> { buildGrid(gridConfig) };
+  grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   // build surplus vector
-  alpha = DataVector { grid->getSize() };
+  alpha = DataVector(grid->getSize());
 
   // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  if (!databaseConfig.filePath.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
-    if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
-                               densityEstimationConfig)) {
-      std::string offlineFilepath = database.getDataMatrix(gridConfig, refinementConfig,
-                                                           regularizationConfig,
-                                                           densityEstimationConfig);
-      offline =
-          std::unique_ptr<DBMatOffline> { DBMatOfflineFactory::buildFromFile(offlineFilepath) };
+    if (database.hasDataMatrix(gridConfig, refinementConfig,
+                               regularizationConfig, densityEstimationConfig)) {
+      std::string offlineFilepath =
+          database.getDataMatrix(gridConfig, refinementConfig,
+                                 regularizationConfig, densityEstimationConfig);
+      offline = std::unique_ptr<DBMatOffline>{
+          DBMatOfflineFactory::buildFromFile(offlineFilepath)};
     }
   }
 
   // Build and decompose offline object if not loaded from database
-  if (offline == nullptr) {
+  if (!offline) {
     // Build offline object by factory, build matrix and decompose
-    offline = std::unique_ptr<DBMatOffline> { DBMatOfflineFactory::buildOfflineObject(
-        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig) };
+    offline =
+        std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
+            gridConfig, refinementConfig, regularizationConfig,
+            densityEstimationConfig)};
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
   }
-  online = std::unique_ptr<DBMatOnlineDE> { DBMatOnlineDEFactory::buildDBMatOnlineDE(
-      *offline, *grid, regularizationConfig.lambda_) };
 
-  online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
-                                           this->config->getDensityEstimationConfig(), true,
-                                           this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online =
+      std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
+          *offline, *grid, regularizationConfig.lambda_, 0,
+          densityEstimationConfig.decomposition_)};
+
+  // in SMW decomposition type case, the inverse of the matrix needs to be
+  // computed explicitly
+  if (densityEstimationConfig.decomposition_ ==
+          MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ ==
+          MatrixDecompositionType::SMW_chol) {
+    offline->compute_inverse();
+  }
+
+  online->computeDensityDifferenceFunction(
+      alpha, newDatasetP, newDatasetQ, *grid,
+      this->config->getDensityEstimationConfig(), true,
+      this->config->getCrossvalidationConfig().enable_);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
   }
 }
 
-bool ModelFittingDensityDifferenceEstimationOnOff::refine(size_t newNoPoints,
-                                                          std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityDifferenceEstimationOnOff::refine(
+    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha
-    std::vector < size_t
-        > idxToDelete { std::begin(*deletedGridPoints), std::end(*deletedGridPoints) };
+    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
+                                    std::end(*deletedGridPoints)};
     alpha.remove(idxToDelete);
   }
   // oldNoPoint refers to the grid size after coarsening
@@ -135,30 +154,32 @@ bool ModelFittingDensityDifferenceEstimationOnOff::refine(size_t newNoPoints,
 
   // Update online object: lhs, rhs and recompute the density function based on
   // the b stored
-  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
-                                          newNoPoints - oldNoPoints, *deletedGridPoints,
-                                          config->getRegularizationConfig().lambda_);
+  online->updateSystemMatrixDecomposition(
+      config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints,
+      *deletedGridPoints, config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
   return true;
 }
 
-void ModelFittingDensityDifferenceEstimationOnOff::update(Dataset& newDatasetP,
-                                                          Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationOnOff::update(
+    Dataset& newDatasetP, Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   update(newDatasetP.getData(), newDatasetQ.getData());
 }
 
-void ModelFittingDensityDifferenceEstimationOnOff::update(DataMatrix& newDatasetP,
-                                                          DataMatrix& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationOnOff::update(
+    DataMatrix& newDatasetP, DataMatrix& newDatasetQ) {
   if (grid == nullptr) {
     // Initial fitting of dataset
     fit(newDatasetP, newDatasetQ);
   } else {
     // Update the fit (streaming)
-    online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
-                                             this->config->getDensityEstimationConfig(), true,
-                                             this->config->getCrossvalidationConfig().enable_);
+    online->computeDensityDifferenceFunction(
+        alpha, newDatasetP, newDatasetQ, *grid,
+        this->config->getDensityEstimationConfig(), true,
+        this->config->getCrossvalidationConfig().enable_);
+
     if (this->config->getDensityEstimationConfig().normalize_) {
       online->normalize(alpha, *grid);
     }

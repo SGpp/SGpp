@@ -23,11 +23,11 @@ namespace pde {
 
 PoissonEquationSolver::PoissonEquationSolver() : EllipticPDESolver() {
   this->bGridConstructed = false;
-  this->myScreen = NULL;
+  this->myScreen = nullptr;
 }
 
 PoissonEquationSolver::~PoissonEquationSolver() {
-  if (this->myScreen != NULL) {
+  if (this->myScreen != nullptr) {
     delete this->myScreen;
   }
 }

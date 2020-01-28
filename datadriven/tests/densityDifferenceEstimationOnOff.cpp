@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_B2_64_B2_2_B2_2) {
             "0.001, \"maxLevelType\" : false, \"noPoints\" : 3}, "
          << "\"regularizationConfig\" : { \"lambda\" : 1}, "
          << "\"densityEstimationConfig\" : { \"densityEstimationType\" : "
-            "\"cg\" } } }"
+            "\"decomposition\" } } }"
          << std::endl;
 
   double mse = testDistributionDDE_OnOff(

@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * RefinementFunctorTypeParser.cpp
- *
- *  Created on: Jun 29, 2018
- *
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
@@ -36,6 +29,8 @@ RefinementFunctorType RefinementFunctorTypeParser::parse(const std::string& inpu
     return RefinementFunctorType::GridPointBased;
   } else if (inputLower == "multipleclass") {
     return RefinementFunctorType::MultipleClass;
+  } else if (inputLower == "classification") {
+    return RefinementFunctorType::Classification;
   } else {
     std::string errorMsg = "Failed to convert string \"" + input + "\" to any known "
         "RefinementFunctorType";
@@ -54,7 +49,8 @@ RefinementFunctorTypeParser::refinementFunctorTypeMap = []() {
       std::make_pair(RefinementFunctorType::ZeroCrossing, "ZeroCrossing"),
       std::make_pair(RefinementFunctorType::DataBased, "DataBased"),
       std::make_pair(RefinementFunctorType::GridPointBased, "GridPointBased"),
-      std::make_pair(RefinementFunctorType::MultipleClass, "MultipleClass")
+      std::make_pair(RefinementFunctorType::MultipleClass, "MultipleClass"),
+      std::make_pair(RefinementFunctorType::Classification, "Classification")
   };
 }();
 

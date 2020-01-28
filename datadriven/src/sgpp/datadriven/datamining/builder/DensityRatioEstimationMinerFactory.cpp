@@ -19,27 +19,33 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting_TwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(
+    const std::string& path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
     // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser));
+    return new SparseGridMinerCrossValidation(
+        createDataSourceCrossValidation(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   } else {
-    return new SparseGridMinerSplitting_TwoDatasets(createDataSourceSplitting_TwoDatasets(parser),
-                                                    createFitter(parser), createScorer(parser));
+    return new SparseGridMinerSplitting_TwoDatasets(
+        createDataSourceSplitting_TwoDatasets(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   }
 }
 
-std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
+std::vector<DataSourceSplitting*>
+DensityRatioEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
     const DataMiningConfigParser& parser) const {
-  std::vector < DataSourceConfig > configs(2);
+  std::vector<DataSourceConfig> configs(2);
 
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
 
@@ -67,7 +73,8 @@ std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createData
  DataSourceConfig config { };
 
  CrossvalidationConfiguration crossValidationconfig { };
- parser.getFitterCrossvalidationConfig(crossValidationconfig, crossValidationconfig);
+ parser.getFitterCrossvalidationConfig(crossValidationconfig,
+ crossValidationconfig);
 
  bool hasSource = parser.getDataSourceConfig(config, config);
 
@@ -82,7 +89,7 @@ std::vector<DataSourceSplitting*> DensityRatioEstimationMinerFactory::createData
 
 ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
-  FitterConfigurationLeastSquares config { };
+  FitterConfigurationLeastSquares config{};
   config.readParams(parser);
   return new ModelFittingDensityRatioEstimation(config);
 }
@@ -93,6 +100,14 @@ ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
  return new DensityRatioEstimationMinerFactory(parser);
  }
  */
+
+Visualizer* DensityRatioEstimationMinerFactory::createVisualizer(
+    const DataMiningConfigParser& parser) const {
+  VisualizerConfiguration config;
+  config.readParams(parser);
+
+  return new VisualizerDummy();
+}
 
 } /* namespace datadriven */
 } /* namespace sgpp */

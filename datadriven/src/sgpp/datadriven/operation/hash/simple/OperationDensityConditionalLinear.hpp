@@ -23,7 +23,7 @@ class OperationDensityConditionalLinear : public OperationDensityConditional {
  public:
   explicit OperationDensityConditionalLinear(base::Grid* grid)
       : OperationDensityConditional(grid) {}
-  virtual ~OperationDensityConditionalLinear() {}
+  ~OperationDensityConditionalLinear() override {}
 
   /**
    * Marginalizes (Density) Functions

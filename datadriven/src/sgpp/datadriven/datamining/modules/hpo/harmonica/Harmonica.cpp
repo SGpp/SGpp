@@ -1,21 +1,16 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Harmonica.cpp
- *
- *  Created on: Feb 2, 2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/Harmonica.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/Fista.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/OperationMultipleEvalMatrix.hpp>
 
 #include <vector>
@@ -98,7 +93,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   // run solver
   solver::LassoFunction g{lambda};
   solver::Fista<solver::LassoFunction> fista{g};
-  DataVector alpha = DataVector{paritymatrix.getNcols()};
+  DataVector alpha = DataVector(paritymatrix.getNcols());
   base::LinearGrid dummygrid(0);
   OperationMultipleEvalMatrix opMultEval{dummygrid, paritymatrix};
   fista.solve(opMultEval, alpha, normed, 100, DEFAULT_RES_THRESHOLD);
@@ -134,7 +129,7 @@ void Harmonica::calculateConstrainedSpace(const DataVector &transformedScores,
   std::cout << "Free bits in new space: " << freeBits.size() << std::endl;
 
   std::vector<int> configIDsNew{};
-  DataVector newScores{};
+  DataVector newScores;
   for (size_t k = 0; k < configIDs.size(); k++) {
     int moved = moveToNewSpace(configIDs[k], freeBitsold);
     // if in new space push back on vector

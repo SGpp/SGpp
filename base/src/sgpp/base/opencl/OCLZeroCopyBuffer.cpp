@@ -6,9 +6,9 @@
 #include <sstream>
 #include <cstring>
 
-#include "sgpp/base/opencl/OCLZeroCopyBuffer.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/opencl/OCLZeroCopyBuffer.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {
@@ -43,7 +43,7 @@ void OCLZeroCopyBuffer::writeToBuffer(void* hostData) {
   }
 
   if (m_mappedHostBuffer == nullptr)
-    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == NULL");
+    throw std::runtime_error("OCLZeroCopyBuffer::writeToBuffer mappedHostBuffer == nullptr");
 
   /*for ( int i = 0; i < m_elements; i++)
   {
@@ -84,7 +84,7 @@ void OCLZeroCopyBuffer::readFromBuffer(void* hostData) {
   if (m_mappedHostBuffer == nullptr)
     throw std::runtime_error(
         "OCLZeroCopyBuffer::writeToBuffer "
-        "mappedHostBuffer == NULL");
+        "mappedHostBuffer == nullptr");
 
   memcpy(hostData, m_mappedHostBuffer, m_sizeofType * m_elements);
 

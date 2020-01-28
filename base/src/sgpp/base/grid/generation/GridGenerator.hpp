@@ -14,6 +14,7 @@
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -69,7 +70,7 @@ class GridGenerator {
    *        optimized tensor-product approximation spaces
    * @param terms determines the included interaction terms.
    */
-  virtual void regularInter(size_t level, const std::vector<std::vector<size_t>>& terms, double T) {
+  virtual void regularInter(size_t level, const std::set<std::set<size_t>>& terms, double T) {
     throw sgpp::base::not_implemented_exception(
         "Interaction-Term aware sparse grids not implemented for this grid type!");
   }
@@ -122,7 +123,7 @@ class GridGenerator {
    * @param func reference to refinement functor
    * @param addedPoints pointer to vector to add newly created grid points to
    */
-  virtual void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) = 0;
+  virtual void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) = 0;
 
   /**
    * Refines a grid according to the settings of the RefinementFunctor func.
@@ -137,7 +138,7 @@ class GridGenerator {
    * @param interactions allowed interactions
    */
   virtual void refineInter(RefinementFunctor& func,
-                           const std::vector<std::vector<size_t>>& interactions) {
+                           const std::set<std::set<size_t>>& interactions) {
     throw sgpp::base::not_implemented_exception(
         "Interaction-Term refinement not implemented for this grid type!");
   }

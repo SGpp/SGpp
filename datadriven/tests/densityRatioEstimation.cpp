@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(Test_3D_B2_64_B2_2_B2_2) {
   stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\""
          << samplesQ << "\"], \"hasTargets\" : false },"
          << "\"scorer\" : { \"metric\" : \"NLL\"}, "
-         << "\"fitter\" : { \"type\" : \"densityDifferenceEstimation\", "
+         << "\"fitter\" : { \"type\" : \"densityRatioEstimation\", "
          << "\"gridConfig\" : { \"gridType\" : \"linear\", \"level\" : 5}, "
          << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : "
             "0.001, \"maxLevelType\" : false, \"noPoints\" : 3}, "

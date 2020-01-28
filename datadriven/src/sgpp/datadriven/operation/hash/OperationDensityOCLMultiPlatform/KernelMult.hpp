@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #pragma once
 
 #include <CL/cl.h>
@@ -14,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "KernelSourceBuilderMult.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelSourceBuilderMult.hpp>
 
 namespace sgpp {
 namespace datadriven {

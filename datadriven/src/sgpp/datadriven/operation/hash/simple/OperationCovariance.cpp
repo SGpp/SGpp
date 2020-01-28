@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
@@ -74,7 +75,7 @@ void OperationCovariance::doQuadrature(base::DataVector& alpha, base::DataMatrix
   std::unique_ptr<datadriven::OperationDensityMargTo1D> opMarg(
       op_factory::createOperationDensityMargTo1D(grid));
 
-  base::Grid* marginalizedGrid = NULL;
+  base::Grid* marginalizedGrid = nullptr;
   base::DataVector* marginalizedAlpha = new base::DataVector(0);
 
   for (size_t idim = 0; idim < ndim; idim++) {

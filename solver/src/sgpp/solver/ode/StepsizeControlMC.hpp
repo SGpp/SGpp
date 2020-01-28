@@ -37,7 +37,7 @@ class StepsizeControlMC : public VarTimestep {
    * @param screen possible pointer to a ScreenOutput object
    */
   StepsizeControlMC(size_t imax, double timestepSize, double eps,
-                    sgpp::base::ScreenOutput* screen = NULL);
+                    sgpp::base::ScreenOutput* screen = nullptr);
 
   /**
    * Std-Destructor

@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
@@ -15,6 +13,7 @@
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
@@ -42,8 +41,9 @@ namespace datadriven {
 
 using sgpp::base::algorithm_exception;
 
-DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta)
-    : DBMatOnline { offline },
+DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda,
+                             double beta)
+    : DBMatOnline{offline},
       localVectorsInitialized(false),
       distributedVectorsInitialized(false),
       useExtraLocalVectors(false),
@@ -56,11 +56,13 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
   oDim = grid.getDimension();
 }
 
-void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints) {
+void DBMatOnlineDE::updateRhs(size_t gridSize,
+                              std::list<size_t>* deletedPoints) {
   if (functionComputed) {
     // Coarsening -> remove all idx in deletedPoints
     if (deletedPoints != nullptr && deletedPoints->size() > 0) {
-      std::vector < size_t > idxToDelete { std::begin(*deletedPoints), std::end(*deletedPoints) };
+      std::vector<size_t> idxToDelete{std::begin(*deletedPoints),
+                                      std::end(*deletedPoints)};
       if (localVectorsInitialized) {
         bSave.remove(idxToDelete);
         bTotalPoints.remove(idxToDelete);
@@ -72,10 +74,12 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints)
 
       if (distributedVectorsInitialized) {
         DataVector tmpbSave = bSaveDistributed->toLocalDataVector();
-        DataVector tmpbTotalPoints = bTotalPointsDistributed->toLocalDataVector();
+        DataVector tmpbTotalPoints =
+            bTotalPointsDistributed->toLocalDataVector();
 
         auto processGrid = bSaveDistributed->getProcessGrid();
-        if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
+        if (processGrid->getCurrentRow() == 0 &&
+            processGrid->getCurrentColumn() == 0) {
           tmpbSave.remove(idxToDelete);
           tmpbTotalPoints.remove(idxToDelete);
         }
@@ -93,16 +97,17 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints)
       }
     }
 
-    if (distributedVectorsInitialized && gridSize > bSaveDistributed->getGlobalRows()) {
+    if (distributedVectorsInitialized &&
+        gridSize > bSaveDistributed->getGlobalRows()) {
       bSaveDistributed->resize(gridSize);
       bTotalPointsDistributed->resize(gridSize);
     }
   }
 }
 
-void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
-                                           DensityEstimationConfiguration& densityEstimationConfig,
-                                           bool do_cv) {
+void DBMatOnlineDE::computeDensityFunction(
+    DataVector& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   if (functionComputed) {
     if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
       // Assemble the rhs
@@ -125,108 +130,81 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
 }
 
 void DBMatOnlineDE::computeDensityDifferenceFunction(
-    DataVector& alpha, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
-    bool do_cv) {
+    DataVector& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   // ---
   if (functionComputed) {
     if (alpha.size() == bSave.size() && alpha.size() == bTotalPoints.size()) {
       // Assemble the rhs
       DataVector b(alpha.size());
       for (size_t i = 0; i < b.size(); i++) {
-        b.set(i, bSave.get(i) / bTotalPoints.get(i) - bSaveExtra.get(i) / bTotalPointsExtra.get(i));
+        b.set(i, bSave.get(i) / bTotalPoints.get(i) -
+                     bSaveExtra.get(i) / bTotalPointsExtra.get(i));
       }
       // Resolve the SLE
       solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
     } else {
       throw sgpp::base::algorithm_exception(
-          "Recomputation of density difference function with mismatching alpha size and b "
+          "Recomputation of density difference function with mismatching alpha "
+          "size and b "
           "size");
     }
   } else {
     throw sgpp::base::algorithm_exception(
-        "Density difference function cannot be recomputed without any b stored in "
+        "Density difference function cannot be recomputed without any b stored "
+        "in "
         "DBMatOnlineDE");
   }
 }
 
-void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-                                           DensityEstimationConfiguration& densityEstimationConfig,
-                                           bool save_b, bool do_cv,
-                                           std::list<size_t>* deletedPoints, size_t newPoints) {
-  std::cout << "Computing density function..." << std::endl;
+void DBMatOnlineDE::computeDensityFunctionParallel(
+    DataVectorDistributed& alpha, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig,
+    const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv) {
+  if (functionComputed) {
+    if (alpha.getGlobalRows() == bSaveDistributed->getGlobalRows() &&
+        alpha.getGlobalRows() == bTotalPointsDistributed->getGlobalRows()) {
+      // Assemble the rhs (on each process)
+      DataVectorDistributed b(processGrid, alpha.getGlobalRows(),
+                              parallelConfig.rowBlockSize_);
+      for (size_t i = 0; i < b.getLocalRows(); i++) {
+        b.getLocalPointer()[i] =
+            bSaveDistributed->getLocalPointer()[i] *
+            (1. / bTotalPointsDistributed->getLocalPointer()[i]);
+      }
+      // Resolve the SLE
+      solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
+    } else {
+      throw sgpp::base::algorithm_exception(
+          "Recomputation of density function with mismatching alpha size and b "
+          "size");
+    }
+  } else {
+    throw sgpp::base::algorithm_exception(
+        "Density function can not be recomputed without any b stored in "
+        "DBMatOnlineDE");
+  }
+}
 
+void DBMatOnlineDE::computeDensityFunction(
+    DataVector& alpha, DataMatrix& m, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool save_b,
+    bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
   if (!localVectorsInitialized) {
-    // init bsave and bTotalPoints only here, as they are not needed in the parallel version
+    // init bsave and bTotalPoints only here, as they are not needed in the
+    // parallel version
     bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-    bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+    bTotalPoints =
+        DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 
     localVectorsInitialized = true;
   }
 
   if (m.getNrows() > 0) {
-    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
-
-    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
-    bool use_B_size = false;
-    size_t B_size = 0;
-    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
-    if (densityEstimationConfig.decomposition_
-        == sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
-      this_OrthoAdapt_pointer = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
-      if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
-        use_B_size = true;
-        B_size = this_OrthoAdapt_pointer->getB().getNcols();
-      }
-    }
-
-    sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
-    if (densityEstimationConfig.decomposition_
-        == sgpp::datadriven::MatrixDecompositionType::SMW_ortho
-        || densityEstimationConfig.decomposition_
-            == sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
-      this_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
-      if (this_SMW_pointer->getB().getNcols() > 1) {
-        use_B_size = true;
-        B_size = this_SMW_pointer->getB().getNcols();
-      }
-    }
-
-    // Compute right hand side of the equation:
+    DataVector b =
+        computeWeightedBFromBatch(m, grid, densityEstimationConfig, false);
     size_t numberOfPoints = m.getNrows();
-
-    DataVector b(use_B_size ? B_size : lhsMatrix.getNcols());
-    b.setAll(0);
-    if (b.getSize() != grid.getSize()) {
-      throw sgpp::base::algorithm_exception(
-          "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of "
-          "system matrix");
-    }
-
-    std::unique_ptr < sgpp::base::OperationMultipleEval
-        > B((offlineObject.interactions.size() == 0) ?
-            sgpp::op_factory::createOperationMultipleEval(grid, m) :
-            sgpp::op_factory::createOperationMultipleEvalInter(grid, m,
-                                                               offlineObject.interactions));
-
-    DataVector y(numberOfPoints);
-    y.setAll(1.0);
-    // Bt * 1
-    B->multTranspose(y, b);
-
-    // Perform neighborhood/radius averaging
-    // if (densityEstimationConfig.type_ == DensityEstimationType::)
-    {
-      // Use index of dataset to search neighbors and average contributions
-    }
-
-    // Perform permutation because of decomposition (LU)
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::LU) {
-#ifdef USE_GSL
-      static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
-#else
-      throw algorithm_exception("built without GSL");
-#endif /*USE_GSL*/
-    }
 
     if (save_b) {
       updateRhs(grid.getSize(), deletedPoints);
@@ -234,24 +212,23 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
       // Online procedure: beta is a forgetRate
       //    1 = forget all past batches
       //    0 = equal weighting
-      // Old rhs is weighted by min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
-      // New contribution is weighted by max(beta, numberOfPoints / (bTotalPoints +
-      // numberOfPoints))
+      // Old rhs is weighted by
+      //    min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
+      // New contribution is weighted by
+      //    max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
       for (size_t i = 0; i < b.getSize(); i++) {
         bSave.set(
-            i,
-            bSave.get(i)
-                * std::min(
-                    1.,
-                    (1. - beta) / bTotalPoints.get(i)
-                        * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i)))
-                + b.get(i)
-                    * std::max(
-                        1.,
-                        beta / static_cast<double>(numberOfPoints)
-                            * (static_cast<double>(numberOfPoints) + bTotalPoints.get(i))));
+            i, bSave.get(i) *
+                       std::min(1., (1. - beta) / bTotalPoints.get(i) *
+                                        (static_cast<double>(numberOfPoints) +
+                                         bTotalPoints.get(i))) +
+                   b.get(i) *
+                       std::max(1., beta / static_cast<double>(numberOfPoints) *
+                                        (static_cast<double>(numberOfPoints) +
+                                         bTotalPoints.get(i))));
 
-        bTotalPoints.set(i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
+        bTotalPoints.set(
+            i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
 
         // Update weighting based on processed data points
         b.set(i, bSave.get(i) / bTotalPoints.get(i));
@@ -265,143 +242,26 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
 
     functionComputed = true;
   }
-  std::cout << "\ndensity function computed successfully\n";
-}
-
-void DBMatOnlineDE::computeDensityFunctionParallel(
-    DataVectorDistributed& alpha, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig,
-    const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
-    bool do_cv) {
-  if (functionComputed) {
-    if (alpha.getGlobalRows() == bSaveDistributed->getGlobalRows()
-        && alpha.getGlobalRows() == bTotalPointsDistributed->getGlobalRows()) {
-      // Assemble the rhs (on each process)
-      DataVectorDistributed b(processGrid, alpha.getGlobalRows(), parallelConfig.rowBlockSize_);
-      for (size_t i = 0; i < b.getLocalRows(); i++) {
-        b.getLocalPointer()[i] = bSaveDistributed->getLocalPointer()[i]
-            * (1. / bTotalPointsDistributed->getLocalPointer()[i]);
-      }
-      // Resolve the SLE
-      solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
-    } else {
-      throw sgpp::base::algorithm_exception(
-          "Recomputation of density function with mismatching alpha size and b size");
-    }
-  } else {
-    throw sgpp::base::algorithm_exception(
-        "Density function can not be recomputed without any b stored in DBMatOnlineDE");
-  }
-}
-
-void DBMatOnlineDE::computeDensityFunctionParallel(
-    DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig,
-    const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
-    bool save_b, bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
-  // ---
-  if (processGrid->getRowColumnIndex() == 0) {
-    std::cout << "Computing density function..." << std::endl;
-  }
-
-  if (save_b && !distributedVectorsInitialized) {
-    // init bSaveDistributed and bTotalPointsDistributed only here, as they are not needed in
-    // the
-    // local version
-    bSaveDistributed =
-        std::make_unique < DataVectorDistributed
-            > (processGrid, offlineObject.getDecomposedMatrix().getNcols(), parallelConfig
-                .rowBlockSize_);
-    bTotalPointsDistributed =
-        std::make_unique < DataVectorDistributed
-            > (processGrid, offlineObject.getDecomposedMatrix().getNcols(), parallelConfig
-                .rowBlockSize_);
-
-    distributedVectorsInitialized = true;
-  }
-
-  if (m.getNrows() > 0) {
-    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
-
-    // in case OrthoAdapt, the current size is not lhs size, but B size
-    bool use_B_size = false;
-    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* thisOrthoAdaptPtr;
-    if (densityEstimationConfig.decomposition_
-        == sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
-      thisOrthoAdaptPtr = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
-      if (thisOrthoAdaptPtr->getB().getNcols() > 1) {
-        use_B_size = true;
-      }
-    }
-
-    // Compute right hand side of the equation:
-    size_t numberOfPoints = m.getNrows();
-
-    size_t bSize = use_B_size ? thisOrthoAdaptPtr->getB().getNcols() : lhsMatrix.getNcols();
-
-    DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
-    if (b.getGlobalRows() != grid.getSize()) {
-      throw sgpp::base::algorithm_exception(
-          "In DBMatOnlineDE::computeDensityFunctionParallel: b doesn't match size of system "
-          "matrix");
-    }
-
-    OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
-
-    if (offlineObject.interactions.size() != 0) {
-      throw sgpp::base::not_implemented_exception(
-          "Parallel evaluation operation not yet implemented for offline objects with "
-          "interations");
-    }
-    std::unique_ptr < OperationMultipleEvalDistributed
-        > B(static_cast<OperationMultipleEvalDistributed*>(sgpp::op_factory::createOperationMultipleEval(
-            grid, m, opConfig)));
-
-    DataVector y(numberOfPoints);
-    y.setAll(1.0);
-    // Bt * 1
-    B->multTransposeDistributed(y, b);
-
-    if (save_b) {
-      updateRhs(grid.getSize(), deletedPoints);
-      // Old rhs is weighted by beta
-      bSaveDistributed->scale(beta);
-      b.add(*bSaveDistributed);
-
-      // Update weighting based on processed data points
-      for (size_t i = 0; i < b.getGlobalRows(); i++) {
-        bSaveDistributed->set(i, b.get(i));
-        bTotalPointsDistributed->set(
-            i, static_cast<double>(numberOfPoints) + bTotalPointsDistributed->get(i));
-        b.set(i, bSaveDistributed->get(i) * (1. / bTotalPointsDistributed->get(i)));
-      }
-    } else {
-      // 1/M * (Bt * 1)
-      b.scale(1. / static_cast<double>(numberOfPoints));
-    }
-
-    solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
-
-    functionComputed = true;
-  }
 }
 
 void DBMatOnlineDE::computeDensityDifferenceFunction(
     DataVector& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv,
-    std::list<size_t>* deletedPoints, size_t newPoints) {
-  // ---
-  std::cout << "Computing density difference function..." << std::endl;
-
+    DensityEstimationConfiguration& densityEstimationConfig, bool save_b,
+    bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
   if (!localVectorsInitialized) {
-    // init bsave and bTotalPoints only here, as they are not needed in the parallel version
+    // init bsave and bTotalPoints only here, as they are not needed in the
+    // parallel version
     bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-    bTotalPoints = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+    bTotalPoints =
+        DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 
     if (!useExtraLocalVectors) {
-      // init bsave and bTotalPoints only here, as they are not needed in the single dataset version
-      bSaveExtra = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
-      bTotalPointsExtra = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+      // init bsave and bTotalPoints only here, as they are not needed in the
+      // single dataset version
+      bSaveExtra =
+          DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
+      bTotalPointsExtra =
+          DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
 
       useExtraLocalVectors = true;
     }
@@ -409,18 +269,134 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
     localVectorsInitialized = true;
   }
 
-  // Normally, both datasets should still have data to process, otherwise we can't compute
-  // anything
+  // Normally, both datasets should still have data to process, otherwise we
+  // can't compute anything
   if (mp.getNrows() > 0 && mq.getNrows()) {
+    // The order of the DataVectors is: b, bp, bq
+    std::vector<DataVector> bs = computeWeightedBFromBatchTwoDatasets(
+        mp, mq, grid, densityEstimationConfig, false);
+    size_t numberOfPointsP = mp.getNrows();
+    size_t numberOfPointsQ = mq.getNrows();
+
+    if (save_b) {
+      updateRhs(grid.getSize(), deletedPoints);
+
+      // Online procedure: beta is a forgetRate
+      //    1 = forget all past batches
+      //    0 = equal weighting
+      // Old rhs is weighted by
+      //    min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
+      // New contribution is weighted by
+      //    max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
+      for (size_t i = 0; i < bs[0].getSize(); i++) {
+        bSave.set(
+            i,
+            bSave.get(i) * std::min(1., (1. - beta) * (static_cast<double>(
+                                                           numberOfPointsP) +
+                                                       bTotalPoints.get(i)) /
+                                            bTotalPoints.get(i)) +
+                bs[1].get(i) *
+                    std::max(1., beta * (static_cast<double>(numberOfPointsP) +
+                                         bTotalPoints.get(i)) /
+                                     static_cast<double>(numberOfPointsP)));
+
+        bTotalPoints.set(
+            i, static_cast<double>(numberOfPointsP) + bTotalPoints.get(i));
+
+        bSaveExtra.set(
+            i,
+            bSaveExtra.get(i) *
+                    std::min(1., (1. - beta) / bTotalPointsExtra.get(i) *
+                                     (static_cast<double>(numberOfPointsQ) +
+                                      bTotalPointsExtra.get(i))) +
+                bs[2].get(i) *
+                    std::max(1., beta / static_cast<double>(numberOfPointsQ) *
+                                     (static_cast<double>(numberOfPointsQ) +
+                                      bTotalPointsExtra.get(i))));
+
+        bTotalPointsExtra.set(
+            i, static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i));
+
+        // Update weighting based on processed data points
+        bs[0].set(i, bSave.get(i) / bTotalPoints.get(i) -
+                         bSaveExtra.get(i) / bTotalPointsExtra.get(i));
+      }
+    } else {
+      // (1. / M_p) * Bt_p * 1 - (1. / M_q) * Bt_q * 1
+      for (size_t i = 0; i < bs[0].getSize(); i++) {
+        bs[0].set(i, bs[1].get(i) / static_cast<double>(numberOfPointsP) -
+                         bs[2].get(i) / static_cast<double>(numberOfPointsQ));
+      }
+    }
+
+    solveSLE(alpha, bs[0], grid, densityEstimationConfig, do_cv);
+
+    functionComputed = true;
+  }
+}
+
+void DBMatOnlineDE::computeDensityFunctionParallel(
+    DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig,
+    const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool save_b, bool do_cv,
+    std::list<size_t>* deletedPoints, size_t newPoints) {
+  if (save_b && !distributedVectorsInitialized) {
+    // init bSaveDistributed and bTotalPointsDistributed only here, as they are
+    // not needed in the local version
+    bSaveDistributed = std::make_unique<DataVectorDistributed>(
+        processGrid, offlineObject.getDecomposedMatrix().getNcols(),
+        parallelConfig.rowBlockSize_);
+    bTotalPointsDistributed = std::make_unique<DataVectorDistributed>(
+        processGrid, offlineObject.getDecomposedMatrix().getNcols(),
+        parallelConfig.rowBlockSize_);
+
+    distributedVectorsInitialized = true;
+  }
+
+  DataVectorDistributed b = computeWeightedBFromBatchParallel(
+      m, grid, densityEstimationConfig, parallelConfig, processGrid, false);
+  size_t numberOfPoints = m.getNrows();
+
+  if (save_b) {
+    updateRhs(grid.getSize(), deletedPoints);
+    // Old rhs is weighted by beta
+    bSaveDistributed->scale(beta);
+    b.add(*bSaveDistributed);
+
+    // Update weighting based on processed data points
+    for (size_t i = 0; i < b.getGlobalRows(); i++) {
+      bSaveDistributed->set(i, b.get(i));
+      bTotalPointsDistributed->set(i, static_cast<double>(numberOfPoints) +
+                                          bTotalPointsDistributed->get(i));
+      b.set(i,
+            bSaveDistributed->get(i) * (1. / bTotalPointsDistributed->get(i)));
+    }
+  } else {
+    // 1/M * (Bt * 1)
+    b.scale(1. / static_cast<double>(numberOfPoints));
+  }
+
+  solveSLEParallel(alpha, b, grid, densityEstimationConfig, do_cv);
+
+  functionComputed = true;
+}
+
+DataVector DBMatOnlineDE::computeWeightedBFromBatch(
+    DataMatrix& m, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool weighted) {
+  if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
-    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
+    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B
+    // size
     bool use_B_size = false;
     size_t B_size = 0;
     sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
-    if (densityEstimationConfig.decomposition_
-        == sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
-      this_OrthoAdapt_pointer = static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+    if (densityEstimationConfig.decomposition_ ==
+        sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+      this_OrthoAdapt_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
       if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
         use_B_size = true;
         B_size = this_OrthoAdapt_pointer->getB().getNcols();
@@ -428,11 +404,90 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
     }
 
     sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
-    if (densityEstimationConfig.decomposition_
-        == sgpp::datadriven::MatrixDecompositionType::SMW_ortho
-        || densityEstimationConfig.decomposition_
-            == sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
-      this_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
+    if (densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+      this_SMW_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
+      if (this_SMW_pointer->getB().getNcols() > 1) {
+        use_B_size = true;
+        B_size = this_SMW_pointer->getB().getNcols();
+      }
+    }
+
+    // Compute right hand side of the equation:
+    size_t numberOfPoints = m.getNrows();
+    DataVector b(use_B_size ? B_size : lhsMatrix.getNcols());
+    b.setAll(0);
+    if (b.getSize() != grid.getSize()) {
+      throw sgpp::base::algorithm_exception(
+          "In DBMatOnlineDE::computeWeightedBFromBatch: b doesn't match size "
+          "of "
+          "system matrix");
+    }
+
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B(
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(grid, m)
+            : sgpp::op_factory::createOperationMultipleEvalInter(
+                  grid, m, offlineObject.interactions));
+
+    DataVector y(numberOfPoints);
+    y.setAll(1.0);
+    // Bt * 1
+    B->multTranspose(y, b);
+
+    // Perform permutation because of decomposition (LU)
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::LU) {
+#ifdef USE_GSL
+      static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
+#else
+      throw algorithm_exception("built without GSL");
+#endif /*USE_GSL*/
+    }
+
+    // Decide if we want to have the final weighted b, or just the simple eval
+    if (weighted) {
+      // (1. / M) * Bt * 1
+      b.mult(1. / static_cast<double>(numberOfPoints));
+    }
+
+    return b;
+  }
+  return DataVector();
+}
+
+std::vector<DataVector> DBMatOnlineDE::computeWeightedBFromBatchTwoDatasets(
+    DataMatrix& mp, DataMatrix& mq, Grid& grid,
+    DensityEstimationConfiguration& densityEstimationConfig, bool weighted) {
+  // Normally, both datasets should still have data to process, otherwise we
+  // can't compute anything
+  if (mp.getNrows() > 0 && mq.getNrows()) {
+    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
+
+    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B
+    // size
+    bool use_B_size = false;
+    size_t B_size = 0;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+        sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+      this_OrthoAdapt_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
+        use_B_size = true;
+        B_size = this_OrthoAdapt_pointer->getB().getNcols();
+      }
+    }
+
+    sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+      this_SMW_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
       if (this_SMW_pointer->getB().getNcols() > 1) {
         use_B_size = true;
         B_size = this_SMW_pointer->getB().getNcols();
@@ -444,25 +499,25 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
     size_t numberOfPointsQ = mq.getNrows();
 
     DataVector b(use_B_size ? B_size : lhsMatrix.getNcols());
-    b.setAll(0.);
-    if (b.getSize() != offlineObject.getGridSize()) {
+    b.setAll(0);
+
+    if (b.getSize() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
-          "In DBMatOnlineDE::computeDensityDifferenceFunction: b doesn't match size of "
+          "In DBMatOnlineDE::computeWeightedBFromBatchTwoDatasets: b doesn't "
+          "match size of "
           "system matrix");
     }
 
-    std::unique_ptr < sgpp::base::OperationMultipleEval
-        > B_p(
-            (offlineObject.interactions.size() == 0) ?
-                sgpp::op_factory::createOperationMultipleEval(grid, mp) :
-                sgpp::op_factory::createOperationMultipleEvalInter(grid, mp,
-                                                                   offlineObject.interactions));
-    std::unique_ptr < sgpp::base::OperationMultipleEval
-        > B_q(
-            (offlineObject.interactions.size() == 0) ?
-                sgpp::op_factory::createOperationMultipleEval(grid, mq) :
-                sgpp::op_factory::createOperationMultipleEvalInter(grid, mq,
-                                                                   offlineObject.interactions));
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B_p(
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(grid, mp)
+            : sgpp::op_factory::createOperationMultipleEvalInter(
+                  grid, mp, offlineObject.interactions));
+    std::unique_ptr<sgpp::base::OperationMultipleEval> B_q(
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(grid, mq)
+            : sgpp::op_factory::createOperationMultipleEvalInter(
+                  grid, mq, offlineObject.interactions));
 
     DataVector bp(b.getSize());
     DataVector bq(b.getSize());
@@ -483,67 +538,106 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
 #ifdef USE_GSL
       static_cast<DBMatOfflineLU&>(offlineObject).permuteVector(b);
 #else
-      throw algorithm_exception("built withot GSL");
+      throw algorithm_exception("built without GSL");
 #endif /*USE_GSL*/
     }
 
-    if (save_b) {
-      updateRhs(grid.getSize(), deletedPoints);
-
-      // Online procedure: beta is a forgetRate
-      //    1 = forget all past batches
-      //    0 = equal weighting
-      // Old rhs is weighted by min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
-      // New contribution is weighted by max(beta, numberOfPoints / (bTotalPoints +
-      // numberOfPoints))
-      for (size_t i = 0; i < b.getSize(); i++) {
-        bSave.set(
-            i,
-            bSave.get(i)
-                * std::min(
-                    1.,
-                    (1. - beta) * (static_cast<double>(numberOfPointsP) + bTotalPoints.get(i))
-                        / bTotalPoints.get(i))
-                + bp.get(i)
-                    * std::max(
-                        1.,
-                        beta * (static_cast<double>(numberOfPointsP) + bTotalPoints.get(i))
-                            / static_cast<double>(numberOfPointsP)));
-
-        bTotalPoints.set(i, static_cast<double>(numberOfPointsP) + bTotalPoints.get(i));
-
-        bSaveExtra.set(
-            i,
-            bSaveExtra.get(i)
-                * std::min(
-                    1.,
-                    (1. - beta) / bTotalPointsExtra.get(i)
-                        * (static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i)))
-                + bq.get(i)
-                    * std::max(
-                        1.,
-                        beta / static_cast<double>(numberOfPointsQ)
-                            * (static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i))));
-
-        bTotalPointsExtra.set(i, static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i));
-
-        // Update weighting based on processed data points
-        b.set(i, bSave.get(i) / bTotalPoints.get(i) - bSaveExtra.get(i) / bTotalPointsExtra.get(i));
-      }
-    } else {
+    // Decide if we want to have the final weighted b, or just the simple eval
+    if (weighted) {
       // (1. / M_p) * Bt_p * 1 - (1. / M_q) * Bt_q * 1
       for (size_t i = 0; i < b.getSize(); i++) {
-        b.set(
-            i,
-            bp.get(i) / static_cast<double>(numberOfPointsP)
-                - bq.get(i) / static_cast<double>(numberOfPointsQ));
+        b.set(i, bp.get(i) / static_cast<double>(numberOfPointsP) -
+                     bq.get(i) / static_cast<double>(numberOfPointsQ));
+      }
+    }
+    std::vector<DataVector> ret;
+    ret.emplace_back(b);
+    ret.emplace_back(bp);
+    ret.emplace_back(bq);
+    return ret;
+  }
+  return std::vector<DataVector>(3);  // by default all three vectors are empty
+}
+
+DataVectorDistributed DBMatOnlineDE::computeWeightedBFromBatchParallel(
+    DataMatrix& m, Grid& grid,
+    const DensityEstimationConfiguration& densityEstimationConfig,
+    const ParallelConfiguration& parallelConfig,
+    std::shared_ptr<BlacsProcessGrid> processGrid, bool weighted) {
+  if (m.getNrows() > 0) {
+    DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
+
+    // in case OrthoAdapt, the current size is not lhs size, but B size
+    bool use_B_size = false;
+    size_t B_size = 0;
+    sgpp::datadriven::DBMatOnlineDEOrthoAdapt* this_OrthoAdapt_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+        sgpp::datadriven::MatrixDecompositionType::OrthoAdapt) {
+      this_OrthoAdapt_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDEOrthoAdapt*>(&*this);
+      if (this_OrthoAdapt_pointer->getB().getNcols() > 1) {
+        use_B_size = true;
+        B_size = this_OrthoAdapt_pointer->getB().getNcols();
       }
     }
 
-    solveSLE(alpha, b, grid, densityEstimationConfig, do_cv);
+    // in case of SMW_ortho or SMW_chol, current size is B size and
+    // also B is not used, bus B_distributed_
+    sgpp::datadriven::DBMatOnlineDE_SMW* this_SMW_pointer;
+    if (densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ ==
+            sgpp::datadriven::MatrixDecompositionType::SMW_chol) {
+      this_SMW_pointer =
+          static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*this);
+      if (this_SMW_pointer->getBDistributed().getGlobalCols() > 1) {
+        use_B_size = true;
+        B_size = this_SMW_pointer->getBDistributed().getGlobalCols();
+      }
+    }
 
-    functionComputed = true;
+    // Compute right hand side of the equation:
+    size_t numberOfPoints = m.getNrows();
+
+    size_t bSize = use_B_size ? B_size : lhsMatrix.getNcols();
+
+    DataVectorDistributed b(processGrid, bSize, parallelConfig.rowBlockSize_);
+
+    if (b.getGlobalRows() != grid.getSize()) {
+      throw sgpp::base::algorithm_exception(
+          "In DBMatOnlineDE::computeWeightedBFromBatchParallel: b doesn't "
+          "match "
+          "size of system "
+          "matrix");
+    }
+
+    OperationMultipleEvalConfiguration opConfig(
+        OperationMultipleEvalType::SCALAPACK);
+
+    if (offlineObject.interactions.size() != 0) {
+      throw sgpp::base::not_implemented_exception(
+          "Parallel evaluation operation not yet implemented for offline "
+          "objects with "
+          "interations");
+    }
+    std::unique_ptr<OperationMultipleEvalDistributed> B(
+        static_cast<OperationMultipleEvalDistributed*>(
+            sgpp::op_factory::createOperationMultipleEval(grid, m, opConfig)));
+
+    DataVector y(numberOfPoints);
+    y.setAll(1.0);
+    // Bt * 1
+    B->multTransposeDistributed(y, b);
+
+    // Decide if we want to have the final weighted b, or just the simple eval
+    if (weighted) {
+      // 1/M * (Bt * 1)
+      b.scale(1. / static_cast<double>(numberOfPoints));
+    }
+
+    return b;
   }
+  return DataVectorDistributed(processGrid, 0, 1);
 }
 
 double DBMatOnlineDE::resDensity(DataVector& alpha, Grid& grid) {
@@ -556,8 +650,7 @@ double DBMatOnlineDE::resDensity(DataVector& alpha, Grid& grid) {
 
   SMatrix.mult(alpha, res);
 
-  for (size_t i = 0; i < res.getSize(); i++)
-    res[i] -= rhs[i];
+  for (size_t i = 0; i < res.getSize(); i++) res[i] -= rhs[i];
   return res.l2Norm();
 }
 
@@ -576,11 +669,12 @@ double DBMatOnlineDE::computeL2Error(DataVector& alpha, Grid& grid) {
   return sqrt(l2err) / static_cast<double>(nRows);
 }
 
-double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force) {
+double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid,
+                           bool force) {
   if (functionComputed || force == true) {
     double res;
-    std::unique_ptr < sgpp::base::OperationEval
-        > opEval(sgpp::op_factory::createOperationEval(grid));
+    std::unique_ptr<sgpp::base::OperationEval> opEval(
+        sgpp::op_factory::createOperationEval(grid));
     res = opEval->eval(alpha, p);
     return res * normFactor;
   } else {
@@ -588,15 +682,14 @@ double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, b
   }
 }
 
-void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
-                         bool force) {
+void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values,
+                         DataVector& results, Grid& grid, bool force) {
   if (functionComputed || force == true) {
-    std::unique_ptr < sgpp::base::OperationMultipleEval
-        > opEval(
-            (offlineObject.interactions.size() == 0) ?
-                sgpp::op_factory::createOperationMultipleEval(grid, values) :
-                sgpp::op_factory::createOperationMultipleEvalInter(grid, values,
-                                                                   offlineObject.interactions));
+    std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
+        (offlineObject.interactions.size() == 0)
+            ? sgpp::op_factory::createOperationMultipleEval(grid, values)
+            : sgpp::op_factory::createOperationMultipleEvalInter(
+                  grid, values, offlineObject.interactions));
     opEval->eval(alpha, results);
     results.mult(normFactor);
   } else {
@@ -604,23 +697,24 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
   }
 }
 
-bool DBMatOnlineDE::isComputed() {
-  return functionComputed;
-}
+bool DBMatOnlineDE::isComputed() { return functionComputed; }
 
 void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
-                                 DataVectorDistributed& results, Grid& grid, bool force) {
+                                 DataVectorDistributed& results, Grid& grid,
+                                 bool force) {
   if (functionComputed || force == true) {
-    OperationMultipleEvalConfiguration opConfig(OperationMultipleEvalType::SCALAPACK);
+    OperationMultipleEvalConfiguration opConfig(
+        OperationMultipleEvalType::SCALAPACK);
     if (offlineObject.interactions.size() != 0) {
       throw sgpp::base::not_implemented_exception(
-          "Parallel evaluation operation not yet implemented for offline objects with "
+          "Parallel evaluation operation not yet implemented for offline "
+          "objects with "
           "interations");
     }
-    std::unique_ptr < OperationMultipleEvalDistributed
-        > opEval(
-            static_cast<OperationMultipleEvalDistributed*>(sgpp::op_factory::createOperationMultipleEval(
-                grid, values, opConfig)));
+    std::unique_ptr<OperationMultipleEvalDistributed> opEval(
+        static_cast<OperationMultipleEvalDistributed*>(
+            sgpp::op_factory::createOperationMultipleEval(grid, values,
+                                                          opConfig)));
 
     opEval->evalParallel(alpha, results);
     results.scale(normFactor);
@@ -629,13 +723,9 @@ void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
   }
 }
 
-void DBMatOnlineDE::setBeta(double newBeta) {
-  beta = newBeta;
-}
+void DBMatOnlineDE::setBeta(double newBeta) { beta = newBeta; }
 
-double DBMatOnlineDE::getBeta() {
-  return beta;
-}
+double DBMatOnlineDE::getBeta() { return beta; }
 
 double DBMatOnlineDE::normalize(DataVector& alpha, Grid& grid, size_t samples) {
   this->normFactor = 1.;
@@ -652,14 +742,22 @@ double DBMatOnlineDE::normalize(DataVector& alpha, Grid& grid, size_t samples) {
 
 double DBMatOnlineDE::normalizeQuadrature(DataVector& alpha, Grid& grid) {
   this->normFactor = 1.;
-  double quadrature = sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
+  double quadrature =
+      sgpp::op_factory::createOperationQuadrature(grid)->doQuadrature(alpha);
 
   return this->normFactor /= quadrature;
 }
 
-void DBMatOnlineDE::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
-                                                 const ParallelConfiguration& parallelConfig) {
+void DBMatOnlineDE::syncDistributedDecomposition(
+    std::shared_ptr<BlacsProcessGrid> processGrid,
+    const ParallelConfiguration& parallelConfig) {
   offlineObject.syncDistributedDecomposition(processGrid, parallelConfig);
+}
+
+void DBMatOnlineDE::resetTraining() {
+  functionComputed = false;
+  localVectorsInitialized = false;
+  distributedVectorsInitialized = false;
 }
 
 }  // namespace datadriven

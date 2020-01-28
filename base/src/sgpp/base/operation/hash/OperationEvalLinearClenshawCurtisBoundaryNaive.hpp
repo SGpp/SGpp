@@ -9,7 +9,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
-#include "common/basis/LinearClenshawCurtisBoundaryBasis.hpp"
+#include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 
 namespace sgpp {
 namespace base {

@@ -13,9 +13,9 @@
 #include <iostream>
 #include <vector>
 
-#include "OperationMultiEvalMPI.hpp"
-#include "sgpp/base/exception/not_implemented_exception.hpp"
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalMPI/OperationMultiEvalMPI.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 
 namespace sgpp {
 namespace datadriven {

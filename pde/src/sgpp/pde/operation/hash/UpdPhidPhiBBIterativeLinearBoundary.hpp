@@ -42,7 +42,7 @@ class UpdPhidPhiBBIterativeLinearBoundary {
   /**
    * Destructor
    */
-  ~UpdPhidPhiBBIterativeLinearBoundary();
+  virtual ~UpdPhidPhiBBIterativeLinearBoundary();
 
   /**
    * This operations performs the calculation of Up in the direction of dimension <i>dim</i>

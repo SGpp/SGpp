@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * LeastSquaresRegressionFactory.cpp
- *
- * Created on: Oct 10, 2016
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
 
@@ -23,6 +16,8 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+
 #include <string>
 
 namespace sgpp {
@@ -35,9 +30,18 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
   return new ModelFittingLeastSquares(config);
 }
 
-FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
-    const DataMiningConfigParser &parser) const {
+FitterFactory* LeastSquaresRegressionMinerFactory::createFitterFactory(
+    const DataMiningConfigParser& parser) const {
   return new LeastSquaresRegressionFitterFactory(parser);
 }
+
+Visualizer* LeastSquaresRegressionMinerFactory::createVisualizer(
+    const DataMiningConfigParser& parser) const {
+  VisualizerConfiguration config;
+  config.readParams(parser);
+
+  return new VisualizerDummy();
+}
+
 } /* namespace datadriven */
 } /* namespace sgpp */

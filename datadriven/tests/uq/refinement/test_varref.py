@@ -14,7 +14,7 @@ from pysgpp.pysgpp_swig import DataVector, RegularGridConfiguration, \
     GridType_Linear, GridType_PolyBoundary, \
     GridType_LinearClenshawCurtisBoundary, GridType_LinearClenshawCurtis, \
     GridType_ModPolyClenshawCurtis, GridType_LinearBoundary, \
-    GridType_ModLinearClenshawCurtis, IndexList
+    GridType_ModLinearClenshawCurtis, SizeList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d, plotFunction2d
 from pysgpp.extensions.datadriven.uq.plot.plot3d import plotSG3d, plotFunction3d
 from pysgpp.extensions.datadriven.uq.dists.MultivariateNormal import MultivariateNormal
@@ -120,7 +120,7 @@ class MonteCarloStrategyTest(unittest.TestCase):
             print("rank var:  %g" % (var_rank,))
         # --------------------------------------------------------------------------
         # remove one grid point and update coefficients
-        toBeRemoved = IndexList()
+        toBeRemoved = SizeList()
         toBeRemoved.push_back(i)
         ixs = gs.deletePoints(toBeRemoved)
         gpsj = []

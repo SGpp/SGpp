@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * MinerFactory.hpp
- *
- * Created on: Oct 10, 2016
- *     Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -16,6 +9,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 
 #include <string>
 
@@ -89,6 +83,13 @@ class MinerFactory {
    * @return the scorer instance
    */
   virtual Scorer* createScorer(const DataMiningConfigParser& parser) const;
+
+  /**
+   * Factory method to build a visualizer instance base on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  virtual Visualizer* createVisualizer(const DataMiningConfigParser& parser) const = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

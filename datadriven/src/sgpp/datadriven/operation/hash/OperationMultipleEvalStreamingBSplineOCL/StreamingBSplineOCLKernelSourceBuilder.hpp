@@ -8,7 +8,7 @@
 #include <fstream>
 #include <string>
 
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace datadriven {

@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "OperationEvalLinearClenshawCurtisBoundaryNaive.hpp"
+#include <sgpp/base/operation/hash/OperationEvalLinearClenshawCurtisBoundaryNaive.hpp>
 
 #include <sgpp/globaldef.hpp>
 

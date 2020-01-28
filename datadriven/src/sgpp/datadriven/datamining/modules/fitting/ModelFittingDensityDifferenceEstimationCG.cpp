@@ -21,6 +21,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
+
 #include <string>
 #include <vector>
 #include <list>
@@ -38,27 +39,31 @@ using sgpp::base::application_exception;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingDensityDifferenceEstimationCG::ModelFittingDensityDifferenceEstimationCG(
-    const FitterConfigurationDensityEstimation& config)
-    : ModelFittingDensityEstimation { },
-      bNum { 0 },
-      bDenom { 0 } {
-  this->config = std::unique_ptr < FitterConfiguration
-      > (std::make_unique < FitterConfigurationDensityEstimation > (config));
+ModelFittingDensityDifferenceEstimationCG::
+    ModelFittingDensityDifferenceEstimationCG(
+        const FitterConfigurationDensityEstimation& config)
+    : ModelFittingDensityEstimation{}, bNum{0}, bDenom{0} {
+  this->config = std::unique_ptr<FitterConfiguration>(
+      std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityDifferenceEstimationCG::evaluate(const DataVector& sample) {
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval (*grid));
+double ModelFittingDensityDifferenceEstimationCG::evaluate(
+    const DataVector& sample) {
+  std::unique_ptr<base::OperationEval> opEval(
+      op_factory::createOperationEval(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityDifferenceEstimationCG::evaluate(DataMatrix& samples, DataVector& results) {
-  sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
+void ModelFittingDensityDifferenceEstimationCG::evaluate(DataMatrix& samples,
+                                                         DataVector& results) {
+  sgpp::op_factory::createOperationMultipleEval(*grid, samples)
+      ->eval(alpha, results);
 }
 
-void ModelFittingDensityDifferenceEstimationCG::fit(Dataset& newDatasetP, Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::fit(Dataset& newDatasetP,
+                                                    Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   fit(newDatasetP.getData(), newDatasetQ.getData());
@@ -71,15 +76,17 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
 
   // Setup new grid
   auto& gridConfig = this->config->getGridConfig();
-  gridConfig.dim_ = newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
-  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
-  grid = std::unique_ptr<Grid> { buildGrid(gridConfig) };
+  gridConfig.dim_ =
+      newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
+  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass
+  // interactions from config?)
+  grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   // build surplus vector
-  alpha = DataVector { grid->getSize() };
+  alpha = DataVector(grid->getSize());
 
   // Initialize the right hand side (numerator and denominator)
-  bNum = DataVector { grid->getSize() };
-  bDenom = DataVector { grid->getSize() };
+  bNum = DataVector(grid->getSize());
+  bDenom = DataVector(grid->getSize());
   bNum.setAll(0.0);
   bDenom.setAll(0.0);
 
@@ -87,13 +94,13 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
   update(newDatasetP, newDatasetQ);
 }
 
-bool ModelFittingDensityDifferenceEstimationCG::refine(size_t newNoPoints,
-                                                       std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityDifferenceEstimationCG::refine(
+    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
     // Restructure alpha and rhs b
-    std::vector < size_t
-        > idxToDelete { std::begin(*deletedGridPoints), std::end(*deletedGridPoints) };
+    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
+                                    std::end(*deletedGridPoints)};
     alpha.remove(idxToDelete);
     bNum.remove(idxToDelete);
     bDenom.remove(idxToDelete);
@@ -111,29 +118,33 @@ bool ModelFittingDensityDifferenceEstimationCG::refine(size_t newNoPoints,
   return true;
 }
 
-void ModelFittingDensityDifferenceEstimationCG::update(Dataset& newDatasetP, Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::update(Dataset& newDatasetP,
+                                                       Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   update(newDatasetP.getData(), newDatasetQ.getData());
 }
 
-base::OperationMatrix* ModelFittingDensityDifferenceEstimationCG::computeRegularizationMatrix(
+base::OperationMatrix*
+ModelFittingDensityDifferenceEstimationCG::computeRegularizationMatrix(
     base::Grid& grid) {
   base::OperationMatrix* C;
   auto& regularizationConfig = this->config->getRegularizationConfig();
   if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ ==
+             datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
-        "ModelFittingDensityDifferenceEstimationCG : unsupported regularization type");
+        "ModelFittingDensityDifferenceEstimationCG : unsupported "
+        "regularization type");
   }
   return C;
 }
 
-void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
-                                                       DataMatrix& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::update(
+    DataMatrix& newDatasetP, DataMatrix& newDatasetQ) {
   if (grid == nullptr) {
     // Initial fitting of datasets
     fit(newDatasetP, newDatasetQ);
@@ -144,15 +155,15 @@ void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
 
     // Calculate the update for the rhs
     DataVector rhsUpdate(grid->getSize());
-    datadriven::DensityDifferenceSystemMatrix SMatrix(*grid, newDatasetP, newDatasetQ, C,
-                                                      regularizationConfig.lambda_);
+    datadriven::DensityDifferenceSystemMatrix SMatrix(
+        *grid, newDatasetP, newDatasetQ, C, regularizationConfig.lambda_);
     SMatrix.generateb(rhsUpdate);
     double numInstancesP = static_cast<double>(newDatasetP.getNrows());
     double numInstancesQ = static_cast<double>(newDatasetQ.getNrows());
     // Rescale the rhs such that it is not normalized by the number of instances
     rhsUpdate.mult(numInstancesP * numInstancesQ);
     // Weigh the current right hand side with beta (decay)
-    bNum.mult(this->config->getLearnerConfig().beta);
+    bNum.mult(this->config->getLearnerConfig().learningRate);
 
     bNum.add(rhsUpdate);
     // Update the denominator (dataset size) as well
@@ -165,14 +176,14 @@ void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();
-    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_, solverConfig.eps_);
-    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_, solverConfig.threshold_);
+    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_,
+                                        solverConfig.eps_);
+    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_,
+                   solverConfig.threshold_);
   }
 }
 
-bool ModelFittingDensityDifferenceEstimationCG::isRefinable() {
-  return true;
-}
+bool ModelFittingDensityDifferenceEstimationCG::isRefinable() { return true; }
 
 void ModelFittingDensityDifferenceEstimationCG::reset() {
   // Clear model

@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
     /**
     * Here we solve the penalised linear system.
     */
-        solver.solve(*op, weights, y, 500, 10e-5);
+        solver.solve(*op, weights, y, 500, 1e-4);
         std::cout << "Finished solving." << std::endl;
         auto prediction = DataVector(num_examples);
     /**

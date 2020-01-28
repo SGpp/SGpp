@@ -521,6 +521,11 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
   point_type::level_type curLevel;
   point_type::level_type curIndex;
 
+  union IntMask {
+    double d;
+    uint64_t ui;
+  } intMask;
+
   for (size_t i = 0; i < list.size(); i++) {
     for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
@@ -528,26 +533,26 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrix& level, DataM
       if (curLevel == 1) {
         level.set(i, current_dim, 0.0);
         index.set(i, current_dim, 0.0);
-        uint64_t intmask = 0x0000000000000000;
-        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+        intMask.ui = 0x0000000000000000;
+        mask.set(i, current_dim, intMask.d);
         offset.set(i, current_dim, 1.0);
       } else if (curIndex == 1) {
         level.set(i, current_dim, (-1.0) * static_cast<double>(1 << curLevel));
         index.set(i, current_dim, 0.0);
-        uint64_t intmask = 0x0000000000000000;
-        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+        intMask.ui = 0x0000000000000000;
+        mask.set(i, current_dim, intMask.d);
         offset.set(i, current_dim, 2.0);
       } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<double>(1 << curLevel));
         index.set(i, current_dim, static_cast<double>(curIndex));
-        uint64_t intmask = 0x0000000000000000;
-        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+        intMask.ui = 0x0000000000000000;
+        mask.set(i, current_dim, intMask.d);
         offset.set(i, current_dim, 1.0);
       } else {
         level.set(i, current_dim, static_cast<double>(1 << curLevel));
         index.set(i, current_dim, static_cast<double>(curIndex));
-        uint64_t intmask = 0x8000000000000000;
-        mask.set(i, current_dim, *reinterpret_cast<double*>(&intmask));
+        intMask.ui = 0x8000000000000000;
+        mask.set(i, current_dim, intMask.d);
         offset.set(i, current_dim, 1.0);
       }
     }
@@ -559,6 +564,11 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
   point_type::level_type curLevel;
   point_type::level_type curIndex;
 
+  union IntMask {
+    float f;
+    uint32_t ui;
+  } intMask;
+
   for (size_t i = 0; i < list.size(); i++) {
     for (size_t current_dim = 0; current_dim < dimension; current_dim++) {
       (list[i])->get(current_dim, curLevel, curIndex);
@@ -566,26 +576,26 @@ void HashGridStorage::getLevelIndexMaskArraysForModEval(DataMatrixSP& level, Dat
       if (curLevel == 1) {
         level.set(i, current_dim, 0.0);
         index.set(i, current_dim, 0.0);
-        uint32_t intmask = 0x00000000;
-        mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+        intMask.ui = 0x00000000;
+        mask.set(i, current_dim, intMask.f);
         offset.set(i, current_dim, 1.0);
       } else if (curIndex == 1) {
         level.set(i, current_dim, (-1.0f) * static_cast<float>(1 << curLevel));
         index.set(i, current_dim, 0.0);
-        uint32_t intmask = 0x00000000;
-        mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+        intMask.ui = 0x00000000;
+        mask.set(i, current_dim, intMask.f);
         offset.set(i, current_dim, 2.0);
       } else if (curIndex == static_cast<point_type::level_type>(((1 << curLevel) - 1))) {
         level.set(i, current_dim, static_cast<float>(1 << curLevel));
         index.set(i, current_dim, static_cast<float>(curIndex));
-        uint32_t intmask = 0x00000000;
-        mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+        intMask.ui = 0x00000000;
+        mask.set(i, current_dim, intMask.f);
         offset.set(i, current_dim, 1.0);
       } else {
         level.set(i, current_dim, static_cast<float>(1 << curLevel));
         index.set(i, current_dim, static_cast<float>(curIndex));
-        uint32_t intmask = 0x80000000;
-        mask.set(i, current_dim, *reinterpret_cast<float*>(&intmask));
+        intMask.ui = 0x80000000;
+        mask.set(i, current_dim, intMask.f);
         offset.set(i, current_dim, 1.0);
       }
     }
@@ -618,7 +628,7 @@ void HashGridStorage::parseGridDescription(std::istream& istream) {
     // read the bounding box
     // create a standard bounding box
     boundingBox = new BoundingBox(dimension);
-    stretching = NULL;
+    stretching = nullptr;
     bUseStretching = false;
     BoundingBox1D tempBound;
 

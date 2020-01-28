@@ -8,6 +8,7 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <initializer_list>
 #include <string>
 #include <vector>
 
@@ -33,20 +34,20 @@ class DataVector : public std::vector<double> {
    */
   DataVector(const DataVector&) = default;
 
-  // /**
-  //  * Move constructor
-  //  */
-  // DataVector(DataVector&&) = default;
+  /**
+   * Move constructor
+   */
+  DataVector(DataVector&&) = default;
 
   /**
    * Copy assignment operator
    */
   DataVector& operator=(const DataVector&) = default;
 
-  // /**
-  //  * Move assignment operator
-  //  */
-  // DataVector& operator=(DataVector&&) = default;
+  /**
+   * Move assignment operator
+   */
+  DataVector& operator=(DataVector&&) = default;
 
   /**
    * Destructor
@@ -83,6 +84,13 @@ class DataVector : public std::vector<double> {
    * @param input std::vector<double> that contains the data
    */
   explicit DataVector(std::vector<double> input);
+
+  /**
+   * Create a new DataVector from a std::initializer_list<double>.
+   *
+   * @param input std::initializer_list<double> that contains the data
+   */
+  explicit DataVector(std::initializer_list<double> input);
 
   /**
    * Create a new DataVector from a std::vector<int>.

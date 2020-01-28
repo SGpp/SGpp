@@ -2,6 +2,7 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #pragma once
 
 #include <sgpp/base/exception/operation_exception.hpp>
@@ -18,9 +19,9 @@
 #include <vector>
 #include <algorithm>
 
-#include "KernelB.hpp"
-#include "KernelMult.hpp"
-#include "OperationDensityOCL.hpp"
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelB.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/KernelMult.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OperationDensityOCL.hpp>
 
 namespace sgpp {
 namespace datadriven {

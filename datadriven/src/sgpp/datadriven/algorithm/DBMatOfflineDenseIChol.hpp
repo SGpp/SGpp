@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineDenseIChol.hpp
- *
- *  Created on: Apr 15, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -31,7 +25,7 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
 
   explicit DBMatOfflineDenseIChol(const std::string& fileName);
 
-  DBMatOffline* clone() override;
+  DBMatOffline* clone() const override;
 
   /**
    * Returns the decomposition type of the DBMatOffline object
@@ -46,8 +40,8 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-      DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -59,8 +53,9 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    * @param lambda the regularization parameter
    */
   void choleskyModification(Grid& grid,
-      datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
-      std::list<size_t> deletedPoints, double lambda) override;
+                            datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+                            size_t newPoints, std::list<size_t> deletedPoints,
+                            double lambda) override;
 
   /**
    * perform parlallel incomplete cholesky factorization of a matrix. This is an out of place

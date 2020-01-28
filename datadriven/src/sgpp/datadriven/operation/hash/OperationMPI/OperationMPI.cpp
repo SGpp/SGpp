@@ -2,14 +2,15 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
+
 #include <mpi.h>
 #include <cstring>
 #include <string>
 #include <typeinfo>
 #include <algorithm>
 #include <vector>
-#include "OperationMPI.hpp"
-#include "MPIEnviroment.hpp"
+#include <sgpp/datadriven/operation/hash/OperationMPI/OperationMPI.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMPI/MPIEnviroment.hpp>
 
 namespace sgpp {
 namespace datadriven {
