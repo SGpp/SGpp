@@ -5,6 +5,7 @@
 
 #pragma once
 // #ifdef USE_EIGEN
+#include <eigen3/Eigen/Dense>
 
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 
