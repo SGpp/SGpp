@@ -52,6 +52,7 @@
 %shared_ptr(sgpp::base::Distribution)
 %shared_ptr(sgpp::base::DistributionUniform)
 %shared_ptr(sgpp::base::DistributionNormal)
+%shared_ptr(sgpp::base::DistributionTruncNormal)
 %shared_ptr(sgpp::base::DistributionLogNormal)
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemDirichlet)
 %shared_ptr(sgpp::parallel::HeatEquationParabolicPDESolverSystem)
@@ -278,6 +279,7 @@ const bool UMFPACK_ENABLED;
 %include "base/src/sgpp/base/tools/DistributionsVector.hpp"
 %include "base/src/sgpp/base/tools/DistributionUniform.hpp"
 %include "base/src/sgpp/base/tools/DistributionNormal.hpp"
+%include "base/src/sgpp/base/tools/DistributionTruncNormal.hpp"
 %include "base/src/sgpp/base/tools/DistributionLogNormal.hpp"
 
 // and the rest

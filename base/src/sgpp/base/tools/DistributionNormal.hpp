@@ -56,6 +56,7 @@ class DistributionNormal : public Distribution {
     // used these for the borehole example
     //    bounds[0] = 0.05;
     //    bounds[1] = 0.15;
+    // std::cout << "DistributionNormal: Overwritten Bounds!\n";
     return bounds;
   }
 

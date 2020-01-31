@@ -134,6 +134,7 @@
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/DistributionLogNormal.hpp>
 #include <sgpp/base/tools/DistributionNormal.hpp>
+#include <sgpp/base/tools/DistributionTruncNormal.hpp>
 #include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/base/tools/DistributionsVector.hpp>
 #include <sgpp/base/tools/EvalCuboidGenerator.hpp>
