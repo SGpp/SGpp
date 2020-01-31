@@ -213,22 +213,15 @@ void DBMatOnlineDE::computeDensityFunction(
       //    1 = forget all past batches
       //    0 = equal weighting
       // Old rhs is weighted by
-      //    min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
+      //    (1 - beta) * M_old / (M_new + M_old)
       // New contribution is weighted by
-      //    max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
+      //    (M_new + beta * M_old) / (M_new + M_old)
+      // This creates a linear transition between the two edge cases.
       for (size_t i = 0; i < b.getSize(); i++) {
-        bSave.set(
-            i, bSave.get(i) *
-                       std::min(1., (1. - beta) / bTotalPoints.get(i) *
-                                        (static_cast<double>(numberOfPoints) +
-                                         bTotalPoints.get(i))) +
-                   b.get(i) *
-                       std::max(1., beta / static_cast<double>(numberOfPoints) *
-                                        (static_cast<double>(numberOfPoints) +
-                                         bTotalPoints.get(i))));
+        bSave.set(i, bSave.get(i) * (1. - beta) + b.get(i));
 
-        bTotalPoints.set(
-            i, static_cast<double>(numberOfPoints) + bTotalPoints.get(i));
+        bTotalPoints.set(i, (1. - beta) * bTotalPoints.get(i) +
+                                static_cast<double>(numberOfPoints));
 
         // Update weighting based on processed data points
         b.set(i, bSave.get(i) / bTotalPoints.get(i));
@@ -284,38 +277,22 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
       // Online procedure: beta is a forgetRate
       //    1 = forget all past batches
       //    0 = equal weighting
-      // Old rhs is weighted by
-      //    min(1-beta, bTotalPoints / (bTotalPoints + numberOfPoints))
-      // New contribution is weighted by
-      //    max(beta, numberOfPoints / (bTotalPoints + numberOfPoints))
+      // Old rhs contribution (P, Q) is weighted by
+      //    (1 - beta) * M_old / (M_new + M_old)
+      // New contribution (P, Q) is weighted by
+      //    (M_new + beta * M_old) / (M_new + M_old)
+      // This creates a linear transition between the two edge cases.
+
       for (size_t i = 0; i < bs[0].getSize(); i++) {
-        bSave.set(
-            i,
-            bSave.get(i) * std::min(1., (1. - beta) * (static_cast<double>(
-                                                           numberOfPointsP) +
-                                                       bTotalPoints.get(i)) /
-                                            bTotalPoints.get(i)) +
-                bs[1].get(i) *
-                    std::max(1., beta * (static_cast<double>(numberOfPointsP) +
-                                         bTotalPoints.get(i)) /
-                                     static_cast<double>(numberOfPointsP)));
+        bSave.set(i, bSave.get(i) * (1. - beta) + bs[1].get(i));
 
-        bTotalPoints.set(
-            i, static_cast<double>(numberOfPointsP) + bTotalPoints.get(i));
+        bTotalPoints.set(i, (1. - beta) * bTotalPoints.get(i) +
+                                static_cast<double>(numberOfPointsP));
 
-        bSaveExtra.set(
-            i,
-            bSaveExtra.get(i) *
-                    std::min(1., (1. - beta) / bTotalPointsExtra.get(i) *
-                                     (static_cast<double>(numberOfPointsQ) +
-                                      bTotalPointsExtra.get(i))) +
-                bs[2].get(i) *
-                    std::max(1., beta / static_cast<double>(numberOfPointsQ) *
-                                     (static_cast<double>(numberOfPointsQ) +
-                                      bTotalPointsExtra.get(i))));
+        bSaveExtra.set(i, bSaveExtra.get(i) * (1. - beta) + bs[2].get(i));
 
-        bTotalPointsExtra.set(
-            i, static_cast<double>(numberOfPointsQ) + bTotalPointsExtra.get(i));
+        bTotalPointsExtra.set(i, (1. - beta) * bTotalPointsExtra.get(i) +
+                                     static_cast<double>(numberOfPointsQ));
 
         // Update weighting based on processed data points
         bs[0].set(i, bSave.get(i) / bTotalPoints.get(i) -
@@ -342,7 +319,8 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
     std::shared_ptr<BlacsProcessGrid> processGrid, bool save_b, bool do_cv,
     std::list<size_t>* deletedPoints, size_t newPoints) {
   if (save_b && !distributedVectorsInitialized) {
-    // init bSaveDistributed and bTotalPointsDistributed only here, as they are
+    // init bSaveDistributed and bTotalPointsDistributed only here, as they
+    // are
     // not needed in the local version
     bSaveDistributed = std::make_unique<DataVectorDistributed>(
         processGrid, offlineObject.getDecomposedMatrix().getNcols(),
@@ -360,17 +338,25 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
 
   if (save_b) {
     updateRhs(grid.getSize(), deletedPoints);
-    // Old rhs is weighted by beta
-    bSaveDistributed->scale(beta);
-    b.add(*bSaveDistributed);
 
-    // Update weighting based on processed data points
+    // Online procedure: beta is a forgetRate
+    //    1 = forget all past batches
+    //    0 = equal weighting
+    // Old rhs is weighted by
+    //    (1 - beta) * M_old / (M_new + M_old)
+    // New contribution is weighted by
+    //    (M_new + beta * M_old) / (M_new + M_old)
+    // This creates a linear transition between the two edge cases.
     for (size_t i = 0; i < b.getGlobalRows(); i++) {
-      bSaveDistributed->set(i, b.get(i));
-      bTotalPointsDistributed->set(i, static_cast<double>(numberOfPoints) +
-                                          bTotalPointsDistributed->get(i));
-      b.set(i,
-            bSaveDistributed->get(i) * (1. / bTotalPointsDistributed->get(i)));
+      bSaveDistributed->set(i,
+                            bSaveDistributed->get(i) * (1. - beta) + b.get(i));
+
+      bTotalPointsDistributed->set(
+          i, (1. - beta) * bTotalPointsDistributed->get(i) +
+                 static_cast<double>(numberOfPoints));
+
+      // Update weighting based on processed data points
+      b.set(i, bSaveDistributed->get(i) / bTotalPointsDistributed->get(i));
     }
   } else {
     // 1/M * (Bt * 1)
@@ -388,7 +374,8 @@ DataVector DBMatOnlineDE::computeWeightedBFromBatch(
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
-    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B
+    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but
+    // B
     // size
     bool use_B_size = false;
     size_t B_size = 0;
@@ -466,7 +453,8 @@ std::vector<DataVector> DBMatOnlineDE::computeWeightedBFromBatchTwoDatasets(
   if (mp.getNrows() > 0 && mq.getNrows()) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
-    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B
+    // in case OrthoAdapt or both SMW_, the current size is not lhs size, but
+    // B
     // size
     bool use_B_size = false;
     size_t B_size = 0;

@@ -42,7 +42,11 @@ namespace datadriven {
 ModelFittingDensityDifferenceEstimationCG::
     ModelFittingDensityDifferenceEstimationCG(
         const FitterConfigurationDensityEstimation& config)
-    : ModelFittingDensityEstimation{}, bNum{0}, bDenom{0} {
+    : ModelFittingDensityEstimation{},
+      bNumP{0},
+      bDenomP{0},
+      bNumQ{0},
+      bDenomQ{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
@@ -85,10 +89,10 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
   alpha = DataVector(grid->getSize());
 
   // Initialize the right hand side (numerator and denominator)
-  bNum = DataVector(grid->getSize());
-  bDenom = DataVector(grid->getSize());
-  bNum.setAll(0.0);
-  bDenom.setAll(0.0);
+  bNumP = DataVector(grid->getSize());
+  bDenomP = DataVector(grid->getSize());
+  bNumQ = DataVector(grid->getSize());
+  bDenomQ = DataVector(grid->getSize());
 
   // Now that everythin is set up with zero data, simply call the update method
   update(newDatasetP, newDatasetQ);
@@ -102,8 +106,10 @@ bool ModelFittingDensityDifferenceEstimationCG::refine(
     std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
                                     std::end(*deletedGridPoints)};
     alpha.remove(idxToDelete);
-    bNum.remove(idxToDelete);
-    bDenom.remove(idxToDelete);
+    bNumP.remove(idxToDelete);
+    bDenomP.remove(idxToDelete);
+    bNumQ.remove(idxToDelete);
+    bDenomQ.remove(idxToDelete);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();
@@ -111,8 +117,10 @@ bool ModelFittingDensityDifferenceEstimationCG::refine(
   // Refinement, expand alpha and rhs b
   if (newNoPoints > oldNoPoints) {
     alpha.resizeZero(newNoPoints);
-    bNum.resizeZero(newNoPoints);
-    bDenom.resizeZero(newNoPoints);
+    bNumP.resizeZero(newNoPoints);
+    bDenomP.resizeZero(newNoPoints);
+    bNumQ.resizeZero(newNoPoints);
+    bDenomQ.resizeZero(newNoPoints);
   }
 
   return true;
@@ -154,25 +162,35 @@ void ModelFittingDensityDifferenceEstimationCG::update(
     auto C = computeRegularizationMatrix(*grid);
 
     // Calculate the update for the rhs
+    // Online procedure: beta is a forgetRate
+    //    1 = forget all past batches
+    //    0 = equal weighting
     DataVector rhsUpdate(grid->getSize());
+    DataVector rhsUpdateExtra(grid->getSize());
     datadriven::DensityDifferenceSystemMatrix SMatrix(
         *grid, newDatasetP, newDatasetQ, C, regularizationConfig.lambda_);
-    SMatrix.generateb(rhsUpdate);
+    SMatrix.computeUnweightedRhs(rhsUpdate, rhsUpdateExtra);
     double numInstancesP = static_cast<double>(newDatasetP.getNrows());
     double numInstancesQ = static_cast<double>(newDatasetQ.getNrows());
-    // Rescale the rhs such that it is not normalized by the number of instances
-    rhsUpdate.mult(numInstancesP * numInstancesQ);
-    // Weigh the current right hand side with beta (decay)
-    bNum.mult(this->config->getLearnerConfig().learningRate);
-
-    bNum.add(rhsUpdate);
-    // Update the denominator (dataset size) as well
-    rhsUpdate.setAll(numInstancesP * numInstancesQ);
-    bDenom.add(rhsUpdate);
-    // Compute the current rhs
-    rhsUpdate.setAll(0.0);
-    rhsUpdate.add(bNum);
-    rhsUpdate.componentwise_div(bDenom);
+    double beta = this->config->getLearnerConfig().learningRate;  // forgetRate
+    // Update numerators
+    bNumP.mult(1. - beta);
+    bNumP.add(rhsUpdate);
+    bNumQ.mult(1. - beta);
+    bNumQ.add(rhsUpdateExtra);
+    // Update denominators
+    rhsUpdate.setAll(numInstancesP);
+    bDenomP.mult(1. - beta);
+    bDenomP.add(rhsUpdate);
+    rhsUpdateExtra.setAll(numInstancesQ);
+    bDenomQ.mult(1. - beta);
+    bDenomQ.add(rhsUpdateExtra);
+    // Compute the final rhs
+    rhsUpdate = bNumP;
+    rhsUpdate.componentwise_div(bDenomP);
+    rhsUpdateExtra = bNumQ;
+    rhsUpdateExtra.componentwise_div(bDenomQ);
+    rhsUpdate.sub(rhsUpdateExtra);
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();

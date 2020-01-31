@@ -46,8 +46,10 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param lambda the regression parameter
    * @param numSamples number of data samples
    */
-  DensitySystemMatrix(sgpp::base::OperationMatrix* A, sgpp::base::OperationMultipleEval* B,
-                      sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
+  DensitySystemMatrix(sgpp::base::OperationMatrix* A,
+                      sgpp::base::OperationMultipleEval* B,
+                      sgpp::base::OperationMatrix* C, double lambda,
+                      size_t numSamples);
 
   /**
    * Std-Constructor
@@ -57,8 +59,8 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param C the regression functional
    * @param lambda the regression parameter
    */
-  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix* C,
-                      double lambda);
+  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
+                      base::OperationMatrix* C, double lambda);
 
   /**
    * Generates the left hand side of the classification equation
@@ -75,6 +77,14 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * matrix vector multiplication on the rhs
    */
   void generateb(base::DataVector& b);
+
+  /**
+   * Computes the unweighted right hand side of the classification equation
+   *
+   * @param b reference to the vector which will contain the result of the
+   * matrix vector multiplication on the rhs
+   */
+  void computeUnweightedRhs(base::DataVector& b);
 
   /**
    * Std-Destructor

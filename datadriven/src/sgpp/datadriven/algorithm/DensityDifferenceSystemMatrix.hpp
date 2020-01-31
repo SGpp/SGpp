@@ -58,21 +58,23 @@ class DensityDifferenceSystemMatrix : public base::OperationMatrix {
   DensityDifferenceSystemMatrix(sgpp::base::OperationMatrix* A,
                                 sgpp::base::OperationMultipleEval* B_p,
                                 sgpp::base::OperationMultipleEval* B_q,
-                                sgpp::base::OperationMatrix* C, double lambda, size_t numSamples_P,
-                                size_t numSamples_Q);
+                                sgpp::base::OperationMatrix* C, double lambda,
+                                size_t numSamples_P, size_t numSamples_Q);
 
   /**
    * Std-Constructor
    *
    * @param grid  reference to the sparse grid
-   * @param trainData_P reference to DataVector that contains the training data from first dataset
-   * @param trainData_Q reference to DataVector that contains the training data from second dataset
+   * @param trainData_P reference to DataVector that contains the training data
+   * from first dataset
+   * @param trainData_Q reference to DataVector that contains the training data
+   * from second dataset
    * @param C the regression functional
    * @param lambda the regression parameter
    */
   DensityDifferenceSystemMatrix(base::Grid& grid, base::DataMatrix& trainData_P,
-                                base::DataMatrix& trainData_Q, base::OperationMatrix* C,
-                                double lambda);
+                                base::DataMatrix& trainData_Q,
+                                base::OperationMatrix* C, double lambda);
 
   /**
    * Generates the left hand side of the density estimation equation
@@ -89,6 +91,16 @@ class DensityDifferenceSystemMatrix : public base::OperationMatrix {
    * matrix vector multiplication on the rhs
    */
   void generateb(base::DataVector& b);
+
+  /**
+   * Computes the unweighted right hand sides of the density estimation equation
+   *
+   * @param bp reference to the vector which will contain the result of the
+   * matrix vector multiplication on the rhs for first dataset
+   * @param bq reference to the vector which will contain the result of the
+   * matrix vector multiplication on the rhs for second dataset
+   */
+  void computeUnweightedRhs(base::DataVector& bp, base::DataVector& bq);
 
   /**
    * Std-Destructor

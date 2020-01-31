@@ -181,14 +181,24 @@ class ModelFittingDensityDifferenceEstimationCG
   base::OperationMatrix* computeRegularizationMatrix(Grid& grid);
 
   /**
-   * Numerator of the system right hand side b
+   * Numerator of the system right hand side b contribution for 1st dataset
    */
-  DataVector bNum;
+  DataVector bNumP;
 
   /**
-   * Denominator of the system right hand side b
+   * Denominator of the system right hand side b contribution for 1st dataset
    */
-  DataVector bDenom;
+  DataVector bDenomP;
+
+  /**
+     * Numerator of the system right hand side b contribution for 2nd dataset
+     */
+  DataVector bNumQ;
+
+  /**
+   * Denominator of the system right hand side b contribution for 2nd dataset
+   */
+  DataVector bDenomQ;
 
   /**
    * Function that indicates whether a model is refinable at all (certain on/off
