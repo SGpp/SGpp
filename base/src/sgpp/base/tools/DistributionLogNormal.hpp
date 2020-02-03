@@ -59,8 +59,8 @@ class DistributionLogNormal : public Distribution {
     bounds[1] = exp(mean + 9 * stddev);
 
     // used these for the borehole example
-    //    bounds[0] = 100;
-    //    bounds[1] = 50000;
+    // bounds[0] = 100;
+    // bounds[1] = 50000;
     return bounds;
   }
 

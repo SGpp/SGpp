@@ -96,8 +96,8 @@
 #include <sgpp/optimization/tools/Math.hpp>
 
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
-#include <sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp>
+#include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
 #include <sgpp/optimization/function/vector/ResponseSurfaceVector.hpp>
-#include <sgpp/optimization/function/vector/SparseGridResponseSurfaceBsplineVector.hpp>
+#include <sgpp/optimization/function/vector/SplineResponseSurfaceVector.hpp>
 
 #endif /* SGPP_OPTIMIZATION_HPP */

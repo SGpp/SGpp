@@ -54,8 +54,8 @@ class DistributionNormal : public Distribution {
     bounds[1] = mean + 9 * stddev;
 
     // used these for the borehole example
-    //    bounds[0] = 0.05;
-    //    bounds[1] = 0.15;
+    // bounds[0] = 0.05;
+    // bounds[1] = 0.15;
     // std::cout << "DistributionNormal: Overwritten Bounds!\n";
     return bounds;
   }

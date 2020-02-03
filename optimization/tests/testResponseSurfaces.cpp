@@ -9,7 +9,7 @@
 
 #include <sgpp/base/function/vector/VectorFunction.hpp>
 #include <sgpp/base/tools/Printer.hpp>
-#include <sgpp/optimization/function/vector/SparseGridResponseSurfaceBsplineVector.hpp>
+#include <sgpp/optimization/function/vector/SplineResponseSurfaceVector.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -72,8 +72,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEval) {
     size_t degree = degrees[t];
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.regular(level);
 
     DataVector point(dim, 0.337);
@@ -98,8 +97,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalJacobian) {
   for (auto& degree : degrees) {
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.regular(level);
 
     DataVector point(dim, 1.0 / 6.0);
@@ -129,8 +127,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSurplusAdaptive) {
     size_t degree = degrees[t];
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum);
 
     DataVector componentwiseErrors(m);
@@ -154,8 +151,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
   for (auto& degree : degrees) {
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.regular(level);
 
     DataVector componentwiseErrors(m);
@@ -179,8 +175,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorNRMSE) {
   for (auto& degree : degrees) {
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.regular(level);
 
     DataMatrix componentwiseErrors(4, m);
@@ -208,8 +203,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorIntegral) {
     size_t degree = degrees[t];
     DataVector lb = testFunction->getLowerBounds();
     DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub,
-                                                                      gridType, degree);
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
     reSurf.regular(level);
     sgpp::base::DataVector integrals = reSurf.getIntegrals();
     // std::cout << integrals.toString() << "\n";
@@ -234,8 +228,7 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
   size_t degree = 3;
   DataVector lb = testFunction->getLowerBounds();
   DataVector ub = testFunction->getUpperBounds();
-  sgpp::optimization::SparseGridResponseSurfaceBsplineVector reSurf(testFunction, lb, ub, gridType,
-                                                                    degree);
+  sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
   reSurf.regular(level);
 
   // serialize
@@ -246,8 +239,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
   out << gridStr;
   out.close();
 
-  sgpp::optimization::SparseGridResponseSurfaceBsplineVector loadedReSurf(
-      dim, m, lb, ub, "testGrid.dat", degree, "testCoefffs.dat");
+  sgpp::optimization::SplineResponseSurfaceVector loadedReSurf(dim, m, lb, ub, "testGrid.dat",
+                                                               degree, "testCoefffs.dat");
 
   DataVector point(dim, 0.337);
   DataVector reSurfEval = reSurf.eval(point);

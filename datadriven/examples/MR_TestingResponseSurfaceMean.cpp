@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/DistributionNormal.hpp>
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-#include <sgpp/optimization/function/scalar/SparseGridResponseSurfaceBspline.hpp>
+#include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
 
 #include <iostream>
 #include <random>
@@ -30,7 +30,7 @@ int main() {
   //  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineExtended;
   //  sgpp::base::DataVector lb = objectiveFunc->getLowerBounds();
   //  sgpp::base::DataVector ub = objectiveFunc->getUpperBounds();
-  //  sgpp::optimization::SparseGridResponseSurfaceBspline reSurf(objectiveFunc, gridType, degree);
+  //  sgpp::optimization::SplineResponseSurface reSurf(objectiveFunc, gridType, degree);
   //  reSurf.regular(level);
   //  //  auto pdf = std::make_shared<sgpp::datadriven::Uniform>(0, 1);
   //  auto pdf = std::make_shared<sgpp::base::DistributionNormal>(0.5, 0.1);
