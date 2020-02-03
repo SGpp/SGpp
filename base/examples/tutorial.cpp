@@ -104,7 +104,7 @@ int main() {
    * next few lines anyway.)
    */
   sgpp::base::DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
+
   std::cout << "length of alpha vector: " << alpha.getSize() << std::endl;
 
   /**

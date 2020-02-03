@@ -55,15 +55,14 @@ int main(int argc, char** argv) {
     /**
      * Set up the weights for the grid.
      */
-    auto weights = DataVector(grid->getSize());
-    weights.setAll(0.0);
+    DataVector weights(grid->getSize());
     double lambda = 1.0;
     const double gamma = 0.98;
     /**
      * Iterate over a few regularization penalties.
      */
     for (int i = 0; i < 5; ++i) {
-        weights.setAll(0.0);
+        // weights.setAll(0.0);
         lambda /= 10;
     /**
     * Create an elastic net function and the corresponding fista solver.

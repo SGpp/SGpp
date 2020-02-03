@@ -87,8 +87,6 @@ double LearnerLeastSquaresIdentity::testRegular(
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
 
-  classesComputed.setAll(0.0);
-
   execTime = 0.0;
 
   sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();

@@ -68,8 +68,7 @@ void OperationInverseRosenblattTransformationKDE::recalcLimits(double sigmaFacto
   base::DataVector xlimits_1d(2);
   base::DataVector ylimits_1d(2);
 
-  base::DataVector kern(nsamples);
-  kern.setAll(1.0);
+  base::DataVector kern(nsamples, 1.0);
 
   std::unique_ptr<OperationRosenblattTransformationKDE> opRosen(
       op_factory::createOperationRosenblattTransformationKDE(*kde));
@@ -112,10 +111,9 @@ void OperationInverseRosenblattTransformationKDE::doTransformation(base::DataMat
       // Work arrays
       base::DataVector unif(ndim);
       base::DataVector cdf(ndim);
-      base::DataVector kern(nsamples);
+      base::DataVector kern(nsamples, 1.0);
       std::shared_ptr<base::DataVector> samples1d;
 
-      kern.setAll(1.0);
       pointsUniform.getRow(idata, unif);
 
       for (size_t idim = 0; idim < ndim; idim++) {
@@ -173,10 +171,9 @@ void OperationInverseRosenblattTransformationKDE::doShuffledTransformation(
       // Work arrays
       base::DataVector unif(ndim);
       base::DataVector cdf(ndim);
-      base::DataVector kern(nsamples);
+      base::DataVector kern(nsamples, 1.0);
       std::shared_ptr<base::DataVector> samples1d;
 
-      kern.setAll(1.0);
       pointsUniform.getRow(idata, unif);
 
       for (size_t i = 0; i < ndim; i++) {
