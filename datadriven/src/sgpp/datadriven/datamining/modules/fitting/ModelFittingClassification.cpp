@@ -277,9 +277,10 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
                                                 refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::Classification: {
-      return new ClassificationRefinementFunctor(grids, surpluses, priors,
-                                                 refinementConfig.noPoints_, true,
-                                                 refinementConfig.refinementThreshold_);
+      return new ClassificationRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.noPoints_, true,
+          refinementConfig.thresholdType_, refinementConfig.refinementThreshold_,
+          refinementConfig.coarseningThreshold_);
     }
   }
 

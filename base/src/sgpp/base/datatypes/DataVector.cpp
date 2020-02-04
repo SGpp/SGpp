@@ -3,23 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <string>
-#include <vector>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
-#include <fstream>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sstream>
-#include <iomanip>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -125,8 +123,7 @@ void DataVector::remove(std::vector<size_t>& indexesToRemove) {
 
   // Count the indexes to remove for the case when there are duplicates in indexesToRemove
   size_t numIndexesToRemove = 0;
-  for (size_t i = 0; i < oldVector.size(); ++i) {
-    size_t idx = indexesToRemove[i];
+  for (size_t idx : indexesToRemove) {
     if (!willBeRemoved[idx]) {
       willBeRemoved[idx] = true;
       ++numIndexesToRemove;

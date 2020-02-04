@@ -27,6 +27,7 @@ const auto datasetPath = "datadriven/tests/pipeline/config_configParser.json";
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
 using sgpp::base::AdaptivityConfiguration;
+using sgpp::base::AdaptivityThresholdType;
 using sgpp::base::GridType;
 using sgpp::base::RegularGridConfiguration;
 using sgpp::datadriven::DataMiningConfigParser;
@@ -160,6 +161,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
 
   AdaptivityConfiguration defaults;
   defaults.numRefinements_ = 42;
+  defaults.thresholdType_ = AdaptivityThresholdType::Absolute;
   defaults.refinementThreshold_ = 42;
   defaults.coarseningThreshold_ = 42;
   defaults.maxLevelType_ = true;
@@ -174,6 +176,8 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(config.numRefinements_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.thresholdType_),
+                    static_cast<int>(AdaptivityThresholdType::Relative));
   BOOST_CHECK_EQUAL(config.refinementThreshold_, 0);
   BOOST_CHECK_EQUAL(config.coarseningThreshold_, 1.0);
   BOOST_CHECK_EQUAL(config.maxLevelType_, false);

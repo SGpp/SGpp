@@ -108,8 +108,7 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, Grid& grid,
 
 void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
                                            DensityEstimationConfiguration& densityEstimationConfig,
-                                           bool save_b, bool do_cv,
-                                           std::list<size_t>* deletedPoints, size_t newPoints) {
+                                           bool save_b, bool do_cv) {
   if (!localVectorsInitialized) {
     // init bsave and bTotalPoints only here, as they are not needed in the parallel version
     bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
@@ -124,7 +123,6 @@ void DBMatOnlineDE::computeDensityFunction(DataVector& alpha, DataMatrix& m, Gri
     totalPoints++;
 
     if (save_b) {
-      updateRhs(grid.getSize(), deletedPoints);
       // Old rhs is weighted by beta
       bSave.mult(beta);
       b.add(bSave);
@@ -194,7 +192,6 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
   totalPoints++;
 
   if (save_b) {
-    updateRhs(grid.getSize(), deletedPoints);
     // Old rhs is weighted by beta
     bSaveDistributed->scale(beta);
     b.add(*bSaveDistributed);
@@ -252,7 +249,7 @@ DataVector DBMatOnlineDE::computeBFromBatch(
     b.setAll(0);
     if (b.getSize() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
-          "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of system matrix");
+          "In DBMatOnlineDE::computeBFromBatch: b doesn't match size of system matrix");
     }
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(

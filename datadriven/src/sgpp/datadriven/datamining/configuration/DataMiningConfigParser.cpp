@@ -14,6 +14,7 @@
 #include <sgpp/base/tools/json/json_exception.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/configuration/AdaptivityThresholdTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
@@ -320,7 +321,7 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     auto adaptivityConfig = static_cast<DictNode *>(&(*configFile)[fitter]["adaptivityConfig"]);
     config.numRefinements_ = parseUInt(*adaptivityConfig, "numRefinements",
                                        defaults.numRefinements_, "adaptivityConfig");
-    config.refinementThreshold_ = parseDouble(*adaptivityConfig, "threshold",
+    config.refinementThreshold_ = parseDouble(*adaptivityConfig, "refinementThreshold",
                                               defaults.refinementThreshold_, "adaptivityConfig");
     config.coarseningThreshold_ = parseDouble(*adaptivityConfig, "coarseningThreshold",
                                               defaults.coarseningThreshold_, "adaptivityConfig");
@@ -375,6 +376,17 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
                 << "value " << CoarseningFunctorTypeParser::toString(defaults.coarseningFunctorType)
                 << "." << std::endl;
       config.coarseningFunctorType = defaults.coarseningFunctorType;
+    }
+
+    // Parse threshold type
+    if (adaptivityConfig->contains("thresholdType")) {
+      config.thresholdType_ =
+          AdaptivityThresholdTypeParser::parse((*adaptivityConfig)["thresholdType"].get());
+    } else {
+      std::cout << "# Did not find adaptivityConfig[thresholdType]. Setting default "
+                << "value " << AdaptivityThresholdTypeParser::toString(defaults.thresholdType_)
+                << "." << std::endl;
+      config.thresholdType_ = defaults.thresholdType_;
     }
 
   } else {

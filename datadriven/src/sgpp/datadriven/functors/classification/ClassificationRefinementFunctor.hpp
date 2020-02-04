@@ -35,12 +35,15 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
    * @param priors Vector of priors related to the classificator
    * @param refinements_num Maximum number of refinements done
    * @param level_penalize If a level penalizing is multiplied to the score (2^{|l|_1})
+   * @param thresholdType type of the threshold: absolute score value or relative score value
    * @param refinementThreshold Threshold for refinement scores
    * @param coarseningThreshold Threshold for coarsening scores
    */
   ClassificationRefinementFunctor(std::vector<base::Grid*> grids,
                                   std::vector<base::DataVector*> alphas, std::vector<double> priors,
                                   size_t refinements_num = 1, bool level_penalize = true,
+                                  sgpp::base::AdaptivityThresholdType thresholdType =
+                                      sgpp::base::AdaptivityThresholdType::Absolute,
                                   double refinementThreshold = 0.0,
                                   double coarseningThreshold = 1.0);
 
@@ -67,6 +70,7 @@ class ClassificationRefinementFunctor : public MultiGridRefinementFunctor {
 
   size_t refinements_num;
   bool level_penalize;
+  sgpp::base::AdaptivityThresholdType thresholdType;
   double refinementThreshold;
   double coarseningThreshold;
 

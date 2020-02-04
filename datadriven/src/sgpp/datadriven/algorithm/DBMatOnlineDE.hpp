@@ -5,15 +5,14 @@
 
 #pragma once
 
+#include <list>
+#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-
-#include <list>
-#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -71,14 +70,10 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param save_b Indicates whether the old right hand side should be saved and
    *        combined with the new right hand side (aka streaming)
    * @param do_cv Indicates whether crossvalidation should take place
-   * @param deletedPoints indicates the indices of removed grid points due to
-   * coarsening
-   * @param newPoints indicates the amount of added points due to refinement
    */
   void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
                               DensityEstimationConfiguration& densityEstimationConfig,
-                              bool save_b = false, bool do_cv = false,
-                              std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+                              bool save_b = false, bool do_cv = false);
 
   /**
    * Computes the density function again based on the saved b's (only applicable for streaming) in

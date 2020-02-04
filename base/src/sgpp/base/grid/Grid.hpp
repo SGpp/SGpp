@@ -127,20 +127,31 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
 };
 
 /**
+ * Enum that is used to set the type of refinement threshold (percentage/relative based or
+ * absolute).
+ */
+enum class AdaptivityThresholdType {
+  Relative,
+  Absolute,
+};
+
+/**
  * structure that can be used by application to define adaptivity strategies
  */
 struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_ = 1;
+  /// threshold type
+  AdaptivityThresholdType thresholdType_ = AdaptivityThresholdType::Absolute;
   /// refinement threshold for surpluses
   double refinementThreshold_ = 0.0;
   /// coarsening threshold for surpluses
   double coarseningThreshold_ = 0.0;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_ = false;
-  /// max. number of points to be refined
+  /// max. number of points to be refined/coarsened
   size_t noPoints_ = 5;
-  /// max. percent of points to be refined
+  /// max. percent of points to be refined/coarsened
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
