@@ -7,13 +7,49 @@
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/base/tools/DistributionLogNormal.hpp>
+#include <sgpp/base/tools/DistributionNormal.hpp>
+#include <sgpp/base/tools/DistributionTruncNormal.hpp>
+#include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
 #include <sgpp/optimization/function/vector/SplineResponseSurfaceVector.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::ScalarFunction;
 using sgpp::base::VectorFunction;
+
+// res = x_0^0 + x_1^1 + x_2^2 +...
+class scalarTestFunction : public ScalarFunction {
+ public:
+  explicit scalarTestFunction(size_t d) : ScalarFunction(d) {}
+
+  double eval(const DataVector& x) override {
+    double res = 0;
+    for (size_t i = 0; i < this->d; i++) {
+      res += std::pow(x[i], i);
+    }
+    return res;
+  }
+
+  sgpp::base::DataVector evalGradient(sgpp::base::DataVector v) {
+    sgpp::base::DataVector gradient(this->d);
+    gradient[0] = 0;
+    for (size_t i = 1; i < this->d; i++) {
+      gradient[i] = static_cast<double>(i) * std::pow(v[i], i - 1);
+    }
+    return gradient;
+  }
+
+  virtual void clone(std::unique_ptr<sgpp::base::ScalarFunction>& clone) const {
+    clone = std::unique_ptr<sgpp::base::ScalarFunction>(new scalarTestFunction(*this));
+  }
+  DataVector getLowerBounds() { return DataVector(d, -2.0); }
+  DataVector getUpperBounds() { return DataVector(d, 2.0); }
+};
 
 // res[t] = (1*x0 + 2*x1 + ... + d*x(d-1))^(t+1)
 class multivariateTestFunction : public VectorFunction {
@@ -30,7 +66,6 @@ class multivariateTestFunction : public VectorFunction {
       value[t] = std::pow(sum, t + 1);
     }
   }
-
   /**
    * @param x         evluation point
    * @param jacobian  Jacobian of the linear combination (each row is a gradient vector)
@@ -60,7 +95,231 @@ class multivariateTestFunction : public VectorFunction {
 
 BOOST_AUTO_TEST_SUITE(testResponseSurfaces)
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEval) {
+/**
+ * ***********************************
+ * SplineResponseSurface tests
+ * ***********************************
+ */
+
+// create regular SplineResponseSurface and evaluate
+BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
+  std::vector<double> epsilons{0.06, 1e-15, 1e-15};
+  size_t dim = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{1, 3, 5};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+
+    DataVector point(dim, 0.337);
+    double reSurfEval = reSurf.eval(point);
+    double trueEval = testFunction->eval(point);
+    double diff = reSurfEval - trueEval;
+    // std::cout << "evalErr = " << diff << "\n";
+    BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+  }
+}
+// create adaptive SplineResponseSurface and evaluate
+BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
+  std::vector<double> epsilons{0.3, 1e-15, 1e-15};
+  size_t dim = 3;
+  size_t maxNumGridPoints = 30;
+  size_t initialLevel = 1;
+  size_t refinementsNum = 1;
+  bool verbose = false;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{1, 3, 5};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum, verbose);
+
+    DataVector point(dim, 0.337);
+    double reSurfEval = reSurf.eval(point);
+    double trueEval = testFunction->eval(point);
+    double diff = reSurfEval - trueEval;
+    // std::cout << "evalErr = " << diff << "\n";
+    BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+  }
+}
+
+// create regular SplineResponseSurfaceVector and evaluate jacobian
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceEvalGradient) {
+  double epsilon = 1e-13;
+  size_t dim = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (auto& degree : degrees) {
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+
+    DataVector point(dim, 1.0 / 6.0);
+    DataVector jacobian(dim);
+    double reSurfEval = reSurf.evalGradient(point, jacobian);
+    // suppress unused variable warning of gcc by doing something with reSurfEval
+    reSurfEval += 1;
+    DataVector trueJacobian = testFunction->evalGradient(point);
+    // std::cout << trueJacobian.toString() << "\n";
+    // std::cout << jacobian.toString() << "\n";
+    trueJacobian.sub(jacobian);
+    double errorSum = trueJacobian.sum();
+    // std::cout << errorSum << "\n";
+    BOOST_CHECK_SMALL(errorSum, epsilon);
+  }
+}
+// create regular SplineResponseSurface and integrate
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceIntegral) {
+  double epsilon = 1e-12;
+  size_t dim = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+    double integral = reSurf.getIntegral();
+    // std::cout << integral << "\n";
+    double realIntegral = 448.0 / 3.0;
+    // std::cout << realIntegral << "\n";
+    double diff = fabs(realIntegral - integral);
+    // std::cout << diff << "\n";
+    BOOST_CHECK_SMALL(diff, epsilon);
+  }
+}
+
+// create Ritter Novak SplineResponseSurface and find minimum
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceOptimization) {
+  double epsilon = 1e-12;
+  size_t dim = 3;
+  // Ritter Novak parameters
+  size_t maxNumGridPoints = 20;
+  double gamma = 0.85;
+  size_t initialLevel = 0;
+
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.ritterNovak(maxNumGridPoints, gamma, initialLevel);
+    DataVector argmin = reSurf.optimize();
+    // This function has no unique minimum. [x,-2,0] is minimal for all x.
+    // So we compare if the objective function evaluated at the found minimum is
+    // close to the actual value
+    // std::cout << argmin << "\n";
+    double realMinimumValue = -1.0;
+    double foundMinimumValue = testFunction->eval(argmin);
+    // std::cout << foundMinimumValue << "\n";
+    double diff = fabs(foundMinimumValue - realMinimumValue);
+    // std::cout << diff << "\n";
+    BOOST_CHECK_SMALL(diff, epsilon);
+  }
+}
+
+// create regular SplineResponseSurface and calculate mean
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceMean) {
+  double epsilon = 1e-6;
+  size_t dim = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+    sgpp::base::DistributionsVector pdfs;
+    auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
+    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+    pdfs.push_back(normalpdf);
+    pdfs.push_back(truncnormalpdf);
+    pdfs.push_back(uniformpdf);
+    size_t quadOrder = 5;
+    double mean = reSurf.getMean(pdfs, quadOrder);
+    // std::cout << mean << "\n";
+    // The reference mean is only determined numerically, trusting that the routine worked at this
+    // point in time For a foolproof test, one might want to claulcate the mean by hand.
+    double realMean = 4.55048;
+    double diff = fabs(realMean - mean);
+    // std::cout << diff << "\n";
+    BOOST_CHECK_SMALL(diff, epsilon);
+  }
+}
+
+// ToDo(rehmemk) This must be debugged! Currently the variance is negativ!
+// create regular SplineResponseSurface and calculate variance
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
+  double epsilon = 1e-6;
+  size_t dim = 3;
+  size_t level = 3;
+  auto testFunction = std::make_shared<scalarTestFunction>(dim);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+    sgpp::base::DistributionsVector pdfs;
+    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+    pdfs.push_back(uniformpdf);
+    pdfs.push_back(truncnormalpdf);
+    pdfs.push_back(truncnormalpdf);
+    size_t quadOrder = 5;
+    DataVector varVec = reSurf.getVariance(pdfs, quadOrder);
+    double var = varVec[0];
+    double meanSquare = varVec[1];
+    double mean = varVec[2];
+    // std::cout << var << "\n";
+    // std::cout << meanSquare << "\n";
+    // std::cout << mean << "\n";
+    // The reference values are only determined numerically, trusting that the routine worked at
+    // this point in time For a foolproof test, one might want to claulcate them by hand.
+    double realVar = 1.704508018662666;
+    double realMeanSquare = 4.32144177859378;
+    double realMean = 1.617693963619545;
+    double diffVar = fabs(realVar - var);
+    double diffMeanSquare = fabs(realMeanSquare - meanSquare);
+    double diffMean = fabs(realMean - mean);
+    // std::cout << diff << "\n";
+    BOOST_CHECK_SMALL(diffVar, epsilon);
+    BOOST_CHECK_SMALL(diffMeanSquare, epsilon);
+    BOOST_CHECK_SMALL(diffMean, epsilon);
+  }
+}
+
+/**
+ * ***********************************
+ * SplineResponseSurfaceVector tests
+ * ***********************************
+ */
+
+// create regular SplineResponseSurfaceVector and evaluate
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEval) {
   std::vector<double> epsilons{0.8, 1e-14, 1e-14};
   size_t dim = 3;
   size_t m = 2;
@@ -86,7 +345,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEval) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalJacobian) {
+// create regular SplineResponseSurfaceVector and evaluate jacobian
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEvalJacobian) {
   double epsilon = 1e-13;
   size_t dim = 3;
   size_t m = 2;
@@ -113,7 +373,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorEvalJacobian) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSurplusAdaptive) {
+// create adaptive SplineResponseSurfaceVector and call L2 error routine
+BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceVector) {
   std::vector<double> epsilons{1e-12};
   size_t dim = 3;
   size_t m = 2;
@@ -140,7 +401,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSurplusAdaptive) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
+// create regular SplineResponseSurfaceVector and call L2 error routine
+BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceVectorL2) {
   double epsilon = 1e-11;
   size_t dim = 3;
   size_t m = 3;
@@ -164,7 +426,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorL2) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorNRMSE) {
+// create regular SplineResponseSurfaceVector and call NRMSE error routine
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorNRMSE) {
   double epsilon = 1e-11;
   size_t dim = 3;
   size_t m = 3;
@@ -191,7 +454,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorNRMSE) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorIntegral) {
+// create regular SplineResponseSurfaceVector and integrate
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorIntegral) {
   std::vector<double> epsilons{1e-12};
   size_t dim = 3;
   size_t m = 2;
@@ -218,11 +482,90 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorIntegral) {
   }
 }
 
-BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
+// create regular SplineResponseSurfaceVector and calculate mean
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorMean) {
+  std::vector<double> epsilons{1e-12};
+  size_t dim = 3;
+  size_t m = 2;
+  size_t level = 3;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+    sgpp::base::DistributionsVector pdfs(0);
+    auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
+    auto lognormalpdf = std::make_shared<sgpp::base::DistributionLogNormal>(0, 1);
+    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+    pdfs.push_back(normalpdf);
+    pdfs.push_back(lognormalpdf);
+    pdfs.push_back(uniformpdf);
+    size_t quadOrder = 5;
+    sgpp::base::DataVector means = reSurf.getMeans(pdfs, quadOrder);
+    // std::cout << means.toString() << "\n";
+    // These are only determined numerically, trusting that the routine worked at this point in time
+    // For a foolproof test, one might want to claulcate some means by hand.
+    DataVector realMeans(2);
+    realMeans[0] = -1.62077337823618873024e-07;
+    realMeans[1] = -1.81980951744657168760e-06;
+    // std::cout << realMeans.toString() << "\n";
+    realMeans.sub(means);
+    // std::cout << realMeans.toString() << "\n";
+    BOOST_CHECK_SMALL(fabs(realMeans[0]), epsilons[t]);
+    BOOST_CHECK_SMALL(fabs(realMeans[1]), epsilons[t]);
+  }
+}
+
+// create regular SplineResponseSurfaceVector and calculate variance
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorVariance) {
+  std::vector<double> epsilons{1e-12};
+  size_t dim = 3;
+  size_t m = 2;
+  size_t level = 3;
+  auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
+  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
+  std::vector<size_t> degrees{3};
+  for (size_t t = 0; t < degrees.size(); t++) {
+    size_t degree = degrees[t];
+    DataVector lb = testFunction->getLowerBounds();
+    DataVector ub = testFunction->getUpperBounds();
+    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
+    reSurf.regular(level);
+    sgpp::base::DistributionsVector pdfs(0);
+    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+    pdfs.push_back(truncnormalpdf);
+    pdfs.push_back(truncnormalpdf);
+    pdfs.push_back(uniformpdf);
+    size_t quadOrder = 5;
+    sgpp::base::DataVector means(m);
+    sgpp::base::DataVector meanSquares(m);
+    sgpp::base::DataVector variances = reSurf.getVariances(pdfs, quadOrder, means, meanSquares);
+    // std::cout << variances.toString() << "\n";
+    // These are only determined numerically, trusting that the routine worked at this point in time
+    // For a foolproof test, one might want to claulcate some variances by hand.
+    DataVector realVariances(2);
+    realVariances[0] = 1.44540648066204973077e+01;
+    realVariances[1] = 3.15439994541866155942e+02;
+    // std::cout << realVariances.toString() << "\n";
+    realVariances.sub(variances);
+    // std::cout << realVariances.toString() << "\n";
+    BOOST_CHECK_SMALL(fabs(realVariances[0]), epsilons[t]);
+    BOOST_CHECK_SMALL(fabs(realVariances[1]), epsilons[t]);
+  }
+}
+
+// create regular SplineResponseSurfaceVector, serialize it to files and create
+// new  SplineResponseSurfaceVector by unserializing from files
+BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorSerialize) {
   double epsilon = 1e-14;
   size_t dim = 3;
   size_t m = 2;
-  size_t level = 1;  // small level to keep I/O operatiosn quick
+  size_t level = 1;  // small level to keep I/O operations quick
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
   sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
   size_t degree = 3;
@@ -234,13 +577,15 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
   // serialize
   std::string gridStr = reSurf.serializeGrid();
   DataMatrix coeffs = reSurf.getCoefficients();
-  coeffs.toFile("testCoefffs.dat");
-  std::ofstream out("testGrid.dat");
+  std::string coeffFileName = "reSurf_testCoeffs.dat";
+  std::string gridFileName = "reSurf_testGrid.dat";
+  coeffs.toFile(coeffFileName);
+  std::ofstream out(gridFileName);
   out << gridStr;
   out.close();
 
-  sgpp::optimization::SplineResponseSurfaceVector loadedReSurf(dim, m, lb, ub, "testGrid.dat",
-                                                               degree, "testCoefffs.dat");
+  sgpp::optimization::SplineResponseSurfaceVector loadedReSurf(dim, m, lb, ub, gridFileName, degree,
+                                                               coeffFileName);
 
   DataVector point(dim, 0.337);
   DataVector reSurfEval = reSurf.eval(point);
@@ -256,6 +601,8 @@ BOOST_AUTO_TEST_CASE(testResponseSurfaceBsplineVectorSerialize) {
   // std::cout << "evalErr = " << evalErr << "\n";
   BOOST_CHECK_SMALL(fabs(evalErr), epsilon);
   BOOST_CHECK_SMALL(fabs(loadedEvalErr), epsilon);
+  remove("reSurf_testCoeffs.dat");
+  remove("reSurf_testGrid.dat");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

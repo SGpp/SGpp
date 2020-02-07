@@ -109,8 +109,8 @@ sgpp::base::DataVector SplineResponseSurface::getVariance(sgpp::base::Distributi
   sgpp::base::OperationWeightedSecondMoment* opWSM =
       sgpp::op_factory::createOperationWeightedSecondMoment(*grid, quadOrder);
   double meanSquare = opWSM->doWeightedQuadrature(coefficients, pdfs);
-  std::cout << std::setprecision(16) << "Variance Calculation. Mean: " << mean
-            << " meanSquare: " << meanSquare << "\n";
+  // std::cout << std::setprecision(16) << "Variance Calculation. Mean: " << mean
+  //           << " meanSquare: " << meanSquare << "\n";
   double variance = meanSquare - mean * mean;
   sgpp::base::DataVector returnVec(3);
   returnVec[0] = variance;
