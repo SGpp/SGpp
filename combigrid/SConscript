@@ -3,22 +3,12 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import Helper
 import ModuleHelper
 
 Import("*")
 
-moduleDependencies = ["sgppoptimization", "sgpppde", "sgppsolver", "sgppquadrature", "sgppbase"]
+moduleDependencies = ["sgppbase"]
 additionalDependencies = []
-
-Helper.checkForLibrary(config, env, additionalDependencies,
-    "PECOS", "USE_DAKOTA", "pecos_global_defs.hpp", "libpecos_src")
-Helper.checkForLibrary(config, env, additionalDependencies,
-    "PECOS_teuchcore", "USE_DAKOTA", "pecos_global_defs.hpp", "libteuchoscore")
-Helper.checkForLibrary(config, env, additionalDependencies,
-    "PECOS_teuchnumerics", "USE_DAKOTA", "pecos_global_defs.hpp", "libteuchosnumerics")
-Helper.checkForLibrary(config, env, additionalDependencies,
-    "PECOS_dak", "USE_DAKOTA", "pecos_global_defs.hpp", "dakota_src")
 
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
@@ -26,6 +16,7 @@ module.scanSource()
 module.buildLibrary()
 module.generatePythonDocstrings()
 module.buildExamples()
+module.runExamples()
 module.buildBoostTests()
 module.runBoostTests()
-module.runCpplint()
+module.checkStyle()
