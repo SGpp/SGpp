@@ -38,7 +38,6 @@
 %newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
 %newobject sgpp::base::Grid::unserialize(std::string& istr);
 %newobject sgpp::base::Grid::createGridOfEquivalentType(size_t numDims);
@@ -118,7 +117,6 @@ enum class GridType {
   LinearClenshawCurtis,         // 28
   ModPolyClenshawCurtis,        // 29
   ModLinearClenshawCurtis,      // 30
-  NakBsplineBoundaryCombigrid   // 31
 };
 
 class Grid
@@ -155,7 +153,6 @@ public:
   static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
   static Grid* unserialize(std::string& istr);
 

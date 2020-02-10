@@ -23,7 +23,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
@@ -44,7 +43,6 @@
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -142,11 +140,6 @@ class HierarchisationSLE : public CloneableSLE {
     } else if (grid.getType() == GridType::ModWavelet) {
       modWaveletBasis = std::unique_ptr<SWaveletModifiedBase>(new SWaveletModifiedBase());
       basisType = WAVELET_MODIFIED;
-    } else if (grid.getType() == GridType::NakBsplineBoundaryCombigrid) {
-      nakBsplineBoundaryCombigridBasis =
-          std::unique_ptr<SNakBsplineBoundaryCombigridBase>(new SNakBsplineBoundaryCombigridBase(
-              dynamic_cast<NakBsplineBoundaryCombigridGrid&>(grid).getDegree()));
-      basisType = NAK_BSPLINEBOUNDARY_COMBIGRID;
     } else if (grid.getType() == GridType::NakBsplineModified) {
       nakBsplineModifiedBasis =
           std::unique_ptr<base::SNakBsplineModifiedBase>(new SNakBsplineModifiedBase(
@@ -258,9 +251,7 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<SWaveletModifiedBase> modWaveletBasis;
   /// not-a-knot B-spline Boundary basis
   std::unique_ptr<SNakBsplineBoundaryBase> nakBsplineBoundaryBasis;
-  /// not-a-knot B-spline Boundary combigrid basis
-  std::unique_ptr<SNakBsplineBoundaryCombigridBase> nakBsplineBoundaryCombigridBasis;
-  /// not-a-knot B-spline Boundary combigrid basis
+  /// not-a-knot B-spline modified basis
   std::unique_ptr<SNakBsplineModifiedBase> nakBsplineModifiedBasis;
   /// mod poly basis
   std::unique_ptr<SPolyModifiedBase> modPolyBasis;
@@ -292,7 +283,6 @@ class HierarchisationSLE : public CloneableSLE {
     WAVELET_BOUNDARY,
     WAVELET_MODIFIED,
     NAK_BSPLINEBOUNDARY,
-    NAK_BSPLINEBOUNDARY_COMBIGRID,
     NAK_BSPLINE_MODIFIED,
     MOD_POLY,
     POLY,
@@ -340,8 +330,6 @@ class HierarchisationSLE : public CloneableSLE {
       return evalWaveletModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NAK_BSPLINEBOUNDARY) {
       return evalNakBsplineBoundaryFunctionAtGridPoint(basisI, pointJ);
-    } else if (basisType == NAK_BSPLINEBOUNDARY_COMBIGRID) {
-      return evalNakBsplineBoundaryCombigridFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NAK_BSPLINE_MODIFIED) {
       return evalNakBsplineModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == MOD_POLY) {
@@ -759,29 +747,6 @@ class HierarchisationSLE : public CloneableSLE {
     return result;
   }
 
-  /**
-   * @param basisI    basis function index
-   * @param pointJ    grid point index
-   * @return          value of the basisI-th not-a-knot B-spline combigrid basis function
-   *                  at the pointJ-th grid point
-   */
-  inline double evalNakBsplineBoundaryCombigridFunctionAtGridPoint(size_t basisI, size_t pointJ) {
-    double result = 1.0;
-
-    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
-      const double result1d = nakBsplineBoundaryCombigridBasis->eval(
-          gridStorage.getPointLevel(basisI, t), gridStorage.getPointIndex(basisI, t),
-          gridStorage.getPointCoordinate(pointJ, t));
-
-      if (result1d == 0.0) {
-        return 0.0;
-      }
-
-      result *= result1d;
-    }
-
-    return result;
-  }
   /**
    * @param basisI    basis function index
    * @param pointJ    grid point index

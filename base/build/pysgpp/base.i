@@ -202,7 +202,6 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
@@ -312,7 +311,6 @@ const bool UMFPACK_ENABLED;
 %template(SFundamentalSplineBase) sgpp::base::FundamentalSplineBasis<unsigned int, unsigned int>;
 %template(SFundamentalSplineModifiedBase) sgpp::base::FundamentalSplineModifiedBasis<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
-%template(SNakBsplineBoundaryCombigridBase) sgpp::base::NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryBase) sgpp::base::NakBsplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;

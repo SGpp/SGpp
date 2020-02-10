@@ -50,7 +50,7 @@ class OperationWeightedQuadratureNakBsplineBoundary : public OperationWeightedQu
  protected:
   // Pointer to the grid's GridStorage object
   GridStorage& storage;
-  /// NakBsplineBoundaryCombigrid Basis object
+  /// Basis object
   SNakBsplineBoundaryBase base;
   /// quadrature rule order
   size_t quadOrder;

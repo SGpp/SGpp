@@ -24,9 +24,7 @@ namespace base {
 /**
  * Hierarchical Not-a-knot B-spline basis.
  *
- * This basis has the canonical choice of a constant basis function on level 0 in contrast to
- * NakBsplineBoundaryCombigridBasis which does otherwise to become analogous to the combigrid not a
- * knot B spline boundary basis.
+ * This basis has the canonical choice of a constant basis function on level 0
  */
 
 template <class LT, class IT>

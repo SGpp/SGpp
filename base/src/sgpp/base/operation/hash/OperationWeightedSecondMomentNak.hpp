@@ -70,7 +70,7 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
   GridStorage& storage;
   // degree of the nak B-spline basis
   size_t degree;
-  /// NakBsplineBoundaryCombigrid Basis object
+  /// Basis object
   std::shared_ptr<sgpp::base::SBasis> basis;
   // quadrature coordinates
   sgpp::base::DataVector coordinates;

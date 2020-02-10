@@ -15,8 +15,7 @@ namespace sgpp {
 namespace base {
 
 /**
- * Quadrature on sparse grid, not a knot B-spline grid created by transformation of a not a knot
- * B-spline combigrid
+ * Quadrature on sparse grid, not a knot boundary B-spline grid
  */
 class OperationQuadratureNakBsplineBoundary : public OperationQuadrature {
  public:
@@ -41,7 +40,7 @@ class OperationQuadratureNakBsplineBoundary : public OperationQuadrature {
  protected:
   // Pointer to the grid's GridStorage object
   GridStorage& storage;
-  /// NakBsplineBoundaryCombigrid Basis object
+  ///  Basis object
   SNakBsplineBoundaryBase base;
 };
 

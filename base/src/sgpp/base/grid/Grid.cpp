@@ -26,7 +26,6 @@
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -162,10 +161,6 @@ Grid* Grid::createNakBsplineGrid(size_t dim, size_t degree) {
   return new NakBsplineGrid(dim, degree);
 }
 
-Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
-  return new NakBsplineBoundaryCombigridGrid(dim, degree);
-}
-
 Grid* Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree) {
   return new NakBsplineModifiedGrid(dim, degree);
 }
@@ -248,8 +243,6 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createModLinearGridStencil(gridConfig.dim_);
       case GridType::NakBsplineBoundary:
         return Grid::createNakBsplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
-      case GridType::NakBsplineBoundaryCombigrid:
-        return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBsplineModified:
         return Grid::createNakBsplineModifiedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakBspline:
@@ -386,10 +379,6 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<NakBsplineBoundaryGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineBoundaryGrid(numDims, degree);
       break;
-    case GridType::NakBsplineBoundaryCombigrid:
-      degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
-      newGrid = Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
-      break;
     case GridType::NakBsplineModified:
       degree = dynamic_cast<NakBsplineModifiedGrid*>(this)->getDegree();
       newGrid = Grid::createNakBsplineModifiedGrid(numDims, degree);
@@ -464,7 +453,6 @@ GridType Grid::getZeroBoundaryType() {
     // no non-boundary treatment basis available for the following grids
     case GridType::BsplineClenshawCurtis:
     case GridType::ModBsplineClenshawCurtis:
-    case GridType::NakBsplineBoundaryCombigrid:
     case GridType::NakBsplineBoundary:
     case GridType::NakBsplineExtended:
     default:
