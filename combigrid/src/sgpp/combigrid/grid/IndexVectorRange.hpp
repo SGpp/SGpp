@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
@@ -40,6 +41,9 @@ class IndexVectorRange {
    * @param grid  full grid
    */
   explicit IndexVectorRange(const FullGrid& grid) : IndexVectorRange() {
+    if (grid.getLevelOccupancy() != FullGrid::LevelOccupancy::TwoToThePowerOfL){
+      throw sgpp::base::not_implemented_exception();
+    }
     setGrid(grid);
   }
 

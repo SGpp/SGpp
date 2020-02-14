@@ -8,6 +8,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 
@@ -20,9 +21,18 @@ namespace combigrid {
 class FullGrid {
  public:
   /**
+   * how many points are occupied per level in each dimension, "growth rate"
+   */
+  enum class LevelOccupancy {
+    TwoToThePowerOfL, ///< the default case: each level l adds 2^l points
+    ///< (except level 0, if present, which adds the two boundary points)
+    Linear, ///< each level adds one point (except level 0, if present, which adds the two boundary points)
+  };
+
+  /**
    * Default constructor, corresponds to the zero-dimensional case.
    */
-  FullGrid() : level(), hasBoundary_(true), basis() {
+  FullGrid() : level(), hasBoundary_(true), basis(), levelOccupancy(FullGrid::LevelOccupancy::TwoToThePowerOfL) {
   }
 
   /**
@@ -32,8 +42,12 @@ class FullGrid {
    * @param basis         type of basis functions for evaluating on the full grid
    * @param hasBoundary   whether the full grid has points on the boundary
    */
-  FullGrid(const LevelVector& level, const HeterogeneousBasis& basis, bool hasBoundary = true) :
-      level(level), hasBoundary_(hasBoundary), basis(basis) {
+  FullGrid(const LevelVector& level, const HeterogeneousBasis& basis, bool hasBoundary = true,
+           FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL):
+      level(level), hasBoundary_(hasBoundary), basis(basis), levelOccupancy(levelOccupancy) {
+    if (levelOccupancy != LevelOccupancy::TwoToThePowerOfL) {
+      throw sgpp::base::not_implemented_exception();
+    }
   }
 
   /**
@@ -209,6 +223,10 @@ class FullGrid {
     this->basis = basis;
   }
 
+  /**
+   * @return level occupancy in the full grid
+   */
+  const LevelOccupancy& getLevelOccupancy() const { return levelOccupancy; }
  protected:
   /// level of the full grid
   LevelVector level;
@@ -216,6 +234,8 @@ class FullGrid {
   bool hasBoundary_;
   /// type of basis functions for evaluating on the full grid
   HeterogeneousBasis basis;
+  /// level occupancy in the full grid
+  LevelOccupancy levelOccupancy;
 };
 
 }  // namespace combigrid
