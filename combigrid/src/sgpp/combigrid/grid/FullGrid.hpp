@@ -9,6 +9,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 
@@ -227,6 +228,17 @@ class FullGrid {
    * @return level occupancy in the full grid
    */
   const LevelOccupancy& getLevelOccupancy() const { return levelOccupancy; }
+
+  /**
+   * Helper function to find a grid point in the full grid.
+   *
+   * @param[in] gridPoint   grid point to find
+   * @param[out] index      index of the grid point after calling
+   *                        (if the grid point is contained in the full grid)
+   * @return whether the grid point is in the full grid
+   */
+  bool findGridPointInFullGrid(const base::GridPoint& gridPoint, IndexVector& index) const;
+
  protected:
   /// level of the full grid
   LevelVector level;
