@@ -8,19 +8,18 @@
 #include "test_datadrivenCommon.hpp"
 
 #include <zlib.h>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
-
+#include <fstream>
+#include <iostream>
+#include <random>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-
-#include <fstream>
-#include <iostream>
-#include <random>
 #include <sstream>
 #include <string>
 #include <tuple>
@@ -121,7 +120,7 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.numRefinementPoints_,
                                                       adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
@@ -146,7 +145,7 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.numRefinementPoints_,
                                                       adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
@@ -205,7 +204,7 @@ double compareToReference(sgpp::base::GridType gridType, const std::string& file
                           sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;
@@ -283,7 +282,7 @@ double compareToReferenceTranspose(
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;
@@ -363,7 +362,7 @@ double compareToReferenceDistributed(
     std::shared_ptr<BlacsProcessGrid> processGrid) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;
@@ -449,7 +448,8 @@ double compareToReferenceTransposeDistributed(
     std::shared_ptr<BlacsProcessGrid> processGrid) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
+  adaptConfig.numCoarseningPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;

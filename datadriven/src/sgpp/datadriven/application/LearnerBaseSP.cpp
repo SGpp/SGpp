@@ -197,7 +197,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     if (i > 0) {
       sgpp::base::DataVector alphaDP(alpha_->getSize());
       sgpp::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
-      sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaDP, AdaptConfig.noPoints_,
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaDP, AdaptConfig.numRefinementPoints_,
                                                         AdaptConfig.refinementThreshold_);
       grid_->getGenerator().refine(myRefineFunc);
       DMSystem->rebuildLevelAndIndex();
@@ -295,7 +295,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
   sgpp::base::AdaptivityConfiguration AdaptConfig;
 
   AdaptConfig.maxLevelType_ = false;
-  AdaptConfig.noPoints_ = 0;
+  AdaptConfig.numRefinementPoints_ = 0;
   AdaptConfig.numRefinements_ = 0;
   AdaptConfig.percent_ = 0.0;
   AdaptConfig.refinementThreshold_ = 0.0;

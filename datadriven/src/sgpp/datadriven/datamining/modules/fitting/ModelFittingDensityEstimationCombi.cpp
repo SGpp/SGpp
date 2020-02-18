@@ -3,6 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iostream>
+#include <list>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -11,9 +13,6 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-
-#include <iostream>
-#include <list>
 #include <utility>
 #include <vector>
 
@@ -225,9 +224,9 @@ bool ModelFittingDensityEstimationCombi::adapt() {
 }
 
 bool ModelFittingDensityEstimationCombi::adapt(size_t newNoPoints,
-                                               std::list<size_t>* deletedGridPoints) {
+                                               std::vector<size_t>& deletedGridPoints) {
   throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
+      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::vector<size_t>& "
       "deletedGridPoints): not ready yet\n");
 }
 

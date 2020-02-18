@@ -3,17 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iostream>
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
-
-#include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/globaldef.hpp>
-
-#include <iostream>
 #include <vector>
 
 namespace sgpp {
@@ -230,17 +227,17 @@ void PrewaveletGridGenerator::consolidateShadow() {
   }
 }
 
-void PrewaveletGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
-                                      std::vector<size_t>* removedSeq) {
+void PrewaveletGridGenerator::coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha, nullptr, removedSeq);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                                size_t numFirstOnly,
-                                                std::vector<size_t>* removedSeq) {
+void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                                std::vector<size_t>* removedSeq,
+                                                size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly, 0, nullptr, removedSeq);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
+                                  removedSeq);
 }
 
 size_t PrewaveletGridGenerator::getNumberOfRemovablePoints() {

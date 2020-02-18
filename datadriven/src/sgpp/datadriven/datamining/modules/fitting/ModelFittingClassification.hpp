@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
+#include <map>
+#include <memory>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
@@ -17,9 +17,7 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
-
-#include <map>
-#include <memory>
+#include <sgpp/globaldef.hpp>
 #include <vector>
 
 using sgpp::base::DataMatrix;
@@ -192,6 +190,11 @@ class ModelFittingClassification : public ModelFittingBase {
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
+
+  /**
+   * Initial size of the grids.
+   */
+  size_t initialGridSize;
 
   /**
    * Models for each class

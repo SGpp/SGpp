@@ -208,11 +208,11 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
             std::make_unique<sgpp::base::DataVector>(grid->getSize());
         multTranspose(trainDataset, *residuals, *mseResiduals);
         mseResiduals->componentwise_mult(*alpha);
-        sgpp::base::SurplusRefinementFunctor myRefineFunc(*mseResiduals, AdaptConfig.noPoints_,
+        sgpp::base::SurplusRefinementFunctor myRefineFunc(*mseResiduals, AdaptConfig.numRefinementPoints_,
                                                           AdaptConfig.refinementThreshold_);
         grid->getGenerator().refine(myRefineFunc);
       } else {
-        sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.noPoints_,
+        sgpp::base::SurplusRefinementFunctor myRefineFunc(*alpha, AdaptConfig.numRefinementPoints_,
                                                           AdaptConfig.refinementThreshold_);
         grid->getGenerator().refine(myRefineFunc);
       }
@@ -332,7 +332,7 @@ LearnerTiming LearnerBase::train(sgpp::base::DataMatrix& trainDataset,
   sgpp::base::AdaptivityConfiguration AdaptConfig;
 
   AdaptConfig.maxLevelType_ = false;
-  AdaptConfig.noPoints_ = 0;
+  AdaptConfig.numRefinementPoints_ = 0;
   AdaptConfig.numRefinements_ = 0;
   AdaptConfig.percent_ = 0.0;
   AdaptConfig.refinementThreshold_ = 0.0;

@@ -152,7 +152,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std:
           // generate indicator
           ForwardSelectorRefinementIndicator indicator(
               *grid, svm->svs, svm->alphas, svm->w, svm->w2, betaRef,
-              adaptivityConfig.refinementThreshold_, adaptivityConfig.noPoints_);
+              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         } else if (refType == "impurity") {
@@ -164,7 +164,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std:
           // generate indicator
           ImpurityRefinementIndicator indicator(
               *grid, svm->svs, &(svm->alphas), &(svm->w), &(svm->w2), svsClassesComputed,
-              adaptivityConfig.refinementThreshold_, adaptivityConfig.noPoints_);
+              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         }

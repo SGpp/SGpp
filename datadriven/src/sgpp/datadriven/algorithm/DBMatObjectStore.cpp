@@ -156,7 +156,7 @@ bool DBMatObjectStore::ObjectContainer::configMatches(
          adaptivityConfig.errorMinInterval == this->adaptivityConfig.errorMinInterval &&
          adaptivityConfig.levelPenalize == this->adaptivityConfig.levelPenalize &&
          adaptivityConfig.maxLevelType_ == this->adaptivityConfig.maxLevelType_ &&
-         adaptivityConfig.noPoints_ == this->adaptivityConfig.noPoints_ &&
+         adaptivityConfig.numRefinementPoints_ == this->adaptivityConfig.numRefinementPoints_ &&
          adaptivityConfig.numRefinements_ == this->adaptivityConfig.numRefinements_ &&
          adaptivityConfig.percent_ == this->adaptivityConfig.percent_ &&
          adaptivityConfig.precomputeEvaluations == this->adaptivityConfig.precomputeEvaluations &&

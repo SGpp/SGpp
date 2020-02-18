@@ -3,17 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
-
-#include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -56,14 +52,13 @@ void PeriodicGridGenerator::cliques(size_t level, size_t clique_size, double T =
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size, T);
 }
 
-void PeriodicGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
-                                    std::vector<size_t>* removedSeq) {
+void PeriodicGridGenerator::coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) {
   throw generation_exception("PeriodicGridGenerator::coarsen is not implemented");
 }
 
-void PeriodicGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                              size_t numFirstOnly,
-                                              std::vector<size_t>* removedSeq) {
+void PeriodicGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq,
+                                              size_t minIndexConsidered) {
   throw generation_exception("PeriodicGridGenerator::coarsenNFirstOnly is not implemented");
 }
 

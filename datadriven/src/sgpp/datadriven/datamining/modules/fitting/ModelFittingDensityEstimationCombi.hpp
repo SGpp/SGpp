@@ -99,7 +99,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * Currently not implemented for this class due to missing strategy for
    * dimensional adaptive refinement. Throws an application_exception.
    */
-  bool adapt(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   /**
    * Resets the state of the entire model

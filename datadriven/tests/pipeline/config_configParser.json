@@ -70,7 +70,9 @@
             "refinementThreshold": 0,
             "coarseningThreshold": 1.0,
             "maxLevelType": false,
-            "noPoints": 0,
+            "numRefinementPoints": 0,
+            "numCoarseningPoints": 0,
+            "coarsenInitialPoints": true,
             "percent": 0,
             "errorBasedRefinement": false
         },

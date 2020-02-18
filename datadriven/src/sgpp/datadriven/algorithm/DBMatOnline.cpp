@@ -3,10 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <list>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
-
-#include <list>
 #include <vector>
 
 using sgpp::base::application_exception;
@@ -41,19 +40,17 @@ DBMatOffline& DBMatOnline::getOfflineObject() {
 const DBMatOffline& DBMatOnline::getOfflineObject() const { return offlineObject; }
 
 std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
-    DensityEstimationConfiguration& densityEstimationConfig,
-    Grid& grid,
-    size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices,
-    double lambda) {
+    DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
+    std::vector<size_t>& deletedGridPointIndices, double lambda) {
   if (!getOfflineObject().isRefineable()) {
-    throw base::not_implemented_exception("Attempted to update system matrix on decomposition "
-                                                  "that doesn't support it.");
+    throw base::not_implemented_exception(
+        "Attempted to update system matrix on decomposition "
+        "that doesn't support it.");
   }
-  throw base::application_exception("Decomposition reports refineable but does not "
-                                            "override updateSystemMatrixDecomposition()");
+  throw base::application_exception(
+      "Decomposition reports refineable but does not "
+      "override updateSystemMatrixDecomposition()");
 }
-
 
 }  // namespace datadriven
 }  // namespace sgpp

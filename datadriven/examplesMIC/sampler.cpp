@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
   // setup adaptivity
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;

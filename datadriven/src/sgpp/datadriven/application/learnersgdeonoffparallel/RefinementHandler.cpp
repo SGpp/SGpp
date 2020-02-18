@@ -300,7 +300,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
   // simple refinement based on surpluses
   sgpp::base::SurplusRefinementFunctor srf(
       alphaWeight,
-      adaptivityConfig.noPoints_);
+      adaptivityConfig.numRefinementPoints_);
   gridGen.refine(srf);
   size_t sizeAfterRefine = grid.getSize();
   return sizeAfterRefine - sizeBeforeRefine;

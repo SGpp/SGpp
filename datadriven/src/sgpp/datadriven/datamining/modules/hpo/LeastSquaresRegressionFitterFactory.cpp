@@ -40,7 +40,7 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
     config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
   }
   if (dispar.count("noPoints")) {
-    config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+    config->getRefinementConfig().numRefinementPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
     config->getRefinementConfig().refinementThreshold_ = conpar["threshold"].getValue();

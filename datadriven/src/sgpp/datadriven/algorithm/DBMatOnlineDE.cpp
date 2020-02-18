@@ -48,14 +48,13 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
   oDim = grid.getDimension();
 }
 
-void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints) {
+void DBMatOnlineDE::updateRhs(size_t gridSize, std::vector<size_t>& deletedPoints) {
   if (functionComputed) {
     // Coarsening -> remove all idx in deletedPoints
-    if (deletedPoints != nullptr && deletedPoints->size() > 0) {
-      std::vector<size_t> idxToDelete{std::begin(*deletedPoints), std::end(*deletedPoints)};
+    if (deletedPoints.size() > 0) {
       if (localVectorsInitialized) {
-        bSave.remove(idxToDelete);
-        bTotalPoints.remove(idxToDelete);
+        bSave.remove(deletedPoints);
+        bTotalPoints.remove(deletedPoints);
       }
 
       if (distributedVectorsInitialized) {
@@ -64,8 +63,8 @@ void DBMatOnlineDE::updateRhs(size_t gridSize, std::list<size_t>* deletedPoints)
 
         auto processGrid = bSaveDistributed->getProcessGrid();
         if (processGrid->getCurrentRow() == 0 && processGrid->getCurrentColumn() == 0) {
-          tmpbSave.remove(idxToDelete);
-          tmpbTotalPoints.remove(idxToDelete);
+          tmpbSave.remove(deletedPoints);
+          tmpbTotalPoints.remove(deletedPoints);
         }
         bSaveDistributed->distribute(tmpbSave.data());
         bTotalPointsDistributed->distribute(tmpbTotalPoints.data());

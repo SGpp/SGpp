@@ -21,24 +21,27 @@ namespace datadriven {
 
 ClassificationRefinementFunctor::ClassificationRefinementFunctor(
     std::vector<base::Grid*> grids, std::vector<base::DataVector*> alphas,
-    std::vector<double> priors, size_t refinements_num, bool level_penalize,
+    std::vector<double> priors, size_t refinements_num, size_t coarsenings_num, bool level_penalize,
     sgpp::base::AdaptivityThresholdType thresholdType, double refinementThreshold,
-    double coarseningThreshold)
+    double coarseningThreshold, bool coarsenInitialPoints, size_t minimumCoarseningIndex)
     : grids(grids),
       alphas(alphas),
       priors(priors),
       refinements_num(refinements_num),
+      coarsenings_num(coarsenings_num),
       level_penalize(level_penalize),
       thresholdType(thresholdType),
       refinementThreshold(refinementThreshold),
       coarseningThreshold(coarseningThreshold),
-      total_grid(grids.at(0)->getDimension()) {}
+      coarsenInitialPoints(coarsenInitialPoints),
+      total_grid(grids.at(0)->getDimension()),
+      minimumCoarseningIndex(minimumCoarseningIndex) {}
 
 double ClassificationRefinementFunctor::operator()(base::GridStorage& storage, size_t seq) const {
   return 0.0;
 }
 
-std::vector<std::list<size_t>> ClassificationRefinementFunctor::adaptAllGrids() {
+std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids() {
   // setup total grid
   size_t dim = grids.at(0)->getDimension();
   size_t numClasses = grids.size();
@@ -169,9 +172,10 @@ std::vector<std::list<size_t>> ClassificationRefinementFunctor::adaptAllGrids() 
     }
   }
 
-  std::vector<std::list<size_t>> deletedPoints(numClasses);
+  std::vector<std::vector<size_t>> deletedPoints(numClasses);
   // remove top coarsening candidates from the grid
   for (size_t y = 0; y < numClasses; y++) {
+    size_t count = 0;
     std::list<size_t> removePoints;
 
     for (auto it = classMapsCoarsening.at(y).begin(); it != classMapsCoarsening.at(y).end(); ++it) {
@@ -180,12 +184,23 @@ std::vector<std::list<size_t>> ClassificationRefinementFunctor::adaptAllGrids() 
       }
 
       size_t candidateIndex = std::get<0>(it->second);
+
+      if (!this->coarsenInitialPoints && candidateIndex < this->minimumCoarseningIndex) {
+        // do not refine initial grid points
+        continue;
+      }
+
       base::HashGridPoint candidate(total_grid.getPoint(candidateIndex));
 
       removePoints.push_back(candidateIndex);
-    }
 
-    deletedPoints.at(y) = removePoints;
+      count++;
+      if (count >= this->coarsenings_num) {
+        break;
+      }
+    }
+    std::vector<size_t> idxToDelete{std::begin(removePoints), std::end(removePoints)};
+    deletedPoints.at(y) = idxToDelete;
 
     if (!removePoints.empty()) {
       grids.at(y)->getStorage().deletePoints(removePoints);

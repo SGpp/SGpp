@@ -6,7 +6,6 @@
 #define BOOST_TEST_DYN_LINK
 
 #include <boost/test/unit_test.hpp>
-
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
@@ -18,7 +17,6 @@
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-
 #include <string>
 #include <vector>
 
@@ -165,7 +163,9 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   defaults.refinementThreshold_ = 42;
   defaults.coarseningThreshold_ = 42;
   defaults.maxLevelType_ = true;
-  defaults.noPoints_ = 42;
+  defaults.numRefinementPoints_ = 42;
+  defaults.numCoarseningPoints_ = 42;
+  defaults.coarsenInitialPoints_ = true;
   defaults.percent_ = 0.42;
   defaults.errorBasedRefinement = true;
   AdaptivityConfiguration config;
@@ -181,7 +181,9 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   BOOST_CHECK_EQUAL(config.refinementThreshold_, 0);
   BOOST_CHECK_EQUAL(config.coarseningThreshold_, 1.0);
   BOOST_CHECK_EQUAL(config.maxLevelType_, false);
-  BOOST_CHECK_EQUAL(config.noPoints_, 0);
+  BOOST_CHECK_EQUAL(config.numRefinementPoints_, 0);
+  BOOST_CHECK_EQUAL(config.numCoarseningPoints_, 0);
+  BOOST_CHECK_EQUAL(config.coarsenInitialPoints_, false);
   BOOST_CHECK_CLOSE(config.percent_, 0, tolerance);
   BOOST_CHECK_EQUAL(config.errorBasedRefinement, false);
 }

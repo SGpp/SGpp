@@ -5,12 +5,10 @@
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
-
+#include <list>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
-
-#include <list>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <vector>
 
 /**
@@ -46,7 +44,8 @@ class DBMatOnlineDEChol : public DBMatOnlineDE {
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices,
+      double lambda) override;
 
  protected:
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,

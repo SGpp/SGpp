@@ -3,13 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-
+#include <sgpp/globaldef.hpp>
 #include <string>
 
 /**
@@ -132,7 +130,7 @@ int main() {
        * of grid points to refine each step.
        */
       adaptConfig.numRefinements_ = 3;
-      adaptConfig.noPoints_ = 5;
+      adaptConfig.numRefinementPoints_ = 5;
       adaptConfig.refinementThreshold_ = 0.0;
 
       // additional parameters:

@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
-
 #include <list>
+#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <vector>
 
 namespace sgpp {
@@ -62,7 +61,7 @@ class DBMatOnline {
    */
   virtual std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda);
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices, double lambda);
 
  protected:
   DBMatOffline& offlineObject;

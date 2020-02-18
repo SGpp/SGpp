@@ -7,9 +7,7 @@
 #define SQUAREROOTGRIDGENERATOR_HPP_
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -39,10 +37,9 @@ class SquareRootGridGenerator : public GridGenerator {
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override {}
   size_t getNumberOfRefinablePoints() override { return 0; }
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha,
-               std::vector<size_t>* removedSeq) override {}
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnly,
-                         std::vector<size_t>* removedSeq) override {}
+  void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) override {}
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq, size_t minIndexConsidered) override {}
   size_t getNumberOfRemovablePoints() override { return 0; }
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override {}

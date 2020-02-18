@@ -68,7 +68,7 @@ bool ModelFittingLeastSquares::adapt() {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(
-          alpha, config->getRefinementConfig().noPoints_,
+          alpha, config->getRefinementConfig().numRefinementPoints_,
           config->getRefinementConfig().refinementThreshold_);
       // refine grid
       auto noPoints = grid->getSize();

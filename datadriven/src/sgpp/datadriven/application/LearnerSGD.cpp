@@ -111,7 +111,7 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType, std::string re
 
   // refinement variables
   size_t refNum = adaptivityConfig.numRefinements_;
-  size_t numPoints = adaptivityConfig.noPoints_;
+  size_t numPoints = adaptivityConfig.numRefinementPoints_;
   size_t refCnt = 0;
   double threshold = adaptivityConfig.refinementThreshold_;
   double currentBatchError = 0.0;

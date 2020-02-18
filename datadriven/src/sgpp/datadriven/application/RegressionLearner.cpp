@@ -132,7 +132,7 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   errors.componentwise_mult(weights);
 
   // Refine the grid using the weighted errors.
-  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
+  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.numRefinementPoints_,
                                                       adaptivityConfig.refinementThreshold_);
   if (terms.size() > 0) {
     grid->getGenerator().refineInter(refineFunctor, terms);

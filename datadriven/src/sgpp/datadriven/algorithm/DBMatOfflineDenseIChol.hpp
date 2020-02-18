@@ -5,9 +5,8 @@
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
-
 #include <list>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 #include <string>
 
 namespace sgpp {
@@ -54,7 +53,7 @@ class DBMatOfflineDenseIChol : public DBMatOfflineChol {
    */
   void choleskyModification(Grid& grid,
                             datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-                            size_t newPoints, std::list<size_t> deletedPoints,
+                            size_t newPoints, std::vector<size_t>& deletedPoints,
                             double lambda) override;
 
   /**

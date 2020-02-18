@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-
 #include <string>
 #include <vector>
 
@@ -119,7 +118,8 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.refinementThreshold_ = 0.0;
   adaptivityConfig.coarseningThreshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
-  adaptivityConfig.noPoints_ = 1;
+  adaptivityConfig.numRefinementPoints_ = 1;
+  adaptivityConfig.numCoarseningPoints_ = 1;
   adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
   adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default

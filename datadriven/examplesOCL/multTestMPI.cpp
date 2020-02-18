@@ -27,7 +27,7 @@ void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::ba
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.numRefinementPoints_,
                                                       adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;

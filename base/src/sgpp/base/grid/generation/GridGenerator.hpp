@@ -6,15 +6,12 @@
 #ifndef GRIDGENERATOR_HPP
 #define GRIDGENERATOR_HPP
 
+#include <set>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
-
-#include <sgpp/base/datatypes/DataVector.hpp>
-
-#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/globaldef.hpp>
-
-#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -146,23 +143,21 @@ class GridGenerator {
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
    *
    * @param func pointer to coarsening functor
-   * @param alpha Pointer to DataVector containing the grid's coefficients
    * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
    */
-  virtual void coarsen(CoarseningFunctor& func, DataVector& alpha,
-                       std::vector<size_t>* removedSeq) = 0;
+  virtual void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) = 0;
 
   /**
    * Coarsens a  grid according to the settings of the CoarseningFunctor func.
    * Only numFirstOnly first grid points are checked for coarsening.
    *
    * @param func pointer to coarsening functor
-   * @param alpha Pointer to DataVector containing the grid's coefficients
    * @param numFirstOnly max. number grid points to be coarsened
    * @param removedSeq pointer to vector to append the seq numbers of coarsened grid points to.
+   * @param minIndexConsidered Minimum index of grid points that will be coarsened
    */
-  virtual void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnl,
-                                 std::vector<size_t>* removedSeqy) = 0;
+  virtual void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnl,
+                                 std::vector<size_t>* removedSeqy, size_t minIndexConsidered) = 0;
 
   /**
    * Returns the number of points on the grid that can be refined in the next iteration

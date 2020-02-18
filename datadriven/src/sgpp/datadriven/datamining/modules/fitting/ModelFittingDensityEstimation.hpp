@@ -5,13 +5,12 @@
 
 #pragma once
 
+#include <list>
+#include <memory>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/globaldef.hpp>
-
-#include <list>
-#include <memory>
 
 namespace sgpp {
 namespace datadriven {
@@ -57,7 +56,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  virtual bool adapt(size_t newNoPoints, std::list<size_t>* deletedGridPoints) = 0;
+  virtual bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) = 0;
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement or coarsening of
@@ -115,6 +114,11 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
+
+  /**
+   * Initial number of grid points
+   */
+  size_t initialGridSize;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

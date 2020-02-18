@@ -66,7 +66,7 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
     if (this->contains("refinement_numSteps"))
       adaptivityConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
-      adaptivityConfig.noPoints_ = (*this)["refinement_numPoints"].getUInt();
+      adaptivityConfig.numRefinementPoints_ = (*this)["refinement_numPoints"].getUInt();
 
     // configure solver
     if (this->contains("solver_type"))
@@ -117,7 +117,7 @@ void LearnerSGDEConfiguration::initConfig() {
 
   // configure adaptive refinement
   adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.noPoints_ = 5;
+  adaptivityConfig.numRefinementPoints_ = 5;
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
@@ -503,7 +503,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha, base::DataMat
         alphaWeight[i] = alpha.get(i) * opEval->eval(alpha, p);
       }
 
-      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
+      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.numRefinementPoints_,
                                          adaptivityConfig.refinementThreshold_);
       gridGen.refine(srf);
 
@@ -661,7 +661,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(
-            refGrids, refAlphas, refPriors, adaptivityConfig.noPoints_, levelPenalize, preCompute);
+            refGrids, refAlphas, refPriors, adaptivityConfig.numRefinementPoints_, levelPenalize, preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
         // to be marked relevant). Cross-validation or similar can/should be
@@ -674,7 +674,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
             refGrids, refAlphas, refPriors, refTrainData, refTrainLabels,
-            adaptivityConfig.noPoints_, levelPenalize, coeffA);
+            adaptivityConfig.numRefinementPoints_, levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
         } else if (refType == "data") {
@@ -698,10 +698,10 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
               alphaWeight[j] = alpha->get(j) * opEval->eval(*alpha, p);
             }
 
-            base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
+            base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.numRefinementPoints_,
                                                adaptivityConfig.refinementThreshold_);
             // base::SurplusRefinementFunctor srf(
-            //  *alpha, adaptivityConfig.noPoints_,
+            //  *alpha, adaptivityConfig.numRefinementPoints_,
             //  adaptivityConfig.threshold_);
             // refine grid
             grid->getGenerator().refine(srf);

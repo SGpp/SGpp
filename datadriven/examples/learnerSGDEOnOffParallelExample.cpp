@@ -11,15 +11,14 @@
 #endif /* USE_GSL */
 
 #ifdef USE_MPI
+#include <omp.h>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-
-#include <omp.h>
-
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -188,7 +187,7 @@ int main(int argc, char *argv[]) {
    * of grid points to refine each step.
    */
   adaptConfig.numRefinements_ = 2;
-  adaptConfig.noPoints_ = 7;
+  adaptConfig.numRefinementPoints_ = 7;
   adaptConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
   // initial weighting factor

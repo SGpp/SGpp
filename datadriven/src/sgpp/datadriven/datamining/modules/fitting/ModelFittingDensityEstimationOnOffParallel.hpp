@@ -76,7 +76,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (always returns true)
    */
-  bool adapt(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   /**
    * Update the density estimation with new data.

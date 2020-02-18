@@ -4,15 +4,12 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/GridStorage.hpp>
-
+#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
-
-#include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -48,17 +45,18 @@ size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void StretchedBoundaryGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
+void StretchedBoundaryGridGenerator::coarsen(CoarseningFunctor& func,
                                              std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha, nullptr, removedSeq);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void StretchedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                                       size_t numFirstOnly,
-                                                       std::vector<size_t>* removedSeq) {
+void StretchedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                                       std::vector<size_t>* removedSeq,
+                                                       size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly, 0, nullptr, removedSeq);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
+                                  removedSeq);
 }
 
 size_t StretchedBoundaryGridGenerator::getNumberOfRemovablePoints() {

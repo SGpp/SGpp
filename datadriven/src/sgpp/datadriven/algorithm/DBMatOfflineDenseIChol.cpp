@@ -3,12 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
-
 #include <algorithm>
 #include <chrono>
 #include <list>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <string>
 
 namespace sgpp {
@@ -58,7 +57,7 @@ void DBMatOfflineDenseIChol::decomposeMatrix(
 
 void DBMatOfflineDenseIChol::choleskyModification(
     Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-    size_t newPoints, std::list<size_t> deletedPoints, double lambda) {
+    size_t newPoints, std::vector<size_t>& deletedPoints, double lambda) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
 

@@ -5,11 +5,10 @@
 
 #pragma once
 
+#include <list>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
-
-#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -91,7 +90,8 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices,
+      double lambda) override;
 
   /**
    * Parallel/Distributed version of updateSystemMatrixDecomposition, uses scalapack and
@@ -107,7 +107,7 @@ class DBMatOnlineDE_SMW : public DBMatOnlineDE {
    */
   std::vector<size_t> updateSystemMatrixDecompositionParallel(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda,
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices, double lambda,
       std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig);
 
   /**

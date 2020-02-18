@@ -161,7 +161,7 @@ int main(int argc, char* argv[]) {
 
   // setup adaptivity
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;
@@ -216,7 +216,8 @@ int main(int argc, char* argv[]) {
       //    boost::program_options::value<bool>(&adaptConfig.maxLevelType_),
       //            "DON'T KNOW WHAT THIS IS FOR")//TODO: seems to be unused,
       //            remove?
-      ("adaptConfig.noPoints", boost::program_options::value<size_t>(&adaptConfig.noPoints_),
+      ("adaptConfig.noPoints",
+       boost::program_options::value<size_t>(&adaptConfig.numRefinementPoints_),
        "number of points to refine")(
           "adaptConfig.numRefinements",
           boost::program_options::value<size_t>(&adaptConfig.numRefinements_),

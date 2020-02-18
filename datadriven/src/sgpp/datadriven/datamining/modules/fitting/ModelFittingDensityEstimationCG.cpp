@@ -79,14 +79,13 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
 }
 
 bool ModelFittingDensityEstimationCG::adapt(size_t newNoPoints,
-                                            std::list<size_t>* deletedGridPoints) {
+                                            std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
-    bNum.remove(idxToDelete);
-    bDenom.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
+    bNum.remove(deletedGridPoints);
+    bDenom.remove(deletedGridPoints);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();

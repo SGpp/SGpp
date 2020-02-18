@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-
+#include <iostream>
+#include <map>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/AdaptivityThresholdTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
+#include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
@@ -31,9 +32,6 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-
-#include <iostream>
-#include <map>
 #include <string>
 #include <vector>
 
@@ -327,8 +325,12 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
                                               defaults.coarseningThreshold_, "adaptivityConfig");
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_, "adaptivityConfig");
-    config.noPoints_ =
-        parseUInt(*adaptivityConfig, "noPoints", defaults.noPoints_, "adaptivityConfig");
+    config.numRefinementPoints_ = parseUInt(*adaptivityConfig, "numRefinementPoints",
+                                            defaults.numRefinementPoints_, "adaptivityConfig");
+    config.numCoarseningPoints_ = parseUInt(*adaptivityConfig, "numCoarseningPoints",
+                                            defaults.numRefinementPoints_, "adaptivityConfig");
+    config.coarsenInitialPoints_ = parseBool(*adaptivityConfig, "coarsenInitialPoints",
+                                             defaults.coarsenInitialPoints_, "adaptivityConfig");
     config.percent_ =
         parseDouble(*adaptivityConfig, "percent", defaults.percent_, "adaptivityConfig");
     config.errorBasedRefinement = parseBool(*adaptivityConfig, "errorBasedRefinement",

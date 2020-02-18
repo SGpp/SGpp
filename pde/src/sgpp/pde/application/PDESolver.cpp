@@ -3,19 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <cmath>
+#include <fstream>
+#include <iostream>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
-#include <sgpp/pde/application/PDESolver.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <cmath>
-#include <fstream>
-#include <iostream>
+#include <sgpp/pde/application/PDESolver.hpp>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -209,7 +207,7 @@ void PDESolver::coarsenInitialGridSurplus(sgpp::base::DataVector& alpha, double 
     size_t numCoarsen = myGenerator.getNumberOfRemovablePoints();
     size_t originalGridSize = myGrid->getSize();
     sgpp::base::SurplusCoarseningFunctor myCoarsenFunctor(alpha, numCoarsen, dThreshold);
-    myGenerator.coarsenNFirstOnly(myCoarsenFunctor, alpha, originalGridSize, nullptr);
+    myGenerator.coarsenNFirstOnly(myCoarsenFunctor, originalGridSize, nullptr, 0);
   } else {
     throw sgpp::base::application_exception(
         "PDESolver::coarsenInitialGridSurplus : The grid wasn't initialized before!");

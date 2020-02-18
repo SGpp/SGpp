@@ -13,13 +13,12 @@
 #include <gsl/gsl_vector.h>
 #endif /* USE_GSL */
 
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-
 #include <algorithm>
 #include <functional>
 #include <list>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatDMSOrthoAdapt.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
 #include <vector>
 
 namespace sgpp {
@@ -45,7 +44,7 @@ DBMatOnlineDEOrthoAdapt::DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& gr
 
 std::vector<size_t> DBMatOnlineDEOrthoAdapt::updateSystemMatrixDecomposition(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices, double lambda) {
+    std::vector<size_t>& deletedGridPointIndices, double lambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 

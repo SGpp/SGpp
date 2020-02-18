@@ -5,10 +5,9 @@
 
 #pragma once
 
+#include <list>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
-
-#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -75,7 +74,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    */
   std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::list<size_t> deletedGridPointIndices, double lambda) override;
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices,
+      double lambda) override;
 
   /**
    * Synchronizes the distributed decomposition, only has an effect if scalapack is used.

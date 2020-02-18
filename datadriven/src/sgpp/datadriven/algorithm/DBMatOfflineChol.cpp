@@ -3,10 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
-
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -179,7 +178,7 @@ void DBMatOfflineChol::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid
 }
 
 void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
-                                            size_t newPoints, std::list<size_t> deletedPoints,
+                                            size_t newPoints, std::vector<size_t>& deletedPoints,
                                             double lambda) {
 #ifdef USE_GSL
 
@@ -204,7 +203,7 @@ void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstim
     // -> job = 2
     size_t coarseCount_2 = 0;
 
-    for (std::list<size_t>::reverse_iterator it = deletedPoints.rbegin();
+    for (std::vector<size_t>::reverse_iterator it = deletedPoints.rbegin();
          it != deletedPoints.rend(); it++) {
       // Indicates current row/column to permute
       index_coarse = *it + 1 + coarseCount_1;

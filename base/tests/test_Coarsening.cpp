@@ -5,27 +5,25 @@
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
-
+#include <climits>
+#include <cmath>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
-
 #include <vector>
-#include <cmath>
-#include <climits>
 
+using sgpp::base::DataVector;
 using sgpp::base::Grid;
 using sgpp::base::GridGenerator;
-using sgpp::base::HashGridPoint;
 using sgpp::base::GridStorage;
-using sgpp::base::DataVector;
-using sgpp::base::HashGenerator;
 using sgpp::base::HashCoarsening;
+using sgpp::base::HashGenerator;
+using sgpp::base::HashGridPoint;
 using sgpp::base::HashGridStorage;
 using sgpp::base::SurplusCoarseningFunctor;
 
@@ -51,7 +49,6 @@ using sgpp::base::SurplusCoarseningFunctor;
 
 BOOST_AUTO_TEST_SUITE(TestSurplusVolumeCoarseningFunctor)
 
-
 /**
    Test basic functionallity
  */
@@ -68,11 +65,14 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   // should be coarsed i=1 l=1
-  alpha[203] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());
+  alpha[203] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());
   // should be coarsed i=1 l=1
-  alpha[204] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
+  alpha[204] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
   // should be coarsed i=1 l=1
-  alpha[208] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
+  alpha[208] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
 
   std::vector<size_t> before;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
 
   HashCoarsening coarsen;
   SurplusCoarseningFunctor functor(alpha, 3, 0.5);
-  coarsen.free_coarsen(gridStorage, functor, alpha);
+  coarsen.free_coarsen(gridStorage, functor);
 
   std::vector<size_t> after;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(testBadAllocIssue) {
   alpha.setAll(0.5);
   HashCoarsening coarsen;
   SurplusCoarseningFunctor functor(alpha, INT_MAX, 1.0);
-  coarsen.free_coarsen(gridStorage, functor, alpha);
+  coarsen.free_coarsen(gridStorage, functor);
 }
 
 /**
@@ -141,9 +141,11 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   alpha[203] = 0.3;  // should not be coarsed b/c thresh
   // should be coarsed i=1 l=1
-  alpha[204] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
+  alpha[204] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
   // should be coarsed i=1 l=1
-  alpha[208] = 0.1; toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
+  alpha[208] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
 
   std::vector<size_t> before;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -153,7 +155,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   HashCoarsening coarsen;
   // threshold of 0.2, max 5 points coarsed
   SurplusCoarseningFunctor functor(alpha, 5, 0.2);
-  coarsen.free_coarsen(gridStorage, functor, alpha);
+  coarsen.free_coarsen(gridStorage, functor);
 
   std::vector<size_t> after;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -179,7 +181,6 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   }
 }
 
-
 /**
  * Test that the removedPoints vector filled by the coarsening functionallity really contains
  * exactly the removed points
@@ -192,7 +193,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
+  std::vector<size_t> toBeRemoved;     // contains grid point hash, not seq numbers!
   std::vector<size_t> toBeRemovedSeq;  // contains seq numbers of grid points to be removed
   toBeRemovedSeq.push_back(203);
   toBeRemovedSeq.push_back(204);
@@ -202,11 +203,14 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   // should be coarsed i=1 l=1
-  alpha[203] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());
+  alpha[203] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(203).getHash());
   // should be coarsed i=1 l=1
-  alpha[204] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
+  alpha[204] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(204).getHash());
   // should be coarsed i=1 l=1
-  alpha[208] = 0.1;  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
+  alpha[208] = 0.1;
+  toBeRemoved.push_back(gridStorage.getPoint(208).getHash());
 
   std::vector<size_t> before;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -218,7 +222,7 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
 
   HashCoarsening coarsen;
   SurplusCoarseningFunctor functor(alpha, 3, 0.5);
-  coarsen.free_coarsen(gridStorage, functor, alpha, &removedPoints, &removedSeq);
+  coarsen.free_coarsen(gridStorage, functor, &removedPoints, &removedSeq);
 
   std::vector<size_t> after;
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
@@ -238,8 +242,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   // Check that toBeRemovedSeq and removedSeq contain the same elements
   BOOST_CHECK_EQUAL(toBeRemovedSeq.size(), removedSeq.size());
   for (size_t i = 0; i < toBeRemovedSeq.size(); i++) {
-    BOOST_CHECK(std::find(removedSeq.begin(), removedSeq.end(), toBeRemovedSeq.at(i))
-                != removedSeq.end());
+    BOOST_CHECK(std::find(removedSeq.begin(), removedSeq.end(), toBeRemovedSeq.at(i)) !=
+                removedSeq.end());
   }
 }
 

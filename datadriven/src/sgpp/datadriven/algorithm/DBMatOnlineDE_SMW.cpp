@@ -11,6 +11,9 @@
 #include <gsl/gsl_vector.h>
 #endif /* USE_GSL */
 
+#include <algorithm>
+#include <functional>
+#include <list>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMS_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineChol.hpp>
@@ -18,10 +21,6 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
-
-#include <algorithm>
-#include <functional>
-#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -47,7 +46,7 @@ DBMatOnlineDE_SMW::DBMatOnlineDE_SMW(DBMatOffline& offline, Grid& grid, double l
 
 std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices, double lambda) {
+    std::vector<size_t>& deletedGridPointIndices, double lambda) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};
 
@@ -90,7 +89,7 @@ std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecomposition(
 
 std::vector<size_t> DBMatOnlineDE_SMW::updateSystemMatrixDecompositionParallel(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices, double lambda,
+    std::vector<size_t>& deletedGridPointIndices, double lambda,
     std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
   // points not possible to coarsen
   std::vector<size_t> return_vector = {};

@@ -6,15 +6,13 @@
 #ifndef GRID_HPP
 #define GRID_HPP
 
+#include <map>
 #include <sgpp/base/grid/CoarseningConfiguration.hpp>
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <map>
 #include <string>
 #include <vector>
 
@@ -147,10 +145,14 @@ struct AdaptivityConfiguration {
   double refinementThreshold_ = 0.0;
   /// coarsening threshold for surpluses
   double coarseningThreshold_ = 0.0;
+  /// prevent coarsening of initial grid points, needed for some decompositions
+  bool coarsenInitialPoints_ = true;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_ = false;
-  /// max. number of points to be refined/coarsened
-  size_t noPoints_ = 5;
+  /// max. number of points to be refined
+  size_t numRefinementPoints_ = 5;
+  /// max. number of points to be coarsened
+  size_t numCoarseningPoints_ = 5;
   /// max. percent of points to be refined/coarsened
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results

@@ -6,12 +6,10 @@
 #ifndef STANDARDGRIDGENERATOR_HPP
 #define STANDARDGRIDGENERATOR_HPP
 
+#include <set>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <set>
 #include <unordered_set>
 #include <vector>
 
@@ -49,10 +47,9 @@ class StandardGridGenerator : public GridGenerator {
                    const std::set<std::set<size_t>>& interactions) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha,
-               std::vector<size_t>* removedSeq) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnly,
-                         std::vector<size_t>* removedSeq) override;
+  void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq, size_t minIndexConsidered) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

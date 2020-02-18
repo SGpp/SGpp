@@ -5,21 +5,18 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-
+#include <list>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
-#include <list>
+#include <sgpp/globaldef.hpp>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -66,7 +63,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool adapt(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 

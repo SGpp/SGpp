@@ -3,16 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
-
+#include <iomanip>
+#include <list>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDMSDenseIChol.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOnlineDEChol.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-
-#include <iomanip>
-#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -84,7 +82,7 @@ DBMatDMSChol* DBMatOnlineDEChol::buildCholSolver(
 
 std::vector<size_t> DBMatOnlineDEChol::updateSystemMatrixDecomposition(
     DensityEstimationConfiguration& densityEstimationConfig, Grid& grid, size_t numAddedGridPoints,
-    std::list<size_t> deletedGridPointIndices, double lambda) {
+    std::vector<size_t>& deletedGridPointIndices, double lambda) {
   DBMatOffline* offlineObject = &getOfflineObject();
   dynamic_cast<DBMatOfflineChol*>(offlineObject)
       ->choleskyModification(grid, densityEstimationConfig, numAddedGridPoints,

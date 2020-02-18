@@ -193,7 +193,7 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
 void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
   (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.noPoints_));
+  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.numRefinementPoints_));
   (*this)["adaptivity"].replaceIDAttr("numRefinements",
                                       static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
@@ -203,7 +203,7 @@ void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& 
 base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
   base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
-  adaptConfig.noPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
+  adaptConfig.numRefinementPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
   adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
   adaptConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
   adaptConfig.refinementThreshold_ = (*this)["adaptivity"]["threshold"].getDouble();

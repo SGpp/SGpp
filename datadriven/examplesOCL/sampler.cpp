@@ -33,7 +33,7 @@ int main(int argc, char** argv) {
 
   // Set Adaptivity
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
   adaptConfig.refinementThreshold_ = 0.0;
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
   std::string metaInformation =
       "refine: " + std::to_string(adaptConfig.numRefinements_) +
-      " points: " + std::to_string(adaptConfig.noPoints_) +
+      " points: " + std::to_string(adaptConfig.numRefinementPoints_) +
       " iterations: " + std::to_string(SLESolverConfigRefine.maxIterations_);
 
   double lambda = 0.000001;

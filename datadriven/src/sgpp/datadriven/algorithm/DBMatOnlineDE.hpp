@@ -45,7 +45,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * points added during refinement after coarsening)
    * @param deletedPoints pointer to list of indexes that will be removed from b
    */
-  void updateRhs(size_t gridSize, std::list<size_t>* deletedPoints);
+  void updateRhs(size_t gridSize, std::vector<size_t>& deletedPoints);
 
   /**
    * Computes the density function again based on the saved b's (only applicable for streaming)

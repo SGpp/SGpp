@@ -5,10 +5,9 @@
 
 #pragma once
 
-#include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
-#include <sgpp/base/exception/not_implemented_exception.hpp>
-
 #include <list>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
 #include <string>
 
 namespace sgpp {
@@ -114,7 +113,7 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    */
   virtual void choleskyModification(
       Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
-      size_t newPoints, std::list<size_t> deletedPoints, double lambda);
+      size_t newPoints, std::vector<size_t>& deletedPoints, double lambda);
 
   /*
    * explicitly computes the inverse

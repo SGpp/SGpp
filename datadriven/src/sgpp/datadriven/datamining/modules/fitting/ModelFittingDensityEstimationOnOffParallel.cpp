@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
-
+#include <list>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -13,10 +12,9 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
-
-#include <list>
 #include <string>
 #include <vector>
 
@@ -158,12 +156,11 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
 }
 
 bool ModelFittingDensityEstimationOnOffParallel::adapt(size_t newNoPoints,
-                                                       std::list<size_t>* deletedGridPoints) {
+                                                       std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
   }
 
   // oldNoPoint refers to the grid size after coarsening
@@ -189,13 +186,13 @@ bool ModelFittingDensityEstimationOnOffParallel::adapt(size_t newNoPoints,
     sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
     online_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
     online_SMW_pointer->updateSystemMatrixDecompositionParallel(
-        config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, *deletedGridPoints,
+        config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, deletedGridPoints,
         config->getRegularizationConfig().lambda_, processGrid, parallelConfig);
 #endif      /* USE_SCALAPACK */
   } else {  // every other decomposition type than SMW
     // Update online object: lhs, rhs and recompute the density function based on the b stored
     online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
-                                            newNoPoints - oldNoPoints, *deletedGridPoints,
+                                            newNoPoints - oldNoPoints, deletedGridPoints,
                                             config->getRegularizationConfig().lambda_);
   }
   online->updateRhs(newNoPoints, deletedGridPoints);

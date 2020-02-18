@@ -356,8 +356,9 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   }
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{
-      gridVector, alphas, priorVector, adaptivityConfig.noPoints_, levelPenalize, preCompute};
+  ZeroCrossingRefinementFunctor funcZrcr{gridVector,    alphas,
+                                         priorVector,   adaptivityConfig.numRefinementPoints_,
+                                         levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
   // can be determined by testing (aim at ~10 % of the training data is
@@ -370,7 +371,8 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-      gridVector,    alphas, priorVector, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
+      gridVector,    alphas,         priorVector,
+      trainDataRef,  trainLabelsRef, adaptivityConfig.numRefinementPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
@@ -426,9 +428,12 @@ void LearnerSGDEOnOffParallel::computeNewSystemMatrixDecomposition(size_t classI
 
   DBMatOnlineDE *densEst = getDensityFunctions()[classIndex].first.get();
   DBMatOffline &dbMatOffline = densEst->getOfflineObject();
-  densEst->updateSystemMatrixDecomposition(
-      densityEstimationConfig, *(grids[classIndex]), refinementResult.addedGridPoints.size(),
-      refinementResult.deletedGridPointsIndices, regularizationConfig.lambda_);
+
+  std::vector<size_t> idxToDelete{std::begin(refinementResult.deletedGridPointsIndices),
+                                  std::end(refinementResult.deletedGridPointsIndices)};
+  densEst->updateSystemMatrixDecomposition(densityEstimationConfig, *(grids[classIndex]),
+                                           refinementResult.addedGridPoints.size(), idxToDelete,
+                                           regularizationConfig.lambda_);
 
   setLocalGridVersion(classIndex, gridVersion);
   D(std::cout << "Send system matrix update to master for class " << classIndex << std::endl;)

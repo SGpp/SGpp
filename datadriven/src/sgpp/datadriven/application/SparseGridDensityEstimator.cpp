@@ -67,7 +67,7 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
     if (this->contains("refinement_numSteps"))
       adaptivityConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
-      adaptivityConfig.noPoints_ = (*this)["refinement_numPoints"].getUInt();
+      adaptivityConfig.numRefinementPoints_ = (*this)["refinement_numPoints"].getUInt();
 
     // configure solver
     if (this->contains("solver_type"))
@@ -162,7 +162,7 @@ void SparseGridDensityEstimatorConfiguration::initConfig() {
 
   // configure adaptive refinement
   adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.noPoints_ = 5;
+  adaptivityConfig.numRefinementPoints_ = 5;
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
@@ -506,7 +506,7 @@ void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
+      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.numRefinementPoints_,
                                          adaptivityConfig.refinementThreshold_);
       gridGen.refine(srf);
 

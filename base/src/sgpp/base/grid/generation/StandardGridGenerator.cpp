@@ -3,19 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <set>
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
-
-#include <sgpp/base/exception/generation_exception.hpp>
-
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -91,17 +87,17 @@ size_t StandardGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void StandardGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha,
-                                    std::vector<size_t>* removedSeq) {
+void StandardGridGenerator::coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha, nullptr, removedSeq);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                              size_t numFirstOnly,
-                                              std::vector<size_t>* removedSeq) {
+void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq,
+                                              size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly, 0, nullptr, removedSeq);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
+                                  removedSeq);
 }
 
 size_t StandardGridGenerator::getNumberOfRemovablePoints() {
