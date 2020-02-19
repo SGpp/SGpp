@@ -16,9 +16,9 @@
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>

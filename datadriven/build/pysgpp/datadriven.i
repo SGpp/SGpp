@@ -131,6 +131,7 @@
 #endif
 
 %include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 %ignore sgpp::datadriven::DataShufflingFunctor::operator();
@@ -200,7 +201,6 @@
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/GridTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
 

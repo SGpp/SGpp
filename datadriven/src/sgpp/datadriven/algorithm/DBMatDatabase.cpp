@@ -13,7 +13,7 @@
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
-#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
+#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 
 #include <algorithm>
 #include <set>
