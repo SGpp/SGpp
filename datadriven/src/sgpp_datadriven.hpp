@@ -147,7 +147,6 @@
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>

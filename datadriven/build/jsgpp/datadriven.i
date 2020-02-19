@@ -219,8 +219,6 @@
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
 
-%include "datadriven/src/sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp"
-
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/MinerFactory.hpp"

@@ -21,7 +21,6 @@
 #include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
@@ -29,6 +28,7 @@
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/solver/SLESolverTypeParser.hpp>
 
 #include <iostream>
 #include <map>
@@ -1001,11 +1001,11 @@ void DataMiningConfigParser::parseSLESolverConfig(
 
   // parse  CG type
   if (dict.contains("solverType")) {
-    config.type_ = SLESolverTypeParser::parse(dict["solverType"].get());
+    config.type_ = solver::SLESolverTypeParser::parse(dict["solverType"].get());
   } else {
     std::cout << "# Did not find " << parentNode
               << "[solverType]. Setting default value "
-              << SLESolverTypeParser::toString(defaults.type_) << "."
+              << solver::SLESolverTypeParser::toString(defaults.type_) << "."
               << std::endl;
     config.type_ = defaults.type_;
   }
