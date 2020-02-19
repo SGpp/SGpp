@@ -34,6 +34,39 @@ def processFile(path):
 
   return True
 
+def processFilePy(path):
+  path = os.path.abspath(path)
+  if os.path.splitext(path)[1] not in [".py"]: return True
+  with open(path, "r") as f: source = f.read()
+
+  COPYRIGHT_BANNER = r"""# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+"""
+
+  # Consider three variants as valid:
+  # 1) starts with copyright
+  # 2) starts with #! (executable)
+  # 3) starts with #! + utf-8 encoding
+  if not (source.startswith(COPYRIGHT_BANNER) or
+          source.startswith("\#!.*?\n"+COPYRIGHT_BANNER) or
+          source.startswith("\#!.*?\n# -\*- coding: utf-8 -\*-\s*")):
+    print(("{}:0: warning: No SG++ copyright message found or existing "
+           "copyright message is not the standard SG++ copyright "
+           "message.  [legal/copyright] [5]").format(path), file=sys.stderr)
+    return False
+
+  if any([(("Author" in x) or ("Created" in x) or
+           ("author" in x) or ("created" in x))
+          for x in source.lower().splitlines()[:11]]):
+    print(("{}:0: warning: Author or creation date in copyright message "
+           "found.  [legal/copyright] [5]").format(path), file=sys.stderr)
+    return False
+
+  return True
+
 
 
 def main():
@@ -50,7 +83,7 @@ def main():
     # for all source/header files
     for root, dirs, files in os.walk(args.path):
       for file_ in sorted(files):
-        success = processFile(os.path.join(root, file_)) and success
+        success = processFilePy(os.path.join(root, file_)) and success
   else:
     success = processFile(args.path)
 
