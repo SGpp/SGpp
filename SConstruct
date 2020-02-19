@@ -641,3 +641,8 @@ else:
 # occurs when cleaning, i.e., `scons -c`, while using Python 3.x for SCons
 if not hasattr(os.environ, "has_key"):
   os.environ.has_key = (lambda x: x in os.environ)
+
+# Save build variables to file
+@atexit.register
+def say_bye():
+  vars.Save("buildVars.out", env)
