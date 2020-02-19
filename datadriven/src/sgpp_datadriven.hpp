@@ -147,7 +147,6 @@
 
 // #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 

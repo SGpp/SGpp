@@ -4,8 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
-
 #include <sgpp/base/exception/data_exception.hpp>
+
 #include <algorithm>
 #include <string>
 

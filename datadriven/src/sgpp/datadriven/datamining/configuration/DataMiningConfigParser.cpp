@@ -10,6 +10,8 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
+#include <sgpp/base/grid/GridTypeParser.hpp>
+#include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
@@ -18,8 +20,6 @@
 #include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/RefinementFunctorTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
@@ -35,7 +35,6 @@
 #include <string>
 #include <vector>
 
-
 using json::DictNode;
 using json::JSON;
 using json::json_exception;
@@ -43,10 +42,6 @@ using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::data_exception;
 using sgpp::base::file_exception;
 using sgpp::base::GeneralGridConfiguration;
-using sgpp::datadriven::CrossvalidationConfiguration;
-using sgpp::datadriven::DensityEstimationConfiguration;
-using sgpp::datadriven::VisualizationGeneralConfig;
-using sgpp::datadriven::VisualizationParameters;
 using sgpp::solver::SLESolverConfiguration;
 
 namespace sgpp {
@@ -334,14 +329,16 @@ bool DataMiningConfigParser::getFitterGridConfig(
     // parse  grid type
     if (fitterConfig->contains("gridType")) {
       if ((*fitterConfig)["gridType"].size() == 1) {
-        config.type_ = GridTypeParser::parse((*fitterConfig)["gridType"].get());
-      } else {
         config.type_ =
-            GridTypeParser::parse((*fitterConfig)["gridType"]["value"].get());
+            base::GridTypeParser::parse((*fitterConfig)["gridType"].get());
+      } else {
+        config.type_ = base::GridTypeParser::parse(
+            (*fitterConfig)["gridType"]["value"].get());
       }
     } else {
       std::cout << "# Did not find gridConfig[gridType]. Setting default value "
-                << GridTypeParser::toString(defaults.type_) << "." << std::endl;
+                << base::GridTypeParser::toString(defaults.type_) << "."
+                << std::endl;
       config.type_ = defaults.type_;
     }
   } else {
@@ -409,12 +406,12 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 
     // Parse refinement indicator
     if (adaptivityConfig->contains("refinementIndicator")) {
-      config.refinementFunctorType = RefinementFunctorTypeParser::parse(
+      config.refinementFunctorType = base::RefinementFunctorTypeParser::parse(
           (*adaptivityConfig)["refinementIndicator"].get());
     } else {
       std::cout << "# Did not find adaptivityConfig[refinementIndicator]. "
                    "Setting default "
-                << "value " << RefinementFunctorTypeParser::toString(
+                << "value " << base::RefinementFunctorTypeParser::toString(
                                    defaults.refinementFunctorType)
                 << "." << std::endl;
       config.refinementFunctorType = defaults.refinementFunctorType;
@@ -1037,7 +1034,7 @@ void DataMiningConfigParser::getHyperparameters(
           (*configFile)[fitter]["gridConfig"]["gridType"]["options"].size();
       if (nOptions > 1) {
         for (size_t i = 0; i < nOptions; ++i) {
-          basisFunctions.push_back(GridTypeParser::parse(
+          basisFunctions.push_back(base::GridTypeParser::parse(
               (*configFile)[fitter]["gridConfig"]["gridType"]["options"][i]
                   .get()));
         }
