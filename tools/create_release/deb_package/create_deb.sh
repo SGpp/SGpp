@@ -3,7 +3,7 @@
 # Build SG++ in the background
 printf '\n~~~ Building SG++ ~~~\n\n'
 cd ../../..
-scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0
+scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0 CHECK_STYLE=0
 cd -
 
 # Create dependency lists 

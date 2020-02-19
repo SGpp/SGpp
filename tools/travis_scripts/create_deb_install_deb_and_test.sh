@@ -1,12 +1,10 @@
 #!/bin/bash
-printf '\nWARNING: This is only meant to run on travis! If you are running this on your own you probably want to run create_deb.sh instead!\n'
-sleep 7
-printf '\nOkay you are on your own now!\n'
-sleep 1
 
-# Build SG++ in the background
+# exit when any command fails
+set -e
+
 printf '\n~~~ building sg++ ~~~\n\n'
-scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0 RUN_PYTHON_TESTS=0
+scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0 RUN_PYTHON_TESTS=0 CHECK_STYLE=0
 cd tools/create_release/deb_package
 
 # Create dependency lists 
@@ -29,7 +27,7 @@ mkdir -p "$HOME/testing_package"
 cp "base/examples/quadrature.cpp" "$HOME/testing_package/quadrature.cpp"
 cp "base/examples/quadrature.py" "$HOME/testing_package/quadrature.py"
 cd "$HOME/testing_package"
-g++ quadrature.cpp -o quad -l sgppbase
+g++ quadrature.cpp -std=c++11 -o quad -l sgppbase
 ./quad > cpp_output.txt
 cat cpp_output
 
