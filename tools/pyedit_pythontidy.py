@@ -1,9 +1,3 @@
-# Copyright (C) 2008-today The SG++ project
-# This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at
-# sgpp.sparsegrids.org
-
-
 """
 This code is public domain.
 The original author is Bear Huang (http://bear330.wordpress.com/).

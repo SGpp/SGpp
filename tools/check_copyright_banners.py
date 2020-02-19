@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
 from __future__ import print_function
 import argparse
@@ -54,7 +58,7 @@ def processFilePy(path):
   # 2) starts with #! (executable)
   # 3) starts with #! + utf-8 encoding
   if not (re.match(COPYRIGHT_BANNER, source) or
-          re.match("#!.*?\n"+COPYRIGHT_BANNER, source) or
+          re.match("#!.*?\s*"+COPYRIGHT_BANNER, source) or
           re.match("#!.*?\n# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source)):
     print(("{}:0: warning: No SG++ copyright message found or existing "
            "copyright message is not the standard SG++ copyright "
