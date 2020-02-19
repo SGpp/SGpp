@@ -6,8 +6,20 @@
 #ifndef SGPP_OPTIMIZATION_HPP
 #define SGPP_OPTIMIZATION_HPP
 
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrinciple.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaOptimization.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaTransformation.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyExtensionPrincipleViaVertexMethod.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyIntervalViaConfidenceInterval.hpp>
+#include <sgpp/optimization/fuzzy/FuzzyIntervalViaMembershipFunction.hpp>
+#include <sgpp/optimization/fuzzy/InterpolatedFuzzyInterval.hpp>
+#include <sgpp/optimization/fuzzy/QuasiGaussianFuzzyNumber.hpp>
+#include <sgpp/optimization/fuzzy/TriangularFuzzyInterval.hpp>
+
 #include <sgpp/optimization/gridgen/HashRefinementMultiple.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGenerator.hpp>
+#include <sgpp/optimization/gridgen/IterativeGridGeneratorFuzzyRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorLinearSurplus.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
@@ -17,15 +29,23 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalNakSplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinear.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationLinearClenshawCurtis.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBspline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModBsplineClenshawCurtis.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModLinear.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModNakBspline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWeaklyFundamentalNakSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModWavelet.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNaturalBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWaveletBoundary.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 
 #include <sgpp/optimization/optimizer/constrained/AugmentedLagrangian.hpp>
 #include <sgpp/optimization/optimizer/constrained/ConstrainedOptimizer.hpp>
@@ -40,9 +60,9 @@
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
-#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Newton.hpp>
+#include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
@@ -54,8 +74,10 @@
 
 #include <sgpp/optimization/test_problems/unconstrained/AbsoluteValue.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Ackley.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Alpine02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Beale.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Branin.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin01.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Branin02.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/BubbleWrap.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/EasomYang.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Eggholder.hpp>
@@ -71,16 +93,19 @@
 #include <sgpp/optimization/test_problems/unconstrained/Perm.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rastrigin.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel06.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel22.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/Schwefel26.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/SHCB.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/Schwefel.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
-#include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/UnconstrainedTestProblem.hpp>
+#include <sgpp/optimization/test_problems/unconstrained/TremblingParabola.hpp>
 
 #include <sgpp/optimization/test_problems/constrained/ConstrainedTestProblem.hpp>
 #include <sgpp/optimization/test_problems/constrained/Floudas.hpp>
 #include <sgpp/optimization/test_problems/constrained/G03.hpp>
 #include <sgpp/optimization/test_problems/constrained/G04.hpp>
+#include <sgpp/optimization/test_problems/constrained/G04Squared.hpp>
 #include <sgpp/optimization/test_problems/constrained/G05.hpp>
 #include <sgpp/optimization/test_problems/constrained/G06.hpp>
 #include <sgpp/optimization/test_problems/constrained/G08.hpp>

@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.cpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
@@ -20,6 +13,15 @@
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
+#include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
+
+#ifdef USE_GSL
+#include <gsl/gsl_blas.h>
+#include <gsl/gsl_linalg.h>
+#include <gsl/gsl_math.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_vector.h>
+#endif /* USE_GSL */
 
 #include <list>
 #include <string>
@@ -46,6 +48,15 @@ ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
     : ModelFittingDensityEstimation() {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
+  this->hasObjectStore = false;
+}
+
+ModelFittingDensityEstimationOnOff::ModelFittingDensityEstimationOnOff(
+    const FitterConfigurationDensityEstimation& config,
+    std::shared_ptr<DBMatObjectStore> objectStore)
+    : ModelFittingDensityEstimationOnOff(config) {
+  this->objectStore = objectStore;
+  this->hasObjectStore = true;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -71,25 +82,54 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
 
   // clear model
   reset();
 
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
-  std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
+  // std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
   // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
   // build surplus vector
-  alpha = DataVector{grid->getSize()};
+  alpha = DataVector(grid->getSize());
 
   // Build the offline instance first
   DBMatOffline* offline = nullptr;
 
-  // Intialize database if it is provided
-  if (!databaseConfig.filepath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filepath);
+  // If the permutation and blow-up approach is applicable to the decomposition type, an object
+  // store is given and the offline permutation method is configured, the offline object is obtained
+  // from the permutation factory
+  if (this->hasObjectStore) {
+    const DBMatOffline* objectFromStore =
+        this->objectStore->getObject(gridConfig, geometryConfig, refinementConfig,
+                                     regularizationConfig, densityEstimationConfig);
+
+    if (objectFromStore != nullptr) {
+      offline = objectFromStore->clone();
+    }
+  }
+
+  if (DBMatOfflinePermutable::PermutableDecompositions.find(
+          densityEstimationConfig.decomposition_) !=
+          DBMatOfflinePermutable::PermutableDecompositions.end() &&
+      this->hasObjectStore && useOfflinePermutation) {
+    // Initialize the permutation factory. If a database path is specified, the path is pased to the
+    // permutation factory
+    DBMatPermutationFactory permutationFactory;
+    if (databaseConfig.filePath.empty()) {
+      permutationFactory = DBMatPermutationFactory(this->objectStore);
+    } else {
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+    }
+    offline = permutationFactory.getPermutedObject(
+        config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
+        config->getRegularizationConfig(), config->getDensityEstimationConfig());
+    offline->interactions = getInteractions(geometryConfig);
+  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -107,20 +147,25 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
-
-    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
-    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
-        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
-      offline->compute_inverse();
+    if (this->hasObjectStore) {
+      this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
+                                   regularizationConfig, densityEstimationConfig, offline->clone());
     }
   }
+
   online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
+
+  // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+    offline->compute_inverse();
+  }
 
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,
                                  this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().beta);
+  online->setBeta(this->config->getLearnerConfig().learningRate);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
@@ -172,6 +217,43 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
   }
 }
 
+double ModelFittingDensityEstimationOnOff::computeResidual(DataMatrix& validationData) const {
+  DataVector bValidation =
+      online->computeBFromBatch(validationData, *grid, this->config->getDensityEstimationConfig());
+
+  DataMatrix rMatrix = online->getOfflineObject().getUnmodifiedR();
+
+#ifdef USE_GSL
+
+  gsl_matrix_view R_view =
+      gsl_matrix_view_array(rMatrix.getPointer(), rMatrix.getNrows(), rMatrix.getNcols());
+  gsl_vector_const_view alpha_view =
+      gsl_vector_const_view_array(alpha.getPointer(), alpha.getSize());
+  gsl_vector_view b_view = gsl_vector_view_array(bValidation.getPointer(), bValidation.getSize());
+
+  // R * alpha - b_val
+  gsl_blas_dgemv(CblasNoTrans, 1.0, &R_view.matrix, &alpha_view.vector, -1.0, &b_view.vector);
+#else
+  throw base::not_implemented_exception("built withot GSL");
+#endif /* USE_GSL */
+
+  return bValidation.l2Norm();
+}
+
+void ModelFittingDensityEstimationOnOff::updateRegularization(double lambda) {
+  if (grid != nullptr) {
+    auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+
+    this->online->getOfflineObject().updateRegularization(lambda);
+
+    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      online->getOfflineObject().compute_inverse();
+    }
+  }
+}
+
 bool ModelFittingDensityEstimationOnOff::isRefinable() {
   if (grid != nullptr) {
     return online->getOfflineObject().isRefineable();
@@ -183,6 +265,13 @@ void ModelFittingDensityEstimationOnOff::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+void ModelFittingDensityEstimationOnOff::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
 }
 
 }  // namespace datadriven

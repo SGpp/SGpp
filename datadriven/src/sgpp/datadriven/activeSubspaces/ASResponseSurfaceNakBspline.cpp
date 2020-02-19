@@ -16,7 +16,7 @@ void ASResponseSurfaceNakBspline::initialize() {
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(activeDim, degree);
     basis = std::make_shared<sgpp::base::SNakBsplineBoundaryBase>(degree);
-  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+  } else if (gridType == sgpp::base::GridType::ModNakBspline) {
     grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(activeDim, degree);
     basis = std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {

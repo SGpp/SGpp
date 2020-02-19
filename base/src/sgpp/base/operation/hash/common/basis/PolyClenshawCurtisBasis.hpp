@@ -119,7 +119,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
   double eval(LT level, IT index, double p) override {
     // check if x value is in the unit interval
     if ((p <= 0) || (p >= 1)) {
-      return 0.0f;
+      return 0.0;
     }
 
     // load boundaries of support
@@ -128,7 +128,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
 
     // check if p is out of bounds
     if ((p <= xleft) || (p >= xright)) {
-      return 0.0f;
+      return 0.0;
     } else {
       return evalBasis(level, index, p);
     }
@@ -223,8 +223,8 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
     // getting legendre gauss points and weights in [-1, 1]
     quadRule.getLevelPointsAndWeights(n_roots, roots, weights);
 
-    double sum = 0.0f;
-    double x = 0.0f;
+    double sum = 0.0;
+    double x = 0.0;
 
     for (size_t i = 0; i < n_roots; i++) {
       // scale the roots to the support of the basis:

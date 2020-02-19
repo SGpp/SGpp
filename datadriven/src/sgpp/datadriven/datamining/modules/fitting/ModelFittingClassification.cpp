@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingClassification.cpp
- *
- *  Created on: Jul 1, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
@@ -20,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
+#include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
@@ -29,7 +23,7 @@
 #include <map>
 #include <string>
 #include <vector>
-
+#include <limits>
 #include <fstream>
 #include <iostream>
 
@@ -50,6 +44,8 @@ ModelFittingClassification::ModelFittingClassification(
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 
+  this->objectStore = std::make_shared<DBMatObjectStore>();
+  this->hasObjectStore = true;
 #ifdef USE_SCALAPACK
   auto& parallelConfig = this->config->getParallelConfig();
   if (parallelConfig.scalapackEnabled_) {
@@ -59,12 +55,18 @@ ModelFittingClassification::ModelFittingClassification(
 #endif
 }
 
+ModelFittingClassification::ModelFittingClassification(
+    const FitterConfigurationClassification& config, std::shared_ptr<DBMatObjectStore> objectStore)
+    : ModelFittingClassification(config) {
+  this->objectStore = objectStore;
+  this->hasObjectStore = true;
+}
+
 double ModelFittingClassification::evaluate(const DataVector& sample) {
   if (models.size() == 0) {
     std::string errorMessage = "Prediction impossible! No models were trained!";
     throw application_exception(errorMessage.c_str());
   } else {
-    auto& learnerConfig = this->config->getLearnerConfig();
     double prediction = 0.0, maxDensity = 0.0;
 
     // Pre compute the total number of instances
@@ -75,6 +77,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
     }
 
     bool evaluatedModel = false;
+    std::vector<double> priors = getClassPriors();
     for (auto& p : classIdx) {
       double label = p.first;
       size_t idx = p.second;
@@ -83,15 +86,7 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
         continue;
       }
       double classConditionalDensity = models[idx]->evaluate(sample);
-      double prior;
-      if (learnerConfig.usePrior) {
-        // Prior is realtive frequency of instances of this class
-        prior = static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
-      } else {
-        // Uniform prior
-        prior = 1.0;
-      }
-      double density = prior * classConditionalDensity;
+      double density = priors[idx] * classConditionalDensity;
 
       if (!evaluatedModel || density > maxDensity) {
         maxDensity = density;
@@ -104,6 +99,11 @@ double ModelFittingClassification::evaluate(const DataVector& sample) {
 }
 
 void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& results) {
+  if (models.size() == 0) {
+    std::string errorMessage = "Prediction impossible! No models were trained!";
+    throw application_exception(errorMessage.c_str());
+  }
+
 #ifdef USE_SCALAPACK
   auto& parallelConfig = this->config->getParallelConfig();
   if (parallelConfig.scalapackEnabled_) {
@@ -126,12 +126,51 @@ void ModelFittingClassification::evaluate(DataMatrix& samples, DataVector& resul
   }
 #endif  // USE_SCALAPACK
 
-#pragma omp parallel for
-  for (size_t i = 0; i < samples.getNrows(); i++) {
-    DataVector tmp(samples.getNcols());
-    samples.getRow(i, tmp);
-    results.set(i, evaluate(tmp));
+  std::vector<double> priors = getClassPriors();
+  std::vector<DataVector> classResults(models.size());
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    DataVector results(samples.getNrows());
+    models[idx]->evaluate(samples, results);
+    results.mult(priors[idx]);
+    classResults[idx] = results;
   }
+  for (size_t j = 0; j < samples.getNrows(); j++) {
+    double maxDensity = std::numeric_limits<double>::lowest();
+    double prediction = 0.0;
+    for (auto& p : classIdx) {
+      size_t idx = p.second;
+      if (maxDensity < classResults[idx][j]) {
+        maxDensity = classResults[idx][j];
+        prediction = p.first;
+      }
+    }
+    results.set(j, prediction);
+  }
+}
+
+std::vector<double> ModelFittingClassification::getClassPriors() const {
+  auto& learnerConfig = this->config->getLearnerConfig();
+  size_t numInstances = 0;
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    numInstances += classNumberInstances[idx];
+  }
+
+  std::vector<double> priors(models.size());
+  for (auto& p : classIdx) {
+    size_t idx = p.second;
+    if (learnerConfig.usePrior) {
+      // Prior is realtive frequency of instances of this class
+      priors[idx] =
+          static_cast<double>(classNumberInstances[idx]) / static_cast<double>(numInstances);
+    } else {
+      // Uniform prior
+      priors[idx] = 1.0;
+    }
+  }
+
+  return priors;
 }
 
 void ModelFittingClassification::fit(Dataset& newDataset) {
@@ -143,7 +182,12 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
     sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
   if (densityEstimationConfig.getGridConfig().generalType_ ==
       base::GeneralGridType::ComponentGrid) {
-    return std::make_unique<ModelFittingDensityEstimationCombi>(densityEstimationConfig);
+    if (this->hasObjectStore) {
+      return std::make_unique<ModelFittingDensityEstimationCombi>(densityEstimationConfig,
+                                                                  this->objectStore);
+    } else {
+      return std::make_unique<ModelFittingDensityEstimationCombi>(densityEstimationConfig);
+    }
   }
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
     case DensityEstimationType::CG: {
@@ -158,11 +202,9 @@ std::unique_ptr<ModelFittingDensityEstimation> ModelFittingClassification::creat
 #endif  // USE_SCALAPACK
       return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
     }
-    default: {
-      std::string errMsg = "Unknown density estimation type";
-      throw application_exception(errMsg.c_str());
-    }
   }
+
+  throw application_exception("Unknown density estimation type");
 }
 
 size_t ModelFittingClassification::labelToIdx(double label) {
@@ -187,7 +229,7 @@ size_t ModelFittingClassification::labelToIdx(double label) {
 }
 
 MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
-    std::vector<Grid*> grids, std::vector<DataVector*> surpluses) {
+    std::vector<Grid*> grids, std::vector<DataVector*> surpluses, std::vector<double> priors) {
   sgpp::base::AdaptivityConfiguration& refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus: {
@@ -196,7 +238,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
                                                refinementConfig.threshold_);
     }
     case RefinementFunctorType::ZeroCrossing: {
-      return new ZeroCrossingRefinementFunctor(grids, surpluses, refinementConfig.noPoints_,
+      return new ZeroCrossingRefinementFunctor(grids, surpluses, priors, refinementConfig.noPoints_,
                                                refinementConfig.levelPenalize,
                                                refinementConfig.precomputeEvaluations);
     }
@@ -206,14 +248,14 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
           std::string errorMessage =
               "Not enough scaling coefficients were given for the amount"
               "of classes";
-          throw new application_exception(errorMessage.c_str());
+          throw application_exception(errorMessage.c_str());
         } else if (refinementConfig.scalingCoefficients.size() > models.size()) {
           std::cout << "Did not train on at least one sample for every class. Data based "
                     << "refinement not possible in this iteration..." << std::endl;
           return nullptr;
         }
       }
-      return new DataBasedRefinementFunctor(grids, surpluses, &(dataset->getData()),
+      return new DataBasedRefinementFunctor(grids, surpluses, priors, &(dataset->getData()),
                                             &(dataset->getTargets()), refinementConfig.noPoints_,
                                             refinementConfig.levelPenalize,
                                             refinementConfig.scalingCoefficients);
@@ -222,20 +264,24 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       std::string errorMessage =
           "Unsupported refinement functor type SurplusVolume "
           "for classification!";
-      throw new application_exception(errorMessage.c_str());
+      throw application_exception(errorMessage.c_str());
     }
     case RefinementFunctorType::GridPointBased: {
-      return new GridPointBasedRefinementFunctor(grids, surpluses, refinementConfig.levelPenalize,
-                                                 refinementConfig.precomputeEvaluations,
-                                                 refinementConfig.threshold_);
+      return new GridPointBasedRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.noPoints_, refinementConfig.levelPenalize,
+          refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
     }
     case RefinementFunctorType::MultipleClass: {
-      return new MultipleClassRefinementFunctor(grids, surpluses, refinementConfig.noPoints_, 0,
-                                                refinementConfig.threshold_);
+      return new MultipleClassRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.noPoints_, 0, refinementConfig.threshold_);
     }
-    default:
-      return nullptr;
+    case RefinementFunctorType::Classification: {
+      return new ClassificationRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.noPoints_, true, refinementConfig.threshold_);
+    }
   }
+
+  return nullptr;
 }
 
 bool ModelFittingClassification::refine() {
@@ -251,15 +297,28 @@ bool ModelFittingClassification::refine() {
     // Assemble grids and alphas
     std::vector<Grid*> grids;
     std::vector<DataVector*> surpluses;
+    std::vector<double> priors;
     grids.reserve(models.size());
     surpluses.reserve(models.size());
+    bool usePrior = this->config->getLearnerConfig().usePrior;
+    size_t numInstances = 0;
+    for (auto& p : classIdx) {
+      size_t idx = p.second;
+      numInstances += classNumberInstances[idx];
+    }
     for (size_t idx = 0; idx < models.size(); idx++) {
       grids.push_back(&(models[idx]->getGrid()));
       surpluses.push_back(&(models[idx]->getSurpluses()));
+      if (usePrior) {
+        priors.push_back(static_cast<double>(classNumberInstances[idx]) /
+                         static_cast<double>(numInstances));
+      } else {
+        priors.push_back(1.0);
+      }
     }
 
     // Create a refinement functor
-    MultiGridRefinementFunctor* func = getRefinementFunctor(grids, surpluses);
+    MultiGridRefinementFunctor* func = getRefinementFunctor(grids, surpluses, priors);
 
     // Apply refinements for all models
     if (func) {
@@ -269,6 +328,10 @@ bool ModelFittingClassification::refine() {
         MultipleClassRefinementFunctor* multifunc =
             dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
+      } else if (refinementConfig.refinementFunctorType == RefinementFunctorType::Classification) {
+        ClassificationRefinementFunctor* classfunc =
+            dynamic_cast<ClassificationRefinementFunctor*>(func);
+        classfunc->refineAllGrids();
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
@@ -282,7 +345,13 @@ bool ModelFittingClassification::refine() {
           func->setGridIndex(idx);
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by the functor
-          grids[idx]->getGenerator().refine(*func);
+          GeometryConfiguration geoConf = config->getGeometryConfig();
+          if (!geoConf.stencils.empty()) {
+            GridFactory gridFactory;
+            grids[idx]->getGenerator().refineInter(*func, gridFactory.getInteractions(geoConf));
+          } else {
+            grids[idx]->getGenerator().refine(*func);
+          }
         }
       }
 
@@ -334,6 +403,18 @@ void ModelFittingClassification::reset() {
   refinementsPerformed = 0;
 }
 
+void ModelFittingClassification::resetTraining() {
+  for (auto& model : models) {
+    model->resetTraining();
+  }
+}
+
+void ModelFittingClassification::updateRegularization(double lambda) {
+  for (auto& model : models) {
+    model->updateRegularization(lambda);
+  }
+}
+
 void ModelFittingClassification::storeClassificator() {
   std::cout << "Storing Classificator..." << std::endl;
 
@@ -378,6 +459,12 @@ void ModelFittingClassification::storeClassificator() {
   }
 }
 
+std::vector<std::unique_ptr<ModelFittingDensityEstimation>>*
+ModelFittingClassification::getModels() {
+  return &(models);
+}
+
+std::map<double, size_t> ModelFittingClassification::getClassIdx() { return this->classIdx; }
 #ifdef USE_SCALAPACK
 std::shared_ptr<BlacsProcessGrid> ModelFittingClassification::getProcessGrid() const {
   return processGrid;

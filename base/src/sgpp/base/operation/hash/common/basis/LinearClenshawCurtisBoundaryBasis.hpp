@@ -62,7 +62,7 @@ class LinearClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
   double getIntegral(LT level, IT index) override {
     // boundary points
     if (level == 0) {
-      return 0.5f;
+      return 0.5;
     } else {
       return basis.getIntegral(level, index);
     }

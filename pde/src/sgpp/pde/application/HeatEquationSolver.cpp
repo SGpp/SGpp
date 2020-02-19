@@ -25,11 +25,11 @@ namespace pde {
 
 HeatEquationSolver::HeatEquationSolver() : ParabolicPDESolver() {
   this->bGridConstructed = false;
-  this->myScreen = NULL;
+  this->myScreen = nullptr;
 }
 
 HeatEquationSolver::~HeatEquationSolver() {
-  if (this->myScreen != NULL) {
+  if (this->myScreen != nullptr) {
     delete this->myScreen;
   }
 }
@@ -74,7 +74,7 @@ void HeatEquationSolver::solveExplicitEuler(size_t numTimesteps, double timestep
     myEuler->solve(*myCG, *myHESolver, verbose);
     dNeededTime = myStopwatch->stop();
 
-    if (this->myScreen != NULL) {
+    if (this->myScreen != nullptr) {
       std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
       this->myScreen->writeEmptyLines(2);
     }
@@ -112,7 +112,7 @@ void HeatEquationSolver::solveImplicitEuler(size_t numTimesteps, double timestep
     myEuler->solve(*myCG, *myHESolver, verbose);
     dNeededTime = myStopwatch->stop();
 
-    if (this->myScreen != NULL) {
+    if (this->myScreen != nullptr) {
       std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
       this->myScreen->writeEmptyLines(2);
     }
@@ -168,7 +168,7 @@ void HeatEquationSolver::solveCrankNicolson(size_t numTimesteps, double timestep
     myCN->solve(*myCG, *myHESolver, false);
     dNeededTime = myStopwatch->stop();
 
-    if (this->myScreen != NULL) {
+    if (this->myScreen != nullptr) {
       std::cout << "Time to solve: " << dNeededTime << " seconds" << std::endl;
       this->myScreen->writeEmptyLines(2);
     }

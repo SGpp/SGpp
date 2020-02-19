@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DensityEstimationConfiguration.hpp
- *
- *  Created on: Jan 02, 2018
- *      Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -27,8 +20,14 @@ enum class DensityEstimationType { CG, Decomposition };
 enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
-  DensityEstimationType type_;             // Type of density estimation
-  MatrixDecompositionType decomposition_;  // Type of matrix decomposition
+  // Type of density estimation
+  DensityEstimationType type_ = DensityEstimationType::Decomposition;
+  // Type of matrix decomposition
+  MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt;
+  /**
+   * Defines whether offline permutation should be used if decomposition allows it.
+   */
+  bool useOfflinePermutation = true;
 
   // flag for normalization in DBMatOnlineDE
   bool normalize_ = false;

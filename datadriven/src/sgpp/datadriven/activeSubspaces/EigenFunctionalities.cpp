@@ -53,7 +53,7 @@ sgpp::base::DataVector EigenRegression(std::shared_ptr<sgpp::base::Grid> grid, s
     basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
-  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+  } else if (gridType == sgpp::base::GridType::ModNakBspline) {
     basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);

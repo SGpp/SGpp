@@ -13,13 +13,13 @@
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <string>
-#include <vector>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <limits>
-#include <fstream>
 #include <sstream>
-#include <iomanip>
+#include <string>
+#include <vector>
 
 namespace sgpp {
 namespace base {
@@ -148,6 +148,10 @@ size_t DataVector::append() { return this->append(0.0); }
 size_t DataVector::append(double value) {
   this->emplace_back(value);
   return this->size() - 1;
+}
+
+void DataVector::append(DataVector::iterator first, DataVector::iterator last) {
+  this->insert(this->end(), first, last);
 }
 
 void DataVector::insert(size_t index, double value) {

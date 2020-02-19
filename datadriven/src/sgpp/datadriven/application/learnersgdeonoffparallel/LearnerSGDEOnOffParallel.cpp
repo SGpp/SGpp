@@ -31,7 +31,8 @@
 #include <utility>
 #include <list>
 #include <numeric>
-#include "../../algorithm/RefinementMonitorConvergence.hpp"
+#include <set>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 using sgpp::base::Grid;
 using sgpp::base::GridStorage;
@@ -91,7 +92,7 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
   for (size_t classIndex = 0; classIndex < numClasses; classIndex++) {
     // Create a grid
     std::unique_ptr<Grid> grid = std::unique_ptr<Grid> {
-      gridFactory.createGrid(gridConfig, std::vector<std::vector <size_t>>())
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
     };
     std::unique_ptr<DBMatOffline> offlineCloned =
         std::unique_ptr<DBMatOffline>{offline->clone()};
@@ -129,7 +130,7 @@ Grid& LearnerSGDEOnOffParallel::getGrid(size_t classIndex) {
 size_t LearnerSGDEOnOffParallel::getNumClasses() const { return numClasses; }
 
 double LearnerSGDEOnOffParallel::getAccuracy() const {
-  DataVector computedLabels{testData.getNumberInstances()};
+  DataVector computedLabels(testData.getNumberInstances());
   predict(testData.getData(), computedLabels);
   size_t correct = 0;
   size_t correctLabel1 = 0;
@@ -185,7 +186,7 @@ void LearnerSGDEOnOffParallel::predict(DataMatrix& data, DataVector& result) con
 double LearnerSGDEOnOffParallel::getError(Dataset& dataset) const {
   double res = -1.0;
 
-  DataVector computedLabels{dataset.getNumberInstances()};
+  DataVector computedLabels(dataset.getNumberInstances());
   predict(dataset.getData(), computedLabels);
   size_t correct = 0;
   for (size_t i = 0; i < computedLabels.getSize(); i++) {
@@ -372,13 +373,16 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
 
   // Copy the vector of grids for typecasting
   std::vector<Grid*> gridVector;
+  std::vector<double> priorVector;
   gridVector.reserve(grids.size());
   for (size_t idx = 0; idx < grids.size(); idx++) {
     gridVector.push_back(&(*(grids[idx])));
+    priorVector.push_back(prior.at(classLabels[idx]));
   }
 
   // Zero-crossing-based refinement
-  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, adaptivityConfig.noPoints_,
+  ZeroCrossingRefinementFunctor funcZrcr{gridVector, alphas, priorVector,
+                                         adaptivityConfig.noPoints_,
                                          levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -392,7 +396,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   DataMatrix *trainDataRef = &(trainData.getData());
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
-    gridVector, alphas, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
+    gridVector, alphas, priorVector, trainDataRef, trainLabelsRef, adaptivityConfig.noPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
@@ -731,8 +735,7 @@ void LearnerSGDEOnOffParallel::mergeAlphaValues(size_t classIndex,
         // See DBMatOnlineDe::updateAlpha()
         if (!deletedPoints.empty()) {
           D(std::cout << "Copying vector (deleting deleted grid points)." << std::endl;)
-          DataVector newAlpha{
-              dataVector.getSize() - deletedPoints.size() + addedPoints.size()};
+          DataVector newAlpha(dataVector.getSize() - deletedPoints.size() + addedPoints.size());
           for (size_t i = 0; i < dataVector.getSize(); i++) {
             if (std::find(deletedPoints.begin(), deletedPoints.end(), i) !=
                 deletedPoints.end()) {

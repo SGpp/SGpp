@@ -1,14 +1,8 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DataMatrixDistributed.cpp
- *
- * Created on: Jan 14, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -600,7 +594,7 @@ void DataMatrixDistributed::broadcast(DataMatrix& localMatrix) const {
         // for the sender, directly copy the block into the local matrix
         for (size_t i = 0; i < colsToSend; i++) {
           double* submatrix = &localMatrix.getPointer()[((col + i) * globalRows) + row];
-          std::copy_n(localBlock, rowsToSend * colsToSend, submatrix);
+          std::copy_n(localBlock, rowsToSend, submatrix);
 
           localBlock += localRows;
         }

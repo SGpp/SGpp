@@ -18,9 +18,8 @@
         },
         "adaptivityConfig": {
             "numRefinements": 10,
-            "threshold": 0.001,
             "noPoints": 10,
-            "refinementIndicator": "dataBased",
+            "refinementIndicator": "classification",
             "penalizeLevels": true,
             "errorBasedRefinement": true,
             "errorMinInterval": 1,

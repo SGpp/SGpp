@@ -134,8 +134,7 @@ int main() {
   for (int step = 0; step < 20; step++) {
     /**
        * Step 1: calculate the surplus vector alpha. In data
-       * mining with do it by solving a regression problem as shown in
-       * example \ref example_classificationRefinementExample_cpp.
+       * mining with do it by solving a regression problem.
        * Here, the function can be evaluated at any point. Hence. we
        * simply evaluate it at the coordinates of the grid points to
        * obtain the nodal values. Then we use hierarchization to

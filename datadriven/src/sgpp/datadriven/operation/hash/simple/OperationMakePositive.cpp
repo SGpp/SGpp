@@ -12,11 +12,11 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/exception/factory_exception.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 
 #include <vector>
-#include "../../../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -72,10 +72,6 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
           std::make_shared<datadriven::OperationMakePositiveFindIntersectionCandidatesJoin>(
               candidateSearchMaxLevel);
       break;
-    default:
-      candidateSearch = std::make_shared<datadriven::OperationMakePositiveLoadFullGridCandidates>(
-          candidateSearchMaxLevel);
-      break;
   }
   candidateSearch->setVerbose(verbose);
 
@@ -93,9 +89,6 @@ void OperationMakePositive::initialize(base::Grid& grid, base::DataVector& alpha
       break;
     case MakePositiveInterpolationAlgorithm::InterpolateFunction:
       interpolation = std::make_shared<datadriven::OperationMakePositiveInterpolateFunction>(f);
-      break;
-    default:
-      interpolation = std::make_shared<datadriven::OperationMakePositiveSetToZero>();
       break;
   }
 

@@ -12,6 +12,7 @@
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
+#include <set>
 #include <vector>
 
 using sgpp::base::DataMatrix;
@@ -24,30 +25,30 @@ BOOST_AUTO_TEST_SUITE(TestOperationMultipleEvalInterModLinear)
 
 // zero alpha case -> evaluation must return alpha
 BOOST_AUTO_TEST_CASE(zeroAlpha) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10.*rand()/static_cast<double>(RAND_MAX));
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
-  std::vector<size_t> tmp = std::vector<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
-  interactions.push_back(tmp);
+  interactions.insert(tmp);
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::vector<size_t> ();
-    tmp.push_back(i);
-    interactions.push_back(tmp);
+    tmp.clear();
+    tmp.insert(i);
+    interactions.insert(tmp);
   }
 
   // add ~50% of all binary interactions
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::vector<size_t> ();
-        tmp.push_back(i);
-        tmp.push_back(j);
-        interactions.push_back(tmp);
+        tmp.clear();
+        tmp.insert(i);
+        tmp.insert(j);
+        interactions.insert(tmp);
       }
     }
   }
@@ -114,30 +115,30 @@ BOOST_AUTO_TEST_CASE(zeroAlpha) {
 // when all coefficients have the same value the grid
 // should be symmetric in all dimensions
 BOOST_AUTO_TEST_CASE(symmetry) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
-  std::vector<size_t> tmp = std::vector<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
-  interactions.push_back(tmp);
+  interactions.insert(tmp);
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::vector<size_t> ();
-    tmp.push_back(i);
-    interactions.push_back(tmp);
+    tmp.clear();
+    tmp.insert(i);
+    interactions.insert(tmp);
   }
 
   // add ~50% of all binary interactions
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::vector<size_t> ();
-        tmp.push_back(i);
-        tmp.push_back(j);
-        interactions.push_back(tmp);
+        tmp.clear();
+        tmp.insert(i);
+        tmp.insert(j);
+        interactions.insert(tmp);
       }
     }
   }
@@ -230,30 +231,30 @@ BOOST_AUTO_TEST_CASE(symmetry) {
 // check if the interaction evaluation returns
 // the same result as the regular one
 BOOST_AUTO_TEST_CASE(regularEvaluation) {
-  srand(static_cast<unsigned>(time(NULL)));
+  srand(static_cast<unsigned>(time(nullptr)));
   const size_t dim = size_t(4+10*(rand()/static_cast<double>(RAND_MAX)));
-  std::vector<std::vector<size_t>> interactions = std::vector<std::vector<size_t>>();
+  std::set<std::set<size_t>> interactions;
 
-  std::vector<size_t> tmp = std::vector<size_t> ();
+  std::set<size_t> tmp;
 
   // add empty interaction
-  interactions.push_back(tmp);
+  interactions.insert(tmp);
 
   // add all unit interactions
   for (size_t i = 0; i < dim; i++) {
-    tmp = std::vector<size_t> ();
-    tmp.push_back(i);
-    interactions.push_back(tmp);
+    tmp.clear();
+    tmp.insert(i);
+    interactions.insert(tmp);
   }
 
   // add ~50% of all binary interactions
   for (size_t i = 0; i < dim; i++) {
     for (size_t j = i+1; j < dim; j++) {
       if (rand()/static_cast<double>(RAND_MAX) > .5) {
-        tmp = std::vector<size_t> ();
-        tmp.push_back(i);
-        tmp.push_back(j);
-        interactions.push_back(tmp);
+        tmp.clear();
+        tmp.insert(i);
+        tmp.insert(j);
+        interactions.insert(tmp);
       }
     }
   }

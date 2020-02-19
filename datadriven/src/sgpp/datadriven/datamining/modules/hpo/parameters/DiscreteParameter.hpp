@@ -1,21 +1,14 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DiscreteParameter.hpp
- *
- *  Created on: Jan 25, 2018
- *      Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifndef DISCRETEPARAMETER_HPP_
 #define DISCRETEPARAMETER_HPP_
 
-#include <string>
+#include <sgpp/datadriven/datamining/modules/hpo/parameters/HyperParameter.hpp>
 
-#include "HyperParameter.hpp"
+#include <string>
 
 namespace sgpp {
 namespace datadriven {

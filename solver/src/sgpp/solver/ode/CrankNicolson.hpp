@@ -35,7 +35,7 @@ class CrankNicolson : public ODESolver {
    * @param timestepSize the size of one timestep
    * @param screen possible pointer to a sgpp::base::ScreenOutput object
    */
-  CrankNicolson(size_t nTimesteps, double timestepSize, sgpp::base::ScreenOutput* screen = NULL);
+  CrankNicolson(size_t nTimesteps, double timestepSize, sgpp::base::ScreenOutput* screen = nullptr);
 
   /**
    * Std-Destructor

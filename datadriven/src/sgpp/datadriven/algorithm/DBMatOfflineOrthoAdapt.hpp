@@ -14,14 +14,14 @@
 #endif /* USE_GSL */
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+#include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 
 #include <string>
 
 namespace sgpp {
 namespace datadriven {
 
-class DBMatOfflineOrthoAdapt : public DBMatOffline {
+class DBMatOfflineOrthoAdapt : public DBMatOfflinePermutable {
  public:
   /**
    * Constructor
@@ -37,7 +37,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   explicit DBMatOfflineOrthoAdapt(const std::string& fileName);
 
-  DBMatOffline* clone();
+  DBMatOffline* clone() const override;
 
   bool isRefineable() override;
 
@@ -48,11 +48,44 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   sgpp::datadriven::MatrixDecompositionType getDecompositionType() override;
 
   /**
+   * Get the unmodified (without added lambda) system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrix& getUnmodifiedR() override;
+
+  /**
+   * Get the unmodified (without added lambda) distributed system matrix R.
+   *
+   * @return Matrix R
+   */
+  const DataMatrixDistributed& getUnmodifiedRDistributed(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override;
+
+  /**
+   * Modifies the decomposition to update the regularization parameter lambda
+   *
+   * @param lambda New lambda value
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
+   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   *
+   * @param lambda New lambda value
+   * @param processGrid ScaLAPACK process grid
+   * @param parallelConfig Configuration for ScaLAPACK
+   */
+  void updateRegularizationParallel(double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
+                                    const ParallelConfiguration& parallelConfig) override;
+
+  /**
    * Builds the left hand side matrix without the regularization term
    * @param grid the underlying grid
    * @param regularizationConfig configuaration for the regularization employed
    */
-  void buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig);
+  void buildMatrix(Grid* grid, const RegularizationConfiguration& regularizationConfig) override;
 
   /**
    * Decomposes and inverts the lhsMatrix of the offline object
@@ -62,8 +95,32 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-                       DensityEstimationConfiguration& densityEstimationConfig);
+  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
+                       const DensityEstimationConfiguration& densityEstimationConfig) override;
+
+  /**
+   * @brief First permutes the rows of the orthogonal matrix Q.
+   * I.e. Q' T (Q')^T = (PQ) T (PQ)^T where P is the permutation matrix obtained from the
+   * permutation approach.
+   * In the second step, the dimension blow-up factor is multiplied to T^{-1}.
+   *
+   * @param baseGridConfig Grid configuration of the base object
+   * @param desiredGridConfig Grid configuration of the desired object
+   */
+  void permuteDecomposition(const sgpp::base::GeneralGridConfiguration& baseGridConfig,
+                            const sgpp::base::GeneralGridConfiguration& desiredGridConfig) override;
+
+  /**
+   * The parallel/distributed version of decomposeMatrix(...)
+   * @param regularizationConfig the regularization configuration
+   * @param densityEstimationConfig the density estimation configuration
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                               DensityEstimationConfiguration& densityEstimationConfig,
+                               std::shared_ptr<BlacsProcessGrid> processGrid,
+                               const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Decomposes the lhsMatrix into lhs = Q * T * Q^t and stores the orthogonal
@@ -94,7 +151,7 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    *
    * @param fileName path where to store the file
    */
-  void store(const std::string& fileName);
+  void store(const std::string& fileName) override;
 
   /**
    * Override to sync Q and Tinv
@@ -110,6 +167,14 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
    */
   void compute_inverse() override;
 
+  /**
+   * parallel/distributed version of compute_inverse()
+   * @param processGrid process grid to distribute the matrix on
+   * @param parallelConfig
+   */
+  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                const ParallelConfiguration& parallelConfig) override;
+
   sgpp::base::DataMatrix& getQ() { return this->q_ortho_matrix_; }
 
   sgpp::base::DataMatrix& getTinv() { return this->t_tridiag_inv_matrix_; }
@@ -122,9 +187,15 @@ class DBMatOfflineOrthoAdapt : public DBMatOffline {
   sgpp::base::DataMatrix q_ortho_matrix_;        // orthogonal matrix of decomposition
   sgpp::base::DataMatrix t_tridiag_inv_matrix_;  // inverse of the tridiag matrix of decomposition
 
+  // Save the original t_diag and t_subdiag vectors in order to change the lambda value later
+  sgpp::base::DataVector t_diag_;
+  sgpp::base::DataVector t_subdiag_;
+
   // distributed matrices, only initialized if scalapack is used
   DataMatrixDistributed q_ortho_matrix_distributed_;
   DataMatrixDistributed t_tridiag_inv_matrix_distributed_;
+
+  bool lhsDistributedSynced = false;
 };
 }  // namespace datadriven
 }  // namespace sgpp

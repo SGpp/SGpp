@@ -1,22 +1,15 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * BoHyperparameterOptimizer.cpp
- *
- * Created on: Jan 22, 2018
- *     Author: Eric Koepke
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-
 #include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+
 #include <vector>
 #include <string>
 #include <limits>
-#include "../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
 
 namespace sgpp {
 namespace datadriven {

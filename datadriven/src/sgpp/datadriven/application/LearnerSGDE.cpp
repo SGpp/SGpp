@@ -189,8 +189,12 @@ sgpp::base::GridType LearnerSGDEConfiguration::stringToGridType(std::string& gri
     return sgpp::base::GridType::Wavelet;
   } else if (gridType.compare("WaveletBoundary") == 0) {
     return sgpp::base::GridType::WaveletBoundary;
+  } else if (gridType.compare("FundamentalNakSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalNakSplineBoundary;
   } else if (gridType.compare("FundamentalSpline") == 0) {
     return sgpp::base::GridType::FundamentalSpline;
+  } else if (gridType.compare("FundamentalSplineBoundary") == 0) {
+    return sgpp::base::GridType::FundamentalSplineBoundary;
   } else if (gridType.compare("ModFundamentalSpline") == 0) {
     return sgpp::base::GridType::ModFundamentalSpline;
   } else if (gridType.compare("ModBsplineClenshawCurtis") == 0) {
@@ -394,8 +398,8 @@ double LearnerSGDE::optimizeLambdaCV() {
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
     if (i % static_cast<size_t>(
-                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0f,
-                         static_cast<double>(1.0f))) ==
+                std::max(static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0,
+                         static_cast<double>(1.0))) ==
         0) {
       if (!crossvalidationConfig.silent_) {
         std::cout << i + 1 << "/" << crossvalidationConfig.lambdaSteps_
@@ -588,7 +592,7 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
     for (size_t i = 0; i < trainData->getNrows(); i++) {
       // get next training sample x and its label y
       sgpp::base::DataVector x(dim);
-      trainData->getRow((size_t)i, x);
+      trainData->getRow(static_cast<size_t>(i), x);
       double y = trainLabels->get(i);
       int label = static_cast<int>(y);
 
@@ -643,16 +647,22 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         // (for zero-crossings refinement, data-based refinement)
         std::vector<sgpp::base::Grid*> refGrids;
         std::vector<sgpp::base::DataVector*> refAlphas;
+        std::vector<double> refPriors;
         for (auto& g : grids) {
           refGrids.push_back(&*(g.second));
           refAlphas.push_back(&*(alphas.at(g.first)));
+          if (usePrior) {
+            refPriors.push_back(priors.at(g.first));
+          } else {
+            refPriors.push_back(1.0);
+          }
         }
         bool levelPenalize = false;  // multiplies penalzing term for fine levels
         bool preCompute = true;      // precomputes and caches evals for zrcr
         sgpp::datadriven::MultiGridRefinementFunctor* func = nullptr;
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(
-            refGrids, refAlphas, adaptivityConfig.noPoints_, levelPenalize, preCompute);
+            refGrids, refAlphas, refPriors, adaptivityConfig.noPoints_, levelPenalize, preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
         // to be marked relevant). Cross-validation or similar can/should be
@@ -664,7 +674,8 @@ void LearnerSGDE::trainOnline(base::DataVector& labels, base::DataMatrix& testDa
         base::DataMatrix* refTrainData = trainData.get();
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
-            refGrids, refAlphas, refTrainData, refTrainLabels, adaptivityConfig.noPoints_,
+            refGrids, refAlphas, refPriors, refTrainData, refTrainLabels,
+            adaptivityConfig.noPoints_,
             levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
@@ -750,7 +761,7 @@ void LearnerSGDE::storeResults(base::DataMatrix& testDataset) {
   } else {
     for (size_t i = 0; i < predictedLabels.getSize(); i++) {
       base::DataVector x(2);
-      testDataset.getRow((size_t)i, x);
+      testDataset.getRow(static_cast<size_t>(i), x);
       output << x[0] << ";" << x[1] << ";" << predictedLabels[i] << std::endl;
     }
     output.close();
@@ -866,8 +877,8 @@ void LearnerSGDE::predict(base::DataMatrix& testData, base::DataVector& predicte
   for (size_t i = 0; i < testData.getNrows(); i++) {
     // get next test sample x
     base::DataVector x(dim);
-    testData.getRow((size_t)i, x);
-    // predict label using Bayes’ Theorem
+    testData.getRow(static_cast<size_t>(i), x);
+    // predict label using Bayes' Theorem
     double max = std::numeric_limits<double>::max() * (-1);
     int predLabel = 0;
     // compute each density function for current test sample x
@@ -948,7 +959,7 @@ void LearnerSGDE::splitset(std::vector<std::shared_ptr<base::DataMatrix>>& strai
 
   if (crossvalidationConfig.shuffle_) {
     if (crossvalidationConfig.seed_ == -1)
-      srand(static_cast<unsigned int>(time(0)));
+      srand(static_cast<unsigned int>(time(nullptr)));
     else
       srand(crossvalidationConfig.seed_);
 

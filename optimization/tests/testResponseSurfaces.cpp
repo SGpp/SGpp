@@ -17,6 +17,10 @@
 #include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
 #include <sgpp/optimization/function/vector/SplineResponseSurfaceVector.hpp>
 
+// debug
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::ScalarFunction;
@@ -93,7 +97,16 @@ class multivariateTestFunction : public VectorFunction {
   DataVector getUpperBounds() { return DataVector(d, 2.0); }
 };
 
-BOOST_AUTO_TEST_SUITE(testResponseSurfaces)
+// Test the relevant supported spline basis types
+std::vector<sgpp::base::GridType> getGridTypes() {
+  std::vector<sgpp::base::GridType> gridTypes;
+  gridTypes.push_back(sgpp::base::GridType::NakBsplineBoundary);
+  gridTypes.push_back(sgpp::base::GridType::ModNakBspline);
+  gridTypes.push_back(sgpp::base::GridType::NakBsplineExtended);
+  return gridTypes;
+}
+
+BOOST_AUTO_TEST_SUITE(TestResponseSurfaces)
 
 /**
  * ***********************************
@@ -103,27 +116,38 @@ BOOST_AUTO_TEST_SUITE(testResponseSurfaces)
 
 // create regular SplineResponseSurface and evaluate
 BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
+  // default values
   std::vector<double> epsilons{0.06, 1e-15, 1e-15};
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{1, 3, 5};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    // replace default values for specific cases
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilons.insert(epsilons.begin(), {0.06, 7e-4, 5e-5});
+    }
 
-    DataVector point(dim, 0.337);
-    double reSurfEval = reSurf.eval(point);
-    double trueEval = testFunction->eval(point);
-    double diff = reSurfEval - trueEval;
-    // std::cout << "evalErr = " << diff << "\n";
-    BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+    std::vector<size_t> degrees{1, 3, 5};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.regular(level);
+
+      DataVector point(dim, 0.337);
+      double reSurfEval = reSurf.eval(point);
+      double trueEval = testFunction->eval(point);
+      double diff = reSurfEval - trueEval;
+      // std::cout << "evalErr = " << diff << "\n";
+      BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+    }
   }
 }
+
 // create adaptive SplineResponseSurface and evaluate
 BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
   std::vector<double> epsilons{0.3, 1e-15, 1e-15};
@@ -133,21 +157,29 @@ BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
   size_t refinementsNum = 1;
   bool verbose = false;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{1, 3, 5};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum, verbose);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    // replace default values for specific cases
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilons.insert(epsilons.begin(), {0.3, 0.0007, 0.023});
+    }
+    std::vector<size_t> degrees{1, 3, 5};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum, verbose);
 
-    DataVector point(dim, 0.337);
-    double reSurfEval = reSurf.eval(point);
-    double trueEval = testFunction->eval(point);
-    double diff = reSurfEval - trueEval;
-    // std::cout << "evalErr = " << diff << "\n";
-    BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+      DataVector point(dim, 0.337);
+      double reSurfEval = reSurf.eval(point);
+      double trueEval = testFunction->eval(point);
+      double diff = reSurfEval - trueEval;
+      // std::cout << "evalErr = " << diff << "\n";
+      BOOST_CHECK_SMALL(fabs(diff), epsilons[t]);
+    }
   }
 }
 
@@ -157,26 +189,33 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceEvalGradient) {
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (auto& degree : degrees) {
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilon = 0.003;
+    }
+    std::vector<size_t> degrees{3};
+    for (auto& degree : degrees) {
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.regular(level);
 
-    DataVector point(dim, 1.0 / 6.0);
-    DataVector jacobian(dim);
-    double reSurfEval = reSurf.evalGradient(point, jacobian);
-    // suppress unused variable warning of gcc by doing something with reSurfEval
-    reSurfEval += 1;
-    DataVector trueJacobian = testFunction->evalGradient(point);
-    // std::cout << trueJacobian.toString() << "\n";
-    // std::cout << jacobian.toString() << "\n";
-    trueJacobian.sub(jacobian);
-    double errorSum = trueJacobian.sum();
-    // std::cout << errorSum << "\n";
-    BOOST_CHECK_SMALL(errorSum, epsilon);
+      DataVector point(dim, 1.0 / 6.0);
+      DataVector jacobian(dim);
+      double reSurfEval = reSurf.evalGradient(point, jacobian);
+      // suppress unused variable warning of gcc by doing something with reSurfEval
+      reSurfEval += 1;
+      DataVector trueJacobian = testFunction->evalGradient(point);
+      // std::cout << trueJacobian.toString() << "\n";
+      // std::cout << jacobian.toString() << "\n";
+      trueJacobian.sub(jacobian);
+      double errorSum = trueJacobian.sum();
+      // std::cout << errorSum << "\n";
+      BOOST_CHECK_SMALL(errorSum, epsilon);
+    }
   }
 }
 // create regular SplineResponseSurface and integrate
@@ -185,21 +224,28 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceIntegral) {
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    double integral = reSurf.getIntegral();
-    // std::cout << integral << "\n";
-    double realIntegral = 448.0 / 3.0;
-    // std::cout << realIntegral << "\n";
-    double diff = fabs(realIntegral - integral);
-    // std::cout << diff << "\n";
-    BOOST_CHECK_SMALL(diff, epsilon);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilon = 1.2;
+    }
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.regular(level);
+      double integral = reSurf.getIntegral();
+      // std::cout << integral << "\n";
+      double realIntegral = 448.0 / 3.0;
+      // std::cout << realIntegral << "\n";
+      double diff = fabs(realIntegral - integral);
+      // std::cout << diff << "\n";
+      BOOST_CHECK_SMALL(diff, epsilon);
+    }
   }
 }
 
@@ -210,105 +256,133 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceOptimization) {
   // Ritter Novak parameters
   size_t maxNumGridPoints = 20;
   double gamma = 0.85;
-  size_t initialLevel = 0;
+  size_t initialLevel = 1;
 
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.ritterNovak(maxNumGridPoints, gamma, initialLevel);
-    DataVector argmin = reSurf.optimize();
-    // This function has no unique minimum. [x,-2,0] is minimal for all x.
-    // So we compare if the objective function evaluated at the found minimum is
-    // close to the actual value
-    // std::cout << argmin << "\n";
-    double realMinimumValue = -1.0;
-    double foundMinimumValue = testFunction->eval(argmin);
-    // std::cout << foundMinimumValue << "\n";
-    double diff = fabs(foundMinimumValue - realMinimumValue);
-    // std::cout << diff << "\n";
-    BOOST_CHECK_SMALL(diff, epsilon);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+
+  for (auto& gridType : gridTypes) {
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilon = 0.002;
+    }
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.ritterNovak(maxNumGridPoints, gamma, initialLevel);
+      DataVector argmin = reSurf.optimize();
+      // This function has no unique minimum. [x,-2,0] is minimal for all x.
+      // So we compare if the objective function evaluated at the found minimum is
+      // close to the actual value
+      // std::cout << argmin << "\n";
+      double realMinimumValue = -1.0;
+      double foundMinimumValue = testFunction->eval(argmin);
+      // std::cout << foundMinimumValue << "\n";
+      double diff = fabs(foundMinimumValue - realMinimumValue);
+      // std::cout << diff << "\n";
+      BOOST_CHECK_SMALL(diff, epsilon);
+    }
   }
 }
 
 // create regular SplineResponseSurface and calculate mean
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceMean) {
-  double epsilon = 1e-6;
+  double epsilon = 1e-5;
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    sgpp::base::DistributionsVector pdfs;
-    auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
-    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
-    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
-    pdfs.push_back(normalpdf);
-    pdfs.push_back(truncnormalpdf);
-    pdfs.push_back(uniformpdf);
-    size_t quadOrder = 5;
-    double mean = reSurf.getMean(pdfs, quadOrder);
-    // std::cout << mean << "\n";
-    // The reference mean is only determined numerically, trusting that the routine worked at this
-    // point in time For a foolproof test, one might want to claulcate the mean by hand.
-    double realMean = 4.55048;
-    double diff = fabs(realMean - mean);
-    // std::cout << diff << "\n";
-    BOOST_CHECK_SMALL(diff, epsilon);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilon = 0.007;
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      epsilon = 0.002;
+    }
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.regular(level);
+      sgpp::base::DistributionsVector pdfs;
+      auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
+      auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+      auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+      pdfs.push_back(uniformpdf);
+      pdfs.push_back(truncnormalpdf);
+      pdfs.push_back(truncnormalpdf);
+      size_t quadOrder = 5;
+      double mean = reSurf.getMean(pdfs, quadOrder);
+      // std::cout << "mean: " << mean << " \n";
+      // The reference mean is only determined numerically with nakBsplineBoundary level 7 (3809
+      // grid points), trusting that the routine worked at this point in time For a foolproof test,
+      // one might want to claulcate the mean by hand.
+      double realMean = 1.61769;
+      double diff = fabs(realMean - mean);
+      // std::cout << diff << "\n";
+      BOOST_CHECK_SMALL(diff, epsilon);
+    }
   }
 }
 
 // ToDo(rehmemk) This must be debugged! Currently the variance is negativ!
 // create regular SplineResponseSurface and calculate variance
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
-  double epsilon = 1e-6;
+  double epsilon = 1e-5;
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    sgpp::base::DistributionsVector pdfs;
-    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
-    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
-    pdfs.push_back(uniformpdf);
-    pdfs.push_back(truncnormalpdf);
-    pdfs.push_back(truncnormalpdf);
-    size_t quadOrder = 5;
-    DataVector varVec = reSurf.getVariance(pdfs, quadOrder);
-    double var = varVec[0];
-    double meanSquare = varVec[1];
-    double mean = varVec[2];
-    // std::cout << var << "\n";
-    // std::cout << meanSquare << "\n";
-    // std::cout << mean << "\n";
-    // The reference values are only determined numerically, trusting that the routine worked at
-    // this point in time For a foolproof test, one might want to claulcate them by hand.
-    double realVar = 1.704508018662666;
-    double realMeanSquare = 4.32144177859378;
-    double realMean = 1.617693963619545;
-    double diffVar = fabs(realVar - var);
-    double diffMeanSquare = fabs(realMeanSquare - meanSquare);
-    double diffMean = fabs(realMean - mean);
-    // std::cout << diff << "\n";
-    BOOST_CHECK_SMALL(diffVar, epsilon);
-    BOOST_CHECK_SMALL(diffMeanSquare, epsilon);
-    BOOST_CHECK_SMALL(diffMean, epsilon);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    if (gridType == sgpp::base::GridType::ModNakBspline) {
+      epsilon = 0.05;
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      epsilon = 0.006;
+    }
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+      // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
+      // "\n";
+      reSurf.regular(level);
+      sgpp::base::DistributionsVector pdfs;
+      auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+      auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+      pdfs.push_back(uniformpdf);
+      pdfs.push_back(truncnormalpdf);
+      pdfs.push_back(truncnormalpdf);
+      size_t quadOrder = 5;
+      DataVector varVec = reSurf.getVariance(pdfs, quadOrder);
+      double var = varVec[0];
+      double meanSquare = varVec[1];
+      double mean = varVec[2];
+      // std::cout << var << "\n";
+      // std::cout << meanSquare << "\n";
+      // std::cout << mean << "\n";
+      // The reference mean is only determined numerically with nakBsplineBoundary level 7 (3809
+      // grid points), trusting that the routine worked at this point in time For a foolproof test,
+      // one might want to claulcate the mean by hand.
+      double realVar = 1.70451;
+      double realMeanSquare = 4.32144;
+      double realMean = 1.61769;
+      double diffVar = fabs(realVar - var);
+      double diffMeanSquare = fabs(realMeanSquare - meanSquare);
+      double diffMean = fabs(realMean - mean);
+      // std::cout << diffMean << "\n";
+      BOOST_CHECK_SMALL(diffVar, epsilon);
+      BOOST_CHECK_SMALL(diffMeanSquare, epsilon);
+      BOOST_CHECK_SMALL(diffMean, epsilon);
+    }
   }
 }
 
@@ -323,25 +397,29 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEval) {
   std::vector<double> epsilons{0.8, 1e-14, 1e-14};
   size_t dim = 3;
   size_t m = 2;
-  size_t level = 3;
+  size_t level = 4;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{1, 3, 5};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{1, 3, 5};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
 
-    DataVector point(dim, 0.337);
-    DataVector reSurfEval = reSurf.eval(point);
-    DataVector trueEval(m);
-    testFunction->eval(point, trueEval);
-    trueEval.sub(reSurfEval);
-    double evalErr = trueEval.sum();
-    // std::cout << "evalErr = " << evalErr << "\n";
-    BOOST_CHECK_SMALL(fabs(evalErr), epsilons[t]);
+      DataVector point(dim, 0.337);
+      DataVector reSurfEval = reSurf.eval(point);
+      DataVector trueEval(m);
+      testFunction->eval(point, trueEval);
+      trueEval.sub(reSurfEval);
+      double evalErr = trueEval.sum();
+      // std::cout << "evalErr = " << evalErr << "\n";
+      BOOST_CHECK_SMALL(fabs(evalErr), epsilons[t]);
+    }
   }
 }
 
@@ -352,24 +430,28 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEvalJacobian) {
   size_t m = 2;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (auto& degree : degrees) {
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (auto& degree : degrees) {
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
 
-    DataVector point(dim, 1.0 / 6.0);
-    DataMatrix jacobian(dim, m);
-    DataVector reSurfEval = reSurf.evalJacobian(point, jacobian);
-    DataMatrix trueJacobian(m, dim);
-    testFunction->evalJacobian(point, trueJacobian);
+      DataVector point(dim, 1.0 / 6.0);
+      DataMatrix jacobian(dim, m);
+      DataVector reSurfEval = reSurf.evalJacobian(point, jacobian);
+      DataMatrix trueJacobian(m, dim);
+      testFunction->evalJacobian(point, trueJacobian);
 
-    trueJacobian.sub(jacobian);
-    double errorSum = trueJacobian.sum();
-    // std::cout << errorSum << "\n";
-    BOOST_CHECK_SMALL(errorSum, epsilon);
+      trueJacobian.sub(jacobian);
+      double errorSum = trueJacobian.sum();
+      // std::cout << errorSum << "\n";
+      BOOST_CHECK_SMALL(errorSum, epsilon);
+    }
   }
 }
 
@@ -382,22 +464,26 @@ BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceVector) {
   size_t initialLevel = 0;
   size_t refinementsNum = 10;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.surplusAdaptive(maxNumGridPoints, initialLevel, refinementsNum);
 
-    DataVector componentwiseErrors(m);
-    size_t numMCPoints = 1000;
-    DataVector errorVec = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
-    double averageL2Err = errorVec[0];
-    // std::cout << "l2 error: " << l2Error << "\n";
-    // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
-    BOOST_CHECK_SMALL(averageL2Err, epsilons[t]);
+      DataVector componentwiseErrors(m);
+      size_t numMCPoints = 1000;
+      DataVector errorVec = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
+      double averageL2Err = errorVec[0];
+      // std::cout << "l2 error: " << l2Error << "\n";
+      // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
+      BOOST_CHECK_SMALL(averageL2Err, epsilons[t]);
+    }
   }
 }
 
@@ -408,21 +494,25 @@ BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceVectorL2) {
   size_t m = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (auto& degree : degrees) {
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (auto& degree : degrees) {
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
 
-    DataVector componentwiseErrors(m);
-    size_t numMCPoints = 1000;
-    DataVector l2Error = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
-    double averageL2Err = l2Error[0];
-    // std::cout << "l2 error: " << l2Error << "\n";
-    // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
-    BOOST_CHECK_SMALL(averageL2Err, epsilon);
+      DataVector componentwiseErrors(m);
+      size_t numMCPoints = 1000;
+      DataVector l2Error = reSurf.averageL2Error(testFunction, componentwiseErrors, numMCPoints);
+      double averageL2Err = l2Error[0];
+      // std::cout << "l2 error: " << l2Error << "\n";
+      // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
+      BOOST_CHECK_SMALL(averageL2Err, epsilon);
+    }
   }
 }
 
@@ -433,24 +523,28 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorNRMSE) {
   size_t m = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (auto& degree : degrees) {
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (auto& degree : degrees) {
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
 
-    DataMatrix componentwiseErrors(4, m);
-    size_t numMCPoints = 1000;
-    DataVector errorVec = reSurf.averageNRMSE(testFunction, componentwiseErrors, numMCPoints);
-    double averageNRMSE = errorVec[0];
-    double averageL2Err = errorVec[1];
-    // std::cout << "NRMSE: " << averageNRMSE << "\n";
-    // std::cout << "l2 error: " << averageL2Err << "\n";
-    // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
-    BOOST_CHECK_SMALL(averageL2Err, epsilon);
-    BOOST_CHECK_SMALL(averageNRMSE, epsilon);
+      DataMatrix componentwiseErrors(4, m);
+      size_t numMCPoints = 1000;
+      DataVector errorVec = reSurf.averageNRMSE(testFunction, componentwiseErrors, numMCPoints);
+      double averageNRMSE = errorVec[0];
+      double averageL2Err = errorVec[1];
+      // std::cout << "NRMSE: " << averageNRMSE << "\n";
+      // std::cout << "l2 error: " << averageL2Err << "\n";
+      // std::cout << "componentwise errors:\n" << componentwiseErrors.toString() << "\n";
+      BOOST_CHECK_SMALL(averageL2Err, epsilon);
+      BOOST_CHECK_SMALL(averageNRMSE, epsilon);
+    }
   }
 }
 
@@ -461,24 +555,28 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorIntegral) {
   size_t m = 2;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    sgpp::base::DataVector integrals = reSurf.getIntegrals();
-    // std::cout << integrals.toString() << "\n";
-    DataVector realIntegrals(2);
-    realIntegrals[0] = 0.0;
-    realIntegrals[1] = 3584.0 / 3.0;
-    // std::cout << realIntegrals.toString() << "\n";
-    realIntegrals.sub(integrals);
-    // std::cout << realIntegrals.toString() << "\n";
-    BOOST_CHECK_SMALL(fabs(realIntegrals[0]), epsilons[t]);
-    BOOST_CHECK_SMALL(fabs(realIntegrals[1]), epsilons[t]);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
+      sgpp::base::DataVector integrals = reSurf.getIntegrals();
+      // std::cout << integrals.toString() << "\n";
+      DataVector realIntegrals(2);
+      realIntegrals[0] = 0.0;
+      realIntegrals[1] = 3584.0 / 3.0;
+      // std::cout << realIntegrals.toString() << "\n";
+      realIntegrals.sub(integrals);
+      // std::cout << realIntegrals.toString() << "\n";
+      BOOST_CHECK_SMALL(fabs(realIntegrals[0]), epsilons[t]);
+      BOOST_CHECK_SMALL(fabs(realIntegrals[1]), epsilons[t]);
+    }
   }
 }
 
@@ -489,34 +587,38 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorMean) {
   size_t m = 2;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    sgpp::base::DistributionsVector pdfs(0);
-    auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
-    auto lognormalpdf = std::make_shared<sgpp::base::DistributionLogNormal>(0, 1);
-    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
-    pdfs.push_back(normalpdf);
-    pdfs.push_back(lognormalpdf);
-    pdfs.push_back(uniformpdf);
-    size_t quadOrder = 5;
-    sgpp::base::DataVector means = reSurf.getMeans(pdfs, quadOrder);
-    // std::cout << means.toString() << "\n";
-    // These are only determined numerically, trusting that the routine worked at this point in time
-    // For a foolproof test, one might want to claulcate some means by hand.
-    DataVector realMeans(2);
-    realMeans[0] = -1.62077337823618873024e-07;
-    realMeans[1] = -1.81980951744657168760e-06;
-    // std::cout << realMeans.toString() << "\n";
-    realMeans.sub(means);
-    // std::cout << realMeans.toString() << "\n";
-    BOOST_CHECK_SMALL(fabs(realMeans[0]), epsilons[t]);
-    BOOST_CHECK_SMALL(fabs(realMeans[1]), epsilons[t]);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
+      sgpp::base::DistributionsVector pdfs(0);
+      auto normalpdf = std::make_shared<sgpp::base::DistributionNormal>(0, 1);
+      auto lognormalpdf = std::make_shared<sgpp::base::DistributionLogNormal>(0, 1);
+      auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+      pdfs.push_back(normalpdf);
+      pdfs.push_back(lognormalpdf);
+      pdfs.push_back(uniformpdf);
+      size_t quadOrder = 5;
+      sgpp::base::DataVector means = reSurf.getMeans(pdfs, quadOrder);
+      // std::cout << means.toString() << "\n";
+      // These are only determined numerically, trusting that the routine worked at this point in
+      // time For a foolproof test, one might want to claulcate some means by hand.
+      DataVector realMeans(2);
+      realMeans[0] = -1.62077337823618873024e-07;
+      realMeans[1] = -1.81980951744657168760e-06;
+      // std::cout << realMeans.toString() << "\n";
+      realMeans.sub(means);
+      // std::cout << realMeans.toString() << "\n";
+      BOOST_CHECK_SMALL(fabs(realMeans[0]), epsilons[t]);
+      BOOST_CHECK_SMALL(fabs(realMeans[1]), epsilons[t]);
+    }
   }
 }
 
@@ -527,35 +629,39 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorVariance) {
   size_t m = 2;
   size_t level = 3;
   auto testFunction = std::make_shared<multivariateTestFunction>(dim, m);
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineBoundary;
-  std::vector<size_t> degrees{3};
-  for (size_t t = 0; t < degrees.size(); t++) {
-    size_t degree = degrees[t];
-    DataVector lb = testFunction->getLowerBounds();
-    DataVector ub = testFunction->getUpperBounds();
-    sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType, degree);
-    reSurf.regular(level);
-    sgpp::base::DistributionsVector pdfs(0);
-    auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
-    auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
-    pdfs.push_back(truncnormalpdf);
-    pdfs.push_back(truncnormalpdf);
-    pdfs.push_back(uniformpdf);
-    size_t quadOrder = 5;
-    sgpp::base::DataVector means(m);
-    sgpp::base::DataVector meanSquares(m);
-    sgpp::base::DataVector variances = reSurf.getVariances(pdfs, quadOrder, means, meanSquares);
-    // std::cout << variances.toString() << "\n";
-    // These are only determined numerically, trusting that the routine worked at this point in time
-    // For a foolproof test, one might want to claulcate some variances by hand.
-    DataVector realVariances(2);
-    realVariances[0] = 1.44540648066204973077e+01;
-    realVariances[1] = 3.15439994541866155942e+02;
-    // std::cout << realVariances.toString() << "\n";
-    realVariances.sub(variances);
-    // std::cout << realVariances.toString() << "\n";
-    BOOST_CHECK_SMALL(fabs(realVariances[0]), epsilons[t]);
-    BOOST_CHECK_SMALL(fabs(realVariances[1]), epsilons[t]);
+  std::vector<sgpp::base::GridType> gridTypes = getGridTypes();
+  for (auto& gridType : gridTypes) {
+    std::vector<size_t> degrees{3};
+    for (size_t t = 0; t < degrees.size(); t++) {
+      size_t degree = degrees[t];
+      DataVector lb = testFunction->getLowerBounds();
+      DataVector ub = testFunction->getUpperBounds();
+      sgpp::optimization::SplineResponseSurfaceVector reSurf(testFunction, lb, ub, gridType,
+                                                             degree);
+      std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree << "\n";
+      reSurf.regular(level);
+      sgpp::base::DistributionsVector pdfs(0);
+      auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
+      auto uniformpdf = std::make_shared<sgpp::base::DistributionUniform>(-2, 2);
+      pdfs.push_back(truncnormalpdf);
+      pdfs.push_back(truncnormalpdf);
+      pdfs.push_back(uniformpdf);
+      size_t quadOrder = 5;
+      sgpp::base::DataVector means(m);
+      sgpp::base::DataVector meanSquares(m);
+      sgpp::base::DataVector variances = reSurf.getVariances(pdfs, quadOrder, means, meanSquares);
+      // std::cout << variances.toString() << "\n";
+      // These are only determined numerically, trusting that the routine worked at this point in
+      // time For a foolproof test, one might want to claulcate some variances by hand.
+      DataVector realVariances(2);
+      realVariances[0] = 1.44540648066204973077e+01;
+      realVariances[1] = 3.15439994541866155942e+02;
+      // std::cout << realVariances.toString() << "\n";
+      realVariances.sub(variances);
+      // std::cout << realVariances.toString() << "\n";
+      BOOST_CHECK_SMALL(fabs(realVariances[0]), epsilons[t]);
+      BOOST_CHECK_SMALL(fabs(realVariances[1]), epsilons[t]);
+    }
   }
 }
 

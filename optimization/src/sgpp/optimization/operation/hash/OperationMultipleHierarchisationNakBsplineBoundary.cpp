@@ -5,16 +5,17 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
 #include <sgpp/base/tools/sle/solver/Auto.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
-#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakBsplineBoundary.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 OperationMultipleHierarchisationNakBsplineBoundary::
-    OperationMultipleHierarchisationNakBsplineBoundary(base::NakBsplineBoundaryGrid& grid)
+OperationMultipleHierarchisationNakBsplineBoundary(
+    base::NakBsplineBoundaryGrid& grid)
     : grid(grid) {}
 
 OperationMultipleHierarchisationNakBsplineBoundary::

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <cstddef>
@@ -43,6 +44,28 @@ class VectorFunction {
    * @param[out] value  \f$g(\vec{x})\f$
    */
   virtual void eval(const DataVector& x, DataVector& value) = 0;
+
+  /**
+   * Convenience method for calculating \f$g(\vec{x})\f$ for multiple \f$\vec{x}\f$.
+   *
+   * @param      x      matrix \f$\vec{x} \in [0, 1]^{N \times d}\f$
+   *                    of evaluation points (row-wise)
+   * @param[out] value  matrix of size \f$N \times m\f$
+   *                    where the \f$k\f$-th row is \f$g(\vec{x}_k)\f$
+   *                    (where \f$\vec{x}_k\f$ is the \f$k\f$-th row of \f$x\f$)
+   */
+  virtual void eval(const DataMatrix& x, DataMatrix& value) {
+    const size_t N = x.getNrows();
+    DataVector xk(d);
+    DataVector yk(m);
+    value.resize(N, m);
+
+    for (size_t k = 0; k < N; k++) {
+      x.getRow(k, xk);
+      eval(xk, yk);
+      value.setRow(k, yk);
+    }
+  }
 
   /**
    * @return dimension \f$d\f$ of the domain

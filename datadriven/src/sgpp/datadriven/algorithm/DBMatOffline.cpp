@@ -16,6 +16,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_matrix_double.h>
@@ -30,6 +31,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <set>
 
 namespace sgpp {
 namespace datadriven {
@@ -46,8 +48,7 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::RegularGridConfiguration;
 
 DBMatOffline::DBMatOffline()
-    : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse() {
-  interactions = std::vector<std::vector<size_t>>();
+     : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse(), interactions() {
 }
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
@@ -99,6 +100,19 @@ DataMatrixDistributed& DBMatOffline::getDecomposedMatrixDistributed() {
 #endif
 }
 
+DataMatrixDistributed& DBMatOffline::getDecomposedInverseDistributed() {
+#ifdef USE_SCALAPACK
+  if (isDecomposed) {
+    return this->lhsDistributedInverse;
+  } else {
+    throw sgpp::base::algorithm_exception(
+        "In DBMatOffline::getDecomposedInverseDistributed:\nlhsMatrix wasn't even decomposed yet.");
+  }
+#else
+  throw sgpp::base::not_implemented_exception("Build without Scalapack");
+#endif
+}
+
 void DBMatOffline::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
                                                 const ParallelConfiguration& parallelConfig) {
 #ifdef USE_SCALAPACK
@@ -107,13 +121,32 @@ void DBMatOffline::syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid
         lhsMatrix.data(), processGrid, lhsMatrix.getNrows(), lhsMatrix.getNcols(),
         parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
   } else {
-    throw data_exception("Matrix was not decomposed yet");
+    throw data_exception(
+        "In DBMatOffline::syncDistributedDecomposition\nCan't sync, because lhsMatrix "
+        "was not decomposed yet");
   }
 #endif
   // no action needed without scalapack
 }
 
-void DBMatOffline::buildMatrix(Grid* grid, RegularizationConfiguration& regularizationConfig) {
+void DBMatOffline::syncDistributedInverse(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                          const ParallelConfiguration& parallelConfig) {
+#ifdef USE_SCALAPACK
+  if (isDecomposed) {
+    lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
+        lhsInverse.data(), processGrid, lhsInverse.getNrows(), lhsInverse.getNcols(),
+        parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+  } else {
+    throw data_exception(
+        "In DBMatOffline::syncDistributedInverse\nCan't sync inverse matrix, because lhsMatrix was "
+        "not decomposed yet.");
+  }
+#endif
+  // no action needed without scalapack
+}
+
+void DBMatOffline::buildMatrix(Grid* grid,
+                               const RegularizationConfiguration& regularizationConfig) {
   if (isConstructed) {  // Already constructed, do nothing
     return;
   }
@@ -136,7 +169,6 @@ void DBMatOffline::store(const std::string& fileName) {
 #ifdef USE_GSL
   if (!isDecomposed) {
     throw algorithm_exception("Matrix not decomposed yet");
-    return;
   }
 
   // Write configuration
@@ -147,7 +179,7 @@ void DBMatOffline::store(const std::string& fileName) {
   }
 
   std::string inter = "," + std::to_string(interactions.size());
-  for (std::vector<size_t> i : interactions) {
+  for (const std::set<size_t>& i : interactions) {
     inter.append("," + std::to_string(i.size()));
     for (size_t j : i) {
       inter.append("," + std::to_string(j));
@@ -176,8 +208,25 @@ void DBMatOffline::store(const std::string& fileName) {
 #endif /* USE_GSL */
 }
 
+void DBMatOffline::decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
+                                           DensityEstimationConfiguration& densityEstimationConfig,
+                                           std::shared_ptr<BlacsProcessGrid> processGrid,
+                                           const ParallelConfiguration& parallelConfig) {
+  throw sgpp::base::algorithm_exception(
+      "called ::decomposeMatrixParallel from parent object,\nmeaning decomposition type is not "
+      "supported");
+}
+
 void DBMatOffline::compute_inverse() {
-  throw sgpp::base::algorithm_exception("called ::compute_inverse from parent object");
+  throw sgpp::base::algorithm_exception(
+      "called ::compute_inverse from parent object,\nmeaning decomposition type is not supported");
+}
+
+void DBMatOffline::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                            const ParallelConfiguration& parallelConfig) {
+  throw sgpp::base::algorithm_exception(
+      "called ::compute_inverse_parallel from parent object,\nmeaning decomposition type is not "
+      "supported");
 }
 
 void DBMatOffline::printMatrix() {
@@ -197,7 +246,7 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
     auto opLTwoLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
     opLTwoLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
-    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitLinear();
+    auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitModLinear();
     opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else {
     throw algorithm_exception(
@@ -206,7 +255,7 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
 }
 
 void sgpp::datadriven::DBMatOffline::parseInter(
-    const std::string& fileName, std::vector<std::vector<size_t>>& interactions) const {
+    const std::string& fileName, std::set<std::set<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {
@@ -220,11 +269,11 @@ void sgpp::datadriven::DBMatOffline::parseInter(
   StringTokenizer::tokenize(str, ",", tokens);
 
   for (size_t i = 4; i < tokens.size(); i += std::stoi(tokens[i]) + 1) {
-    std::vector<size_t> tmp = std::vector<size_t>();
+    std::set<size_t> tmp;
     for (size_t j = 1; j <= std::stoul(tokens[i]); j++) {
-      tmp.push_back(std::stoi(tokens[i + j]));
+      tmp.insert(std::stoi(tokens[i + j]));
     }
-    interactions.push_back(tmp);
+    interactions.insert(tmp);
   }
 
   std::cout << interactions.size() << std::endl;

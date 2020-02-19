@@ -45,7 +45,7 @@ namespace base {
  * part of the spanned space and not extend on levels >=3 again leading to another spanned space.
  * ToDo (rehmemk) It might be interesting to compare the various possibilities of extended not a
  * knot B-spline bases
- * (Note: coefficients were calculated with Extension.m))
+ * (Note: coefficients were calculated with ExtensionBspline.m))
  *
  */
 template <class LT, class IT>

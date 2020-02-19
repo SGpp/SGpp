@@ -192,8 +192,8 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index,
 
         if (!(current_right > target_left || current_left
               < target_right)) {
-          return;
           delete new_index;
+          return;
         }
       }
 
@@ -276,7 +276,6 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
   throw generation_exception(
     "PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel "
     "is not implemented");
-  return 0;
 }
 
 }  // namespace base

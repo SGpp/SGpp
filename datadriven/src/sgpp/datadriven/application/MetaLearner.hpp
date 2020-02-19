@@ -1,26 +1,26 @@
 // Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of
-// distribution and use, please see the copyright notice
-// provided with SG++ or at sgpp.sparsegrids.org.
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
+
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/tools/TypesDatadriven.hpp>
+#include <sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp>
+#include <sgpp/solver/SLESolver.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/base/grid/GridStorage.hpp"
-#include "sgpp/base/grid/generation/GridGenerator.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/tools/TypesDatadriven.hpp"
-#include "sgpp/datadriven/application/LearnerLeastSquaresIdentity.hpp"
-#include "sgpp/solver/SLESolver.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {

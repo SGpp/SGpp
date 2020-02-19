@@ -32,7 +32,7 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     SNakBsplineModifiedBase, SNakBsplineExtendedBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
-from pysgpp.pysgpp_swig import IndexVector
+from pysgpp.pysgpp_swig import SizeVector
 
 #######################################################################
 bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
@@ -559,7 +559,7 @@ def insertPoint(grid, gp):
     if gs.isContaining(gp) or not isValid(grid, gp):
         return []
 
-    added_grid_points = IndexVector()
+    added_grid_points = SizeVector()
     gs.insert(HashGridPoint(gp), added_grid_points) > -1
 
     ans = []

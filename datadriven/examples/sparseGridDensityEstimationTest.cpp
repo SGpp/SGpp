@@ -1,6 +1,6 @@
 // Copyright (C) 2008-today The SG++ project
 // This file is part of the SG++ project. For conditions of distribution and
-// use, please see the copyrigSht notice provided with SG++ or at
+// use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
 /**
@@ -157,7 +157,6 @@ int main(int argc, char** argv) {
       sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
   sgdeConfig.makePositive_interpolationAlgorithm_ =
       sgpp::datadriven::MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
-  sgdeConfig.makePositive_verbose_ = true;
   sgdeConfig.unitIntegrand_ = true;
 
   /**

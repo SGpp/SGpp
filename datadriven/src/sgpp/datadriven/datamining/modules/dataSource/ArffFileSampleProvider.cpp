@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ARFFWrapper.cpp
- *
- *  Created on: Feb 8, 2016
- *      Author: perun, Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 
@@ -105,7 +99,7 @@ Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
   base::DataMatrix& destSamples = tmpDataset->getData();
   base::DataVector& destTargets = tmpDataset->getTargets();
 
-  base::DataVector tmpRow{srcSamples.getNcols()};
+  base::DataVector tmpRow(srcSamples.getNcols());
 
   // copy "size" rows beginning from "counter" to the new dataset.
   for (size_t i = counter; i < counter + size; ++i) {

@@ -16,13 +16,12 @@
         "gridConfig": {
             "generalGridType": "component",
             "gridType": "linear",
-            "level": 1
+            "level": 3
         },
         "adaptivityConfig": {
             "numRefinements": 60,
-            "threshold": 0.001,
             "noPoints": 10,
-            "refinementIndicator" : "dataBased",
+            "refinementIndicator" : "classification",
             "errorBasedRefinement" : true,
             "errorMinInterval" : 1,
             "errorBufferSize" : 2,

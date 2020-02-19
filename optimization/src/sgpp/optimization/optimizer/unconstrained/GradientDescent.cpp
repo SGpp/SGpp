@@ -9,6 +9,8 @@
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/LineSearchArmijo.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -16,12 +18,11 @@ namespace optimizer {
 GradientDescent::GradientDescent(const base::ScalarFunction& f,
                                  const base::ScalarFunctionGradient& fGradient, size_t maxItCount,
                                  double beta, double gamma, double tolerance, double epsilon)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       beta(beta),
       gamma(gamma),
       tol(tolerance),
       eps(epsilon) {
-  fGradient.clone(this->fGradient);
 }
 GradientDescent::GradientDescent(const GradientDescent& other)
     : UnconstrainedOptimizer(other),
@@ -29,7 +30,6 @@ GradientDescent::GradientDescent(const GradientDescent& other)
       gamma(other.gamma),
       tol(other.tol),
       eps(other.eps) {
-  other.fGradient->clone(fGradient);
 }
 
 GradientDescent::~GradientDescent() {}
@@ -40,38 +40,53 @@ void GradientDescent::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
   base::DataVector x(x0);
-  double fx = NAN;
+  double fx = std::numeric_limits<double>::quiet_NaN();
 
   base::DataVector gradFx(d);
   base::DataVector s(d);
   base::DataVector y(d);
   size_t k = 0;
 
+  const double BINDING_TOLERANCE = 1e-6;
+
   while (k < N) {
     // calculate gradient and norm
     fx = fGradient->eval(x, gradFx);
     k++;
-    double gradFxNorm = gradFx.l2Norm();
 
     if (k == 1) {
       xHist.appendRow(x);
       fHist.append(fx);
     }
 
+    for (size_t t = 0; t < d; t++) {
+      // search direction (negated gradient)
+      s[t] = -gradFx[t];
+
+      // is constraint binding?
+      // (i.e., we are at the boundary and the search direction points outwards)
+      if (((x[t] < BINDING_TOLERANCE) && (s[t] < 0.0)) ||
+          ((x[t] > 1.0 - BINDING_TOLERANCE) && (s[t] > 0.0))) {
+        // discard variable by setting direction to zero
+        s[t] = 0.0;
+        gradFx[t] = 0.0;
+      }
+    }
+
+    const double sNorm = s.l2Norm();
+
     // exit if norm small enough
-    if (gradFxNorm < tol) {
+    if (sNorm < tol) {
       break;
     }
 
-    // search direction is the normalized negated gradient
-    for (size_t t = 0; t < d; t++) {
-      s[t] = -gradFx[t] / gradFxNorm;
-    }
+    // normalize search direction
+    s.mult(1.0 / sNorm);
 
     // status printing
     base::Printer::getInstance().printStatusUpdate(
@@ -80,7 +95,7 @@ void GradientDescent::optimize() {
     // line search
     if (!lineSearchArmijo(*f, beta, gamma, tol, eps, x, fx, gradFx, s, y, k)) {
       // line search failed ==> exit
-      // (either a "real" error occured or the improvement
+      // (either a "real" error occurred or the improvement
       // achieved is too small)
       break;
     }
@@ -95,8 +110,6 @@ void GradientDescent::optimize() {
   fOpt = fx;
   base::Printer::getInstance().printStatusEnd();
 }
-
-base::ScalarFunctionGradient& GradientDescent::getObjectiveGradient() const { return *fGradient; }
 
 double GradientDescent::getBeta() const { return beta; }
 

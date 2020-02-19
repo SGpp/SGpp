@@ -9,10 +9,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/ModBsplineGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
@@ -23,6 +19,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -83,7 +80,6 @@ class RegressionLearner {
           first.solverFista.swap(second.solverFista);
           break;
         case solverCategory::none:
-        default:
           // Do nothing.
           break;
       }
@@ -106,7 +102,6 @@ class RegressionLearner {
           solverFista.~unique_ptr<sgpp::solver::FistaBase>();
           break;
         case solverCategory::none:
-        default:
           // do nothing
           break;
       }
@@ -137,7 +132,7 @@ class RegressionLearner {
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig,
-                    std::vector<std::vector<size_t>> terms);
+                    std::set<std::set<size_t>> terms);
 
   /**
    * @brief RegressionLearner
@@ -180,12 +175,6 @@ class RegressionLearner {
    */
   std::shared_ptr<sgpp::base::Grid> getGridPtr();
   /**
-   * @brief get shared pointer to Grid
-   * @return the grid pointer
-   */
-  //  std::shared_ptr<base::Grid> getGridPtr();
-
-  /**
    * @brief getMSE
    * @param data is the design matrix
    * @param y is the target
@@ -209,7 +198,7 @@ class RegressionLearner {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   datadriven::RegularizationConfiguration regularizationConfig;
-  std::vector<std::vector<size_t>> terms;
+  std::set<std::set<size_t>> terms;
   std::unique_ptr<sgpp::base::OperationMultipleEval> op;
   std::unique_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 

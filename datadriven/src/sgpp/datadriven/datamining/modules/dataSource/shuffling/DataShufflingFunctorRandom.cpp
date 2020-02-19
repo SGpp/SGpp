@@ -1,14 +1,7 @@
-
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DataShufflingFunctorSequential.cpp
- *
- *  Created on: Jul 20, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp>
 
@@ -21,7 +14,7 @@ namespace datadriven {
 DataShufflingFunctorRandom::DataShufflingFunctorRandom(int64_t seed) :
     numSamples{0}, bitShift{0}, bitMask{0}, seed{seed} {
   if (this->seed == -1) {
-    srand(static_cast<unsigned int>(time(NULL)));
+    srand(static_cast<unsigned int>(time(nullptr)));
     this->seed = std::rand();
   }
   std::cout << "Seed for random shuffling functor: " << (this->seed) << std::endl;

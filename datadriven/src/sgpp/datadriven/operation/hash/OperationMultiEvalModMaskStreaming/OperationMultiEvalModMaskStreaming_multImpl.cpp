@@ -3,6 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
+#include <sgpp/globaldef.hpp>
+
 #if defined(__SSE3__) && !defined(__AVX__)
 #include <pmmintrin.h>
 #endif
@@ -18,9 +21,6 @@
 #include <cmath>
 #include <vector>
 #include <algorithm>
-
-#include "sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -42,8 +42,9 @@ void OperationMultiEvalModMaskStreaming::multImpl(
   size_t dims = dataset->getNrows();
 
   for (size_t c = start_index_data; c < end_index_data;
-       c += std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data - c))) {
-    size_t data_end = std::min<size_t>((size_t)getChunkDataPoints() + c, end_index_data);
+       c += std::min<size_t>(static_cast<size_t>(getChunkDataPoints()), (end_index_data - c))) {
+    size_t data_end = std::min<size_t>(
+        static_cast<size_t>(getChunkDataPoints()) + c, end_index_data);
 
 #ifdef __ICC
 #pragma ivdep
@@ -55,8 +56,10 @@ void OperationMultiEvalModMaskStreaming::multImpl(
     }
 
     for (size_t m = start_index_grid; m < end_index_grid;
-         m += std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m))) {
-      size_t grid_inc = std::min<size_t>((size_t)getChunkGridPoints(), (end_index_grid - m));
+         m += std::min<size_t>(static_cast<size_t>(getChunkGridPoints()),
+                               (end_index_grid - m))) {
+      size_t grid_inc = std::min<size_t>(
+          static_cast<size_t>(getChunkGridPoints()), (end_index_grid - m));
 
       for (size_t i = c; i < c + getChunkDataPoints(); i += 12) {
         for (size_t j = m; j < m + grid_inc; j++) {

@@ -58,7 +58,7 @@ void ModelFittingLeastSquares::fit(Dataset &newDataset) {
   gridConfig.dim_ = dataset->getDimension();
   grid = std::unique_ptr<Grid>{buildGrid(config->getGridConfig())};
   // build surplus vector
-  alpha = DataVector{grid->getSize()};
+  alpha = DataVector(grid->getSize());
 
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
@@ -71,7 +71,13 @@ bool ModelFittingLeastSquares::refine() {
                                                  config->getRefinementConfig().threshold_);
       // refine grid
       auto noPoints = grid->getSize();
-      grid->getGenerator().refine(refinementFunctor);
+      GeometryConfiguration geoConf = config->getGeometryConfig();
+      if (!geoConf.stencils.empty()) {
+        GridFactory gridFactory;
+        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf));
+      } else {
+        grid->getGenerator().refine(refinementFunctor);
+      }
       if (grid->getSize() > noPoints) {
         // Tell the SLE manager that the grid changed (for interal data structures)
         alpha.resizeZero(grid->getSize());
@@ -88,7 +94,6 @@ bool ModelFittingLeastSquares::refine() {
   } else {
     throw application_exception(
         "ModelFittingLeastSquares: Can't refine before initial grid is created");
-    return false;
   }
 }
 
@@ -124,7 +129,7 @@ void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfigurati
       buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
                         config->getMultipleEvalConfig()));
 
-  DataVector b{grid->getSize()};
+  DataVector b(grid->getSize());
   systemMatrix->generateb(dataset->getTargets(), b);
 
   reconfigureSolver(*solver, solverConfig);

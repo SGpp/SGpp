@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineDenseIChol.cpp
- *
- *  Created on: Apr 15, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
@@ -27,17 +21,18 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol() : DBMatOfflineChol() {}
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() { return new DBMatOfflineDenseIChol{*this}; }
+DBMatOffline* DBMatOfflineDenseIChol::clone() const { return new DBMatOfflineDenseIChol{*this}; }
 
-void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineDenseIChol::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       return;
     } else {
       //  auto begin = std::chrono::high_resolution_clock::now();
 
-      DataMatrix tmpMatrix{lhsMatrix.getNrows(), lhsMatrix.getNcols()};
+      DataMatrix tmpMatrix(lhsMatrix.getNrows(), lhsMatrix.getNcols());
 
 // only copy lower triangular matrix
 #pragma omp parallel for schedule(guided)
@@ -61,9 +56,9 @@ void DBMatOfflineDenseIChol::decomposeMatrix(RegularizationConfiguration& regula
   }
 }
 
-void DBMatOfflineDenseIChol::choleskyModification(Grid& grid,
-    datadriven::DensityEstimationConfiguration& densityEstimationConfig, size_t newPoints,
-    std::list<size_t> deletedPoints, double lambda) {
+void DBMatOfflineDenseIChol::choleskyModification(
+    Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    size_t newPoints, std::list<size_t> deletedPoints, double lambda) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
 

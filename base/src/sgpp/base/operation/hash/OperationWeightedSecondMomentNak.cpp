@@ -17,7 +17,7 @@ std::shared_ptr<sgpp::base::SBasis> OperationWeightedSecondMomentNak::initialize
     return std::make_shared<sgpp::base::SNakBsplineBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
     return std::make_shared<sgpp::base::SNakBsplineBoundaryBase>(degree);
-  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+  } else if (gridType == sgpp::base::GridType::ModNakBspline) {
     return std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     return std::make_shared<sgpp::base::SNakBsplineExtendedBase>(degree);

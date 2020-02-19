@@ -26,25 +26,25 @@ class factory_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit factory_exception(const char* msg) throw() : msg(msg) {
+  explicit factory_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standard Constructor
    */
-  factory_exception() throw() : msg(NULL) { }
+  factory_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor
    */
-  ~factory_exception() throw() override { }
+  ~factory_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

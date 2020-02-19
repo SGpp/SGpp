@@ -14,6 +14,8 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace base {
 
@@ -57,7 +59,7 @@ class InterpolantScalarFunctionHessian : public ScalarFunctionHessian {
                      DataMatrix& hessian) override {
     for (size_t t = 0; t < d; t++) {
       if ((x[t] < 0.0) || (x[t] > 1.0)) {
-        return INFINITY;
+        return std::numeric_limits<double>::infinity();
       }
     }
 

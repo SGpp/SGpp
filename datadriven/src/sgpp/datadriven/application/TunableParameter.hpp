@@ -5,10 +5,10 @@
 
 #pragma once
 
+#include <sgpp/globaldef.hpp>
+
 #include <string>
 #include <vector>
-
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace datadriven {

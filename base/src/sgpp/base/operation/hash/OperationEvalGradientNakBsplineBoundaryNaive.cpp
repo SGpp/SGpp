@@ -3,15 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineBoundaryNaive.hpp>
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineBoundaryNaive.hpp>
 
 namespace sgpp {
 namespace base {
 
-double OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(const DataVector& alpha,
-                                                                  const DataVector& point,
-                                                                  DataVector& gradient) {
+double OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(
+    const DataVector& alpha,
+    const DataVector& point,
+    DataVector& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   double result = 0.0;
@@ -35,8 +36,8 @@ double OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(const DataVect
 
     for (size_t t = 0; t < d; t++) {
       const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
-      const double dx1d =
-          base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) * innerDerivative[t];
+      const double dx1d = baseDeriv1.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
 
       curValue *= val1d;
 
@@ -57,9 +58,9 @@ double OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(const DataVect
 }
 
 void OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(const DataMatrix& alpha,
-                                                                const DataVector& point,
-                                                                DataVector& value,
-                                                                DataMatrix& gradient) {
+                                                               const DataVector& point,
+                                                               DataVector& value,
+                                                               DataMatrix& gradient) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = alpha.getNcols();
@@ -86,8 +87,8 @@ void OperationEvalGradientNakBsplineBoundaryNaive::evalGradient(const DataMatrix
 
     for (size_t t = 0; t < d; t++) {
       const double val1d = base.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]);
-      const double dx1d =
-          base.evalDx(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) * innerDerivative[t];
+      const double dx1d = baseDeriv1.eval(gp.getLevel(t), gp.getIndex(t), pointInUnitCube[t]) *
+          innerDerivative[t];
 
       curValue *= val1d;
 

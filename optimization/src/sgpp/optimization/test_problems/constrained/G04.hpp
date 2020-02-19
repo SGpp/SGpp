@@ -171,6 +171,14 @@ class G04 : public ConstrainedTestProblem {
   double getOptimalPointUndisplaced(base::DataVector& x) override;
 
  protected:
+  /**
+   * Sets the first, second, and fourth displacement component to zero and
+   * checks the resulting displacement.
+   *
+   * @return whether the current displacement is feasible
+   */
+  bool isDisplacementFeasible() override;
+
   /// objective function
   G04Objective f;
   /// inequality constraint function

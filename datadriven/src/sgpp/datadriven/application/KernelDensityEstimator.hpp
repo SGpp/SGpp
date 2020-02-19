@@ -7,13 +7,13 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/datadriven/application/DensityEstimator.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
 #include <random>
-#include "../../../../../base/src/sgpp/base/function/scalar/ScalarFunction.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -41,7 +41,7 @@ class Kernel {
 
 class GaussianKernel : public Kernel {
  public:
-  virtual ~GaussianKernel();
+  ~GaussianKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -53,7 +53,7 @@ class GaussianKernel : public Kernel {
 
 class EpanechnikovKernel : public Kernel {
  public:
-  virtual ~EpanechnikovKernel();
+  ~EpanechnikovKernel() override;
 
   double eval(double x) override;
   double cdf(double x) override;
@@ -80,7 +80,7 @@ class KernelDensityEstimator : public DensityEstimator {
                                       BandwidthOptimizationType::SILVERMANSRULE);
   KernelDensityEstimator(const KernelDensityEstimator& kde);
 
-  virtual ~KernelDensityEstimator();
+  ~KernelDensityEstimator() override;
 
   void initialize(base::DataMatrix& samples) override;
   void initialize(std::vector<std::shared_ptr<base::DataVector>>& samplesVec);

@@ -18,6 +18,7 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
+#include <limits>
 #include <vector>
 
 #include "CheckEqualFunction.hpp"
@@ -172,28 +173,30 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunction) {
   y[0] = 0.12;
   y[1] = 0.56;
 
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+
   {
     ScalarTestFunction f(3);
-    ComponentScalarFunction g(f, {NAN, 0.34, NAN});
+    ComponentScalarFunction g(f, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunction> g2;
     g.clone(g2);
     BOOST_CHECK_EQUAL(f.eval(x), g2->eval(y));
 
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, {nan, nan, nan, nan}), std::runtime_error);
   }
 
   {
     VectorTestFunction f(3, 4);
     DataVector fx(4);
     f.eval(x, fx);
-    ComponentScalarFunction g(f, 1, {NAN, 0.34, NAN});
+    ComponentScalarFunction g(f, 1, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunction> g2;
     g.clone(g2);
     BOOST_CHECK_EQUAL(fx[1], g2->eval(y));
 
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {NAN, NAN, NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunction(f, 1, {nan, nan, nan, nan}), std::runtime_error);
   }
 }
 
@@ -208,9 +211,11 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
   y[0] = 0.12;
   y[1] = 0.56;
 
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+
   {
     ScalarTestGradient f(3);
-    ComponentScalarFunctionGradient g(f, {NAN, 0.34, NAN});
+    ComponentScalarFunctionGradient g(f, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunctionGradient> g2;
     g.clone(g2);
     DataVector gradF(3), gradG(2);
@@ -218,8 +223,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
     BOOST_CHECK_EQUAL(gradF[0], gradG[0]);
     BOOST_CHECK_EQUAL(gradF[2], gradG[1]);
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, {nan, nan, nan, nan}), std::runtime_error);
   }
 
   {
@@ -227,7 +232,7 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
     DataVector fx(4);
     DataMatrix gradF(4, 3);
     f.eval(x, fx, gradF);
-    ComponentScalarFunctionGradient g(f, 1, {NAN, 0.34, NAN});
+    ComponentScalarFunctionGradient g(f, 1, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunctionGradient> g2;
     g.clone(g2);
     DataVector gradG(2);
@@ -235,8 +240,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionGradient) {
     BOOST_CHECK_EQUAL(gradF(1, 0), gradG[0]);
     BOOST_CHECK_EQUAL(gradF(1, 2), gradG[1]);
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {NAN, NAN, NAN, NAN}),
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionGradient(f, 1, {nan, nan, nan, nan}),
                       std::runtime_error);
   }
 }
@@ -252,9 +257,11 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
   y[0] = 0.12;
   y[1] = 0.56;
 
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+
   {
     ScalarTestHessian f(3);
-    ComponentScalarFunctionHessian g(f, {NAN, 0.34, NAN});
+    ComponentScalarFunctionHessian g(f, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunctionHessian> g2;
     g.clone(g2);
     DataVector gradF(3), gradG(2);
@@ -267,8 +274,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
     BOOST_CHECK_EQUAL(hessF(2, 0), hessG(1, 0));
     BOOST_CHECK_EQUAL(hessF(2, 2), hessG(1, 1));
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {NAN, NAN, NAN, NAN}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, {nan, nan, nan, nan}), std::runtime_error);
   }
 
   {
@@ -277,7 +284,7 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
     DataMatrix gradF(4, 3);
     std::vector<DataMatrix> hessF(4, DataMatrix(3, 3));
     f.eval(x, fx, gradF, hessF);
-    ComponentScalarFunctionHessian g(f, 1, {NAN, 0.34, NAN});
+    ComponentScalarFunctionHessian g(f, 1, {nan, 0.34, nan});
     std::unique_ptr<ScalarFunctionHessian> g2;
     g.clone(g2);
     DataVector gradG(2);
@@ -290,8 +297,8 @@ BOOST_AUTO_TEST_CASE(TestComponentScalarFunctionHessian) {
     BOOST_CHECK_EQUAL(hessF[1](2, 0), hessG(1, 0));
     BOOST_CHECK_EQUAL(hessF[1](2, 2), hessG(1, 1));
 
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {NAN, NAN}), std::runtime_error);
-    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {NAN, NAN, NAN, NAN}),
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {nan, nan}), std::runtime_error);
+    BOOST_CHECK_THROW(ComponentScalarFunctionHessian(f, 1, {nan, nan, nan, nan}),
                       std::runtime_error);
   }
 }

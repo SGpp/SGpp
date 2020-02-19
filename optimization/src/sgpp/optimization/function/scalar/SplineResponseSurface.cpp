@@ -57,7 +57,7 @@ void SplineResponseSurface::ritterNovak(size_t maxNumGridPoints, double gamma, s
                                         bool verbose) {
   // this uses the default values for Ritter Novaks initial Level, max level, powerMethod
   sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(
-      *objectiveFunc, *grid, maxNumGridPoints, gamma, initialLevel);
+      *objectiveFunc, *grid, maxNumGridPoints, gamma, static_cast<base::level_t>(initialLevel));
   if (!gridGen.generate()) {
     std::cout << "Grid generation failed, exiting.\n";
   }
@@ -104,7 +104,7 @@ double SplineResponseSurface::getMean(sgpp::base::DistributionsVector pdfs, size
 sgpp::base::DataVector SplineResponseSurface::getVariance(sgpp::base::DistributionsVector pdfs,
                                                           size_t quadOrder) {
   if (!computedMeanFlag) {
-    double dummy = getMean(pdfs, quadOrder);
+    getMean(pdfs, quadOrder);
   }
   sgpp::base::OperationWeightedSecondMoment* opWSM =
       sgpp::op_factory::createOperationWeightedSecondMoment(*grid, quadOrder);

@@ -7,11 +7,11 @@
 
 #include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -92,8 +92,8 @@ class SplineResponseSurface : public ResponseSurface {
       grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
       boundary = true;
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
-      grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    } else if (gridType == sgpp::base::GridType::ModNakBspline) {
+      grid = std::make_shared<sgpp::base::ModNakBsplineGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
@@ -135,7 +135,7 @@ class SplineResponseSurface : public ResponseSurface {
       basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
       boundary = true;
     } else if (gridType == sgpp::base::GridType::ModBspline) {
-      basis = std::make_unique<sgpp::base::SBsplineModifiedBase>(degree);
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
       basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
@@ -152,7 +152,7 @@ class SplineResponseSurface : public ResponseSurface {
     } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
       basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
       boundary = true;
-    } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+    } else if (gridType == sgpp::base::GridType::ModNakBspline) {
       basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {

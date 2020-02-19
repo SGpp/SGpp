@@ -1,27 +1,20 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * BayesianOptimization.cpp
- *
- *  Created on: Feb 2, 2018
- *      Author: Eric Koepke
- */
-#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 
 #include <vector>
 #include <iostream>
 #include <limits>
-
-#include "../../../../../../../../base/src/sgpp/base/function/scalar/WrapperScalarFunction.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/Printer.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/BiCGStab.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/Eigen.hpp"
-#include "../../../../../../../../base/src/sgpp/base/tools/sle/solver/GaussianElimination.hpp"
 
 namespace sgpp {
 namespace datadriven {
@@ -236,7 +229,7 @@ void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMat
         gnew.set(i, i, value);
       } else {
         decomFailed = true;
-        gnew.set(i, i, 10e-8);
+        gnew.set(i, i, 1e-7);
       }
     }
   }

@@ -8,6 +8,8 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 
+#include <limits>
+
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -15,12 +17,11 @@ namespace optimizer {
 Rprop::Rprop(const base::ScalarFunction& f, const base::ScalarFunctionGradient& fGradient,
              size_t maxItCount, double tolerance, double initialStepSize,
              double stepSizeIncreaseFactor, double stepSizeDecreaseFactor)
-    : UnconstrainedOptimizer(f, maxItCount),
+    : UnconstrainedOptimizer(f, &fGradient, nullptr, maxItCount),
       theta(tolerance),
       initialAlpha(initialStepSize),
       rhoAlphaPlus(stepSizeIncreaseFactor),
       rhoAlphaMinus(stepSizeDecreaseFactor) {
-  fGradient.clone(this->fGradient);
 }
 
 Rprop::Rprop(const Rprop& other)
@@ -29,7 +30,6 @@ Rprop::Rprop(const Rprop& other)
       initialAlpha(other.initialAlpha),
       rhoAlphaPlus(other.rhoAlphaPlus),
       rhoAlphaMinus(other.rhoAlphaMinus) {
-  other.fGradient->clone(fGradient);
 }
 
 Rprop::~Rprop() {}
@@ -40,7 +40,7 @@ void Rprop::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -134,8 +134,6 @@ void Rprop::optimize() {
   fOpt = f->eval(x);
   base::Printer::getInstance().printStatusEnd();
 }
-
-base::ScalarFunctionGradient& Rprop::getObjectiveGradient() const { return *fGradient; }
 
 double Rprop::getTolerance() const { return theta; }
 

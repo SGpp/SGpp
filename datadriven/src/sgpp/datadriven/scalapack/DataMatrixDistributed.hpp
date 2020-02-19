@@ -1,14 +1,8 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DataMatrixDistributed.hpp
- *
- * Created on: Jan 14, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
+
 #pragma once
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -203,7 +197,7 @@ class DataMatrixDistributed {
    * sub(y) := alpha*sub(this)'*sub(x) + beta*sub(y)
    *
    * @param[in] x vector to be multiplied
-   * @param[in, out] y vector in which the result should be stored
+   * @param[in,out] y vector in which the result should be stored
    * @param[in] transpose transpose if true, default false
    * @param[in] alpha factor alpha, default 1.0
    * @param[in] beta factor beta, default 0.0
@@ -218,7 +212,7 @@ class DataMatrixDistributed {
    *
    * @param[in] a matrix to be multiplied
    * @param[in] x vector to be multiplied
-   * @param[in, out] y vector in which the result should be stored
+   * @param[in,out] y vector in which the result should be stored
    * @param[in] transpose transpose if true, default false
    * @param[in] alpha factor alpha, default 1.0
    * @param[in] beta factor beta, default 0.0
@@ -233,7 +227,7 @@ class DataMatrixDistributed {
    * sub(C) := alpha*op(sub(this))*op(sub(B)) + beta*sub(C)
    *
    * @param[in] b matrix B
-   * @param[in, out] c used as output matrix C, can also be added to the product using factor
+   * @param[in,out] c used as output matrix C, can also be added to the product using factor
    * beta
    * @param[in] transposeA Whether or not to transpose this matrix
    * @param[in] transposeB Whether or not to transpose matrix B
@@ -250,7 +244,7 @@ class DataMatrixDistributed {
    *
    * @param[in] a matrix A
    * @param[in] b matrix B
-   * @param[in, out] c used as output matrix C, can also be added to the product using factor
+   * @param[in,out] c used as output matrix C, can also be added to the product using factor
    * beta
    * @param[in] transposeA Whether or not to transpose this matrix
    * @param[in] transposeB Whether or not to transpose matrix B
@@ -266,7 +260,7 @@ class DataMatrixDistributed {
    * A=LL^T
    *
    * @param[in] l lower triangular matrix L of the Cholesky decomposition
-   * @param[in, out] b vector b of the linear system, is overwritten with solution x
+   * @param[in,out] b vector b of the linear system, is overwritten with solution x
    * @param[in] uplo storage format of the triangular matrix, either upper or lower triangular
    */
   static void solveCholesky(const DataMatrixDistributed& l, DataVectorDistributed& b,

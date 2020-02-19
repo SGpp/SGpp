@@ -35,7 +35,7 @@ int main() {
   objectiveFunctionVarious objectiveFuncInstance;
   auto objectiveFunc = std::make_shared<sgpp::base::WrapperScalarFunction>(
       objectiveFuncInstance.getObjectiveFunction());
-  sgpp::base::GridType gridType = sgpp::base::GridType::NakBsplineModified;
+  sgpp::base::GridType gridType = sgpp::base::GridType::ModNakBspline;
 
   sgpp::datadriven::ASMatrixBsplineAnalytic ASM(objectiveFunc, gridType, degree);
   size_t initialLevel = 1;

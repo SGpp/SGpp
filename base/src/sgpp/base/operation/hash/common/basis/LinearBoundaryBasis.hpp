@@ -61,7 +61,7 @@ class LinearBoundaryBasis : public Basis<LT, IT> {
     return eval(l, i, (x - t) / q);
   }
 
-  double evalDx(LT level, IT index, double x) override {
+  double evalDx(LT level, IT index, double x) {
     std::cerr << "LinearBoundaryBasis: evalDx not implemented" << std::endl;
     return -1;
   }

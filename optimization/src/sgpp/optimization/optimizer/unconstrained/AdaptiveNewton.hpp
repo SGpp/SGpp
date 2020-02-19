@@ -9,12 +9,12 @@
 
 #include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
 #include <sgpp/base/tools/sle/solver/SLESolver.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/UnconstrainedOptimizer.hpp>
 
 #include <cstddef>
 #include <memory>
 
-#include "../../../../../../base/src/sgpp/base/function/scalar/ScalarFunctionHessian.hpp"
 namespace sgpp {
 namespace optimization {
 namespace optimizer {
@@ -100,11 +100,6 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function Hessian
-   */
-  base::ScalarFunctionHessian& getObjectiveHessian() const;
-
-  /**
    * @return tolerance
    */
   double getTolerance() const;
@@ -170,8 +165,6 @@ class AdaptiveNewton : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function Hessian
-  std::unique_ptr<base::ScalarFunctionHessian> fHessian;
   /// tolerance
   double theta;
   /// step size increase factor

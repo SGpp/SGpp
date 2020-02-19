@@ -102,11 +102,6 @@ class Newton : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function Hessian
-   */
-  base::ScalarFunctionHessian& getObjectiveHessian() const;
-
-  /**
    * @return              beta (parameter for Armijo's rule)
    */
   double getBeta() const;
@@ -182,8 +177,6 @@ class Newton : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function Hessian
-  std::unique_ptr<base::ScalarFunctionHessian> fHessian;
   /// beta (parameter for Armijo's rule)
   double beta;
   /// gamma (parameter for Armijo's rule)

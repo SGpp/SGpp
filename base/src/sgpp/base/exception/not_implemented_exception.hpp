@@ -23,24 +23,24 @@ class not_implemented_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit not_implemented_exception(const char* msg) throw() : msg(msg) {}
+  explicit not_implemented_exception(const char* msg) noexcept : msg(msg) {}
 
   /**
    * Standard Constructor
    */
-  not_implemented_exception() throw() : msg(NULL) {}
+  not_implemented_exception() noexcept : msg(nullptr) {}
 
   /**
    * Destructor
    */
-  ~not_implemented_exception() throw() override {}
+  ~not_implemented_exception() noexcept override {}
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

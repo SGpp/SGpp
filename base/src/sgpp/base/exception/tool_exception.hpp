@@ -26,25 +26,25 @@ class tool_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit tool_exception(const char* msg) throw() : msg(msg) {
+  explicit tool_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standard Constructor
    */
-  tool_exception() throw() : msg(NULL) { }
+  tool_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor
    */
-  ~tool_exception() throw() override { }
+  ~tool_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

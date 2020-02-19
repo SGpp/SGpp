@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimationOnOffParallel.hpp
- *
- * Created on: Mar 13, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -75,7 +68,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened.
@@ -83,7 +76,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (always returns true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   /**
    * Update the density estimation with new data.
@@ -98,7 +91,7 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
@@ -124,9 +117,38 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   bool isRefinable() override;
 
   /**
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the decomposition and the grid.
+   */
+  void resetTraining() override;
 
   /**
    * @returns the BLACS process grid

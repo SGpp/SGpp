@@ -57,7 +57,7 @@ class LinearClenshawCurtisBasis : public Basis<LT, IT> {
     return eval(level, index, (p - offset) / width);
   }
 
-  double evalDx(LT level, IT index, double x) override {
+  double evalDx(LT level, IT index, double x) {
     std::cerr << "LinearClenshawCurtisBasis: evalDx not implemented" << std::endl;
     return -1;
   }

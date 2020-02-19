@@ -13,12 +13,14 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <limits>
 #include <string>
 #include <vector>
 
 namespace sgpp {
 namespace optimization {
 
+namespace {
 /**
  * Fast and approximative version of std::pow.
  * Source: http://martin.ankerl.com/2012/01/25/optimized-approximative-pow-in-c-and-cpp/
@@ -38,6 +40,7 @@ inline double fastPow(double a, double b) {
 
   return u.d;
 }
+}  // namespace
 
 IterativeGridGeneratorRitterNovak::IterativeGridGeneratorRitterNovak(
     base::ScalarFunction& f, base::Grid& grid, size_t N, double adaptivity,
@@ -159,9 +162,9 @@ bool IterativeGridGeneratorRitterNovak::generate() {
                                                            ", k = " + std::to_string(k) + ")");
     }
 
-    // determine the best i (i.e. i_best = argmin_i g_i)
+    // determine the best i (i.e., iBest = argmin_i g_i)
     size_t iBest = 0;
-    double gBest = INFINITY;
+    double gBest = std::numeric_limits<double>::infinity();
 
     for (size_t i = 0; i < currentN; i++) {
       if (ignore[i]) {
@@ -171,7 +174,7 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       // refinement criterion
       double g;
 
-      if (powMethod == STD_POW) {
+      if (powMethod == PowMethod::STD_POW) {
         g = std::pow(static_cast<double>(levelSum[i] + degree[i]) + 1.0, gamma) *
             std::pow(static_cast<double>(rank[i]) + 1.0, 1.0 - gamma);
       } else {
@@ -245,12 +248,11 @@ bool IterativeGridGeneratorRitterNovak::generate() {
       }
     }
 
-    // refine point no. i_best
+    // refine point no. iBest
     degree[iBest]++;
     refinementAlpha[iBest] = 1.0;
     base::SurplusRefinementFunctor refineFunc(refinementAlpha, 1);
     refinement.free_refine(gridStorage, refineFunc);
-
     // new grid size
     const size_t newN = gridStorage.getSize();
 

@@ -11,7 +11,7 @@
 
 #include <algorithm>
 #include <cstdlib>
-#include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -20,23 +20,28 @@ namespace optimization {
 namespace optimizer {
 
 MultiStart::MultiStart(const base::ScalarFunction& f, size_t maxFcnEvalCount, size_t populationSize)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount), defaultOptimizer(NelderMead(f)) {
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
+      defaultOptimizer(NelderMead(f)) {
   defaultOptimizer.clone(optimizer);
   initialize(populationSize);
 }
 
 MultiStart::MultiStart(const UnconstrainedOptimizer& optimizer, size_t maxFcnEvalCount,
                        size_t populationSize)
-    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(), maxFcnEvalCount),
+    : UnconstrainedOptimizer(optimizer.getObjectiveFunction(),
+                             optimizer.getObjectiveGradient(),
+                             optimizer.getObjectiveHessian(),
+                             maxFcnEvalCount),
       defaultOptimizer(NelderMead(*f)) {
   optimizer.clone(this->optimizer);
   initialize(populationSize);
 }
 
 MultiStart::MultiStart(const MultiStart& other)
-    : UnconstrainedOptimizer(other), defaultOptimizer(NelderMead(*f)) {
+    : UnconstrainedOptimizer(other),
+      defaultOptimizer(NelderMead(*f)) {
   other.optimizer->clone(optimizer);
-  initialize(populationSize);
+  initialize(other.populationSize);
 }
 
 MultiStart::~MultiStart() {}
@@ -47,13 +52,28 @@ void MultiStart::initialize(size_t populationSize) {
                              : std::min(10 * f->getNumberOfParameters(), static_cast<size_t>(100));
 }
 
+void MultiStart::setObjectiveFunction(const base::ScalarFunction& f) {
+  UnconstrainedOptimizer::setObjectiveFunction(f);
+  optimizer->setObjectiveFunction(f);
+}
+
+void MultiStart::setObjectiveGradient(const base::ScalarFunctionGradient* fGradient) {
+  UnconstrainedOptimizer::setObjectiveGradient(fGradient);
+  optimizer->setObjectiveGradient(fGradient);
+}
+
+void MultiStart::setObjectiveHessian(const base::ScalarFunctionHessian* fHessian) {
+  UnconstrainedOptimizer::setObjectiveHessian(fHessian);
+  optimizer->setObjectiveHessian(fHessian);
+}
+
 void MultiStart::optimize() {
   base::Printer::getInstance().printStatusBegin("Optimizing (multi-start)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
   kHist.clear();
@@ -74,65 +94,8 @@ void MultiStart::optimize() {
     }
   }
 
-  /*Printer::getInstance().disableStatusPrinting();
-
-  #pragma omp parallel shared(d, x0, roundN, xOpt, fOpt,base::Printer) \
-
-  {
-    Optimizer* curOptimizerPtr = &optimizer;
-  #ifdef _OPENMP
-    std::unique_ptr<Optimizer> curOptimizer;
-
-    if (omp_get_max_threads() > 1) {
-      optimizer.clone(curOptimizer);
-      curOptimizerPtr = curOptimizer.get();
-    }
-
-  #endif ** _OPENMP **
-
-    base::DataVector curXOpt(d);
-    double curFOpt;
-
-    #pragma omp for ordered schedule(dynamic)
-
-    for (size_t k = 0; k < populationSize; k++) {
-      // optimize with k-th starting point
-      curOptimizerPtr->setStartingPoint(x0[k]);
-      curOptimizerPtr->setN(roundN[k]);
-      curOptimizerPtr->optimize(curXOpt);
-
-      curFOpt = curOptimizerPtr->getScalarFunction().eval(curXOpt);
-
-      #pragma omp critical
-      {
-        if (curFOpt < fOpt) {
-          // this point is the best so far
-          fOpt = curFOpt;
-          xOpt = curXOpt;
-        }
-      }
-
-      // status printing
-      #pragma omp ordered
-      {
-        char str[10];
-        snprintf(str, 10, "%.1f%%",
-                 static_cast<double>(k) /
-                 static_cast<double>(populationSize) * 100.0);
-       base::Printer::getInstance().getMutex().lock();
-       base::Printer::getInstance().enableStatusPrinting();
-       base::Printer::getInstance().printStatusUpdate(std::string(str) +
-                                  ", f(x) = " + std::to_string(fOpt));
-       base::Printer::getInstance().disableStatusPrinting();
-       base::Printer::getInstance().getMutex().unlock();
-      }
-    }
-  }
-
- base::Printer::getInstance().enableStatusPrinting();*/
-
   base::DataVector xCurrentOpt(d);
-  double fCurrentOpt = INFINITY;
+  double fCurrentOpt = std::numeric_limits<double>::infinity();
 
   // temporarily save x0 and N (will be overwritten by the loop)
   const base::DataVector tmpX0(optimizer->getStartingPoint());
@@ -143,7 +106,9 @@ void MultiStart::optimize() {
     base::Printer::getInstance().disableStatusPrinting();
   }
 
-#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt)
+  size_t pointsDone = 0;
+
+#pragma omp parallel shared(x0, roundN, xCurrentOpt, fCurrentOpt, pointsDone)
   {
     UnconstrainedOptimizer* curOptimizerPtr = optimizer.get();
 #ifdef _OPENMP
@@ -179,9 +144,11 @@ void MultiStart::optimize() {
         }
       }
 
+#pragma omp atomic
+      pointsDone++;
+
 // status printing
-#pragma omp ordered
-      {
+      if (statusPrintingEnabled) {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
                  static_cast<double>(k) / static_cast<double>(populationSize) * 100.0);

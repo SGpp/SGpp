@@ -9,7 +9,7 @@
 #include <sgpp/optimization/optimizer/unconstrained/NelderMead.hpp>
 
 #include <algorithm>
-#include <iostream>
+#include <limits>
 #include <vector>
 
 namespace sgpp {
@@ -18,7 +18,7 @@ namespace optimizer {
 
 NelderMead::NelderMead(const base::ScalarFunction& f, size_t maxFcnEvalCount, double alpha,
                        double beta, double gamma, double delta)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       alpha(alpha),
       beta(beta),
       gamma(gamma),
@@ -39,7 +39,7 @@ void NelderMead::optimize() {
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -103,7 +103,7 @@ void NelderMead::optimize() {
       }
     }
 
-    double fPointR = (inDomain ? f->eval(pointR) : INFINITY);
+    double fPointR = (inDomain ? f->eval(pointR) : std::numeric_limits<double>::infinity());
     numberOfFcnEvals++;
 
     if ((fPoints[0] <= fPointR) && (fPointR < fPoints[d - 1])) {
@@ -121,7 +121,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double f_point_e = (inDomain ? f->eval(pointE) : INFINITY);
+      double f_point_e = (inDomain ? f->eval(pointE) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (f_point_e < fPointR) {
@@ -143,7 +143,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointOC = (in_domain ? f->eval(pointOC) : INFINITY);
+      double fPointOC = (in_domain ? f->eval(pointOC) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (fPointOC <= fPointR) {
@@ -164,7 +164,7 @@ void NelderMead::optimize() {
         }
       }
 
-      double fPointIC = (in_domain ? f->eval(pointIC) : INFINITY);
+      double fPointIC = (in_domain ? f->eval(pointIC) : std::numeric_limits<double>::infinity());
       numberOfFcnEvals++;
 
       if (fPointIC < fPoints[d]) {
@@ -188,7 +188,7 @@ void NelderMead::optimize() {
           }
         }
 
-        fPoints[i] = (in_domain ? f->eval(points[i]) : INFINITY);
+        fPoints[i] = (in_domain ? f->eval(points[i]) : std::numeric_limits<double>::infinity());
       }
 
       numberOfFcnEvals += d;

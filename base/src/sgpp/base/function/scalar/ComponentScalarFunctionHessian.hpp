@@ -11,8 +11,10 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <stdexcept>
 #include <vector>
+
 namespace sgpp {
 namespace base {
 
@@ -50,13 +52,15 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
       :
 
         ScalarFunctionHessian((defaultValues.size() > 0)
-                                  ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                  ? std::count(defaultValues.begin(), defaultValues.end(),
+                                      std::numeric_limits<double>::quiet_NaN())
                                   : fHessian.getNumberOfParameters()),
         fHessianScalar(&fHessian),
         fHessianVector(nullptr),
         dF(fHessian.getNumberOfParameters()),
         k(0),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(dF),
         tmpMat(dF, dF),
@@ -84,13 +88,15 @@ class ComponentScalarFunctionHessian : public ScalarFunctionHessian {
       :
 
         ScalarFunctionHessian((defaultValues.size() > 0)
-                                  ? std::count(defaultValues.begin(), defaultValues.end(), NAN)
+                                  ? std::count(defaultValues.begin(), defaultValues.end(),
+                                      std::numeric_limits<double>::quiet_NaN())
                                   : fHessian.getNumberOfParameters()),
         fHessianScalar(nullptr),
         fHessianVector(&fHessian),
         dF(fHessian.getNumberOfParameters()),
         k(k),
-        defaultValues((defaultValues.size() > 0) ? defaultValues : std::vector<double>(dF, NAN)),
+        defaultValues((defaultValues.size() > 0) ? defaultValues :
+            std::vector<double>(dF, std::numeric_limits<double>::quiet_NaN())),
         tmpVec1(dF),
         tmpVec2(fHessian.getNumberOfComponents()),
         tmpMat(fHessian.getNumberOfComponents(), dF),

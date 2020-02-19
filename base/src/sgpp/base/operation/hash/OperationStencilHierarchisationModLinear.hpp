@@ -44,19 +44,19 @@ class OperationStencilHierarchisationModLinear : public
 
   const IndexStencil& getSurplusStencil() const override {
     return surplusStencil;
-  };
+  }
 
   const IndexStencil& getNeighborStencil() const override {
     return neighborStencil;
-  };
+  }
 
   const WeightStencil& getWeightStencil() const override {
     return weightStencil;
-  };
+  }
 
   size_t getStencilSize() const override {
     return surplusStencil.size();
-  };
+  }
 
  protected:
   /// reference to the grid's GridStorage object

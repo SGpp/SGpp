@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.hpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -19,6 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -28,8 +22,8 @@
 #include <list>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -52,6 +46,15 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
+   * Constuctor with offline object store.
+   *
+   * @param config Configuration object that specifies grid, refinement, and regularization.
+   * @param objectStore Offline object store
+   */
+  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
+                                              std::shared_ptr<DBMatObjectStore> objectStore);
+
+  /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
@@ -64,7 +67,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
@@ -72,7 +75,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 
@@ -82,7 +85,7 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    * whatsoever)
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
@@ -101,6 +104,24 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Computes the residual
+   *
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override;
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override;
+
+  /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement)
    * @return whether the model is refinable
@@ -112,7 +133,26 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
    */
   void reset() override;
 
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   *
+   * Does not reset the offline object and grid.
+   */
+  void resetTraining() override;
+
  private:
+  /**
+   * @brief The instances offline object store
+   *
+   */
+  std::shared_ptr<DBMatObjectStore> objectStore;
+
+  /**
+   * @brief True if instnce has an offline object store
+   *
+   */
+  bool hasObjectStore;
+
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 };

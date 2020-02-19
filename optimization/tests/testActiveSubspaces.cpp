@@ -7,7 +7,6 @@
 #include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 //#include <sgpp/datadriven/activeSubspaces/ASMatrixBsplineAnalytic.hpp>
 //#include <sgpp/datadriven/activeSubspaces/ASResponseSurfaceNakBspline.hpp>
 //#include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
@@ -129,7 +128,7 @@
 //  if (gridType == sgpp::base::GridType::NakBspline) {
 //    grid = new sgpp::base::NakBsplineGrid(numDim, degree);
 //    grid2 = new sgpp::base::NakBsplineGrid(numDim, degree);
-//  } else if (gridType == sgpp::base::GridType::NakBsplineModified) {
+//  } else if (gridType == sgpp::base::GridType::ModNakBspline) {
 //    grid = new sgpp::base::NakBsplineModifiedGrid(numDim, degree);
 //    grid2 = new sgpp::base::NakBsplineModifiedGrid(numDim, degree);
 //  } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {

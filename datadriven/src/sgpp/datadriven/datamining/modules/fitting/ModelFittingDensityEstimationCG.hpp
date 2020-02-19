@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityEstimation.hpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -19,6 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -64,7 +58,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset);
+  void fit(DataMatrix& dataset) override;
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
@@ -72,7 +66,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t> *deletedGridPoints);
+  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
 
@@ -82,7 +76,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * whatsoever)
    * @param samples the new data samples
    */
-  void update(DataMatrix& samples);
+  void update(DataMatrix& samples) override;
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
@@ -104,6 +98,42 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * Resets the state of the entire model
    */
   void reset() override;
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
+  void resetTraining() override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCG::resetTraining() is not implemented!");
+  }
+
+  /**
+    * Should compute some kind of Residual to evaluate the fit of the model.
+    *
+    * In the case of density estimation, this is
+    * || R * alpha_lambda - b_val ||_2
+    *
+    * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+    * there are no targets.
+    *
+    * @param validationData Matrix for validation data
+    *
+    * @returns the residual score
+    */
+  double computeResidual(DataMatrix& validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCG::computeResidual() is not implemented!");
+  }
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityEstimationCG::updateRegularization() is not implemented!");
+  }
 
  private:
   /**

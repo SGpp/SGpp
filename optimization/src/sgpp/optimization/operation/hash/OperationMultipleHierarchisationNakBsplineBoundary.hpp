@@ -7,25 +7,27 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisation.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 namespace sgpp {
 namespace optimization {
 
 /**
- * Hierarchisation operation for B-spline basis functions on
- * Boundary grids.
+ * Hierarchisation operation for B-spline basis functions on Boundary grids
+ * with not-a-knot boundary conditions.
  */
-class OperationMultipleHierarchisationNakBsplineBoundary : public OperationMultipleHierarchisation {
+class OperationMultipleHierarchisationNakBsplineBoundary :
+    public OperationMultipleHierarchisation {
  public:
   /**
    * Constructor.
    *
    * @param grid      grid
    */
-  explicit OperationMultipleHierarchisationNakBsplineBoundary(base::NakBsplineBoundaryGrid& grid);
+  explicit OperationMultipleHierarchisationNakBsplineBoundary(
+      base::NakBsplineBoundaryGrid& grid);
 
   /**
    * Destructor.

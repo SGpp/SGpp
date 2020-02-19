@@ -62,11 +62,6 @@ class Rprop : public UnconstrainedOptimizer {
   void optimize() override;
 
   /**
-   * @return objective function gradient
-   */
-  base::ScalarFunctionGradient& getObjectiveGradient() const;
-
-  /**
    * @return tolerance
    */
   double getTolerance() const;
@@ -112,8 +107,6 @@ class Rprop : public UnconstrainedOptimizer {
   void clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const override;
 
  protected:
-  /// objective function gradient
-  std::unique_ptr<base::ScalarFunctionGradient> fGradient;
   /// tolerance
   double theta;
   /// initial step size

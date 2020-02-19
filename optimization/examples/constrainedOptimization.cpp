@@ -4,7 +4,8 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_constrainedOptimization_cpp constrainedOptimization.cpp
+ * \page example_constrainedOptimization_cpp Constrained Optimization
+ *
  * This example demonstrates the optimization of an objective function \f$ f\f$ with additional
  * constraints.
  * The inequality constraints are specified via a function \f$ g\f$, the equality constraints are
@@ -60,7 +61,7 @@ int main() {
   const size_t p = 5;
   const size_t d = problem.getObjectiveFunction().getNumberOfParameters();
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
-  const size_t l = 5;
+  const size_t l = 3;
   grid->getGenerator().regular(l);
 
   /**

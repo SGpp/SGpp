@@ -48,8 +48,11 @@ Printer& Printer::getInstance() {
 void Printer::printStatusBegin(const std::string& msg) {
   ScopedLock lock(mutex);
 
-  if (!statusPrintingEnabled || (statusLevel > verbose)) {
-    // status printing disabled or verbose level too low
+  if (!statusPrintingEnabled) {
+    // status printing disabled
+    return;
+  } else if (statusLevel > verbose) {
+    // verbose level too low
     statusLevel++;
     return;
   }
@@ -136,12 +139,16 @@ void Printer::printStatusIdentation() {
 void Printer::printStatusEnd(const std::string& msg) {
   ScopedLock lock(mutex);
 
-  statusLevel--;
-
-  if (!statusPrintingEnabled || (statusLevel > verbose)) {
-    // status printing disabled or verbose level too low
+  if (!statusPrintingEnabled) {
+    // status printing disabled
+    return;
+  } else if (statusLevel - 1 > verbose) {
+    // verbose level too low
+    statusLevel--;
     return;
   }
+
+  statusLevel--;
 
   // go to new line
   if (!cursorInClearLine) {

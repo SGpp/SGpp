@@ -6,7 +6,7 @@ Created on Apr 19, 2016
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList
+from pysgpp import HashGridPoint, createOperationEval, DataVector, SizeList
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getHierarchicalAncestors, \
@@ -244,7 +244,7 @@ class OperationMakePositiveFast(object):
             gs = grid.getStorage()
 
             notAffectedGridPoints = []
-            toBeRemoved = IndexList()
+            toBeRemoved = SizeList()
             for gp in newGridPoints:
                 # if the grid point is a leaf and has negative weight
                 # we dont need it to make the function positive
