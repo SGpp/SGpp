@@ -28,8 +28,7 @@ cp "base/examples/quadrature.cpp" "$HOME/testing_package/quadrature.cpp"
 cp "base/examples/quadrature.py" "$HOME/testing_package/quadrature.py"
 cd "$HOME/testing_package"
 g++ quadrature.cpp -std=c++11 -o quad -l sgppbase
-./quad > cpp_output.txt
-cat cpp_output
+./quad 
 
 printf '\n~~~ Testing debian python package ~~~\n\n'
 python3 quadrature.py
