@@ -20,8 +20,21 @@ python3 create_deb.py deps_sgpp.tmp deps_pysgpp.tmp automated
 
 
 printf '\n~~~ Installing debian package ~~~\n\n'
-dpkg -i libsgpp-test-package_0.0-0.deb
-dpkg -i libsgpp-python-test-package_0.0-0.deb
+sudo dpkg -i libsgpp-test-package_0.0-0.deb
+sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
+
+printf '\n~~~ Testing debian cpp package ~~~\n\n'
+cd ../../..
+mkdir -p "$HOME/testing_package"
+cp "base/examples/quadrature.cpp" "$HOME/testing_package/quadrature.cpp"
+cp "base/examples/quadrature.py" "$HOME/testing_package/quadrature.py"
+cd "$HOME/testing_package"
+g++ quadrature.cpp -o quad -l sgppbase
+./quad > cpp_output.txt
+cat cpp_output
+
+printf '\n~~~ Testing debian python package ~~~\n\n'
+python3 quadrature.py
 
 # Clean-up (for debugging, the lines below should be commented out)
 # rm deps_sgpp.tmp
