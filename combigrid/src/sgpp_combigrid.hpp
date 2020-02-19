@@ -23,3 +23,5 @@
 #include <sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
+
+#include <sgpp/combigrid/adaptive/AdaptiveCombiGridGenerator.hpp>
