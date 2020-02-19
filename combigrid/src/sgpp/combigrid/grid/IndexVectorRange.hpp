@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <vector>
+
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
-
-#include <vector>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -31,9 +31,8 @@ class IndexVectorRange {
   /**
    * Default constructor, corresponds to the zero-dimensional case.
    */
-  IndexVectorRange() : dim(0), minIndex(), maxIndex(), numberOfIndexVectors(),
-      totalNumberOfIndexVectors(0) {
-  }
+  IndexVectorRange()
+      : dim(0), minIndex(), maxIndex(), numberOfIndexVectors(), totalNumberOfIndexVectors(0) {}
 
   /**
    * Constructor for FullGrid instances.
@@ -41,7 +40,7 @@ class IndexVectorRange {
    * @param grid  full grid
    */
   explicit IndexVectorRange(const FullGrid& grid) : IndexVectorRange() {
-    if (grid.getLevelOccupancy() != FullGrid::LevelOccupancy::TwoToThePowerOfL){
+    if (grid.getLevelOccupancy() != FullGrid::LevelOccupancy::TwoToThePowerOfL) {
       throw sgpp::base::not_implemented_exception();
     }
     setGrid(grid);
@@ -53,9 +52,12 @@ class IndexVectorRange {
    * @param minIndex  vector of minimum 1D indices
    * @param maxIndex  vector of maximum 1D indices
    */
-  IndexVectorRange(const IndexVector& minIndex, const IndexVector& maxIndex) :
-      dim(minIndex.size()), minIndex(minIndex), maxIndex(maxIndex), numberOfIndexVectors(dim),
-      totalNumberOfIndexVectors(1) {
+  IndexVectorRange(const IndexVector& minIndex, const IndexVector& maxIndex)
+      : dim(minIndex.size()),
+        minIndex(minIndex),
+        maxIndex(maxIndex),
+        numberOfIndexVectors(dim),
+        totalNumberOfIndexVectors(1) {
     for (size_t d = 0; d < dim; d++) {
       numberOfIndexVectors[d] = maxIndex[d] - minIndex[d] + 1;
       totalNumberOfIndexVectors *= numberOfIndexVectors[d];
@@ -68,9 +70,7 @@ class IndexVectorRange {
    *
    * @return iterator that corresponds to the minimum index
    */
-  IndexVectorIterator begin() const {
-    return IndexVectorIterator(minIndex, maxIndex);
-  }
+  IndexVectorIterator begin() const { return IndexVectorIterator(minIndex, maxIndex); }
 
   /**
    * Returns the end of the range, i.e., the IndexVectorIterator that corresponds to
@@ -122,9 +122,7 @@ class IndexVectorRange {
    *
    * @param[out] indices  vector of indices (contents will be overwritten)
    */
-  void getIndices(std::vector<IndexVector>& indices) const {
-    indices.assign(begin(), end());
-  }
+  void getIndices(std::vector<IndexVector>& indices) const { indices.assign(begin(), end()); }
 
   /**
    * Save all grid points of a FullGrid in a DataMatrix.
@@ -141,7 +139,7 @@ class IndexVectorRange {
     for (const IndexVector& index : range) {
       for (size_t d = 0; d < range.dim; d++) {
         points(i, d) = static_cast<double>(index[d]) /
-            static_cast<double>(static_cast<index_t>(1) << level[d]);
+                       static_cast<double>(static_cast<index_t>(1) << level[d]);
       }
 
       i++;
