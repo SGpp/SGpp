@@ -8,8 +8,8 @@ cd -
 
 # Create dependency lists 
 # IMPORTANT: list needs to be comma delimited!
-echo -e 'zlib1g, libomp-dev' > deps_sgpp.tmp
-echo -e 'python3-numpy, python3-scipy' > deps_pysgpp.tmp
+echo -e 'zlib1g, build-essential' > deps_sgpp.tmp
+echo -e '' > deps_pysgpp.tmp
 
 # Build debian package
 printf '\n~~~ Building Debian package ~~~\n\n'

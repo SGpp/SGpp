@@ -26,4 +26,4 @@ matrix:
         - python3-jinja2
         - libgomp1
     script:
-    - scons -j 2 SG_ALL=0 SG_BASE=1 SG_PYTHON=1 SG_JAVA=1 RUN_CPP_EXAMPLES=1 RUN_PYTHON_EXAMPLES=1
+    - ./tool/travis_scripts/create_deb_install_deb_and_test.sh

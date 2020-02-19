@@ -53,37 +53,47 @@ if len(sys.argv) >= 2:
                 line = fin.readline()
         pysgpp_deps = pysgpp_deps.strip(" ,")
 
-# enter version information
-major_version = input("Enter major version: ")
-if major_version == "":
-    print("Aborting: You have to specify a major version")
-    sys.exit(1)
-if not major_version.isdigit():
-    print("Aborting: major version can only contain digits")
-    sys.exit(1)
-minor_version = input("Enter minor version (default: \"0\"): ")
-if minor_version == "":
+package_name = ""
+if len(sys.argv) >= 4:
+    print("WARNING! Running with default version numbers for automated testing!")
+    major_version = "0"
     minor_version = "0"
-if not minor_version.isdigit():
-    print("Aborting: minor version can only contain digits")
-    sys.exit(1)
-package_revision = input("Enter package_revision (default: \"1\"): ")
-if package_revision == "":
-    package_revision = "1"
-if not package_revision.isdigit():
-    print("Aborting: package revision can only contain digits")
-    sys.exit(1)
+    package_revision = "0"
+    maintainer_name = "dummy"
+    maintainer_email = "dummy"
+    package_name = "libsgpp-test-package_" + major_version + "." + minor_version + "-" + package_revision
+else:
+    # enter version information
+    major_version = input("Enter major version: ")
+    if major_version == "":
+        print("Aborting: You have to specify a major version")
+        sys.exit(1)
+    if not major_version.isdigit():
+        print("Aborting: major version can only contain digits")
+        sys.exit(1)
+    minor_version = input("Enter minor version (default: \"0\"): ")
+    if minor_version == "":
+        minor_version = "0"
+    if not minor_version.isdigit():
+        print("Aborting: minor version can only contain digits")
+        sys.exit(1)
+    package_revision = input("Enter package_revision (default: \"1\"): ")
+    if package_revision == "":
+        package_revision = "1"
+    if not package_revision.isdigit():
+        print("Aborting: package revision can only contain digits")
+        sys.exit(1)
 
-# enter maintainer information
-maintainer_name = input("Enter the name of the maintainer (default \"Dirk Pflüger\"):")
-if maintainer_name == "":
-    maintainer_name = "Dirk Pflüger"
+    # enter maintainer information
+    maintainer_name = input("Enter the name of the maintainer (default \"Dirk Pflüger\"):")
+    if maintainer_name == "":
+        maintainer_name = "Dirk Pflüger"
 
-maintainer_email = input("Enter the email adress of the maintainer (default \"Dirk.Pflueger@ipvs.uni-stuttgart.de\"):")
-if maintainer_email == "":
-    maintainer_email = "Dirk.Pflueger@ipvs.uni-stuttgart.de"
+    maintainer_email = input("Enter the email adress of the maintainer (default \"Dirk.Pflueger@ipvs.uni-stuttgart.de\"):")
+    if maintainer_email == "":
+        maintainer_email = "Dirk.Pflueger@ipvs.uni-stuttgart.de"
 
-package_name = "libsgpp_" + major_version + "." + minor_version + "-" + package_revision
+    package_name = "libsgpp_" + major_version + "." + minor_version + "-" + package_revision
 print(("package name: " + package_name))
 deb_name = package_name + ".deb"
 
@@ -121,7 +131,10 @@ except Exception as e:
     print((str(e)))
 
 # now create the python bindings package
-package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
+if len(sys.argv) >= 4:
+    package_name = "libsgpp-python-test-package_" + major_version + "." + minor_version + "-" + package_revision
+else:
+    package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
 print(("python bindings package name: " + package_name))
 deb_name = package_name + ".deb"
 
