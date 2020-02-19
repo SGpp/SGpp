@@ -42,6 +42,7 @@ class FullGrid {
    * @param level         level of the full grid
    * @param basis         type of basis functions for evaluating on the full grid
    * @param hasBoundary   whether the full grid has points on the boundary
+   * @param levelOccupancy how many points are added to the grid per level
    */
   FullGrid(const LevelVector& level, const HeterogeneousBasis& basis, bool hasBoundary = true,
            FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL):
