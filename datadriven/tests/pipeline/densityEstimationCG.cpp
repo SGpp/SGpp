@@ -5,6 +5,7 @@
 
 #ifdef USE_GSL
 
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test_suite.hpp>
 #include <boost/test/test_tools.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
