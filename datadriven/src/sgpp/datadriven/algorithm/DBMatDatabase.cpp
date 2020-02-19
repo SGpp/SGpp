@@ -10,15 +10,16 @@
 #include <sgpp/base/tools/json/DictNode.hpp>
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
+#include <sgpp/base/grid/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
 
 #include <algorithm>
 #include <set>
 #include <string>
 #include <vector>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -136,7 +137,7 @@ void DBMatDatabase::putDataMatrix(
     json::DictNode& gridConfigEntry =
         dynamic_cast<json::DictNode&>(entry.addDictAttr(keyGridConfiguration));
     gridConfigEntry.addTextAttr(
-        keyGridType, sgpp::datadriven::GeneralGridTypeParser::toString(gridConfig.generalType_));
+        keyGridType, sgpp::base::GeneralGridTypeParser::toString(gridConfig.generalType_));
     gridConfigEntry.addIDAttr(keyGridDimension, static_cast<uint64_t>(gridConfig.dim_));
     if (gridConfig.generalType_ == sgpp::base::GeneralGridType::ComponentGrid) {
       json::ListNode& level =
@@ -212,7 +213,7 @@ bool DBMatDatabase::gridConfigurationMatches(json::DictNode* node,
   if (node->contains(keyGridType)) {
     // Parse the grid general type
     std::string strGridType = (*node)[keyGridType].get();
-    gridType = sgpp::datadriven::GeneralGridTypeParser::parse(strGridType);
+    gridType = sgpp::base::GeneralGridTypeParser::parse(strGridType);
     // Check if the general grid type matches
     if (gridConfig.generalType_ != gridType) return false;
   } else {

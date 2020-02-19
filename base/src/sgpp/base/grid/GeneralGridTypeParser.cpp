@@ -3,20 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
+#include <sgpp/base/grid/GeneralGridTypeParser.hpp>
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <algorithm>
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 using sgpp::base::data_exception;
 
-sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string &input) {
+sgpp::base::GeneralGridType GeneralGridTypeParser::parse(
+    const std::string &input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
+                 ::tolower);
   if (inputLower == "regular") {
     return sgpp::base::GeneralGridType::RegularSparseGrid;
   } else if (inputLower == "refinedcoarsened") {
@@ -31,19 +33,23 @@ sgpp::base::GeneralGridType GeneralGridTypeParser::parse(const std::string &inpu
   }
 }
 
-const std::string &GeneralGridTypeParser::toString(sgpp::base::GeneralGridType type) {
+const std::string &GeneralGridTypeParser::toString(
+    sgpp::base::GeneralGridType type) {
   return generalGridTypeMap.at(type);
 }
 
 const GeneralGridTypeParser::GeneralGridTypeMap_t
     GeneralGridTypeParser::generalGridTypeMap = []() {
-  return GeneralGridTypeMap_t{
-      std::make_pair(sgpp::base::GeneralGridType::RegularSparseGrid, "regular"),
-      std::make_pair(sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid, "refinedcoarsened"),
-      std::make_pair(sgpp::base::GeneralGridType::GeometryAwareSparseGrid,
-                     "geometryaware"),
-      std::make_pair(sgpp::base::GeneralGridType::ComponentGrid, "component")
-  };
-}();
-} /* namespace datadriven */
+      return GeneralGridTypeMap_t{
+          std::make_pair(sgpp::base::GeneralGridType::RegularSparseGrid,
+                         "regular"),
+          std::make_pair(
+              sgpp::base::GeneralGridType::RefinedCoarsenedSparseGrid,
+              "refinedcoarsened"),
+          std::make_pair(sgpp::base::GeneralGridType::GeometryAwareSparseGrid,
+                         "geometryaware"),
+          std::make_pair(sgpp::base::GeneralGridType::ComponentGrid,
+                         "component")};
+    }();
+} /* namespace base */
 } /* namespace sgpp */
