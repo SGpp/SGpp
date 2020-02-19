@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 import numpy as np
 import matplotlib.pyplot as plt
 from pysgpp.extensions.datadriven.uq.plot.colors import load_color, load_font_properties
