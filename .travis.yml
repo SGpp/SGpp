@@ -26,4 +26,4 @@ matrix:
         - python3-jinja2
         - libgomp1
     script:
-    - ./tool/travis_scripts/create_deb_install_deb_and_test.sh
+    - bash tools/travis_scripts/create_deb_install_deb_and_test.sh
