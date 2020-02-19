@@ -9,6 +9,7 @@
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
@@ -57,8 +58,8 @@ namespace unit_test {
 namespace ut_detail {
 
 std::string normalize_test_case_name(const_string name) {
-  return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1) :
-                             std::string(name.begin(), name.size()));
+  return ((name[0] == '&') ? std::string(name.begin() + 1, name.size() - 1)
+                           : std::string(name.begin(), name.size()));
 }
 
 }  // namespace ut_detail
@@ -99,7 +100,7 @@ BOOST_AUTO_TEST_CASE(testHeterogeneousBasis) {
   sgpp::base::SBsplineBase basis1d5(5);
 
   BOOST_CHECK(HeterogeneousBasis(3, basis1d3) ==
-      HeterogeneousBasis({&basis1d3, &basis1d3, &basis1d3}));
+              HeterogeneousBasis({&basis1d3, &basis1d3, &basis1d3}));
 
   {
     sgpp::combigrid::level_t level;
@@ -135,10 +136,10 @@ BOOST_AUTO_TEST_CASE(testHeterogeneousBasis) {
 
   // 0.8 * 0.53866667 * 0.53037333 = 0.2285555
   BOOST_CHECK_CLOSE(basisHierarchical.eval({1, 2, 3}, {1, 2, 6}, DataVector({0.6, 0.7, 0.8})),
-      0.2285555, 1e-4);
+                    0.2285555, 1e-4);
   // 0.8 * 0.28266667 * 0.47554667 = 0.1075370
-  BOOST_CHECK_CLOSE(basisNodal.eval({1, 2, 3}, {1, 2, 6}, DataVector({0.6, 0.7, 0.8})),
-      0.1075370, 1e-4);
+  BOOST_CHECK_CLOSE(basisNodal.eval({1, 2, 3}, {1, 2, 6}, DataVector({0.6, 0.7, 0.8})), 0.1075370,
+                    1e-4);
 }
 
 BOOST_AUTO_TEST_CASE(testCombinationGrid) {
@@ -153,44 +154,20 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
     if (hasBoundary) {
       subspaceLevels = {
-          {0, 0, 5}, {0, 1, 4}, {0, 2, 3}, {0, 3, 2}, {0, 4, 1}, {0, 5, 0},
-          {1, 0, 4}, {1, 1, 3}, {1, 2, 2}, {1, 3, 1}, {1, 4, 0},
-          {2, 0, 3}, {2, 1, 2}, {2, 2, 1}, {2, 3, 0},
-          {3, 0, 2}, {3, 1, 1}, {3, 2, 0},
-          {4, 0, 1}, {4, 1, 0},
-          {5, 0, 0},
-          {0, 0, 4}, {0, 1, 3}, {0, 2, 2}, {0, 3, 1}, {0, 4, 0},
-          {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 0},
-          {2, 0, 2}, {2, 1, 1}, {2, 2, 0},
-          {3, 0, 1}, {3, 1, 0},
-          {4, 0, 0},
-          {0, 0, 3}, {0, 1, 2}, {0, 2, 1}, {0, 3, 0},
-          {1, 0, 2}, {1, 1, 1}, {1, 2, 0},
-          {2, 0, 1}, {2, 1, 0},
-          {3, 0, 0},
-          {0, 0, 2}, {0, 1, 1}, {0, 2, 0},
-          {1, 0, 1}, {1, 1, 0},
-          {2, 0, 0},
-          {0, 0, 1}, {0, 1, 0},
-          {1, 0, 0},
-          {0, 0, 0}};
+          {0, 0, 5}, {0, 1, 4}, {0, 2, 3}, {0, 3, 2}, {0, 4, 1}, {0, 5, 0}, {1, 0, 4}, {1, 1, 3},
+          {1, 2, 2}, {1, 3, 1}, {1, 4, 0}, {2, 0, 3}, {2, 1, 2}, {2, 2, 1}, {2, 3, 0}, {3, 0, 2},
+          {3, 1, 1}, {3, 2, 0}, {4, 0, 1}, {4, 1, 0}, {5, 0, 0}, {0, 0, 4}, {0, 1, 3}, {0, 2, 2},
+          {0, 3, 1}, {0, 4, 0}, {1, 0, 3}, {1, 1, 2}, {1, 2, 1}, {1, 3, 0}, {2, 0, 2}, {2, 1, 1},
+          {2, 2, 0}, {3, 0, 1}, {3, 1, 0}, {4, 0, 0}, {0, 0, 3}, {0, 1, 2}, {0, 2, 1}, {0, 3, 0},
+          {1, 0, 2}, {1, 1, 1}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}, {3, 0, 0}, {0, 0, 2}, {0, 1, 1},
+          {0, 2, 0}, {1, 0, 1}, {1, 1, 0}, {2, 0, 0}, {0, 0, 1}, {0, 1, 0}, {1, 0, 0}, {0, 0, 0}};
     } else {
-      subspaceLevels = {
-          {1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1},
-          {2, 1, 4}, {2, 2, 3}, {2, 3, 2}, {2, 4, 1},
-          {3, 1, 3}, {3, 2, 2}, {3, 3, 1},
-          {4, 1, 2}, {4, 2, 1},
-          {5, 1, 1},
-          {1, 1, 4}, {1, 2, 3}, {1, 3, 2}, {1, 4, 1},
-          {2, 1, 3}, {2, 2, 2}, {2, 3, 1},
-          {3, 1, 2}, {3, 2, 1},
-          {4, 1, 1},
-          {1, 1, 3}, {1, 2, 2}, {1, 3, 1},
-          {2, 1, 2}, {2, 2, 1},
-          {3, 1, 1},
-          {1, 1, 2}, {1, 2, 1},
-          {2, 1, 1},
-          {1, 1, 1}};
+      subspaceLevels = {{1, 1, 5}, {1, 2, 4}, {1, 3, 3}, {1, 4, 2}, {1, 5, 1}, {2, 1, 4},
+                        {2, 2, 3}, {2, 3, 2}, {2, 4, 1}, {3, 1, 3}, {3, 2, 2}, {3, 3, 1},
+                        {4, 1, 2}, {4, 2, 1}, {5, 1, 1}, {1, 1, 4}, {1, 2, 3}, {1, 3, 2},
+                        {1, 4, 1}, {2, 1, 3}, {2, 2, 2}, {2, 3, 1}, {3, 1, 2}, {3, 2, 1},
+                        {4, 1, 1}, {1, 1, 3}, {1, 2, 2}, {1, 3, 1}, {2, 1, 2}, {2, 2, 1},
+                        {3, 1, 1}, {1, 1, 2}, {1, 2, 1}, {2, 1, 1}, {1, 1, 1}};
     }
 
     std::vector<CombinationGrid> combinationGrids = {
@@ -199,7 +176,7 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
     for (const CombinationGrid& combinationGrid : combinationGrids) {
       BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
-          (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
+                        (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
       sgpp::base::GridStorage gridStorage(3);
       combinationGrid.combinePoints(gridStorage);
       BOOST_CHECK_EQUAL(gridStorage.getSize(), (hasBoundary ? 705 : 351));
@@ -260,8 +237,8 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   // 3 2 3
   // 0   1
   // 03221
-  const DataVector correctResult({0.0, 3.0, 2.0, 2.0, 1.0, 0.0, 1.0, 3.0, 2.0, 3.0, 3.0, 0.0,
-      4.0, 1.0, 1.0, 1.0, 3.0});
+  const DataVector correctResult(
+      {0.0, 3.0, 2.0, 2.0, 1.0, 0.0, 1.0, 3.0, 2.0, 3.0, 3.0, 0.0, 4.0, 1.0, 1.0, 1.0, 3.0});
   const std::vector<DataVector> correctDistributedValues = {
       // 41113
       // |   |
@@ -300,17 +277,17 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   std::vector<size_t> order(gridStorage.getSize());
   std::iota(order.begin(), order.end(), 0);
   std::sort(order.begin(), order.end(), [&gridStorage](size_t a, size_t b) {
-        const double a1 = gridStorage.getPoint(a).getStandardCoordinate(1);
-        const double b1 = gridStorage.getPoint(b).getStandardCoordinate(1);
+    const double a1 = gridStorage.getPoint(a).getStandardCoordinate(1);
+    const double b1 = gridStorage.getPoint(b).getStandardCoordinate(1);
 
-        if (a1 != b1) {
-          return (a1 < b1);
-        } else {
-          const double a0 = gridStorage.getPoint(a).getStandardCoordinate(0);
-          const double b0 = gridStorage.getPoint(b).getStandardCoordinate(0);
-          return (a0 < b0);
-        }
-      });
+    if (a1 != b1) {
+      return (a1 < b1);
+    } else {
+      const double a0 = gridStorage.getPoint(a).getStandardCoordinate(0);
+      const double b0 = gridStorage.getPoint(b).getStandardCoordinate(0);
+      return (a0 < b0);
+    }
+  });
 
   for (size_t k = 0; k < gridStorage.getSize(); k++) {
     BOOST_CHECK_EQUAL(result[order[k]], correctResult[k]);
@@ -322,7 +299,8 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
   for (size_t i = 0; i < distributedValues.size(); i++) {
     BOOST_CHECK_EQUAL_COLLECTIONS(distributedValues[i].begin(), distributedValues[i].end(),
-        correctDistributedValues[i].begin(), correctDistributedValues[i].end());
+                                  correctDistributedValues[i].begin(),
+                                  correctDistributedValues[i].end());
   }
 }
 
@@ -337,22 +315,15 @@ BOOST_AUTO_TEST_CASE(testIndexVectorRangeIterator) {
 
     if (j == 0) {
       range = IndexVectorRange(fullGrid);
-      correctIndices = {
-          {0, 0}, {1, 0}, {2, 0},
-          {0, 1}, {1, 1}, {2, 1},
-          {0, 2}, {1, 2}, {2, 2},
-          {0, 3}, {1, 3}, {2, 3},
-          {0, 4}, {1, 4}, {2, 4}};
+      correctIndices = {{0, 0}, {1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1}, {0, 2}, {1, 2},
+                        {2, 2}, {0, 3}, {1, 3}, {2, 3}, {0, 4}, {1, 4}, {2, 4}};
       BOOST_CHECK_EQUAL(range.find({2, 1}), 5);
     } else {
       range = IndexVectorRange({3, 6, 1}, {6, 8, 2});
-      correctIndices = {
-          {3, 6, 1}, {4, 6, 1}, {5, 6, 1}, {6, 6, 1},
-          {3, 7, 1}, {4, 7, 1}, {5, 7, 1}, {6, 7, 1},
-          {3, 8, 1}, {4, 8, 1}, {5, 8, 1}, {6, 8, 1},
-          {3, 6, 2}, {4, 6, 2}, {5, 6, 2}, {6, 6, 2},
-          {3, 7, 2}, {4, 7, 2}, {5, 7, 2}, {6, 7, 2},
-          {3, 8, 2}, {4, 8, 2}, {5, 8, 2}, {6, 8, 2}};
+      correctIndices = {{3, 6, 1}, {4, 6, 1}, {5, 6, 1}, {6, 6, 1}, {3, 7, 1}, {4, 7, 1},
+                        {5, 7, 1}, {6, 7, 1}, {3, 8, 1}, {4, 8, 1}, {5, 8, 1}, {6, 8, 1},
+                        {3, 6, 2}, {4, 6, 2}, {5, 6, 2}, {6, 6, 2}, {3, 7, 2}, {4, 7, 2},
+                        {5, 7, 2}, {6, 7, 2}, {3, 8, 2}, {4, 8, 2}, {5, 8, 2}, {6, 8, 2}};
       BOOST_CHECK_EQUAL(range.find({5, 7, 2}), 18);
     }
 
@@ -360,22 +331,20 @@ BOOST_AUTO_TEST_CASE(testIndexVectorRangeIterator) {
     size_t i = 0;
 
     for (const IndexVector& index : range) {
-      BOOST_CHECK_EQUAL_COLLECTIONS(index.begin(), index.end(),
-          correctIndices[i].begin(), correctIndices[i].end());
+      BOOST_CHECK_EQUAL_COLLECTIONS(index.begin(), index.end(), correctIndices[i].begin(),
+                                    correctIndices[i].end());
       i++;
     }
   }
 
   DataMatrix points;
   IndexVectorRange::getPoints(fullGrid, points);
-  const DataMatrix correctPoints({
-      0.0, 0.0, 0.5, 0.0, 1.0, 0.0,
-      0.0, 0.25, 0.5, 0.25, 1.0, 0.25,
-      0.0, 0.5, 0.5, 0.5, 1.0, 0.5,
-      0.0, 0.75, 0.5, 0.75, 1.0, 0.75,
-      0.0, 1.0, 0.5, 1.0, 1.0, 1.0}, 15);
-  BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(),
-      correctPoints.begin(), correctPoints.end());
+  const DataMatrix correctPoints(
+      {0.0, 0.0, 0.5, 0.0, 1.0,  0.0, 0.0,  0.25, 0.5,  0.25, 1.0, 0.25, 0.0, 0.5, 0.5,
+       0.5, 1.0, 0.5, 0.0, 0.75, 0.5, 0.75, 1.0,  0.75, 0.0,  1.0, 0.5,  1.0, 1.0, 1.0},
+      15);
+  BOOST_CHECK_EQUAL_COLLECTIONS(points.begin(), points.end(), correctPoints.begin(),
+                                correctPoints.end());
 }
 
 BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
@@ -383,8 +352,8 @@ BOOST_AUTO_TEST_CASE(testOperationEvalCombinationGrid) {
   const HeterogeneousBasis basis(2, basis1d, false);
   const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 2, basis, false);
   OperationEvalCombinationGrid op(combinationGrid);
-  const std::vector<DataVector> surpluses = {
-      DataVector{1.0, -2.0, -1.0}, DataVector{-0.5, 0.5, 1.0}, DataVector{5.0}};
+  const std::vector<DataVector> surpluses = {DataVector{1.0, -2.0, -1.0},
+                                             DataVector{-0.5, 0.5, 1.0}, DataVector{5.0}};
   DataVector point({0.625, 0.375});
   // 1 * (1.0*(0*0.75) + -2.0*(0.5*0.75) + -1.0*(0.5*0.75))
   // + 1 * (-0.5*(0.75*0.5) + 0.5*(0.75*0.5) + 1.0*(0.75*0))
@@ -405,11 +374,11 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
   const FullGrid fullGrid({2, 1}, basis);
   OperationPoleHierarchisationLinear operationPole;
   OperationUPFullGrid operation(fullGrid, operationPole);
-  DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
-      -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+  DataVector values{-0.5, 3.0, 0.25, 0.5,  -1.0, 1.0,  5.0, 2.5,
+                    -1.5, 0.0, 2.0,  -1.0, 1.0,  -2.0, -1.0};
   operation.apply(values);
-  const DataVector correctSurpluses{-0.5, 3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
-      -2.1875, 1.0, 2.0, -2.5, 0.5, -2.0, -1.0};
+  const DataVector correctSurpluses{-0.5,    3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
+                                    -2.1875, 1.0,   2.0, -2.5,  0.5,  -2.0, -1.0};
 
   for (size_t i = 0; i < values.size(); i++) {
     BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
@@ -424,21 +393,23 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridGeneral) {
     std::vector<std::unique_ptr<OperationPole>> operationPole;
     OperationPoleHierarchisationGeneral::fromHeterogenerousBasis(basis, operationPole);
     OperationUPFullGrid operation(fullGrid, operationPole);
-    DataVector values{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0, 5.0, 2.5,
-                      -1.5, 0.0, 2.0, -1.0, 1.0, -2.0, -1.0};
+    DataVector values{-0.5, 3.0, 0.25, 0.5,  -1.0, 1.0,  5.0, 2.5,
+                      -1.5, 0.0, 2.0,  -1.0, 1.0,  -2.0, -1.0};
     operation.apply(values);
     DataVector correctSurpluses;
 
     if (isBasisHierarchical) {
-      correctSurpluses = DataVector{-4.34548191029053, 11.29388598889826, -0.45638469432632633,
-          8.30837174457185, -3.402942074462426, -4.7579856595053664, 10.752772401474628,
-          4.220642134584388, -8.117821514507945, 5.795370207225638, 8.991769884961288,
-          -15.38082204309674, 3.036651517372788, -7.852574819533291, -3.5702774351738715};
+      correctSurpluses = DataVector{-4.34548191029053,  11.29388598889826,  -0.45638469432632633,
+                                    8.30837174457185,   -3.402942074462426, -4.7579856595053664,
+                                    10.752772401474628, 4.220642134584388,  -8.117821514507945,
+                                    5.795370207225638,  8.991769884961288,  -15.38082204309674,
+                                    3.036651517372788,  -7.852574819533291, -3.5702774351738715};
     } else {
-      correctSurpluses = DataVector{-2.860096153846154, 5.333241758241758, -3.044299450549451,
-          3.4689560439560445, -3.4386675824175827, -1.101923076923078, 10.83626373626374,
-          4.042582417582418, -4.506593406593407, 2.4123626373626372, 5.998557692307693,
-          -7.601373626373627, 3.8355082417582422, -4.365659340659341, -1.4800137362637362};
+      correctSurpluses = DataVector{-2.860096153846154, 5.333241758241758,   -3.044299450549451,
+                                    3.4689560439560445, -3.4386675824175827, -1.101923076923078,
+                                    10.83626373626374,  4.042582417582418,   -4.506593406593407,
+                                    2.4123626373626372, 5.998557692307693,   -7.601373626373627,
+                                    3.8355082417582422, -4.365659340659341,  -1.4800137362637362};
     }
 
     for (size_t i = 0; i < values.size(); i++) {
@@ -451,9 +422,9 @@ BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
   sgpp::base::SBsplineBase basis1d;
   const HeterogeneousBasis basis(2, basis1d);
   const CombinationGrid combinationGrid = CombinationGrid::fromRegularSparse(2, 1, basis);
-  const std::vector<DataVector> originalValues = {
-      DataVector{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0}, DataVector{5.0, 2.5, -1.5, 0.0, 2.0, -1.0},
-      DataVector{1.0, -2.0, -1.0, 0.5}};
+  const std::vector<DataVector> originalValues = {DataVector{-0.5, 3.0, 0.25, 0.5, -1.0, 1.0},
+                                                  DataVector{5.0, 2.5, -1.5, 0.0, 2.0, -1.0},
+                                                  DataVector{1.0, -2.0, -1.0, 0.5}};
 
   {
     OperationPoleNodalisationBspline operationPole(3);
@@ -504,4 +475,27 @@ BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
     BOOST_CHECK_EQUAL(values[2][2], -1.0);
     BOOST_CHECK_EQUAL(values[2][3], 0.5);
   }
+}
+
+namespace std {
+using sgpp::base::operator<<;
+}  // namespace std
+
+BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
+  using sgpp::base::operator<<;
+
+  std::vector<LevelVector> subspaces = {LevelVector{0, 0, 1}, LevelVector{0, 2, 1},
+                                        LevelVector{1, 0, 3}};
+
+  std::vector<LevelVector> downwardClosedSetSolution = {
+      LevelVector{0, 0, 0}, LevelVector{0, 0, 1}, LevelVector{0, 0, 2}, LevelVector{0, 0, 3},
+      LevelVector{0, 1, 0}, LevelVector{0, 1, 1}, LevelVector{0, 2, 0}, LevelVector{0, 2, 1},
+      LevelVector{1, 0, 0}, LevelVector{1, 0, 1}, LevelVector{1, 0, 2}, LevelVector{1, 0, 3},
+  };
+
+  auto downwardClosedSet = sgpp::combigrid::makeDownwardClosed(subspaces, LevelVector{0, 0, 0});
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(
+      downwardClosedSetSolution.begin(), downwardClosedSetSolution.end(),
+      downwardClosedSet.begin(), downwardClosedSet.end());
 }

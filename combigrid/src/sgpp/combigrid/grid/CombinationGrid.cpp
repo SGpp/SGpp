@@ -3,12 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -16,35 +18,37 @@
 namespace sgpp {
 namespace combigrid {
 
-CombinationGrid::CombinationGrid() : fullGrids(), coefficients() {
-}
+CombinationGrid::CombinationGrid() : fullGrids(), coefficients() {}
 
 CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
-    const base::DataVector& coefficients) : fullGrids(fullGrids), coefficients(coefficients) {
-}
+                                 const base::DataVector& coefficients)
+    : fullGrids(fullGrids), coefficients(coefficients) {}
 
 CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
-    const HeterogeneousBasis& basis, bool hasBoundary) {
-  std::vector<size_t> binomialCoefficients((dim+1)/2);
+                                                   const HeterogeneousBasis& basis,
+                                                   bool hasBoundary) {
+  std::vector<size_t> binomialCoefficients((dim + 1) / 2);
   binomialCoefficients[0] = 1.0;
 
   // binomial(dim-1, d)
   // = ((dim-1) * (dim-2) * ... * (dim-d)) / (1 * 2 * ... * d)
   // = binomial(dim-1, d-1) * (dim-d) / d
-  for (size_t q = 1; q < (dim+1)/2; q++) {
-    binomialCoefficients[q] = binomialCoefficients[q-1] * (dim-q) / q;
+  for (size_t q = 1; q < (dim + 1) / 2; q++) {
+    binomialCoefficients[q] = binomialCoefficients[q - 1] * (dim - q) / q;
   }
 
   std::vector<FullGrid> fullGrids;
   base::DataVector coefficients;
-  const level_t maxLevelSum = (hasBoundary ? n : static_cast<level_t>(n+dim-1));
+  const level_t maxLevelSum = (hasBoundary ? n : static_cast<level_t>(n + dim - 1));
 
   for (size_t q = 0; q < dim; q++) {
-    const std::vector<LevelVector> levels = (hasBoundary ?
-        enumerateLevelsWithSumWithBoundary(dim, maxLevelSum-static_cast<level_t>(q)) :
-        enumerateLevelsWithSumWithoutBoundary(dim, maxLevelSum-static_cast<level_t>(q)));
-    const double coefficient = ((q % 2 == 0) ? 1.0 : -1.0) *
-        static_cast<double>(binomialCoefficients[((q < (dim+1)/2) ? q : (dim-q-1))]);
+    const std::vector<LevelVector> levels =
+        (hasBoundary
+             ? enumerateLevelsWithSumWithBoundary(dim, maxLevelSum - static_cast<level_t>(q))
+             : enumerateLevelsWithSumWithoutBoundary(dim, maxLevelSum - static_cast<level_t>(q)));
+    const double coefficient =
+        ((q % 2 == 0) ? 1.0 : -1.0) *
+        static_cast<double>(binomialCoefficients[((q < (dim + 1) / 2) ? q : (dim - q - 1))]);
 
     for (const LevelVector& level : levels) {
       fullGrids.emplace_back(level, basis, hasBoundary);
@@ -55,9 +59,8 @@ CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
   return CombinationGrid(fullGrids, coefficients);
 }
 
-CombinationGrid CombinationGrid::fromSubspaces(
-    const std::vector<LevelVector>& subspaceLevels, const HeterogeneousBasis& basis,
-    bool hasBoundary) {
+CombinationGrid CombinationGrid::fromSubspaces(const std::vector<LevelVector>& subspaceLevels,
+                                               const HeterogeneousBasis& basis, bool hasBoundary) {
   const size_t dim = basis.getDimension();
   LevelVector offsetMinIndex(dim, 0);
   LevelVector offsetMaxIndex(dim, 1);
@@ -119,13 +122,14 @@ double CombinationGrid::combineValues(const base::DataVector& values) const {
 }
 
 void CombinationGrid::combineValues(const base::DataMatrix& values,
-    base::DataVector& result) const {
+                                    base::DataVector& result) const {
   result.resize(values.getNrows());
   values.mult(coefficients, result);
 }
 
 void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStorage,
-    const std::vector<base::DataVector>& values, base::DataVector& result) const {
+                                              const std::vector<base::DataVector>& values,
+                                              base::DataVector& result) const {
   const size_t N = gridStorage.getSize();
   const size_t n = fullGrids.size();
   const size_t dim = getDimension();
@@ -145,7 +149,8 @@ void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStora
 }
 
 void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStorage,
-    const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const {
+                                              const std::vector<base::DataMatrix>& values,
+                                              base::DataMatrix& result) const {
   const size_t N = gridStorage.getSize();
 
   if (values.empty()) {
@@ -175,7 +180,9 @@ void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStora
 }
 
 void CombinationGrid::distributeValuesToFullGrid(const base::GridStorage& gridStorage,
-    const base::DataVector& values, const FullGrid& fullGrid, base::DataVector& result) const {
+                                                 const base::DataVector& values,
+                                                 const FullGrid& fullGrid,
+                                                 base::DataVector& result) const {
   const size_t dim = getDimension();
   const size_t N = gridStorage.getSize();
   IndexVector index(dim);
@@ -191,7 +198,8 @@ void CombinationGrid::distributeValuesToFullGrid(const base::GridStorage& gridSt
 }
 
 void CombinationGrid::distributeValuesToFullGrids(const base::GridStorage& gridStorage,
-    const base::DataVector& values, std::vector<base::DataVector>& result) const {
+                                                  const base::DataVector& values,
+                                                  std::vector<base::DataVector>& result) const {
   const size_t dim = getDimension();
   const size_t N = gridStorage.getSize();
   const size_t n = fullGrids.size();
@@ -218,22 +226,18 @@ size_t CombinationGrid::getDimension() const {
   return (fullGrids.empty() ? 0 : fullGrids[0].getDimension());
 }
 
-const std::vector<FullGrid>& CombinationGrid::getFullGrids() const {
-  return fullGrids;
-}
+const std::vector<FullGrid>& CombinationGrid::getFullGrids() const { return fullGrids; }
 
-const base::DataVector& CombinationGrid::getCoefficients() const {
-  return coefficients;
-}
+const base::DataVector& CombinationGrid::getCoefficients() const { return coefficients; }
 
 void CombinationGrid::setFullGridsAndCoefficients(const std::vector<FullGrid>& fullGrids,
-    const base::DataVector& coefficients) {
+                                                  const base::DataVector& coefficients) {
   this->fullGrids = fullGrids;
   this->coefficients = coefficients;
 }
 
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(
-    size_t dim, level_t n) {
+std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(size_t dim,
+                                                                             level_t n) {
   if (dim == 0) {
     return std::vector<LevelVector>();
   } else if (dim == 1) {
@@ -244,7 +248,7 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(
     std::vector<LevelVector> result;
 
     for (level_t l = 0; l <= n; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithBoundary(dim-1, n-l)) {
+      for (LevelVector& level : enumerateLevelsWithSumWithBoundary(dim - 1, n - l)) {
         level.push_back(l);
         result.push_back(level);
       }
@@ -254,8 +258,8 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(
   }
 }
 
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
-    size_t dim, level_t n) {
+std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(size_t dim,
+                                                                                level_t n) {
   if ((dim == 0) || (n < dim)) {
     return std::vector<LevelVector>();
   } else if (dim == 1) {
@@ -263,8 +267,8 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
   } else {
     std::vector<LevelVector> result;
 
-    for (level_t l = 1; l <= n-dim+1; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithoutBoundary(dim-1, n-l)) {
+    for (level_t l = 1; l <= n - dim + 1; l++) {
+      for (LevelVector& level : enumerateLevelsWithSumWithoutBoundary(dim - 1, n - l)) {
         level.push_back(l);
         result.push_back(level);
       }
@@ -272,6 +276,77 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
 
     return result;
   }
+}
+
+std::vector<LevelVector> getLevelVectorsRecursiveLastDim(const LevelVector& maxLevel,
+                                                         const LevelVector& minLevel,
+                                                         const LevelVector& prefix) {
+  assert(prefix.size() == minLevel.size() - 1);
+  assert(minLevel.back() <= maxLevel.back());
+  std::vector<LevelVector> oneDRange{};
+  for (level_t i = minLevel.back(); i <= maxLevel.back(); ++i) {
+    LevelVector current = prefix;
+    current.push_back(i);
+    oneDRange.push_back(current);
+  }
+  return oneDRange;
+}
+
+std::vector<LevelVector> getLevelVectorsRecursive(const LevelVector& maxLevel,
+                                                  const LevelVector& minLevel,
+                                                  const LevelVector& prefix) {
+  using sgpp::base::operator<<;
+  std::vector<LevelVector> currentVector{};
+  auto currentDim = prefix.size();
+
+  // if we are at the last dimension, add one one-dimensional row of the hypercube
+  if (currentDim == minLevel.size() - 1) {
+    auto newPole = getLevelVectorsRecursiveLastDim(maxLevel, minLevel, prefix);
+    currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
+  } else {
+    // else, recurse to the next dimension
+    for (level_t i = minLevel[currentDim]; i <= maxLevel[currentDim]; ++i) {
+      auto newPrefix = prefix;
+      newPrefix.push_back(i);
+      auto newHypercube = getLevelVectorsRecursive(maxLevel, minLevel, newPrefix);
+      currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
+    }
+  }
+  return currentVector;
+}
+
+std::vector<LevelVector> hyperCubeOfLevelVectors(const LevelVector& maxLevel,
+                                                 const LevelVector& minLevel) {
+  return getLevelVectorsRecursive(maxLevel, minLevel, LevelVector{});
+}
+
+std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
+                                            LevelVector lowestLevelVector) {
+  assert(lowestLevelVector.size() == subspaceLevels[0].size());
+  auto downwardClosedSet = subspaceLevels;
+  // for each subspace level, ...
+  for (const LevelVector& subspaceLevel : subspaceLevels) {
+    // add the full hypercube of lower levels, if not already present
+    for (const auto& level : hyperCubeOfLevelVectors(subspaceLevel, lowestLevelVector)) {
+      if (std::find(downwardClosedSet.begin(), downwardClosedSet.end(), level) ==
+          downwardClosedSet.end()) {
+        downwardClosedSet.push_back(level);
+      }
+    }
+  }
+
+  std::sort(downwardClosedSet.begin(), downwardClosedSet.end(),
+            [](const LevelVector& a, const LevelVector& b) {
+              for (size_t i = 0; i < a.size(); i++) {
+                if (a[i] < b[i]) {
+                  return true;
+                } else if (a[i] > b[i]) {
+                  return false;
+                }
+              }
+              return false;
+            });
+  return downwardClosedSet;
 }
 
 }  // namespace combigrid
