@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <vector>
-
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
