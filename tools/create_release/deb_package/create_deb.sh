@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # Build SG++ in the background
 printf '\n~~~ Building SG++ ~~~\n\n'
@@ -13,7 +14,10 @@ echo -e '' > deps_pysgpp.tmp
 
 # Build debian package
 printf '\n~~~ Building Debian package ~~~\n\n'
-python3 create_deb.py deps_sgpp.tmp deps_pysgpp.tmp
+# If $1 is empty, create_deb.py will query the user for version numbers, author names, etc
+# Use that for the actual release since you want to add the version numbers
+# Otherwise, use some text like "./create_deb.sh testing" for $1 if you just want a package for automated testing
+python3 create_deb.py deps_sgpp.tmp deps_pysgpp.tmp $1
 
 # Clean-up (for debugging, the lines below should be commented out)
 # rm deps_sgpp.tmp

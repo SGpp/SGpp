@@ -3,19 +3,8 @@
 # exit when any command fails
 set -e
 
-printf '\n~~~ building sg++ ~~~\n\n'
-scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0 RUN_PYTHON_TESTS=0 CHECK_STYLE=0
 cd tools/create_release/deb_package
-
-# Create dependency lists 
-# IMPORTANT: list needs to be comma delimited!
-echo -e 'zlib1g, build-essential' > deps_sgpp.tmp
-echo -e '' > deps_pysgpp.tmp
-
-# Build debian package
-printf '\n~~~ Building Debian package ~~~\n\n'
-python3 create_deb.py deps_sgpp.tmp deps_pysgpp.tmp automated
-
+./create_deb.sh testing
 
 printf '\n~~~ Installing debian package ~~~\n\n'
 sudo dpkg -i libsgpp-test-package_0.0-0.deb
