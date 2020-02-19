@@ -20,7 +20,7 @@
 #include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
+#include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
@@ -34,6 +34,7 @@
 #include <map>
 #include <string>
 #include <vector>
+
 
 using json::DictNode;
 using json::JSON;
