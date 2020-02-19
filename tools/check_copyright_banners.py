@@ -4,6 +4,7 @@ from __future__ import print_function
 import argparse
 import os
 import sys
+import re
 
 
 
@@ -39,9 +40,11 @@ def processFilePy(path):
   if os.path.splitext(path)[1] not in [".py"]: return True
   with open(path, "r") as f: source = f.read()
 
-  COPYRIGHT_BANNER = r"""# Copyright (C) 2008-today The SG++ project
-# This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at
+  # Difference to C++ copyright banner: check requires regular expression. 
+  # Therefore, regular expression characters have to be quoted.
+  COPYRIGHT_BANNER = r"""# Copyright \(C\) 2008-today The SG\+\+ project
+# This file is part of the SG\+\+ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG\+\+ or at
 # sgpp.sparsegrids.org
 
 """
@@ -50,12 +53,13 @@ def processFilePy(path):
   # 1) starts with copyright
   # 2) starts with #! (executable)
   # 3) starts with #! + utf-8 encoding
-  if not (source.startswith(COPYRIGHT_BANNER) or
-          source.startswith("\#!.*?\n"+COPYRIGHT_BANNER) or
-          source.startswith("\#!.*?\n# -\*- coding: utf-8 -\*-\s*")):
+  if not (re.match(COPYRIGHT_BANNER, source) or
+          re.match("#!.*?\n"+COPYRIGHT_BANNER, source) or
+          re.match("#!.*?\n# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source)):
     print(("{}:0: warning: No SG++ copyright message found or existing "
            "copyright message is not the standard SG++ copyright "
-           "message.  [legal/copyright] [5]").format(path), file=sys.stderr)
+           "message.  [legal/copyright] [5]"
+           "Copyright message may only be preceded by executable and utf-8 encoding").format(path), file=sys.stderr)
     return False
 
   if any([(("Author" in x) or ("Created" in x) or
