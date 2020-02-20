@@ -91,9 +91,10 @@ def main():
     # for all source/header files
     for root, dirs, files in os.walk(args.path):
       for file_ in sorted(files):
-        success = processFilePy(os.path.join(root, file_)) and success
+        success = (processFilePy(os.path.join(root, file_)) or
+                   processFile(os.path.join(root, file_)) and success
   else:
-    success = processFile(args.path)
+    success = processFilePy(args.path) or processFile(args.path)
 
   sys.exit(0 if success else 1)
 
