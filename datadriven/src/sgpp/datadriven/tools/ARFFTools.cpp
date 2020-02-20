@@ -5,9 +5,8 @@
 
 #include <sgpp/base/exception/file_exception.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
-
 #include <sgpp/globaldef.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <math.h>
 #include <algorithm>
@@ -17,6 +16,7 @@
 #include <string>
 #include <cstring>
 #include <vector>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -187,7 +187,7 @@ Dataset ARFFTools::readARFF(std::istream& stream,
 }
 
 std::vector<double> ARFFTools::tokenizeLine(const std::string& line) {
-  sgpp::datadriven::StringTokenizer tokenizer;
+  sgpp::base::StringTokenizer tokenizer;
   std::vector<std::string> toks;
   tokenizer.tokenize(line, ",", toks);
   std::vector<double> vals;
