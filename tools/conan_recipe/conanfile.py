@@ -33,7 +33,7 @@ class SgppConan(ConanFile):
             self.run('scons -j4 SG_JAVA=0 RUN_BOOST_TESTS=0')
 
     def package(self):
-        self.copy("*.hpp", dst="include", src="hello")
+        self.copy("*.hpp", dst="include")
         self.copy("*.so", dst="lib", keep_path=False)
 
     def package_info(self):
