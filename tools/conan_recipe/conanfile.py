@@ -4,7 +4,7 @@ from conans import ConanFile, CMake, tools
 class SgppConan(ConanFile):
     name = "SGpp"
     version = "3.2.0"
-    license = "?"
+    license = "BSD-style license"
     author = "Gregor Daiß Gregor.Daiss@ipvs.uni-stuttgart.de"
     url = "https://sgpp.sparsegrids.org/"
     description = """The sparse grids toolkit SG++
