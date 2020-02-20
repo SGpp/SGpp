@@ -15,6 +15,16 @@ import os
 import shutil
 from setuptools import setup, find_packages
 
+
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+    class bdist_wheel(_bdist_wheel):
+        def finalize_options(self):
+            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+except ImportError:
+    bdist_wheel = None
+
 # path to pysgpp lib
 libpath = os.path.join("lib", "pysgpp")
 extensionspath = os.path.join(libpath, "extensions")
@@ -107,15 +117,23 @@ for dllLib in dllLibs:
 setup(name='pysgpp',
       version="3.3.0",
       url='https://github.com/SGpp/SGpp',
-      author="",
-      description='',
+      author="Dirk.Pflueger@ipvs.uni-stuttgart.de",
+      description='''The sparse grids toolkit SG++
+ SG++ is a collection of numerical algorithms for sparse grids. It
+ contains modules for interpolation, quadrature, data mining
+ (regression, classification, clustering), optimization, PDEs, and
+ more. SG++ implements algorithms for spatially adaptive grids and
+ also provides a module for the combination technique. Many of the
+ implemented algorithms are also available as a high-performance
+ version, often orders of magnitude faster than standard
+ implementations.''',
       license='',
       long_description="README",
-      platforms='any',
       zip_safe=False,
       package_dir={'': 'lib'},
       packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
       package_data={'pysgpp': ['*.so', '*.lib', '*.pyd']},
+      cmdclass={'bdist_wheel': bdist_wheel},
       )
 
 # cleanup
