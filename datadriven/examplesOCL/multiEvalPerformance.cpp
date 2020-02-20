@@ -35,7 +35,6 @@ int main(int argc, char** argv) {
 
   // create coefficient vector
   sgpp::base::DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
 
   std::random_device rd;
   std::mt19937 mt(rd());

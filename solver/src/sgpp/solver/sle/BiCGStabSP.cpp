@@ -54,13 +54,8 @@ void BiCGStabSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::
   sgpp::base::DataVectorSP v(alpha.getSize());
   sgpp::base::DataVectorSP w(alpha.getSize());
 
-  s.setAll(0.0);
-  v.setAll(0.0);
-  w.setAll(0.0);
-
   while (this->nIterations < this->nMaxIterations) {
     // s  = Ap
-    s.setAll(0.0f);
     SystemMatrix.mult(p, s);
 
     // std::cout << "s " << s.get(0) << " " << s.get(1)  << std::endl;
@@ -78,7 +73,6 @@ void BiCGStabSP::solve(sgpp::base::OperationMatrixSP& SystemMatrix, sgpp::base::
     w.axpy((-1.0f) * a, s);
 
     // v = Aw
-    v.setAll(0.0f);
     SystemMatrix.mult(w, v);
 
     // std::cout << "v " << v.get(0) << " " << v.get(1)  << std::endl;

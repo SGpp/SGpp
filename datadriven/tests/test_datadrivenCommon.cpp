@@ -258,7 +258,6 @@ double compareToReference(
   doRandomRefinements(adaptConfig, *grid, gridGen, alpha);
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   eval->prepare();
 
@@ -269,7 +268,6 @@ double compareToReference(
 
   sgpp::base::DataVector dataSizeVectorResultCompare(
       dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
@@ -352,7 +350,6 @@ double compareToReferenceTranspose(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
-  alphaResultCompare.setAll(0.0);
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 
@@ -437,7 +434,6 @@ double compareToReferenceDistributed(
 
   sgpp::base::DataVector dataSizeVectorResultCompare(
       dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
@@ -529,7 +525,6 @@ double compareToReferenceTransposeDistributed(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
-  alphaResultCompare.setAll(0.0);
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 

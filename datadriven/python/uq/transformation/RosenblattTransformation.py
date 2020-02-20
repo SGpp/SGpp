@@ -1,13 +1,11 @@
 #!/usr/bin/python
-# Copyright (C) 2013 Technische Universitaet Muenchen
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 #
 """
 @file    InverseCDFTransformation.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Fri Jul 19 13:34:25 2013
-
 @brief This class transforms a point in [0, 1]^d according to the
 inverse of a given distrubution function
 
