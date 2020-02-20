@@ -304,7 +304,7 @@ Export("EXAMPLE_DIR")
 # for CXX or if the default ("g++" on Linux) has been used
 env.arguments = ARGUMENTS
 
-if not env.GetOption('clean'):
+if not ( env.GetOption('clean') or env.GetOption('help') ):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
