@@ -9,7 +9,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/exception/operation_exception.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_linalg.h>
@@ -43,7 +43,7 @@ sgpp::datadriven::DBMatOfflineGE::DBMatOfflineGE(const std::string& fileName)
   filestream.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
 #ifdef USE_GSL
   auto size = std::stoi(tokens[0]);
