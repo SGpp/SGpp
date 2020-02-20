@@ -5,11 +5,6 @@
 
 #ifdef ZLIB
 
-#define BOOST_TEST_DYN_LINK
-#include <zlib.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/test/unit_test.hpp>
-
 #include "test_datadrivenCommon.hpp"
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -18,6 +13,10 @@
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
+
+#include <zlib.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <fstream>
 #include <iostream>

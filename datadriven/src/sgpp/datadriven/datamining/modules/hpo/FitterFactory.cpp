@@ -8,7 +8,6 @@
 #include <vector>
 #include <string>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -69,7 +68,8 @@ std::string FitterFactory::printConfig() {
   std::stringstream s;
   for (auto &pair : catpar) {
     if (pair.first == "basisFunction") {
-      s << ", " << base::GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+      s << ", " << base::GridTypeParser::toString(
+                       basisFunctions[catpar["basisFunction"].getValue()]);
     } else {
       s << ", " << pair.second.getValue();
     }
