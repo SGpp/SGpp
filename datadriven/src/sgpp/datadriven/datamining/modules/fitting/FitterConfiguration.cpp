@@ -120,7 +120,6 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.maxLevelType_ = false;
   adaptivityConfig.numRefinementPoints_ = 1;
   adaptivityConfig.numCoarseningPoints_ = 1;
-  adaptivityConfig.coarsenInitialPoints_ = false;
   adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
   adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
