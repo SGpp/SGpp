@@ -3,13 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-
-'''
-Created on Feb 6, 2015
-
-@author: franzefn
-'''
-
 import os
 import numpy as np
 

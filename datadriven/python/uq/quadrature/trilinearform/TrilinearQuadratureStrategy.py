@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-"""
-Created on Aug 6, 2014
-
-@author: franzefn
-"""
 import numpy as np
 
 from pysgpp import DataMatrix, DataVector

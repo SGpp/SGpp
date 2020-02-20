@@ -21,7 +21,6 @@ def processFile(path):
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-
 """
 
   if not source.startswith(COPYRIGHT_BANNER):
@@ -50,15 +49,16 @@ def processFilePy(path):
 # This file is part of the SG\+\+ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG\+\+ or at
 # sgpp.sparsegrids.org
-
 """
 
   # Consider three variants as valid:
   # 1) starts with copyright
   # 2) starts with #! (executable)
-  # 3) starts with #! + utf-8 encoding
+  # 3) starts with utf-8 encoding
+  # 3) starts with both
   if not (re.match(COPYRIGHT_BANNER, source) or
           re.match("#!.*?\s*"+COPYRIGHT_BANNER, source) or
+          re.match("# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source) or
           re.match("#!.*?\n# -\*- coding: utf-8 -\*-\s*"+COPYRIGHT_BANNER, source)):
     print(("{}:0: warning: No SG++ copyright message found or existing "
            "copyright message is not the standard SG++ copyright "

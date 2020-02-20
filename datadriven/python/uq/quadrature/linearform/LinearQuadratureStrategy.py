@@ -3,11 +3,6 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-"""
-Created on Aug 6, 2014
-
-@author: franzefn
-"""
 from pysgpp.extensions.datadriven.uq.operations import getBasis
 from pysgpp.extensions.datadriven.uq.quadrature import HashQuadrature
 import numpy as np

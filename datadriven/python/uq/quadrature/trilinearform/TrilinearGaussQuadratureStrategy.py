@@ -2,12 +2,7 @@
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
-
-"""
-Created on Aug 6, 2014
-
-@author: franzefn
-"""
+#
 from pysgpp.extensions.datadriven.uq.quadrature.trilinearform.TrilinearQuadratureStrategy import TrilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBoundsOfSupport, bsplineGridTypes, \
     polyGridTypes
