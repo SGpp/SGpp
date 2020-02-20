@@ -3,9 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <algorithm>
 #include <string>
 

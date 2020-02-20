@@ -67,6 +67,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridDataBase.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/GridTypeParser.hpp>
+#include <sgpp/base/grid/GeneralGridTypeParser.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
+#include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>
@@ -86,16 +90,20 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInconsistent.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/RefinementDecorator.hpp>
-// #include <sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp>
+// #include
+// <sgpp/base/grid/generation/refinement_strategy/SubspaceGSGRefinement.hpp>
 // #include <sgpp/base/grid/generation/refinement_strategy/GSGRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/MultipleClassRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/PredictiveRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
-// #include <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
-/*#include <sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
-#include <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
+// #include
+// <sgpp/base/grid/generation/refinement_strategy/PredictiveSubspaceGSGRefinement.hpp>
+/*#include
+<sgpp/base/grid/generation/refinement_strategy/PredictiveANOVARefinement.hpp>
+#include
+<sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimension.hpp>
 #include
 <sgpp/base/grid/generation/refinement_strategy/OnlinePredictiveRefinementDimensionOld.hpp>*/
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -106,14 +114,18 @@
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
-/*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
+/*#include
+<sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/GeneralizedBoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/PeriodicGridGenerator.hpp>
 #include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
-#include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>*/
+#include
+<sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
+#include
+<sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
+#include
+<sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>*/
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>

@@ -11,13 +11,13 @@
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
-using sgpp::base::GridType;
+namespace base {
 
 class GridTypeParser {
  public:
   /**
-   * Convert strings to values #sgpp::base::GridType. Throws if there is no valid
+   * Convert strings to values #sgpp::base::GridType. Throws if there is no
+   * valid
    * representation
    * @param input case insensitive string representation of a
    * #sgpp::base::GridType.
@@ -41,5 +41,5 @@ class GridTypeParser {
    */
   static const GridTypeMap_t gridTypeMap;
 };
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */

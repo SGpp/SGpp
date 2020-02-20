@@ -127,6 +127,9 @@
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
+#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
+#include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
@@ -143,14 +146,7 @@
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
-// #include <sgpp/datadriven/datamining/configuration/CombiConfigurator.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/DensityEstimationTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/GeneralGridTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/MatrixDecompositionTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/SLESolverTypeParser.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
