@@ -215,7 +215,8 @@ class CombinationGrid {
  * @brief Make any level set a downward closed one
  *
  * @param subspaceLevels            an arbitrary level set
- * @param lowestLevelVector         the minimum level vector
+ * @param lowestLevelVector         the minimum level vector, a vector of zeros or ones would be a
+ *                                    standard choice
  * @return std::vector<LevelVector> the updated, downward closed level set containing subspaceLevels
  */
 std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,

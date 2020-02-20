@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/not_implemented_exception.hpp>
-#include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 #include <sgpp/globaldef.hpp>
@@ -278,48 +277,6 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
   }
 }
 
-std::vector<LevelVector> getLevelVectorsRecursiveLastDim(const LevelVector& maxLevel,
-                                                         const LevelVector& minLevel,
-                                                         const LevelVector& prefix) {
-  assert(prefix.size() == minLevel.size() - 1);
-  assert(minLevel.back() <= maxLevel.back());
-  std::vector<LevelVector> oneDRange{};
-  for (level_t i = minLevel.back(); i <= maxLevel.back(); ++i) {
-    LevelVector current = prefix;
-    current.push_back(i);
-    oneDRange.push_back(current);
-  }
-  return oneDRange;
-}
-
-std::vector<LevelVector> getLevelVectorsRecursive(const LevelVector& maxLevel,
-                                                  const LevelVector& minLevel,
-                                                  const LevelVector& prefix) {
-  using sgpp::base::operator<<;
-  std::vector<LevelVector> currentVector{};
-  auto currentDim = prefix.size();
-
-  // if we are at the last dimension, add one one-dimensional row of the hypercube
-  if (currentDim == minLevel.size() - 1) {
-    auto newPole = getLevelVectorsRecursiveLastDim(maxLevel, minLevel, prefix);
-    currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
-  } else {
-    // else, recurse to the next dimension
-    for (level_t i = minLevel[currentDim]; i <= maxLevel[currentDim]; ++i) {
-      auto newPrefix = prefix;
-      newPrefix.push_back(i);
-      auto newHypercube = getLevelVectorsRecursive(maxLevel, minLevel, newPrefix);
-      currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
-    }
-  }
-  return currentVector;
-}
-
-std::vector<LevelVector> hyperCubeOfLevelVectors(const LevelVector& maxLevel,
-                                                 const LevelVector& minLevel) {
-  return getLevelVectorsRecursive(maxLevel, minLevel, LevelVector{});
-}
-
 std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
                                             LevelVector lowestLevelVector) {
   assert(lowestLevelVector.size() == subspaceLevels[0].size());
@@ -335,17 +292,7 @@ std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subs
     }
   }
 
-  std::sort(downwardClosedSet.begin(), downwardClosedSet.end(),
-            [](const LevelVector& a, const LevelVector& b) {
-              for (size_t i = 0; i < a.size(); i++) {
-                if (a[i] < b[i]) {
-                  return true;
-                } else if (a[i] > b[i]) {
-                  return false;
-                }
-              }
-              return false;
-            });
+  std::sort(downwardClosedSet.begin(), downwardClosedSet.end());
   return downwardClosedSet;
 }
 
