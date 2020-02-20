@@ -127,7 +127,7 @@ setup(name='pysgpp',
  implemented algorithms are also available as a high-performance
  version, often orders of magnitude faster than standard
  implementations.''',
-      license='',
+      license='BSD-style license',
       long_description="README",
       zip_safe=False,
       package_dir={'': 'lib'},
