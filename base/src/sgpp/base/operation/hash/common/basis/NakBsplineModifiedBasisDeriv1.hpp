@@ -147,105 +147,103 @@ class NakBsplineModifiedBasisDeriv1 : public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1 (Lagrange)
-            double result = -2.0 / 23.0;         //
-            result = 6.0 / 23.0 + result * t;    //
-            result = 18.0 / 23.0 + result * t;   //
-            result = -67.0 / 46.0 + result * t;  //
-            return innerDeriv * result;          //
+            double result = -2.0 / 23.0;
+            result = 6.0 / 23.0 + result * t;
+            result = 18.0 / 23.0 + result * t;
+            result = -67.0 / 46.0 + result * t;
+            return innerDeriv * result;
           } else if ((l == 3) && (i == 3)) {
             // l = 3, i=3
-            if ((t < -3.0) || (t > 5.0)) {                    //
-              return 0.0;                                     //
-            } else if (t < 0.0) {                             //
-              t += 3.0;                                       //
-              double result = 1.3778659611992945e-03;         //
-              result = 2.7513227513227514e-02 + result * t;   //
-              result = -1.6825396825396827e-01 + result * t;  //
-              result *= t;                                    //
-              result = 3.4973544973544973e-01 + result * t;   //
-              return innerDeriv * result;                     //
-            } else if (t < 1.0) {                             //
-              double result = -3.6276455026455025e-02;        //
-              result = 4.4047619047619051e-02 + result * t;   //
-              result = 1.5376984126984128e-01 + result * t;   //
-              result = -1.1785714285714285e-01 + result * t;  //
-              result = -3.1008597883597883e-01 + result * t;  //
-              return innerDeriv * result;                     //
-            } else if (t < 2.0) {                             //
-              t -= 1.0;                                       //
-              double result = 2.8736772486772488e-02;         //
-              result = -1.0105820105820106e-01 + result * t;  //
-              result = 6.8253968253968247e-02 + result * t;   //
-              result = 1.7671957671957672e-01 + result * t;   //
-              result = -2.6640211640211642e-01 + result * t;  //
-              return innerDeriv * result;                     //
-            } else {                                          //
-              t -= 2.0;                                       //
-              double result = -1.1574074074074073e-03;        //
-              result = 1.3888888888888888e-02 + result * t;   //
-              result = -6.2500000000000000e-02 + result * t;  //
-              result = 1.2500000000000000e-01 + result * t;   //
-              result = -9.3750000000000000e-02 + result * t;  //
+            if ((t < -3.0) || (t > 5.0)) {
+              return 0.0;
+            } else if (t < 0.0) {
+              t += 3.0;
+              double result = 1.3778659611992945e-03;
+              result = 2.7513227513227514e-02 + result * t;
+              result = -1.6825396825396827e-01 + result * t;
+              result *= t;
+              result = 3.4973544973544973e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 1.0) {
+              double result = -3.6276455026455025e-02;
+              result = 4.4047619047619051e-02 + result * t;
+              result = 1.5376984126984128e-01 + result * t;
+              result = -1.1785714285714285e-01 + result * t;
+              result = -3.1008597883597883e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 2.8736772486772488e-02;
+              result = -1.0105820105820106e-01 + result * t;
+              result = 6.8253968253968247e-02 + result * t;
+              result = 1.7671957671957672e-01 + result * t;
+              result = -2.6640211640211642e-01 + result * t;
+              return innerDeriv * result;
+            } else {
+              t -= 2.0;
+              double result = -1.1574074074074073e-03;
+              result = 1.3888888888888888e-02 + result * t;
+              result = -6.2500000000000000e-02 + result * t;
+              result = 1.2500000000000000e-01 + result * t;
+              result = -9.3750000000000000e-02 + result * t;
               return innerDeriv * result;
             }
           } else {
             if (i == 1) {
               // l >= 3, i = 1
-              if ((t < -1.0) || (t > 3.0)) {                    //
-                return 0.0;                                     //
-              } else if (t < 2.0) {                             //
-                t += 1.0;                                       //
-                double result = 1.6313932980599648e-03;         //
-                result = -1.8518518518518517e-02 + result * t;  //
-                result = 6.3492063492063489e-02 + result * t;   //
-                result *= t;                                    //
-                result = -3.8095238095238093e-01 + result * t;  //
-                result = 5.3333333333333333e-01 + result * t;   //
-                return innerDeriv * result;                     //
-              } else {                                          //
-                t -= 2.0;                                       //
-                double result = -1.1904761904761906e-03;        //
-                result = 5.9523809523809521e-03 + result * t;   //
-                result = -1.1904761904761904e-02 + result * t;  //
-                result = 1.1904761904761904e-02 + result * t;   //
-                result = -5.9523809523809521e-03 + result * t;  //
-                result = 1.1904761904761906e-03 + result * t;   //
-                return innerDeriv * result;                     //
+              if ((t < -1.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 2.0) {
+                t += 1.0;
+                double result = 8.1569664902998232e-03;
+                result = -7.4074074074074070e-02 + result * t;
+                result = 1.9047619047619047e-01 + result * t;
+                result *= t;
+                result = -3.8095238095238093e-01 + result * t;
+                return innerDeriv * result;
+              } else {
+                t -= 2.0;
+                double result = -5.9523809523809521e-03;
+                result = 2.3809523809523808e-02 + result * t;
+                result = -3.5714285714285712e-02 + result * t;
+                result = 2.3809523809523808e-02 + result * t;
+                result = -5.9523809523809521e-03 + result * t;
+                return innerDeriv * result;
               }
             } else {
               // l >= 4, i = 3
-              if ((t < -3.0) || (t > 3.0)) {                    //
-                return 0.0;                                     //
-              } else if (t < 0.0) {                             //
-                t += 3.0;                                       //
-                double result = 3.9682539682539680e-03;         //
-                result = 1.9047619047619049e-02 + result * t;   //
-                result = -1.7142857142857143e-01 + result * t;  //
-                result *= t;                                    //
-                result = 3.4285714285714286e-01 + result * t;   //
-                return innerDeriv * result;                     //
-              } else if (t < 1.0) {                             //
-                double result = -6.2698412698412698e-02;        //
-                result = 6.6666666666666666e-02 + result * t;   //
-                result = 2.1428571428571427e-01 + result * t;   //
-                result = -8.5714285714285715e-02 + result * t;  //
-                result = -3.6428571428571427e-01 + result * t;  //
-                return innerDeriv * result;                     //
-              } else if (t < 2.0) {                             //
-                t -= 1.0;                                       //
-                double result = 6.5873015873015875e-02;         //
-                result = -1.8412698412698414e-01 + result * t;  //
-                result = 3.8095238095238099e-02 + result * t;   //
-                result = 2.9206349206349208e-01 + result * t;   //
-                result = -2.3174603174603176e-01 + result * t;  //
-                return innerDeriv * result;                     //
-              } else {                                          //
-                t -= 2.0;                                       //
-                double result = -1.9841269841269840e-02;        //
-                result = 7.9365079365079361e-02 + result * t;   //
-                result = -1.1904761904761904e-01 + result * t;  //
-                result = 7.9365079365079361e-02 + result * t;   //
-                result = -1.9841269841269840e-02 + result * t;  //
+              if ((t < -3.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 0.0) {
+                t += 3.0;
+                double result = 3.9682539682539680e-03;
+                result = 1.9047619047619049e-02 + result * t;
+                result = -1.7142857142857143e-01 + result * t;
+                result *= t;
+                result = 3.4285714285714286e-01 + result * t;
+                return innerDeriv * result;
+              } else if (t < 1.0) {
+                double result = -6.2698412698412698e-02;
+                result = 6.6666666666666666e-02 + result * t;
+                result = 2.1428571428571427e-01 + result * t;
+                result = -8.5714285714285715e-02 + result * t;
+                result = -3.6428571428571427e-01 + result * t;
+                return innerDeriv * result;
+              } else if (t < 2.0) {
+                t -= 1.0;
+                double result = 6.5873015873015875e-02;
+                result = -1.8412698412698414e-01 + result * t;
+                result = 3.8095238095238099e-02 + result * t;
+                result = 2.9206349206349208e-01 + result * t;
+                result = -2.3174603174603176e-01 + result * t;
+                return innerDeriv * result;
+              } else {
+                t -= 2.0;
+                double result = -1.9841269841269840e-02;
+                result = 7.9365079365079361e-02 + result * t;
+                result = -1.1904761904761904e-01 + result * t;
+                result = 7.9365079365079361e-02 + result * t;
+                result = -1.9841269841269840e-02 + result * t;
                 return innerDeriv * result;
               }
             }

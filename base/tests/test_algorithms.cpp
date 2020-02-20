@@ -158,15 +158,14 @@ void derivativesTest(SBasis& basis, size_t degree = 2, level_t startLevel = 1,
                   basisEvalDx(basis, l, i, 1.0 - dx), tol1);
       }
 
-      // if (degree >= 2) {
-      //   // test second derivative at boundary (central difference quotient)
-      //   errorTest((basisEvalDx(basis, l, i, 2.0 * dx) - basisEvalDx(basis, l, i, 0.0)) / (2.0 *
-      //   dx),
-      //             basisEvalDxDx(basis, l, i, dx), tol2);
-      //   errorTest(
-      //       (basisEvalDx(basis, l, i, 1.0) - basisEvalDx(basis, l, i, 1.0 - 2.0 * dx)) / (2.0 *
-      //       dx), basisEvalDxDx(basis, l, i, 1.0 - dx), tol2);
-      // }
+      if (degree >= 2) {
+        // test second derivative at boundary (central difference quotient)
+        errorTest((basisEvalDx(basis, l, i, 2.0 * dx) - basisEvalDx(basis, l, i, 0.0)) / (2.0 * dx),
+                  basisEvalDxDx(basis, l, i, dx), tol2);
+        errorTest(
+            (basisEvalDx(basis, l, i, 1.0) - basisEvalDx(basis, l, i, 1.0 - 2.0 * dx)) / (2.0 * dx),
+            basisEvalDxDx(basis, l, i, 1.0 - dx), tol2);
+      }
 
       size_t discontinuities = 0;
 
@@ -184,12 +183,12 @@ void derivativesTest(SBasis& basis, size_t degree = 2, level_t startLevel = 1,
                       basisEvalDx(basis, l, i, x), tol1);
           }
 
-          // if (degree >= 2) {
-          //   // test second derivative (central difference quotient)
-          //   errorTest(
-          //       (basisEvalDx(basis, l, i, x + dx) - basisEvalDx(basis, l, i, x - dx)) / (2.0 *
-          //       dx), basisEvalDxDx(basis, l, i, x), tol2);
-          // }
+          if (degree >= 2) {
+            // test second derivative (central difference quotient)
+            errorTest(
+                (basisEvalDx(basis, l, i, x + dx) - basisEvalDx(basis, l, i, x - dx)) / (2.0 * dx),
+                basisEvalDxDx(basis, l, i, x), tol2);
+          }
         }
       }
 
