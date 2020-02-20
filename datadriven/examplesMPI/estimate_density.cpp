@@ -76,9 +76,8 @@ int main(int argc, char *argv[]) {
   }
 
   sgpp::datadriven::clusteringmpi::OperationDensityMultMPI mult_op(*grid, 0.001, "MyOCLConf.cfg");
-  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector alpha(gridsize, 1.0);
   sgpp::base::DataVector result(gridsize);
-  alpha.setAll(1.0);
 
   std::chrono::time_point<std::chrono::high_resolution_clock> rhs_start, rhs_end;
   rhs_start = std::chrono::system_clock::now();

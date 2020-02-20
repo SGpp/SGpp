@@ -57,8 +57,6 @@ class AlgorithmDGEMV {
       IndexValVector vec;
       GetAffectedBasisFunctions<BASIS> ga(storage);
 
-      privateResult.setAll(0.0);
-
       #pragma omp for schedule(static)
 
       for (size_t i = 0; i < source_size; i++) {

@@ -51,7 +51,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceAnisotropic) {
   generator.regular(storage, 3);
 
   DataVector data_vector(storage.getSize());
-  data_vector.setAll(0.0);
   data_vector[9] = 2.0;
 
   SurplusRefinementFunctor functor(data_vector, 1);
@@ -78,7 +77,6 @@ BOOST_AUTO_TEST_CASE(testFreeRefineSubspaceIsotropic) {
   generator.regular(storage, 3);
 
   DataVector data_vector(storage.getSize());
-  data_vector.setAll(0.0);
   data_vector[13] = 2.0;
 
   SurplusRefinementFunctor functor(data_vector, 1);

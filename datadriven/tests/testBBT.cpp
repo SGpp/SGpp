@@ -650,10 +650,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   GridStorage& gridStorage = grid->getStorage();
 
   DataVector alpha(gridStorage.getSize());
-  DataMatrix data(1, 1);
-  data.setAll(0.25);
-  DataVector classes(1);
-  classes.setAll(1.0);
+  DataMatrix data(1, 1, 0.25);
+  DataVector classes(1, 1.0);
 
   std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
       sgpp::op_factory::createOperationTest(*grid));
@@ -678,10 +676,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   GridStorage& gridStorage = grid->getStorage();
 
   DataVector alpha(gridStorage.getSize());
-  DataMatrix data(1, 1);
-  data.setAll(0.25);
-  DataVector classes(1);
-  classes.setAll(1.0);
+  DataMatrix data(1, 1, 0.25);
+  DataVector classes(1, 1.0);
 
   std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
       sgpp::op_factory::createOperationTest(*grid));
@@ -710,10 +706,8 @@ BOOST_AUTO_TEST_CASE(testOperationTest_test) {
   GridStorage& gridStorage = grid->getStorage();
 
   DataVector alpha(gridStorage.getSize());
-  DataMatrix data(1, 1);
-  data.setAll(0.25);
-  DataVector classes(1);
-  classes.setAll(1.0);
+  DataMatrix data(1, 1, 0.25);
+  DataVector classes(1, 1.0);
 
   std::unique_ptr<sgpp::datadriven::OperationTest> testOP(
       sgpp::op_factory::createOperationTest(*grid));
