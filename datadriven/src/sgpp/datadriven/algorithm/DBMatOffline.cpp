@@ -14,9 +14,9 @@
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_matrix_double.h>
@@ -266,7 +266,7 @@ void sgpp::datadriven::DBMatOffline::parseInter(
   file.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
   for (size_t i = 4; i < tokens.size(); i += std::stoi(tokens[i]) + 1) {
     std::set<size_t> tmp;

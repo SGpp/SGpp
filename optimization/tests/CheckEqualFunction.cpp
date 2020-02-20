@@ -3,6 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#define BOOST_TEST_DYN_LINK
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
 #include <boost/test/unit_test.hpp>
