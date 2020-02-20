@@ -92,7 +92,7 @@ def main():
     for root, dirs, files in os.walk(args.path):
       for file_ in sorted(files):
         success = (processFilePy(os.path.join(root, file_)) or
-                   processFile(os.path.join(root, file_)) and success
+                   processFile(os.path.join(root, file_))) and success
   else:
     success = processFilePy(args.path) or processFile(args.path)
 
