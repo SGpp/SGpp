@@ -5,11 +5,12 @@
 
 #ifdef ZLIB
 
-#include "test_datadrivenCommon.hpp"
-
+#define BOOST_TEST_DYN_LINK
 #include <zlib.h>
 #include <boost/lexical_cast.hpp>
 #include <boost/test/unit_test.hpp>
+
+#include "test_datadrivenCommon.hpp"
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>

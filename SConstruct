@@ -113,6 +113,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add("LINK", "Override the linker, can be used to select a specific linker version", None)
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
@@ -641,3 +642,8 @@ else:
 # occurs when cleaning, i.e., `scons -c`, while using Python 3.x for SCons
 if not hasattr(os.environ, "has_key"):
   os.environ.has_key = (lambda x: x in os.environ)
+
+# Save build variables to file
+@atexit.register
+def say_bye():
+  vars.Save("buildVars.out", env)
