@@ -16,7 +16,6 @@ class SgppConan(ConanFile):
  implemented algorithms are also available as a high-performance
  version, often orders of magnitude faster than standard
  implementations."""
-    topics = ("<Put some tag here>", "<here>", "<and here>")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = {"shared": False}
