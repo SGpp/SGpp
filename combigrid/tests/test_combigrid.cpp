@@ -12,6 +12,7 @@
 #include <sgpp/base/tools/Printer.hpp>
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
+#include <sgpp/combigrid/adaptive/AdaptiveCombiGridGenerator.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
@@ -34,6 +35,7 @@
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::combigrid::AdaptiveCombiGridGenerator;
 using sgpp::combigrid::CombinationGrid;
 using sgpp::combigrid::FullGrid;
 using sgpp::combigrid::HeterogeneousBasis;
@@ -478,12 +480,11 @@ BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
 }
 
 namespace std {
+// needed for BOOST_CHECK_EQUAL_COLLECTIONS in next test
 using sgpp::base::operator<<;
 }  // namespace std
 
 BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
-  using sgpp::base::operator<<;
-
   std::vector<LevelVector> subspaces = {LevelVector{0, 0, 1}, LevelVector{0, 2, 1},
                                         LevelVector{1, 0, 3}};
 
@@ -495,7 +496,22 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
 
   auto downwardClosedSet = sgpp::combigrid::makeDownwardClosed(subspaces, LevelVector{0, 0, 0});
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(
-      downwardClosedSetSolution.begin(), downwardClosedSetSolution.end(),
-      downwardClosedSet.begin(), downwardClosedSet.end());
+  BOOST_CHECK_EQUAL_COLLECTIONS(downwardClosedSetSolution.begin(), downwardClosedSetSolution.end(),
+                                downwardClosedSet.begin(), downwardClosedSet.end());
+}
+
+BOOST_AUTO_TEST_CASE(testAdaptiveCombiGridGenerator) {
+  for (bool hasBoundary : {true, false}) {
+    sgpp::base::SBsplineBase basis1d;
+    HeterogeneousBasis basis(3, basis1d);
+    auto combinationGrid = CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary);
+    auto qois = std::vector<double>(combinationGrid.getFullGrids().size(), 1.);
+    auto adaptiveCombiGridGenerator = AdaptiveCombiGridGenerator::fromCombinationGrid(
+        combinationGrid,
+        std::unique_ptr<sgpp::combigrid::ErrorEstimator>(
+            new sgpp::combigrid::WeightedErrorEstimator()),
+        std::unique_ptr<sgpp::combigrid::PriorityCalculator>(
+            new sgpp::combigrid::AveragingPriorityCalculator()),
+        qois);
+  }
 }
