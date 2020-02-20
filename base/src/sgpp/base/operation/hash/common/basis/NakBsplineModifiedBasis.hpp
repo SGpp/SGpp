@@ -3,16 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef NAK_BSPLINE_MODIFIED_BASE_HPP
-#define NAK_BSPLINE_MODIFIED_BASE_HPP
+#pragma once
 
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,13 +20,12 @@ namespace base {
  * Not-a-knot B-spline basis.
  */
 template <class LT, class IT>
-class NakBsplineModifiedBasis: public Basis<LT, IT> {
+class NakBsplineModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  NakBsplineModifiedBasis() : nakBsplineBasis(NakBsplineBasis<LT, IT>()) {
-  }
+  NakBsplineModifiedBasis() : nakBsplineBasis(NakBsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,8 +33,8 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit NakBsplineModifiedBasis(size_t degree) :
-        nakBsplineBasis(NakBsplineBasis<LT, IT>(degree)) {
+  explicit NakBsplineModifiedBasis(size_t degree)
+      : nakBsplineBasis(NakBsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -45,8 +43,7 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~NakBsplineModifiedBasis() override {
-  }
+  ~NakBsplineModifiedBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -72,7 +69,7 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
             t *= -1.0;
           }
 
-          // l >= 3, i = 1
+          // l >= 2, i = 1
           return std::max(1.0 - t, 0.0);
         }
 
@@ -95,17 +92,17 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
               return 0.0;
             } else if (t < 1.0) {
               t += 1.0;
-              double result = 1.0/40.0;
+              double result = 1.0 / 40.0;
               result *= t;
-              result = -3.0/5.0 + result * t;
-              result = 6.0/5.0 + result * t;
+              result = -3.0 / 5.0 + result * t;
+              result = 6.0 / 5.0 + result * t;
               return result;
             } else {
               t -= 1.0;
-              double result = -1.0/40.0;
-              result = 3.0/20.0 + result * t;
-              result = -3.0/10.0 + result * t;
-              result = 1.0/5.0 + result * t;
+              double result = -1.0 / 40.0;
+              result = 3.0 / 20.0 + result * t;
+              result = -3.0 / 10.0 + result * t;
+              result = 1.0 / 5.0 + result * t;
               return result;
             }
           } else {
@@ -114,17 +111,17 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
               return 0.0;
             } else if (t < 1.0) {
               t += 1.0;
-              double result = 1.0/24.0;
+              double result = 1.0 / 24.0;
               result *= t;
-              result = -3.0/4.0 + result * t;
-              result = 5.0/4.0 + result * t;
+              result = -3.0 / 4.0 + result * t;
+              result = 5.0 / 4.0 + result * t;
               return result;
             } else {
               t -= 1.0;
-              double result = -1.0/12.0;
-              result = 1.0/4.0 + result * t;
-              result = -1.0/4.0 + result * t;
-              result = 1.0/12.0 + result * t;
+              double result = -1.0 / 12.0;
+              result = 1.0 / 4.0 + result * t;
+              result = -1.0 / 4.0 + result * t;
+              result = 1.0 / 12.0 + result * t;
               return result;
             }
           }
@@ -134,8 +131,8 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
         if (l == 1) {
           // l = 1, i = 1
           return 1.0;
-        } else if ((i > 1) && (i < hInv - 1)) {
-          // l >= 3, 1 < i < 2^l - 1
+        } else if ((i > 3) && (i < hInv - 3)) {
+          // l >= 3, 3 < i < 2^l - 3
           return nakBsplineBasis.eval(l, i, x);
         } else {
           if (i > hInv / 2) {
@@ -144,113 +141,117 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
           }
 
           if (l == 2) {
-            // l = 2, i = 1
-            double result = -3.0/70.0;
-            result = 19.0/210.0 + result * t;
-            result = 37.0/70.0 + result * t;
-            result = -331.0/210.0 + result * t;
+            // l = 2, i = 1 (Lagrange)
+            double result = -1.0 / 46.0;
+            result = 2.0 / 23.0 + result * t;
+            result = 9.0 / 23.0 + result * t;
+            result = -67.0 / 46.0 + result * t;
             result = 1.0 + result * t;
             return result;
-          } else {
-            // l >= 3, i = 1
-            if ((t < -1.0) || (t > 3.0)) {
+          } else if ((l == 3) && (i == 3)) {
+            // l = 3, i=3
+            if ((t < -3.0) || (t > 5.0)) {
               return 0.0;
-            } else if (t < 2.0) {
-              t += 1.0;
-              double result = 37.0/22680.0;
-              result = -1.0/54.0 + result * t;
-              result = 4.0/63.0 + result * t;
+            } else if (t < 0.0) {
+              t += 3.0;
+              double result = 2.7557319223985889e-04;
+              result = 6.8783068783068784e-03 + result * t;
+              result = -5.6084656084656084e-02 + result * t;
               result *= t;
-              result = -8.0/21.0 + result * t;
-              result = 8.0/15.0 + result * t;
+              result = 3.4973544973544973e-01 + result * t;
+              result = 3.8603174603174606e-01 + result * t;
+              return result;
+            } else if (t < 1.0) {
+              double result = -7.2552910052910051e-03;
+              result = 1.1011904761904763e-02 + result * t;
+              result = 5.1256613756613757e-02 + result * t;
+              result = -5.8928571428571427e-02 + result * t;
+              result = -3.1008597883597883e-01 + result * t;
+              result = 5.4505952380952383e-01 + result * t;
+              return result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 5.7473544973544975e-03;
+              result = -2.5264550264550264e-02 + result * t;
+              result = 2.2751322751322751e-02 + result * t;
+              result = 8.8359788359788360e-02 + result * t;
+              result = -2.6640211640211642e-01 + result * t;
+              result = 2.3105820105820105e-01 + result * t;
               return result;
             } else {
               t -= 2.0;
-              double result = -1.0/840.0;
-              result = 1.0/168.0 + result * t;
-              result = -1.0/84.0 + result * t;
-              result = 1.0/84.0 + result * t;
-              result = -1.0/168.0 + result * t;
-              result = 1.0/840.0 + result * t;
-              return result;
-            }
-          }
-        }
-
-      case 7:
-        if (l == 1) {
-          // l = 1, i = 1
-          return 1.0;
-        } else if ((i > 1) && (i < hInv - 1)) {
-          // l >= 3, 1 < i < 2^l - 1
-          return nakBsplineBasis.eval(l, i, x);
-        } else {
-          if (i > hInv / 2) {
-            i = hInv - i;
-            t *= -1.0;
-          }
-
-          if (l == 2) {
-            // l = 2, i = 1
-            double result = -3.0/70.0;
-            result = 19.0/210.0 + result * t;
-            result = 37.0/70.0 + result * t;
-            result = -331.0/210.0 + result * t;
-            result = 1.0 + result * t;
-            return result;
-          } else if (l == 3) {
-            // l = 3, i = 1
-            if ((t < -1.0) || (t > 7.0)) {
-              return 0.0;
-            } else if (t < 3.0) {
-              t += 1.0;
-              double result = 31.0/4942080.0;
-              result = -7.0/41184.0 + result * t;
-              result = 49.0/25740.0 + result * t;
-              result = -14.0/1287.0 + result * t;
-              result = 112.0/3861.0 + result * t;
-              result *= t;
-              result = -3584.0/19305.0 + result * t;
-              result = 2048.0/6435.0 + result * t;
-              return result;
-            } else {
-              t -= 3.0;
-              double result = -1.0/4942080.0;
-              result = 7.0/1235520.0 + result * t;
-              result = -7.0/102960.0 + result * t;
-              result = 7.0/15444.0 + result * t;
-              result = -7.0/3861.0 + result * t;
-              result = 28.0/6435.0 + result * t;
-              result = -112.0/19305.0 + result * t;
-              result = 64.0/19305.0 + result * t;
+              double result = -2.3148148148148149e-04;
+              result = 3.4722222222222220e-03 + result * t;
+              result = -2.0833333333333332e-02 + result * t;
+              result = 6.2500000000000000e-02 + result * t;
+              result = -9.3750000000000000e-02 + result * t;
+              result = 5.6250000000000001e-02 + result * t;
               return result;
             }
           } else {
-            // l >= 4, i = 1
-            if ((t < -1.0) || (t > 4.0)) {
-              return 0.0;
-            } else if (t < 3.0) {
-              t += 1.0;
-              double result = 2101.0/154828800.0;
-              result = -41.0/122880.0 + result * t;
-              result = 61.0/18432.0 + result * t;
-              result = -25.0/1536.0 + result * t;
-              result = 125.0/3456.0 + result * t;
-              result *= t;
-              result = -125.0/864.0 + result * t;
-              result = 125.0/672.0 + result * t;
-              return result;
+            if (i == 1) {
+              // l >= 3, i = 1
+              if ((t < -1.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 2.0) {
+                t += 1.0;
+                double result = 1.6313932980599648e-03;
+                result = -1.8518518518518517e-02 + result * t;
+                result = 6.3492063492063489e-02 + result * t;
+                result *= t;
+                result = -3.8095238095238093e-01 + result * t;
+                result = 5.3333333333333333e-01 + result * t;
+                return result;
+              } else {
+                t -= 2.0;
+                double result = -1.1904761904761906e-03;
+                result = 5.9523809523809521e-03 + result * t;
+                result = -1.1904761904761904e-02 + result * t;
+                result = 1.1904761904761904e-02 + result * t;
+                result = -5.9523809523809521e-03 + result * t;
+                result = 1.1904761904761906e-03 + result * t;
+                return result;
+              }
             } else {
-              t -= 3.0;
-              double result = -1.0/151200.0;
-              result = 1.0/21600.0 + result * t;
-              result = -1.0/7200.0 + result * t;
-              result = 1.0/4320.0 + result * t;
-              result = -1.0/4320.0 + result * t;
-              result = 1.0/7200.0 + result * t;
-              result = -1.0/21600.0 + result * t;
-              result = 1.0/151200.0 + result * t;
-              return result;
+              // l >= 4, i = 3
+              if ((t < -3.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 0.0) {
+                t += 3.0;
+                double result = 7.9365079365079365e-04;
+                result = 4.7619047619047623e-03 + result * t;
+                result = -5.7142857142857141e-02 + result * t;
+                result *= t;
+                result = 3.4285714285714286e-01 + result * t;
+                result = 3.7714285714285717e-01 + result * t;
+                return result;
+              } else if (t < 1.0) {
+                double result = -1.2539682539682540e-02;
+                result = 1.6666666666666666e-02 + result * t;
+                result = 7.1428571428571425e-02 + result * t;
+                result = -4.2857142857142858e-02 + result * t;
+                result = -3.6428571428571427e-01 + result * t;
+                result = 4.4142857142857145e-01 + result * t;
+                return result;
+              } else if (t < 2.0) {
+                t -= 1.0;
+                double result = 1.3174603174603174e-02;
+                result = -4.6031746031746035e-02 + result * t;
+                result = 1.2698412698412698e-02 + result * t;
+                result = 1.4603174603174604e-01 + result * t;
+                result = -2.3174603174603176e-01 + result * t;
+                result = 1.0984126984126984e-01 + result * t;
+                return result;
+              } else {
+                t -= 2.0;
+                double result = -3.9682539682539680e-03;
+                result = 1.9841269841269840e-02 + result * t;
+                result = -3.9682539682539680e-02 + result * t;
+                result = 3.9682539682539680e-02 + result * t;
+                result = -1.9841269841269840e-02 + result * t;
+                result = 3.9682539682539680e-03 + result * t;
+                return result;
+              }
             }
           }
         }
@@ -265,9 +266,7 @@ class NakBsplineModifiedBasis: public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const override {
-    return nakBsplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return nakBsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation
@@ -279,5 +278,3 @@ typedef NakBsplineModifiedBasis<unsigned int, unsigned int> SNakBsplineModifiedB
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* NAK_BSPLINE_MODIFIED_BASE_HPP */
