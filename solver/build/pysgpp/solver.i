@@ -16,6 +16,7 @@
 %include "solver/src/sgpp/solver/ode/Euler.hpp"
 %include "solver/src/sgpp/solver/ode/CrankNicolson.hpp"
 %include "solver/src/sgpp/solver/TypesSolver.hpp"
+%include "solver/src/sgpp/solver/SLESolverTypeParser.hpp"
 
 %include "solver/src/sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp"
 

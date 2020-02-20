@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/RegularizationTypeParser.hpp>
 
 #include <algorithm>
 #include <string>

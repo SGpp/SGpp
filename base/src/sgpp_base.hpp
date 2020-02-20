@@ -71,6 +71,11 @@
 #include <sgpp/base/grid/GridDataBase.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
+#include <sgpp/base/grid/GridTypeParser.hpp>
+#include <sgpp/base/grid/GeneralGridTypeParser.hpp>
+#include <sgpp/base/grid/RefinementConfiguration.hpp>
+#include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
+
 #include <sgpp/base/grid/common/BoundingBox.hpp>
 #include <sgpp/base/grid/common/DirichletUpdateVector.hpp>
 #include <sgpp/base/grid/common/Stretching.hpp>

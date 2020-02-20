@@ -5,12 +5,13 @@
 
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <string>
 #include <vector>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -35,7 +36,7 @@ DBMatOfflineOrthoAdapt::DBMatOfflineOrthoAdapt(const std::string& fileName)
   filestream.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
   auto size = std::stoi(tokens[0]);
   std::cout << "Grid size " << size << std::endl;
