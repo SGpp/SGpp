@@ -11,6 +11,11 @@ To generate the Debian package, the following steps need to be performed:
   2. Run the script directly from this folder:
 
       ./create_deb.sh
+      
+      
+Please note that create_deb.sh can take one optional argument. 
+If given, it will build a test package without asking the user for version numbers and author
+This is used for automated testing. Manually, you should stick to calling the script without any parameters
 
 ~~~
 To install the packages, copy the Debian packages to a folder on the target system, 
