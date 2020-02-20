@@ -11,13 +11,13 @@
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
-using sgpp::base::RefinementFunctorType;
+namespace base {
 
 class RefinementFunctorTypeParser {
  public:
   /**
-   * Convert strings to values #sgpp::base::RefinementFunctorType. Throws if there is no valid
+   * Convert strings to values #sgpp::base::RefinementFunctorType. Throws if
+   * there is no valid
    * representation
    * @param input case insensitive string representation of a
    * #sgpp::base::RefinementFunctorType.
@@ -26,21 +26,24 @@ class RefinementFunctorTypeParser {
   static RefinementFunctorType parse(const std::string& input);
 
   /**
-   * generate string representations for values of #sgpp::base::RefinementFunctorType.
+   * generate string representations for values of
+   * #sgpp::base::RefinementFunctorType.
    * @param type enum value.
    * @return string representation of a #sgpp::base::RefinementFunctorType.
    */
   static const std::string& toString(RefinementFunctorType type);
 
  private:
-  typedef std::map<RefinementFunctorType, std::string> RefinementFunctorTypeMap_t;
+  typedef std::map<RefinementFunctorType, std::string>
+      RefinementFunctorTypeMap_t;
 
   /**
-   * Map containing all values of #sgpp::base::RefinementFunctorType and the corresponding
+   * Map containing all values of #sgpp::base::RefinementFunctorType and the
+   * corresponding
    * string representation.
    */
   static const RefinementFunctorTypeMap_t refinementFunctorTypeMap;
 };
 
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */
