@@ -7,7 +7,6 @@
 
 # @package classifier
 # @ingroup bin
-# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief Main script to do classification, regression, ...
 # @version $CURR$
 # @todo Join the different modes so that not 100 different versions (checkpointing, ...) exist!
