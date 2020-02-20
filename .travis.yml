@@ -31,6 +31,7 @@ matrix:
         - python3-numpy
         - python3-jinja2
         - libgomp1
+        - doxygen
     script:
     - bash tools/travis_scripts/create_deb_install_deb_and_test.sh
   - name: "SGpp-travis-medium"
