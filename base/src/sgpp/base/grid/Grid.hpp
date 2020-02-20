@@ -146,7 +146,7 @@ struct AdaptivityConfiguration {
   /// coarsening threshold for surpluses
   double coarseningThreshold_ = 0.0;
   /// prevent coarsening of initial grid points, needed for some decompositions
-  bool coarsenInitialPoints_ = true;
+  bool coarsenInitialPoints_ = false;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_ = false;
   /// max. number of points to be refined
