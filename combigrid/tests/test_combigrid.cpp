@@ -531,8 +531,9 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
     std::sort(subspaces.begin(), subspaces.end());
     for (const auto& subspace : subspaces) {
       AdaptiveCombinationGridGenerator.setQoIInformation(subspace, 1.);
-      bool adapted = AdaptiveCombinationGridGenerator.adaptNextLevelVector();
-      BOOST_CHECK(adapted);
+      bool notAdapted = !AdaptiveCombinationGridGenerator.adaptNextLevelVector();
+      // those should all already be in the old set, from the way the generator was constructed
+      BOOST_CHECK(notAdapted);
     }
     bool notAdapted = !AdaptiveCombinationGridGenerator.adaptAllKnown();
     BOOST_CHECK(notAdapted);

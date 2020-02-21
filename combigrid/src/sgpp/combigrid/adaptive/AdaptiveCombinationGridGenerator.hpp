@@ -117,6 +117,10 @@ class AveragingPriorityEstimator : public PriorityEstimator {
  * delta, a measure for how much the combined QoI will change if a particular level vector would be
  * added.
  *
+ * If grid evaluations are expensive and one would like to know which QoIs should be computed next,
+ * a priority queue can be obtained by \c getPriorityQueue , which uses the \c priorityEstimator to
+ * infer a priority for the active set levels from the QoIs of the downward neighbors.
+ *
  * Terminology is mostly taken from Gerstner, T. and Griebel, M., 2003. Dimension–adaptive
  * tensor–product quadrature. Computing, 71(1), pp.65-87.
  */
@@ -238,11 +242,13 @@ class AdaptiveCombinationGridGenerator {
    * @brief add all subspaces of known result to the old set
    */
   bool adaptAllKnown() {
+    bool atLeastOneLevelVectorAdded = false;
     bool levelVectorAdded = false;
     do {
       levelVectorAdded = adaptNextLevelVector();
+      atLeastOneLevelVectorAdded |= levelVectorAdded;
     } while (levelVectorAdded);
-    return levelVectorAdded;
+    return atLeastOneLevelVectorAdded;
   }
 
   /**
