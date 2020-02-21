@@ -411,11 +411,10 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getSize());
+  DataVector alpha(factory->getSize(), 0.0);
   DataMatrix p(1, 1);
   DataVector beta(1);
 
-  alpha.setAll(0.0);
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
@@ -443,13 +442,13 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(factory->getSize(), 1.0);
 
   DataVector p(1);
   p.setAll(0.25);
 
-  std::unique_ptr<OperationEval> eval(sgpp::op_factory::createOperationEval(*factory));
+  std::unique_ptr<OperationEval> eval(
+      sgpp::op_factory::createOperationEval(*factory));
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 0.5, 0.0);
 }
 
@@ -520,11 +519,10 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getSize());
+  DataVector alpha(factory->getSize(), 0.0);
   DataMatrix p(1, 1);
   DataVector beta(1);
 
-  alpha.setAll(0.0);
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
@@ -554,13 +552,12 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(factory->getSize(), 1.0);
 
-  DataVector p(1);
-  p.setAll(0.25);
+  DataVector p(1, 0.25);
 
-  std::unique_ptr<OperationEval> eval(sgpp::op_factory::createOperationEval(*factory));
+  std::unique_ptr<OperationEval> eval(
+      sgpp::op_factory::createOperationEval(*factory));
 
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 1.5, 0.0);
 }
@@ -594,7 +591,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_one) {
   BOOST_CHECK(storage.getSize() == 4);
 
   DataVector alpha(4);
-  alpha.setAll(0.0);
 
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -611,7 +607,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
   gen.regular(0);
 
   DataVector alpha(4);
-  alpha.setAll(0.0);
 
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -619,7 +614,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_two) {
   gen.refine(func);
 
   DataVector alpha2(8);
-  alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
   SurplusRefinementFunctor func2(alpha2);
@@ -636,7 +630,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
   gen.regular(0);
 
   DataVector alpha(4);
-  alpha.setAll(0.0);
 
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -644,7 +637,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
   gen.refine(func);
 
   DataVector alpha2(8);
-  alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
   SurplusRefinementFunctor func2(alpha2);
@@ -652,7 +644,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_three) {
   gen.refine(func2);
 
   DataVector alpha3(13);
-  alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
   SurplusRefinementFunctor func3(alpha3);
@@ -669,7 +660,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   gen.regular(0);
 
   DataVector alpha(4);
-  alpha.setAll(0.0);
 
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -677,7 +667,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   gen.refine(func);
 
   DataVector alpha2(8);
-  alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
   SurplusRefinementFunctor func2(alpha2);
@@ -685,7 +674,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   gen.refine(func2);
 
   DataVector alpha3(13);
-  alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
   SurplusRefinementFunctor func3(alpha3);
@@ -693,7 +681,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_four) {
   gen.refine(func3);
 
   DataVector alpha4(18);
-  alpha4.setAll(0.0);
 
   alpha4[12] = 1.0;
   SurplusRefinementFunctor func4(alpha4);
@@ -710,7 +697,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   gen.regular(0);
 
   DataVector alpha(4);
-  alpha.setAll(0.0);
 
   alpha[0] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -718,7 +704,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   gen.refine(func);
 
   DataVector alpha2(8);
-  alpha2.setAll(0.0);
 
   alpha2[4] = 1.0;
   SurplusRefinementFunctor func2(alpha2);
@@ -726,7 +711,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   gen.refine(func2);
 
   DataVector alpha3(13);
-  alpha3.setAll(0.0);
 
   alpha3[11] = 1.0;
   SurplusRefinementFunctor func3(alpha3);
@@ -734,7 +718,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   gen.refine(func3);
 
   DataVector alpha4(18);
-  alpha4.setAll(0.0);
 
   alpha4[12] = 1.0;
   SurplusRefinementFunctor func4(alpha4);
@@ -742,7 +725,6 @@ BOOST_AUTO_TEST_CASE(testRefinement2d_five) {
   gen.refine(func4);
 
   DataVector alpha5(25);
-  alpha5.setAll(0.0);
 
   alpha5[23] = 1.0;
   SurplusRefinementFunctor func5(alpha5);
@@ -762,11 +744,10 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   // point 3: l = (2,0), i = (1,0)
   // point 4: l = (2,0), i = (3,0)
 
-  DataVector alpha(factory->getSize());
+  DataVector alpha(factory->getSize(), 0.0);
   DataMatrix p(1, 2);
   DataVector beta(1);
 
-  alpha.setAll(0.0);
   p.set(0, 0, 0.25);
   p.set(0, 1, 0.25);
   beta[0] = 1.0;
@@ -804,11 +785,9 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(factory->getSize(), 1.0);
 
-  DataVector p(2);
-  p.setAll(0.25);
+  DataVector p(2, 0.25);
 
   std::unique_ptr<OperationEval> eval(
       sgpp::op_factory::createOperationEval(*factory));
@@ -889,7 +868,6 @@ BOOST_AUTO_TEST_CASE(testRefinement3d) {
 
   BOOST_CHECK(storage.getSize() == 27);
   DataVector alpha(27);
-  alpha.setAll(0.0);
 
   alpha[26] = 1.0;
   SurplusRefinementFunctor func(alpha);
@@ -913,12 +891,11 @@ BOOST_AUTO_TEST_CASE(testOperationMultipleEval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(2);
 
-  DataVector alpha(factory->getSize());
+  DataVector alpha(factory->getSize(), 0.0);
 
   DataMatrix p(1, 1);
   DataVector beta(1);
 
-  alpha.setAll(0.0);
   p.set(0, 0, 0.25);
   beta[0] = 1.0;
 
@@ -961,11 +938,9 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   gen = factory.getGenerator()
   gen.regular(1)
 
-  alpha = DataVector(factory.getSize())
-  alpha.setAll(1.0)
+  alpha = DataVector(factory.getSize(), 1.0)
 
-  p = DataVector(1)
-  p.setAll(0.25)
+  p = DataVector(1, 0.25)
 
   eval = createOperationEval(factory)
 
@@ -985,13 +960,12 @@ BOOST_AUTO_TEST_CASE(testOperationEval_eval) {
   GridGenerator& gen = factory->getGenerator();
   gen.regular(1);
 
-  DataVector alpha(factory->getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(factory->getSize(), 1.0);
 
-  DataVector p(1);
-  p.setAll(0.25);
+  DataVector p(1, 0.25);
 
-  std::unique_ptr<OperationEval> eval(sgpp::op_factory::createOperationEval(*factory));
+  std::unique_ptr<OperationEval> eval(
+      sgpp::op_factory::createOperationEval(*factory));
 
   BOOST_CHECK_CLOSE(eval->eval(alpha, p), 0.8176285620, 1e-8);
 }

@@ -8,15 +8,13 @@
 #include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/base/tools/HermiteBasis.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPoly.hpp>
 #include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
-#include <sgpp_datadriven.hpp>
 #include <sgpp_optimization.hpp>
-#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -32,20 +30,23 @@ namespace datadriven {
 /**
  * WARNING: the grid must be a 1D grid!
  */
-OperationInverseRosenblattTransformation1DPoly::OperationInverseRosenblattTransformation1DPoly(
-    base::Grid* grid)
+OperationInverseRosenblattTransformation1DPoly::
+    OperationInverseRosenblattTransformation1DPoly(base::Grid* grid)
     : sum(0.0), quadOrder(0), grid(grid) {}
 
-OperationInverseRosenblattTransformation1DPoly::~OperationInverseRosenblattTransformation1DPoly() {}
+OperationInverseRosenblattTransformation1DPoly::
+    ~OperationInverseRosenblattTransformation1DPoly() {}
 
-void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alpha1d) {
+void OperationInverseRosenblattTransformation1DPoly::init(
+    base::DataVector* alpha1d) {
   patch_areas.clear();
   is_negative_patch.clear();
   ordered_grid_points.clear();
   patch_functions.clear();
   coord_cdf.clear();
   sum = 0;
-  opEval = std::unique_ptr<base::OperationEval>(op_factory::createOperationEval(*grid));
+  opEval = std::unique_ptr<base::OperationEval>(
+      op_factory::createOperationEval(*grid));
 
   base::DataVector coord(1);
   std::multimap<double, double>::iterator it1;
@@ -55,7 +56,8 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   size_t p = dynamic_cast<sgpp::base::PolyGrid*>(grid)->getDegree();
   quadOrder = (p + 1) / 2;
 
-  gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates, weights);
+  gauss.getLevelPointsAndWeightsNormalized(quadOrder, gauss_coordinates,
+                                           weights);
 
   // need an ordered list of the grid points
   for (size_t i = 0; i < gs->getSize(); i++) {
@@ -100,7 +102,9 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
         right_coord = ordered_grid_points[j];
         coord[0] = right_coord;
         right_function_value = opEval->eval(*alpha1d, coord);
-        if (right_function_value >= 0 && right_function_value != left_function_value) break;
+        if (right_function_value >= 0 &&
+            right_function_value != left_function_value)
+          break;
       }
 
       right_coord = ordered_grid_points[j];
@@ -124,24 +128,28 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
       double function_values[3];
       function_values[0] = left_function_value;
       function_values[1] = right_function_value;
-      secants[0] = (right_function_value - left_function_value) / (right_coord - left_coord);
+      secants[0] = (right_function_value - left_function_value) /
+                   (right_coord - left_coord);
       tangents[0] = secants[0];
       if (j != ordered_grid_points.size() - 1) {
         coord[0] = ordered_grid_points[j + 1];
         function_values[2] = opEval->eval(*alpha1d, coord);
       } else {
-        // if j is the last grid point choose the next one with the same step size
+        // if j is the last grid point choose the next one with the same step
+        // size
         // and set it's function value to the last value
         coord[0] = 1 + ordered_grid_points[j] - ordered_grid_points[j - 1];
         function_values[2] = right_function_value;
       }
-      secants[1] = (function_values[2] - function_values[1]) / (coord[0] - ordered_grid_points[j]);
+      secants[1] = (function_values[2] - function_values[1]) /
+                   (coord[0] - ordered_grid_points[j]);
       tangents[2] = secants[1];
       // secants left and right of current point
       if (secants[0] == 0 || secants[1] == 0)
         // if one of the secants is zero
         tangents[1] = 0;
-      else if ((secants[0] > 0 && secants[1] < 0) || (secants[0] < 0 && secants[1] > 0))
+      else if ((secants[0] > 0 && secants[1] < 0) ||
+               (secants[0] < 0 && secants[1] > 0))
         // if the secants dont have the same sign
         tangents[1] = 0;
       else
@@ -159,9 +167,9 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
       }
       // interpolation that can be evaluated between left_coord and right_coord
 
-      std::function<double(double)> interpolation = [right_coord, left_coord, left_function_value,
-                                                     right_function_value,
-                                                     tangents](double x) -> double {
+      std::function<double(double)> interpolation =
+          [right_coord, left_coord, left_function_value, right_function_value,
+           tangents](double x) -> double {
         double h = right_coord - left_coord;
         double t = (x - left_coord) / h;
         return left_function_value * base::HermiteBasis::h_0_0(t) +
@@ -211,8 +219,8 @@ void OperationInverseRosenblattTransformation1DPoly::init(base::DataVector* alph
   }
 }
 
-double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* alpha1d,
-                                                              double coord1d) {
+double OperationInverseRosenblattTransformation1DPoly::sample(
+    base::DataVector* alpha1d, double coord1d) {
   if (coord1d == 0.0) return 0.0;
   if (sum == 0) return 0;
   base::DataVector coord(1);
@@ -232,7 +240,8 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
   }
   --patch_nr;
   --negative_patch_counter;
-  // std::cout << "negative_patch_counter: " << negative_patch_counter << std::endl;
+  // std::cout << "negative_patch_counter: " << negative_patch_counter <<
+  // std::endl;
   // std::cout << "patch_nr: " << patch_nr << std::endl;
   // std::cout << "PAs size: " << patch_areas.size() << std::endl;
   // std::cout << "PFs size : " << patch_functions.size() << std::endl;
@@ -243,7 +252,8 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
   if (is_negative_patch[patch_nr]) {
     for (size_t c = 0; c < quadOrder; c++) {
       coord[0] = left + scaling * gauss_coordinates[c];
-      gaussQuadSum += weights[c] * patch_functions[negative_patch_counter](coord[0]);
+      gaussQuadSum +=
+          weights[c] * patch_functions[negative_patch_counter](coord[0]);
     }
   } else {
     for (size_t c = 0; c < quadOrder; c++) {
@@ -254,12 +264,13 @@ double OperationInverseRosenblattTransformation1DPoly::sample(base::DataVector* 
   return it1->second + (gaussQuadSum * scaling) / sum;
 }
 
-double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(base::DataVector* alpha1d,
-                                                                          double coord1d) {
+double OperationInverseRosenblattTransformation1DPoly::doTransformation1D(
+    base::DataVector* alpha1d, double coord1d) {
   init(alpha1d);
-  // std::cout << "PFs size after exit: " << patch_functions.size() << std::endl;
-  std::function<double(const base::DataVector&)> optFunc = [this, coord1d, alpha1d](
-      const base::DataVector& x) -> double {
+  // std::cout << "PFs size after exit: " << patch_functions.size() <<
+  // std::endl;
+  std::function<double(const base::DataVector&)> optFunc =
+      [this, coord1d, alpha1d](const base::DataVector& x) -> double {
     double F_x = sample(alpha1d, x[0]);
     return (F_x - coord1d) * (F_x - coord1d);
   };

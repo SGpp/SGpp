@@ -128,7 +128,7 @@ int main() {
 
   // create coefficient vector
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
+
   std::cout << "length of alpha vector:           " << alpha.getSize() << std::endl;
 
   for (int step = 0; step < 20; step++) {

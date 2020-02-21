@@ -7,7 +7,6 @@
 
 # @package tools
 # @ingroup bin
-# @author Dirk Pflueger, Joerg Blank, Richard Roettger
 # @brief A collection of helper functions.
 # @version $CURR$
 

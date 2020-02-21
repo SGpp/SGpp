@@ -5,7 +5,7 @@
 
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -175,7 +175,7 @@ void CSVTools::readCSVSize(std::istream& stream,
 }
 
 std::vector<double> CSVTools::tokenizeLine(const std::string& line) {
-  sgpp::datadriven::StringTokenizer tokenizer;
+  sgpp::base::StringTokenizer tokenizer;
   std::vector<std::string> toks;
   tokenizer.tokenize(line, ",", toks);
   std::vector<double> vals;

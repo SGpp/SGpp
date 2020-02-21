@@ -1,9 +1,7 @@
-
-'''
-Created on Feb 6, 2015
-
-@author: franzefn
-'''
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
 import os
 import numpy as np

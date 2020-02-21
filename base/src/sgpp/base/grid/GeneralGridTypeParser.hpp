@@ -11,15 +11,17 @@
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 /**
- * Parser class to parse a general grid type into a GeneralGridType enum type and vice versa
+ * Parser class to parse a general grid type into a GeneralGridType enum type
+ * and vice versa
  */
 class GeneralGridTypeParser {
  public:
   /**
-   * Parses an input string and returns the corresponding sgpp::base::GeneralGridType type.
+   * Parses an input string and returns the corresponding
+   * sgpp::base::GeneralGridType type.
    * Throws an exception if the string has no representation
    * @param input the grid type to parse
    * @return the parsed grid type
@@ -35,15 +37,16 @@ class GeneralGridTypeParser {
 
  private:
   // Define a type for the map grid type -> string
-  typedef std::map<sgpp::base::GeneralGridType, std::string> GeneralGridTypeMap_t;
+  typedef std::map<sgpp::base::GeneralGridType, std::string>
+      GeneralGridTypeMap_t;
 
   /**
-   * Map to describe the mapping between sgpp::base::GeneralGridType types and their string
+   * Map to describe the mapping between sgpp::base::GeneralGridType types and
+   * their string
    * representations.
    */
   static const GeneralGridTypeMap_t generalGridTypeMap;
 };
 
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */
-

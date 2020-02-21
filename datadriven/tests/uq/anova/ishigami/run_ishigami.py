@@ -1,8 +1,7 @@
-'''
-Created on Sep 19, 2016
-
-@author: franzefn
-'''
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 from argparse import ArgumentParser
 from multiprocessing.process import Process
 from uq.anova.ishigami.test_ishigami import run_ishigami_pce, \

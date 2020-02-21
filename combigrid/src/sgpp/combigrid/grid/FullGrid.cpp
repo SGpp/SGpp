@@ -8,8 +8,7 @@
 namespace sgpp {
 namespace combigrid {
 
-bool FullGrid::findGridPointInFullGrid(const base::GridPoint& gridPoint,
-    IndexVector& index) const {
+bool FullGrid::findGridPointInFullGrid(const base::GridPoint& gridPoint, IndexVector& index) const {
   const LevelVector& levelFullGrid = this->getLevel();
   bool isContained = true;
 

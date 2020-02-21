@@ -3,20 +3,19 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/GridTypeParser.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
 
 #include <algorithm>
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
-
-using sgpp::base::data_exception;
+namespace base {
 
 GridType GridTypeParser::parse(const std::string &input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
+                 ::tolower);
 
   if (inputLower.compare("linear") == 0) {
     return sgpp::base::GridType::Linear;
@@ -75,12 +74,15 @@ GridType GridTypeParser::parse(const std::string &input) {
   } else if (inputLower.compare("modlinearstencil") == 0) {
     return sgpp::base::GridType::ModLinearStencil;
   } else {
-    std::string errorMsg = "Failed to convert string \"" + input + "\" to any known GridType";
+    std::string errorMsg =
+        "Failed to convert string \"" + input + "\" to any known GridType";
     throw data_exception(errorMsg.c_str());
   }
 }
 
-const std::string &GridTypeParser::toString(GridType type) { return gridTypeMap.at(type); }
+const std::string &GridTypeParser::toString(GridType type) {
+  return gridTypeMap.at(type);
+}
 
 const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
   return GridTypeMap_t{
@@ -88,8 +90,10 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::LinearStretched, "LinearStretched"),
       std::make_pair(GridType::LinearL0Boundary, "LinearL0Boundary"),
       std::make_pair(GridType::LinearBoundary, "LinearBoundary"),
-      std::make_pair(GridType::LinearStretchedBoundary, "LinearStretchedBoundary"),
-      std::make_pair(GridType::LinearTruncatedBoundary, "LinearTruncatedBoundary"),
+      std::make_pair(GridType::LinearStretchedBoundary,
+                     "LinearStretchedBoundary"),
+      std::make_pair(GridType::LinearTruncatedBoundary,
+                     "LinearTruncatedBoundary"),
       std::make_pair(GridType::ModLinear, "ModLinear"),
       std::make_pair(GridType::Poly, "Poly"),
       std::make_pair(GridType::PolyBoundary, "PolyBoundary"),
@@ -108,11 +112,13 @@ const GridTypeParser::GridTypeMap_t GridTypeParser::gridTypeMap = []() {
       std::make_pair(GridType::FundamentalNakSplineBoundary,
                      "FundamentalNakSplineBoundary"),
       std::make_pair(GridType::FundamentalSpline, "FundamentalSpline"),
-      std::make_pair(GridType::FundamentalSplineBoundary, "FundamentalSplineBoundary"),
+      std::make_pair(GridType::FundamentalSplineBoundary,
+                     "FundamentalSplineBoundary"),
       std::make_pair(GridType::ModFundamentalSpline, "ModFundamentalSpline"),
-      std::make_pair(GridType::ModBsplineClenshawCurtis, "ModBsplineClenshawCurtis"),
+      std::make_pair(GridType::ModBsplineClenshawCurtis,
+                     "ModBsplineClenshawCurtis"),
       std::make_pair(GridType::LinearStencil, "LinearStencil"),
       std::make_pair(GridType::ModLinearStencil, "ModLinearStencil")};
 }();
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */
