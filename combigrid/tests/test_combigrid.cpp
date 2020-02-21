@@ -502,16 +502,20 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
 
 BOOST_AUTO_TEST_CASE(testAdaptiveCombiGridGenerator) {
   for (bool hasBoundary : {true, false}) {
+
     sgpp::base::SBsplineBase basis1d;
     HeterogeneousBasis basis(3, basis1d);
+
     auto combinationGrid = CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary);
-    auto qois = std::vector<double>(combinationGrid.getFullGrids().size(), 1.);
-    auto adaptiveCombiGridGenerator = AdaptiveCombiGridGenerator::fromCombinationGrid(
-        combinationGrid,
-        std::unique_ptr<sgpp::combigrid::ErrorEstimator>(
-            new sgpp::combigrid::WeightedErrorEstimator()),
-        std::unique_ptr<sgpp::combigrid::PriorityCalculator>(
-            new sgpp::combigrid::AveragingPriorityCalculator()),
-        qois);
+    auto QoIs = std::vector<double>(combinationGrid.getFullGrids().size(), 1.);
+
+    auto adaptiveCombiGridGeneratorFromCombinationGrid =
+        AdaptiveCombiGridGenerator::fromCombinationGrid(
+            combinationGrid,
+            std::unique_ptr<sgpp::combigrid::ErrorEstimator>(
+                new sgpp::combigrid::WeightedErrorEstimator()),
+            std::unique_ptr<sgpp::combigrid::PriorityCalculator>(
+                new sgpp::combigrid::AveragingPriorityCalculator()),
+            QoIs);
   }
 }

@@ -164,6 +164,7 @@ class AdaptiveCombiGridGenerator {
       std::unique_ptr<PriorityCalculator> priorityCalculator,
       std::vector<double> QoIs = std::vector<double>()) {
     std::vector<LevelVector> subspaces{};
+    subspaces.resize(combinationGrid.getFullGrids().size());
     std::transform(combinationGrid.getFullGrids().begin(), combinationGrid.getFullGrids().end(),
                    subspaces.begin(),
                    [](const FullGrid& fg) -> LevelVector { return fg.getLevel(); });
