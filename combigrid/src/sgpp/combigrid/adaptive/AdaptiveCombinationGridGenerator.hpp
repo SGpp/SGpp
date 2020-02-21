@@ -144,28 +144,7 @@ class AdaptiveCombinationGridGenerator {
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::unique_ptr<PriorityEstimator> PriorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()))
-      : relevanceCalculator_(std::move(relevanceCalculator)),
-        PriorityEstimator_(std::move(PriorityEstimator)) {
-    assert(levelVectors.size() > 0);
-
-    // set the minimum level vector
-    auto numDimensions = levelVectors[0].size();
-    minimumLevelVector_ = LevelVector(numDimensions, std::numeric_limits<level_t>::max());
-    for (const auto& subspace : levelVectors) {
-      for (size_t d = 0; d < numDimensions; ++d) {
-        minimumLevelVector_[d] = std::min(subspace[d], minimumLevelVector_[d]);
-      }
-    }
-
-    auto downwardClosedLevelSet = makeDownwardClosed(levelVectors, minimumLevelVector_);
-
-    for (const auto& level : downwardClosedLevelSet) {
-      subspacesAndQoI_[level] = std::numeric_limits<double>::quiet_NaN();
-      activeSet_.push_back(level);
-      adaptLevel(level);
-    }
-  }
+          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object
@@ -184,25 +163,13 @@ class AdaptiveCombinationGridGenerator {
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::unique_ptr<PriorityEstimator> PriorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator())) {
-    std::vector<LevelVector> subspaces{};
-    subspaces.resize(combinationGrid.getFullGrids().size());
-    std::transform(combinationGrid.getFullGrids().begin(), combinationGrid.getFullGrids().end(),
-                   subspaces.begin(),
-                   [](const FullGrid& fg) -> LevelVector { return fg.getLevel(); });
-    return AdaptiveCombinationGridGenerator(subspaces, std::move(relevanceCalculator),
-                                            std::move(PriorityEstimator));
-  }
+          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
    * @brief Get the the currently valid combination grid consisting of the "old set"
    * (the combination grid only holds the full grid vectors with non-zero coefficients)
    */
-  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis) const {
-    bool hasBoundary = std::find(minimumLevelVector_.begin(), minimumLevelVector_.end(), 0) !=
-                       minimumLevelVector_.end();
-    return CombinationGrid::fromSubspaces(oldSet_, basis, hasBoundary);
-  }
+  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis) const;
 
   /**
    * @brief Get the subspacesAndQoIs object
@@ -222,34 +189,12 @@ class AdaptiveCombinationGridGenerator {
    * @return false    if there was no subspace added (e.g. because all known results were in the old
    *                  set already) //TODO(pollinta): use regular parameter
    */
-  bool adaptNextLevelVector(bool regular = false) {
-    if (regular) {
-      throw sgpp::base::not_implemented_exception("Parameter regular not yet implemented!");
-    }
-    auto relevance = getRelevanceOfActiveSet();
-    auto pr = std::max_element(
-        relevance.begin(), relevance.end(),
-        [](const MapPairType& m1, const MapPairType& m2) { return m1.second < m2.second; });
-    if (pr != relevance.end()) {
-      adaptLevel(pr->first);
-      return true;
-    } else {
-      return false;
-    }
-  }
+  bool adaptNextLevelVector(bool regular = false);
 
   /**
    * @brief add all subspaces of known result to the old set
    */
-  bool adaptAllKnown() {
-    bool atLeastOneLevelVectorAdded = false;
-    bool levelVectorAdded = false;
-    do {
-      levelVectorAdded = adaptNextLevelVector();
-      atLeastOneLevelVectorAdded |= levelVectorAdded;
-    } while (levelVectorAdded);
-    return atLeastOneLevelVectorAdded;
-  }
+  bool adaptAllKnown();
 
   /**
    * @brief Get the level vectors of the old set
@@ -278,38 +223,11 @@ class AdaptiveCombinationGridGenerator {
    *
    * @return double  the delta value, NaN if result is unknown
    */
-  double getDelta(const LevelVector& levelVector) const {
-    if (subspacesAndQoI_.find(levelVector) == subspacesAndQoI_.end()) {
-      return std::numeric_limits<double>::quiet_NaN();
-    }
-
-    double neighborStencilSum = 0.;
-    auto levelVectorMinusOne = levelVector;
-    for (size_t d = 0; d < levelVectorMinusOne.size(); ++d) {
-      auto& l = levelVectorMinusOne[d];
-      if (l > minimumLevelVector_[d]) {
-        l -= 1;
-      }
-    }
-
-    auto lowerHypercube = hyperCubeOfLevelVectors(levelVector, levelVectorMinusOne);
-    lowerHypercube.pop_back();
-    // TODO(pollinta): simplify Hamming distance calculation
-    for (size_t i = 0; i < lowerHypercube.size(); ++i) {
-      auto hypercubeElement = subspacesAndQoI_.find(lowerHypercube[i]);
-      assert(hypercubeElement != subspacesAndQoI_.end());
-      auto hammingDistance = 0;
-      for (size_t d = 0; d < levelVector.size(); ++d) {
-        hammingDistance += levelVector[d] - lowerHypercube[i][d];
-      }
-      neighborStencilSum += subspacesAndQoI_.at(lowerHypercube[i]) * std::pow(-1, hammingDistance);
-    }
-    return subspacesAndQoI_.at(levelVector) - neighborStencilSum;
-  }
+  double getDelta(const LevelVector& levelVector) const;
 
   /**
    * @brief get a priority queue of elements in the active set that don't have a result / QoI /
-   * delta yet
+   * delta yet //TODO(pollinta): implement
    */
   std::map<LevelVector, double> getPriorityQueue() const;
 
@@ -317,71 +235,30 @@ class AdaptiveCombinationGridGenerator {
    * @brief get exact value of relevance / "error" of those elements in the active set
    * that already have a QoI value
    */
-  std::map<LevelVector, double> getRelevanceOfActiveSet() const {
-    std::map<LevelVector, double> relevance{};
-    for (const auto& levelVector : activeSet_) {
-      const auto delta = getDelta(levelVector);
-      if (!std::isnan(delta)) {
-        relevance[levelVector] = relevanceCalculator_->calculate(levelVector, delta);
-      }
-    }
-    return relevance;
-  }
+  std::map<LevelVector, double> getRelevanceOfActiveSet() const;
 
   /**
    * @brief get an estimate or exact value of relevance or priority of all elements in the active
    * set
    */
-  std::map<LevelVector, double> getPrioritiesAndRelevanceOfActiveSet() const {
-    auto relevance = getRelevanceOfActiveSet();
-    auto priorityQueueAndRelevance = getPriorityQueue();
-    priorityQueueAndRelevance.insert(relevance.begin(), relevance.end());
-    return priorityQueueAndRelevance;
-  }
+  std::map<LevelVector, double> getPrioritiesAndRelevanceOfActiveSet() const;
 
  private:
   /**
    * @brief a level vector is admissible, if all potential lower neighbors are already in the old
    * set
    */
-  bool isAdmissible(const LevelVector& level) const {
-    for (size_t d = 0; d < minimumLevelVector_.size(); ++d) {
-      if (level[d] > minimumLevelVector_[d]) {
-        auto neighborLevel = level;
-        neighborLevel[d] -= 1;
-        bool isInOldSet = std::find(oldSet_.begin(), oldSet_.end(), neighborLevel) != oldSet_.end();
-        if (!isInOldSet) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
+  bool isAdmissible(const LevelVector& level) const;
 
   /**
    * @brief add forward neighbors of \c level to active set, if admissible
    */
-  void addNeighborsToActiveSet(const LevelVector& level) {
-    for (size_t d = 0; d < level.size(); ++d) {
-      auto neighborLevel = level;
-      neighborLevel[d] += 1;
-      if (isAdmissible(neighborLevel)) {
-        activeSet_.push_back(neighborLevel);
-      }
-    }
-  }
+  void addNeighborsToActiveSet(const LevelVector& level);
 
   /**
    * @brief adapt to level vector \c level = move from active to old set
    */
-  void adaptLevel(const LevelVector& level) {
-    assert(std::find(oldSet_.begin(), oldSet_.end(), level) == oldSet_.end());
-    assert(std::find(activeSet_.begin(), activeSet_.end(), level) != activeSet_.end());
-
-    oldSet_.push_back(level);
-    activeSet_.remove(level);
-    addNeighborsToActiveSet(level);
-  }
+  void adaptLevel(const LevelVector& level);
 
   // a map that holds all the levels / results
   // key: the downward-closed set of all level vectors / subspaces considered so far
