@@ -12,7 +12,7 @@
 #include <sgpp/base/tools/Printer.hpp>
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/adaptive/AdaptiveCombiGridGenerator.hpp>
+#include <sgpp/combigrid/adaptive/AdaptiveCombinationGridGenerator.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
@@ -35,7 +35,7 @@
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::combigrid::AdaptiveCombiGridGenerator;
+using sgpp::combigrid::AdaptiveCombinationGridGenerator;
 using sgpp::combigrid::CombinationGrid;
 using sgpp::combigrid::FullGrid;
 using sgpp::combigrid::HeterogeneousBasis;
@@ -500,7 +500,7 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
                                 downwardClosedSet.begin(), downwardClosedSet.end());
 }
 
-BOOST_AUTO_TEST_CASE(testAdaptiveCombiGridGenerator) {
+BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
   using sgpp::base::operator<<;
   for (bool hasBoundary : {true, false}) {
     sgpp::base::SBsplineBase basis1d;
@@ -508,19 +508,21 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombiGridGenerator) {
 
     auto combinationGrid = CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary);
 
-    auto adaptiveCombiGridGenerator = AdaptiveCombiGridGenerator::fromCombinationGrid(
+    auto AdaptiveCombinationGridGenerator = AdaptiveCombinationGridGenerator::fromCombinationGrid(
         combinationGrid,
-        std::unique_ptr<sgpp::combigrid::ErrorEstimator>(
-            new sgpp::combigrid::WeightedErrorEstimator()),
-        std::unique_ptr<sgpp::combigrid::PriorityCalculator>(
-            new sgpp::combigrid::AveragingPriorityCalculator()));
+        std::unique_ptr<sgpp::combigrid::RelevanceCalculator>(
+            new sgpp::combigrid::WeightedRelevanceCalculator()),
+        std::unique_ptr<sgpp::combigrid::PriorityEstimator>(
+            new sgpp::combigrid::AveragingPriorityEstimator()));
     if (hasBoundary) {
-      BOOST_CHECK_EQUAL(adaptiveCombiGridGenerator.getMinimumLevelVector(), LevelVector(3, 0));
+      BOOST_CHECK_EQUAL(AdaptiveCombinationGridGenerator.getMinimumLevelVector(),
+                        LevelVector(3, 0));
     } else {
-      BOOST_CHECK_EQUAL(adaptiveCombiGridGenerator.getMinimumLevelVector(), LevelVector(3, 1));
+      BOOST_CHECK_EQUAL(AdaptiveCombinationGridGenerator.getMinimumLevelVector(),
+                        LevelVector(3, 1));
     }
 
-    // feed "known values" for the initial combinationGrid to the adaptiveCombiGridGenerator
+    // feed "known values" for the initial combinationGrid to the AdaptiveCombinationGridGenerator
     std::vector<LevelVector> subspaces{};
     subspaces.resize(combinationGrid.getFullGrids().size());
     std::transform(combinationGrid.getFullGrids().begin(), combinationGrid.getFullGrids().end(),
@@ -528,25 +530,25 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombiGridGenerator) {
                    [](const FullGrid& fg) -> LevelVector { return fg.getLevel(); });
     std::sort(subspaces.begin(), subspaces.end());
     for (const auto& subspace : subspaces) {
-      adaptiveCombiGridGenerator.addQoIInformation(subspace, 1.);
-      bool adapted = adaptiveCombiGridGenerator.adaptNextLevelVector();
+      AdaptiveCombinationGridGenerator.setQoIInformation(subspace, 1.);
+      bool adapted = AdaptiveCombinationGridGenerator.adaptNextLevelVector();
       BOOST_CHECK(adapted);
     }
-    bool notAdapted = !adaptiveCombiGridGenerator.adaptAllKnown();
+    bool notAdapted = !AdaptiveCombinationGridGenerator.adaptAllKnown();
     BOOST_CHECK(notAdapted);
 
     // adapt three times, should be regular
     for (size_t i = 0; i < 3; i++) {
-      auto activeSet = adaptiveCombiGridGenerator.getActiveSet();
+      auto activeSet = AdaptiveCombinationGridGenerator.getActiveSet();
       for (auto& active : activeSet) {
-        adaptiveCombiGridGenerator.addQoIInformation(active, 1.);
+        AdaptiveCombinationGridGenerator.setQoIInformation(active, 1.);
       }
-      BOOST_CHECK(adaptiveCombiGridGenerator.adaptAllKnown());
+      BOOST_CHECK(AdaptiveCombinationGridGenerator.adaptAllKnown());
     }
 
     // assert that we get the same subspaces we would get when taking a larger regular
     // combinationGrid
-    auto adaptedCombinationGrid = adaptiveCombiGridGenerator.getCombinationGrid(basis);
+    auto adaptedCombinationGrid = AdaptiveCombinationGridGenerator.getCombinationGrid(basis);
 
     std::vector<LevelVector> adaptedSubspaces{};
     adaptedSubspaces.resize(adaptedCombinationGrid.getFullGrids().size());
