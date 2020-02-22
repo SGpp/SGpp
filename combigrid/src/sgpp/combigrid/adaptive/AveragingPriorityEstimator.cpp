@@ -8,6 +8,7 @@
 #include <map>
 #include <numeric>
 #include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
