@@ -6360,10 +6360,12 @@ def main():
 
   # Change stderr to write with replacement characters so we don't die
   # if we try to print something containing non-ASCII characters.
-  sys.stderr = codecs.StreamReaderWriter(sys.stderr,
-                                         codecs.getreader('utf8'),
-                                         codecs.getwriter('utf8'),
-                                         'replace')
+  #sys.stderr = codecs.StreamReaderWriter(sys.stderr,
+  #                                       codecs.getreader('utf8'),
+  #                                       codecs.getwriter('utf8'),
+  #                                       'replace')
+  # disabled: if we do this, the Python script may die silently, because
+  # Python exceptions will not be visible anymore
 
   _cpplint_state.ResetErrorCounts()
   for filename in filenames:
