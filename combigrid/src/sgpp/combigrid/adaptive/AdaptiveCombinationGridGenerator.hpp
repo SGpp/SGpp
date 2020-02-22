@@ -5,98 +5,20 @@
 
 #pragma once
 
-#include <sgpp/base/exception/not_implemented_exception.hpp>
-
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
+#include <sgpp/combigrid/adaptive/AveragingPriorityEstimator.hpp>
+#include <sgpp/combigrid/adaptive/PriorityEstimator.hpp>
+#include <sgpp/combigrid/adaptive/RelevanceCalculator.hpp>
+#include <sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 
-#include <algorithm>
-#include <cassert>
-#include <limits>
 #include <list>
 #include <map>
 #include <memory>
-#include <numeric>
-#include <utility>
 #include <vector>
 
 namespace sgpp {
 namespace combigrid {
-
-/**
- * @brief a generic relevance calculator for dimensionally-adaptive combination technique
- *
- * cf. [0] Gerstner, T. and Griebel, M., 2003. Dimension–adaptive tensor–product quadrature.
- * Computing, 71(1), pp.65-87.
- * <- here, it is called "Error Estimation"
- */
-class RelevanceCalculator {
- public:
-  /**
-   * @brief get a relevance for the subspace of LevelVector levelVector and Delta delta
-   */
-  virtual double calculate(const LevelVector& levelVector, double delta) const = 0;
-};
-
-/**
- * @brief the weighted relevance calculator introduced in [0]
- */
-class WeightedRelevanceCalculator : public RelevanceCalculator {
- public:
-  explicit WeightedRelevanceCalculator(double weightDeltaInRelationToNumberOfPoints = 1.)
-      : weightDeltaInRelationToNumberOfPoints(weightDeltaInRelationToNumberOfPoints) {}
-
-  double calculate(const LevelVector& levelVector, double delta) const override {
-    auto numPoints = static_cast<index_t>(1)
-                     << std::accumulate(levelVector.begin(), levelVector.end(), 0);
-    return std::max(weightDeltaInRelationToNumberOfPoints * delta,
-                    (1 - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numPoints));
-  }
-
- private:
-  double weightDeltaInRelationToNumberOfPoints;
-};
-
-/**
- * @brief a generic priority estimator for level vectors that don't have a definite result / QoI
- * yet
- */
-class PriorityEstimator {
- public:
-  /**
-   * @brief get a priority estimate based on the downward neighbors' deltas
-   *
-   * @param levelVector                 the level of the level vector considered
-   * @param deltasOfDownwardNeighbors   the levels and deltas of the downward neighbors of
-   *                                        levelVector
-   * @return double                     the priority
-   */
-  virtual double estimatePriority(
-      const LevelVector& levelVector,
-      const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const = 0;
-};
-
-/**
- * @brief the AveragingLevelManager from @holzmudd's combigrid module
- */
-class AveragingPriorityEstimator : public PriorityEstimator {
- public:
-  double estimatePriority(const LevelVector& levelVector,
-                          const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const {
-    auto normDividedByNumberOfPoints =
-        [](double& accumulateResult,
-           const std::pair<const std::vector<unsigned int>, double>& mapEntry) {
-          auto sumOfLevelVector = static_cast<index_t>(1) << std::accumulate(
-                                      mapEntry.first.begin(), mapEntry.first.end(), 0);
-          accumulateResult += mapEntry.second / sumOfLevelVector;
-          return accumulateResult;
-        };
-    auto sumOfNormDividedByNumberOfPoints =
-        std::accumulate(deltasOfDownwardNeighbors.begin(), deltasOfDownwardNeighbors.end(), 0.,
-                        normDividedByNumberOfPoints);
-    return sumOfNormDividedByNumberOfPoints / static_cast<double>(deltasOfDownwardNeighbors.size());
-  }
-};
 
 /**
  * @brief The AdaptiveCombinationGridGenerator is a (potentially changing) representation of a
