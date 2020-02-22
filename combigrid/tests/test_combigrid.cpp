@@ -16,7 +16,6 @@
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
-#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationPole.hpp>
 #include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
@@ -25,6 +24,7 @@
 #include <sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
+#include <sgpp/combigrid/tools/IndexVectorRange.hpp>
 
 #include <boost/test/unit_test.hpp>
 

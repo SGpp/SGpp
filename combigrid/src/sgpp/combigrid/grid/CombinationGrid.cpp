@@ -5,7 +5,7 @@
 
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
-#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
+#include <sgpp/combigrid/tools/IndexVectorRange.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
