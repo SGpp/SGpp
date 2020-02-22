@@ -18,8 +18,9 @@ namespace combigrid {
  */
 class AveragingPriorityEstimator : public PriorityEstimator {
  public:
-  double estimatePriority(const LevelVector& levelVector,
-                          const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const;
+  double estimatePriority(
+      const LevelVector& levelVector,
+      const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const override;
 };
 
 }  // namespace combigrid

@@ -20,6 +20,11 @@ namespace combigrid {
 class RelevanceCalculator {
  public:
   /**
+   * @brief empty virtual destructor
+   */
+  virtual ~RelevanceCalculator() {};
+
+  /**
    * @brief get a relevance for the subspace of LevelVector levelVector and Delta delta
    */
   virtual double calculate(const LevelVector& levelVector, double delta) const = 0;

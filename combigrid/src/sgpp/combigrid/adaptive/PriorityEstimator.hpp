@@ -19,6 +19,11 @@ namespace combigrid {
 class PriorityEstimator {
  public:
   /**
+   * @brief empty virtual destructor
+   */
+  virtual ~PriorityEstimator() {};
+
+  /**
    * @brief get a priority estimate based on the downward neighbors' deltas
    *
    * @param levelVector                 the level of the level vector considered
