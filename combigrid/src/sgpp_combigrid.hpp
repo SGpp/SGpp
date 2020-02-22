@@ -26,3 +26,4 @@
 
 #include <sgpp/combigrid/tools/IndexVectorIterator.hpp>
 #include <sgpp/combigrid/tools/IndexVectorRange.hpp>
+#include <sgpp/combigrid/tools/LevelVectorTools.hpp>
