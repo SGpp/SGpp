@@ -21,18 +21,5 @@ typedef std::vector<level_t> LevelVector;
 /// index multi-index
 typedef std::vector<index_t> IndexVector;
 
-
-/**
- * @brief get a hypercube of all level vectors between and including minLevel and maxLevel
- *
- * @param maxLevel                    the maximum level vector
- * @param minLevel                    the minimum level vector, must not be larger than maxLevel in
- *                                      any dimension
- * @return std::vector<LevelVector>   a lexicographically ordered vector of level vectors in the
- *                                      hypercube //TODO is this true?
- */
-std::vector<LevelVector> hyperCubeOfLevelVectors(const LevelVector& maxLevel,
-                                                 const LevelVector& minLevel);
-
 }  // namespace combigrid
 }  // namespace sgpp

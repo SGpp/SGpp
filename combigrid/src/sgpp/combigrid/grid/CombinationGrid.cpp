@@ -6,6 +6,7 @@
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 #include <sgpp/combigrid/tools/IndexVectorRange.hpp>
+#include <sgpp/combigrid/tools/LevelVectorTools.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
@@ -43,8 +44,10 @@ CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
   for (size_t q = 0; q < dim; q++) {
     const std::vector<LevelVector> levels =
         (hasBoundary
-             ? enumerateLevelsWithSumWithBoundary(dim, maxLevelSum - static_cast<level_t>(q))
-             : enumerateLevelsWithSumWithoutBoundary(dim, maxLevelSum - static_cast<level_t>(q)));
+             ? LevelVectorTools::generateDiagonalWithBoundary(
+                dim, maxLevelSum - static_cast<level_t>(q))
+             : LevelVectorTools::generateDiagonalWithoutBoundary(
+                dim, maxLevelSum - static_cast<level_t>(q)));
     const double coefficient =
         ((q % 2 == 0) ? 1.0 : -1.0) *
         static_cast<double>(binomialCoefficients[((q < (dim + 1) / 2) ? q : (dim - q - 1))]);
@@ -233,68 +236,6 @@ void CombinationGrid::setFullGridsAndCoefficients(const std::vector<FullGrid>& f
                                                   const base::DataVector& coefficients) {
   this->fullGrids = fullGrids;
   this->coefficients = coefficients;
-}
-
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithBoundary(size_t dim,
-                                                                             level_t n) {
-  if (dim == 0) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else if (n == 0) {
-    return std::vector<LevelVector>{LevelVector(dim, 0)};
-  } else {
-    std::vector<LevelVector> result;
-
-    for (level_t l = 0; l <= n; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithBoundary(dim - 1, n - l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
-    }
-
-    return result;
-  }
-}
-
-std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(size_t dim,
-                                                                                level_t n) {
-  if ((dim == 0) || (n < dim)) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else {
-    std::vector<LevelVector> result;
-
-    for (level_t l = 1; l <= n - dim + 1; l++) {
-      for (LevelVector& level : enumerateLevelsWithSumWithoutBoundary(dim - 1, n - l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
-    }
-
-    return result;
-  }
-}
-
-std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
-                                            LevelVector lowestLevelVector) {
-  assert(lowestLevelVector.size() == subspaceLevels[0].size());
-  std::vector<LevelVector> downwardClosedSet = subspaceLevels;
-
-  // for each subspace level, ...
-  for (const LevelVector& subspaceLevel : subspaceLevels) {
-    // add the full hypercube of lower levels, if not already present
-    for (const LevelVector& level : hyperCubeOfLevelVectors(subspaceLevel, lowestLevelVector)) {
-      if (std::find(downwardClosedSet.begin(), downwardClosedSet.end(), level) ==
-          downwardClosedSet.end()) {
-        downwardClosedSet.push_back(level);
-      }
-    }
-  }
-
-  std::sort(downwardClosedSet.begin(), downwardClosedSet.end());
-  return downwardClosedSet;
 }
 
 }  // namespace combigrid

@@ -9,6 +9,7 @@
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
+#include <sgpp/combigrid/tools/LevelVectorTools.hpp>
 
 #include <algorithm>
 #include <cassert>
@@ -42,7 +43,7 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
   }
 
   const std::vector<LevelVector> downwardClosedLevelSet =
-      makeDownwardClosed(levelVectors, minimumLevelVector);
+      LevelVectorTools::makeDownwardClosed(levelVectors, minimumLevelVector);
 
   for (const LevelVector& level : downwardClosedLevelSet) {
     subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
@@ -117,7 +118,7 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   }
 
   std::vector<LevelVector> lowerHypercube =
-      hyperCubeOfLevelVectors(levelVector, levelVectorMinusOne);
+      LevelVectorTools::generateHyperCube(levelVector, levelVectorMinusOne);
   lowerHypercube.pop_back();
 
   // TODO(pollinta): simplify Hamming distance calculation

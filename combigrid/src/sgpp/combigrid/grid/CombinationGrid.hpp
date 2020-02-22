@@ -184,43 +184,12 @@ class CombinationGrid {
   void setFullGridsAndCoefficients(const std::vector<FullGrid>& fullGrids,
                                    const base::DataVector& coefficients);
 
-  /**
-   * Helper function to enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
-   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
-   *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (with boundary)
-   */
-  static std::vector<LevelVector> enumerateLevelsWithSumWithBoundary(size_t dim, level_t n);
-
-  /**
-   * Helper function to enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 1}^{dim}\f$
-   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
-   *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (without boundary)
-   */
-  static std::vector<LevelVector> enumerateLevelsWithSumWithoutBoundary(size_t dim, level_t n);
-
  protected:
   /// vector of full grids
   std::vector<FullGrid> fullGrids;
   /// vector of coefficients, same size as \c fullGrids
   base::DataVector coefficients;
 };
-
-/**
- * @brief Make any level set a downward closed one
- *
- * @param subspaceLevels            an arbitrary level set
- * @param lowestLevelVector         the minimum level vector, a vector of zeros or ones would be a
- *                                    standard choice
- * @return std::vector<LevelVector> the updated, downward closed level set containing subspaceLevels
- */
-std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
-                                            LevelVector lowestLevelVector);
 
 }  // namespace combigrid
 }  // namespace sgpp

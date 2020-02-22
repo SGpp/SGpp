@@ -25,6 +25,7 @@
 #include <sgpp/combigrid/operation/OperationUPCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
 #include <sgpp/combigrid/tools/IndexVectorRange.hpp>
+#include <sgpp/combigrid/tools/LevelVectorTools.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -42,6 +43,7 @@ using sgpp::combigrid::HeterogeneousBasis;
 using sgpp::combigrid::IndexVector;
 using sgpp::combigrid::IndexVectorRange;
 using sgpp::combigrid::LevelVector;
+using sgpp::combigrid::LevelVectorTools;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
 using sgpp::combigrid::OperationPoleHierarchisationGeneral;
@@ -145,8 +147,8 @@ BOOST_AUTO_TEST_CASE(testHeterogeneousBasis) {
 }
 
 BOOST_AUTO_TEST_CASE(testCombinationGrid) {
-  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithBoundary(3, 5).size(), 21);
-  BOOST_CHECK_EQUAL(CombinationGrid::enumerateLevelsWithSumWithoutBoundary(3, 7).size(), 15);
+  BOOST_CHECK_EQUAL(LevelVectorTools::generateDiagonalWithBoundary(3, 5).size(), 21);
+  BOOST_CHECK_EQUAL(LevelVectorTools::generateDiagonalWithoutBoundary(3, 7).size(), 15);
 
   sgpp::base::SBsplineBase basis1d;
   HeterogeneousBasis basis(3, basis1d);
@@ -494,7 +496,7 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
       LevelVector{1, 0, 0}, LevelVector{1, 0, 1}, LevelVector{1, 0, 2}, LevelVector{1, 0, 3},
   };
 
-  auto downwardClosedSet = sgpp::combigrid::makeDownwardClosed(subspaces, LevelVector{0, 0, 0});
+  auto downwardClosedSet = LevelVectorTools::makeDownwardClosed(subspaces, LevelVector{0, 0, 0});
 
   BOOST_CHECK_EQUAL_COLLECTIONS(downwardClosedSetSolution.begin(), downwardClosedSetSolution.end(),
                                 downwardClosedSet.begin(), downwardClosedSet.end());
