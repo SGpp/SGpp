@@ -21,7 +21,7 @@ class PriorityEstimator {
   /**
    * @brief empty virtual destructor
    */
-  virtual ~PriorityEstimator() {};
+  virtual ~PriorityEstimator() {}
 
   /**
    * @brief get a priority estimate based on the downward neighbors' deltas

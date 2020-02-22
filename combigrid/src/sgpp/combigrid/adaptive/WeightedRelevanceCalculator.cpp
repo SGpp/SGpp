@@ -5,6 +5,7 @@
 
 #include <sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp>
 
+#include <algorithm>
 #include <numeric>
 
 namespace sgpp {

@@ -22,7 +22,7 @@ class RelevanceCalculator {
   /**
    * @brief empty virtual destructor
    */
-  virtual ~RelevanceCalculator() {};
+  virtual ~RelevanceCalculator() {}
 
   /**
    * @brief get a relevance for the subspace of LevelVector levelVector and Delta delta

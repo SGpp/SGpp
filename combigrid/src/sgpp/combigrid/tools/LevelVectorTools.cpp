@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
