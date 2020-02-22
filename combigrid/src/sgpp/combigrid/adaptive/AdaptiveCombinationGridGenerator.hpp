@@ -44,17 +44,17 @@ class RelevanceCalculator {
 class WeightedRelevanceCalculator : public RelevanceCalculator {
  public:
   explicit WeightedRelevanceCalculator(double weightDeltaInRelationToNumberOfPoints = 1.)
-      : weightDeltaInRelationToNumberOfPoints_(weightDeltaInRelationToNumberOfPoints) {}
+      : weightDeltaInRelationToNumberOfPoints(weightDeltaInRelationToNumberOfPoints) {}
 
   double calculate(const LevelVector& levelVector, double delta) const override {
     auto numPoints = static_cast<index_t>(1)
                      << std::accumulate(levelVector.begin(), levelVector.end(), 0);
-    return std::max(weightDeltaInRelationToNumberOfPoints_ * delta,
-                    (1 - weightDeltaInRelationToNumberOfPoints_) / static_cast<double>(numPoints));
+    return std::max(weightDeltaInRelationToNumberOfPoints * delta,
+                    (1 - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numPoints));
   }
 
  private:
-  double weightDeltaInRelationToNumberOfPoints_;
+  double weightDeltaInRelationToNumberOfPoints;
 };
 
 /**
@@ -135,7 +135,7 @@ class AdaptiveCombinationGridGenerator {
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
-   *                                result we don't yet know (similar to relevanceCalculator_, but
+   *                                result we don't yet know (similar to relevanceCalculator, but
    *                                based on the deltas of the downward neighbors instead of the
    *                                level's own delta)
    */
@@ -154,7 +154,7 @@ class AdaptiveCombinationGridGenerator {
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
-   *                                result we don't yet know (similar to relevanceCalculator_, but
+   *                                result we don't yet know (similar to relevanceCalculator, but
    *                                based on the deltas of the downward neighbors instead of the
    *                                level's own delta)
    */
@@ -174,12 +174,12 @@ class AdaptiveCombinationGridGenerator {
   /**
    * @brief Get the subspacesAndQoIs object
    */
-  const std::map<LevelVector, double>& getSubspacesAndQoIs() const { return subspacesAndQoI_; }
+  const std::map<LevelVector, double>& getSubspacesAndQoIs() const { return subspacesAndQoI; }
 
   /**
    * @brief set QoI information / a result for LevelVector level
    */
-  void setQoIInformation(const LevelVector& level, double qoi) { subspacesAndQoI_[level] = qoi; }
+  void setQoIInformation(const LevelVector& level, double qoi) { subspacesAndQoI[level] = qoi; }
 
   /**
    * @brief add the next most important subspace of known result to the old set
@@ -201,21 +201,21 @@ class AdaptiveCombinationGridGenerator {
    *
    * @return std::vector<LevelVector> the old set
    */
-  std::vector<LevelVector> getOldSet() const { return oldSet_; }
+  std::vector<LevelVector> getOldSet() const { return oldSet; }
 
   /**
    * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
    *
    * @return std::list<LevelVector> the active set
    */
-  std::list<LevelVector> getActiveSet() const { return activeSet_; }
+  std::list<LevelVector> getActiveSet() const { return activeSet; }
 
   /**
    * @brief Get the minimum Level Vector object
    *
    * @return const LevelVector&
    */
-  const LevelVector& getMinimumLevelVector() const { return minimumLevelVector_; }
+  const LevelVector& getMinimumLevelVector() const { return minimumLevelVector; }
 
   /**
    * @brief Get the delta belonging to a level vector. Delta denotes by how much the combined value
@@ -266,24 +266,24 @@ class AdaptiveCombinationGridGenerator {
   // adapted; by default initialized with NaN (in case there is no result yet)
   // TODO(pollinta) allow results to be something else than a double / scalar ... how to do this?
   //                ( = function, vector...)
-  std::map<LevelVector, double> subspacesAndQoI_;
+  std::map<LevelVector, double> subspacesAndQoI;
 
   // the minimum level vector, from where the adaptation is started
-  LevelVector minimumLevelVector_;
+  LevelVector minimumLevelVector;
 
   // the old set = the level vectors that are definitely in our combigrid already
-  std::vector<LevelVector> oldSet_;
+  std::vector<LevelVector> oldSet;
 
   // the active set = the level vectors that may be added to our combigrid next
-  std::list<LevelVector> activeSet_;
+  std::list<LevelVector> activeSet;
 
   // the relevance calculator used to relate delta and level vector to an "error" / relevance
-  std::unique_ptr<RelevanceCalculator> relevanceCalculator_;
+  std::unique_ptr<RelevanceCalculator> relevanceCalculator;
 
   // the priority estimator used to estimate the priority of a level whose result we don't yet
-  // know (similar to relevanceCalculator_, but based on the deltas of the downward neighbors
+  // know (similar to relevanceCalculator, but based on the deltas of the downward neighbors
   // instead of the level's own delta)
-  std::unique_ptr<PriorityEstimator> priorityEstimator_;  // averaging, weighted
+  std::unique_ptr<PriorityEstimator> priorityEstimator;  // averaging, weighted
 };
 }  // namespace combigrid
 }  // namespace sgpp

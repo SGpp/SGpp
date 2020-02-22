@@ -27,24 +27,24 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
     const std::vector<LevelVector>& levelVectors,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
     std::unique_ptr<PriorityEstimator> priorityEstimator)
-    : relevanceCalculator_(std::move(relevanceCalculator)),
-      priorityEstimator_(std::move(priorityEstimator)) {
+    : relevanceCalculator(std::move(relevanceCalculator)),
+      priorityEstimator(std::move(priorityEstimator)) {
   assert(levelVectors.size() > 0);
 
   // set the minimum level vector
   auto numDimensions = levelVectors[0].size();
-  minimumLevelVector_ = LevelVector(numDimensions, std::numeric_limits<level_t>::max());
+  minimumLevelVector = LevelVector(numDimensions, std::numeric_limits<level_t>::max());
   for (const auto& subspace : levelVectors) {
     for (size_t d = 0; d < numDimensions; ++d) {
-      minimumLevelVector_[d] = std::min(subspace[d], minimumLevelVector_[d]);
+      minimumLevelVector[d] = std::min(subspace[d], minimumLevelVector[d]);
     }
   }
 
-  auto downwardClosedLevelSet = makeDownwardClosed(levelVectors, minimumLevelVector_);
+  auto downwardClosedLevelSet = makeDownwardClosed(levelVectors, minimumLevelVector);
 
   for (const auto& level : downwardClosedLevelSet) {
-    subspacesAndQoI_[level] = std::numeric_limits<double>::quiet_NaN();
-    activeSet_.push_back(level);
+    subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
+    activeSet.push_back(level);
     adaptLevel(level);
   }
 }
@@ -64,9 +64,9 @@ AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinati
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
     const HeterogeneousBasis& basis) const {
-  bool hasBoundary = std::find(minimumLevelVector_.begin(), minimumLevelVector_.end(), 0) !=
-                     minimumLevelVector_.end();
-  return CombinationGrid::fromSubspaces(oldSet_, basis, hasBoundary);
+  bool hasBoundary = std::find(minimumLevelVector.begin(), minimumLevelVector.end(), 0) !=
+                     minimumLevelVector.end();
+  return CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
 }
 
 bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
@@ -96,7 +96,7 @@ bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
 }
 
 double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector) const {
-  if (subspacesAndQoI_.find(levelVector) == subspacesAndQoI_.end()) {
+  if (subspacesAndQoI.find(levelVector) == subspacesAndQoI.end()) {
     return std::numeric_limits<double>::quiet_NaN();
   }
 
@@ -104,7 +104,7 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   auto levelVectorMinusOne = levelVector;
   for (size_t d = 0; d < levelVectorMinusOne.size(); ++d) {
     auto& l = levelVectorMinusOne[d];
-    if (l > minimumLevelVector_[d]) {
+    if (l > minimumLevelVector[d]) {
       l -= 1;
     }
   }
@@ -113,15 +113,15 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   lowerHypercube.pop_back();
   // TODO(pollinta): simplify Hamming distance calculation
   for (size_t i = 0; i < lowerHypercube.size(); ++i) {
-    auto hypercubeElement = subspacesAndQoI_.find(lowerHypercube[i]);
-    assert(hypercubeElement != subspacesAndQoI_.end());
+    auto hypercubeElement = subspacesAndQoI.find(lowerHypercube[i]);
+    assert(hypercubeElement != subspacesAndQoI.end());
     auto hammingDistance = 0;
     for (size_t d = 0; d < levelVector.size(); ++d) {
       hammingDistance += levelVector[d] - lowerHypercube[i][d];
     }
-    neighborStencilSum += subspacesAndQoI_.at(lowerHypercube[i]) * std::pow(-1, hammingDistance);
+    neighborStencilSum += subspacesAndQoI.at(lowerHypercube[i]) * std::pow(-1, hammingDistance);
   }
-  return subspacesAndQoI_.at(levelVector) - neighborStencilSum;
+  return subspacesAndQoI.at(levelVector) - neighborStencilSum;
 }
 
 std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorityQueue() const {
@@ -130,10 +130,10 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorityQueue
 
 std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getRelevanceOfActiveSet() const {
   std::map<LevelVector, double> relevance{};
-  for (const auto& levelVector : activeSet_) {
+  for (const auto& levelVector : activeSet) {
     const auto delta = getDelta(levelVector);
     if (!std::isnan(delta)) {
-      relevance[levelVector] = relevanceCalculator_->calculate(levelVector, delta);
+      relevance[levelVector] = relevanceCalculator->calculate(levelVector, delta);
     }
   }
   return relevance;
@@ -148,11 +148,11 @@ AdaptiveCombinationGridGenerator::getPrioritiesAndRelevanceOfActiveSet() const {
 }
 
 bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) const {
-  for (size_t d = 0; d < minimumLevelVector_.size(); ++d) {
-    if (level[d] > minimumLevelVector_[d]) {
+  for (size_t d = 0; d < minimumLevelVector.size(); ++d) {
+    if (level[d] > minimumLevelVector[d]) {
       auto neighborLevel = level;
       neighborLevel[d] -= 1;
-      bool isInOldSet = std::find(oldSet_.begin(), oldSet_.end(), neighborLevel) != oldSet_.end();
+      bool isInOldSet = std::find(oldSet.begin(), oldSet.end(), neighborLevel) != oldSet.end();
       if (!isInOldSet) {
         return false;
       }
@@ -166,17 +166,17 @@ void AdaptiveCombinationGridGenerator::addNeighborsToActiveSet(const LevelVector
     auto neighborLevel = level;
     neighborLevel[d] += 1;
     if (isAdmissible(neighborLevel)) {
-      activeSet_.push_back(neighborLevel);
+      activeSet.push_back(neighborLevel);
     }
   }
 }
 
 void AdaptiveCombinationGridGenerator::adaptLevel(const LevelVector& level) {
-  assert(std::find(oldSet_.begin(), oldSet_.end(), level) == oldSet_.end());
-  assert(std::find(activeSet_.begin(), activeSet_.end(), level) != activeSet_.end());
+  assert(std::find(oldSet.begin(), oldSet.end(), level) == oldSet.end());
+  assert(std::find(activeSet.begin(), activeSet.end(), level) != activeSet.end());
 
-  oldSet_.push_back(level);
-  activeSet_.remove(level);
+  oldSet.push_back(level);
+  activeSet.remove(level);
   addNeighborsToActiveSet(level);
 }
 
