@@ -143,7 +143,7 @@ class AdaptiveCombinationGridGenerator {
       const std::vector<LevelVector>& levelVectors,
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> PriorityEstimator =
+      std::unique_ptr<PriorityEstimator> priorityEstimator =
           std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
@@ -162,7 +162,7 @@ class AdaptiveCombinationGridGenerator {
       const CombinationGrid& combinationGrid,
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> PriorityEstimator =
+      std::unique_ptr<PriorityEstimator> priorityEstimator =
           std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
@@ -283,7 +283,7 @@ class AdaptiveCombinationGridGenerator {
   // the priority estimator used to estimate the priority of a level whose result we don't yet
   // know (similar to relevanceCalculator_, but based on the deltas of the downward neighbors
   // instead of the level's own delta)
-  std::unique_ptr<PriorityEstimator> PriorityEstimator_;  // averaging, weighted
+  std::unique_ptr<PriorityEstimator> priorityEstimator_;  // averaging, weighted
 };
 }  // namespace combigrid
 }  // namespace sgpp

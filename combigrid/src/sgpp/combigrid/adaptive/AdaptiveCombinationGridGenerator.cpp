@@ -26,9 +26,9 @@ namespace combigrid {
 AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
     const std::vector<LevelVector>& levelVectors,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
-    std::unique_ptr<PriorityEstimator> PriorityEstimator)
+    std::unique_ptr<PriorityEstimator> priorityEstimator)
     : relevanceCalculator_(std::move(relevanceCalculator)),
-      PriorityEstimator_(std::move(PriorityEstimator)) {
+      priorityEstimator_(std::move(priorityEstimator)) {
   assert(levelVectors.size() > 0);
 
   // set the minimum level vector
@@ -52,14 +52,14 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
 AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinationGrid(
     const CombinationGrid& combinationGrid,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
-    std::unique_ptr<PriorityEstimator> PriorityEstimator) {
+    std::unique_ptr<PriorityEstimator> priorityEstimator) {
   std::vector<LevelVector> subspaces{};
   subspaces.resize(combinationGrid.getFullGrids().size());
   std::transform(combinationGrid.getFullGrids().begin(), combinationGrid.getFullGrids().end(),
                  subspaces.begin(),
                  [](const FullGrid& fg) -> LevelVector { return fg.getLevel(); });
   return AdaptiveCombinationGridGenerator(subspaces, std::move(relevanceCalculator),
-                                          std::move(PriorityEstimator));
+                                          std::move(priorityEstimator));
 }
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
