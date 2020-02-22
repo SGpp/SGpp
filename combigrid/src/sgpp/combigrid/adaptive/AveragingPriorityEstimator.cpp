@@ -13,17 +13,15 @@ namespace combigrid {
 
 double AveragingPriorityEstimator::estimatePriority(const LevelVector& levelVector,
     const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const {
-  auto normDividedByNumberOfPoints =
-      [](double& accumulateResult,
-          const std::pair<const std::vector<unsigned int>, double>& mapEntry) {
-        auto sumOfLevelVector = static_cast<index_t>(1) << std::accumulate(
-                                    mapEntry.first.begin(), mapEntry.first.end(), 0);
-        accumulateResult += mapEntry.second / sumOfLevelVector;
-        return accumulateResult;
-      };
-  auto sumOfNormDividedByNumberOfPoints =
-      std::accumulate(deltasOfDownwardNeighbors.begin(), deltasOfDownwardNeighbors.end(), 0.,
-                      normDividedByNumberOfPoints);
+  double sumOfNormDividedByNumberOfPoints = 0.;
+
+  for (const std::pair<const std::vector<unsigned int>, double>& mapEntry :
+      deltasOfDownwardNeighbors) {
+    const index_t sumOfLevelVector = static_cast<index_t>(1) << std::accumulate(
+                                          mapEntry.first.begin(), mapEntry.first.end(), 0);
+    sumOfNormDividedByNumberOfPoints += mapEntry.second / sumOfLevelVector;
+  }
+
   return sumOfNormDividedByNumberOfPoints / static_cast<double>(deltasOfDownwardNeighbors.size());
 }
 

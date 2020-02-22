@@ -16,12 +16,15 @@ std::vector<LevelVector> getLevelVectorsRecursiveLastDim(const LevelVector& maxL
                                                          const LevelVector& prefix) {
   assert(prefix.size() == minLevel.size() - 1);
   assert(minLevel.back() <= maxLevel.back());
-  std::vector<LevelVector> oneDRange{};
-  for (level_t i = minLevel.back(); i <= maxLevel.back(); ++i) {
-    LevelVector current = prefix;
-    current.push_back(i);
+  std::vector<LevelVector> oneDRange;
+  LevelVector current = prefix;
+  current.push_back(0);
+
+  for (level_t l = minLevel.back(); l <= maxLevel.back(); ++l) {
+    current[prefix.size()] = l;
     oneDRange.push_back(current);
   }
+
   return oneDRange;
 }
 
@@ -29,22 +32,27 @@ std::vector<LevelVector> getLevelVectorsRecursive(const LevelVector& maxLevel,
                                                   const LevelVector& minLevel,
                                                   const LevelVector& prefix) {
   using sgpp::base::operator<<;
-  std::vector<LevelVector> currentVector{};
-  auto currentDim = prefix.size();
+  std::vector<LevelVector> currentVector;
+  const size_t currentDim = prefix.size();
 
   // if we are at the last dimension, add one one-dimensional row of the hypercube
   if (currentDim == minLevel.size() - 1) {
-    auto newPole = getLevelVectorsRecursiveLastDim(maxLevel, minLevel, prefix);
+    const std::vector<LevelVector> newPole =
+        getLevelVectorsRecursiveLastDim(maxLevel, minLevel, prefix);
     currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
   } else {
+    LevelVector newPrefix = prefix;
+    newPrefix.push_back(0);
+
     // else, recurse to the next dimension
-    for (level_t i = minLevel[currentDim]; i <= maxLevel[currentDim]; ++i) {
-      auto newPrefix = prefix;
-      newPrefix.push_back(i);
-      auto newHypercube = getLevelVectorsRecursive(maxLevel, minLevel, newPrefix);
+    for (level_t l = minLevel[currentDim]; l <= maxLevel[currentDim]; ++l) {
+      newPrefix[prefix.size()] = l;
+      const std::vector<LevelVector> newHypercube =
+          getLevelVectorsRecursive(maxLevel, minLevel, newPrefix);
       currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
     }
   }
+
   return currentVector;
 }
 

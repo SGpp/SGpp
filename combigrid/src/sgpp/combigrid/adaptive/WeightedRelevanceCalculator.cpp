@@ -16,10 +16,10 @@ WeightedRelevanceCalculator::WeightedRelevanceCalculator(
 
 double WeightedRelevanceCalculator::calculate(
     const LevelVector& levelVector, double delta) const {
-  auto numPoints = static_cast<index_t>(1)
-                   << std::accumulate(levelVector.begin(), levelVector.end(), 0);
+  const index_t numPoints = static_cast<index_t>(1)
+                            << std::accumulate(levelVector.begin(), levelVector.end(), 0);
   return std::max(weightDeltaInRelationToNumberOfPoints * delta,
-                  (1 - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numPoints));
+                  (1. - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numPoints));
 }
 
 }  // namespace combigrid

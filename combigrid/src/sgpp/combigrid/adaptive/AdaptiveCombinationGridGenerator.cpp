@@ -32,17 +32,19 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
   assert(levelVectors.size() > 0);
 
   // set the minimum level vector
-  auto numDimensions = levelVectors[0].size();
+  const size_t numDimensions = levelVectors[0].size();
   minimumLevelVector = LevelVector(numDimensions, std::numeric_limits<level_t>::max());
-  for (const auto& subspace : levelVectors) {
+
+  for (const LevelVector& subspace : levelVectors) {
     for (size_t d = 0; d < numDimensions; ++d) {
       minimumLevelVector[d] = std::min(subspace[d], minimumLevelVector[d]);
     }
   }
 
-  auto downwardClosedLevelSet = makeDownwardClosed(levelVectors, minimumLevelVector);
+  const std::vector<LevelVector> downwardClosedLevelSet =
+      makeDownwardClosed(levelVectors, minimumLevelVector);
 
-  for (const auto& level : downwardClosedLevelSet) {
+  for (const LevelVector& level : downwardClosedLevelSet) {
     subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
     activeSet.push_back(level);
     adaptLevel(level);
@@ -53,18 +55,19 @@ AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinati
     const CombinationGrid& combinationGrid,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
     std::unique_ptr<PriorityEstimator> priorityEstimator) {
-  std::vector<LevelVector> subspaces{};
-  subspaces.resize(combinationGrid.getFullGrids().size());
-  std::transform(combinationGrid.getFullGrids().begin(), combinationGrid.getFullGrids().end(),
-                 subspaces.begin(),
-                 [](const FullGrid& fg) -> LevelVector { return fg.getLevel(); });
+  std::vector<LevelVector> subspaces;
+
+  for (const FullGrid& fullGrid : combinationGrid.getFullGrids()) {
+    subspaces.push_back(fullGrid.getLevel());
+  }
+
   return AdaptiveCombinationGridGenerator(subspaces, std::move(relevanceCalculator),
                                           std::move(priorityEstimator));
 }
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
     const HeterogeneousBasis& basis) const {
-  bool hasBoundary = std::find(minimumLevelVector.begin(), minimumLevelVector.end(), 0) !=
+  const bool hasBoundary = std::find(minimumLevelVector.begin(), minimumLevelVector.end(), 0) !=
                      minimumLevelVector.end();
   return CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
 }
@@ -73,10 +76,12 @@ bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
   if (regular) {
     throw sgpp::base::not_implemented_exception("Parameter regular not yet implemented!");
   }
-  auto relevance = getRelevanceOfActiveSet();
-  auto pr = std::max_element(
+
+  const std::map<LevelVector, double> relevance = getRelevanceOfActiveSet();
+  const auto pr = std::max_element(
       relevance.begin(), relevance.end(),
       [](const MapPairType& m1, const MapPairType& m2) { return m1.second < m2.second; });
+
   if (pr != relevance.end()) {
     adaptLevel(pr->first);
     return true;
@@ -88,10 +93,12 @@ bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
 bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
   bool atLeastOneLevelVectorAdded = false;
   bool levelVectorAdded = false;
+
   do {
     levelVectorAdded = adaptNextLevelVector();
     atLeastOneLevelVectorAdded |= levelVectorAdded;
   } while (levelVectorAdded);
+
   return atLeastOneLevelVectorAdded;
 }
 
@@ -101,26 +108,31 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   }
 
   double neighborStencilSum = 0.;
-  auto levelVectorMinusOne = levelVector;
+  LevelVector levelVectorMinusOne = levelVector;
+
   for (size_t d = 0; d < levelVectorMinusOne.size(); ++d) {
-    auto& l = levelVectorMinusOne[d];
-    if (l > minimumLevelVector[d]) {
-      l -= 1;
+    if (levelVectorMinusOne[d] > minimumLevelVector[d]) {
+      levelVectorMinusOne[d] -= 1;
     }
   }
 
-  auto lowerHypercube = hyperCubeOfLevelVectors(levelVector, levelVectorMinusOne);
+  std::vector<LevelVector> lowerHypercube =
+      hyperCubeOfLevelVectors(levelVector, levelVectorMinusOne);
   lowerHypercube.pop_back();
+
   // TODO(pollinta): simplify Hamming distance calculation
   for (size_t i = 0; i < lowerHypercube.size(); ++i) {
-    auto hypercubeElement = subspacesAndQoI.find(lowerHypercube[i]);
+    const auto hypercubeElement = subspacesAndQoI.find(lowerHypercube[i]);
     assert(hypercubeElement != subspacesAndQoI.end());
-    auto hammingDistance = 0;
+    level_t hammingDistance = 0;
+
     for (size_t d = 0; d < levelVector.size(); ++d) {
       hammingDistance += levelVector[d] - lowerHypercube[i][d];
     }
+
     neighborStencilSum += subspacesAndQoI.at(lowerHypercube[i]) * std::pow(-1, hammingDistance);
   }
+
   return subspacesAndQoI.at(levelVector) - neighborStencilSum;
 }
 
@@ -129,20 +141,23 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorityQueue
 }
 
 std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getRelevanceOfActiveSet() const {
-  std::map<LevelVector, double> relevance{};
-  for (const auto& levelVector : activeSet) {
-    const auto delta = getDelta(levelVector);
+  std::map<LevelVector, double> relevance;
+
+  for (const LevelVector& levelVector : activeSet) {
+    const double delta = getDelta(levelVector);
+
     if (!std::isnan(delta)) {
       relevance[levelVector] = relevanceCalculator->calculate(levelVector, delta);
     }
   }
+
   return relevance;
 }
 
 std::map<LevelVector, double>
 AdaptiveCombinationGridGenerator::getPrioritiesAndRelevanceOfActiveSet() const {
-  auto relevance = getRelevanceOfActiveSet();
-  auto priorityQueueAndRelevance = getPriorityQueue();
+  const std::map<LevelVector, double> relevance = getRelevanceOfActiveSet();
+  std::map<LevelVector, double> priorityQueueAndRelevance = getPriorityQueue();
   priorityQueueAndRelevance.insert(relevance.begin(), relevance.end());
   return priorityQueueAndRelevance;
 }
@@ -150,21 +165,25 @@ AdaptiveCombinationGridGenerator::getPrioritiesAndRelevanceOfActiveSet() const {
 bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) const {
   for (size_t d = 0; d < minimumLevelVector.size(); ++d) {
     if (level[d] > minimumLevelVector[d]) {
-      auto neighborLevel = level;
+      LevelVector neighborLevel = level;
       neighborLevel[d] -= 1;
-      bool isInOldSet = std::find(oldSet.begin(), oldSet.end(), neighborLevel) != oldSet.end();
+      const bool isInOldSet = (std::find(oldSet.begin(), oldSet.end(), neighborLevel) !=
+                               oldSet.end());
+
       if (!isInOldSet) {
         return false;
       }
     }
   }
+
   return true;
 }
 
 void AdaptiveCombinationGridGenerator::addNeighborsToActiveSet(const LevelVector& level) {
   for (size_t d = 0; d < level.size(); ++d) {
-    auto neighborLevel = level;
+    LevelVector neighborLevel = level;
     neighborLevel[d] += 1;
+
     if (isAdmissible(neighborLevel)) {
       activeSet.push_back(neighborLevel);
     }

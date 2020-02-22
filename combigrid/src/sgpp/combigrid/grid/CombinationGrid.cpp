@@ -280,11 +280,12 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
 std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
                                             LevelVector lowestLevelVector) {
   assert(lowestLevelVector.size() == subspaceLevels[0].size());
-  auto downwardClosedSet = subspaceLevels;
+  std::vector<LevelVector> downwardClosedSet = subspaceLevels;
+
   // for each subspace level, ...
   for (const LevelVector& subspaceLevel : subspaceLevels) {
     // add the full hypercube of lower levels, if not already present
-    for (const auto& level : hyperCubeOfLevelVectors(subspaceLevel, lowestLevelVector)) {
+    for (const LevelVector& level : hyperCubeOfLevelVectors(subspaceLevel, lowestLevelVector)) {
       if (std::find(downwardClosedSet.begin(), downwardClosedSet.end(), level) ==
           downwardClosedSet.end()) {
         downwardClosedSet.push_back(level);
