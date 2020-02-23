@@ -496,7 +496,7 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
       LevelVector{1, 0, 0}, LevelVector{1, 0, 1}, LevelVector{1, 0, 2}, LevelVector{1, 0, 3},
   };
 
-  auto downwardClosedSet = LevelVectorTools::makeDownwardClosed(subspaces, LevelVector{0, 0, 0});
+  auto downwardClosedSet = LevelVectorTools::makeDownwardClosed(LevelVector{0, 0, 0}, subspaces);
 
   BOOST_CHECK_EQUAL_COLLECTIONS(downwardClosedSetSolution.begin(), downwardClosedSetSolution.end(),
                                 downwardClosedSet.begin(), downwardClosedSet.end());

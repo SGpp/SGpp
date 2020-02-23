@@ -99,15 +99,15 @@ std::vector<LevelVector> LevelVectorTools::generateDiagonalWithoutBoundary(
 }
 
 std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
-    const std::vector<LevelVector>& subspaceLevels, LevelVector lowestLevelVector) {
-  assert(lowestLevelVector.size() == subspaceLevels[0].size());
+    LevelVector minLevel, const std::vector<LevelVector>& subspaceLevels) {
+  assert(minLevel.size() == subspaceLevels[0].size());
   std::vector<LevelVector> downwardClosedVector;
   std::unordered_set<LevelVector, LevelVectorHash> downwardClosedSet;
 
   // for each subspace level, ...
   for (const LevelVector& subspaceLevel : subspaceLevels) {
     // add the full hypercube of lower levels, if not already present
-    for (const LevelVector& level : generateHyperCube(lowestLevelVector, subspaceLevel)) {
+    for (const LevelVector& level : generateHyperCube(minLevel, subspaceLevel)) {
       if (downwardClosedSet.find(level) == downwardClosedSet.end()) {
         downwardClosedVector.push_back(level);
         downwardClosedSet.insert(level);

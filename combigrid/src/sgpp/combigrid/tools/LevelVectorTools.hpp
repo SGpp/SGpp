@@ -82,13 +82,14 @@ class LevelVectorTools {
   /**
    * @brief Make any level set a downward closed one.
    *
-   * @param subspaceLevels      an arbitrary level set
-   * @param lowestLevelVector   the minimum level vector, a vector of zeros or ones would be a
-   *                                standard choice
+   * @param minLevel        the minimum level vector, a vector of zeros or ones would be a
+   *                            standard choice
+   * @param subspaceLevels  an arbitrary level set
    * @return the updated, downward closed level set containing subspaceLevels
    */
-  static std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
-                                                     LevelVector lowestLevelVector);
+  static std::vector<LevelVector> makeDownwardClosed(
+      LevelVector minLevel,
+      const std::vector<LevelVector>& subspaceLevels);
 
   class LevelVectorHash {
    public:

@@ -43,7 +43,7 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
   }
 
   const std::vector<LevelVector> downwardClosedLevelSet =
-      LevelVectorTools::makeDownwardClosed(levelVectors, minimumLevelVector);
+      LevelVectorTools::makeDownwardClosed(minimumLevelVector, levelVectors);
 
   for (const LevelVector& level : downwardClosedLevelSet) {
     subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
