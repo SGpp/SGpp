@@ -21,30 +21,30 @@ class LevelVectorTools {
   LevelVectorTools() = delete;
 
   /**
-   * @brief Get a hypercube of all level vectors between and including minLevel and maxLevel.
+   * @brief Enumerate all levels in the hypercube between and including minLevel and maxLevel.
    *
    * @param minLevel  the minimum level vector
    * @param maxLevel  the maximum level vector
-   * @return a lexicographically ordered vector of level vectors in the hypercube
+   * @return a colexicographically ordered vector of level vectors in the hypercube
    */
   static std::vector<LevelVector> generateHyperCube(const LevelVector& minLevel,
                                                     const LevelVector& maxLevel);
 
   /**
-   * @brief Get a hypercube of all level vectors between and including \f$(0, \dotsc, 0)\f$ and
+   * @brief Enumerate all levels in the hypercube between and including \f$(0, \dotsc, 0)\f$ and
    * maxLevel.
    *
    * @param maxLevel  the maximum level vector
-   * @return a lexicographically ordered vector of level vectors in the hypercube
+   * @return a colexicographically ordered vector of level vectors in the hypercube
    */
   static std::vector<LevelVector> generateHyperCubeWithBoundary(const LevelVector& maxLevel);
 
   /**
-   * @brief Get a hypercube of all level vectors between and including \f$(1, \dotsc, 1)\f$ and
+   * @brief Enumerate all levels in the hypercube between and including \f$(1, \dotsc, 1)\f$ and
    * maxLevel.
    *
    * @param maxLevel  the maximum level vector
-   * @return a lexicographically ordered vector of level vectors in the hypercube
+   * @return a colexicographically ordered vector of level vectors in the hypercube
    */
   static std::vector<LevelVector> generateHyperCubeWithoutBoundary(const LevelVector& maxLevel);
 
@@ -55,7 +55,7 @@ class LevelVectorTools {
    *
    * @param minLevel  the minimum level vector
    * @param levelSum  level sum
-   * @return vector of levels of desired level sum
+   * @return a colexicographically ordered vector of levels of desired level sum
    */
   static std::vector<LevelVector> generateDiagonal(const LevelVector& minLevel, level_t levelSum);
 
@@ -65,7 +65,7 @@ class LevelVectorTools {
    *
    * @param dim       dimensionality
    * @param levelSum  level sum
-   * @return vector of levels of desired level sum (with boundary)
+   * @return a colexicographically ordered vector of levels of desired level sum (with boundary)
    */
   static std::vector<LevelVector> generateDiagonalWithBoundary(size_t dim, level_t levelSum);
 
@@ -75,7 +75,7 @@ class LevelVectorTools {
    *
    * @param dim       dimensionality
    * @param levelSum  level sum
-   * @return vector of levels of desired level sum (without boundary)
+   * @return a colexicographically ordered vector of levels of desired level sum (without boundary)
    */
   static std::vector<LevelVector> generateDiagonalWithoutBoundary(size_t dim, level_t levelSum);
 
@@ -91,12 +91,36 @@ class LevelVectorTools {
                                                      LevelVector lowestLevelVector);
 
  protected:
+  /**
+   * @brief Enumerate all levels in the hypercube between and including minLevel and maxLevel
+   * (internal recursive function).
+   *
+   * @param[in] minLevel  the minimum level vector
+   * @param[in] maxLevel  the maximum level vector
+   * @param[in] curLevel  the current level vector, \c curLevel[d] won't be modified anymore for
+   *                      \f$d >= \mathrm{curDim}\f$
+   * @param[in] curDim    the dimension of the remaining hypercube
+   * @param[out] result   a colexicographically ordered vector of level vectors in the hypercube
+   */
   static void generateHyperCubeRecursive(const LevelVector& minLevel,
                                          const LevelVector& maxLevel,
                                          LevelVector& curLevel,
                                          size_t curDim,
                                          std::vector<LevelVector>& result);
 
+  /**
+   * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
+   * with \f$\sum_{d=1}^{dim} \ell_d = \mathrm{levelSum}\f$ and
+   * \f$\ell_d \ge \textrm{minLevel}_d\f$ for all \f$d\f$ (internal recursive function).
+   *
+   * @param[in] minLevel      the minimum level vector
+   * @param[in] minLevelSum   level sum of \c minLevel
+   * @param[in] levelSum      level sum
+   * @param[in] curLevel      the current level vector, \c curLevel[d] won't be modified anymore for
+   *                              \f$d >= \mathrm{curDim}\f$
+   * @param[in] curDim        the dimension of the remaining diagonal
+   * @param[out] result       a colexicographically ordered vector of levels of desired level sum
+   */
   static void generateDiagonalRecursive(const LevelVector& minLevel,
                                         level_t minLevelSum,
                                         level_t levelSum,
