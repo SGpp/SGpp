@@ -491,9 +491,9 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
                                         LevelVector{1, 0, 3}};
 
   std::vector<LevelVector> downwardClosedSetSolution = {
-      LevelVector{0, 0, 0}, LevelVector{0, 0, 1}, LevelVector{0, 0, 2}, LevelVector{0, 0, 3},
-      LevelVector{0, 1, 0}, LevelVector{0, 1, 1}, LevelVector{0, 2, 0}, LevelVector{0, 2, 1},
-      LevelVector{1, 0, 0}, LevelVector{1, 0, 1}, LevelVector{1, 0, 2}, LevelVector{1, 0, 3},
+      LevelVector{0, 0, 0}, LevelVector{1, 0, 0}, LevelVector{0, 1, 0}, LevelVector{0, 2, 0},
+      LevelVector{0, 0, 1}, LevelVector{1, 0, 1}, LevelVector{0, 1, 1}, LevelVector{0, 2, 1},
+      LevelVector{0, 0, 2}, LevelVector{1, 0, 2}, LevelVector{0, 0, 3}, LevelVector{1, 0, 3},
   };
 
   auto downwardClosedSet = LevelVectorTools::makeDownwardClosed(LevelVector{0, 0, 0}, subspaces);

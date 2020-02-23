@@ -102,7 +102,7 @@ std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
     LevelVector minLevel, const std::vector<LevelVector>& subspaceLevels) {
   assert(minLevel.size() == subspaceLevels[0].size());
   std::vector<LevelVector> downwardClosedVector;
-  std::unordered_set<LevelVector, LevelVectorHash> downwardClosedSet;
+  std::unordered_set<LevelVector, Hash> downwardClosedSet;
 
   // for each subspace level, ...
   for (const LevelVector& subspaceLevel : subspaceLevels) {
@@ -115,8 +115,12 @@ std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
     }
   }
 
-  std::sort(downwardClosedVector.begin(), downwardClosedVector.end());
+  sort(downwardClosedVector);
   return downwardClosedVector;
+}
+
+void LevelVectorTools::sort(std::vector<LevelVector>& levels) {
+  std::sort(levels.begin(), levels.end(), compareLower);
 }
 
 }  // namespace combigrid

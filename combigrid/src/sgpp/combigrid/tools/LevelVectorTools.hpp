@@ -8,6 +8,7 @@
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <vector>
 
 namespace sgpp {
@@ -91,7 +92,9 @@ class LevelVectorTools {
       LevelVector minLevel,
       const std::vector<LevelVector>& subspaceLevels);
 
-  class LevelVectorHash {
+  static void sort(std::vector<LevelVector>& levels);
+
+  class Hash {
    public:
     size_t operator()(const LevelVector& level) const {
       std::hash<level_t> hasher;
@@ -102,6 +105,21 @@ class LevelVectorTools {
       return seed;
     }
   };
+
+  static bool compareLower(const LevelVector& a, const LevelVector& b) {
+    for (size_t dim = 0; dim < std::min(a.size(), b.size()); ++dim) {
+      const size_t i = a.size() - dim - 1;
+      const size_t j = b.size() - dim - 1;
+
+      if (a[i] < b[j]) {
+        return true;
+      } else if (a[i] > b[j]) {
+        return false;
+      }
+    }
+
+    return (a.size() < b.size());
+  }
 
  protected:
   /**
