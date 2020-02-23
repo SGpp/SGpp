@@ -15,41 +15,27 @@ namespace combigrid {
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCube(
     const LevelVector& minLevel, const LevelVector& maxLevel) {
+  LevelVector curLevel = minLevel;
+  const size_t curDim = curLevel.size();
   std::vector<LevelVector> result;
-  generateHyperCubeRecursive(minLevel, maxLevel, LevelVector{}, result);
+  generateHyperCubeRecursive(minLevel, maxLevel, curLevel, curDim, result);
   return result;
 }
 
-void LevelVectorTools::generateHyperCubeRecursiveLastDim(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix,
-    std::vector<LevelVector>& result) {
-  assert(suffix.size() == minLevel.size() - 1);
-  LevelVector current{0};
-  current.insert(current.end(), suffix.begin(), suffix.end());
-
-  for (level_t l = minLevel.back(); l <= maxLevel.back(); ++l) {
-    current[0] = l;
-    result.push_back(current);
-  }
-}
-
 void LevelVectorTools::generateHyperCubeRecursive(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix,
-    std::vector<LevelVector>& result) {
-  const size_t dim = minLevel.size();
-  const size_t currentDim = dim - suffix.size();
-
+    const LevelVector& minLevel, const LevelVector& maxLevel, LevelVector& curLevel,
+    size_t curDim, std::vector<LevelVector>& result) {
   // if we are at the last dimension, add one one-dimensional row of the hypercube
-  if (currentDim == 1) {
-    generateHyperCubeRecursiveLastDim(minLevel, maxLevel, suffix, result);
+  if (curDim == 1) {
+    for (level_t l = minLevel[0]; l <= maxLevel[0]; ++l) {
+      curLevel[0] = l;
+      result.push_back(curLevel);
+    }
   } else {
-    LevelVector newSuffix{0};
-    newSuffix.insert(newSuffix.end(), suffix.begin(), suffix.end());
-
     // else, recurse to the next dimension
-    for (level_t l = minLevel[currentDim - 1]; l <= maxLevel[currentDim - 1]; ++l) {
-      newSuffix[0] = l;
-      generateHyperCubeRecursive(minLevel, maxLevel, newSuffix, result);
+    for (level_t l = minLevel[curDim - 1]; l <= maxLevel[curDim - 1]; ++l) {
+      curLevel[curDim - 1] = l;
+      generateHyperCubeRecursive(minLevel, maxLevel, curLevel, curDim - 1, result);
     }
   }
 }
