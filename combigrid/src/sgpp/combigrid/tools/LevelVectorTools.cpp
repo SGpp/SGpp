@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <unordered_set>
 #include <vector>
 
 namespace sgpp {
@@ -100,21 +101,22 @@ std::vector<LevelVector> LevelVectorTools::generateDiagonalWithoutBoundary(
 std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
     const std::vector<LevelVector>& subspaceLevels, LevelVector lowestLevelVector) {
   assert(lowestLevelVector.size() == subspaceLevels[0].size());
-  std::vector<LevelVector> downwardClosedSet = subspaceLevels;
+  std::vector<LevelVector> downwardClosedVector;
+  std::unordered_set<LevelVector, LevelVectorHash> downwardClosedSet;
 
   // for each subspace level, ...
   for (const LevelVector& subspaceLevel : subspaceLevels) {
     // add the full hypercube of lower levels, if not already present
     for (const LevelVector& level : generateHyperCube(lowestLevelVector, subspaceLevel)) {
-      if (std::find(downwardClosedSet.begin(), downwardClosedSet.end(), level) ==
-          downwardClosedSet.end()) {
-        downwardClosedSet.push_back(level);
+      if (downwardClosedSet.find(level) == downwardClosedSet.end()) {
+        downwardClosedVector.push_back(level);
+        downwardClosedSet.insert(level);
       }
     }
   }
 
-  std::sort(downwardClosedSet.begin(), downwardClosedSet.end());
-  return downwardClosedSet;
+  std::sort(downwardClosedVector.begin(), downwardClosedVector.end());
+  return downwardClosedVector;
 }
 
 }  // namespace combigrid

@@ -90,6 +90,18 @@ class LevelVectorTools {
   static std::vector<LevelVector> makeDownwardClosed(const std::vector<LevelVector>& subspaceLevels,
                                                      LevelVector lowestLevelVector);
 
+  class LevelVectorHash {
+   public:
+    size_t operator()(const LevelVector& level) const {
+      std::hash<level_t> hasher;
+      size_t seed = 0;
+      for (level_t l : level) {
+        seed ^= hasher(l) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+      }
+      return seed;
+    }
+  };
+
  protected:
   /**
    * @brief Enumerate all levels in the hypercube between and including minLevel and maxLevel
