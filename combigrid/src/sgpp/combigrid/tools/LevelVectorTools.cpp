@@ -15,35 +15,33 @@ namespace combigrid {
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCube(
     const LevelVector& minLevel, const LevelVector& maxLevel) {
-  return generateHyperCubeRecursive(minLevel, maxLevel, LevelVector{});
+  std::vector<LevelVector> result;
+  generateHyperCubeRecursive(minLevel, maxLevel, LevelVector{}, result);
+  return result;
 }
 
-std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursiveLastDim(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix) {
+void LevelVectorTools::generateHyperCubeRecursiveLastDim(
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix,
+    std::vector<LevelVector>& result) {
   assert(suffix.size() == minLevel.size() - 1);
-  std::vector<LevelVector> oneDRange;
   LevelVector current{0};
   current.insert(current.end(), suffix.begin(), suffix.end());
 
   for (level_t l = minLevel.back(); l <= maxLevel.back(); ++l) {
     current[0] = l;
-    oneDRange.push_back(current);
+    result.push_back(current);
   }
-
-  return oneDRange;
 }
 
-std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix) {
-  std::vector<LevelVector> currentVector;
+void LevelVectorTools::generateHyperCubeRecursive(
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix,
+    std::vector<LevelVector>& result) {
   const size_t dim = minLevel.size();
   const size_t currentDim = dim - suffix.size();
 
   // if we are at the last dimension, add one one-dimensional row of the hypercube
   if (currentDim == 1) {
-    const std::vector<LevelVector> newPole =
-        generateHyperCubeRecursiveLastDim(minLevel, maxLevel, suffix);
-    currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
+    generateHyperCubeRecursiveLastDim(minLevel, maxLevel, suffix, result);
   } else {
     LevelVector newSuffix{0};
     newSuffix.insert(newSuffix.end(), suffix.begin(), suffix.end());
@@ -51,13 +49,9 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
     // else, recurse to the next dimension
     for (level_t l = minLevel[currentDim - 1]; l <= maxLevel[currentDim - 1]; ++l) {
       newSuffix[0] = l;
-      const std::vector<LevelVector> newHypercube =
-          generateHyperCubeRecursive(minLevel, maxLevel, newSuffix);
-      currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
+      generateHyperCubeRecursive(minLevel, maxLevel, newSuffix, result);
     }
   }
-
-  return currentVector;
 }
 
 std::vector<LevelVector> LevelVectorTools::generateDiagonal(

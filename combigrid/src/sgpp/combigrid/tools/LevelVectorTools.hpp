@@ -73,12 +73,15 @@ class LevelVectorTools {
                                                      LevelVector lowestLevelVector);
 
  protected:
-  static std::vector<LevelVector> generateHyperCubeRecursiveLastDim(const LevelVector& minLevel,
-                                                                    const LevelVector& maxLevel,
-                                                                    const LevelVector& suffix);
-  static std::vector<LevelVector> generateHyperCubeRecursive(const LevelVector& minLevel,
-                                                             const LevelVector& maxLevel,
-                                                             const LevelVector& suffix);
+  static void generateHyperCubeRecursiveLastDim(const LevelVector& minLevel,
+                                                const LevelVector& maxLevel,
+                                                const LevelVector& suffix,
+                                                std::vector<LevelVector>& result);
+
+  static void generateHyperCubeRecursive(const LevelVector& minLevel,
+                                         const LevelVector& maxLevel,
+                                         const LevelVector& suffix,
+                                         std::vector<LevelVector>& result);
 
   static void generateDiagonalRecursive(const LevelVector& minLevel,
                                         level_t minLevelSum,
