@@ -40,6 +40,16 @@ void LevelVectorTools::generateHyperCubeRecursive(
   }
 }
 
+std::vector<LevelVector> LevelVectorTools::generateHyperCubeWithBoundary(
+    const LevelVector& maxLevel) {
+  return generateHyperCube(LevelVector(maxLevel.size(), 0), maxLevel);
+}
+
+std::vector<LevelVector> LevelVectorTools::generateHyperCubeWithoutBoundary(
+    const LevelVector& maxLevel) {
+  return generateHyperCube(LevelVector(maxLevel.size(), 1), maxLevel);
+}
+
 std::vector<LevelVector> LevelVectorTools::generateDiagonal(
     const LevelVector& minLevel, level_t levelSum) {
   if (minLevel.empty()) {

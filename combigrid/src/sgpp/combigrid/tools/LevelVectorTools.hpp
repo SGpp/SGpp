@@ -31,6 +31,24 @@ class LevelVectorTools {
                                                     const LevelVector& maxLevel);
 
   /**
+   * @brief Get a hypercube of all level vectors between and including \f$(0, \dotsc, 0)\f$ and
+   * maxLevel.
+   *
+   * @param maxLevel  the maximum level vector
+   * @return a lexicographically ordered vector of level vectors in the hypercube
+   */
+  static std::vector<LevelVector> generateHyperCubeWithBoundary(const LevelVector& maxLevel);
+
+  /**
+   * @brief Get a hypercube of all level vectors between and including \f$(1, \dotsc, 1)\f$ and
+   * maxLevel.
+   *
+   * @param maxLevel  the maximum level vector
+   * @return a lexicographically ordered vector of level vectors in the hypercube
+   */
+  static std::vector<LevelVector> generateHyperCubeWithoutBoundary(const LevelVector& maxLevel);
+
+  /**
    * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
    * with \f$\sum_{d=1}^{dim} \ell_d = \mathrm{levelSum}\f$ and
    * \f$\ell_d \ge \textrm{minLevel}_d\f$ for all \f$d\f$.
