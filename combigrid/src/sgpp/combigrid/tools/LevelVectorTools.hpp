@@ -82,7 +82,8 @@ class LevelVectorTools {
   static void generateDiagonalRecursive(const LevelVector& minLevel,
                                         level_t minLevelSum,
                                         level_t levelSum,
-                                        const LevelVector& suffix,
+                                        LevelVector& curLevel,
+                                        size_t curDim,
                                         std::vector<LevelVector>& result);
 };
 

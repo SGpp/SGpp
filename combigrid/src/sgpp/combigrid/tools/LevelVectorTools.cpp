@@ -50,33 +50,29 @@ std::vector<LevelVector> LevelVectorTools::generateDiagonal(
     }
   } else {
     const level_t minLevelSum = std::accumulate(minLevel.begin(), minLevel.end(), 0);
+    LevelVector curLevel = minLevel;
+    const size_t curDim = curLevel.size();
     std::vector<LevelVector> result;
-    generateDiagonalRecursive(minLevel, minLevelSum, levelSum, LevelVector{}, result);
+    generateDiagonalRecursive(minLevel, minLevelSum, levelSum, curLevel, curDim, result);
     return result;
   }
 }
 
 void LevelVectorTools::generateDiagonalRecursive(
-    const LevelVector& minLevel, level_t minLevelSum, level_t levelSum, const LevelVector& suffix,
-    std::vector<LevelVector>& result) {
-  const size_t dim = minLevel.size();
-  const size_t currentDim = dim - suffix.size();
-
+    const LevelVector& minLevel, level_t minLevelSum, level_t levelSum, LevelVector& curLevel,
+    size_t curDim, std::vector<LevelVector>& result) {
   if (levelSum < minLevelSum) {
     return;
-  } else if (currentDim == 1) {
-    LevelVector l{levelSum};
-    l.insert(l.end(), suffix.begin(), suffix.end());
-    result.push_back(l);
+  } else if (curDim == 1) {
+    curLevel[0] = levelSum;
+    result.push_back(curLevel);
   } else {
-    const level_t newMinLevelSum = minLevelSum - minLevel[currentDim - 1];
-    LevelVector newSuffix{0};
-    newSuffix.insert(newSuffix.end(), suffix.begin(), suffix.end());
+    const level_t newMinLevelSum = minLevelSum - minLevel[curDim - 1];
 
-    for (level_t l = minLevel[currentDim - 1]; l <= levelSum - newMinLevelSum; l++) {
-      newSuffix[0] = l;
+    for (level_t l = minLevel[curDim - 1]; l <= levelSum - newMinLevelSum; l++) {
+      curLevel[curDim - 1] = l;
       generateDiagonalRecursive(
-          minLevel, newMinLevelSum, levelSum - l, newSuffix, result);
+          minLevel, newMinLevelSum, levelSum - l, curLevel, curDim - 1, result);
     }
   }
 }
