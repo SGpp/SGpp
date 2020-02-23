@@ -23,12 +23,12 @@ class LevelVectorTools {
   /**
    * @brief Get a hypercube of all level vectors between and including minLevel and maxLevel.
    *
+   * @param minLevel  the minimum level vector
    * @param maxLevel  the maximum level vector
-   * @param minLevel  the minimum level vector, must not be larger than maxLevel in any dimension
    * @return a lexicographically ordered vector of level vectors in the hypercube
    */
-  static std::vector<LevelVector> generateHyperCube(const LevelVector& maxLevel,
-                                                    const LevelVector& minLevel);
+  static std::vector<LevelVector> generateHyperCube(const LevelVector& minLevel,
+                                                    const LevelVector& maxLevel);
 
   /**
    * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
@@ -73,11 +73,11 @@ class LevelVectorTools {
                                                      LevelVector lowestLevelVector);
 
  protected:
-  static std::vector<LevelVector> generateHyperCubeRecursiveLastDim(const LevelVector& maxLevel,
-                                                                    const LevelVector& minLevel,
+  static std::vector<LevelVector> generateHyperCubeRecursiveLastDim(const LevelVector& minLevel,
+                                                                    const LevelVector& maxLevel,
                                                                     const LevelVector& prefix);
-  static std::vector<LevelVector> generateHyperCubeRecursive(const LevelVector& maxLevel,
-                                                             const LevelVector& minLevel,
+  static std::vector<LevelVector> generateHyperCubeRecursive(const LevelVector& minLevel,
+                                                             const LevelVector& maxLevel,
                                                              const LevelVector& prefix);
 
   static void generateDiagonalRecursive(const LevelVector& minLevel,

@@ -118,7 +118,7 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   }
 
   std::vector<LevelVector> lowerHypercube =
-      LevelVectorTools::generateHyperCube(levelVector, levelVectorMinusOne);
+      LevelVectorTools::generateHyperCube(levelVectorMinusOne, levelVector);
   lowerHypercube.pop_back();
 
   // TODO(pollinta): simplify Hamming distance calculation

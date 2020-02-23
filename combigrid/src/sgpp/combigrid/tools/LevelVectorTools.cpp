@@ -14,12 +14,12 @@ namespace sgpp {
 namespace combigrid {
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCube(
-    const LevelVector& maxLevel, const LevelVector& minLevel) {
-  return generateHyperCubeRecursive(maxLevel, minLevel, LevelVector{});
+    const LevelVector& minLevel, const LevelVector& maxLevel) {
+  return generateHyperCubeRecursive(minLevel, maxLevel, LevelVector{});
 }
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursiveLastDim(
-    const LevelVector& maxLevel, const LevelVector& minLevel, const LevelVector& prefix) {
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& prefix) {
   assert(prefix.size() == minLevel.size() - 1);
   assert(minLevel.back() <= maxLevel.back());
   std::vector<LevelVector> oneDRange;
@@ -35,14 +35,14 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursiveLastDim(
 }
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
-    const LevelVector& maxLevel, const LevelVector& minLevel, const LevelVector& prefix) {
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& prefix) {
   std::vector<LevelVector> currentVector;
   const size_t currentDim = prefix.size();
 
   // if we are at the last dimension, add one one-dimensional row of the hypercube
   if (currentDim == minLevel.size() - 1) {
     const std::vector<LevelVector> newPole =
-        generateHyperCubeRecursiveLastDim(maxLevel, minLevel, prefix);
+        generateHyperCubeRecursiveLastDim(minLevel, maxLevel, prefix);
     currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
   } else {
     LevelVector newPrefix = prefix;
@@ -52,7 +52,7 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
     for (level_t l = minLevel[currentDim]; l <= maxLevel[currentDim]; ++l) {
       newPrefix[prefix.size()] = l;
       const std::vector<LevelVector> newHypercube =
-          generateHyperCubeRecursive(maxLevel, minLevel, newPrefix);
+          generateHyperCubeRecursive(minLevel, maxLevel, newPrefix);
       currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
     }
   }
@@ -119,7 +119,7 @@ std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
   // for each subspace level, ...
   for (const LevelVector& subspaceLevel : subspaceLevels) {
     // add the full hypercube of lower levels, if not already present
-    for (const LevelVector& level : generateHyperCube(subspaceLevel, lowestLevelVector)) {
+    for (const LevelVector& level : generateHyperCube(lowestLevelVector, subspaceLevel)) {
       if (std::find(downwardClosedSet.begin(), downwardClosedSet.end(), level) ==
           downwardClosedSet.end()) {
         downwardClosedSet.push_back(level);
