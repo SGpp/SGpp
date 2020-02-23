@@ -21,7 +21,7 @@ class LevelVectorTools {
   LevelVectorTools() = delete;
 
   /**
-   * @brief get a hypercube of all level vectors between and including minLevel and maxLevel
+   * @brief Get a hypercube of all level vectors between and including minLevel and maxLevel.
    *
    * @param maxLevel  the maximum level vector
    * @param minLevel  the minimum level vector, must not be larger than maxLevel in any dimension
@@ -31,27 +31,38 @@ class LevelVectorTools {
                                                     const LevelVector& minLevel);
 
   /**
-   * @brief enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
-   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
+   * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
+   * with \f$\sum_{d=1}^{dim} \ell_d = \mathrm{levelSum}\f$ and
+   * \f$\ell_d \ge \textrm{minLevel}_d\f$ for all \f$d\f$.
    *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (with boundary)
+   * @param minLevel  the minimum level vector
+   * @param levelSum  level sum
+   * @return vector of levels of desired level sum
    */
-  static std::vector<LevelVector> generateDiagonalWithBoundary(size_t dim, level_t n);
+  static std::vector<LevelVector> generateDiagonal(const LevelVector& minLevel, level_t levelSum);
 
   /**
-   * @brief enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 1}^{dim}\f$
+   * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
    * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
    *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (without boundary)
+   * @param dim       dimensionality
+   * @param levelSum  level sum
+   * @return vector of levels of desired level sum (with boundary)
    */
-  static std::vector<LevelVector> generateDiagonalWithoutBoundary(size_t dim, level_t n);
+  static std::vector<LevelVector> generateDiagonalWithBoundary(size_t dim, level_t levelSum);
 
   /**
-   * @brief Make any level set a downward closed one
+   * @brief Enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 1}^{dim}\f$
+   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
+   *
+   * @param dim       dimensionality
+   * @param levelSum  level sum
+   * @return vector of levels of desired level sum (without boundary)
+   */
+  static std::vector<LevelVector> generateDiagonalWithoutBoundary(size_t dim, level_t levelSum);
+
+  /**
+   * @brief Make any level set a downward closed one.
    *
    * @param subspaceLevels      an arbitrary level set
    * @param lowestLevelVector   the minimum level vector, a vector of zeros or ones would be a
@@ -68,6 +79,11 @@ class LevelVectorTools {
   static std::vector<LevelVector> generateHyperCubeRecursive(const LevelVector& maxLevel,
                                                              const LevelVector& minLevel,
                                                              const LevelVector& prefix);
+
+  static std::vector<LevelVector> generateDiagonalRecursive(const LevelVector& minLevel,
+                                                            level_t minLevelSum,
+                                                            level_t levelSum,
+                                                            const LevelVector& prefix);
 };
 
 }  // namespace combigrid

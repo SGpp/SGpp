@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 #include <vector>
 
 namespace sgpp {
@@ -59,44 +60,56 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
   return currentVector;
 }
 
-std::vector<LevelVector> LevelVectorTools::generateDiagonalWithBoundary(size_t dim, level_t n) {
-  if (dim == 0) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else if (n == 0) {
-    return std::vector<LevelVector>{LevelVector(dim, 0)};
+std::vector<LevelVector> LevelVectorTools::generateDiagonal(
+    const LevelVector& minLevel, level_t levelSum) {
+  if (minLevel.empty()) {
+    if (levelSum == 0) {
+      return std::vector<LevelVector>{LevelVector{}};
+    } else {
+      return std::vector<LevelVector>{};
+    }
   } else {
-    std::vector<LevelVector> result;
+    const level_t minLevelSum = std::accumulate(minLevel.begin(), minLevel.end(), 0);
+    return generateDiagonalRecursive(minLevel, minLevelSum, levelSum, LevelVector{});
+  }
+}
 
-    for (level_t l = 0; l <= n; l++) {
-      for (LevelVector& level : generateDiagonalWithBoundary(dim - 1, n - l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
+std::vector<LevelVector> LevelVectorTools::generateDiagonalRecursive(
+    const LevelVector& minLevel, level_t minLevelSum, level_t levelSum, const LevelVector& prefix) {
+  const size_t dim = minLevel.size();
+  const size_t currentDim = prefix.size();
+
+  if (levelSum < minLevelSum) {
+    return std::vector<LevelVector>{};
+  } else if (currentDim == dim - 1) {
+    LevelVector l = prefix;
+    l.push_back(levelSum);
+    return std::vector<LevelVector>{l};
+  } else {
+    const level_t newMinLevelSum = minLevelSum - minLevel[currentDim];
+    std::vector<LevelVector> result;
+    LevelVector newPrefix = prefix;
+    newPrefix.push_back(0);
+
+    for (level_t l = minLevel[currentDim]; l <= levelSum - newMinLevelSum; l++) {
+      newPrefix[currentDim] = l;
+      const std::vector<LevelVector> newResult = generateDiagonalRecursive(
+          minLevel, newMinLevelSum, levelSum - l, newPrefix);
+      result.insert(result.end(), newResult.begin(), newResult.end());
     }
 
     return result;
   }
 }
 
-std::vector<LevelVector> LevelVectorTools::generateDiagonalWithoutBoundary(size_t dim, level_t n) {
-  if ((dim == 0) || (n < dim)) {
-    return std::vector<LevelVector>();
-  } else if (dim == 1) {
-    return std::vector<LevelVector>{LevelVector{n}};
-  } else {
-    std::vector<LevelVector> result;
+std::vector<LevelVector> LevelVectorTools::generateDiagonalWithBoundary(
+    size_t dim, level_t levelSum) {
+  return generateDiagonal(LevelVector(dim, 0), levelSum);
+}
 
-    for (level_t l = 1; l <= n - dim + 1; l++) {
-      for (LevelVector& level : generateDiagonalWithoutBoundary(dim - 1, n - l)) {
-        level.push_back(l);
-        result.push_back(level);
-      }
-    }
-
-    return result;
-  }
+std::vector<LevelVector> LevelVectorTools::generateDiagonalWithoutBoundary(
+    size_t dim, level_t levelSum) {
+  return generateDiagonal(LevelVector(dim, 1), levelSum);
 }
 
 std::vector<LevelVector> LevelVectorTools::makeDownwardClosed(
