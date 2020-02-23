@@ -83,7 +83,7 @@ class LevelVectorTools {
   static std::vector<LevelVector> generateDiagonalRecursive(const LevelVector& minLevel,
                                                             level_t minLevelSum,
                                                             level_t levelSum,
-                                                            const LevelVector& prefix);
+                                                            const LevelVector& suffix);
 };
 
 }  // namespace combigrid
