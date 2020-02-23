@@ -19,15 +19,14 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCube(
 }
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursiveLastDim(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& prefix) {
-  assert(prefix.size() == minLevel.size() - 1);
-  assert(minLevel.back() <= maxLevel.back());
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix) {
+  assert(suffix.size() == minLevel.size() - 1);
   std::vector<LevelVector> oneDRange;
-  LevelVector current = prefix;
-  current.push_back(0);
+  LevelVector current{0};
+  current.insert(current.end(), suffix.begin(), suffix.end());
 
   for (level_t l = minLevel.back(); l <= maxLevel.back(); ++l) {
-    current[prefix.size()] = l;
+    current[0] = l;
     oneDRange.push_back(current);
   }
 
@@ -35,24 +34,25 @@ std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursiveLastDim(
 }
 
 std::vector<LevelVector> LevelVectorTools::generateHyperCubeRecursive(
-    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& prefix) {
+    const LevelVector& minLevel, const LevelVector& maxLevel, const LevelVector& suffix) {
   std::vector<LevelVector> currentVector;
-  const size_t currentDim = prefix.size();
+  const size_t dim = minLevel.size();
+  const size_t currentDim = dim - suffix.size();
 
   // if we are at the last dimension, add one one-dimensional row of the hypercube
-  if (currentDim == minLevel.size() - 1) {
+  if (currentDim == 1) {
     const std::vector<LevelVector> newPole =
-        generateHyperCubeRecursiveLastDim(minLevel, maxLevel, prefix);
+        generateHyperCubeRecursiveLastDim(minLevel, maxLevel, suffix);
     currentVector.insert(currentVector.end(), newPole.begin(), newPole.end());
   } else {
-    LevelVector newPrefix = prefix;
-    newPrefix.push_back(0);
+    LevelVector newSuffix{0};
+    newSuffix.insert(newSuffix.end(), suffix.begin(), suffix.end());
 
     // else, recurse to the next dimension
-    for (level_t l = minLevel[currentDim]; l <= maxLevel[currentDim]; ++l) {
-      newPrefix[prefix.size()] = l;
+    for (level_t l = minLevel[currentDim - 1]; l <= maxLevel[currentDim - 1]; ++l) {
+      newSuffix[0] = l;
       const std::vector<LevelVector> newHypercube =
-          generateHyperCubeRecursive(minLevel, maxLevel, newPrefix);
+          generateHyperCubeRecursive(minLevel, maxLevel, newSuffix);
       currentVector.insert(currentVector.end(), newHypercube.begin(), newHypercube.end());
     }
   }
