@@ -88,5 +88,4 @@ do
 done
 
 # Cleanup
-sudo dpkg -r libsgpp-test-package_0.0-0.deb
-sudo dpkg -r libsgpp-python-test-package_0.0-0.deb
+sudo dpkg --remove libsgpp libsgpp-python
