@@ -1,6 +1,11 @@
 #!/bin/bash
 set -e
 
+# upgrade pip
+sudo -H pip3 install --upgrade pip
+# install setuptools/wheel
+sudo -H pip3 install setuptools wheel
+
 # install patchelf
 git clone https://github.com/NixOS/patchelf.git
 pushd patchelf
