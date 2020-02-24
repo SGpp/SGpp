@@ -42,6 +42,7 @@ print(("Found compiled modules: " + str(modules)))
 print("Building dependencies")
 sgpp_deps = ""
 pysgpp_deps = "libsgpp"
+jsgpp_deps = "libsgpp"
 if len(sys.argv) >= 2:
     with open(sys.argv[1], 'r') as fin:
         line = fin.readline()
@@ -58,9 +59,17 @@ if len(sys.argv) >= 2:
                 print("\t" + line.strip())
                 line = fin.readline()
         pysgpp_deps = pysgpp_deps.strip(" ,")
+        if len(sys.argv) >= 4:
+            with open(sys.argv[2], 'r') as fin:
+                line = fin.readline()
+                while line:
+                    jsgpp_deps += (", " + line.strip())
+                    print("\t" + line.strip())
+                    line = fin.readline()
+            jsgpp_deps = jsgpp_deps.strip(" ,")
 
 package_name = ""
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 5:
     print("WARNING! Running with default version numbers for automated testing!")
     major_version = "0"
     minor_version = "0"
@@ -137,7 +146,7 @@ except Exception as e:
     print((str(e)))
 
 # now create the python bindings package
-if len(sys.argv) >= 4:
+if len(sys.argv) >= 5:
     package_name = "libsgpp-python-test-package_" + major_version + "." + minor_version + "-" + package_revision
 else:
     package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
@@ -165,6 +174,43 @@ control_template = jinja2_env.get_template('control_python_template')
 rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email, pysgpp_deps=pysgpp_deps)
 with open(os.path.join(package_name, "DEBIAN/control"), "w") as f:
     # dpkg-deb requires newline at the end of the file
+    f.write(rendered + "\n")
+
+# finally, create the package
+try:
+    subprocess.check_call(["fakeroot", "dpkg-deb", "--build", package_name])
+except Exception as e:
+    print("Error: building the deb-file failed")
+    print("reason: ")
+    print((str(e)))
+
+# now create the java bindings package
+if len(sys.argv) >= 5:
+    package_name = "libsgpp-java-test-package_" + major_version + "." + minor_version + "-" + package_revision
+else:
+    package_name = "libsgpp-java_" + major_version + "." + minor_version + "-" + package_revision
+print(("java bindings package name: " + package_name))
+deb_name = package_name + ".deb"
+
+if os.path.exists(package_name):
+    print(("Aborting: build path \"" + package_name + "\" already exists (remove or create different version)"))
+    sys.exit(1)
+
+if os.path.exists(deb_name):
+    print(("Aborting: The deb file to build (\""+ deb_name + "\") already exists"))
+    sys.exit(1)
+
+os.makedirs(os.path.join(package_name, "usr/share/java/"))
+os.makedirs(os.path.join(package_name, "usr/lib/"))
+
+# copy main shared library
+shutil.copy("../../../lib/jsgpp/libjsgpp.so", os.path.join(package_name, "usr/lib/libjsgpp.so"))
+shutil.copy("../../../lib/jsgpp/jsgpp.jar", os.path.join(package_name, "usr/share/java/jsgpp.jar"))
+os.makedirs(os.path.join(package_name, "DEBIAN"))
+control_template = jinja2_env.get_template('control_java_template')
+rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email, jsgpp_deps=jsgpp_deps)
+with open(os.path.join(package_name, "DEBIAN/control"), "w") as f:
+    # dpkg-deb quires newline at the end of the file
     f.write(rendered + "\n")
 
 # finally, create the package
