@@ -9,7 +9,6 @@ cd tools/create_release/deb_package
 
 printf '\n\n\n~~~ Installing debian packages ~~~\n\n'
 sudo dpkg -i libsgpp-test-package_0.0-0.deb
-sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
 
 printf '\n\n\n~~~ Testing debian cpp package ~~~\n\n'
 cd ../../..
@@ -46,13 +45,14 @@ do
   cd "$HOME/testing_package"
   echo "... building ${target_file} into $exec_name "
   g++ ${file_name} -std=c++11 -o ${exec_name} -l sgppbase -l sgppsolver -l sgppoptimization -lsgppcombigrid
-  echo "... running ./$exec_name "
+  echo "... running ./${exec_name} "
   ./${exec_name}
   echo "... switching back into SGpp root directory"
   cd -
 done
 
 printf '\n\n\n~~~ Testing debian python package ~~~\n\n'
+sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
 mkdir -p "$HOME/testing_python_package"
 declare -a python_examples_to_test=(
                                     "base/examples/quadrature.py"
@@ -87,6 +87,35 @@ do
   cd -
 done
 
+printf '\n\n\n~~~ Testing debian java package ~~~\n\n'
+sudo dpkg -i libsgpp-java-test-package_0.0-0.deb
+mkdir -p "$HOME/testing_java_package"
+declare -a java_examples_to_test=(
+                                    "base/examples/tutorial.java"
+                                    "base/examples/refinement.java"
+                                )
+arraylength=${#java_examples_to_test[@]}
+for (( i=1; i<${arraylength}+1; i++ ));
+do
+  echo ""
+  echo "-------------------------------------------------------------"
+  echo "Python examples test" $i "of" ${arraylength} "(to be copied from " ${java_examples_to_test[$i-1]} "into test folder) : "
+  source_file=${java_examples_to_test[$i-1]}
+  file_name=$(basename $source_file)
+  target_file=$HOME/testing_java_package/${file_name}
+  echo "... copying $file_name from" $source_file " into $target_file "
+  cp ${source_file} ${target_file}
+  echo "... switching into java test folder"
+  cd "$HOME/testing_java_package"
+  exec_name=${file_name%.*}
+  echo "... building ${target_file} into $exec_name "
+  export CLASSPATH=/usr/share/java/jsgpp.jar:$(pwd)
+  javac ${file_name}
+  echo "... running ./${exec_name} "
+  java ${exec_name}
+  echo "... switching back into SGpp root directory"
+  cd -
+done
+
 # Cleanup
-sudo dpkg -r libsgpp-test-package_0.0-0.deb
-sudo dpkg -r libsgpp-python-test-package_0.0-0.deb
+sudo dpkg --remove libsgpp-test-package libsgpp-python-test-package libsgpp-java-test-package
