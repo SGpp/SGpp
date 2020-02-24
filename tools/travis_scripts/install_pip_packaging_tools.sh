@@ -1,5 +1,5 @@
-#!/bin/sh
-set -ex
+#!/bin/bash
+set -e
 
 # install patchelf
 git clone https://github.com/NixOS/patchelf.git
