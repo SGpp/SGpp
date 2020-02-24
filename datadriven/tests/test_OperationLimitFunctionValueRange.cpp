@@ -45,27 +45,30 @@ double sin(DataVector& x) {
   return result;
 }
 
-void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_t refnums,
-                                 size_t side,
-                                 MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                                 double (*f)(DataVector&), double ylower, double yupper,
-                                 double tol = 1e-12, bool verbose = false) {
+void testLimitFunctionValueRange(
+    Grid& grid, size_t numDims, size_t level, size_t refnums, size_t side,
+    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    double (*f)(DataVector&), double ylower, double yupper, double tol = 1e-12,
+    bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
   GridStorage& gridStorage = grid.getStorage();
   grid.getGenerator().regular(level);
   if (verbose) {
-    std::cout << "========================================================" << std::endl;
-    std::cout << "dimensionality               : " << gridStorage.getDimension() << std::endl;
+    std::cout << "========================================================"
+              << std::endl;
+    std::cout << "dimensionality               : " << gridStorage.getDimension()
+              << std::endl;
     std::cout << "level                        : " << level << std::endl;
-    std::cout << "number of initial grid points: " << gridStorage.getSize() << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
+    std::cout << "number of initial grid points: " << gridStorage.getSize()
+              << std::endl;
+    std::cout << "--------------------------------------------------------"
+              << std::endl;
   }
 
   // create coefficient vector
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
 
   DataVector x(gridStorage.getDimension());
   // set function values in alpha
@@ -98,31 +101,38 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
         sgpp::op_factory::createOperationHierarchisation(grid));
     opHier->doHierarchisation(alpha);
     if (verbose) {
-      std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-                << std::endl;
+      std::cout << "refinement step " << step + 1
+                << ", new grid size: " << alpha.getSize() << std::endl;
     }
   }
 
-  size_t numFullGridPoints =
-      static_cast<size_t>(std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
+  size_t numFullGridPoints = static_cast<size_t>(
+      std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
   size_t maxLevel = gridStorage.getMaxLevel();
   if (verbose) {
     if (refnums > 0) {
-      std::cout << "--------------------------------------------------------" << std::endl;
-      std::cout << "level after refinement       : " << gridStorage.getMaxLevel() << std::endl;
-      std::cout << "grid size after refinement   : " << gridStorage.getSize() << std::endl;
-      std::cout << "--------------------------------------------------------" << std::endl;
+      std::cout << "--------------------------------------------------------"
+                << std::endl;
+      std::cout << "level after refinement       : "
+                << gridStorage.getMaxLevel() << std::endl;
+      std::cout << "grid size after refinement   : " << gridStorage.getSize()
+                << std::endl;
+      std::cout << "--------------------------------------------------------"
+                << std::endl;
     }
 
     std::cout << "number of full grid points   : " << numFullGridPoints
-              << " (maxLevel = " << gridStorage.getMaxLevel() << ")" << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
+              << " (maxLevel = " << gridStorage.getMaxLevel() << ")"
+              << std::endl;
+    std::cout << "--------------------------------------------------------"
+              << std::endl;
   }
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
   std::unique_ptr<sgpp::datadriven::OperationLimitFunctionValueRange> opLimit(
       sgpp::op_factory::createOperationLimitFunctionValueRange(
-          candidateSearchAlgorithm, MakePositiveInterpolationAlgorithm::SetToZero));
+          candidateSearchAlgorithm,
+          MakePositiveInterpolationAlgorithm::SetToZero));
 
   std::unique_ptr<Grid> limitedGrid(grid.clone());
   DataVector limitedAlpha(alpha);
@@ -145,8 +155,9 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
 
   if (verbose) {
     std::cout << "(" << gridStorage.getDimension() << "," << level
-              << ") : #grid points = " << grid.getSize() << " -> " << limitedGrid->getSize()
-              << " < " << numFullGridPoints << std::endl;
+              << ") : #grid points = " << grid.getSize() << " -> "
+              << limitedGrid->getSize() << " < " << numFullGridPoints
+              << std::endl;
   }
 
   // make sure that the sparse grid function is really positive
@@ -169,7 +180,8 @@ void testLimitFunctionValueRange(Grid& grid, size_t numDims, size_t level, size_
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
   std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
-      sgpp::op_factory::createOperationMultipleEval(*limitedGrid, coordinates, evalConfig));
+      sgpp::op_factory::createOperationMultipleEval(*limitedGrid, coordinates,
+                                                    evalConfig));
   opEval->mult(limitedAlpha, nodalValues);
 
   if (verbose) {
@@ -199,11 +211,13 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeLower) {
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations;
+           irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 0,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testLimitFunctionValueRange(
+            *grid, idim, ilevel, irefIteration * refnums, 0,
+            MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+            0.8);
       }
     }
   }
@@ -219,11 +233,13 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeUpper) {
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations;
+           irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 1,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testLimitFunctionValueRange(
+            *grid, idim, ilevel, irefIteration * refnums, 1,
+            MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+            0.8);
       }
     }
   }
@@ -239,11 +255,13 @@ BOOST_AUTO_TEST_CASE(testOperationLimitFunctionValueRangeBothSides) {
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
+      for (size_t irefIteration = 0; irefIteration <= refIterations;
+           irefIteration++) {
         grid.reset(Grid::createLinearGrid(idim));
-        testLimitFunctionValueRange(*grid, idim, ilevel, irefIteration * refnums, 2,
-                                    MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
-                                    0.8);
+        testLimitFunctionValueRange(
+            *grid, idim, ilevel, irefIteration * refnums, 2,
+            MakePositiveCandidateSearchAlgorithm::Intersections, &sin, -0.8,
+            0.8);
       }
     }
   }

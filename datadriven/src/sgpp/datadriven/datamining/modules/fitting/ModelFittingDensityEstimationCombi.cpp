@@ -144,10 +144,10 @@ double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
 
 void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVector& results) {
   auto temp = sgpp::base::DataVector(results.size(), 0);
-  results.setAll(0);
+  results.setAll(0.);
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
-      temp.setAll(0);
+      temp.setAll(0.);
       components.at(i)->evaluate(samples, temp);
       temp.mult(static_cast<double>(componentConfigs.at(i).second));
       results.add(temp);

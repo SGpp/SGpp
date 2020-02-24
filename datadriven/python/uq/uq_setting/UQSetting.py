@@ -1,13 +1,11 @@
 #!/usr/bin/python
-# Copyright (C) 2013 Technische Universitaet Muenchen
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 #
 """
 @file    UQSetting.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Fri Jul 19 13:16:04 2013
-
 @brief It contains the UQSetting class which represents a
 non-intrusive UQ setting defined by a preprocession, simulation and
 postprocessing step. The preprocessing transforms the initial
