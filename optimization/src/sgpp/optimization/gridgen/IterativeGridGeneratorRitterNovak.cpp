@@ -120,7 +120,6 @@ bool IterativeGridGeneratorRitterNovak::generate() {
   // (e.g. refinementAlpha[i] == 1.0 for exactly one i) to refine
   // exactly one grid point
   base::DataVector refinementAlpha(currentN);
-  refinementAlpha.setAll(0.0);
 
   for (size_t i = 0; i < currentN; i++) {
     base::GridPoint& gp = gridStorage[i];

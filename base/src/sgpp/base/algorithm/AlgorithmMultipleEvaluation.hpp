@@ -52,12 +52,9 @@ class AlgorithmMultipleEvaluation {
 #pragma omp parallel
     {
       DataVector privateResult(result.getSize());
-      privateResult.setAll(0.0);
 
       DataVector line(x.getNcols());
       AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
-
-      privateResult.setAll(0.0);
 
 #pragma omp for schedule(static)
 
