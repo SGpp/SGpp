@@ -12,7 +12,7 @@ sudo dpkg -i libsgpp-test-package_0.0-0.deb
 sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
 
 printf '\n\n\n~~~ Testing debian cpp package ~~~\n\n'
-#cd ../../..
+cd ../../..
 mkdir -p "$HOME/testing_package"
 declare -a cpp_examples_to_test=(
                                     "base/examples/quadrature.cpp"
@@ -28,7 +28,7 @@ declare -a cpp_examples_to_test=(
                                     "solver/examples/fistaExample.cpp"
                                     "optimization/examples/optimization.cpp"
                                     "optimization/examples/constrainedOptimization.cpp"
-                                    #"combigrid/examples/combigrid.cpp" #Currently not working
+                                    "combigrid/examples/combigrid.cpp" 
                                 )
 arraylength=${#cpp_examples_to_test[@]}
 for (( i=1; i<${arraylength}+1; i++ ));
@@ -45,7 +45,7 @@ do
   echo "... switching into test folder"
   cd "$HOME/testing_package"
   echo "... building ${target_file} into $exec_name "
-  g++ ${file_name} -std=c++11 -o ${exec_name} -l sgppbase -l sgppsolver -l sgppoptimization
+  g++ ${file_name} -std=c++11 -o ${exec_name} -l sgppbase -l sgppsolver -l sgppoptimization -lsgppcombigrid
   echo "... running ./$exec_name "
   ./${exec_name}
   echo "... switching back into SGpp root directory"
