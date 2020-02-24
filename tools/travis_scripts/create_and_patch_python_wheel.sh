@@ -3,8 +3,6 @@
 # exit when any command fails
 set -e
 
-pushd ../..
-
 # set paths
 export LD_LIBRARY_PATH=$(pwd)/lib/sgpp:$LD_LIBRARY_PATH
 
