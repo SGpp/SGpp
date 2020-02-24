@@ -3,12 +3,13 @@
 # exit when any command fails
 set -e
 
-#cd tools/create_release/deb_package
-#./create_deb.sh testing
+printf '\n\n\n~~~ Creating debian packages ~~~\n\n'
+cd tools/create_release/deb_package
+./create_deb.sh testing
 
-#printf '\n~~~ Installing debian package ~~~\n\n'
-#sudo dpkg -i libsgpp-test-package_0.0-0.deb
-#sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
+printf '\n\n\n~~~ Installing debian packages ~~~\n\n'
+sudo dpkg -i libsgpp-test-package_0.0-0.deb
+sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
 
 printf '\n\n\n~~~ Testing debian cpp package ~~~\n\n'
 #cd ../../..
@@ -27,7 +28,7 @@ declare -a cpp_examples_to_test=(
                                     "solver/examples/fistaExample.cpp"
                                     "optimization/examples/optimization.cpp"
                                     "optimization/examples/constrainedOptimization.cpp"
-                                    #"combigrid/examples/combigrid.cpp"
+                                    #"combigrid/examples/combigrid.cpp" #Currently not working
                                 )
 arraylength=${#cpp_examples_to_test[@]}
 for (( i=1; i<${arraylength}+1; i++ ));
