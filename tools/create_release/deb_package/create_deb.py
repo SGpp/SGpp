@@ -6,6 +6,8 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+# TODO These packages do not really support changelogs yet - This should be added!
+
 import sys
 import os
 import re
@@ -218,7 +220,9 @@ rendered = changelog_template.render(major_version=major_version, minor_version=
 with open(os.path.join(package_name, "debian/changelog"), "w") as f:
     # dpkg-deb quires newline at the end of the file
     f.write(rendered + "\n")
-# Run javahelper
+# Run javahelper! For some reason java helper expects the DEBIAN folder to be names debian and installs everything in there?
+# This is rather odd: Maybe it's not meant to be used like this - it works however. 
+# TODO Find alternative to javahelper (or at least use it in a way to get rid of the following moves)
 os.chdir(package_name)
 os.system("jh_installlibs ../../../../lib/jsgpp/jsgpp.jar")
 os.system("mv debian/usr usr")
