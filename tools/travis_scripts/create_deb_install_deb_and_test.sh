@@ -87,4 +87,6 @@ do
   cd -
 done
 
-# Cleanup not required on travis
+# Cleanup
+sudo dpkg -r libsgpp-test-package_0.0-0.deb
+sudo dpkg -r libsgpp-python-test-package_0.0-0.deb
