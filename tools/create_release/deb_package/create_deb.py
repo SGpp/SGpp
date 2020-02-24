@@ -200,19 +200,30 @@ if os.path.exists(deb_name):
     print(("Aborting: The deb file to build (\""+ deb_name + "\") already exists"))
     sys.exit(1)
 
-os.makedirs(os.path.join(package_name, "usr/share/java/"))
-os.makedirs(os.path.join(package_name, "usr/lib/"))
+os.makedirs(os.path.join(package_name, "debian/usr/share/java/"))
+os.makedirs(os.path.join(package_name, "debian/usr/lib/"))
+#os.makedirs(os.path.join(package_name, "DEBIAN"))
 
 # copy main shared library
-shutil.copy("../../../lib/jsgpp/libjsgpp.so", os.path.join(package_name, "usr/lib/libjsgpp.so"))
-shutil.copy("../../../lib/jsgpp/jsgpp.jar", os.path.join(package_name, "usr/share/java/jsgpp.jar"))
-os.makedirs(os.path.join(package_name, "DEBIAN"))
+shutil.copy("../../../lib/jsgpp/libjsgpp.so", os.path.join(package_name, "debian/usr/lib/libjsgpp.so"))
+
 control_template = jinja2_env.get_template('control_java_template')
 rendered = control_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision, maintainer_name=maintainer_name, maintainer_email=maintainer_email, jsgpp_deps=jsgpp_deps)
-with open(os.path.join(package_name, "DEBIAN/control"), "w") as f:
+with open(os.path.join(package_name, "debian/control"), "w") as f:
     # dpkg-deb quires newline at the end of the file
     f.write(rendered + "\n")
 
+changelog_template = jinja2_env.get_template('changelog_java_template')
+rendered = changelog_template.render(major_version=major_version, minor_version=minor_version, package_revision=package_revision)
+with open(os.path.join(package_name, "debian/changelog"), "w") as f:
+    # dpkg-deb quires newline at the end of the file
+    f.write(rendered + "\n")
+# Run javahelper
+os.chdir(package_name)
+os.system("jh_installlibs ../../../../lib/jsgpp/jsgpp.jar")
+os.system("mv debian/usr usr")
+os.system("mv debian DEBIAN")
+os.chdir("..")
 # finally, create the package
 try:
     subprocess.check_call(["fakeroot", "dpkg-deb", "--build", package_name])

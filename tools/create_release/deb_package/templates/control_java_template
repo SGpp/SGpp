@@ -1,5 +1,6 @@
 Package: libsgpp-java
 Version: {{major_version}}.{{minor_version}}-{{package_revision}}
+Source: {{major_version}}.{{minor_version}}-{{package_revision}}
 Section: base
 Priority: optional
 Architecture: amd64
