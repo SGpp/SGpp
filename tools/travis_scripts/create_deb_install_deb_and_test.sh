@@ -81,7 +81,7 @@ do
   echo "... switching into python test folder"
   cd "$HOME/testing_python_package"
   echo "... running python3 ${file_name} "
-  #python3 ${file_name}
+  python3 ${file_name}
   echo "... switching back into SGpp root directory"
   cd -
 done
