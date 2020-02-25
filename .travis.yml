@@ -5,7 +5,7 @@ branches:
 
 language: cpp
 
-dist: xenial
+dist: bionic
 
 addons:
   apt:
@@ -33,7 +33,7 @@ matrix:
         - python3-dev
         - libgomp1
         - doxygen
-        - openjdk-8-jdk
+        - openjdk-11-jdk
         - javahelper
     script:
     - bash tools/travis_scripts/create_deb_install_deb_and_test.sh
