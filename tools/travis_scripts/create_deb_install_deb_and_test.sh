@@ -9,6 +9,8 @@ cd tools/create_release/deb_package
 
 printf '\n\n\n~~~ Installing debian packages ~~~\n\n'
 sudo dpkg -i libsgpp-test-package_0.0-0.deb
+sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
+sudo dpkg -i libsgpp-java-test-package_0.0-0.deb
 
 printf '\n\n\n~~~ Testing debian cpp package ~~~\n\n'
 cd ../../..
@@ -52,7 +54,6 @@ do
 done
 
 printf '\n\n\n~~~ Testing debian python package ~~~\n\n'
-sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
 mkdir -p "$HOME/testing_python_package"
 declare -a python_examples_to_test=(
                                     "base/examples/quadrature.py"
@@ -88,7 +89,6 @@ do
 done
 
 printf '\n\n\n~~~ Testing debian java package ~~~\n\n'
-sudo dpkg -i libsgpp-java-test-package_0.0-0.deb
 mkdir -p "$HOME/testing_java_package"
 declare -a java_examples_to_test=(
                                     "base/examples/tutorial.java"
@@ -118,11 +118,11 @@ do
 done
 echo ""
 echo "-------------------------------------------------------------"
-echo "Last java examples test (needs two files from optimzation/examples) : "
-echo "... copying optimization.java from base/examples/optimization.java into $HOME/testing_java_package/optimization.java"
-cp base/examples/optimization.java $HOME/testing_java_package/optimization.java
-echo "... copying ExampleFunction.java from base/examples/ExampleFunction.java into $HOME/testing_java_package/ExampleFunction.java"
-cp base/examples/ExampleFunction.java $HOME/testing_java_package/ExampleFunction.java
+echo "Bonus java examples test (needs two files from optimzation/examples) : "
+echo "... copying optimization.java from optimization/examples/optimization.java into $HOME/testing_java_package/optimization.java"
+cp optimization/examples/optimization.java $HOME/testing_java_package/optimization.java
+echo "... copying ExampleFunction.java from optimization/examples/ExampleFunction.java into $HOME/testing_java_package/ExampleFunction.java"
+cp optimization/examples/ExampleFunction.java $HOME/testing_java_package/ExampleFunction.java
 echo "... switching into java test folder"
 cd "$HOME/testing_java_package"
 echo "... building optimization.java and ExampleFunction.java into optimization"
