@@ -6,6 +6,7 @@
 #ifdef USE_MPI
 #ifndef USE_SCALAPACK  // this test interferes with the ScaLAPACK tests
 
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -14,7 +15,6 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
 
-#define BOOST_TEST_DYN_LINK
 #define SCHEDULER_BATCH_SIZE 1337
 #define TEST_DIMENSION 3
 #define TEST_DATASET_SIZE 3

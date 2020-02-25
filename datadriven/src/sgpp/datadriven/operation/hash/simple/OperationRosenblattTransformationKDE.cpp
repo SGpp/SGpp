@@ -50,10 +50,9 @@ void OperationRosenblattTransformationKDE::doTransformation(DataMatrix& pointsCd
       // Work arrays
       DataVector unif(ndim);
       DataVector cdf(ndim);
-      DataVector kern(nsamples);
+      DataVector kern(nsamples, 1.0);
       std::shared_ptr<base::DataVector> samples1d;
 
-      kern.setAll(1.0);
       pointsCdf.getRow(idata, cdf);
 
       for (size_t idim = 0; idim < ndim; idim++) {
@@ -109,10 +108,9 @@ void OperationRosenblattTransformationKDE::doShuffledTransformation(DataMatrix& 
       // Work arrays
       DataVector unif(ndim);
       DataVector cdf(ndim);
-      DataVector kern(nsamples);
+      DataVector kern(nsamples, 1.0);
       std::shared_ptr<base::DataVector> samples1d;
 
-      kern.setAll(1.0);
       pointsCdf.getRow(idata, cdf);
 
       for (size_t i = 0; i < ndim; i++) {

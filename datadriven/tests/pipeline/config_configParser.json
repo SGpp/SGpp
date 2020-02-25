@@ -72,7 +72,7 @@
             "maxLevelType": false,
             "numRefinementPoints": 0,
             "numCoarseningPoints": 0,
-            "coarsenInitialPoints": true,
+            "coarsenInitialPoints": false,
             "percent": 0,
             "errorBasedRefinement": false
         },

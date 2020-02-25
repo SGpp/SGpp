@@ -12,7 +12,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationBsplineBoundary.hpp>
-#include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -30,7 +29,8 @@ namespace sgpp {
 namespace datadriven {
 
 void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
-    base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points) {
+    base::DataVector* alpha, base::DataMatrix* pointscdf,
+    base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t num_samples = pointscdf->getNrows();
@@ -64,7 +64,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
-      double y = doTransformation1D(grids1d[idim], alphas1d[idim], pointscdf->get(i, idim));
+      double y = doTransformation1D(grids1d[idim], alphas1d[idim],
+                                    pointscdf->get(i, idim));
       // and write it to the output
       points->set(i, idim, y);
 
@@ -87,8 +88,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
 }
 
 void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
-    base::DataVector* alpha, base::DataMatrix* pointscdf, base::DataMatrix* points,
-    size_t dim_start) {
+    base::DataVector* alpha, base::DataMatrix* pointscdf,
+    base::DataMatrix* points, size_t dim_start) {
   // 1. marginalize to dim_start
   base::Grid* g1d = nullptr;
   base::DataVector* a1d = nullptr;
@@ -109,7 +110,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
 
       pointscdf->getRow(i, cdfs1d);
       points->getRow(i, coords1d);
-      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
+      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d,
+                                  &coords1d);
       points->setRow(i, coords1d);
     }
   }
@@ -118,33 +120,39 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation(
   delete a1d;
 }
 
-void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation_start_dimX(
-    base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* cdfs1d,
-    base::DataVector* coords1d) {
+void OperationInverseRosenblattTransformationBsplineBoundary::
+    doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in,
+                                size_t dim_start, base::DataVector* cdfs1d,
+                                base::DataVector* coords1d) {
   size_t dims = coords1d->getSize();  // total dimensions
 
   if ((dims > 1) && (dim_start <= dims - 1)) {
     size_t curr_dim = dim_start;
-    doTransformation_in_next_dim(g_in, a_in, dim_start, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_in, a_in, dim_start, cdfs1d, coords1d,
+                                 curr_dim);
   } else if (dims == 1) {
-    throw base::operation_exception("Error: # of dimensions = 1. No operation needed!");
+    throw base::operation_exception(
+        "Error: # of dimensions = 1. No operation needed!");
   } else {
-    throw base::operation_exception("Error: dimension out of range. Operation aborted!");
+    throw base::operation_exception(
+        "Error: dimension out of range. Operation aborted!");
   }
 
   return;
 }
 
-void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation_in_next_dim(
-    base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* cdfs1d,
-    base::DataVector* coords1d, size_t& curr_dim) {
+void OperationInverseRosenblattTransformationBsplineBoundary::
+    doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
+                                 size_t op_dim, base::DataVector* cdfs1d,
+                                 base::DataVector* coords1d, size_t& curr_dim) {
   size_t dims = cdfs1d->getSize();  // total dimensions
 
   /* Step 1: do conditional in current dim */
   base::Grid* g_out = nullptr;
   base::DataVector* a_out = new base::DataVector(1);
-  op_factory::createOperationDensityConditional(*g_in)->doConditional(
-      *a_in, g_out, *a_out, static_cast<unsigned int>(op_dim), coords1d->get(curr_dim));
+  op_factory::createOperationDensityConditional(*g_in)
+      ->doConditional(*a_in, g_out, *a_out, static_cast<unsigned int>(op_dim),
+                      coords1d->get(curr_dim));
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
@@ -157,7 +165,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation_i
     // Marginalize to next dimension
     base::Grid* g1d = nullptr;
     base::DataVector* a1d = nullptr;
-    op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
+    op_factory::createOperationDensityMargTo1D(*g_out)
+        ->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
     x = doTransformation1D(g1d, a1d, cdfs1d->get(curr_dim));
@@ -174,7 +183,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation_i
 
   /* Step 4: sample in next dimension */
   if (g_out->getDimension() > 1)
-    doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d,
+                                 curr_dim);
 
   delete g_out;
   delete a_out;
@@ -182,7 +192,8 @@ void OperationInverseRosenblattTransformationBsplineBoundary::doTransformation_i
   return;
 }
 
-double OperationInverseRosenblattTransformationBsplineBoundary::doTransformation1D(
+double
+OperationInverseRosenblattTransformationBsplineBoundary::doTransformation1D(
     base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   std::unique_ptr<OperationTransformation1D> opInverseRosenblatt(
       op_factory::createOperationInverseRosenblattTransformation1D(*grid1d));

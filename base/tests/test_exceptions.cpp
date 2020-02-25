@@ -72,7 +72,6 @@ using sgpp::base::tool_exception;
 
 BOOST_AUTO_TEST_CASE(test_AlgorithmException) {
   DataVector testVector(5);
-  testVector.setAll(0);
   algorithm_exception expectedException("more indices than entries!");
   std::vector<size_t> tooLongVector(6);
   try {

@@ -18,6 +18,7 @@
 #include <sgpp/solver/ode/StepsizeControlMC.hpp>
 #include <sgpp/solver/ode/StepsizeControlBDF.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/solver/SLESolverTypeParser.hpp>
 #include <sgpp/solver/operation/hash/OperationParabolicPDESolverSystem.hpp>
 
 #endif /* SOLVER_HPP */

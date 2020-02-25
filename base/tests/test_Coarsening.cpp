@@ -60,8 +60,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
   grid->getGenerator().regular(level);
 
   std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
-  DataVector alpha(gridStorage.getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(gridStorage.getSize(), 1.0);
+
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   // should be coarsed i=1 l=1
@@ -117,8 +117,8 @@ BOOST_AUTO_TEST_CASE(testBadAllocIssue) {
   std::unique_ptr<Grid> grid(Grid::createLinearBoundaryGrid(dim));
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
-  DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.5);
+  DataVector alpha(gridStorage.getSize(), 0.5);
+
   HashCoarsening coarsen;
   SurplusCoarseningFunctor functor(alpha, INT_MAX, 1.0);
   coarsen.free_coarsen(gridStorage, functor);
@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   grid->getGenerator().regular(level);
 
   std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
-  DataVector alpha(gridStorage.getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(gridStorage.getSize(), 1.0);
+
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   alpha[203] = 0.3;  // should not be coarsed b/c thresh
@@ -198,8 +198,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   toBeRemovedSeq.push_back(203);
   toBeRemovedSeq.push_back(204);
   toBeRemovedSeq.push_back(208);
-  DataVector alpha(gridStorage.getSize());
-  alpha.setAll(1.0);
+  DataVector alpha(gridStorage.getSize(), 1.0);
+
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
   alpha[162] = 0.1;  // should not be coarsed i=1 l=0
   // should be coarsed i=1 l=1

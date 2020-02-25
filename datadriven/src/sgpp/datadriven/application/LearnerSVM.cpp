@@ -310,7 +310,6 @@ double LearnerSVM::getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector
   size_t numData = data.getNrows();
   size_t dim = data.getNcols();
   sgpp::base::DataVector error(numData);
-  error.setAll(0.0);
 
   double res = -1.0;
   if (errorType == "MSE") {

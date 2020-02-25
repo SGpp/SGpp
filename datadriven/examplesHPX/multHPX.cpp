@@ -134,7 +134,6 @@ int main(int argc, char* argv[]) {
             sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
     sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-    dataSizeVectorResultCompare.setAll(0.0);
 
     evalCompare->mult(alpha, dataSizeVectorResultCompare);
 

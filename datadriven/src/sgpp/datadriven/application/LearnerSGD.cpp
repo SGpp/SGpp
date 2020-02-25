@@ -357,7 +357,6 @@ double LearnerSGD::getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector
   size_t numData = data.getNrows();
   sgpp::base::DataVector result(numData);
   sgpp::base::DataVector error(numData);
-  error.setAll(0.0);
 
   std::unique_ptr<base::OperationMultipleEval> opEval(
       op_factory::createOperationMultipleEval(*grid, data));

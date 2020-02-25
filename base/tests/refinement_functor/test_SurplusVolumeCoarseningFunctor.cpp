@@ -27,8 +27,7 @@ BOOST_AUTO_TEST_CASE(testCoarsen) {
 
   generator.regular(storage, 2);
 
-  DataVector alpha(storage.getSize());
-  alpha.setAll(0.5);
+  DataVector alpha(storage.getSize(), 0.5);
   alpha[0] = 1.0;  // these surpluses corresponds to constant function 1
 
   // this should remove all children, i.e. the whole level 2

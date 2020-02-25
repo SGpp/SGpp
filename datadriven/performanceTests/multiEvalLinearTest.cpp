@@ -125,7 +125,6 @@ void getRuntime(sgpp::base::GridType gridType, const std::string& kernel, std::s
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
   eval->prepare();
@@ -298,7 +297,6 @@ void getRuntimeDataMining(sgpp::base::GridType gridType, const std::string& kern
       sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration));
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
   eval->prepare();
@@ -393,7 +391,6 @@ void getRuntimeDataMiningTransposed(
       sgpp::op_factory::createOperationMultipleEval(grid, trainingData, configuration));
 
   sgpp::base::DataVector gridSizeVectorResult(gridStorage.getSize());
-  gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
   eval->prepare();
@@ -485,7 +482,6 @@ void getRuntimeTransposed(sgpp::base::GridType gridType, const std::string& kern
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   sgpp::base::DataVector gridSizeVectorResult(gridStorage.getSize());
-  gridSizeVectorResult.setAll(0);
 
   BOOST_TEST_MESSAGE("preparing operation for refined grid");
   eval->prepare();

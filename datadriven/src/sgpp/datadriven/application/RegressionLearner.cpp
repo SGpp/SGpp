@@ -183,7 +183,6 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
     grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
   }
   weights = base::DataVector(grid->getSize());
-  weights.setAll(0.0);
 }
 
 // maybe pass regularizationConfig instead of state.

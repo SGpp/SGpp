@@ -6,8 +6,6 @@
 #
 """
 @file    hdmr.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Tue Jul 23 12:23:32 2013
 
 @brief ANOVA-(H)igh (D)imensional (M)odel (R)epresentation
 decomposition for a Sparse-Grid function

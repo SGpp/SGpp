@@ -94,7 +94,6 @@ int main(int argc, char** argv) {
   std::cout << "grid set up" << std::endl;
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   std::cout << "preparing operation for refined grid" << std::endl;
   eval->prepare();
@@ -110,7 +109,6 @@ int main(int argc, char** argv) {
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData);
 
   sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
