@@ -1,11 +1,12 @@
-Package: libsgpp-python
+Package: libsgpp-java
 Version: {{major_version}}.{{minor_version}}-{{package_revision}}
+Source: {{major_version}}.{{minor_version}}-{{package_revision}}
 Section: base
 Priority: optional
 Architecture: amd64
-Depends: {{pysgpp_deps}}
+Depends: {{jsgpp_deps}}
 Maintainer: {{maintainer_name}} <{{maintainer_email}}>
-Description: Python bindings for the sparse grids toolkit SG++
+Description: Java bindings for the sparse grids toolkit SG++
  SG++ is a collection of numerical algorithms for sparse grids. It
  contains modules for interpolation, quadrature, data mining
  (regression, classification, clustering), optimization, PDEs, and
@@ -13,4 +14,4 @@ Description: Python bindings for the sparse grids toolkit SG++
  also provides a module for the combination technique. Many of the
  implemented algorithms are also available as a high-performance
  version, often orders of magnitude faster than standard
- implementations. This package provides Python bindings for SG++.
+ implementations. This package provides Java bindings for SG++.
