@@ -118,4 +118,4 @@ do
 done
 
 # Cleanup
-sudo dpkg --remove libsgpp-test-package libsgpp-python-test-package libsgpp-java-test-package
+sudo dpkg --remove libsgpp libsgpp-python libsgpp-java

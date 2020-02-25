@@ -31,8 +31,6 @@ matrix:
         - swig
         - python3-pip
         - python3-dev
-        - python3-numpy
-        - python3-jinja2
         - libgomp1
         - doxygen
         - openjdk-8-jdk
