@@ -3,20 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
+#include <sgpp/base/grid/CoarseningFunctorTypeParser.hpp>
 
+#include <sgpp/base/exception/data_exception.hpp>
 #include <algorithm>
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 
 using sgpp::base::data_exception;
 
-CoarseningFunctorType CoarseningFunctorTypeParser::parse(const std::string& input) {
+CoarseningFunctorType CoarseningFunctorTypeParser::parse(
+    const std::string& input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
+                 ::tolower);
   if (inputLower == "surplus") {
     return CoarseningFunctorType::Surplus;
   } else if (inputLower == "surplusvolume") {
@@ -31,7 +33,8 @@ CoarseningFunctorType CoarseningFunctorTypeParser::parse(const std::string& inpu
   }
 }
 
-const std::string& CoarseningFunctorTypeParser::toString(CoarseningFunctorType type) {
+const std::string& CoarseningFunctorTypeParser::toString(
+    CoarseningFunctorType type) {
   return coarseningFunctorTypeMap.at(type);
 }
 
@@ -40,8 +43,9 @@ const CoarseningFunctorTypeParser::CoarseningFunctorTypeMap_t
       return CoarseningFunctorTypeMap_t{
           std::make_pair(CoarseningFunctorType::Surplus, "Surplus"),
           std::make_pair(CoarseningFunctorType::SurplusVolume, "SurplusVolume"),
-          std::make_pair(CoarseningFunctorType::Classification, "Classification")};
+          std::make_pair(CoarseningFunctorType::Classification,
+                         "Classification")};
     }();
 
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */

@@ -11,7 +11,7 @@
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
+namespace base {
 using sgpp::base::AdaptivityThresholdType;
 
 class AdaptivityThresholdTypeParser {
@@ -42,5 +42,5 @@ class AdaptivityThresholdTypeParser {
   static const AdaptivityThresholdTypeMap_t refinementFunctorTypeMap;
 };
 
-} /* namespace datadriven */
+} /* namespace base */
 } /* namespace sgpp */

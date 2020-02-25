@@ -12,6 +12,8 @@
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
 #include <sgpp/base/grid/GridTypeParser.hpp>
+#include <sgpp/base/grid/AdaptivityThresholdTypeParser.hpp>
+#include <sgpp/base/grid/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
 
 #include <sgpp/base/tools/json/JSON.hpp>
@@ -24,9 +26,6 @@
 #include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
-
-#include <sgpp/datadriven/datamining/configuration/AdaptivityThresholdTypeParser.hpp>
-#include <sgpp/datadriven/datamining/configuration/CoarseningFunctorTypeParser.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
@@ -438,12 +437,12 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 
     // Parse coarsening indicator
     if (adaptivityConfig->contains("coarseningIndicator")) {
-      config.coarseningFunctorType = CoarseningFunctorTypeParser::parse(
+      config.coarseningFunctorType = base::CoarseningFunctorTypeParser::parse(
           (*adaptivityConfig)["coarseningIndicator"].get());
     } else {
       std::cout << "# Did not find adaptivityConfig[coarseningIndicator]. "
                    "Setting default "
-                << "value " << CoarseningFunctorTypeParser::toString(
+                << "value " << base::CoarseningFunctorTypeParser::toString(
                                    defaults.coarseningFunctorType)
                 << "." << std::endl;
       config.coarseningFunctorType = defaults.coarseningFunctorType;
@@ -451,13 +450,13 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
 
     // Parse threshold type
     if (adaptivityConfig->contains("thresholdType")) {
-      config.thresholdType_ = AdaptivityThresholdTypeParser::parse(
+      config.thresholdType_ = base::AdaptivityThresholdTypeParser::parse(
           (*adaptivityConfig)["thresholdType"].get());
     } else {
       std::cout
           << "# Did not find adaptivityConfig[thresholdType]. Setting default "
-          << "value "
-          << AdaptivityThresholdTypeParser::toString(defaults.thresholdType_)
+          << "value " << base::AdaptivityThresholdTypeParser::toString(
+                             defaults.thresholdType_)
           << "." << std::endl;
       config.thresholdType_ = defaults.thresholdType_;
     }
