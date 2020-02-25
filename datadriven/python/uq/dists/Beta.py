@@ -6,9 +6,6 @@
 #
 """
 @file    beta.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Fri Jul 19 14:10:32 2013
-
 @brief   Represents the beta distribution
 
 @version  0.1

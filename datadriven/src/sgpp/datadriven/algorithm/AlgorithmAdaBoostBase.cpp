@@ -87,8 +87,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
     base::DataMatrix& weights, base::DataMatrix& decision,
     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
     base::DataMatrix& algorithmValueTest) {
-  base::DataVector weight(this->numData);
-  weight.setAll(1.0 / static_cast<double>(this->numData));
+  base::DataVector weight(this->numData, 1.0 / static_cast<double>(this->numData));
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
@@ -126,7 +125,6 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
                                 static_cast<double>(gridPoint));
     }
 
-    alpha_train.setAll(0.0);
     weights.setColumn(count, weight);
 
     bool final_step = false;
@@ -340,8 +338,7 @@ void AlgorithmAdaBoostBase::doDiscreteAdaBoost(base::DataVector&
 void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
     base::DataMatrix& testData, base::DataMatrix& algorithmValueTrain,
     base::DataMatrix& algorithmValueTest) {
-  base::DataVector weight(this->numData);
-  weight.setAll(1.0 / static_cast<double>(this->numData));
+  base::DataVector weight(this->numData, 1.0 / static_cast<double>(this->numData));
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
@@ -373,7 +370,6 @@ void AlgorithmAdaBoostBase::doRealAdaBoost(base::DataMatrix& weights,
                                 static_cast<double>(gridPoint));
     }
 
-    alpha_train.setAll(0.0);
     weights.setColumn(count, weight);
 
     bool final_step = false;
@@ -480,8 +476,7 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
       "An unknown loss function type was specified!");
   }
 
-  base::DataVector weight(this->numData);
-  weight.setAll(1.0 / static_cast<double>(this->numData));
+  base::DataVector weight(this->numData, 1.0 / static_cast<double>(this->numData));
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
@@ -525,7 +520,6 @@ void AlgorithmAdaBoostBase::doAdaBoostR2(base::DataMatrix& weights,
                                 static_cast<double>(gridPoint));
     }
 
-    alpha_train.setAll(0.0);
     weights.setColumn(count, weight);
 
     bool final_step = false;
@@ -681,8 +675,7 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
       "An unknown power type was specified!");
   }
 
-  base::DataVector weight(this->numData);
-  weight.setAll(1.0 / static_cast<double>(this->numData));
+  base::DataVector weight(this->numData, 1.0 / static_cast<double>(this->numData));
   std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*this->grid));
   // to store certain train data point
   base::DataVector p_train(this->dim);
@@ -724,7 +717,6 @@ void AlgorithmAdaBoostBase::doAdaBoostRT(base::DataMatrix& weights,
                                 static_cast<double>(gridPoint));
     }
 
-    alpha_train.setAll(0.0);
     weights.setColumn(count, weight);
 
     bool final_step = false;
@@ -855,15 +847,12 @@ void AlgorithmAdaBoostBase::eval(base::DataMatrix& testData,
                                  base::DataMatrix& algorithmValueTrain,
                                  base::DataMatrix& algorithmValueTest) {
   base::DataMatrix weightsMatrix(this->numData, this->numBaseLearners);
-  weightsMatrix.setAll(0.0);
 
   if (this->boostMode == 1) {
     base::DataVector theHypoWeight(this->numBaseLearners);
     base::DataVector theWeightError(this->numBaseLearners);
     base::DataMatrix decisionMatrix(this->numData, this->numBaseLearners);
-    theHypoWeight.setAll(0.0);
-    theWeightError.setAll(0.0);
-    decisionMatrix.setAll(0.0);
+
     doDiscreteAdaBoost(theHypoWeight, theWeightError, weightsMatrix,
                        decisionMatrix, testData, algorithmValueTrain,
                        algorithmValueTest);

@@ -136,7 +136,7 @@ void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStora
 
   for (size_t k = 0; k < N; k++) {
     for (size_t i = 0; i < n; i++) {
-      if (findGridPointInFullGrid(fullGrids[i], gridStorage[k], index)) {
+      if (fullGrids[i].findGridPointInFullGrid(gridStorage[k], index)) {
         range.setGrid(fullGrids[i]);
         result[k] += coefficients[i] * values[i][range.find(index)];
       }
@@ -163,7 +163,7 @@ void CombinationGrid::combineSparseGridValues(const base::GridStorage& gridStora
 
   for (size_t k = 0; k < N; k++) {
     for (size_t i = 0; i < n; i++) {
-      if (findGridPointInFullGrid(fullGrids[i], gridStorage[k], index)) {
+      if (fullGrids[i].findGridPointInFullGrid(gridStorage[k], index)) {
         range.setGrid(fullGrids[i]);
 
         for (size_t j = 0; j < m; j++) {
@@ -184,7 +184,7 @@ void CombinationGrid::distributeValuesToFullGrid(const base::GridStorage& gridSt
   result.setAll(0.0);
 
   for (size_t k = 0; k < N; k++) {
-    if (findGridPointInFullGrid(fullGrid, gridStorage[k], index)) {
+    if (fullGrid.findGridPointInFullGrid(gridStorage[k], index)) {
       result[range.find(index)] = values[k];
     }
   }
@@ -206,7 +206,7 @@ void CombinationGrid::distributeValuesToFullGrids(const base::GridStorage& gridS
 
   for (size_t k = 0; k < N; k++) {
     for (size_t i = 0; i < n; i++) {
-      if (findGridPointInFullGrid(fullGrids[i], gridStorage[k], index)) {
+      if (fullGrids[i].findGridPointInFullGrid(gridStorage[k], index)) {
         range.setGrid(fullGrids[i]);
         result[i][range.find(index)] = values[k];
       }
@@ -272,25 +272,6 @@ std::vector<LevelVector> CombinationGrid::enumerateLevelsWithSumWithoutBoundary(
 
     return result;
   }
-}
-
-bool CombinationGrid::findGridPointInFullGrid(const FullGrid& fullGrid,
-    const base::GridPoint& gridPoint, IndexVector& index) {
-  const LevelVector& levelFullGrid = fullGrid.getLevel();
-  bool isContained = true;
-
-  for (size_t d = 0; d < gridPoint.getDimension(); d++) {
-    const level_t curLevel = gridPoint.getLevel(d);
-
-    if ((curLevel <= levelFullGrid[d]) && (fullGrid.hasBoundary() || (curLevel >= 1))) {
-      index[d] = gridPoint.getIndex(d) << (levelFullGrid[d] - curLevel);
-    } else {
-      isContained = false;
-      break;
-    }
-  }
-
-  return isContained;
 }
 
 }  // namespace combigrid

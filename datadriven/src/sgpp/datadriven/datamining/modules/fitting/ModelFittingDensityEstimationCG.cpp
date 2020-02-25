@@ -72,8 +72,6 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   // Initialize the right hand side (numerator and denominator)
   bNum = DataVector(grid->getSize());
   bDenom = DataVector(grid->getSize());
-  bNum.setAll(0.0);
-  bDenom.setAll(0.0);
 
   // Now that everythin is setup with zero data, simply call the update method
   update(newDataset);
