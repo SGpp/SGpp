@@ -115,7 +115,7 @@ for dllLib in dllLibs:
 
 # setup pysgpp
 setup(name='pysgpp',
-      version="3.3.0",
+      version="0.0.0",
       url='https://github.com/SGpp/SGpp',
       author="Dirk.Pflueger@ipvs.uni-stuttgart.de",
       description='''The sparse grids toolkit SG++
