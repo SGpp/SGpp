@@ -133,7 +133,6 @@ setup(name='pysgpp',
       package_dir={'': 'lib'},
       packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
       package_data={'pysgpp': ['_pysgpp_swig.so', '*.lib', '*.pyd']},
-      cmdclass={'bdist_wheel': bdist_wheel},
       )
 
 # cleanup
