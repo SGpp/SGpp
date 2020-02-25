@@ -115,7 +115,7 @@ for dllLib in dllLibs:
 
 # setup pysgpp
 setup(name='pysgpp',
-      version="3.3.0",
+      version="0.0.0",
       url='https://github.com/SGpp/SGpp',
       author="Dirk.Pflueger@ipvs.uni-stuttgart.de",
       description='''The sparse grids toolkit SG++
@@ -132,8 +132,7 @@ setup(name='pysgpp',
       zip_safe=False,
       package_dir={'': 'lib'},
       packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
-      package_data={'pysgpp': ['*.so', '*.lib', '*.pyd']},
-      cmdclass={'bdist_wheel': bdist_wheel},
+      package_data={'pysgpp': ['_pysgpp_swig.so', '*.lib', '*.pyd']},
       )
 
 # cleanup
