@@ -34,6 +34,7 @@ matrix:
         - libgomp1
         - doxygen
         - openjdk-8-jdk
+        - javahelper
     script:
     - bash tools/travis_scripts/create_deb_install_deb_and_test.sh
     - bash tools/travis_scripts/create_and_patch_python_wheel.sh
