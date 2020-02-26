@@ -559,8 +559,7 @@ void LearnerSGDEOnOffParallel::splitBatchIntoClasses(
 }
 
 void LearnerSGDEOnOffParallel::allocateClassMatrices(
-    size_t dim,
-    std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
+    size_t dim, std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
     std::map<double, int> &classIndices) const {
   int index = 0;
   for (size_t i = 0; i < getNumClasses(); i++) {
@@ -574,7 +573,7 @@ void LearnerSGDEOnOffParallel::allocateClassMatrices(
 
 // Train from a Batch already split up into its classes
 void LearnerSGDEOnOffParallel::train(
-    std::vector<std::pair<sgpp::base::DataMatrix *, double>> &trainDataClasses,
+    std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
     bool doCrossValidation) {
   // Calculate the total number of data points
   size_t numberOfDataPoints = 0;

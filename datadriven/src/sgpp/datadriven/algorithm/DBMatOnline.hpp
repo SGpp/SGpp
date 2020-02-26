@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <list>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
+
+#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -38,7 +39,8 @@ class DBMatOnline {
 
   //  /**
   //   * Changes the weighting factor for the regularization term,
-  //   * if possible (might depend on the kind of decomposition for classification)
+  //   * if possible (might depend on the kind of decomposition for
+  //   classification)
   //   */
   void setLambda(double lambda);
 
@@ -54,14 +56,16 @@ class DBMatOnline {
    * Update the system matrix decomposition after the grid has been modified.
    * @param densityEstimationConfig configuration of the density estimation
    * @param grid the underlying grid
-   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param numAddedGridPoints Number of grid points inserted at the end of the
+   * grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
    * @return list of grid points, that cannot be coarsened
    */
   virtual std::vector<size_t> updateSystemMatrixDecomposition(
       DensityEstimationConfiguration& densityEstimationConfig, Grid& grid,
-      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices, double lambda);
+      size_t numAddedGridPoints, std::vector<size_t>& deletedGridPointIndices,
+      double lambda);
 
  protected:
   DBMatOffline& offlineObject;

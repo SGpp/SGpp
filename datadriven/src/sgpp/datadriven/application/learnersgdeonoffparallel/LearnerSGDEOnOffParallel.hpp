@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <mpi.h>
 
+#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
@@ -18,15 +19,13 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPITaskScheduler.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/AuxiliaryStructures.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RefinementHandler.hpp>
-
-#include <mpi.h>
+#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 #include <list>
 #include <map>
 #include <string>
 #include <utility>
 #include <vector>
-#include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -406,7 +405,7 @@ class LearnerSGDEOnOffParallel {
    */
   void allocateClassMatrices(
       size_t dim,
-      std::vector<std::pair<base::DataMatrix *, double>> &trainDataClasses,
+      std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
       std::map<double, int> &classIndices) const;
 
   /**
