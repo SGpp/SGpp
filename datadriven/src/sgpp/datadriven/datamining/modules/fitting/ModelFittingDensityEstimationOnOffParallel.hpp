@@ -21,6 +21,7 @@
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 
 #include <list>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -30,17 +31,21 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
+ * Fitter object that encapsulates the usage of sparse grid density estimation
+ * with identity as
  * regularization.
  *
- * Based on ModelFittingDensityEstimationOnOff, but uses ScaLAPACK for parallelization.
+ * Based on ModelFittingDensityEstimationOnOff, but uses ScaLAPACK for
+ * parallelization.
  */
-class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEstimation {
+class ModelFittingDensityEstimationOnOffParallel
+    : public ModelFittingDensityEstimation {
  public:
   /**
    * Constructor
    *
-   * @param config configuration object that specifies grid, refinement, and regularization
+   * @param config configuration object that specifies grid, refinement, and
+   * regularization
    */
   explicit ModelFittingDensityEstimationOnOffParallel(
       const FitterConfigurationDensityEstimation& config);
@@ -48,22 +53,27 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   /**
    * Constructor
    *
-   * @param config configuration object that specifies grid, refinement, and regularization
+   * @param config configuration object that specifies grid, refinement, and
+   * regularization
    * @param processGrid BLACS process grid for parallelization with ScaLAPACK
    */
-  ModelFittingDensityEstimationOnOffParallel(const FitterConfigurationDensityEstimation& config,
-                                             std::shared_ptr<BlacsProcessGrid> processGrid);
+  ModelFittingDensityEstimationOnOffParallel(
+      const FitterConfigurationDensityEstimation& config,
+      std::shared_ptr<BlacsProcessGrid> processGrid);
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial grid by the
+   * Fit the grid to the given dataset by determining the weights of the initial
+   * grid by the
    * SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial grid by the
-   * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
+   * Fit the grid to the given dataset by determining the weights of the initial
+   * grid by the
+   * SGDE approach. Requires only data samples and no targets (since those are
+   * irrelevant for the
    * density estimation whatsoever).
    * This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
@@ -71,12 +81,15 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   void fit(DataMatrix& dataset) override;
 
   /**
-   * Performs a refinement given the new grid size and the points to coarsened.
+   * Performs refinement and coarsening given the new grid size and the points
+   * to coarsened.
    * @param newNoPoints the grid size after refinement and coarsening
-   * @param deletedGridPoints a list of indexes for grid points that will be removed
+   * @param deletedGridPoints a list of indexes for grid points that will be
+   * removed
    * @return if the grid was refined (always returns true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints,
+             std::vector<size_t>& deletedGridPoints) override;
 
   /**
    * Update the density estimation with new data.
@@ -85,8 +98,10 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   void update(Dataset& dataset) override;
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only
-   * the data samples and no targets (since those are irrelevant for the density estimation
+   * Updates the model based on new data samples (streaming, batch learning).
+   * Requires only
+   * the data samples and no targets (since those are irrelevant for the density
+   * estimation
    * whatsoever).
    * This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
@@ -94,23 +109,28 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   void update(DataMatrix& samples) override;
 
   /**
-   * Evaluate the fitted density at a single data point - requires a trained grid.
+   * Evaluate the fitted density at a single data point - requires a trained
+   * grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
   double evaluate(const DataVector& sample) override;
 
   /**
-   * Evaluate the fitted density on a set of data points - requires a trained grid.
-   * @param samples matrix where each row represents a sample and the columns contain the
+   * Evaluate the fitted density on a set of data points - requires a trained
+   * grid.
+   * @param samples matrix where each row represents a sample and the columns
+   * contain the
    * coordinates in all dimensions of that sample.
-   * @param results vector where each row will contain the evaluation of the respective sample on
+   * @param results vector where each row will contain the evaluation of the
+   * respective sample on
    * the current model.
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
-   * Function that indicates whether a model is refinable at all (certain on/off settings do not
+   * Function that indicates whether a model is refinable at all (certain on/off
+   * settings do not
    * allow for refinement)
    * @return whether the model is refinable
    */
@@ -122,7 +142,8 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
    * In the case of density estimation, this is
    * || R * alpha_lambda - b_val ||_2
    *
-   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * This is useful for unsupervised learning models, where normal evaluation
+   * cannot be used as
    * there are no targets.
    *
    * @param validationData Matrix for validation data
@@ -144,7 +165,8 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   void reset() override;
 
   /**
-   * Resets any trained representations of the model, but does not reset the entire state.
+   * Resets any trained representations of the model, but does not reset the
+   * entire state.
    *
    * Does not reset the decomposition and the grid.
    */
@@ -159,10 +181,12 @@ class ModelFittingDensityEstimationOnOffParallel : public ModelFittingDensityEst
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 
-  // pointer to the BLACS process grid for distributed matrices (init before alpha)
+  // pointer to the BLACS process grid for distributed matrices (init before
+  // alpha)
   std::shared_ptr<BlacsProcessGrid> processGrid;
 
-  // distributed version of the alpha vector (note that it is created after the process grid)
+  // distributed version of the alpha vector (note that it is created after the
+  // process grid)
   DataVectorDistributed alphaDistributed;
 };
 } /* namespace datadriven */

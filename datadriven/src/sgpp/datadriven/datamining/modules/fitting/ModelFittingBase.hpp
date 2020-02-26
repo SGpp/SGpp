@@ -10,12 +10,12 @@
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
-#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 
 #include <memory>
 #include <set>
@@ -94,10 +94,11 @@ class ModelFittingBase {
   virtual void fit(Dataset &dataset) = 0;
 
   /**
-   * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
-   * @return true if refinement was performed, else false.
+   * Improve accuracy of the model on the given training data by adaptive refinement or coarsening
+   * of the grid.
+   * @return true if refinement or coarsening was performed, else false.
    */
-  virtual bool refine() = 0;
+  virtual bool adapt() = 0;
 
   // TODO(lettrich): dataset should be const
   /**

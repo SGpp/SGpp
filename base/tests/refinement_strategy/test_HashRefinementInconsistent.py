@@ -27,7 +27,7 @@ class Test_HashRefinementInconsistent(unittest.TestCase):
         for i in [9, 10, 11, 12]:
             alpha[i] = 0.0
         coarseningFunctor = SurplusCoarseningFunctor(alpha, 4, 0.5)
-        self.grid.getGenerator().coarsen(coarseningFunctor, alpha)
+        self.grid.getGenerator().coarsen(coarseningFunctor)
         
 
 
