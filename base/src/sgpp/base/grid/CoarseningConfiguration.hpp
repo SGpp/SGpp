@@ -8,17 +8,9 @@
 namespace sgpp {
 namespace base {
 /**
- * Enumeration that defines different types of refinement indicators / functors
+ * Enumeration that defines different types of coarsening indicators / functors
  */
-enum class RefinementFunctorType {
-  Surplus,
-  SurplusVolume,
-  DataBased,
-  ZeroCrossing,
-  GridPointBased,
-  MultipleClass,
-  Classification
-};
+enum class CoarseningFunctorType { Surplus, SurplusVolume, Classification };
 
 }  // namespace base
 }  // namespace sgpp

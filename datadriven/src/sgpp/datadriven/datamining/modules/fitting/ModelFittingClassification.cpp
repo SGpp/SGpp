@@ -6,26 +6,32 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
+
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
+#include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
+
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
+
 #include <sgpp/datadriven/functors/MultiSurplusRefinementFunctor.hpp>
+
 #include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/DataBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/GridPointBasedRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/MultipleClassRefinementFunctor.hpp>
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
-#include <list>
-#include <map>
 #include <string>
-#include <vector>
-#include <limits>
 #include <fstream>
 #include <iostream>
+#include <limits>
+#include <list>
+#include <map>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -38,7 +44,7 @@ namespace datadriven {
 
 ModelFittingClassification::ModelFittingClassification(
     const FitterConfigurationClassification& config)
-    : refinementsPerformed{0} {
+    : refinementsPerformed(0), initialGridSize(0) {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 
@@ -246,12 +252,13 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus: {
       return new MultiSurplusRefinementFunctor(
-          grids, surpluses, refinementConfig.noPoints_,
-          refinementConfig.levelPenalize, refinementConfig.threshold_);
+          grids, surpluses, refinementConfig.numRefinementPoints_,
+          refinementConfig.levelPenalize,
+          refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::ZeroCrossing: {
       return new ZeroCrossingRefinementFunctor(
-          grids, surpluses, priors, refinementConfig.noPoints_,
+          grids, surpluses, priors, refinementConfig.numRefinementPoints_,
           refinementConfig.levelPenalize,
           refinementConfig.precomputeEvaluations);
     }
@@ -273,7 +280,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       }
       return new DataBasedRefinementFunctor(
           grids, surpluses, priors, &(dataset->getData()),
-          &(dataset->getTargets()), refinementConfig.noPoints_,
+          &(dataset->getTargets()), refinementConfig.numRefinementPoints_,
           refinementConfig.levelPenalize, refinementConfig.scalingCoefficients);
     }
     case RefinementFunctorType::SurplusVolume: {
@@ -284,30 +291,36 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     }
     case RefinementFunctorType::GridPointBased: {
       return new GridPointBasedRefinementFunctor(
-          grids, surpluses, priors, refinementConfig.noPoints_,
+          grids, surpluses, priors, refinementConfig.numRefinementPoints_,
           refinementConfig.levelPenalize,
-          refinementConfig.precomputeEvaluations, refinementConfig.threshold_);
+          refinementConfig.precomputeEvaluations,
+          refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::MultipleClass: {
-      return new MultipleClassRefinementFunctor(grids, surpluses, priors,
-                                                refinementConfig.noPoints_, 0,
-                                                refinementConfig.threshold_);
+      return new MultipleClassRefinementFunctor(
+          grids, surpluses, priors, refinementConfig.numRefinementPoints_, 0,
+          refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::Classification: {
       return new ClassificationRefinementFunctor(
-          grids, surpluses, priors, refinementConfig.noPoints_, true,
-          refinementConfig.threshold_);
+          grids, surpluses, priors, refinementConfig.numRefinementPoints_,
+          refinementConfig.numCoarseningPoints_, true,
+          refinementConfig.thresholdType_,
+          refinementConfig.refinementThreshold_,
+          refinementConfig.coarseningThreshold_,
+          refinementConfig.coarsenInitialPoints_, this->initialGridSize);
     }
   }
 
   return nullptr;
 }
 
-bool ModelFittingClassification::refine() {
+bool ModelFittingClassification::adapt() {
+  std::vector<std::vector<size_t>> deletedPoints(models.size());
   if (config->getGridConfig().generalType_ ==
       base::GeneralGridType::ComponentGrid) {
     for (size_t i = 0; i < models.size(); i++) {
-      models.at(i)->refine();
+      models.at(i)->adapt();
     }
     refinementsPerformed++;
     return true;
@@ -356,7 +369,7 @@ bool ModelFittingClassification::refine() {
                  RefinementFunctorType::Classification) {
         ClassificationRefinementFunctor* classfunc =
             dynamic_cast<ClassificationRefinementFunctor*>(func);
-        classfunc->refineAllGrids();
+        deletedPoints = classfunc->adaptAllGrids();
       } else {
         // The refinements have to be triggered manually
         for (size_t idx = 0; idx < models.size(); idx++) {
@@ -388,10 +401,7 @@ bool ModelFittingClassification::refine() {
 
       // Apply changes to all models
       for (size_t idx = 0; idx < models.size(); idx++) {
-        // TODO(fuchsgdk): Coarsening for classification? Any criteria
-        // availible?
-        std::list<size_t> coarsened;
-        models[idx]->refine(grids[idx]->getSize(), &coarsened);
+        models[idx]->adapt(grids[idx]->getSize(), deletedPoints.at(idx));
         std::cout << "Refined model for class index " << idx
                   << " (new size : " << (grids[idx]->getSize()) << ")"
                   << std::endl;
@@ -426,6 +436,11 @@ void ModelFittingClassification::update(Dataset& newDataset) {
     models[idx]->update(*samples);
     classNumberInstances[idx] += samples->getNrows();
     delete samples;
+  }
+
+  // save initial size of the grid, if not set already
+  if (this->initialGridSize == 0) {
+    this->initialGridSize = models[0]->getGrid().getSize();
   }
 }
 

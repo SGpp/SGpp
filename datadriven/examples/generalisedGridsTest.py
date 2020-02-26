@@ -46,7 +46,8 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
 
     adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 5
-    adapt.noPoints_ = 3
+    adapt.numRefinementPoints_ = 3
+    adapt.numCoarseningPoints_ = 3
 
     solv = sg.SLESolverConfiguration()
     solv.maxIterations_ = 50

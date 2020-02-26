@@ -25,8 +25,8 @@ void doAllRefinements(const sgpp::base::AdaptivityConfiguration& adaptConfig,
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -50,10 +50,10 @@ int main(int argc, char** argv) {
 
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
 

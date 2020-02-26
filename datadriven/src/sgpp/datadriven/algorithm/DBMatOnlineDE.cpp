@@ -3,20 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+
 #include <sgpp/base/exception/algorithm_exception.hpp>
+
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalInterModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinear.hpp>
+
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+
 #include <sgpp/datadriven/algorithm/DBMatDecompMatrixSolver.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEOrthoAdapt.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE_SMW.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
 
 #ifdef USE_GSL
@@ -26,7 +33,6 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
-#include <memory>
 #include <vector>
 
 namespace sgpp {
@@ -50,15 +56,13 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda,
 }
 
 void DBMatOnlineDE::updateRhs(size_t gridSize,
-                              std::list<size_t>* deletedPoints) {
+                              std::vector<size_t>& deletedPoints) {
   if (functionComputed) {
     // Coarsening -> remove all idx in deletedPoints
-    if (deletedPoints != nullptr && deletedPoints->size() > 0) {
-      std::vector<size_t> idxToDelete{std::begin(*deletedPoints),
-                                      std::end(*deletedPoints)};
+    if (deletedPoints.size() > 0) {
       if (localVectorsInitialized) {
-        bSave.remove(idxToDelete);
-        bTotalPoints.remove(idxToDelete);
+        bSave.remove(deletedPoints);
+        bTotalPoints.remove(deletedPoints);
       }
 
       if (distributedVectorsInitialized) {
@@ -69,8 +73,8 @@ void DBMatOnlineDE::updateRhs(size_t gridSize,
         auto processGrid = bSaveDistributed->getProcessGrid();
         if (processGrid->getCurrentRow() == 0 &&
             processGrid->getCurrentColumn() == 0) {
-          tmpbSave.remove(idxToDelete);
-          tmpbTotalPoints.remove(idxToDelete);
+          tmpbSave.remove(deletedPoints);
+          tmpbTotalPoints.remove(deletedPoints);
         }
         bSaveDistributed->distribute(tmpbSave.data());
         bTotalPointsDistributed->distribute(tmpbTotalPoints.data());
@@ -117,7 +121,7 @@ void DBMatOnlineDE::computeDensityFunction(
 void DBMatOnlineDE::computeDensityFunction(
     DataVector& alpha, DataMatrix& m, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool save_b,
-    bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
+    bool do_cv) {
   if (!localVectorsInitialized) {
     // init bsave and bTotalPoints only here, as they are not needed in the
     // parallel version
@@ -134,7 +138,6 @@ void DBMatOnlineDE::computeDensityFunction(
     totalPoints++;
 
     if (save_b) {
-      updateRhs(grid.getSize(), deletedPoints);
       // Old rhs is weighted by beta
       bSave.mult(beta);
       b.add(bSave);
@@ -213,7 +216,6 @@ void DBMatOnlineDE::computeDensityFunctionParallel(
   totalPoints++;
 
   if (save_b) {
-    updateRhs(grid.getSize(), deletedPoints);
     // Old rhs is weighted by beta
     bSaveDistributed->scale(beta);
     b.add(*bSaveDistributed);
@@ -276,8 +278,8 @@ DataVector DBMatOnlineDE::computeBFromBatch(
 
     if (b.getSize() != grid.getSize()) {
       throw sgpp::base::algorithm_exception(
-          "In DBMatOnlineDE::computeDensityFunction: b doesn't match size of "
-          "system matrix");
+          "In DBMatOnlineDE::computeBFromBatch: b doesn't match size of system "
+          "matrix");
     }
 
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(

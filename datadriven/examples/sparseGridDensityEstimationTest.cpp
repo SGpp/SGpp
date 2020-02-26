@@ -110,7 +110,7 @@ int main(int argc, char** argv) {
   std::cout << "# create adaptive refinement config" << std::endl;
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.numRefinements_ = 0;
-  adaptConfig.noPoints_ = 10;
+  adaptConfig.numRefinementPoints_ = 10;
 
   /**
    * Configure the solver. The solver type is set to the conjugent gradient
