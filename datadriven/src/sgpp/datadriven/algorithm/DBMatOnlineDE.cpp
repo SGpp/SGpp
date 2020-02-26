@@ -33,7 +33,6 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
-#include <memory>
 #include <vector>
 
 namespace sgpp {

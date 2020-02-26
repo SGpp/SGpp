@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <list>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -11,7 +12,8 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
+
+#include <list>
 #include <string>
 #include <vector>
 
@@ -32,8 +34,10 @@ namespace datadriven {
 ModelFittingDensityEstimation::ModelFittingDensityEstimation()
     : refinementsPerformed(0), initialGridSize(0) {}
 
-std::unique_ptr<RefinementFunctor> ModelFittingDensityEstimation::getRefinementFunctor() {
-  sgpp::base::AdaptivityConfiguration &refinementConfig = this->config->getRefinementConfig();
+std::unique_ptr<RefinementFunctor>
+ModelFittingDensityEstimation::getRefinementFunctor() {
+  sgpp::base::AdaptivityConfiguration &refinementConfig =
+      this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus: {
       return std::make_unique<SurplusRefinementFunctor>(
@@ -79,8 +83,10 @@ std::unique_ptr<RefinementFunctor> ModelFittingDensityEstimation::getRefinementF
   return nullptr;
 }
 
-std::unique_ptr<CoarseningFunctor> ModelFittingDensityEstimation::getCoarseningFunctor() {
-  sgpp::base::AdaptivityConfiguration &adaptivityConfig = this->config->getRefinementConfig();
+std::unique_ptr<CoarseningFunctor>
+ModelFittingDensityEstimation::getCoarseningFunctor() {
+  sgpp::base::AdaptivityConfiguration &adaptivityConfig =
+      this->config->getRefinementConfig();
   switch (adaptivityConfig.coarseningFunctorType) {
     case CoarseningFunctorType::Surplus: {
       return std::make_unique<SurplusCoarseningFunctor>(
@@ -110,27 +116,32 @@ bool ModelFittingDensityEstimation::adapt() {
 
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement and coarsening functors
-      std::unique_ptr<RefinementFunctor> refinementFunc = getRefinementFunctor();
+      std::unique_ptr<RefinementFunctor> refinementFunc =
+          getRefinementFunctor();
       auto oldNoPoints = grid->getSize();
 
-      std::unique_ptr<CoarseningFunctor> coarseningFunc = getCoarseningFunctor();
+      std::unique_ptr<CoarseningFunctor> coarseningFunc =
+          getCoarseningFunctor();
       std::vector<size_t> deletedGridPoints;
 
-      // do coarsening before refinement to prevent refined grid points from being coarsened
+      // do coarsening before refinement to prevent refined grid points from
+      // being coarsened
       // immediately
 
       if (coarseningFunc) {
         // coarsen grid
         if (config->getRefinementConfig().coarsenInitialPoints_) {
-          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
-                                                 &deletedGridPoints, 0);
+          grid->getGenerator().coarsenNFirstOnly(
+              *coarseningFunc, grid->getSize(), &deletedGridPoints, 0);
         } else {
-          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
-                                                 &deletedGridPoints, this->initialGridSize);
+          grid->getGenerator().coarsenNFirstOnly(
+              *coarseningFunc, grid->getSize(), &deletedGridPoints,
+              this->initialGridSize);
         }
       } else {
         throw application_exception(
-            "ModelFittingDensityEstimation: No coarsening functor could be created!");
+            "ModelFittingDensityEstimation: No coarsening functor could be "
+            "created!");
       }
 
       if (refinementFunc) {
@@ -139,13 +150,15 @@ bool ModelFittingDensityEstimation::adapt() {
         GeometryConfiguration geoConf = config->getGeometryConfig();
         if (!geoConf.stencils.empty()) {
           GridFactory gridFactory;
-          grid->getGenerator().refineInter(*refinementFunc, gridFactory.getInteractions(geoConf));
+          grid->getGenerator().refineInter(
+              *refinementFunc, gridFactory.getInteractions(geoConf));
         } else {
           grid->getGenerator().refine(*refinementFunc);
         }
       } else {
         throw application_exception(
-            "ModelFittingDensityEstimation: No refinement functor could be created!");
+            "ModelFittingDensityEstimation: No refinement functor could be "
+            "created!");
       }
 
       auto newNoPoints = grid->getSize();
@@ -162,7 +175,8 @@ bool ModelFittingDensityEstimation::adapt() {
     }
   } else {
     throw application_exception(
-        "ModelFittingDensityEstimation: Can't refine before initial grid is created");
+        "ModelFittingDensityEstimation: Can't refine before initial grid is "
+        "created");
   }
 }  // namespace datadriven
 

@@ -3,20 +3,23 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <iostream>
+#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
+
 #include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/grid/generation/PrewaveletGridGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <iostream>
 #include <vector>
 
 namespace sgpp {
 namespace base {
 
-PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage& storage, GridStorage& shadowstorage)
+PrewaveletGridGenerator::PrewaveletGridGenerator(GridStorage& storage,
+                                                 GridStorage& shadowstorage)
     : storage(storage), shadowstorage(shadowstorage) {}
 
 PrewaveletGridGenerator::~PrewaveletGridGenerator() {}
@@ -36,7 +39,8 @@ void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size) {
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size);
 }
 
-void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size, double T) {
+void PrewaveletGridGenerator::cliques(size_t level, size_t clique_size,
+                                      double T) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size, T);
 }
@@ -49,7 +53,8 @@ void PrewaveletGridGenerator::full(size_t level) {
 /**
  * Refines the grid and updates the shadow storage.
  */
-void PrewaveletGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
+void PrewaveletGridGenerator::refine(RefinementFunctor& func,
+                                     std::vector<size_t>* addedPoints) {
   HashRefinement refine;
   size_t start = this->storage.getSize();
   refine.free_refine(this->storage, func, addedPoints);
@@ -89,8 +94,8 @@ size_t PrewaveletGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
-                                            GridStorage::grid_iterator& shadowIter) {
+void PrewaveletGridGenerator::insertParents(
+    GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter) {
   // Call parents in every dimension
   for (size_t d = 0; d < storage.getDimension(); d++) {
     index_t current_index;
@@ -106,7 +111,8 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
     // Ok, point is neither in storage, nor in shadowstorage ...
     if (storage.isInvalidSequenceNumber(iter.seq()) &&
         shadowstorage.isInvalidSequenceNumber(shadowIter.seq())) {
-      GridStorage::point_pointer new_index = new GridStorage::point_type(storage.getDimension());
+      GridStorage::point_pointer new_index =
+          new GridStorage::point_type(storage.getDimension());
 
       for (size_t dim = 0; dim < storage.getDimension(); ++dim) {
         index_t target_index;
@@ -127,9 +133,9 @@ void PrewaveletGridGenerator::insertParents(GridStorage::grid_iterator& iter,
   }
 }
 
-void PrewaveletGridGenerator::addNeighbours(index_type& index, size_t current_dim,
-                                            level_t target_level, GridStorage::grid_iterator& iter,
-                                            GridStorage::grid_iterator& shadowIter) {
+void PrewaveletGridGenerator::addNeighbours(
+    index_type& index, size_t current_dim, level_t target_level,
+    GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter) {
   level_t sum = 0;
 
   for (size_t d = 0; d < storage.getDimension(); ++d) {
@@ -140,7 +146,8 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index, size_t current_di
   }
 
   if (sum == target_level) {
-    GridStorage::point_pointer new_index = new GridStorage::point_type(storage.getDimension());
+    GridStorage::point_pointer new_index =
+        new GridStorage::point_type(storage.getDimension());
 
     if (storage.isInvalidSequenceNumber(iter.seq()) &&
         shadowstorage.isInvalidSequenceNumber(shadowIter.seq())) {
@@ -159,16 +166,18 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index, size_t current_di
         new_index->set(d, current_level, current_index);
 
         // The index cast to int is required to allow a negative index
-        int target_left = static_cast<int>((1.0 / (1 << target_level)) *
-                                           static_cast<double>(static_cast<int>(target_index) - 3));
+        int target_left = static_cast<int>(
+            (1.0 / (1 << target_level)) *
+            static_cast<double>(static_cast<int>(target_index) - 3));
         int target_right = static_cast<int>(
-            (1.0 / (1 << target_level)) * static_cast<double>(static_cast<int>(target_index) + 3));
-        int current_left =
-            static_cast<int>((1.0 / (1 << current_index)) *
-                             static_cast<double>(static_cast<int>(current_level) + 3));
-        int current_right =
-            static_cast<int>((1.0 / (1 << current_index)) *
-                             static_cast<double>(static_cast<int>(current_level) + 3));
+            (1.0 / (1 << target_level)) *
+            static_cast<double>(static_cast<int>(target_index) + 3));
+        int current_left = static_cast<int>(
+            (1.0 / (1 << current_index)) *
+            static_cast<double>(static_cast<int>(current_level) + 3));
+        int current_right = static_cast<int>(
+            (1.0 / (1 << current_index)) *
+            static_cast<double>(static_cast<int>(current_level) + 3));
 
         if (!(current_right > target_left || current_left < target_right)) {
           delete new_index;
@@ -209,7 +218,8 @@ void PrewaveletGridGenerator::addNeighbours(index_type& index, size_t current_di
 
 /**
  * If during the refinement one or more points of the shadow register are added
- * to the actual grid then we have to remove these points from the shadow storage.
+ * to the actual grid then we have to remove these points from the shadow
+ * storage.
  */
 void PrewaveletGridGenerator::consolidateShadow() {
   GridStorage temp(storage.getDimension());
@@ -227,17 +237,19 @@ void PrewaveletGridGenerator::consolidateShadow() {
   }
 }
 
-void PrewaveletGridGenerator::coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) {
+void PrewaveletGridGenerator::coarsen(CoarseningFunctor& func,
+                                      std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
   coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+void PrewaveletGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+                                                size_t numFirstOnly,
                                                 std::vector<size_t>* removedSeq,
                                                 size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
-                                  removedSeq);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly,
+                                  minIndexConsidered, nullptr, removedSeq);
 }
 
 size_t PrewaveletGridGenerator::getNumberOfRemovablePoints() {
@@ -245,11 +257,14 @@ size_t PrewaveletGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor& func, size_t maxLevel) {
-  throw generation_exception("PrewaveletGridGenerator::refineMaxLevel is not implemented");
+void PrewaveletGridGenerator::refineMaxLevel(RefinementFunctor& func,
+                                             size_t maxLevel) {
+  throw generation_exception(
+      "PrewaveletGridGenerator::refineMaxLevel is not implemented");
 }
 
-size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
+size_t PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel(
+    size_t maxLevel) {
   throw generation_exception(
       "PrewaveletGridGenerator::getNumberOfRefinablePointsToMaxLevel "
       "is not implemented");

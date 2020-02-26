@@ -3,12 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
+
 #include <algorithm>
 #include <chrono>
-#include <list>
-#include <sgpp/base/exception/algorithm_exception.hpp>
-#include <sgpp/datadriven/algorithm/DBMatOfflineDenseIChol.hpp>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -20,7 +21,9 @@ DBMatOfflineDenseIChol::DBMatOfflineDenseIChol() : DBMatOfflineChol() {}
 DBMatOfflineDenseIChol::DBMatOfflineDenseIChol(const std::string& fileName)
     : DBMatOfflineChol{fileName} {}
 
-DBMatOffline* DBMatOfflineDenseIChol::clone() const { return new DBMatOfflineDenseIChol{*this}; }
+DBMatOffline* DBMatOfflineDenseIChol::clone() const {
+  return new DBMatOfflineDenseIChol{*this};
+}
 
 void DBMatOfflineDenseIChol::decomposeMatrix(
     const RegularizationConfiguration& regularizationConfig,
@@ -42,21 +45,25 @@ void DBMatOfflineDenseIChol::decomposeMatrix(
         }
       }
 
-      ichol(tmpMatrix, lhsMatrix, densityEstimationConfig.iCholSweepsDecompose_);
+      ichol(tmpMatrix, lhsMatrix,
+            densityEstimationConfig.iCholSweepsDecompose_);
     }
     isDecomposed = true;
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::cout << "IChol decompostition took"
-    //              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
+    //              << std::chrono::duration_cast<std::chrono::milliseconds>(end
+    //              - begin).count() <<
     //              "ms"
     //              << std::endl;
   } else {
-    throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
+    throw algorithm_exception(
+        "Matrix has to be constructed before it can be decomposed");
   }
 }
 
 void DBMatOfflineDenseIChol::choleskyModification(
-    Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+    Grid& grid,
+    datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     size_t newPoints, std::vector<size_t>& deletedPoints, double lambda) {
   if (newPoints > 0) {
     //    auto begin = std::chrono::high_resolution_clock::now();
@@ -79,7 +86,8 @@ void DBMatOfflineDenseIChol::choleskyModification(
 
     // lhsMatrix.resizeQuadratic(gridSize);
 
-    // DataMatrix to collect newly added points to avoid a full copy of the matrix.
+    // DataMatrix to collect newly added points to avoid a full copy of the
+    // matrix.
     DataMatrix matRefine(newPoints, gridSize);
 
     // printf("mat size will be %d, %d\n", newPoints, gridSize);
@@ -121,13 +129,15 @@ void DBMatOfflineDenseIChol::choleskyModification(
               // Use formula for different overlapping ansatz functions:
               if (lik > ljk) {  // Phi_i_k is the "smaller" ansatz function
                 double diff = (iik / lik) - (ijk / ljk);  // x_i_k - x_j_k
-                double temp_res = fabs(diff - (1 / lik)) + fabs(diff + (1 / lik)) - fabs(diff);
+                double temp_res = fabs(diff - (1 / lik)) +
+                                  fabs(diff + (1 / lik)) - fabs(diff);
                 temp_res *= ljk;
                 temp_res = (1 - temp_res) / lik;
                 res *= temp_res;
               } else {  // Phi_j_k is the "smaller" ansatz function
                 double diff = (ijk / ljk) - (iik / lik);  // x_j_k - x_i_k
-                double temp_res = fabs(diff - (1 / ljk)) + fabs(diff + (1 / ljk)) - fabs(diff);
+                double temp_res = fabs(diff - (1 / ljk)) +
+                                  fabs(diff + (1 / ljk)) - fabs(diff);
                 temp_res *= lik;
                 temp_res = (1 - temp_res) / ljk;
                 res *= temp_res;
@@ -148,18 +158,22 @@ void DBMatOfflineDenseIChol::choleskyModification(
       }
     }
 
-    ichol(matRefine, lhsMatrix, densityEstimationConfig.iCholSweepsRefine_, (gridSize - newPoints));
+    ichol(matRefine, lhsMatrix, densityEstimationConfig.iCholSweepsRefine_,
+          (gridSize - newPoints));
 
     //    auto end = std::chrono::high_resolution_clock::now();
     //    std::cout << "IChol refinement took "
-    //              << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<
+    //              << std::chrono::duration_cast<std::chrono::milliseconds>(end
+    //              - begin).count() <<
     //              "ms"
     //              << std::endl;
   }
 }
 
-void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, DataMatrix& result,
-                                                     size_t sweeps, size_t startRow) {
+void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix,
+                                                     DataMatrix& result,
+                                                     size_t sweeps,
+                                                     size_t startRow) {
   if (startRow > matrix.getSize()) {
     throw algorithm_exception{"Start row is larger then the matrix size"};
   }
@@ -192,7 +206,8 @@ void sgpp::datadriven::DBMatOfflineDenseIChol::ichol(const DataMatrix& matrix, D
   }
 } /* omp parallel */
 
-sgpp::datadriven::MatrixDecompositionType DBMatOfflineDenseIChol::getDecompositionType() {
+sgpp::datadriven::MatrixDecompositionType
+DBMatOfflineDenseIChol::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 }
 } /* namespace datadriven */

@@ -19,12 +19,13 @@ LearnerScenario::LearnerScenario(std::string scenarioFileName)
   //  this->readFromFile(scenarioFileName);
 }
 
-LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
-                                 InternalPrecision internalPrecision,
-                                 base::RegularGridConfiguration gridConfig,
-                                 solver::SLESolverConfiguration SLESolverConfigRefine,
-                                 solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdaptivityConfiguration adaptConfig)
+LearnerScenario::LearnerScenario(
+    std::string datasetFileName, double lambda,
+    InternalPrecision internalPrecision,
+    base::RegularGridConfiguration gridConfig,
+    solver::SLESolverConfiguration SLESolverConfigRefine,
+    solver::SLESolverConfiguration SLESolverConfigFinal,
+    base::AdaptivityConfiguration adaptConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
@@ -36,13 +37,14 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   (*this).addDictAttr("testset").addIDAttr("hasTestDataset", false);
 }
 
-LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
-                                 InternalPrecision internalPrecision,
-                                 base::RegularGridConfiguration gridConfig,
-                                 solver::SLESolverConfiguration SLESolverConfigRefine,
-                                 solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdaptivityConfiguration adaptConfig,
-                                 datadriven::TestsetConfiguration testsetConfig)
+LearnerScenario::LearnerScenario(
+    std::string datasetFileName, double lambda,
+    InternalPrecision internalPrecision,
+    base::RegularGridConfiguration gridConfig,
+    solver::SLESolverConfiguration SLESolverConfigRefine,
+    solver::SLESolverConfiguration SLESolverConfigFinal,
+    base::AdaptivityConfiguration adaptConfig,
+    datadriven::TestsetConfiguration testsetConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
@@ -60,13 +62,18 @@ void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
   (*this).replaceTextAttr("datasetFileName", datasetFileName);
 }
 
-std::string LearnerScenario::getDatasetFileName() { return (*this)["datasetFileName"].get(); }
+std::string LearnerScenario::getDatasetFileName() {
+  return (*this)["datasetFileName"].get();
+}
 
-void LearnerScenario::setLambda(double lambda) { (*this).replaceIDAttr("lambda", lambda); }
+void LearnerScenario::setLambda(double lambda) {
+  (*this).replaceIDAttr("lambda", lambda);
+}
 
 double LearnerScenario::getLambda() { return (*this)["lambda"].getDouble(); }
 
-void LearnerScenario::setInternalPrecision(InternalPrecision internalPrecision) {
+void LearnerScenario::setInternalPrecision(
+    InternalPrecision internalPrecision) {
   if (internalPrecision == InternalPrecision::Float) {
     (*this).replaceIDAttr("INTERNAL_PRECISION", "float");
   } else {
@@ -85,12 +92,16 @@ InternalPrecision LearnerScenario::getInternalPrecision() {
   }
 }
 
-void LearnerScenario::setGridConfig(base::RegularGridConfiguration& gridConfig) {
+void LearnerScenario::setGridConfig(
+    base::RegularGridConfiguration& gridConfig) {
   (*this).replaceDictAttr("grid");
-  (*this)["grid"].replaceIDAttr("boundaryLevel", static_cast<uint64_t>(gridConfig.boundaryLevel_));
+  (*this)["grid"].replaceIDAttr(
+      "boundaryLevel", static_cast<uint64_t>(gridConfig.boundaryLevel_));
   (*this)["grid"].replaceIDAttr("dim", static_cast<uint64_t>(gridConfig.dim_));
-  (*this)["grid"].replaceIDAttr("level", static_cast<uint64_t>(gridConfig.level_));
-  (*this)["grid"].replaceIDAttr("maxDegree", static_cast<uint64_t>(gridConfig.maxDegree_));
+  (*this)["grid"].replaceIDAttr("level",
+                                static_cast<uint64_t>(gridConfig.level_));
+  (*this)["grid"].replaceIDAttr("maxDegree",
+                                static_cast<uint64_t>(gridConfig.maxDegree_));
 
   if (gridConfig.type_ == base::GridType::Linear) {
     (*this)["grid"].replaceTextAttr("type", "Linear");
@@ -125,10 +136,13 @@ base::RegularGridConfiguration LearnerScenario::getGridConfig() {
 void LearnerScenario::setSolverConfigurationRefine(
     solver::SLESolverConfiguration& solverConfigRefine) {
   (*this).replaceDictAttr("solverRefine");
-  (*this)["solverRefine"].replaceIDAttr("eps", static_cast<double>(solverConfigRefine.eps_));
-  (*this)["solverRefine"].replaceIDAttr("maxIterations",
-                                        static_cast<uint64_t>(solverConfigRefine.maxIterations_));
-  (*this)["solverRefine"].replaceIDAttr("threshold", solverConfigRefine.threshold_);
+  (*this)["solverRefine"].replaceIDAttr(
+      "eps", static_cast<double>(solverConfigRefine.eps_));
+  (*this)["solverRefine"].replaceIDAttr(
+      "maxIterations",
+      static_cast<uint64_t>(solverConfigRefine.maxIterations_));
+  (*this)["solverRefine"].replaceIDAttr("threshold",
+                                        solverConfigRefine.threshold_);
   if (solverConfigRefine.type_ == solver::SLESolverType::CG) {
     (*this)["solverRefine"].replaceIDAttr("type", "CG");
   } else if (solverConfigRefine.type_ == solver::SLESolverType::BiCGSTAB) {
@@ -142,8 +156,10 @@ void LearnerScenario::setSolverConfigurationRefine(
 solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
   solver::SLESolverConfiguration solverConfigFinal;
   solverConfigFinal.eps_ = (*this)["solverRefine"]["eps"].getDouble();
-  solverConfigFinal.maxIterations_ = (*this)["solverRefine"]["maxIterations"].getUInt();
-  solverConfigFinal.threshold_ = (*this)["solverRefine"]["threshold"].getDouble();
+  solverConfigFinal.maxIterations_ =
+      (*this)["solverRefine"]["maxIterations"].getUInt();
+  solverConfigFinal.threshold_ =
+      (*this)["solverRefine"]["threshold"].getDouble();
   std::string solverType = (*this)["solverRefine"]["type"].get();
   if (solverType.compare("CG") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::CG;
@@ -159,10 +175,12 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationRefine() {
 void LearnerScenario::setSolverConfigurationFinal(
     solver::SLESolverConfiguration& solverConfigFinal) {
   (*this).replaceDictAttr("solverFinal");
-  (*this)["solverFinal"].replaceIDAttr("eps", static_cast<double>(solverConfigFinal.eps_));
-  (*this)["solverFinal"].replaceIDAttr("maxIterations",
-                                       static_cast<uint64_t>(solverConfigFinal.maxIterations_));
-  (*this)["solverFinal"].replaceIDAttr("threshold", solverConfigFinal.threshold_);
+  (*this)["solverFinal"].replaceIDAttr(
+      "eps", static_cast<double>(solverConfigFinal.eps_));
+  (*this)["solverFinal"].replaceIDAttr(
+      "maxIterations", static_cast<uint64_t>(solverConfigFinal.maxIterations_));
+  (*this)["solverFinal"].replaceIDAttr("threshold",
+                                       solverConfigFinal.threshold_);
   if (solverConfigFinal.type_ == solver::SLESolverType::CG) {
     (*this)["solverFinal"].replaceIDAttr("type", "CG");
   } else if (solverConfigFinal.type_ == solver::SLESolverType::BiCGSTAB) {
@@ -176,8 +194,10 @@ void LearnerScenario::setSolverConfigurationFinal(
 solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   solver::SLESolverConfiguration solverConfigFinal;
   solverConfigFinal.eps_ = (*this)["solverFinal"]["eps"].getDouble();
-  solverConfigFinal.maxIterations_ = (*this)["solverFinal"]["maxIterations"].getUInt();
-  solverConfigFinal.threshold_ = (*this)["solverFinal"]["threshold"].getDouble();
+  solverConfigFinal.maxIterations_ =
+      (*this)["solverFinal"]["maxIterations"].getUInt();
+  solverConfigFinal.threshold_ =
+      (*this)["solverFinal"]["threshold"].getDouble();
   std::string solverType = (*this)["solverFinal"]["type"].get();
   if (solverType.compare("CG") == 0) {
     solverConfigFinal.type_ = solver::SLESolverType::CG;
@@ -190,23 +210,30 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   return solverConfigFinal;
 }
 
-void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig) {
+void LearnerScenario::setAdaptivityConfiguration(
+    base::AdaptivityConfiguration& adaptConfig) {
   (*this).replaceDictAttr("adaptivity");
-  (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
-  (*this)["adaptivity"].replaceIDAttr("noPoints", static_cast<uint64_t>(adaptConfig.numRefinementPoints_));
-  (*this)["adaptivity"].replaceIDAttr("numRefinements",
-                                      static_cast<uint64_t>(adaptConfig.numRefinements_));
+  (*this)["adaptivity"].replaceIDAttr("maxLevelType",
+                                      adaptConfig.maxLevelType_);
+  (*this)["adaptivity"].replaceIDAttr(
+      "noPoints", static_cast<uint64_t>(adaptConfig.numRefinementPoints_));
+  (*this)["adaptivity"].replaceIDAttr(
+      "numRefinements", static_cast<uint64_t>(adaptConfig.numRefinements_));
   (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
-  (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.refinementThreshold_);
+  (*this)["adaptivity"].replaceIDAttr("threshold",
+                                      adaptConfig.refinementThreshold_);
 }
 
 base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
   base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
-  adaptConfig.numRefinementPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
-  adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
+  adaptConfig.numRefinementPoints_ =
+      (*this)["adaptivity"]["noPoints"].getUInt();
+  adaptConfig.numRefinements_ =
+      (*this)["adaptivity"]["numRefinements"].getUInt();
   adaptConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
-  adaptConfig.refinementThreshold_ = (*this)["adaptivity"]["threshold"].getDouble();
+  adaptConfig.refinementThreshold_ =
+      (*this)["adaptivity"]["threshold"].getDouble();
   return adaptConfig;
 }
 
@@ -222,10 +249,13 @@ bool LearnerScenario::hasTestsetConfiguration() {
   return (*this)["testset"]["hasTestDataset"].getBool();
 }
 
-void LearnerScenario::setTestsetConfiguration(datadriven::TestsetConfiguration& testsetConfig) {
+void LearnerScenario::setTestsetConfiguration(
+    datadriven::TestsetConfiguration& testsetConfig) {
   (*this).replaceDictAttr("testset");
-  (*this)["testset"].replaceIDAttr("hasTestDataset", testsetConfig.hasTestDataset);
-  (*this)["testset"].replaceTextAttr("testFileName", testsetConfig.alphaReferenceFileName);
+  (*this)["testset"].replaceIDAttr("hasTestDataset",
+                                   testsetConfig.hasTestDataset);
+  (*this)["testset"].replaceTextAttr("testFileName",
+                                     testsetConfig.alphaReferenceFileName);
   (*this)["testset"].replaceIDAttr("expectedMSE", testsetConfig.expectedMSE);
   (*this)["testset"].replaceIDAttr("expectedLargestDifference",
                                    testsetConfig.expectedLargestDifference);
@@ -234,7 +264,8 @@ void LearnerScenario::setTestsetConfiguration(datadriven::TestsetConfiguration& 
 datadriven::TestsetConfiguration LearnerScenario::getTestsetConfiguration() {
   TestsetConfiguration testsetConfig;
   testsetConfig.hasTestDataset = (*this)["testset"]["hasTestDataset"].getBool();
-  testsetConfig.alphaReferenceFileName = (*this)["testset"]["testFileName"].get();
+  testsetConfig.alphaReferenceFileName =
+      (*this)["testset"]["testFileName"].get();
   testsetConfig.expectedMSE = (*this)["testset"]["expectedMSE"].getDouble();
   testsetConfig.expectedLargestDifference =
       (*this)["testset"]["expectedLargestDifference"].getDouble();

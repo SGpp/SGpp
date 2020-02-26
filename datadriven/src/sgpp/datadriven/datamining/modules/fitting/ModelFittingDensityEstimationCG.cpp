@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <list>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -13,9 +14,10 @@
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
+
+#include <list>
 #include <string>
 #include <vector>
 
@@ -41,13 +43,16 @@ ModelFittingDensityEstimationCG::ModelFittingDensityEstimationCG(
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityEstimationCG::evaluate(const DataVector& sample) {
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
+  std::unique_ptr<base::OperationEval> opEval(
+      op_factory::createOperationEval(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples, DataVector& results) {
-  sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
+void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples,
+                                               DataVector& results) {
+  sgpp::op_factory::createOperationMultipleEval(*grid, samples)
+      ->eval(alpha, results);
 }
 
 void ModelFittingDensityEstimationCG::fit(Dataset& newDataset) {
@@ -63,7 +68,8 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   auto& gridConfig = this->config->getGridConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
   gridConfig.dim_ = newDataset.getNcols();
-  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
+  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass
+  // interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
   // build surplus vector
   alpha = DataVector(grid->getSize());
@@ -76,8 +82,8 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   update(newDataset);
 }
 
-bool ModelFittingDensityEstimationCG::adapt(size_t newNoPoints,
-                                            std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityEstimationCG::adapt(
+    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
@@ -103,13 +109,14 @@ void ModelFittingDensityEstimationCG::update(Dataset& newDataset) {
   update(newDataset.getData());
 }
 
-base::OperationMatrix* ModelFittingDensityEstimationCG::computeRegularizationMatrix(
-    base::Grid& grid) {
+base::OperationMatrix*
+ModelFittingDensityEstimationCG::computeRegularizationMatrix(base::Grid& grid) {
   base::OperationMatrix* C;
   auto& regularizationConfig = this->config->getRegularizationConfig();
   if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ ==
+             datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
@@ -129,7 +136,8 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
 
     // Calculate the update for the rhs
     DataVector rhsUpdate(grid->getSize());
-    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C, regularizationConfig.lambda_);
+    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C,
+                                            regularizationConfig.lambda_);
     SMatrix.generateb(rhsUpdate);
     double numInstances = static_cast<double>(newDataset.getNrows());
     // Rescale the rhs such that it is not normalized by the number of instances
@@ -148,8 +156,10 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();
-    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_, solverConfig.eps_);
-    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_, solverConfig.threshold_);
+    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_,
+                                        solverConfig.eps_);
+    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_,
+                   solverConfig.threshold_);
   }
 }
 

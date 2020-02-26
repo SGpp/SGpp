@@ -4,9 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
-#include <climits>
-#include <cmath>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -15,6 +13,11 @@
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+
+#include <boost/test/unit_test.hpp>
+
+#include <climits>
+#include <cmath>
 #include <vector>
 
 using sgpp::base::DataVector;
@@ -59,7 +62,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
+  std::vector<size_t>
+      toBeRemoved;  // contains grid point hash, not seq numbers!
   DataVector alpha(gridStorage.getSize(), 1.0);
 
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
@@ -96,14 +100,15 @@ BOOST_AUTO_TEST_CASE(testCoarseningBasic) {
     // check if the point is no longer in the grid storage
     if (std::find(after.begin(), after.end(), before.at(i)) == after.end()) {
       // if so it must have been a removed point
-      BOOST_CHECK(std::find(toBeRemoved.begin(), toBeRemoved.end(), before.at(i)) !=
-                  toBeRemoved.end());
+      BOOST_CHECK(std::find(toBeRemoved.begin(), toBeRemoved.end(),
+                            before.at(i)) != toBeRemoved.end());
     }
   }
 
   // Check that all three points really are removed
   for (size_t i = 0; i < toBeRemoved.size(); i++) {
-    BOOST_CHECK(std::find(after.begin(), after.end(), toBeRemoved.at(i)) == after.end());
+    BOOST_CHECK(std::find(after.begin(), after.end(), toBeRemoved.at(i)) ==
+                after.end());
   }
 }
 
@@ -134,7 +139,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;  // contains grid point hash, not seq numbers!
+  std::vector<size_t>
+      toBeRemoved;  // contains grid point hash, not seq numbers!
   DataVector alpha(gridStorage.getSize(), 1.0);
 
   alpha[161] = 0.1;  // should not be coarsed i=0 l=0
@@ -170,19 +176,21 @@ BOOST_AUTO_TEST_CASE(testCoarseningThreshold) {
     // check if the point is no longer in the grid storage
     if (std::find(after.begin(), after.end(), before.at(i)) == after.end()) {
       // if so it must have been a removed point
-      BOOST_CHECK(std::find(toBeRemoved.begin(), toBeRemoved.end(), before.at(i)) !=
-                  toBeRemoved.end());
+      BOOST_CHECK(std::find(toBeRemoved.begin(), toBeRemoved.end(),
+                            before.at(i)) != toBeRemoved.end());
     }
   }
 
   // Check that all three points really are removed
   for (size_t i = 0; i < toBeRemoved.size(); i++) {
-    BOOST_CHECK(std::find(after.begin(), after.end(), toBeRemoved.at(i)) == after.end());
+    BOOST_CHECK(std::find(after.begin(), after.end(), toBeRemoved.at(i)) ==
+                after.end());
   }
 }
 
 /**
- * Test that the removedPoints vector filled by the coarsening functionallity really contains
+ * Test that the removedPoints vector filled by the coarsening functionallity
+ * really contains
  * exactly the removed points
  * Test further, that removedSeq contains the seq numbers which were removed
  */
@@ -193,8 +201,10 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   GridStorage& gridStorage = grid->getStorage();
   grid->getGenerator().regular(level);
 
-  std::vector<size_t> toBeRemoved;     // contains grid point hash, not seq numbers!
-  std::vector<size_t> toBeRemovedSeq;  // contains seq numbers of grid points to be removed
+  std::vector<size_t>
+      toBeRemoved;  // contains grid point hash, not seq numbers!
+  std::vector<size_t>
+      toBeRemovedSeq;  // contains seq numbers of grid points to be removed
   toBeRemovedSeq.push_back(203);
   toBeRemovedSeq.push_back(204);
   toBeRemovedSeq.push_back(208);
@@ -228,7 +238,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   for (auto it = gridStorage.begin(); it != gridStorage.end(); it++) {
     after.push_back(it->first->getHash());
   }
-  // Check that toBeRemoved and removedPoints contain the same hash of grid points
+  // Check that toBeRemoved and removedPoints contain the same hash of grid
+  // points
   BOOST_CHECK_EQUAL(toBeRemoved.size(), removedPoints.size());
   for (size_t i = 0; i < removedPoints.size(); i++) {
     size_t hash = removedPoints.at(i).getHash();
@@ -242,8 +253,8 @@ BOOST_AUTO_TEST_CASE(testCoarseningRemovedPoints) {
   // Check that toBeRemovedSeq and removedSeq contain the same elements
   BOOST_CHECK_EQUAL(toBeRemovedSeq.size(), removedSeq.size());
   for (size_t i = 0; i < toBeRemovedSeq.size(); i++) {
-    BOOST_CHECK(std::find(removedSeq.begin(), removedSeq.end(), toBeRemovedSeq.at(i)) !=
-                removedSeq.end());
+    BOOST_CHECK(std::find(removedSeq.begin(), removedSeq.end(),
+                          toBeRemovedSeq.at(i)) != removedSeq.end());
   }
 }
 

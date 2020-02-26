@@ -26,12 +26,12 @@
 #include <sgpp/datadriven/functors/classification/ZeroCrossingRefinementFunctor.hpp>
 
 #include <string>
-#include <vector>
 #include <fstream>
 #include <iostream>
 #include <limits>
 #include <list>
 #include <map>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

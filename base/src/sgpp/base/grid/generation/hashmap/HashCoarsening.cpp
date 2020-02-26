@@ -3,21 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <list>
-#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
-#include <sgpp/globaldef.hpp>
 #include <utility>
 #include <vector>
 
 namespace sgpp {
 namespace base {
 
-void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFunctor& functor,
-                                             size_t numFirstPoints, size_t minIndexConsidered,
-                                             std::vector<HashGridPoint>* removedPoints,
-                                             std::vector<size_t>* removedSeq) {
+void HashCoarsening::free_coarsen_NFirstOnly(
+    GridStorage& storage, CoarseningFunctor& functor, size_t numFirstPoints,
+    size_t minIndexConsidered, std::vector<HashGridPoint>* removedPoints,
+    std::vector<size_t>* removedSeq) {
   // check if the grid has any points
   if (storage.getSize() == 0) {
     throw generation_exception("storage empty");
@@ -81,17 +82,20 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFun
   // vector to save remaining points
   std::vector<size_t> remainingIndex;
 
-  // vector containing the actually removed points. "local" b/c @param removedPoints
+  // vector containing the actually removed points. "local" b/c @param
+  // removedPoints
   std::vector<size_t> localRemovedPoints;
 
   // vector to store the points that match all condition for deleting
   // this->deletePoints.clear();
 
   for (size_t i = 0; i < remove_num; i++) {
-    if (removeCandidates[i].second < initValue && removeCandidates[i].second <= threshold) {
+    if (removeCandidates[i].second < initValue &&
+        removeCandidates[i].second <= threshold) {
       localRemovedPoints.push_back(removeCandidates[i].first);
       if (removedPoints != nullptr) {
-        removedPoints->push_back(GridPoint(storage.getPoint(removeCandidates[i].first)));
+        removedPoints->push_back(
+            GridPoint(storage.getPoint(removeCandidates[i].first)));
       }
       if (removedSeq != nullptr) {
         removedSeq->push_back(removeCandidates[i].first);
@@ -100,16 +104,19 @@ void HashCoarsening::free_coarsen_NFirstOnly(GridStorage& storage, CoarseningFun
   }
 
   // For some reason HashGridStorage expects a std::list and not a vector D:
-  std::list<size_t> removedPointsList(localRemovedPoints.begin(), localRemovedPoints.end());
+  std::list<size_t> removedPointsList(localRemovedPoints.begin(),
+                                      localRemovedPoints.end());
   storage.deletePoints(removedPointsList);
 
   delete[] removeCandidates;
 }
 
-void HashCoarsening::free_coarsen(GridStorage& storage, CoarseningFunctor& functor,
+void HashCoarsening::free_coarsen(GridStorage& storage,
+                                  CoarseningFunctor& functor,
                                   std::vector<HashGridPoint>* removedPoints,
                                   std::vector<size_t>* removedSeq) {
-  free_coarsen_NFirstOnly(storage, functor, storage.getSize(), 0, removedPoints, removedSeq);
+  free_coarsen_NFirstOnly(storage, functor, storage.getSize(), 0, removedPoints,
+                          removedSeq);
 }
 
 size_t HashCoarsening::getNumberOfRemovablePoints(GridStorage& storage) {
@@ -122,7 +129,8 @@ size_t HashCoarsening::getNumberOfRemovablePoints(GridStorage& storage) {
   GridPoint point;
   GridStorage::grid_map_iterator end_iter = storage.end();
 
-  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter; iter++) {
+  for (GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
+       iter++) {
     point = *(iter->first);
 
     if (point.isLeaf()) {

@@ -5,9 +5,10 @@
 
 #pragma once
 
-#include <list>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
+
+#include <list>
 #include <vector>
 
 namespace sgpp {
@@ -23,8 +24,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param grid The underlying grid (TODO(fuchsgruber) do we need this?)
    * @param beta The initial weighting factor
    */
-  explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid, double lambda,
-                                   double beta = 0.);
+  explicit DBMatOnlineDEOrthoAdapt(DBMatOffline& offline, Grid& grid,
+                                   double lambda, double beta = 0.);
 
   /**
    * Returns the additive component of the sherman-morrison-formula, which
@@ -35,7 +36,9 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   /**
    * @returns distributed version of matrix B
    */
-  DataMatrixDistributed& getBDistributed() { return this->b_adapt_matrix_distributed_; }
+  DataMatrixDistributed& getBDistributed() {
+    return this->b_adapt_matrix_distributed_;
+  }
 
   /**
    * Adds new DataVector to list of refined points
@@ -43,7 +46,9 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    *
    * @param x The DataVector to add
    */
-  void add_new_refine_point(sgpp::base::DataVector& x) { this->refined_points_.push_back(x); }
+  void add_new_refine_point(sgpp::base::DataVector& x) {
+    this->refined_points_.push_back(x);
+  }
 
   /**
    * Gets pointer to the container of refined points, only for testing purposes
@@ -53,7 +58,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   }
 
   /**
-   * Rank-one updates/downdates the system matrix, based on the Sherman-Morrison-formula
+   * Rank-one updates/downdates the system matrix, based on the
+   * Sherman-Morrison-formula
    * In the current version of the function, the refinePts already are adapted
    * to the regularization parameter lambda.
    *
@@ -67,7 +73,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   /**
    * @param densityEstimationConfig configuration for the density estimation
    * @param grid the underlying grid
-   * @param numAddedGridPoints Number of grid points inserted at the end of the grid storage
+   * @param numAddedGridPoints Number of grid points inserted at the end of the
+   * grid storage
    * @param deletedGridPointIndices Indices of grid points that were deleted
    * @param lambda The last best lambda value
    * @return list of grid points, that cannot be coarsened
@@ -78,10 +85,12 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
       double lambda) override;
 
   /**
-   * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
+   * Synchronizes the distributed decomposition, only has an effect if scalapack
+   * is used.
    */
-  void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
-                                    const ParallelConfiguration& parallelConfig) override;
+  void syncDistributedDecomposition(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override;
 
  protected:
   // matrix, which holds information about refined/coarsened points
@@ -96,7 +105,8 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
   // points to end of refined_points_, !which already were processed!
   size_t current_refine_index;
 
-  // tells if refinement/coarsening has been performed on the matrix b_adapt_matrix_ yet
+  // tells if refinement/coarsening has been performed on the matrix
+  // b_adapt_matrix_ yet
   bool b_is_refined;
 
   /**
@@ -109,13 +119,16 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param b The right hand side of the system
    * @param grid the underlying grid
    * @param densityEstimationConfig configuration for the density estimation
-   * @param do_cv Specifies, if cross-validation should be done (todo: currently not implemented)
+   * @param do_cv Specifies, if cross-validation should be done (todo: currently
+   * not implemented)
    */
   void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-                DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) override;
+                DensityEstimationConfiguration& densityEstimationConfig,
+                bool do_cv) override;
 
   /**
-   * Solves the distributed system (R + lambda*I) * alpha = b in parallel and obtains alpha.
+   * Solves the distributed system (R + lambda*I) * alpha = b in parallel and
+   * obtains alpha.
    * For more information, see solveSLE.
    *
    * @param alpha distributed datavector for surplusses
@@ -124,19 +137,23 @@ class DBMatOnlineDEOrthoAdapt : public DBMatOnlineDE {
    * @param densityEstimationConfig configuration for the density estimation
    * @param do_cv cross-validation (currently not implemented)
    */
-  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+  void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b,
+                        Grid& grid,
                         DensityEstimationConfiguration& densityEstimationConfig,
                         bool do_cv) override;
 
  private:
   /**
-   * Computes the L_2 products of the refined gridpoints and pushes them into the
-   * refined_points_ container member. The computed vectors of the products correspond
+   * Computes the L_2 products of the refined gridpoints and pushes them into
+   * the
+   * refined_points_ container member. The computed vectors of the products
+   * correspond
    * to rows/columns of the lhs matrix
    *
    * @param grid the underlying grid
    * @param newPoints The number of points to refine
-   * @param newLambda The regularization coefficient added to the diagonal elements
+   * @param newLambda The regularization coefficient added to the diagonal
+   * elements
    */
   void compute_L2_gridvectors(Grid& grid, size_t newPoints, double newLambda);
 };

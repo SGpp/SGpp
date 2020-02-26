@@ -10,15 +10,16 @@
  * problems. It uses the artificial Ripley dataset.
  */
 
-#include <exception>
-#include <limits>
-#include <ostream>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
+
+#include <exception>
+#include <limits>
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -48,18 +49,21 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   regularizationConfig.lambda_ = 0.00001;
   regularizationConfig.exponentBase_ = 0.25;
 
-  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig, solverConfig,
-                                                 solverConfig, regularizationConfig);
+  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig,
+                                                 solverConfig, solverConfig,
+                                                 regularizationConfig);
 }
 
 /**
  * @brief main
-   Creates a sparse grid classification learner and prints the training accuracy for the ripley
+   Creates a sparse grid classification learner and prints the training accuracy
+ for the ripley
  dataset.
  * @return
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain = std::string("../datasets/ripley/ripleyGarcke.train.arff");
+  const auto filenameTrain =
+      std::string("../datasets/ripley/ripleyGarcke.train.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
@@ -70,5 +74,6 @@ int main(int argc, char** argv) {
   auto learner = getLearner(dimensions);
   learner.train(xTrain, yTrain);
   const auto accuracy = learner.getAccuracy(xTrain, yTrain);
-  std::cout << "Best config got a training acc of " << accuracy << "!" << std::endl;
+  std::cout << "Best config got a training acc of " << accuracy << "!"
+            << std::endl;
 }

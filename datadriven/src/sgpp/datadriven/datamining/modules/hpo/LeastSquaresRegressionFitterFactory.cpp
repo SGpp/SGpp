@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/LeastSquaresRegressionFitterFactory.hpp>
+
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -32,18 +33,22 @@ ModelFittingBase *LeastSquaresRegressionFitterFactory::buildFitter() {
   // build config
   auto *config = new FitterConfigurationLeastSquares(baseConfig);
 
-  // base::GridType basisFunction[] = {base::GridType::Linear,base::GridType::ModLinear};
+  // base::GridType basisFunction[] =
+  // {base::GridType::Linear,base::GridType::ModLinear};
   if (dispar.count("level")) {
     config->getGridConfig().level_ = dispar["level"].getValue();
   }
   if (catpar.count("basisFunction")) {
-    config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
+    config->getGridConfig().type_ =
+        basisFunctions[catpar["basisFunction"].getValue()];
   }
   if (dispar.count("noPoints")) {
-    config->getRefinementConfig().numRefinementPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+    config->getRefinementConfig().numRefinementPoints_ =
+        static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
-    config->getRefinementConfig().refinementThreshold_ = conpar["threshold"].getValue();
+    config->getRefinementConfig().refinementThreshold_ =
+        conpar["threshold"].getValue();
   }
   if (conpar.count("lambda")) {
     config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();

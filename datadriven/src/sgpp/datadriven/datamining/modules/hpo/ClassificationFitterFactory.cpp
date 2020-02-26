@@ -3,13 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/ClassificationFitterFactory.hpp>
+
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-ClassificationFitterFactory::ClassificationFitterFactory(const DataMiningConfigParser &parser)
+ClassificationFitterFactory::ClassificationFitterFactory(
+    const DataMiningConfigParser &parser)
     : baseConfig() {
   baseConfig.readParams(parser);
 
@@ -31,13 +33,16 @@ ModelFittingBase *ClassificationFitterFactory::buildFitter() {
     config->getGridConfig().level_ = dispar["level"].getValue();
   }
   if (catpar.count("basisFunction")) {
-    config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
+    config->getGridConfig().type_ =
+        basisFunctions[catpar["basisFunction"].getValue()];
   }
   if (dispar.count("noPoints")) {
-    config->getRefinementConfig().numRefinementPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+    config->getRefinementConfig().numRefinementPoints_ =
+        static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
-    config->getRefinementConfig().refinementThreshold_ = conpar["threshold"].getValue();
+    config->getRefinementConfig().refinementThreshold_ =
+        conpar["threshold"].getValue();
   }
   if (conpar.count("lambda")) {
     config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();

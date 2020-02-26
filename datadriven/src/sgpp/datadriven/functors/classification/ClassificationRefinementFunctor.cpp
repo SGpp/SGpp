@@ -3,14 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
+
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <limits>
+#include <list>
 #include <map>
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/datadriven/functors/classification/ClassificationRefinementFunctor.hpp>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -21,9 +24,10 @@ namespace datadriven {
 
 ClassificationRefinementFunctor::ClassificationRefinementFunctor(
     std::vector<base::Grid*> grids, std::vector<base::DataVector*> alphas,
-    std::vector<double> priors, size_t refinements_num, size_t coarsenings_num, bool level_penalize,
-    sgpp::base::AdaptivityThresholdType thresholdType, double refinementThreshold,
-    double coarseningThreshold, bool coarsenInitialPoints, size_t minimumCoarseningIndex)
+    std::vector<double> priors, size_t refinements_num, size_t coarsenings_num,
+    bool level_penalize, sgpp::base::AdaptivityThresholdType thresholdType,
+    double refinementThreshold, double coarseningThreshold,
+    bool coarsenInitialPoints, size_t minimumCoarseningIndex)
     : grids(grids),
       alphas(alphas),
       priors(priors),
@@ -37,11 +41,13 @@ ClassificationRefinementFunctor::ClassificationRefinementFunctor(
       total_grid(grids.at(0)->getDimension()),
       minimumCoarseningIndex(minimumCoarseningIndex) {}
 
-double ClassificationRefinementFunctor::operator()(base::GridStorage& storage, size_t seq) const {
+double ClassificationRefinementFunctor::operator()(base::GridStorage& storage,
+                                                   size_t seq) const {
   return 0.0;
 }
 
-std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids() {
+std::vector<std::vector<size_t>>
+ClassificationRefinementFunctor::adaptAllGrids() {
   // setup total grid
   size_t dim = grids.at(0)->getDimension();
   size_t numClasses = grids.size();
@@ -60,7 +66,8 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
     root.getRoot(j);
   }
   root.rehash();
-  std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> initialNeighbors(0);
+  std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>
+      initialNeighbors(0);
   for (size_t j = 0; j < dim; j++) {
     base::HashGridPoint left(root);
     base::HashGridPoint right(root);
@@ -106,10 +113,10 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
   }
 
   // Score neighbor relations
-  std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>> classMapsRefinement(
-      numClasses);
-  std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>> classMapsCoarsening(
-      numClasses);
+  std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>>
+      classMapsRefinement(numClasses);
+  std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>>
+      classMapsCoarsening(numClasses);
 
   double maxScore = 0.0;
 
@@ -122,20 +129,23 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
       double vLeafClassLeaf = allEvals.get(leafSeqNumber, classLeaf);
       double vLeafClassNeighbor = allEvals.get(leafSeqNumber, classNeighbor);
       double vNeighborClassLeaf = allEvals.get(neighborSeqNumber, classLeaf);
-      double vNeighborClassNeighbor = allEvals.get(neighborSeqNumber, classNeighbor);
+      double vNeighborClassNeighbor =
+          allEvals.get(neighborSeqNumber, classNeighbor);
       double score = std::abs((vLeafClassLeaf - vLeafClassNeighbor) -
                               (vNeighborClassLeaf - vNeighborClassNeighbor)) /
                      (1 << std::get<4>(neighborRel));
-      std::tuple<size_t, size_t, bool> candidate(leafSeqNumber, std::get<2>(neighborRel),
-                                                 std::get<3>(neighborRel));
+      std::tuple<size_t, size_t, bool> candidate(
+          leafSeqNumber, std::get<2>(neighborRel), std::get<3>(neighborRel));
       classMapsRefinement.at(classLeaf).emplace(score, candidate);
       classMapsRefinement.at(classNeighbor).emplace(score, candidate);
 
-      // check if the grid point of the candidate was already placed in the map (with different
+      // check if the grid point of the candidate was already placed in the map
+      // (with different
       // neighbor relations)
-      insertCoarseningCandidate(classLeaf, classMapsCoarsening, leafSeqNumber, score, candidate);
-      insertCoarseningCandidate(classNeighbor, classMapsCoarsening, leafSeqNumber, score,
-                                candidate);
+      insertCoarseningCandidate(classLeaf, classMapsCoarsening, leafSeqNumber,
+                                score, candidate);
+      insertCoarseningCandidate(classNeighbor, classMapsCoarsening,
+                                leafSeqNumber, score, candidate);
 
       if (score > maxScore) {
         maxScore = score;
@@ -143,7 +153,8 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
     }
   }
 
-  // set the proper threshold based on the max score if a relative threshold is used
+  // set the proper threshold based on the max score if a relative threshold is
+  // used
   if (thresholdType == sgpp::base::AdaptivityThresholdType::Relative) {
     this->refinementThreshold = this->refinementThreshold * maxScore;
     this->coarseningThreshold = this->coarseningThreshold * maxScore;
@@ -152,8 +163,8 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
   // Insert top refinement candidates into grid
   for (size_t y = 0; y < numClasses; y++) {
     size_t count = 0;
-    for (auto it = classMapsRefinement.at(y).rbegin(); it != classMapsRefinement.at(y).rend();
-         ++it) {
+    for (auto it = classMapsRefinement.at(y).rbegin();
+         it != classMapsRefinement.at(y).rend(); ++it) {
       if (it->first < this->refinementThreshold) {
         break;
       }
@@ -178,14 +189,16 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
     size_t count = 0;
     std::list<size_t> removePoints;
 
-    for (auto it = classMapsCoarsening.at(y).begin(); it != classMapsCoarsening.at(y).end(); ++it) {
+    for (auto it = classMapsCoarsening.at(y).begin();
+         it != classMapsCoarsening.at(y).end(); ++it) {
       if (it->first > this->coarseningThreshold) {
         break;
       }
 
       size_t candidateIndex = std::get<0>(it->second);
 
-      if (!this->coarsenInitialPoints && candidateIndex < this->minimumCoarseningIndex) {
+      if (!this->coarsenInitialPoints &&
+          candidateIndex < this->minimumCoarseningIndex) {
         // do not refine initial grid points
         continue;
       }
@@ -199,7 +212,8 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
         break;
       }
     }
-    std::vector<size_t> idxToDelete{std::begin(removePoints), std::end(removePoints)};
+    std::vector<size_t> idxToDelete{std::begin(removePoints),
+                                    std::end(removePoints)};
     deletedPoints.at(y) = idxToDelete;
 
     if (!removePoints.empty()) {
@@ -212,21 +226,28 @@ std::vector<std::vector<size_t>> ClassificationRefinementFunctor::adaptAllGrids(
 
 double ClassificationRefinementFunctor::start() const { return 0.0; }
 
-size_t ClassificationRefinementFunctor::getRefinementsNum() const { return this->refinements_num; }
+size_t ClassificationRefinementFunctor::getRefinementsNum() const {
+  return this->refinements_num;
+}
 
 double ClassificationRefinementFunctor::getRefinementThreshold() const {
   return this->refinementThreshold;
 }
 
-void ClassificationRefinementFunctor::setGridIndex(size_t grid_index) { return; }
+void ClassificationRefinementFunctor::setGridIndex(size_t grid_index) {
+  return;
+}
 
-size_t ClassificationRefinementFunctor::getNumGrids() { return this->grids.size(); }
+size_t ClassificationRefinementFunctor::getNumGrids() {
+  return this->grids.size();
+}
 
 void ClassificationRefinementFunctor::preComputeEvaluations() { return; }
 
 void ClassificationRefinementFunctor::stepDown(
     size_t d, size_t minDim, base::HashGridPoint& gp,
-    std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>& neighbors) {
+    std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>&
+        neighbors) {
   for (size_t j = 0; j < d; j++) {
     base::GridPoint::level_type level;
     base::GridPoint::index_type index;
@@ -238,13 +259,14 @@ void ClassificationRefinementFunctor::stepDown(
     if (!total_grid.isContaining(left)) {
       collectNeighbors(gp, neighbors.at(j).first, j, true);
     } else if (j >= minDim) {
-      std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> leftNeighbors(neighbors);
+      std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>
+          leftNeighbors(neighbors);
       for (size_t i = 0; i < leftNeighbors.size(); i++) {
         leftNeighbors.at(i).first.set(j, level, index - 1);
         leftNeighbors.at(i).second.set(j, level, index - 1);
       }
-      leftNeighbors.at(j) =
-          std::pair<base::HashGridPoint, base::HashGridPoint>(neighbors.at(j).first, gp);
+      leftNeighbors.at(j) = std::pair<base::HashGridPoint, base::HashGridPoint>(
+          neighbors.at(j).first, gp);
       stepDown(d, j, left, leftNeighbors);
     }
     base::HashGridPoint right(gp);
@@ -252,21 +274,23 @@ void ClassificationRefinementFunctor::stepDown(
     if (!total_grid.isContaining(right)) {
       collectNeighbors(gp, neighbors.at(j).second, j, false);
     } else if (j >= minDim) {
-      std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>> rightNeighbors(neighbors);
+      std::vector<std::pair<base::HashGridPoint, base::HashGridPoint>>
+          rightNeighbors(neighbors);
       for (size_t i = 0; i < rightNeighbors.size(); i++) {
         rightNeighbors.at(i).first.set(j, level, index + 1);
         rightNeighbors.at(i).second.set(j, level, index + 1);
       }
       rightNeighbors.at(j) =
-          std::pair<base::HashGridPoint, base::HashGridPoint>(gp, neighbors.at(j).second);
+          std::pair<base::HashGridPoint, base::HashGridPoint>(
+              gp, neighbors.at(j).second);
       stepDown(d, j, right, rightNeighbors);
     }
   }
 }
 
-void ClassificationRefinementFunctor::collectNeighbors(base::HashGridPoint leaf,
-                                                       base::HashGridPoint neighbor, size_t dim,
-                                                       bool isLeft) {
+void ClassificationRefinementFunctor::collectNeighbors(
+    base::HashGridPoint leaf, base::HashGridPoint neighbor, size_t dim,
+    bool isLeft) {
   size_t leafSeqNumber = total_grid.getSequenceNumber(leaf);
   size_t neighborSeqNumber;
   if (total_grid.isContaining(neighbor)) {
@@ -274,15 +298,20 @@ void ClassificationRefinementFunctor::collectNeighbors(base::HashGridPoint leaf,
   } else {
     neighborSeqNumber = total_grid.insert(neighbor);
   }
-  neighborRels.emplace_back(leafSeqNumber, neighborSeqNumber, dim, isLeft, leaf.getLevelSum());
+  neighborRels.emplace_back(leafSeqNumber, neighborSeqNumber, dim, isLeft,
+                            leaf.getLevelSum());
 }
 
 void ClassificationRefinementFunctor::insertCoarseningCandidate(
     size_t y,
-    std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>>& classMapsCoarsening,
-    size_t leafSeqNumber, double score, std::tuple<size_t, size_t, bool> candidate) {
-  for (auto iter = classMapsCoarsening.at(y).begin(); iter != classMapsCoarsening.at(y).end();) {
-    // we are looking for the candidate with the highest score -> only insert new candidate if new
+    std::vector<std::multimap<double, std::tuple<size_t, size_t, bool>>>&
+        classMapsCoarsening,
+    size_t leafSeqNumber, double score,
+    std::tuple<size_t, size_t, bool> candidate) {
+  for (auto iter = classMapsCoarsening.at(y).begin();
+       iter != classMapsCoarsening.at(y).end();) {
+    // we are looking for the candidate with the highest score -> only insert
+    // new candidate if new
     // score is higher
     if (std::get<0>(iter->second) == leafSeqNumber && score > iter->first) {
       // discard old candidate
@@ -294,7 +323,8 @@ void ClassificationRefinementFunctor::insertCoarseningCandidate(
     }
     ++iter;
   }
-  // insert the point if it is not already in the map or the new candidate has a higher score
+  // insert the point if it is not already in the map or the new candidate has a
+  // higher score
   classMapsCoarsening.at(y).emplace(score, candidate);
 }
 

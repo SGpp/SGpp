@@ -4,13 +4,16 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
-#include <cmath>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
+
+#include <boost/test/unit_test.hpp>
+
+#include <cmath>
 
 using sgpp::base::DataVector;
 using sgpp::base::HashCoarsening;

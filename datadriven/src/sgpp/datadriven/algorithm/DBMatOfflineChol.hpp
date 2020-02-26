@@ -5,10 +5,12 @@
 
 #pragma once
 
-#include <list>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineGE.hpp>
+
 #include <string>
+#include <list>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -17,7 +19,8 @@ using sgpp::base::DataVector;
 
 /**
  * DBMatOffline specialization that uses a cholesky factorization on
- * a dense matrix. The resulting factorization can be updated when the grid changes.
+ * a dense matrix. The resulting factorization can be updated when the grid
+ * changes.
  */
 class DBMatOfflineChol : public DBMatOfflineGE {
  public:
@@ -68,14 +71,16 @@ class DBMatOfflineChol : public DBMatOfflineGE {
   }
 
   /**
-   * Modifies the parallel decomposition to update the regularization parameter lambda.
+   * Modifies the parallel decomposition to update the regularization parameter
+   * lambda.
    *
    * @param lambda New lambda value
    * @param processGrid ScaLAPACK process grid
    * @param parallelConfig Configuration for ScaLAPACK
    */
-  void updateRegularizationParallel(double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
-                                    const ParallelConfiguration& parallelConfig) override {
+  void updateRegularizationParallel(
+      double lambda, std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override {
     throw sgpp::base::not_implemented_exception(
         "DBMatOfflineChol::updateRegularizationParallel() is not implemented!");
   }
@@ -86,8 +91,9 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param regularizationConfig the regularization configuration
    * @param densityEstimationConfig the density estimation configuration
    */
-  void decomposeMatrix(const RegularizationConfiguration& regularizationConfig,
-                       const DensityEstimationConfiguration& densityEstimationConfig) override;
+  void decomposeMatrix(
+      const RegularizationConfiguration& regularizationConfig,
+      const DensityEstimationConfiguration& densityEstimationConfig) override;
 
   /**
    * The parallel/distributed version of decomposeMatrix(...)
@@ -96,10 +102,11 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param processGrid process grid to distribute the matrix on
    * @param parallelConfig
    */
-  void decomposeMatrixParallel(RegularizationConfiguration& regularizationConfig,
-                               DensityEstimationConfiguration& densityEstimationConfig,
-                               std::shared_ptr<BlacsProcessGrid> processGrid,
-                               const ParallelConfiguration& parallelConfig) override;
+  void decomposeMatrixParallel(
+      RegularizationConfiguration& regularizationConfig,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override;
 
   /**
    * Updates offline cholesky factorization based on coarsed (deletedPoints)
@@ -112,7 +119,8 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param lambda the regularization parameter
    */
   virtual void choleskyModification(
-      Grid& grid, datadriven::DensityEstimationConfiguration& densityEstimationConfig,
+      Grid& grid,
+      datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       size_t newPoints, std::vector<size_t>& deletedPoints, double lambda);
 
   /*
@@ -128,8 +136,9 @@ class DBMatOfflineChol : public DBMatOfflineGE {
    * @param processGrid process grid to distribute the matrix on
    * @param parallelConfig
    */
-  void compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
-                                const ParallelConfiguration& parallelConfig) override;
+  void compute_inverse_parallel(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig) override;
 
  protected:
   /**
