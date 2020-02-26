@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "BasisEval.hpp"
 
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
@@ -16,14 +16,14 @@
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
-
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
+
+#include <boost/test/unit_test.hpp>
 
 #include <vector>
 #include <random>
 
-#include "BasisEval.hpp"
 
 using sgpp::base::BoundingBox;
 using sgpp::base::BoundingBox1D;

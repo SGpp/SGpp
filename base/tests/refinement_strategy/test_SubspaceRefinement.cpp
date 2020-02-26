@@ -12,7 +12,7 @@
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridPoint.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
-#include "sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp"
+#include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 
 using sgpp::base::DataVector;
 using sgpp::base::HashGenerator;

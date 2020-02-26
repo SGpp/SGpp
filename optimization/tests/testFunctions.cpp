@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "CheckEqualFunction.hpp"
 
 #include <sgpp/base/function/scalar/ComponentScalarFunction.hpp>
 #include <sgpp/base/function/scalar/ComponentScalarFunctionGradient.hpp>
@@ -18,10 +18,11 @@
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <limits>
 #include <vector>
 
-#include "CheckEqualFunction.hpp"
 
 using sgpp::base::ComponentScalarFunction;
 using sgpp::base::ComponentScalarFunctionGradient;

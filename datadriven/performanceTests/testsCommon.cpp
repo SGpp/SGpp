@@ -4,6 +4,9 @@
 // sgpp.sparsegrids.org
 
 #ifdef ZLIB
+#include "testsCommon.hpp"
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <zlib.h>
 #include <boost/lexical_cast.hpp>
@@ -15,8 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "testsCommon.hpp"
 
 std::string uncompressFile(std::string fileName) {
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");

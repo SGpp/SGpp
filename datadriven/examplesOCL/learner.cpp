@@ -3,13 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <boost/program_options.hpp>
 #include <string>
 #include <vector>
 
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/globaldef.hpp"
 
 namespace sgpp {
 namespace base {

@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "GridCreator.hpp"
 
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
@@ -13,9 +13,10 @@
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorSOO.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Rosenbrock.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <vector>
 
-#include "GridCreator.hpp"
 
 using sgpp::base::Printer;
 using sgpp::base::RandomNumberGenerator;

@@ -7,6 +7,16 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
+#include "test_datadrivenCommon.hpp"
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <zlib.h>
 #include <boost/test/unit_test.hpp>
 
@@ -17,14 +27,6 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
-#include "test_datadrivenCommon.hpp"
 
 namespace TestStreamingOCLMultiPlatformMultFixture {
 struct FilesNamesAndErrorFixture {

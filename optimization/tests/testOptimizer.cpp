@@ -4,7 +4,9 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "CheckEqualFunction.hpp"
+#include "GridCreator.hpp"
+#include "ObjectiveFunctions.hpp"
 
 #include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/base/function/scalar/InterpolantScalarFunctionGradient.hpp>
@@ -32,11 +34,10 @@
 #include <sgpp/optimization/optimizer/unconstrained/NLCG.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/Rprop.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <vector>
 
-#include "CheckEqualFunction.hpp"
-#include "GridCreator.hpp"
-#include "ObjectiveFunctions.hpp"
 
 using sgpp::base::EmptyVectorFunction;
 using sgpp::base::EmptyVectorFunctionGradient;

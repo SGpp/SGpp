@@ -7,8 +7,20 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <zlib.h>
+#include "testsCommon.hpp"
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/LinearGrid.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <zlib.h>
 #include <boost/test/unit_test.hpp>
 #include <chrono>
 #include <fstream>
@@ -18,17 +30,6 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/grid/type/LinearGrid.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
-#include "testsCommon.hpp"
 
 #define OUT_FILENAME "results.csv"
 // #define REFINEMENT_POINTS 100

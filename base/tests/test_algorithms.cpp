@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "BasisEval.hpp"
 
 #include <sgpp/base/algorithm/GetAffectedBasisFunctions.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -15,11 +15,12 @@
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <limits>
 #include <utility>
 #include <vector>
 
-#include "BasisEval.hpp"
 
 using sgpp::base::BoundingBox1D;
 using sgpp::base::DataVector;

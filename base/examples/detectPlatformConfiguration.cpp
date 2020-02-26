@@ -11,12 +11,10 @@
  * It can be used as a quick check whether OpenCL is working.
  */
 
-#include <iostream>
-
 #if USE_OCL == 1
 
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
 
 int main(int argc, char** argv) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> configuration =
@@ -31,6 +29,7 @@ int main(int argc, char** argv) {
   return 0;
 }
 #else
+#include <iostream>
 int main(int argc, char** argv) {
   std::cout << "no OpenCL support" << std::endl;
 }

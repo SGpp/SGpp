@@ -3,14 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <random>
 #include <string>
 
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 
 int main(int argc, char** argv) {
   //  std::string fileName = "friedman_4d_2000.arff";

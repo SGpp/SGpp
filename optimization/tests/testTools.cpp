@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "ObjectiveFunctions.hpp"
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/Printer.hpp>
@@ -15,10 +15,11 @@
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <string>
 #include <vector>
 
-#include "ObjectiveFunctions.hpp"
 
 using sgpp::base::Printer;
 using sgpp::base::RandomNumberGenerator;

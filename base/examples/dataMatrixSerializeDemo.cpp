@@ -10,9 +10,10 @@
    * and then to restore it back.
    */
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+
 #include <iostream>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
 
 using sgpp::base::DataMatrix;
 

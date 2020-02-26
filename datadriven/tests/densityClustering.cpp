@@ -7,6 +7,19 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
+#include "test_datadrivenCommon.hpp"
+
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <zlib.h>
 #include <boost/test/unit_test.hpp>
 
@@ -16,18 +29,8 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include "sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp"
-#include "sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
-#include "sgpp/solver/sle/ConjugateGradients.hpp"
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
-#include "test_datadrivenCommon.hpp"
+
 void multiply_and_test(
     sgpp::base::OCLOperationConfiguration *parameters,
     std::vector<double> &mult_optimal_result,

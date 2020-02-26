@@ -10,9 +10,10 @@
    * and then to restore it back.
    */
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+
 #include <iostream>
 
-#include "sgpp/base/datatypes/DataVector.hpp"
 
 using sgpp::base::DataVector;
 

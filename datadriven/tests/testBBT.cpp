@@ -6,6 +6,16 @@
 #ifdef ZLIB
 
 #define BOOST_TEST_DYN_LINK
+#include "test_datadrivenCommon.hpp"
+
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <boost/test/unit_test.hpp>
 
 #include <zlib.h>
@@ -13,14 +23,6 @@
 #include <algorithm>
 #include <vector>
 
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/globaldef.hpp"
-#include "test_datadrivenCommon.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

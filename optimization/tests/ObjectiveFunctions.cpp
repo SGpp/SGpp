@@ -3,9 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include "ObjectiveFunctions.hpp"
+
 #include <limits>
 
-#include "ObjectiveFunctions.hpp"
 
 ExampleFunction::ExampleFunction() : ScalarFunction(2) {}
 
