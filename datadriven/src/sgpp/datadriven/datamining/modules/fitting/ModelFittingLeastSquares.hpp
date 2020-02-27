@@ -54,7 +54,7 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * @return true if refinement could be performed based on the refinement configuration, else
    * false.
    */
-  bool refine() override;
+  bool adapt() override;
 
   void update(Dataset &dataset) override;
 

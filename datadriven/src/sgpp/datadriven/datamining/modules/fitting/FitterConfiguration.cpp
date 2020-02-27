@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-
 #include <string>
 #include <vector>
 
@@ -116,9 +115,12 @@ void FitterConfiguration::setupDefaults() {
   gridConfig.t_ = 0.0;  // mirrors struct default
 
   adaptivityConfig.numRefinements_ = 1;
-  adaptivityConfig.threshold_ = 0.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.coarseningThreshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
-  adaptivityConfig.noPoints_ = 1;
+  adaptivityConfig.numRefinementPoints_ = 1;
+  adaptivityConfig.numCoarseningPoints_ = 1;
+  adaptivityConfig.coarsenInitialPoints_ = false;
   adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
   adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
@@ -126,7 +128,9 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.errorMinInterval = 0;               // mirrors struct default
   adaptivityConfig.refinementPeriod = 1;               // mirrors struct default
   adaptivityConfig.refinementFunctorType =
-      sgpp::base::RefinementFunctorType::Surplus;                // mirrors struct default
+      sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
+  adaptivityConfig.coarseningFunctorType =         // mirrors struct default
+      sgpp::base::CoarseningFunctorType::Surplus;
   adaptivityConfig.precomputeEvaluations = true;                 // mirrors struct default
   adaptivityConfig.levelPenalize = false;                        // mirrors struct default
   adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default;

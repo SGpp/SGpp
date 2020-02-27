@@ -49,7 +49,8 @@ class HashGridStorage {
   typedef const HashGridPoint* index_const_pointer;
   /// unordered_map of index_pointers
   typedef std::unordered_map<point_pointer, size_t, HashGridPointPointerHashFunctor,
-                             HashGridPointPointerEqualityFunctor> grid_map;
+                             HashGridPointPointerEqualityFunctor>
+      grid_map;
   /// iterator of grid_map
   typedef grid_map::iterator grid_map_iterator;
   /// const_iterator of grid_map

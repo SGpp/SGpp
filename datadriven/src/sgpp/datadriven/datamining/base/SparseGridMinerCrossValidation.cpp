@@ -15,7 +15,6 @@
 namespace sgpp {
 namespace datadriven {
 
-
 SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
     DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer,
     Visualizer* visualizer)
@@ -114,7 +113,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
         monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
         size_t refinements = monitor->refinementsNecessary();
         while (refinements--) {
-          fitter->refine();
+          fitter->adapt();
         }
 
         if (verbose) {

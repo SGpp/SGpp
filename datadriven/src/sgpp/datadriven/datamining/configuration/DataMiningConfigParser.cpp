@@ -7,34 +7,40 @@
 
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
+
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
 #include <sgpp/base/grid/GridTypeParser.hpp>
+#include <sgpp/base/grid/AdaptivityThresholdTypeParser.hpp>
+#include <sgpp/base/grid/CoarseningFunctorTypeParser.hpp>
 #include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
+
 #include <sgpp/base/tools/json/JSON.hpp>
 #include <sgpp/base/tools/json/ListNode.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
+
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
 #include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
+
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceFileTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataSourceShufflingTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationTypesParser.hpp>
+
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/SLESolverTypeParser.hpp>
 
-#include <iostream>
-#include <map>
 #include <string>
 #include <vector>
-
+#include <iostream>
+#include <map>
 
 using json::DictNode;
 using json::JSON;
@@ -365,13 +371,24 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
     config.numRefinements_ =
         parseUInt(*adaptivityConfig, "numRefinements", defaults.numRefinements_,
                   "adaptivityConfig");
-    config.threshold_ = parseDouble(*adaptivityConfig, "threshold",
-                                    defaults.threshold_, "adaptivityConfig");
+    config.refinementThreshold_ =
+        parseDouble(*adaptivityConfig, "refinementThreshold",
+                    defaults.refinementThreshold_, "adaptivityConfig");
+    config.coarseningThreshold_ =
+        parseDouble(*adaptivityConfig, "coarseningThreshold",
+                    defaults.coarseningThreshold_, "adaptivityConfig");
     config.maxLevelType_ =
         parseBool(*adaptivityConfig, "maxLevelType", defaults.maxLevelType_,
                   "adaptivityConfig");
-    config.noPoints_ = parseUInt(*adaptivityConfig, "noPoints",
-                                 defaults.noPoints_, "adaptivityConfig");
+    config.numRefinementPoints_ =
+        parseUInt(*adaptivityConfig, "numRefinementPoints",
+                  defaults.numRefinementPoints_, "adaptivityConfig");
+    config.numCoarseningPoints_ =
+        parseUInt(*adaptivityConfig, "numCoarseningPoints",
+                  defaults.numRefinementPoints_, "adaptivityConfig");
+    config.coarsenInitialPoints_ =
+        parseBool(*adaptivityConfig, "coarsenInitialPoints",
+                  defaults.coarsenInitialPoints_, "adaptivityConfig");
     config.percent_ = parseDouble(*adaptivityConfig, "percent",
                                   defaults.percent_, "adaptivityConfig");
     config.errorBasedRefinement =
@@ -417,6 +434,33 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
                 << "." << std::endl;
       config.refinementFunctorType = defaults.refinementFunctorType;
     }
+
+    // Parse coarsening indicator
+    if (adaptivityConfig->contains("coarseningIndicator")) {
+      config.coarseningFunctorType = base::CoarseningFunctorTypeParser::parse(
+          (*adaptivityConfig)["coarseningIndicator"].get());
+    } else {
+      std::cout << "# Did not find adaptivityConfig[coarseningIndicator]. "
+                   "Setting default "
+                << "value " << base::CoarseningFunctorTypeParser::toString(
+                                   defaults.coarseningFunctorType)
+                << "." << std::endl;
+      config.coarseningFunctorType = defaults.coarseningFunctorType;
+    }
+
+    // Parse threshold type
+    if (adaptivityConfig->contains("thresholdType")) {
+      config.thresholdType_ = base::AdaptivityThresholdTypeParser::parse(
+          (*adaptivityConfig)["thresholdType"].get());
+    } else {
+      std::cout
+          << "# Did not find adaptivityConfig[thresholdType]. Setting default "
+          << "value " << base::AdaptivityThresholdTypeParser::toString(
+                             defaults.thresholdType_)
+          << "." << std::endl;
+      config.thresholdType_ = defaults.thresholdType_;
+    }
+
   } else {
     std::cout << "# Could not find specification  of fitter[adaptivityConfig]. "
                  "Falling Back to "

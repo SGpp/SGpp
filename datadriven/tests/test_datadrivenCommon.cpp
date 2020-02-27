@@ -125,7 +125,8 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
     sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alpha, adaptConfig.noPoints_, adaptConfig.threshold_);
+        alpha, adaptConfig.numRefinementPoints_,
+        adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -151,7 +152,8 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
     sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alphaRefine, adaptConfig.noPoints_, adaptConfig.threshold_);
+        alphaRefine, adaptConfig.numRefinementPoints_,
+        adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -214,10 +216,10 @@ double compareToReference(
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -296,10 +298,10 @@ double compareToReferenceTranspose(
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -380,10 +382,10 @@ double compareToReferenceDistributed(
     std::shared_ptr<BlacsProcessGrid> processGrid) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -471,10 +473,11 @@ double compareToReferenceTransposeDistributed(
     std::shared_ptr<BlacsProcessGrid> processGrid) {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
+  adaptConfig.numCoarseningPoints_ = 80;
   adaptConfig.numRefinements_ = 1;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
