@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -85,14 +85,25 @@ else:
 
 
 # define the flags
-vars.Add("CPPFLAGS", "Set additional compiler flags, they are compiler-dependent " +
-                     "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+vars.Add("CFLAGS", "Set additional C compiler flags, they are compiler-dependent "
+                   "(multiple flags separated by space: '-Wall -Wextra')", "",
+                   converter=Helper.multiParamConverter)
+vars.Add("CPPFLAGS", "Set additional C++ compiler flags, they are compiler-dependent "
+                     "(multiple flags separated by space: '-Wall -Wextra')", "",
                      converter=Helper.multiParamConverter)
-vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent " +
-                      "(multiple flags combined with comma, e.g. -lpython,-lm)", "",
+vars.Add("LINKFLAGS", "Set additional linker flags, they are linker-dependent "
+                      "(multiple flags separated by space: '-lpython -lm')", "",
                      converter=Helper.multiParamConverter)
-vars.Add("CPPPATH", "Set path where to look for additional headers", "")
-vars.Add("LIBPATH", "Set path where to look for additional libraries", "")
+vars.Add("CPPDEFINES", "Set additional C++ defines "
+                       "(multiple defines separated by space: 'FLAG_A=1 FLAG_B=2')", "",
+                       converter=Helper.multiParamDefineConverter)
+vars.Add("CPPPATH", "Set path where to look for additional headers "
+                    "(multiple paths separated by '{}': '{}')".format(
+                        os.pathsep, os.pathsep.join([os.path.join("first", "path"),
+                                                     os.path.join("second", "path")])), "",
+                    converter=Helper.multiParamPathConverter)
+vars.Add("LIBPATH", "Set path where to look for additional libraries", "",
+                    converter=Helper.multiParamPathConverter)
 vars.Add("ARCH", "Set the architecture, the possible values are compiler-dependent, " +
                  "for COMPILER=gnu, e.g., the following values are possible: " +
                  "sse3, sse42, avx, fma4, avx2, avx512", "sse3")
@@ -102,6 +113,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add("LINK", "Override the linker, can be used to select a specific linker version", None)
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
@@ -115,8 +127,8 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
 vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
-vars.Add("SWIGFLAGS", "Set additional swig flags, they are compiler-dependent " +
-                      "(multiple flags combined with comma, e.g. -Wall,-Wextra)", "",
+vars.Add("SWIGFLAGS", "Set additional SWIG flags, they are compiler-dependent "
+                      "(multiple flags separated by space: '-Wall -Wextra')", "",
                       converter=Helper.multiParamConverter)
 
 for moduleName in moduleNames:
@@ -160,8 +172,10 @@ vars.Add(BoolVariable("RUN_BOOST_PERFORMANCE_TESTS", "Run the test cases written
                                          "(only if COMPILE_BOOST_PERFORMANCE_TESTS is true)", True))
 vars.Add(BoolVariable("RUN_BOOST_TESTS", "Run the test cases written using Boost Test " +
                                          "(only if COMPILE_BOOST_TESTS is true)", True))
-vars.Add(BoolVariable("RUN_CPPLINT",
+vars.Add(BoolVariable("CHECK_STYLE",
                       "Check compliance to Google's style guide using cpplint", True))
+vars.Add(BoolVariable("RUN_CPP_EXAMPLES", "Run all C++ examples", False))
+vars.Add(BoolVariable("RUN_PYTHON_EXAMPLES", "Run all Python examples", False))
 
 vars.Add(BoolVariable("USE_ARMADILLO", "Set if Armadillo should be used " +
                                        "(only relevant for sgpp::optimization)", False))
@@ -185,8 +199,6 @@ vars.Add(BoolVariable("USE_SCALAPACK", "Set if the ScaLAPACK library should be u
 vars.Add(BoolVariable("BUILD_STATICLIB", "Set if static libraries should be built " +
                                          "instead of shared libraries", False))
 vars.Add(BoolVariable("PRINT_INSTRUCTIONS", "Print instructions for installing SG++", True))
-
-vars.Add(BoolVariable("USE_PYTHON_EMBEDDING", "Link to the Python.h", False))
 
 # create temporary environment to check which system and compiler we should use
 # (the Environment call without "tools=[]" crashes with MinGW,
@@ -212,8 +224,7 @@ if env["USE_HPX"]:
   env["USE_OCL"] = True
 
 # fail if unknown variables where encountered on the command line
-unknownVariables = [var for var in vars.UnknownVariables()
-                    if var not in ["CFLAGS", "CPPDEFINES"]]
+unknownVariables = vars.UnknownVariables()
 if len(unknownVariables) > 0:
   Helper.printErrorAndExit("The following command line variables could not be recognized:",
                            unknownVariables,
@@ -243,30 +254,6 @@ if ("doxygen" in BUILD_TARGETS) and (not env.GetOption("clean")):
   Helper.printInfo("Building Doxyfile for modules: "+
                    ', '.join([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]]))
   DoxygenHelper.prepareDoxygen([moduleFolder for moduleFolder in moduleFolders if env["SG_" + moduleFolder.upper()]])
-
-if "CXX" in ARGUMENTS:
-  Helper.printInfo("CXX: {}".format(ARGUMENTS["CXX"]))
-  env["CXX"] = ARGUMENTS["CXX"]
-if "CC" in ARGUMENTS:
-  Helper.printInfo("CC: {}".format(ARGUMENTS["CC"]))
-  env["CC"] = ARGUMENTS["CC"]
-if "CPPFLAGS" in ARGUMENTS:
-  env["CPPFLAGS"] = ARGUMENTS["CPPFLAGS"].split(",")
-if "CFLAGS" in ARGUMENTS:
-  env["CFLAGS"] = ARGUMENTS["CFLAGS"]
-env.AppendUnique(CPPDEFINES = {})
-if "CPPDEFINES" in ARGUMENTS:
-  for define in ARGUMENTS["CPPDEFINES"].split(","):
-    key, value = define.split("=")
-    env["CPPDEFINES"][key] = value
-
-if "CPPPATH" in ARGUMENTS:
-  env["CPPPATH"] = ARGUMENTS["CPPPATH"].split(",")
-if "LIBPATH" in ARGUMENTS:
-  env["LIBPATH"] = ARGUMENTS["LIBPATH"].split(",")
-
-if "SWIGFLAGS" in ARGUMENTS:
-    env["SWIGFLAGS"] = ARGUMENTS["SWIGFLAGS"].split(",")
 
 env.Export("moduleNames")
 env.Export("moduleFolders")
@@ -312,7 +299,12 @@ Export("MATSGPP_BUILD_PATH")
 EXAMPLE_DIR = Dir(os.path.join("bin", "examples"))
 Export("EXAMPLE_DIR")
 
-if not env.GetOption('clean'):
+# save ARGUMENTS dict (unparsed command-line arguments) in env
+# in order to be able to tell, e.g., if the user has specified a custom value
+# for CXX or if the default ("g++" on Linux) has been used
+env.arguments = ARGUMENTS
+
+if not ( env.GetOption('clean') or env.GetOption('help') ):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
@@ -336,23 +328,22 @@ Export("config")
 # update PATH under win32/LD_LIBRARY_PATH otherwise
 # to add BUILD_DIR (so we can run the Boost tests)
 if env["PLATFORM"] == "win32":
-  env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
-                                        BUILD_DIR.abspath])
+  env["ENV"]["PATH"] = os.pathsep.join([BUILD_DIR.abspath,
+                                        env["ENV"].get("PATH", "")])
 
   # also add the Boost library path to the PATH
   # so that the Boost test *.dll can be found when running the tests
   if env["COMPILE_BOOST_TESTS"]:
-    env["ENV"]["PATH"] = os.pathsep.join([env["ENV"].get("PATH", ""),
-                                          env["BOOST_LIBRARY_PATH"]])
+    env["ENV"]["PATH"] = os.pathsep.join([env["BOOST_LIBRARY_PATH"],
+                                          env["ENV"].get("PATH", "")])
 # Mac OS X doesn't use LD_LIBRARY_PATH
 elif env["PLATFORM"] == "darwin":
   env["ENV"]["DYLD_FALLBACK_LIBRARY_PATH"] = os.pathsep.join([
-      env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", ""),
-      BUILD_DIR.abspath])
+      BUILD_DIR.abspath,
+      env["ENV"].get("DYLD_FALLBACK_LIBRARY_PATH", "")])
 else:
   env["ENV"]["LD_LIBRARY_PATH"] = os.pathsep.join([
-      env["ENV"].get("LD_LIBRARY_PATH", ""),
-      BUILD_DIR.abspath])
+      BUILD_DIR.abspath, env["ENV"].get("LD_LIBRARY_PATH", "")])
 
 # Add the pysgpp package path to the environment
 #########################################################################
@@ -379,7 +370,7 @@ if env["PLATFORM"] == "win32":
   # add it to the build python path
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([
       pysgppTempFolder,
-      env["ENV"].get("PYTHONPATH", "")])
+                                              env["ENV"].get("PYTHONPATH", "")])
 else:
   env["ENV"]["PYTHONPATH"] = os.pathsep.join([
       PYSGPP_PACKAGE_PATH.abspath,
@@ -389,16 +380,24 @@ else:
 # Style checker
 #########################################################################
 
-def lintAction(target, source, env):
-  p = subprocess.Popen(["python", "tools/cpplint.py",
-                        "--extensions=cpp,hpp", "--linelength=100",
-                        source[0].abspath],
-                       stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  # wait for termination and get output on stdout and stderr
-  stdout, stderr = p.communicate()
-  # in Python 3.x, communicate returns bytes
-  if sys.version_info >= (3, 0):
-    stdout, stderr = stdout.decode(), stderr.decode()
+def checkStyleAction(target, source, env):
+  def run(args):
+    p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # wait for termination and get output on stdout and stderr
+    stdout, stderr = p.communicate()
+    # in Python 3.x, communicate returns bytes
+    if sys.version_info >= (3, 0):
+      stdout, stderr = stdout.decode(), stderr.decode()
+    return stdout, stderr
+
+  sourcePath = source[0].abspath
+  stdouts, stderrs = zip(*[run(args) for args in [
+      ["python", "tools/cpplint.py", "--extensions=cpp,hpp",
+       "--linelength=100", sourcePath],
+      ["python", "tools/check_copyright_banners.py", sourcePath],
+      ["python", "tools/check_includes.py", sourcePath]]])
+  stdout, stderr = "\n".join(stdouts), "\n".join(stderrs)
+
   # cpplint prints on stderr
   for line in stderr.splitlines():
     # skip status lines, empty lines, and some warning types
@@ -423,18 +422,16 @@ def lintAction(target, source, env):
   # (to indicate for the next run of SCons that we already checked this file)
   with open(target[0].abspath, "w"): pass
 
-env.Export("lintAction")
+env.Export("checkStyleAction")
 
-# Custom builders for Python and Boost tests
+# Custom builders for running Python/Boost tests and examples
 #########################################################################
 
 if env["RUN_PYTHON_TESTS"]:
   if env["SG_PYTHON"]:
-    # do the actual thing
-    python = "python3"
-    builder = Builder(action=python + " $SOURCE", chdir=0)
+    builder = Builder(action="python3 $SOURCE", chdir=0)
     env.Append(BUILDERS={"Test" : builder})
-    builder = Builder(action=python + " $SOURCE")
+    builder = Builder(action="python3 $SOURCE")
     env.Append(BUILDERS={"SimpleTest" : builder})
   else:
     Helper.printWarning("Python tests disabled because SG_PYTHON is disabled.")
@@ -442,6 +439,18 @@ if env["RUN_PYTHON_TESTS"]:
 if env["COMPILE_BOOST_TESTS"]:
   builder = Builder(action="./$SOURCE --log_level=test_suite")
   env.Append(BUILDERS={"BoostTest" : builder})
+
+if env["RUN_CPP_EXAMPLES"]:
+  builder = Builder(action="./${SOURCE.file}", chdir=1)
+  env.Append(BUILDERS={"CppExample" : builder})
+
+if env["RUN_PYTHON_EXAMPLES"]:
+  if env["SG_PYTHON"]:
+    builder = Builder(action="python3 ${SOURCE.file}", chdir=1)
+    env.Append(BUILDERS={"PythonExample" : builder})
+  else:
+    Helper.printWarning("Running of Python examples disabled "
+                        "because SG_PYTHON is disabled.")
 
 # Building the modules
 #########################################################################
@@ -451,6 +460,8 @@ pythonTestTargetList = []
 boostTestTargetList = []
 boostTestRunTargetList = []
 exampleTargetList = []
+cppTestRunTargetList = []
+pythonTestRunTargetList = []
 pydocTargetList = []
 headerSourceList = []
 headerDestList = []
@@ -459,6 +470,8 @@ env.Export("pythonTestTargetList")
 env.Export("boostTestTargetList")
 env.Export("boostTestRunTargetList")
 env.Export("exampleTargetList")
+env.Export("cppTestRunTargetList")
+env.Export("pythonTestRunTargetList")
 env.Export("pydocTargetList")
 env.Export("headerSourceList")
 env.Export("headerDestList")
@@ -552,6 +565,16 @@ env.Depends(exampleTargetList, finalStepDependencies)
 finalStepDependencies.append(exampleTargetList)
 env.SideEffect("sideEffectFinalSteps", exampleTargetList)
 
+if env["RUN_CPP_EXAMPLES"]:
+  env.Depends(cppTestRunTargetList, finalStepDependencies)
+  finalStepDependencies.append(cppTestRunTargetList)
+  env.SideEffect("sideEffectFinalSteps", cppTestRunTargetList)
+
+if env["RUN_PYTHON_EXAMPLES"]:
+  env.Depends(pythonTestRunTargetList, finalStepDependencies)
+  finalStepDependencies.append(pythonTestRunTargetList)
+  env.SideEffect("sideEffectFinalSteps", pythonTestRunTargetList)
+
 # System-wide installation
 #########################################################################
 
@@ -611,3 +634,16 @@ else:
     finalMessagePrinter.disable()
   elif not env["PRINT_INSTRUCTIONS"]:
     finalMessagePrinter.disable()
+
+# dirty fix for Debian bug #893740
+# (https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=893740),
+# they seem to have reintroduced the Python-2-only syntax "dict.has_key"
+# (instead of "in") in SCons/Script/Main.py, line 1111,
+# occurs when cleaning, i.e., `scons -c`, while using Python 3.x for SCons
+if not hasattr(os.environ, "has_key"):
+  os.environ.has_key = (lambda x: x in os.environ)
+
+# Save build variables to file
+@atexit.register
+def say_bye():
+  vars.Save("buildVars.out", env)

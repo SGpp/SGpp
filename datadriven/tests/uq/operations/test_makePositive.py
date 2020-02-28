@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.special import binom
@@ -22,7 +27,7 @@ from pysgpp import createOperationMakePositive, \
     MakePositiveCandidateSearchAlgorithm_Intersections, \
     MakePositiveInterpolationAlgorithm_SetToZero, \
     MakePositiveInterpolationAlgorithm_InterpolateExp, \
-    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, IndexList, \
+    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d, SizeList, \
     HashGridPoint, MakePositiveCandidateSearchAlgorithm_HybridFullIntersections, \
     GridType_Linear, GridType_Poly, RegularGridConfiguration
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import checkPositivity

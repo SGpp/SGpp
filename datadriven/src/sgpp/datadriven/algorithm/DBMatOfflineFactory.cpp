@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineFactory.cpp
- *
- *  Created on: Apr 5, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 
@@ -17,10 +11,11 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <string>
 #include <vector>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -42,7 +37,6 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::LU):
 #ifdef USE_GSL
@@ -50,7 +44,6 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::Chol):
     case (MatrixDecompositionType::SMW_chol):
@@ -59,25 +52,20 @@ DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-      break;
 
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol();
-      break;
 
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_ortho):
 #ifdef USE_GSL
       return new DBMatOfflineOrthoAdapt();
-      break;
 #else
       throw factory_exception("built without GSL");
 #endif /* USE_GSL */
-
-    default:
-      throw factory_exception("Trying to build offline object from unknown decomposition type");
-      return nullptr;
   }
+
+  throw factory_exception("Trying to build offline object from unknown decomposition type");
 }
 
 DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
@@ -94,7 +82,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
 
   std::cout << str;
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
   std::cout << "tokens: ";
   for (auto& item : tokens) {
     std::cout << item << ",";
@@ -108,27 +96,21 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
   switch (type) {
     case (MatrixDecompositionType::Eigen):
       return new DBMatOfflineEigen(fileName);
-      break;
     case (MatrixDecompositionType::LU):
       return new DBMatOfflineLU(fileName);
-      break;
     case (MatrixDecompositionType::Chol):
     case (MatrixDecompositionType::SMW_chol):
       return new DBMatOfflineChol(fileName);
-      break;
     case (MatrixDecompositionType::DenseIchol):
       return new DBMatOfflineDenseIChol(fileName);
-      break;
     case (MatrixDecompositionType::OrthoAdapt):
     case (MatrixDecompositionType::SMW_ortho):
       return new DBMatOfflineOrthoAdapt(fileName);
-      break;
-    default:
-      throw factory_exception("Trying to build offline object from unknown decomposition type");
-      return nullptr;
   }
+
+  throw factory_exception("Trying to build offline object from unknown decomposition type");
 #else
-  throw factory_exception("built withot GSL");
+  throw factory_exception("built without GSL");
 #endif /* USE_GSL */
 }
 

@@ -2,12 +2,10 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-// Created on: 18.12.2017
-// Author: Eric Koepke
 
 #include <sgpp/datadriven/tools/CSVTools.hpp>
 #include <sgpp/base/exception/file_exception.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -18,6 +16,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <regex>
+
 
 namespace sgpp {
 namespace datadriven {
@@ -175,7 +175,7 @@ void CSVTools::readCSVSize(std::istream& stream,
 }
 
 std::vector<double> CSVTools::tokenizeLine(const std::string& line) {
-  sgpp::datadriven::StringTokenizer tokenizer;
+  sgpp::base::StringTokenizer tokenizer;
   std::vector<std::string> toks;
   tokenizer.tokenize(line, ",", toks);
   std::vector<double> vals;
@@ -183,6 +183,24 @@ std::vector<double> CSVTools::tokenizeLine(const std::string& line) {
     vals.push_back(atof(toks.at(i).c_str()));
   }
   return vals;
+}
+
+void CSVTools::writeMatrixToCSVFile(const std::string& path, sgpp::base::DataMatrix matrix) {
+  std::cout << "Writing to file " + path + ".csv" << std::endl;
+  std::ofstream output;
+  output.open(path + ".csv");
+
+  sgpp::base::DataVector row(matrix.getNcols());
+
+  for (size_t index=0; index < matrix.getNrows(); index++) {
+    matrix.getRow(index, row);
+    std::string line = row.toString();
+    line.erase(line.begin());
+    line.erase(line.end()-1);
+    output << line+"\n";
+  }
+
+  output.close();
 }
 
 }  // namespace datadriven

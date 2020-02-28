@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * test_DataMatrixDistributed.cpp
- *
- * Created on: Feb 19, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifdef USE_SCALAPACK
 #define BOOST_TEST_DYN_LINK
@@ -417,7 +410,7 @@ BOOST_AUTO_TEST_CASE(testToVector) {
 
   if (localGrid->isProcessInGrid()) {
     for (size_t i = 0; i < testData.size(); i++) {
-      BOOST_CHECK_CLOSE(vector.get(i), testData[i], 10e-5);
+      BOOST_CHECK_CLOSE(vector.get(i), testData[i], 1e-4);
     }
   }
 }

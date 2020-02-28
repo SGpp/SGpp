@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SparseGridMinerCrossValidation.cpp
- *
- *  Created on: Jul 26, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
@@ -23,8 +16,9 @@ namespace sgpp {
 namespace datadriven {
 
 SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
-    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer)
-    : SparseGridMiner(fitter, scorer), dataSource{dataSource} {}
+    DataSourceCrossValidation* dataSource, ModelFittingBase* fitter, Scorer* scorer,
+    Visualizer* visualizer)
+    : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerCrossValidation::learn(bool verbose) {
   // todo(fuchsgdk): see below
@@ -95,7 +89,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
         if (verbose) {
           std::ostringstream out;
           out << "###############"
-              << "Itertation #" << (iteration++) << std::endl
+              << "Iteration #" << (iteration) << std::endl
               << "Batch size: " << numInstances;
           print(out);
         }
@@ -114,11 +108,12 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
           print(out);
         }
 
+        visualizer->runVisualization(*fitter, *dataSource, fold, iteration);
         // Refine the model if neccessary
         monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
         size_t refinements = monitor->refinementsNecessary();
         while (refinements--) {
-          fitter->refine();
+          fitter->adapt();
         }
 
         if (verbose) {
@@ -127,6 +122,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
               << "Iteration finished.";
           print(out);
         }
+        iteration++;
       }
     }
     // Evaluate the final score on the validation data

@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <vector>
 #include <utility>
 
@@ -79,7 +80,6 @@ class RegressionLearner {
           first.solverFista.swap(second.solverFista);
           break;
         case solverCategory::none:
-        default:
           // Do nothing.
           break;
       }
@@ -102,7 +102,6 @@ class RegressionLearner {
           solverFista.~unique_ptr<sgpp::solver::FistaBase>();
           break;
         case solverCategory::none:
-        default:
           // do nothing
           break;
       }
@@ -133,7 +132,7 @@ class RegressionLearner {
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig,
-                    std::vector<std::vector<size_t>> terms);
+                    std::set<std::set<size_t>> terms);
 
   /**
    * @brief RegressionLearner
@@ -194,7 +193,7 @@ class RegressionLearner {
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   datadriven::RegularizationConfiguration regularizationConfig;
-  std::vector<std::vector<size_t>> terms;
+  std::set<std::set<size_t>> terms;
   std::unique_ptr<sgpp::base::OperationMultipleEval> op;
   std::unique_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 

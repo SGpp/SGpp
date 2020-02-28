@@ -35,7 +35,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
-  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.numRefinementPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
@@ -156,9 +156,9 @@ std::vector<sgpp::datadriven::RegularizationConfiguration> getConfigs() {
  * hyper-parameter for the Friedman3 dataset using the diagonal Tikhonov regularization method.
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain = std::string("../datasets/friedman3_10k_train.arff");
-  const auto filenameValidation = std::string("../datasets/friedman3_10k_validation.arff");
-  const auto filenameTest = std::string("../datasets/friedman3_10k_test.arff");
+  const auto filenameTrain = std::string("../datasets/friedman/friedman3_10k_train.arff");
+  const auto filenameValidation = std::string("../datasets/friedman/friedman3_10k_validation.arff");
+  const auto filenameTest = std::string("../datasets/friedman/friedman3_10k_test.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;

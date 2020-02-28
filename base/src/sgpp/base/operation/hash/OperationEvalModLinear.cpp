@@ -38,7 +38,7 @@ double OperationEvalModLinear::eval(const DataVector& alpha,
   BoundingBox* bb = storage.getBoundingBox();
   size_t dim = bb->getDimension();
 
-  if (bb != NULL) {
+  if (bb != nullptr) {
     for (size_t d = 0; d < dim; ++d) {
       BoundingBox1D dimbb = bb->getBoundary(d);
 

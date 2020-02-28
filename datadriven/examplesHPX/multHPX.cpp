@@ -6,7 +6,6 @@
 #include <hpx/hpx_init.hpp>
 #include <hpx/include/actions.hpp>
 #include <hpx/include/util.hpp>
-
 #include <random>
 #include <string>
 
@@ -47,10 +46,10 @@ int hpx_main(boost::program_options::variables_map& vm) {
   is_root_node = hpx::find_here() == hpx::find_root_locality();
 
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::ARFFTools arffTools;
   dataset = arffTools.readARFFFromFile(fileName);
@@ -135,7 +134,6 @@ int main(int argc, char* argv[]) {
             sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
     sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-    dataSizeVectorResultCompare.setAll(0.0);
 
     evalCompare->mult(alpha, dataSizeVectorResultCompare);
 

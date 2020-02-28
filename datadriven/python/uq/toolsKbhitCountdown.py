@@ -1,11 +1,7 @@
-# Copyright (C) 2009  Dirk Pflueger (pflueged@in.tum.de)
-# Version 1.00, 2009/05/16
-# Version 1.01, 2009/05/26
-# - If no terminal available (e.g. run in eclipse), countdown
-#   just returns False
-# Version 1.02, 2009/05/27    Alexander Heinecke
-# - If no terminal available (e.g. run in eclipse), countdown
-#   just returns False
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
 import sys, time
 

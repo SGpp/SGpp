@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * AlgorithmMultipleEvaluationDistributed.hpp
- *
- * Created on: Mar 23, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -61,12 +54,9 @@ class AlgorithmMultipleEvaluationDistributed {
     size_t source_size = source.getSize();
 
     sgpp::base::DataVector privateResult(result.getGlobalRows());
-    privateResult.setAll(0.0);
 
     sgpp::base::DataVector line(x.getNcols());
     sgpp::base::AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
-
-    privateResult.setAll(0.0);
 
     // distribute into approximately even blocks
     auto processGrid = result.getProcessGrid();

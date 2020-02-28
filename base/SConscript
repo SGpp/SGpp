@@ -3,6 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
+import Helper
 import ModuleHelper
 
 Import("*")
@@ -13,6 +14,15 @@ additionalDependencies = []
 if env["USE_OCL"]:
     additionalDependencies += ["OpenCL"]
 
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "UMFPACK", "USE_UMFPACK", "suitesparse/umfpack.h", "umfpack")
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Eigen", "USE_EIGEN", "eigen3/Eigen/Dense", None)
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Armadillo", "USE_ARMADILLO", "armadillo", "armadillo")
+Helper.checkForLibrary(config, env, additionalDependencies,
+    "Gmm++", "USE_GMMPP", "gmm/gmm.h", None)
+
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
 module.scanSource()
@@ -20,8 +30,9 @@ module.buildLibrary()
 module.generatePythonDocstrings()
 if env["ARCH"] != "mic":
   module.buildExamples()
+  module.runExamples()
 
 module.runPythonTests() 
 module.buildBoostTests()
 module.runBoostTests()
-module.runCpplint()
+module.checkStyle()

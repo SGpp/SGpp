@@ -1,19 +1,13 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * FileBasedDataSourceBuilder.cpp
- *
- *  Created on: 01.06.2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "DataSourceBuilder.hpp"
+#include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
@@ -71,7 +65,7 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
 DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
   // Create a shuffling functor
   DataShufflingFunctorFactory shufflingFunctorFactory;
-  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctor* shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
 
   SampleProvider* sampleProvider = nullptr;
 
@@ -80,7 +74,7 @@ DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
   } else if (config.fileType == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(shuffling);
   } else {
-    data_exception("Unknown file type");
+    throw data_exception("DataSourceBuilder::splittingAssemble() unknown file type");
   }
 
   if (config.isCompressed) {
@@ -107,8 +101,8 @@ DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConf
 DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
   // Create a shuffling functor
   DataShufflingFunctorFactory shufflingFunctorFactory;
-  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
-  DataShufflingFunctorCrossValidation *crossValidationShuffling =
+  DataShufflingFunctor* shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctorCrossValidation* crossValidationShuffling =
       new DataShufflingFunctorCrossValidation(crossValidationConfig, shuffling);
 
   SampleProvider* sampleProvider = nullptr;
@@ -118,7 +112,7 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
   } else if (config.fileType == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(crossValidationShuffling);
   } else {
-    data_exception("Unknown file type");
+    throw data_exception("DataSourceBuilder::crossValidationAssemble() unknown file type");
   }
 
   if (config.isCompressed) {
@@ -130,7 +124,7 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
 #endif
   }
   auto t = new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
-      sampleProvider);
+                                         sampleProvider);
   return t;
 }
 
@@ -149,7 +143,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;
   // split the string
-  StringTokenizer::tokenize(config.filePath, ".", tokens);
+  sgpp::base::StringTokenizer::tokenize(config.filePath, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
     // TODO(Michael Lettrich): test if this works with umlauts
@@ -165,7 +159,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   for (auto t : tokens) {
     try {
       type = DataSourceFileTypeParser::parse(t);
-    } catch (data_exception& e) {
+    } catch (data_exception&) {
       // wasn't found
       withFileType(DataSourceFileType::NONE);
     }

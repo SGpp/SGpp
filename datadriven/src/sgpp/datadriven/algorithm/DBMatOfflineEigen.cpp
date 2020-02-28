@@ -1,24 +1,18 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DBMatOfflineEigen.cpp
- *
- *  Created on: 02.03.2017
- *      Author: michael
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #ifdef USE_GSL
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
 
 #include <gsl/gsl_blas.h>
 #include <gsl/gsl_eigen.h>
@@ -30,10 +24,10 @@
 namespace sgpp {
 namespace datadriven {
 
-using sgpp::base::DataMatrix;
+using sgpp::base::algorithm_exception;
 using sgpp::base::application_exception;
 using sgpp::base::data_exception;
-using sgpp::base::algorithm_exception;
+using sgpp::base::DataMatrix;
 using sgpp::base::OperationMatrix;
 
 DBMatOfflineEigen::DBMatOfflineEigen() {}
@@ -51,7 +45,7 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
   filestream.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
   auto nCols = std::stoi(tokens[0]);
   auto nRows = std::stoi(tokens[1]);
@@ -78,13 +72,13 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
   gsl_matrix_free(matrix);
 }
 
-
-DBMatOffline* DBMatOfflineEigen::clone() { return new DBMatOfflineEigen{*this}; }
+DBMatOffline* DBMatOfflineEigen::clone() const { return new DBMatOfflineEigen{*this}; }
 
 bool DBMatOfflineEigen::isRefineable() { return false; }
 
-void DBMatOfflineEigen::decomposeMatrix(RegularizationConfiguration& regularizationConfig,
-    DensityEstimationConfiguration& densityEstimationConfig) {
+void DBMatOfflineEigen::decomposeMatrix(
+    const RegularizationConfiguration& regularizationConfig,
+    const DensityEstimationConfiguration& densityEstimationConfig) {
   if (isConstructed) {
     if (isDecomposed) {
       // Already decomposed => Do nothing

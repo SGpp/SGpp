@@ -1,12 +1,11 @@
-'''
-Created on Feb 6, 2015
-
-@author: franzefn
-'''
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 from pysgpp.extensions.datadriven.uq.operations import checkPositivity, \
     insertHierarchicalAncestors, insertPoint, copyGrid, \
     dehierarchize, hierarchize, hasChildren, hasAllChildren
-from pysgpp import HashGridPoint, createOperationEval, DataVector, IndexList, \
+from pysgpp import HashGridPoint, createOperationEval, DataVector, SizeList, \
     createOperationQuadrature, GridType_LinearBoundary, GridType_PolyBoundary
 import warnings
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
@@ -211,7 +210,7 @@ class OperationMakePositive(object):
         while True:
             newGrid = copyGrid(grid)
             notAffectedGridPoints = []
-            toBeRemoved = IndexList()
+            toBeRemoved = SizeList()
             for gp in newGridPoints:
                 ix = gs.getSequenceNumber(gp)
                 gp.getStandardCoordinates(p)

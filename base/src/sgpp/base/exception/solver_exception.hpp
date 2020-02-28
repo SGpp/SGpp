@@ -26,25 +26,25 @@ class solver_exception : public std::exception {
    *
    * @param msg the exception message
    */
-  explicit solver_exception(const char* msg) throw() : msg(msg) {
+  explicit solver_exception(const char* msg) noexcept : msg(msg) {
   }
 
   /**
    * Standard Constructor
    */
-  solver_exception() throw() : msg(NULL) { }
+  solver_exception() noexcept : msg(nullptr) { }
 
   /**
    * Destructor
    */
-  ~solver_exception() throw() override { }
+  ~solver_exception() noexcept override { }
 
   /**
    * throw method that have to be implemented
    *
    * @return returns the message specified in the constructor otherwise a general text
    */
-  const char* what() const throw() override {
+  const char* what() const noexcept override {
     if (msg) {
       return msg;
     } else {

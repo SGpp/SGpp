@@ -1,15 +1,9 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SampleProviderModule.cpp
- *
- *  Created on: 17.05.2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "DataSource.hpp"
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceIterator.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
@@ -42,6 +36,25 @@ DataSource::DataSource(DataSourceConfig conf, SampleProvider* sp)
 DataSourceIterator DataSource::begin() { return DataSourceIterator(*this, 0); }
 
 DataSourceIterator DataSource::end() { return DataSourceIterator(*this, config.numBatches); }
+
+Dataset* DataSource::getAllSamples() {
+  Dataset* dataset = nullptr;
+
+  sampleProvider->reset();
+
+  dataset = sampleProvider->getAllSamples();
+
+  sampleProvider->reset();
+
+  sampleProvider->getNextSamples(currentIteration*config.batchSize);
+  // Transform dataset if wanted
+  if (!(config.dataTransformationConfig.type == DataTransformationType::NONE)) {
+    dataTransformation->initialize(dataset, config.dataTransformationConfig);
+    return dataTransformation->doTransformation(dataset);
+  } else {
+    return dataset;
+  }
+}
 
 Dataset* DataSource::getNextSamples() {
   Dataset* dataset = nullptr;

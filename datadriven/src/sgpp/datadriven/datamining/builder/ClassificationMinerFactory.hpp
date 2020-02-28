@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ClassificationMinerFactory.hpp
- *
- *  Created on: Jul 2, 2018
- *      Author: dominik
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -47,6 +40,12 @@ class ClassificationMinerFactory : public MinerFactory {
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
   FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+
+  /* Factory method to build a visualizer instance base on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  Visualizer* createVisualizer(const DataMiningConfigParser& parser) const override;
 };
 
 } /* namespace datadriven */

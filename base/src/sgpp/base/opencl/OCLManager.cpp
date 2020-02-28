@@ -7,8 +7,8 @@
 #include <sstream>
 #include <string>
 
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/exception/operation_exception.hpp"
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/exception/operation_exception.hpp>
 
 namespace sgpp {
 namespace base {
@@ -352,7 +352,7 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
 
   // setting the program
   const char* kernel_src = program_src.c_str();
-  cl_program program = clCreateProgramWithSource(context, 1, &kernel_src, NULL, &err);
+  cl_program program = clCreateProgramWithSource(context, 1, &kernel_src, nullptr, &err);
 
   if (err != CL_SUCCESS) {
     std::stringstream errorString;
@@ -371,16 +371,16 @@ void OCLManager::buildKernel(const std::string& program_src, const char* kernel_
   }
 
   // compiling the program
-  err = clBuildProgram(program, 0, NULL, build_opts.c_str(), NULL, NULL);
+  err = clBuildProgram(program, 0, nullptr, build_opts.c_str(), nullptr, nullptr);
 
   // if (err != CL_SUCCESS) {
 
   if ((*parameters)["SHOW_BUILD_LOG"].getBool()) {
     // get the build log
     size_t len;
-    clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG, 0, NULL, &len);
+    clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG, 0, nullptr, &len);
     std::string buffer(len, '\0');
-    clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG, len, &buffer[0], NULL);
+    clGetProgramBuildInfo(program, device_ids[0], CL_PROGRAM_BUILD_LOG, len, &buffer[0], nullptr);
     buffer = buffer.substr(0, buffer.find('\0'));
 
     if (verbose) {

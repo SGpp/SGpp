@@ -1,12 +1,23 @@
-# coding: utf-8
-from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.sampler import MCSampler
+# -*- coding: utf-8 -*-
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-from pysgpp import *
+try:
+    from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
+    from pysgpp.extensions.datadriven.uq.sampler import MCSampler
 
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
+    from pysgpp import *
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.dists.Lognormal import Lognormal
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 
 parameterBuilder = ParameterBuilder()

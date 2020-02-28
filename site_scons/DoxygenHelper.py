@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -139,9 +139,10 @@ def convertExampleSourcesToDoxy(modules):
   # for each module
   for moduleName in modules:
     examplePath = os.path.join(moduleName, "examples")
+    if not os.path.isdir(examplePath): continue
 
     snippetsFolder = os.path.join(moduleName, "doc", "doxygen", "snippets")
-    if not os.path.exists(snippetsFolder): os.makedirs(snippetsFolder)
+    if not os.path.isdir(snippetsFolder): os.makedirs(snippetsFolder)
 
     # search for examples
     for exampleFileName in os.listdir(examplePath):

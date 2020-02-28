@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 from pysgpp import (createOperationHierarchisation,
                     createOperationEval, createOperationMultipleEval, createOperationEvalNaive,
                     createOperationMultipleEvalNaive,
@@ -30,7 +35,7 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     SBsplineModifiedClenshawCurtisBase, \
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
-from pysgpp.pysgpp_swig import IndexVector
+from pysgpp.pysgpp_swig import SizeVector
 
 
 #######################################################################
@@ -536,7 +541,7 @@ def insertPoint(grid, gp):
     if gs.isContaining(gp) or not isValid(grid, gp):
         return []
 
-    added_grid_points = IndexVector()
+    added_grid_points = SizeVector()
     gs.insert(HashGridPoint(gp), added_grid_points) > -1
 
     ans = []

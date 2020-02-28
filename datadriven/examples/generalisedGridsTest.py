@@ -16,11 +16,17 @@
 ## G_n^T &= \bigcup_{\substack{\vert {\mathbf{l}} \vert_1 - T \vert \mathbf{i} \vert_\infty \\ \leq n + d - 1 - T n}} G_{\mathbf{l}},\\
 ## V_n^T &= \bigoplus_{\substack{\vert {\mathbf{l}} \vert_1 - T \vert \mathbf{i} \vert_\infty \\ \leq n + d - 1 - T n}} W_{\mathbf{l}}\nonumber \f}
 
-## We first import all pysgpp and other utility libraries.
-import numpy as np
-import pysgpp as sg; sg.omp_set_num_threads(4)
-#import pandas as pd
-import sklearn.datasets as data
+try:
+    ## We first import all pysgpp and other utility libraries.
+    import numpy as np
+    import pysgpp as sg; sg.omp_set_num_threads(4)
+    #import pandas as pd
+    import sklearn.datasets as data
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 ## This function generates the Friedman1 dataset on demand.
 def generate_friedman1(seed):
@@ -40,12 +46,13 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
 
     adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 5
-    adapt.noPoints_ = 3
+    adapt.numRefinementPoints_ = 3
+    adapt.numCoarseningPoints_ = 3
 
     solv = sg.SLESolverConfiguration()
     solv.maxIterations_ = 50
-    solv.eps_ = 10e-6
-    solv.threshold_ = 10e-6
+    solv.eps_ = 1e-5
+    solv.threshold_ = 1e-5
     solv.type_ = sg.SLESolverType_CG
 
     final_solv = solv
@@ -54,7 +61,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     regular = sg.RegularizationConfiguration()
     regular.type_ = sg.RegularizationType_Identity
     regular.exponentBase_ = 1.0
-    regular.lambda_ = 10e-4    
+    regular.lambda_ = 1e-3
 
     ## Create the estimator, train it with the training data and then return the error
     ## for the testing set.

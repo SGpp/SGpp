@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DensityEstimationMinerFactory.hpp
- *
- * Created on: Jan 02, 2018
- *     Author: Kilian Röhner
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -18,6 +11,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 
 #include <string>
 
@@ -49,6 +43,12 @@ class DensityEstimationMinerFactory : public MinerFactory {
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
   FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+
+  /* Factory method to build a visualizer instance base on a configuration file.
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  Visualizer* createVisualizer(const DataMiningConfigParser& parser) const override;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

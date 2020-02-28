@@ -1,7 +1,7 @@
 // Copyright (C) 2008-today The SG++ project
-// This file is part of the SG++ project. For conditions of
-// distribution and use, please see the copyright notice
-// provided with SG++ or at sgpp.sparsegrids.org.
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <random>
 #include <string>
@@ -35,7 +35,6 @@ int main(int argc, char** argv) {
 
   // create coefficient vector
   sgpp::base::DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
 
   std::random_device rd;
   std::mt19937 mt(rd());

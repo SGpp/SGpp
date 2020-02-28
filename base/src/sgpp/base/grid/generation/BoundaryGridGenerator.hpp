@@ -8,11 +8,8 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
@@ -32,8 +29,7 @@ class BoundaryGridGenerator : public GridGenerator {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  explicit BoundaryGridGenerator(GridStorage& storage,
-                                 level_t boundaryLevel = 1);
+  explicit BoundaryGridGenerator(GridStorage& storage, level_t boundaryLevel = 1);
 
   /**
    * Destructor
@@ -46,12 +42,12 @@ class BoundaryGridGenerator : public GridGenerator {
   void regular(size_t level) override;
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override;
-  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = 0) override;
+  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                         size_t numFirstOnly) override;
+  void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq, size_t minIndexConsidered) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

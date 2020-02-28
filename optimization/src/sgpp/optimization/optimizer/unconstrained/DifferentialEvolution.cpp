@@ -5,13 +5,13 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/DifferentialEvolution.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/tools/RandomNumberGenerator.hpp>
 
 #include <algorithm>
 #include <cstdlib>
-#include <iostream>
+#include <limits>
 #include <string>
 #include <vector>
 
@@ -19,12 +19,12 @@ namespace sgpp {
 namespace optimization {
 namespace optimizer {
 
-DifferentialEvolution::DifferentialEvolution(const ScalarFunction& f, size_t maxFcnEvalCount,
+DifferentialEvolution::DifferentialEvolution(const base::ScalarFunction& f, size_t maxFcnEvalCount,
                                              size_t populationSize, double crossoverProbability,
                                              double scalingFactor, size_t idleGenerationsCount,
                                              double avgImprovementThreshold,
                                              double maxDistanceThreshold)
-    : UnconstrainedOptimizer(f, maxFcnEvalCount),
+    : UnconstrainedOptimizer(f, nullptr, nullptr, maxFcnEvalCount),
       populationSize((populationSize > 0) ? populationSize : 10 * f.getNumberOfParameters()),
       crossoverProbability(crossoverProbability),
       scalingFactor(scalingFactor),
@@ -39,18 +39,17 @@ DifferentialEvolution::DifferentialEvolution(const DifferentialEvolution& other)
       scalingFactor(other.scalingFactor),
       idleGenerationsCount(other.idleGenerationsCount),
       avgImprovementThreshold(other.avgImprovementThreshold),
-      maxDistanceThreshold(other.maxDistanceThreshold) {
-}
+      maxDistanceThreshold(other.maxDistanceThreshold) {}
 
 DifferentialEvolution::~DifferentialEvolution() {}
 
 void DifferentialEvolution::optimize() {
-  Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
+  base::Printer::getInstance().printStatusBegin("Optimizing (differential evolution)...");
 
   const size_t d = f->getNumberOfParameters();
 
   xOpt.resize(0);
-  fOpt = NAN;
+  fOpt = std::numeric_limits<double>::quiet_NaN();
   xHist.resize(0, d);
   fHist.resize(0);
 
@@ -64,22 +63,23 @@ void DifferentialEvolution::optimize() {
   std::vector<base::DataVector>* xNew = &x2;
 
   // function values at the points of the populations
-  // (no need to swape those)
+  // (no need to swap those)
   base::DataVector fx(populationSize);
 
   // initial pseudorandom points
   for (size_t i = 0; i < populationSize; i++) {
     for (size_t t = 0; t < d; t++) {
-      (*xOld)[i][t] = RandomNumberGenerator::getInstance().getUniformRN();
+      (*xOld)[i][t] = base::RandomNumberGenerator::getInstance().getUniformRN();
     }
 
     fx[i] = f->eval((*xOld)[i]);
   }
 
   // smallest function value in the population
-  double fCurrentOpt = INFINITY;
+  double fCurrentOpt = std::numeric_limits<double>::infinity();
   // index of the point with value fOpt
   size_t xOptIndex = 0;
+
   // iteration number of the last iteration with significant improvement
   size_t lastNonidleK = 0;
   // average of all function values
@@ -87,7 +87,7 @@ void DifferentialEvolution::optimize() {
   // average in the previous round
   double lastAvg = 0.0;
   // number of iterations
-  size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
+  const size_t maxK = std::max(static_cast<size_t>(2), N / populationSize) - 1;
 
   std::vector<std::vector<size_t>> a(maxK, std::vector<size_t>(populationSize, 0)), b = a, c = a,
                                                                                     j = a;
@@ -101,22 +101,22 @@ void DifferentialEvolution::optimize() {
   for (size_t k = 0; k < maxK; k++) {
     for (size_t i = 0; i < populationSize; i++) {
       do {
-        a[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        a[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while (a[k][i] == i);
 
       do {
-        b[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        b[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while ((b[k][i] == i) || (b[k][i] == a[k][i]));
 
       do {
-        c[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
+        c[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(populationSize);
       } while ((c[k][i] == i) || (c[k][i] == a[k][i]) || (c[k][i] == b[k][i]));
 
-      j[k][i] = RandomNumberGenerator::getInstance().getUniformIndexRN(d);
+      j[k][i] = base::RandomNumberGenerator::getInstance().getUniformIndexRN(d);
 
       for (size_t t = 0; t < d; t++) {
         if (t != j[k][i]) {
-          prob[k][i][t] = RandomNumberGenerator::getInstance().getUniformRN();
+          prob[k][i][t] = base::RandomNumberGenerator::getInstance().getUniformRN();
         }
       }
     }
@@ -125,17 +125,16 @@ void DifferentialEvolution::optimize() {
   // "real" algorithm loop
   for (size_t k = 0; k < maxK; k++) {
     // abbreviations
-    const std::vector<size_t> &a_k = a[k], &b_k = b[k], &c_k = c[k];
+    const std::vector<size_t>&a_k = a[k], &b_k = b[k], &c_k = c[k];
     const std::vector<size_t>& j_k = j[k];
     const std::vector<base::DataVector>& prob_k = prob[k];
 
-#pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, \
-                            xNew)
+#pragma omp parallel shared(k, a_k, b_k, c_k, j_k, prob_k, xOld, fx, fCurrentOpt, xOptIndex, xNew)
     {  // NOLINT(whitespace/braces)
       base::DataVector y(d);
-      ScalarFunction* curFPtr = f.get();
+      base::ScalarFunction* curFPtr = f.get();
 #ifdef _OPENMP
-      std::unique_ptr<ScalarFunction> curF;
+      std::unique_ptr<base::ScalarFunction> curF;
 
       if (omp_get_max_threads() > 1) {
         f->clone(curF);
@@ -173,7 +172,7 @@ void DifferentialEvolution::optimize() {
         }
 
         // evaluate mutated point (if not out of bounds)
-        const double fy = (inDomain ? curFPtr->eval(y) : INFINITY);
+        const double fy = (inDomain ? curFPtr->eval(y) : std::numeric_limits<double>::infinity());
 
         if (fy < fx[i]) {
 // function_value is better ==> replace point with mutated one
@@ -247,8 +246,8 @@ void DifferentialEvolution::optimize() {
 
     // status message
     if (k % 10 == 0) {
-      Printer::getInstance().printStatusUpdate(std::to_string(k) + " steps, f(x) = " +
-                                               std::to_string(fCurrentOpt));
+      base::Printer::getInstance().printStatusUpdate(
+          std::to_string(k) + " steps, f(x) = " + std::to_string(fCurrentOpt));
     }
 
     xHist.appendRow((*xOld)[xOptIndex]);
@@ -260,15 +259,47 @@ void DifferentialEvolution::optimize() {
   xOpt = (*xOld)[xOptIndex];
   fOpt = fCurrentOpt;
 
-  Printer::getInstance().printStatusUpdate(std::to_string(maxK) + " steps, f(x) = " +
-                                           std::to_string(fCurrentOpt));
-  Printer::getInstance().printStatusEnd();
+  base::Printer::getInstance().printStatusUpdate(std::to_string(maxK) +
+                                                 " steps, f(x) = " + std::to_string(fCurrentOpt));
+  base::Printer::getInstance().printStatusEnd();
 }
 
 size_t DifferentialEvolution::getPopulationSize() const { return populationSize; }
 
 void DifferentialEvolution::setPopulationSize(size_t populationSize) {
   this->populationSize = populationSize;
+}
+
+double DifferentialEvolution::getCrossoverProbability() const { return crossoverProbability; }
+
+void DifferentialEvolution::setCrossoverProbability(double crossoverProbability) {
+  this->crossoverProbability = crossoverProbability;
+}
+
+double DifferentialEvolution::getScalingFactor() const { return scalingFactor; }
+
+void DifferentialEvolution::setScalingFactor(double scalingFactor) {
+  this->scalingFactor = scalingFactor;
+}
+
+size_t DifferentialEvolution::getIdleGenerationsCount() const { return idleGenerationsCount; }
+
+void DifferentialEvolution::setIdleGenerationsCount(size_t idleGenerationsCount) {
+  this->idleGenerationsCount = idleGenerationsCount;
+}
+
+double DifferentialEvolution::getAvgImprovementThreshold() const {
+  return avgImprovementThreshold;
+}
+
+void DifferentialEvolution::setAvgImprovementThreshold(double avgImprovementThreshold) {
+  this->avgImprovementThreshold = avgImprovementThreshold;
+}
+
+double DifferentialEvolution::getMaxDistanceThreshold() const { return maxDistanceThreshold; }
+
+void DifferentialEvolution::setMaxDistanceThreshold(double maxDistanceThreshold) {
+  this->maxDistanceThreshold = maxDistanceThreshold;
 }
 
 void DifferentialEvolution::clone(std::unique_ptr<UnconstrainedOptimizer>& clone) const {

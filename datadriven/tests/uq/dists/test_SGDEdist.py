@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 # -------------------------------------------------------------------------------
 # DataDist tests
 # -------------------------------------------------------------------------------
@@ -51,7 +56,6 @@ class SGDEdistTest(unittest.TestCase):
                                                          "sgde_makePositive": False,
                                                          "sgde_makePositive_candidateSearchAlgorithm": "joined",
                                                          "sgde_makePositive_interpolationAlgorithm": "setToZero",
-                                                         "sgde_makePositive_verbose": True,
                                                          "sgde_unitIntegrand": True})
 
         # build parameter set
@@ -90,7 +94,6 @@ class SGDEdistTest(unittest.TestCase):
                                                     "sgde_makePositive": True,
                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
                                                     "sgde_makePositive_interpolationAlgorithm": "interpolateBoundaries1d",
-                                                    "sgde_makePositive_verbose": True,
                                                     "sgde_unitIntegrand": True})
 
         fig, ax, _ = plotDensity3d(dist)
@@ -122,7 +125,6 @@ class SGDEdistTest(unittest.TestCase):
                                                     "sgde_makePositive": False,
                                                     "sgde_makePositive_candidateSearchAlgorithm": "fullGrid",
                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
-                                                    "sgde_makePositive_verbose": True,
                                                     "sgde_unitIntegrand": False},
                                             bounds=np.array([U.getBounds()]))
 
@@ -172,7 +174,6 @@ class SGDEdistTest(unittest.TestCase):
                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
                                                     "sgde_makePositive_generateConsistentGrid": False,
-                                                    "sgde_makePositive_verbose": True,
                                                     "sgde_unitIntegrand": True},
                                             bounds=U.getBounds())
         fig = plt.figure()
@@ -449,7 +450,6 @@ class SGDEdistTest(unittest.TestCase):
                                                     "sgde_makePositive": True,
                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
-                                                    "sgde_makePositive_verbose": True,
                                                     "sgde_generateConsistentGrid": True,
                                                     "sgde_unitIntegrand": True})
 

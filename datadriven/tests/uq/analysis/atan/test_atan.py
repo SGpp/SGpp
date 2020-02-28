@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 # ----------------------------------------------------
 # ASGC Sampler test: atan
 # ----------------------------------------------------
@@ -101,7 +106,6 @@ class AtanPeridynamicExample(object):
 #                                                     "sgde_makePositive": True,
 #                                                     "sgde_makePositive_candidateSearchAlgorithm": "joined",
 #                                                     "sgde_makePositive_interpolationAlgorithm": "setToZero",
-#                                                     "sgde_makePositive_verbose": False,
 #                                                     "sgde_unitIntegrand": True})
 
         return dist

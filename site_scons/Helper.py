@@ -1,4 +1,4 @@
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -57,7 +57,13 @@ def getModules(ignoreFolders):
 #########################################################################
 
 def multiParamConverter(s):
-  return s.split(",")
+  return s.split(" ")
+
+def multiParamPathConverter(s):
+  return s.split(os.pathsep)
+
+def multiParamDefineConverter(s):
+  return (dict([x.split("=") for x in s.split(" ")]) if s != "" else {})
 
 # this class is used with "sys.stdout = Logger(sys.stdout)" at the very beginning
 # => print lines to the terminal and to the log file simultaneously
@@ -393,3 +399,25 @@ def CheckMklScalapack(context):
   context.did_show_result = 1
   context.Result(res)
   return res
+
+# check if library is installed and set define flag,
+# use None for "libraries" if it's a header-only library,
+# "additionalDependencies" is a list which will be extended by the libraries
+def checkForLibrary(config, env, additionalDependencies,
+                    name, flag, headers, libraries):
+  if type(headers) is str: headers = [headers]
+  if type(libraries) is str: libraries = [libraries]
+  if libraries is None: libraries = []
+
+  if (flag not in config.env) or (not config.env[flag]):
+    printInfo("SG++ will be compiled without {} (flag not set).".format(name))
+  elif not config.CheckHeader(headers, language="C++"):
+    printErrorAndExit("The flag {} was given, but the".format(flag),
+                      "necessary headers {} were not found.".format(headers))
+  elif (len(libraries) > 0) and (not config.CheckLib(libraries, language="C++")):
+    printErrorAndExit("The flag {} was given, but the".format(flag),
+                      "necessary libraries {} were not found.".format(libraries))
+  else:
+    printInfo("SG++ will be compiled with {}.".format(name))
+    additionalDependencies.extend(libraries)
+    env["CPPDEFINES"][flag] = "1"

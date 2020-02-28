@@ -1,17 +1,10 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * LeastSquaresRegressionFitterFactory.cpp
- *
- *  Created on:	17.12.2017
- *      Author: Eric Koepke
- */
-#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
+#include <sgpp/base/grid/GridTypeParser.hpp>
 #include <vector>
 #include <string>
 
@@ -75,7 +68,8 @@ std::string FitterFactory::printConfig() {
   std::stringstream s;
   for (auto &pair : catpar) {
     if (pair.first == "basisFunction") {
-      s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+      s << ", " << base::GridTypeParser::toString(
+                       basisFunctions[catpar["basisFunction"].getValue()]);
     } else {
       s << ", " << pair.second.getValue();
     }

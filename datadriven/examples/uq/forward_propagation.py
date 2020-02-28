@@ -1,21 +1,32 @@
-from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
-from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
-from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
-from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
-from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, \
-    plotSobolIndices
-from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, \
-    plotDensity3d
-from pysgpp.extensions.datadriven.learner.Types import BorderTypes
+try:
+    from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
+    from pysgpp.extensions.datadriven.uq.uq_setting import UQBuilder
+    from pysgpp.extensions.datadriven.uq.sampler.asgc import ASGCSamplerBuilder
 
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
-import matplotlib
-from matplotlib import rc
+    from pysgpp.extensions.datadriven.uq.analysis.asgc import ASGCAnalysisBuilder
+    from pysgpp.extensions.datadriven.uq.analysis.KnowledgeTypes import KnowledgeTypes
+    from pysgpp.extensions.datadriven.uq.manager.ASGCUQManagerBuilder import ASGCUQManagerBuilder
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, \
+        plotSobolIndices
+    from pysgpp.extensions.datadriven.uq.plot.plot3d import plotFunction3d, plotSG3d, \
+        plotDensity3d
+    from pysgpp.extensions.datadriven.learner.Types import BorderTypes
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
+    import matplotlib
+    from matplotlib import rc
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 font = {'family' : 'sans-serif',
         'sans-serif':['Helvetica'],

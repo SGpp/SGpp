@@ -2,8 +2,6 @@
 // This file is part of the SG++ project. For conditions of distribution and
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
-// Created on: 18.12.2017
-// Author: Eric Koepke
 
 #ifndef CSVTOOLS_HPP
 #define CSVTOOLS_HPP
@@ -106,6 +104,11 @@ class CSVTools {
                                   bool skipFirstLine = false,
                                   bool hasTargets = true,
                                   std::vector<double> selectedTargets = std::vector<double>());
+
+  /**
+   * Method to write the content of a matrix to a CSV File
+   */
+  static void writeMatrixToCSVFile(const std::string& path, sgpp::base::DataMatrix matrix);
 
  private:
   /**

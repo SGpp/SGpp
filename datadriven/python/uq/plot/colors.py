@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 from matplotlib.font_manager import FontProperties
 import os
 import subprocess
@@ -32,8 +37,7 @@ def load_custom_pgf_preamble(dtype="standard", macros="thesis"):
 
     pgf_preamble = {"font.family": pysgpp_uq_font["family"],  # use serif/main font for text elements
                     "text.usetex": True,  # use inline math for ticks
-                    "text.latex.preamble": [r"\usepackage[utf8x]{inputenc}",
-                                            r'\usepackage{amsmath}',
+                    "text.latex.preamble": [r'\usepackage{amsmath}',
                                             r"\usepackage{amssymb}",
                                             r"\usepackage{tikz}",
                                             r"\usepackage{pgfplots}",

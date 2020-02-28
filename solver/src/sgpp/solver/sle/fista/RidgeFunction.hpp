@@ -24,6 +24,8 @@ class RidgeFunction : public RegularizationFunction {
    */
   explicit RidgeFunction(double lambda) : lambda(lambda) {}
 
+  ~RidgeFunction() override {}
+
   // (lambda |x|_2 )
   double eval(sgpp::base::DataVector weights) override {
     return lambda * weights.dotProduct(weights);

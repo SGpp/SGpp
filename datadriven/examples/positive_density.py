@@ -1,56 +1,62 @@
-'''
-Created on Sep 4, 2017
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-@author: franzefn
-'''
-from argparse import ArgumentParser
+try:
+    from argparse import ArgumentParser
 
-import matplotlib.pylab as plt
-import numpy as np
+    import matplotlib.pylab as plt
+    import numpy as np
 
-import cvxopt
-import quadprog
-from cvxopt.base import matrix
-from pysgpp import (GridType_Bspline, GridType_BsplineBoundary,
-                    GridType_BsplineClenshawCurtis, GridType_Linear,
-                    GridType_LinearBoundary, GridType_LinearClenshawCurtis,
-                    GridType_LinearClenshawCurtisBoundary,
-                    GridType_LinearL0Boundary, GridType_ModBspline,
-                    GridType_ModBsplineClenshawCurtis,
-                    GridType_ModLinearClenshawCurtis,
-                    GridType_ModPolyClenshawCurtis, GridType_Poly,
-                    GridType_PolyBoundary, GridType_PolyClenshawCurtis,
-                    GridType_PolyClenshawCurtisBoundary)
-from pysgpp.extensions.datadriven.uq.dists import J, Normal
-from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (createGrid,
-                                                                    dehierarchize)
-from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, plotSG2d
-from pysgpp.pysgpp_swig import (DataMatrix, DataVector, DensitySystemMatrix,
-                                Grid,
-                                MakePositiveCandidateSearchAlgorithm_Intersections,
-                                MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d,
-                                RegularGridConfiguration,
-                                createOperationLaplace,
-                                createOperationLaplaceExplicit,
-                                createOperationLTwoDotProduct,
-                                createOperationMakePositive,
-                                createOperationMultipleEval,
-                                createOperationMultipleEvalNaive)
+    import cvxopt
+    import quadprog
+    from cvxopt.base import matrix
+    from pysgpp import (GridType_Bspline, GridType_BsplineBoundary,
+                        GridType_BsplineClenshawCurtis, GridType_Linear,
+                        GridType_LinearBoundary, GridType_LinearClenshawCurtis,
+                        GridType_LinearClenshawCurtisBoundary,
+                        GridType_LinearL0Boundary, GridType_ModBspline,
+                        GridType_ModBsplineClenshawCurtis,
+                        GridType_ModLinearClenshawCurtis,
+                        GridType_ModPolyClenshawCurtis, GridType_Poly,
+                        GridType_PolyBoundary, GridType_PolyClenshawCurtis,
+                        GridType_PolyClenshawCurtisBoundary)
+    from pysgpp.extensions.datadriven.uq.dists import J, Normal
+    from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
+    from pysgpp.extensions.datadriven.uq.operations.sparse_grid import (createGrid,
+                                                                        dehierarchize)
+    from pysgpp.extensions.datadriven.uq.plot.colors import insert_legend
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotDensity1d, plotSG1d
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d, plotSG2d
+    from pysgpp.pysgpp_swig import (DataMatrix, DataVector, DensitySystemMatrix,
+                                    Grid,
+                                    MakePositiveCandidateSearchAlgorithm_Intersections,
+                                    MakePositiveInterpolationAlgorithm_InterpolateBoundaries1d,
+                                    RegularGridConfiguration,
+                                    createOperationLaplace,
+                                    createOperationLaplaceExplicit,
+                                    createOperationLTwoDotProduct,
+                                    createOperationMakePositive,
+                                    createOperationMultipleEval,
+                                    createOperationMultipleEvalNaive)
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 multipleEvalNaiveGridTypes = [GridType_Bspline,
-                              GridType_BsplineClenshawCurtis,
-                              GridType_BsplineBoundary,
-                              GridType_ModBsplineClenshawCurtis,
-                              GridType_ModBspline,
-                              GridType_LinearClenshawCurtis,
-                              GridType_LinearClenshawCurtisBoundary,
-                              GridType_ModLinearClenshawCurtis,
-                              GridType_PolyClenshawCurtis,
-                              GridType_PolyClenshawCurtisBoundary,
-                              GridType_ModPolyClenshawCurtis]
+                            GridType_BsplineClenshawCurtis,
+                            GridType_BsplineBoundary,
+                            GridType_ModBsplineClenshawCurtis,
+                            GridType_ModBspline,
+                            GridType_LinearClenshawCurtis,
+                            GridType_LinearClenshawCurtisBoundary,
+                            GridType_ModLinearClenshawCurtis,
+                            GridType_PolyClenshawCurtis,
+                            GridType_PolyClenshawCurtisBoundary,
+                            GridType_ModPolyClenshawCurtis]
 
 
 def getSamples():
@@ -1258,7 +1264,6 @@ if __name__ == "__main__":
                                                      "sgde_makePositive_candidateSearchAlgorithm": "intersections",
                                                      "sgde_makePositive_interpolationAlgorithm": "interpolateBoundaries1d",
                                                      "sgde_makePositive_generateConsistentGrid": False,
-                                                     "sgde_makePositive_verbose": False,
                                                      "sgde_unitIntegrand": False}, bounds=U.getBounds())
     nodalValues = dehierarchize(dist_sgde.grid, dist_sgde.alpha)
     print("is positive? %s (min=%f)" % ("Yes" if np.all(nodalValues >= 0) else "Nope",

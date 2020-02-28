@@ -1,4 +1,9 @@
-from pysgpp import HashGridPoint, IndexVector
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+from pysgpp import HashGridPoint, SizeVector
 
 from pysgpp.extensions.datadriven.uq.operations import (insertPoint,
                                insertHierarchicalAncestors,
@@ -16,7 +21,7 @@ class LocalRefinementStrategy(object):
 class AddNode(LocalRefinementStrategy):
 
     def refine(self, grid, gp):
-        ixs = IndexVector()
+        ixs = SizeVector()
         gs = grid.getStorage()
 
         gs.insert(gp, ixs)

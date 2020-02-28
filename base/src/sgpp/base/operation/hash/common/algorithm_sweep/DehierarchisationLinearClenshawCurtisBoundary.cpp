@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DehierarchisationLinearClenshawCurtisBoundary.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationLinearClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>

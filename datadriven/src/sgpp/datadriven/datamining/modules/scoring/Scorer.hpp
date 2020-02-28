@@ -1,14 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- *
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Scorer.hpp
- *
- *  Created on: Feb 8, 2016
- *      Author: perun, Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -44,12 +37,7 @@ class Scorer {
    */
   Scorer(Scorer&& rhs) = default;
 
-  /**
-   * Copy assign operator
-   * @param rhs const reference to the scorer object to copy from.
-   * @return rerefernce to this with updated values.
-   */
-  Scorer& operator=(const Scorer& rhs) = default;
+  Scorer& operator=(const Scorer& rhs) = delete;
 
   /**
    * Move assign operator
@@ -68,9 +56,10 @@ class Scorer {
    *
    * @param model model to be fitted based on the train dataset.
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @param lowerIsBetter sets up the metric so that a lower score indicates a better result
    * @return accuracy of the fit.
    */
-  double test(ModelFittingBase& model, Dataset& testDataset);
+  double test(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter = false);
 
  private:
   /**
@@ -79,9 +68,10 @@ class Scorer {
    *
    * @param model model to be fitted based on the train dataset.
    * @param testDataset dataset used quantify accuracy using #sgpp::datadriven::Metric.
+   * @param lowerIsBetter sets up the metric so that a lower score indicates a better result
    * @return accuracy of the fit.
    */
-  double testDistributed(ModelFittingBase& model, Dataset& testDataset);
+  double testDistributed(ModelFittingBase& model, Dataset& testDataset, bool lowerIsBetter = false);
 
   /**
    * #sgpp::datadriven::Metric to be used to quantify accuracy of the fit.

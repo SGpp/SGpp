@@ -13,7 +13,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 
-#include <sgpp/globaldef.hpp>
 #include <map>
 #include <cstdlib>
 #include <fstream>
@@ -29,9 +28,9 @@
 namespace sgpp {
 namespace datadriven {
 
-void OperationInverseRosenblattTransformationLinear::doTransformation(base::DataVector* alpha,
-                                                                      base::DataMatrix* pointscdf,
-                                                                      base::DataMatrix* points) {
+void OperationInverseRosenblattTransformationLinear::doTransformation(
+    base::DataVector* alpha, base::DataMatrix* pointscdf,
+    base::DataMatrix* points) {
   size_t dim_start = 0;
   size_t num_dims = this->grid->getDimension();
   size_t num_samples = pointscdf->getNrows();
@@ -65,7 +64,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
     for (size_t i = 0; i < pointscdf->getNrows(); i++) {
       // transform the point in the current dimension
       size_t idim = startindices[i];
-      double y = doTransformation1D(grids1d[idim], alphas1d[idim], pointscdf->get(i, idim));
+      double y = doTransformation1D(grids1d[idim], alphas1d[idim],
+                                    pointscdf->get(i, idim));
       // and write it to the output
       points->set(i, idim, y);
 
@@ -87,13 +87,12 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   }
 }
 
-void OperationInverseRosenblattTransformationLinear::doTransformation(base::DataVector* alpha,
-                                                                      base::DataMatrix* pointscdf,
-                                                                      base::DataMatrix* points,
-                                                                      size_t dim_start) {
+void OperationInverseRosenblattTransformationLinear::doTransformation(
+    base::DataVector* alpha, base::DataMatrix* pointscdf,
+    base::DataMatrix* points, size_t dim_start) {
   // 1. marginalize to dim_start
-  base::Grid* g1d = NULL;
-  base::DataVector* a1d = NULL;
+  base::Grid* g1d = nullptr;
+  base::DataVector* a1d = nullptr;
   std::unique_ptr<OperationDensityMargTo1D> marg1d(
       op_factory::createOperationDensityMargTo1D(*this->grid));
   marg1d->margToDimX(alpha, g1d, a1d, dim_start);
@@ -111,7 +110,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
 
       pointscdf->getRow(i, cdfs1d);
       points->getRow(i, coords1d);
-      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d, &coords1d);
+      doTransformation_start_dimX(this->grid, alpha, dim_start, &cdfs1d,
+                                  &coords1d);
       points->setRow(i, coords1d);
     }
   }
@@ -120,33 +120,39 @@ void OperationInverseRosenblattTransformationLinear::doTransformation(base::Data
   delete a1d;
 }
 
-void OperationInverseRosenblattTransformationLinear::doTransformation_start_dimX(
-    base::Grid* g_in, base::DataVector* a_in, size_t dim_start, base::DataVector* cdfs1d,
-    base::DataVector* coords1d) {
+void OperationInverseRosenblattTransformationLinear::
+    doTransformation_start_dimX(base::Grid* g_in, base::DataVector* a_in,
+                                size_t dim_start, base::DataVector* cdfs1d,
+                                base::DataVector* coords1d) {
   size_t dims = coords1d->getSize();  // total dimensions
 
   if ((dims > 1) && (dim_start <= dims - 1)) {
     size_t curr_dim = dim_start;
-    doTransformation_in_next_dim(g_in, a_in, dim_start, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_in, a_in, dim_start, cdfs1d, coords1d,
+                                 curr_dim);
   } else if (dims == 1) {
-    throw base::operation_exception("Error: # of dimensions = 1. No operation needed!");
+    throw base::operation_exception(
+        "Error: # of dimensions = 1. No operation needed!");
   } else {
-    throw base::operation_exception("Error: dimension out of range. Operation aborted!");
+    throw base::operation_exception(
+        "Error: dimension out of range. Operation aborted!");
   }
 
   return;
 }
 
-void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_dim(
-    base::Grid* g_in, base::DataVector* a_in, size_t op_dim, base::DataVector* cdfs1d,
-    base::DataVector* coords1d, size_t& curr_dim) {
+void OperationInverseRosenblattTransformationLinear::
+    doTransformation_in_next_dim(base::Grid* g_in, base::DataVector* a_in,
+                                 size_t op_dim, base::DataVector* cdfs1d,
+                                 base::DataVector* coords1d, size_t& curr_dim) {
   size_t dims = cdfs1d->getSize();  // total dimensions
 
   /* Step 1: do conditional in current dim */
-  base::Grid* g_out = NULL;
+  base::Grid* g_out = nullptr;
   base::DataVector* a_out = new base::DataVector(1);
-  op_factory::createOperationDensityConditional(*g_in)->doConditional(
-      *a_in, g_out, *a_out, static_cast<unsigned int>(op_dim), coords1d->get(curr_dim));
+  op_factory::createOperationDensityConditional(*g_in)
+      ->doConditional(*a_in, g_out, *a_out, static_cast<unsigned int>(op_dim),
+                      coords1d->get(curr_dim));
 
   // move on to next dim
   curr_dim = (curr_dim + 1) % dims;
@@ -157,9 +163,10 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
 
   if (g_out->getDimension() > 1) {
     // Marginalize to next dimension
-    base::Grid* g1d = NULL;
-    base::DataVector* a1d = NULL;
-    op_factory::createOperationDensityMargTo1D(*g_out)->margToDimX(a_out, g1d, a1d, op_dim);
+    base::Grid* g1d = nullptr;
+    base::DataVector* a1d = nullptr;
+    op_factory::createOperationDensityMargTo1D(*g_out)
+        ->margToDimX(a_out, g1d, a1d, op_dim);
 
     // Draw a sample in next dimension
     x = doTransformation1D(g1d, a1d, cdfs1d->get(curr_dim));
@@ -176,7 +183,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
 
   /* Step 4: sample in next dimension */
   if (g_out->getDimension() > 1)
-    doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d, curr_dim);
+    doTransformation_in_next_dim(g_out, a_out, op_dim, cdfs1d, coords1d,
+                                 curr_dim);
 
   delete g_out;
   delete a_out;
@@ -184,9 +192,8 @@ void OperationInverseRosenblattTransformationLinear::doTransformation_in_next_di
   return;
 }
 
-double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::Grid* grid1d,
-                                                                          base::DataVector* alpha1d,
-                                                                          double coord1d) {
+double OperationInverseRosenblattTransformationLinear::doTransformation1D(
+    base::Grid* grid1d, base::DataVector* alpha1d, double coord1d) {
   /***************** STEP 1. Compute CDF  ********************/
 
   // compute PDF, sort by coordinates
@@ -194,12 +201,14 @@ double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::
   std::multimap<double, double>::iterator it1, it2, it3;
 
   base::GridStorage* gs = &grid1d->getStorage();
-  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*(grid1d)));
+  std::unique_ptr<base::OperationEval> opEval(
+      op_factory::createOperationEval(*(grid1d)));
   base::DataVector coord(1);
 
   for (unsigned int i = 0; i < gs->getSize(); i++) {
     coord[0] = gs->getPoint(i).getStandardCoordinate(0);
-    coord_pdf.insert(std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
+    coord_pdf.insert(
+        std::pair<double, double>(coord[0], opEval->eval(*alpha1d, coord)));
     coord_cdf.insert(std::pair<double, double>(coord[0], i));
   }
 
@@ -244,8 +253,8 @@ double OperationInverseRosenblattTransformationLinear::doTransformation1D(base::
     // WARNING: THIS IS A HACK THAT OVERCOMES THE PROBLEM
     // OF NON POSITIVE DENSITY
     if (area < 0) {
-      std::cerr << "warning: negative area encountered (inverse) " << (*it1).second << ", "
-                << (*it2).second << std::endl;
+      std::cerr << "warning: negative area encountered (inverse) "
+                << (*it1).second << ", " << (*it2).second << std::endl;
       area = 0;
     }
 

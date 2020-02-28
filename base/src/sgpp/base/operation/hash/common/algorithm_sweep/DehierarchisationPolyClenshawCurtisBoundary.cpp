@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "DehierarchisationPolyClenshawCurtisBoundary.hpp"
+#include <sgpp/base/operation/hash/common/algorithm_sweep/DehierarchisationPolyClenshawCurtisBoundary.hpp>
 
 #include <sgpp/base/tools/ClenshawCurtisTable.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
@@ -25,7 +25,6 @@ DehierarchisationPolyClenshawCurtisBoundary::~DehierarchisationPolyClenshawCurti
 void DehierarchisationPolyClenshawCurtisBoundary::operator()(DataVector& source, DataVector& result,
                                                      grid_iterator& index, size_t dim) {
   DataVector coeffs(index.getGridDepth(dim) + 2);
-  coeffs.setAll(0.0);
 
   // init coefficients at the boundary
   size_t seq;
@@ -85,9 +84,9 @@ void DehierarchisationPolyClenshawCurtisBoundary::rec(DataVector& source, DataVe
     index.up(dim);
 
     if (cur_lev == 0) {
-      coeffs[cur_ind] = 0.0f;
+      coeffs[cur_ind] = 0.0;
     } else {
-      coeffs[cur_lev + 1] = 0.0f;
+      coeffs[cur_lev + 1] = 0.0;
     }
   }
 }

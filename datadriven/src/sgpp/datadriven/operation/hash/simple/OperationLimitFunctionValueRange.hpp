@@ -7,11 +7,10 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
-
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
 
 #include <vector>
 #include <limits>
@@ -26,7 +25,7 @@ class OperationLimitFunctionValueRange {
           MakePositiveCandidateSearchAlgorithm::Intersections,
       datadriven::MakePositiveInterpolationAlgorithm interpolationAlgorithm =
           MakePositiveInterpolationAlgorithm::SetToZero,
-      bool verbose = false, sgpp::optimization::ScalarFunction* f = nullptr);
+      sgpp::base::ScalarFunction* f = nullptr);
 
   virtual ~OperationLimitFunctionValueRange();
 
@@ -70,8 +69,6 @@ class OperationLimitFunctionValueRange {
   void addConst(base::Grid& grid, base::DataVector& alpha, double c, double y);
 
   std::unique_ptr<datadriven::OperationMakePositive> opPositive;
-
-  bool verbose;
 };
 
 } /* namespace datadriven */

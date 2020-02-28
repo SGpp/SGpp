@@ -6,29 +6,25 @@
 #ifndef CHECK_EQUAL_FUNCTION_HPP
 #define CHECK_EQUAL_FUNCTION_HPP
 
-#include <sgpp/optimization/function/scalar/ScalarFunction.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionGradient.hpp>
-#include <sgpp/optimization/function/scalar/ScalarFunctionHessian.hpp>
-#include <sgpp/optimization/function/vector/VectorFunction.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionGradient.hpp>
-#include <sgpp/optimization/function/vector/VectorFunctionHessian.hpp>
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionGradient.hpp>
+#include <sgpp/base/function/scalar/ScalarFunctionHessian.hpp>
+#include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/base/function/vector/VectorFunctionGradient.hpp>
+#include <sgpp/base/function/vector/VectorFunctionHessian.hpp>
 
-void checkEqualFunction(sgpp::optimization::ScalarFunction& f,
-                        sgpp::optimization::ScalarFunction& g);
+void checkEqualFunction(sgpp::base::ScalarFunction& f, sgpp::base::ScalarFunction& g);
 
-void checkEqualFunction(sgpp::optimization::ScalarFunctionGradient& f,
-                        sgpp::optimization::ScalarFunctionGradient& g);
+void checkEqualFunction(sgpp::base::ScalarFunctionGradient& f,
+                        sgpp::base::ScalarFunctionGradient& g);
 
-void checkEqualFunction(sgpp::optimization::ScalarFunctionHessian& f,
-                        sgpp::optimization::ScalarFunctionHessian& g);
+void checkEqualFunction(sgpp::base::ScalarFunctionHessian& f, sgpp::base::ScalarFunctionHessian& g);
 
-void checkEqualFunction(sgpp::optimization::VectorFunction& f,
-                        sgpp::optimization::VectorFunction& g);
+void checkEqualFunction(sgpp::base::VectorFunction& f, sgpp::base::VectorFunction& g);
 
-void checkEqualFunction(sgpp::optimization::VectorFunctionGradient& f,
-                        sgpp::optimization::VectorFunctionGradient& g);
+void checkEqualFunction(sgpp::base::VectorFunctionGradient& f,
+                        sgpp::base::VectorFunctionGradient& g);
 
-void checkEqualFunction(sgpp::optimization::VectorFunctionHessian& f,
-                        sgpp::optimization::VectorFunctionHessian& g);
+void checkEqualFunction(sgpp::base::VectorFunctionHessian& f, sgpp::base::VectorFunctionHessian& g);
 
 #endif /* CHECK_EQUAL_FUNCTION_HPP */

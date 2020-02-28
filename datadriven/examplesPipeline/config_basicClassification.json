@@ -14,30 +14,49 @@
     "fitter": {
         "type": "classification",
         "gridConfig": {
-            "gridType": "linear",
+            "gridType": "modlinear",
             "level": 5
         },
         "adaptivityConfig": {
-            "numRefinements": 10,
-            "threshold": 0.001,
-            "noPoints": 10,
-            "refinementIndicator": "dataBased",
+            "numRefinements": 100,
+            "numRefinementPoints": 10,
+            "numCoarseningPoints": 10,
+            "refinementIndicator": "classification",
             "penalizeLevels": true,
             "errorBasedRefinement": true,
             "errorMinInterval": 1,
             "errorBufferSize": 2,
-            "errorConvergenceThreshold": 0.001
+            "errorConvergenceThreshold": 0.001,
+            "thresholdType": "relative",
+            "coarseningThreshold": 0.3,
+            "coarsenInitialPoints": false
         },
         "regularizationConfig": {
-            "lambda": 10e-2
+            "lambda": 1e-1
         },
         "densityEstimationConfig": {
             "densityEstimationType": "decomposition",
-            "matrixDecompositionType": "chol"
+            "matrixDecompositionType": "orthoadapt"
         },
         "learner": {
             "usePrior": true,
             "beta": 1.0
+        }
+    },
+    "visualization": {
+        "generalConfig": {
+            "algorithm": ["tsne", "heatmaps"],
+            "targetDirectory": "./output",
+            "targetFileType": "json",
+            "numBatches": 1
+        },
+        "parameters": {
+            "perplexity": 30,
+            "theta": 0.5,
+            "seed": 150,
+            "maxNumberIterations": 1000,
+            "targetDimension": 2,
+            "numberCores": 1
         }
     }
 }

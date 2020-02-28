@@ -1,14 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * OperationMultipleEvalModLinearDistributed.hpp
- *
- * Created on: Mar 23, 2019
- *     Author: Jan Schopohl
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -48,7 +41,7 @@ class OperationMultipleEvalModLinearDistributed : public OperationMultipleEvalDi
    * @param alpha vector, to which @f$B@f$ is applied. Typically the coefficient vector
    * @param result the result vector of the matrix vector multiplication
    */
-  void multDistributed(sgpp::base::DataVector& alpha, DataVectorDistributed& result);
+  void multDistributed(sgpp::base::DataVector& alpha, DataVectorDistributed& result) override;
 
   /**
    * Distributed version of multTransposed.
@@ -57,7 +50,8 @@ class OperationMultipleEvalModLinearDistributed : public OperationMultipleEvalDi
    * @param source vector, to which @f$B^T@f$ is applied. Typically the coefficient vector
    * @param result the result vector of the matrix vector multiplication
    */
-  void multTransposeDistributed(sgpp::base::DataVector& source, DataVectorDistributed& result);
+  void multTransposeDistributed(
+      sgpp::base::DataVector& source, DataVectorDistributed& result) override;
 
   double getDuration() override;
 

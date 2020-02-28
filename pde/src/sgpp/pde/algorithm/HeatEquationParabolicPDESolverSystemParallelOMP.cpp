@@ -31,8 +31,8 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
   this->TimestepSize = TimestepSize;
   this->BoundGrid = &SparseGrid;
   this->alpha_complete = &alpha;
-  this->InnerGrid = NULL;
-  this->alpha_inner = NULL;
+  this->InnerGrid = nullptr;
+  this->alpha_inner = nullptr;
 
   this->BoundaryUpdate = new sgpp::base::DirichletUpdateVector(SparseGrid.getStorage());
   this->GridConverter = new sgpp::base::DirichletGridConverter();
@@ -49,7 +49,7 @@ HeatEquationParabolicPDESolverSystemParallelOMP::HeatEquationParabolicPDESolverS
   this->OpMassInner = sgpp::op_factory::createOperationLTwoDotProduct(*this->InnerGrid);
 
   // right hand side if System
-  this->rhs = NULL;
+  this->rhs = nullptr;
 }
 
 HeatEquationParabolicPDESolverSystemParallelOMP::
@@ -62,15 +62,15 @@ HeatEquationParabolicPDESolverSystemParallelOMP::
   delete this->BoundaryUpdate;
   delete this->GridConverter;
 
-  if (this->InnerGrid != NULL) {
+  if (this->InnerGrid != nullptr) {
     delete this->InnerGrid;
   }
 
-  if (this->alpha_inner != NULL) {
+  if (this->alpha_inner != nullptr) {
     delete this->alpha_inner;
   }
 
-  if (this->rhs != NULL) {
+  if (this->rhs != nullptr) {
     delete this->rhs;
   }
 }
@@ -91,7 +91,6 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(
   result.setAll(0.0);
 
   sgpp::base::DataVector temp(alpha.getSize());
-  temp.setAll(0.0);
 
   std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
@@ -146,7 +145,6 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(
   result.setAll(0.0);
 
   sgpp::base::DataVector temp(alpha.getSize());
-  temp.setAll(0.0);
 
   std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
@@ -367,7 +365,7 @@ sgpp::base::DataVector* HeatEquationParabolicPDESolverSystemParallelOMP::generat
 
   rhs_complete.sub(result_complete);
 
-  if (this->rhs != NULL) {
+  if (this->rhs != nullptr) {
     delete this->rhs;
   }
 

@@ -6,7 +6,7 @@
 /**
  * Example test function.
  */
-public class ExampleFunction extends sgpp.OptScalarFunction {
+public class ExampleFunction extends sgpp.ScalarFunction {
   /**
    * Constructor.
    */
@@ -33,6 +33,6 @@ public class ExampleFunction extends sgpp.OptScalarFunction {
   /**
    * Dummy method needed for SWIG, which provides the actual method body.
    */
-  public void clone(sgpp.SWIGTYPE_p_std__unique_ptrT_sgpp__optimization__ScalarFunction_t clone) {
+  public void clone(sgpp.SWIGTYPE_p_std__unique_ptrT_sgpp__base__ScalarFunction_t clone) {
   }
 }

@@ -86,7 +86,7 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
     return new pde::OperationLaplaceModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
     return new pde::OperationLaplacePrewavelet(&grid.getStorage(),
-                                               &((base::PrewaveletGrid*)&grid)->getShadowStorage());
+        &(dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage()));
   } else if (grid.getType() == base::GridType::LinearStretched) {
     return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {

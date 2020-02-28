@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 """
 plot package
 ==========================================
@@ -45,17 +50,17 @@ from pysgpp.extensions.datadriven.uq.plot.plot3d import (plotFunction3d,
                     plotError3d,
                     insert_labels_3d)
 
-from pysgpp.extensions.datadriven.uq.parameters.plot.plotGrid import plotGrid
+from pysgpp.extensions.datadriven.uq.plot.plotGrid import plotGrid
 
-from pysgpp.extensions.datadriven.uq.parameters.plot.scatterplot import scatterplot_matrix
+from pysgpp.extensions.datadriven.uq.plot.scatterplot import scatterplot_matrix
 
-from pysgpp.extensions.datadriven.uq.parameters.plot.colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
+from pysgpp.extensions.datadriven.uq.plot.colors import intToRGB, rgbTpInt, load_color, load_marker, load_font, \
     load_font_properties, insert_legend
 
 try:
     import matplotlib as mpl
     import matplotlib.pyplot as plt
-    from pysgpp.extensions.datadriven.uq.parameters.plot.colors import initialize_plotting_style
+    from pysgpp.extensions.datadriven.uq.plot.colors import initialize_plotting_style
 
     initialize_plotting_style()
 

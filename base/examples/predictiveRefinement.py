@@ -1,10 +1,11 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
+
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-#!/usr/bin/python
 
 
 
@@ -34,8 +35,6 @@ import sys
 import math
 
 from pysgpp import *
-import matplotlib.pyplot as plotter
-from mpl_toolkits.mplot3d import Axes3D
 
 
 
@@ -104,8 +103,7 @@ for refnum in range(20):
 
     
     ## Step 1: calculate the surplus vector alpha. In data
-    ## mining with do it by solving a regression problem as shown in
-    ## example \ref example_classificationRefinementExample_cpp.
+    ## mining with do it by solving a regression problem.
     ## Here, the function can be evaluated at any point. Hence. we
     ## simply evaluate it at the coordinates of the grid points to
     ## obtain the nodal values. Then we use hierarchization to

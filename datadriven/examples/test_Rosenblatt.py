@@ -1,9 +1,20 @@
-import pysgpp
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
+try:
+  import pysgpp
+  import numpy as np
+  import matplotlib.pyplot as plt
+  import math
+  from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
+    
 pi = math.pi
 
 class interpolation_function(object):

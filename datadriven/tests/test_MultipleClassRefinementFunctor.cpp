@@ -135,23 +135,26 @@ BOOST_AUTO_TEST_CASE(testRefine2class) {
 
     std::vector<sgpp::base::Grid*> grids;
     std::vector<sgpp::base::DataVector*> alphas;
+    std::vector<double> priors;
 
     std::shared_ptr<sgpp::base::Grid> grid1(sgpp::base::Grid::createLinearGrid(dim));
     grid1->getGenerator().regular(level);
     grids.push_back(grid1.get());
     alphas.push_back(&alphas1);
+    priors.push_back(1.0);
 
     std::shared_ptr<sgpp::base::Grid> grid2(sgpp::base::Grid::createLinearGrid(dim));
     grid2->getGenerator().regular(level);
     grids.push_back(grid2.get());
     alphas.push_back(&alphas2);
+    priors.push_back(1.0);
 
     size_t sizeGrids = 17;
 
     BOOST_CHECK_EQUAL(grid1->getStorage().getSize(), sizeGrids);
     BOOST_CHECK_EQUAL(grid2->getStorage().getSize(), sizeGrids);
 
-    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids, alphas, 2, 0, 0);
+    sgpp::datadriven::MultipleClassRefinementFunctor mcrf(grids, alphas, priors, 2, 0, 0);
     mcrf.refine();
 
     BOOST_CHECK_GT(grid1->getStorage().getSize(), sizeGrids);

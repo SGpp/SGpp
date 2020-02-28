@@ -1,19 +1,14 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * Metric.hpp
- *
- *  Created on: Feb 8, 2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
-
+#include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
@@ -76,10 +71,26 @@ class Metric {
    *
    * @param predictedValues values calculated by the model for testing data
    * @param trueValues actual values as taken from the dataset.
-   * @return Quantification of the difference. Smaller is better.
+   * @param model reference to the model
+   * @param testDataset dataset with test data
+   * @return Quantification of the difference.
    */
-  virtual double measure(const DataVector &predictedValues,
-                         const DataVector &trueValues) const = 0;
+  virtual double measure(const DataVector &predictedValues, const DataVector &trueValues,
+                         const ModelFittingBase &model, Dataset &testDataset) const = 0;
+
+  /**
+   * Quantify the difference between predicted values and actual values, where lower values indicate
+   * a better result. Does not have an inner state.
+   *
+   * @param predictedValues values calculated by the model for testing data
+   * @param trueValues actual values as taken from the dataset.
+   * @param model reference to the model
+   * @param testDataset dataset with test data
+   * @return Quantification of the difference.
+   */
+  virtual double measureLowerIsBetter(const DataVector &predictedValues,
+                                      const DataVector &trueValues, const ModelFittingBase &model,
+                                      Dataset &testDataset) const = 0;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

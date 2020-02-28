@@ -1,22 +1,16 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * FileBasedDataSourceBuilder.hpp
- *
- *  Created on: 01.06.2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
 #include <memory.h>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 #include <string>
 #include <vector>
 
@@ -34,7 +28,9 @@ class DataSourceBuilder {
   DataSourceBuilder() = default;
 
   /**
-   * Optionally specify a valid path to a file that should be read if files are used.
+   * Optionally specify a valid path to a file that should be read if files are used. If the file
+   * extension does not match a type from DataSourceFileType it has to be manually specified using
+   * DataSourceBuilder::withFileType.
    * @param filePath valid path to a file that should be read by the data source.
    * @return Reference to this object, used for chaining.
    */
@@ -50,7 +46,7 @@ class DataSourceBuilder {
 
   /**
    * Optionally Specify the file type if files are used. If data source does not use any files,
-   * this is set to none by default.
+   * this is set to none by default. See DataSourceFileType for supported file types.
    * @param fileType value of
    * @return Reference to this object, used for chaining.
    */
@@ -101,8 +97,8 @@ class DataSourceBuilder {
    * @param crossValidationConfig configuration for the cross validation
    * @return Fully configured instance of #sgpp::datadriven::DataSourceCrossValidation object.
    */
-  DataSourceCrossValidation* crossValidationFromConfig(const DataSourceConfig& config,
-      const CrossvalidationConfiguration &crossValidationConfig);
+  DataSourceCrossValidation* crossValidationFromConfig(
+      const DataSourceConfig& config, const CrossvalidationConfiguration& crossValidationConfig);
 
  private:
   /**

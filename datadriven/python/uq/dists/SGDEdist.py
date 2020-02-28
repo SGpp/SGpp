@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 from pysgpp.extensions.datadriven.tools import (readAlphaARFF,
                                                 readGrid,
                                                 readDataTrivial)
@@ -120,9 +125,7 @@ class SGDEdist(EstimatedDist):
 #         config["sgde_makePositive_candidateSearchAlgorithm"] = "intersections"
 #         config["sgde_makePositive_interpolationAlgorithm"] = "setToZero"
 #         config["sgde_makePositive_generateConsistentGrid"] = True
-#         config["sgde_makePositive_verbose"] = True
 #         config["sgde_unitIntegrand"] = True
-#         config["sgde_makePositive_verbose"] = True
         if grid is not None:
             # serialize grid and add it to config
             grid_str = grid.serialize()

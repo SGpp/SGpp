@@ -45,7 +45,8 @@ double normal(DataVector& input) {
   double sigma = 0.02;
   size_t numDims = input.getSize();
 
-  double norm = 1. / std::sqrt(std::pow(2 * M_PI, numDims) * std::pow(sigma, numDims));
+  double norm =
+      1. / std::sqrt(std::pow(2 * M_PI, numDims) * std::pow(sigma, numDims));
 
   for (size_t i = 0; i < numDims; i++) {
     double x = (input[i] - mean);
@@ -62,26 +63,30 @@ double sin(DataVector& x) {
   return result;
 }
 
-void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
-                      MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
-                      double (*f)(DataVector&), bool generateConsistentGrid = true,
-                      double tol = -1e-12, bool verbose = false) {
+void testMakePositive(
+    Grid& grid, size_t numDims, size_t level, size_t refnums,
+    MakePositiveCandidateSearchAlgorithm candidateSearchAlgorithm,
+    double (*f)(DataVector&), bool generateConsistentGrid = true,
+    double tol = -1e-12, bool verbose = false) {
   // -------------------------------------------------------------------------------------------
   // interpolate the pdf
   // create a two-dimensional piecewise bilinear grid
   GridStorage& gridStorage = grid.getStorage();
   grid.getGenerator().regular(level);
   if (verbose) {
-    std::cout << "========================================================" << std::endl;
-    std::cout << "dimensionality               : " << gridStorage.getDimension() << std::endl;
+    std::cout << "========================================================"
+              << std::endl;
+    std::cout << "dimensionality               : " << gridStorage.getDimension()
+              << std::endl;
     std::cout << "level                        : " << level << std::endl;
-    std::cout << "number of initial grid points: " << gridStorage.getSize() << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
+    std::cout << "number of initial grid points: " << gridStorage.getSize()
+              << std::endl;
+    std::cout << "--------------------------------------------------------"
+              << std::endl;
   }
 
   // create coefficient vector
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
 
   DataVector x(gridStorage.getDimension());
   // set function values in alpha
@@ -114,40 +119,48 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
         sgpp::op_factory::createOperationHierarchisation(grid));
     opHier->doHierarchisation(alpha);
     if (verbose) {
-      std::cout << "refinement step " << step + 1 << ", new grid size: " << alpha.getSize()
-                << std::endl;
+      std::cout << "refinement step " << step + 1
+                << ", new grid size: " << alpha.getSize() << std::endl;
     }
   }
 
-  size_t numFullGridPoints =
-      static_cast<size_t>(std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
+  size_t numFullGridPoints = static_cast<size_t>(
+      std::pow(std::pow(2, gridStorage.getMaxLevel()) - 1, numDims));
   size_t maxLevel = gridStorage.getMaxLevel();
   if (verbose) {
     if (refnums > 0) {
-      std::cout << "--------------------------------------------------------" << std::endl;
-      std::cout << "level after refinement       : " << gridStorage.getMaxLevel() << std::endl;
-      std::cout << "grid size after refinement   : " << gridStorage.getSize() << std::endl;
-      std::cout << "--------------------------------------------------------" << std::endl;
+      std::cout << "--------------------------------------------------------"
+                << std::endl;
+      std::cout << "level after refinement       : "
+                << gridStorage.getMaxLevel() << std::endl;
+      std::cout << "grid size after refinement   : " << gridStorage.getSize()
+                << std::endl;
+      std::cout << "--------------------------------------------------------"
+                << std::endl;
     }
 
     std::cout << "number of full grid points   : " << numFullGridPoints
-              << " (maxLevel = " << gridStorage.getMaxLevel() << ")" << std::endl;
-    std::cout << "--------------------------------------------------------" << std::endl;
+              << " (maxLevel = " << gridStorage.getMaxLevel() << ")"
+              << std::endl;
+    std::cout << "--------------------------------------------------------"
+              << std::endl;
   }
   // -------------------------------------------------------------------------------------------
   // force the function to be positive
   std::unique_ptr<sgpp::datadriven::OperationMakePositive> opMakePositive(
-      sgpp::op_factory::createOperationMakePositive(candidateSearchAlgorithm,
-                                                    MakePositiveInterpolationAlgorithm::SetToZero,
-                                                    generateConsistentGrid, verbose));
+      sgpp::op_factory::createOperationMakePositive(
+          candidateSearchAlgorithm,
+          MakePositiveInterpolationAlgorithm::SetToZero,
+          generateConsistentGrid));
   std::unique_ptr<Grid> positiveGrid(grid.clone());
   DataVector positiveAlpha(alpha);
   opMakePositive->makePositive(*positiveGrid, positiveAlpha);
 
   if (verbose) {
-    std::cout << "(" << gridStorage.getDimension() << ", " << level << ", " << refnums
-              << ") : #grid points = " << grid.getSize() << " -> " << positiveGrid->getSize()
-              << " < " << numFullGridPoints << std::endl;
+    std::cout << "(" << gridStorage.getDimension() << ", " << level << ", "
+              << refnums << ") : #grid points = " << grid.getSize() << " -> "
+              << positiveGrid->getSize() << " < " << numFullGridPoints
+              << std::endl;
   }
 
   // --------------------------------------------------------------------------------------------
@@ -155,7 +168,8 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
   if (verbose) {
     std::cout << "check full grid for success: ";
   }
-  std::unique_ptr<sgpp::base::Grid> fullGrid(sgpp::base::Grid::createLinearGrid(numDims));
+  std::unique_ptr<sgpp::base::Grid> fullGrid(
+      sgpp::base::Grid::createLinearGrid(numDims));
   fullGrid->getGenerator().full(maxLevel);
 
   if (verbose) {
@@ -171,7 +185,8 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::DEFAULT);
   std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
-      sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates, evalConfig));
+      sgpp::op_factory::createOperationMultipleEval(*positiveGrid, coordinates,
+                                                    evalConfig));
   opEval->mult(positiveAlpha, nodalValues);
 
   if (verbose) {
@@ -187,18 +202,21 @@ void testMakePositive(Grid& grid, size_t numDims, size_t level, size_t refnums,
 
   // --------------------------------------------------------------------------------------------
   // make sure that the sparse grid is really minimal
-  std::vector<size_t> addedGridPointIndices = opMakePositive->getAddedGridPointsForPositivity();
-  std::vector<std::pair<std::shared_ptr<HashGridPoint>, double>> addedGridPoints;
+  std::vector<size_t> addedGridPointIndices =
+      opMakePositive->getAddedGridPointsForPositivity();
+  std::vector<std::pair<std::shared_ptr<HashGridPoint>, double>>
+      addedGridPoints;
 
   std::unique_ptr<Grid> coarsedGrid(positiveGrid->clone());
   GridStorage& coarsedGridStorage = coarsedGrid->getStorage();
   for (auto& ix : addedGridPointIndices) {
-    std::shared_ptr<HashGridPoint> gp(new HashGridPoint(coarsedGridStorage.getPoint(ix)));
+    std::shared_ptr<HashGridPoint> gp(
+        new HashGridPoint(coarsedGridStorage.getPoint(ix)));
     addedGridPoints.push_back(std::make_pair(gp, positiveAlpha[ix]));
   }
 
-  // remove each of the added grid points and check if the function value at that point is
-  // negative
+  // remove each of the added grid points and check if the function value at
+  // that point is negative
   std::list<size_t> toBeRemoved;
   DataVector coarsedAlpha(positiveAlpha);
   for (auto& values : addedGridPoints) {
@@ -247,23 +265,28 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveConsistent) {
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        // check whether both candidate search algorithms lead to the same consistent grid
+      for (size_t irefIteration = 0; irefIteration <= refIterations;
+           irefIteration++) {
+        // check whether both candidate search algorithms lead to the same
+        // consistent grid
         gridIntersections.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, true,
-                         tol, verbose);
+        testMakePositive(*gridIntersections, idim, ilevel,
+                         irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections,
+                         &normal, true, tol, verbose);
         gridIntersectionsJoin.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true,
-                         tol, verbose);
+        testMakePositive(
+            *gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
+            MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal,
+            true, tol, verbose);
         if (irefIteration == 0) {
           gridFull.reset(Grid::createLinearGrid(idim));
           testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
-                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, true,
-                           tol, verbose);
+                           MakePositiveCandidateSearchAlgorithm::FullGrid,
+                           &normal, true, tol, verbose);
           BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
-          BOOST_CHECK_EQUAL(gridIntersectionsJoin->getSize(), gridFull->getSize());
+          BOOST_CHECK_EQUAL(gridIntersectionsJoin->getSize(),
+                            gridFull->getSize());
         }
       }
     }
@@ -285,21 +308,25 @@ BOOST_AUTO_TEST_CASE(testOperationMakePositiveInconsistent) {
 
   for (size_t idim = 2; idim <= numDims; idim++) {
     for (size_t ilevel = 2; ilevel <= level; ilevel++) {
-      for (size_t irefIteration = 0; irefIteration <= refIterations; irefIteration++) {
-        // check whether the candidate search algorithms lead to the same inconsistent grid
+      for (size_t irefIteration = 0; irefIteration <= refIterations;
+           irefIteration++) {
+        // check whether the candidate search algorithms lead to the same
+        // inconsistent grid
         gridIntersections.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*gridIntersections, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::Intersections, &normal, false,
-                         tol, verbose);
+        testMakePositive(*gridIntersections, idim, ilevel,
+                         irefIteration * refnums,
+                         MakePositiveCandidateSearchAlgorithm::Intersections,
+                         &normal, false, tol, verbose);
         gridIntersectionsJoin.reset(Grid::createLinearGrid(idim));
-        testMakePositive(*gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
-                         MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal, true,
-                         tol, verbose);
+        testMakePositive(
+            *gridIntersectionsJoin, idim, ilevel, irefIteration * refnums,
+            MakePositiveCandidateSearchAlgorithm::IntersectionsJoin, &normal,
+            true, tol, verbose);
         if (irefIteration == 0) {
           gridFull.reset(Grid::createLinearGrid(idim));
           testMakePositive(*gridFull, idim, ilevel, irefIteration * refnums,
-                           MakePositiveCandidateSearchAlgorithm::FullGrid, &normal, false,
-                           tol, verbose);
+                           MakePositiveCandidateSearchAlgorithm::FullGrid,
+                           &normal, false, tol, verbose);
           BOOST_CHECK_EQUAL(gridIntersections->getSize(), gridFull->getSize());
         }
       }

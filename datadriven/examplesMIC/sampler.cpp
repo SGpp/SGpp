@@ -29,10 +29,10 @@ int main(int argc, char** argv) {
 
   // setup adaptivity
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   // setup solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -49,9 +49,8 @@ int main(int argc, char** argv) {
   double lambda = 0.000001;
 
   bool verbose = true;
-  sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine,
-                                        SLESolverConfigFinal, adaptConfig,
-                                        lambda, verbose);
+  sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
+                                        adaptConfig, lambda, verbose);
 
   // Configuration for intrisics-based streaming implementation
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(

@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DenseIChol_test.cpp
- *
- *  Created on: Jun 18, 2017
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/unit_test.hpp>
@@ -40,7 +34,7 @@ BOOST_AUTO_TEST_CASE(decomp_identity) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], B[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], B[i], 1e-4);
   }
 }
 
@@ -63,7 +57,7 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
   // clang-format on
 
   auto size = 5u;
-  DataMatrix A{data.data(), size, size};
+  DataMatrix A(data, size);
   auto B = A;
 
   // decomp:
@@ -71,7 +65,7 @@ BOOST_AUTO_TEST_CASE(decomp_diag) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], results[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], results[i], 1e-4);
   }
 }
 
@@ -105,7 +99,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
       0.707106781186547, 0, 1.492405014489273, 0.565333771083307, 3.599045012221992};
   // clang-format on
 
-  DataMatrix A{data.data(), size, size};
+  DataMatrix A(data, size);
   auto B = A;
 
   // decomp:
@@ -113,7 +107,7 @@ BOOST_AUTO_TEST_CASE(decomp_arbitrary) {
 
   // test
   for (auto i = 0u; i < A.getSize(); i++) {
-    BOOST_CHECK_CLOSE(A[i], results[i], 10e-5);
+    BOOST_CHECK_CLOSE(A[i], results[i], 1e-4);
   }
   omp_set_num_threads(numThreads);
 }

@@ -22,8 +22,8 @@ void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::ba
   std::uniform_real_distribution<double> dist(1, 100);
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -53,10 +53,10 @@ int main(int argc, char** argv) {
 
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::base::OCLOperationConfiguration parameters("platformFloat.cfg");
 
@@ -106,7 +106,6 @@ int main(int argc, char** argv) {
   std::cout << "grid set up" << std::endl;
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   std::cout << "preparing operation for refined grid" << std::endl;
   eval->prepare();
@@ -121,7 +120,6 @@ int main(int argc, char** argv) {
   std::cout << "duration: " << eval->getDuration() << std::endl;
 
   //    sgpp::base::DataVector alpha2(gridStorage.getSize());
-  //    alpha2.setAll(0.0);
   //
   //    eval->multTranspose(dataSizeVectorResult, alpha2);
 
@@ -132,7 +130,6 @@ int main(int argc, char** argv) {
           sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 

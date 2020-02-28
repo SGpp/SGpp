@@ -21,14 +21,14 @@
             "errorBasedRefinement": false
         },
         "regularizationConfig": {
-            "lambda": 10e-3
+            "lambda": 1e-2
         },
         "densityEstimationConfig": {
             "densityEstimationType": "decomposition",
             "matrixDecompositionType": "chol"
         },
         "database": {
-            "filepath": "./database.json"
+            "filePath": "./database.json"
         }
     }
 }

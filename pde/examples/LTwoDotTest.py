@@ -1,8 +1,19 @@
-import pysgpp
-from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
-import numpy as np
-import random
-import matplotlib.pyplot as plt
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+try:
+  import pysgpp
+  from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getBasis
+  import numpy as np
+  import random
+  import matplotlib.pyplot as plt
+  
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 def test_base():
     n = 100000

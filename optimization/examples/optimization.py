@@ -1,6 +1,10 @@
 #!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 
-## \page example_optimization_py optimization.py
+## \page example_optimization_py Optimization Example (Python)
 ##
 ## On this page, we look at an example application of the sgpp::optimization module.
 ## Versions of the example are given in all languages
@@ -16,14 +20,16 @@ import pysgpp
 import math
 import sys
 
+
 ## The function \f$f\colon [0, 1]^d \to \mathbb{R}\f$ to be minimized
-## is called <i>objective function</i> and has to derive from pysgpp.OptScalarFunction.
+## is called <i>objective function</i> and has to derive from pysgpp.ScalarFunction.
 ## In the constructor, we give the dimensionality of the domain
 ## (in this case \f$d = 2\f$).
 ## The eval method evaluates the objective function and returns the function
 ## value \f$f(\vec{x})\f$ for a given point \f$\vec{x} \in [0, 1]^d\f$.
-class ExampleFunction(pysgpp.OptScalarFunction):
+class ExampleFunction(pysgpp.ScalarFunction):
     """Example objective function from the title of my Master's thesis."""
+
     def __init__(self):
         super(ExampleFunction, self).__init__(2)
 
@@ -31,16 +37,18 @@ class ExampleFunction(pysgpp.OptScalarFunction):
         """Evaluates the function."""
         return math.sin(8.0 * x[0]) + math.sin(7.0 * x[1])
 
+
 def printLine():
     print("----------------------------------------" + \
           "----------------------------------------")
+
 
 ## We have to disable OpenMP within pysgpp since it interferes with SWIG's director feature.
 pysgpp.omp_set_num_threads(1)
 
 print("sgpp::optimization example program started.\n")
 # increase verbosity of the output
-pysgpp.OptPrinter.getInstance().setVerbosity(2)
+pysgpp.Printer.getInstance().setVerbosity(2)
 
 ## Here, we define some parameters: objective function, dimensionality,
 ## B-spline degree, maximal number of grid points, and adaptivity.
@@ -75,8 +83,8 @@ printLine()
 print("Hierarchizing...\n")
 functionValues = gridGen.getFunctionValues()
 coeffs = pysgpp.DataVector(len(functionValues))
-hierSLE = pysgpp.OptHierarchisationSLE(grid)
-sleSolver = pysgpp.OptAutoSLESolver()
+hierSLE = pysgpp.HierarchisationSLE(grid)
+sleSolver = pysgpp.AutoSLESolver()
 
 # solve linear system
 if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
@@ -89,8 +97,8 @@ if not sleSolver.solve(hierSLE, gridGen.getFunctionValues(), coeffs):
 ## sgpp::optimization::optimizer.
 printLine()
 print("Optimizing smooth interpolant...\n")
-ft = pysgpp.OptInterpolantScalarFunction(grid, coeffs)
-ftGradient = pysgpp.OptInterpolantScalarFunctionGradient(grid, coeffs)
+ft = pysgpp.InterpolantScalarFunction(grid, coeffs)
+ftGradient = pysgpp.InterpolantScalarFunctionGradient(grid, coeffs)
 gradientDescent = pysgpp.OptGradientDescent(ft, ftGradient)
 x0 = pysgpp.DataVector(d)
 

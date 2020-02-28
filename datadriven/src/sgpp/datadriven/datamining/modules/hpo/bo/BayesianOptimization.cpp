@@ -1,21 +1,15 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * BayesianOptimization.cpp
- *
- *  Created on: Feb 2, 2018
- *      Author: Eric Koepke
- */
-#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include <sgpp/optimization/sle/solver/Eigen.hpp>
-#include <sgpp/optimization/sle/solver/BiCGStab.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/optimization/tools/Printer.hpp>
-#include <sgpp/optimization/sle/solver/GaussianElimination.hpp>
-#include <sgpp/optimization/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/sle/solver/BiCGStab.hpp>
+#include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/bo/BayesianOptimization.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/MultiStart.hpp>
 
 #include <vector>
@@ -81,7 +75,7 @@ double BayesianOptimization::var(base::DataVector &knew, double kself) {
 
 BOConfig BayesianOptimization::main(BOConfig &prototype) {
   BOConfig nextconfig(prototype);
-  optimization::WrapperScalarFunction wrapper(prototype.getContSize(),
+  base::WrapperScalarFunction wrapper(prototype.getContSize(),
                                               std::bind(&BayesianOptimization::acquisitionOuter,
                                                         this,
                                                         std::placeholders::_1));
@@ -137,7 +131,7 @@ void BayesianOptimization::setScales(base::DataVector nscales, double factor) {
 }
 
 base::DataVector BayesianOptimization::fitScales() {
-  optimization::WrapperScalarFunction wrapper(scales.size(),
+  base::WrapperScalarFunction wrapper(scales.size(),
                                               std::bind(&BayesianOptimization::likelihood,
                                                         this,
                                                         std::placeholders::_1));
@@ -235,7 +229,7 @@ void BayesianOptimization::decomposeCholesky(base::DataMatrix &km, base::DataMat
         gnew.set(i, i, value);
       } else {
         decomFailed = true;
-        gnew.set(i, i, 10e-8);
+        gnew.set(i, i, 1e-7);
       }
     }
   }

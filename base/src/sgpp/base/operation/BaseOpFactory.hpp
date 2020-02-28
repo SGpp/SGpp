@@ -8,6 +8,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
+#include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
+#include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
+#include <sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp>
 #include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
@@ -26,11 +29,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <set>
 #include <vector>
-
-#include "hash/OperationEvalGradient.hpp"
-#include "hash/OperationEvalHessian.hpp"
-#include "hash/OperationEvalPartialDerivative.hpp"
 
 namespace sgpp {
 
@@ -133,7 +133,7 @@ base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
-    base::DataMatrix& dataset, std::vector<std::vector<size_t>> interactions);
+    base::DataMatrix& dataset, std::set<std::set<size_t>> interactions);
 
 /**
  * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.

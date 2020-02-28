@@ -6,16 +6,16 @@
 #pragma once
 #if USE_OCL == 1
 
+#include <sgpp/globaldef.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/application/TunableParameter.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
 #include <utility>
 #include <string>
 #include <vector>
 #include <tuple>
-
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/application/TunableParameter.hpp"
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 namespace sgpp {
 namespace datadriven {

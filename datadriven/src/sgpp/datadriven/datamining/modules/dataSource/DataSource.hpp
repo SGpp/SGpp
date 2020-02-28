@@ -1,13 +1,7 @@
-/* Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SampleProviderModule.hpp
- *
- *  Created on: 17.05.2016
- *      Author: Michael Lettrich
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -52,6 +46,13 @@ class DataSource {
    * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
    */
   virtual Dataset* getNextSamples();
+
+  /**
+   * Request all data from the underlying SampleProvider
+   * object upon construction.
+   * @return #sgpp::datadriven::Dataset containing requested amount of samples (if available).
+   */
+  virtual Dataset* getAllSamples();
 
   /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain

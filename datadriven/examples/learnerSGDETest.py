@@ -1,15 +1,28 @@
-import sklearn.datasets as data
-import numpy as np
-import matplotlib.pyplot as plt
-from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
-from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
-from pysgpp.extensions.datadriven.learner import Types
-import pysgpp as sg
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
+try:
+    import sklearn.datasets as data
+    import numpy as np
+    import matplotlib.pyplot as plt
+    from pysgpp.extensions.datadriven.uq.plot.plot1d import plotSG1d
+    from pysgpp.extensions.datadriven.uq.plot.plot2d import plotSG2d
+    from pysgpp.extensions.datadriven.learner import Types
+    import pysgpp as sg
+
+except ImportError as e:
+    print(e.__class__.__name__ + ": " + e.msg)
+    print("Skipping example...")
+    exit(0)
 
 
 ## This function generates the Friedman1 dataset on demand
 def generate_friedman1(seed):
     (X,y) = data.make_friedman1(n_samples=2000, random_state=seed, noise=1.0)
+    
+    print(X.shape, y.shape)
     
     # transform values to DataMatrix/DataVector types
     X = sg.DataMatrix(X)
@@ -48,7 +61,7 @@ def main():
     print("create adaptive refinement config... ", end=' ')
     adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
-    adapt.noPoints_ = 10
+    adapt.numRefinementPoints_ = 10
     print("Done")
     
     # Config solver
