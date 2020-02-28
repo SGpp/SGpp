@@ -12,6 +12,7 @@
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -100,6 +101,10 @@ class SplineResponseSurface : public ResponseSurface {
       grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
       boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakPBspline) {
+      grid = std::make_shared<sgpp::base::NakPBsplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
+      boundary = false;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
     }
@@ -157,6 +162,9 @@ class SplineResponseSurface : public ResponseSurface {
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
       basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakPBspline) {
+      basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
       boundary = false;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");

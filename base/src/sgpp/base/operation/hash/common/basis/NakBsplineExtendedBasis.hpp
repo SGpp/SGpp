@@ -553,7 +553,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   NakBsplineBasis<LT, IT> notAKnotBsplineBasis;
 
  private:
-};  // namespace base
+};
 
 // default type-def (unsigned int for level and index)
 typedef NakBsplineExtendedBasis<unsigned int, unsigned int> SNakBsplineExtendedBase;

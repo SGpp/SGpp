@@ -206,7 +206,6 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv2.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
@@ -226,6 +225,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -347,6 +347,7 @@ const bool UMFPACK_ENABLED;
 %template(SWeaklyFundamentalNakSplineBaseDeriv2) sgpp::base::WeaklyFundamentalNakSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
+%template(SNakPBsplineBase) sgpp::base::NakPBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv1) sgpp::base::NakBsplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv2) sgpp::base::NakBsplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;

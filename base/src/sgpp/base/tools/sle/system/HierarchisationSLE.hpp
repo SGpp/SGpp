@@ -26,6 +26,7 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
@@ -54,6 +55,7 @@
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
@@ -193,6 +195,10 @@ class HierarchisationSLE : public CloneableSLE {
           std::unique_ptr<SNakBsplineExtendedBase>(new base::SNakBsplineExtendedBase(
               dynamic_cast<NakBsplineExtendedGrid&>(grid).getDegree()));
       basisType = NAK_BSPLINE_EXTENDED;
+    } else if (grid.getType() == GridType::NakPBspline) {
+      nakPBsplineBasis = std::unique_ptr<SNakPBsplineBase>(
+          new base::SNakPBsplineBase(dynamic_cast<NakPBsplineGrid&>(grid).getDegree()));
+      basisType = NAK_P_BSPLINE;
     } else {
       throw std::invalid_argument("HierarchisationSLE: Grid type not supported.");
     }
@@ -296,6 +302,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<SPolyBoundaryBase> polyBoundaryBasis;
   /// nak Bspline extended basis
   std::unique_ptr<SNakBsplineExtendedBase> nakBsplineExtendedBasis;
+  /// nak Bspline extended basis
+  std::unique_ptr<SNakPBsplineBase> nakPBsplineBasis;
 
   /// type of grid/basis functions
   enum {
@@ -326,7 +334,8 @@ class HierarchisationSLE : public CloneableSLE {
     MOD_POLY,
     POLY,
     POLYBOUNDARY,
-    NAK_BSPLINE_EXTENDED
+    NAK_BSPLINE_EXTENDED,
+    NAK_P_BSPLINE
   } basisType;
 
   /**
@@ -392,6 +401,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalNakBsplineFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NAK_BSPLINE_EXTENDED) {
       return evalNakBsplineExtendedFunctionAtGridPoint(basisI, pointJ);
+    } else if (basisType == NAK_P_BSPLINE) {
+      return evalNakPBsplineFunctionAtGridPoint(basisI, pointJ);
     } else {
       return 0.0;
     }
@@ -1075,6 +1086,29 @@ class HierarchisationSLE : public CloneableSLE {
       const double result1d = nakBsplineExtendedBasis->eval(
           gridStorage.getPointLevel(basisI, t), gridStorage.getPointIndex(basisI, t),
           gridStorage.getPointCoordinate(pointJ, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+  /**
+   * @param basisI    basis function index
+   * @param pointJ    grid point index
+   * @return          value of the basisI-th nak polynomial Bspline basis function
+   *                  at the pointJ-th grid point
+   */
+  inline double evalNakPBsplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = nakPBsplineBasis->eval(gridStorage.getPointLevel(basisI, t),
+                                                     gridStorage.getPointIndex(basisI, t),
+                                                     gridStorage.getPointCoordinate(pointJ, t));
 
       if (result1d == 0.0) {
         return 0.0;

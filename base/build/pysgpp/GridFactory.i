@@ -54,6 +54,7 @@
 %newobject sgpp::base::Grid::createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakPBsplineGrid(size_t dim, size_t degree);
 
                              
 %newobject sgpp::base::Grid::unserializeFromFile(std::string filename);

@@ -3,11 +3,10 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include "NakBsplineExtendedGrid.hpp"
-
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 
 #include <sgpp/globaldef.hpp>
 

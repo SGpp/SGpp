@@ -66,6 +66,7 @@ enum class GridType {
   FundamentalNakSplineBoundary,        // 38
   NakBsplineExtended,                  // 39
   NakBspline,                          // 40
+  NakPBspline,                         // 41
 };
 
 /**
@@ -654,6 +655,15 @@ class Grid {
    * @return grid
    */
   static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot polynomial B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakPBsplineGrid(size_t dim, size_t degree);
 
   /**
    * opens a file given by name and reads a grid out of the stored string

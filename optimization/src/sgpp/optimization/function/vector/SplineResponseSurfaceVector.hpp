@@ -18,6 +18,7 @@
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -107,6 +108,10 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
       grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
+      // basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakPBspline) {
+      grid = std::make_shared<sgpp::base::NakPBsplineGrid>(numDim, degree);
       // basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
       boundary = false;
     } else {
