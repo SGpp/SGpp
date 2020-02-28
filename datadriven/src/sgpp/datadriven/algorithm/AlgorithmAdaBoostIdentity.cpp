@@ -9,32 +9,37 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
-AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(sgpp::base::Grid&
-    SparseGrid, size_t gridType, sgpp::base::level_t gridLevel,
-    sgpp::base::DataMatrix& trainData, sgpp::base::DataVector& trainDataClass,
-    size_t NUM, double lambda, size_t IMAX, double eps, size_t IMAX_final,
-    double eps_final, double firstLabel, double secondLabel, double threshold,
-    double maxLambda, double minLambda, size_t searchNum, bool refine,
-    size_t refineMode, size_t refineNum, size_t numberOfAda, double percentOfAda,
-    size_t mode) : AlgorithmAdaBoostBase(SparseGrid, gridType, gridLevel, trainData,
-          trainDataClass, NUM, lambda, IMAX, eps, IMAX_final, eps_final, firstLabel,
-          secondLabel, threshold, maxLambda, minLambda, searchNum, refine, refineMode,
-          refineNum, numberOfAda, percentOfAda, mode) {
+AlgorithmAdaBoostIdentity::AlgorithmAdaBoostIdentity(sgpp::base::Grid& SparseGrid,
+                                                     base::GridType gridType,
+                                                     sgpp::base::level_t gridLevel,
+                                                     sgpp::base::DataMatrix& trainData,
+                                                     sgpp::base::DataVector& trainDataClass,
+                                                     size_t NUM, double lambda, size_t IMAX,
+                                                     double eps, size_t IMAX_final,
+                                                     double eps_final, double firstLabel,
+                                                     double secondLabel, double threshold,
+                                                     double maxLambda, double minLambda,
+                                                     size_t searchNum, bool refine,
+                                                     size_t refineMode, size_t refineNum,
+                                                     size_t numberOfAda, double percentOfAda,
+                                                     size_t mode)
+    : AlgorithmAdaBoostBase(SparseGrid, gridType, gridLevel, trainData, trainDataClass, NUM, lambda,
+                            IMAX, eps, IMAX_final, eps_final, firstLabel, secondLabel, threshold,
+                            maxLambda, minLambda, searchNum, refine, refineMode, refineNum,
+                            numberOfAda, percentOfAda, mode) {
 }
 
 AlgorithmAdaBoostIdentity::~AlgorithmAdaBoostIdentity() {
 }
 
-void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda,
-    sgpp::base::DataVector& weight, sgpp::base::DataVector& alpha, bool final) {
-  std::unique_ptr<sgpp::base::OperationMatrix> C(
-      sgpp::op_factory::createOperationIdentity(*this->grid));
-  sgpp::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda,
-      weight);
+void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda, sgpp::base::DataVector& weight,
+                                            sgpp::base::DataVector& alpha, bool final) {
+  std::unique_ptr < sgpp::base::OperationMatrix
+      > C(sgpp::op_factory::createOperationIdentity(*this->grid));
+  sgpp::datadriven::DMWeightMatrix WMatrix(*this->grid, *this->data, *C, lambda, weight);
   sgpp::base::DataVector rhs(alpha.getSize());
   WMatrix.generateb(*this->classes, rhs);
 
@@ -49,4 +54,3 @@ void AlgorithmAdaBoostIdentity::alphaSolver(double& lambda,
 
 }  // namespace datadriven
 }  // namespace sgpp
-
