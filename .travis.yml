@@ -1,7 +1,6 @@
 branches:
   only:
   - master
-  - testing
 
 language: cpp
 
