@@ -156,7 +156,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
                           learner.alpha,
                           generator.getNumberOfRemovablePoints(),
                           learner.specification.getAdaptThreshold())
-                generator.coarsen(functor, learner.alpha)
+                generator.coarsen(functor)
             
             self.plotGrid(learner, suffix)
             

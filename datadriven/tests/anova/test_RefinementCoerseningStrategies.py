@@ -159,7 +159,7 @@ class TestRefinementCoerseningANOVAStrategy(unittest.TestCase):
 #                          learner.alpha,
 #                          generator.getNumberOfRemovablePoints(),
 #                          learner.specification.getAdaptThreshold())
-                generator.coarsen(functor, learner.alpha)
+                generator.coarsen(functor)
             #print "coersening finished"
             self.plotGrid(learner, suffix)
             

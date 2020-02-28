@@ -13,18 +13,18 @@
 #include <sgpp/base/grid/generation/refinement_strategy/ForwardSelectorRefinement.hpp>
 #include <sgpp/base/grid/generation/refinement_strategy/ImpurityRefinement.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitor.hpp>
-#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp>
+#include <sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <string>
-#include <algorithm>
 
-using sgpp::base::GridStorage;
-using sgpp::base::HashRefinement;
 using sgpp::base::ForwardSelectorRefinement;
 using sgpp::base::ForwardSelectorRefinementIndicator;
+using sgpp::base::GridStorage;
+using sgpp::base::HashRefinement;
 using sgpp::base::ImpurityRefinement;
 using sgpp::base::ImpurityRefinementIndicator;
 
@@ -32,12 +32,9 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
-                       base::AdaptivityConfiguration& adaptConfig,
-                       base::DataMatrix& pTrainData,
-                       base::DataVector& pTrainLabels,
-                       base::DataMatrix& pTestData,
-                       base::DataVector& pTestLabels,
-                       base::DataMatrix* pValidData,
+                       base::AdaptivityConfiguration& adaptConfig, base::DataMatrix& pTrainData,
+                       base::DataVector& pTrainLabels, base::DataMatrix& pTestData,
+                       base::DataVector& pTestLabels, base::DataMatrix* pValidData,
                        base::DataVector* pValidLabels)
     : grid(nullptr),
       trainData(pTrainData),
@@ -69,8 +66,7 @@ std::unique_ptr<base::Grid> LearnerSVM::createRegularGrid() {
   if (gridConfig.type_ == base::GridType::ModLinear) {
     uGrid.reset(base::Grid::createModLinearGrid(gridConfig.dim_));
   } else {
-    throw base::application_exception(
-        "LearnerSVM::createRegularGrid : grid type is not supported");
+    throw base::application_exception("LearnerSVM::createRegularGrid : grid type is not supported");
   }
 
   uGrid->getGenerator().regular(gridConfig.level_);
@@ -78,9 +74,8 @@ std::unique_ptr<base::Grid> LearnerSVM::createRegularGrid() {
   return uGrid;
 }
 
-void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
-                       std::string refType, std::string refMonitor,
-                       size_t refPeriod, double errorDeclineThreshold,
+void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std::string refType,
+                       std::string refMonitor, size_t refPeriod, double errorDeclineThreshold,
                        size_t errorDeclineBufferSize, size_t minRefInterval) {
   GridStorage& gridStorage = grid->getStorage();
 
@@ -102,12 +97,12 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
   size_t refCnt = 0;
   double currentValidError = 0.0;
   double currentTrainError = 0.0;
-  RefinementMonitor *monitor = nullptr;
+  RefinementMonitor* monitor = nullptr;
   if (refMonitor == "periodic") {
     monitor = new RefinementMonitorPeriodic(refPeriod);
   } else if (refMonitor == "convergence") {
-    monitor = new RefinementMonitorConvergence(
-            errorDeclineThreshold, errorDeclineBufferSize, minRefInterval);
+    monitor = new RefinementMonitorConvergence(errorDeclineThreshold, errorDeclineBufferSize,
+                                               minRefInterval);
   }
 
   // auxiliary variable for accuracy (error) measurement
@@ -149,8 +144,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
         // acc = getAccuracy(testData, testLabels, 0.0);
         // avgErrors.append(1.0 - acc);
 
-        std::cout << "refinement at iteration: " << processedPoints
-                  << std::endl;
+        std::cout << "refinement at iteration: " << processedPoints << std::endl;
         HashRefinement refinement;
 
         if (refType == "combined-measure") {
@@ -158,7 +152,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
           // generate indicator
           ForwardSelectorRefinementIndicator indicator(
               *grid, svm->svs, svm->alphas, svm->w, svm->w2, betaRef,
-              adaptivityConfig.threshold_, adaptivityConfig.noPoints_);
+              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         } else if (refType == "impurity") {
@@ -169,9 +163,8 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef,
           ImpurityRefinement decorator(&refinement);
           // generate indicator
           ImpurityRefinementIndicator indicator(
-              *grid, svm->svs, &(svm->alphas), &(svm->w), &(svm->w2),
-              svsClassesComputed, adaptivityConfig.threshold_,
-              adaptivityConfig.noPoints_);
+              *grid, svm->svs, &(svm->alphas), &(svm->w), &(svm->w2), svsClassesComputed,
+              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         }
@@ -221,8 +214,8 @@ void LearnerSVM::storeResults(sgpp::base::DataMatrix& testDataset) {
   } else {
     sgpp::base::GridStorage& storage = grid->getStorage();
     sgpp::base::GridStorage::grid_map_iterator end_iter = storage.end();
-    for (sgpp::base::GridStorage::grid_map_iterator iter = storage.begin();
-         iter != end_iter; iter++) {
+    for (sgpp::base::GridStorage::grid_map_iterator iter = storage.begin(); iter != end_iter;
+         iter++) {
       sgpp::base::DataVector gpCoord(testDataset.getNcols());
       storage.getCoordinates(*(iter->first), gpCoord);
       for (size_t d = 0; d < gpCoord.getSize(); d++) {
@@ -288,15 +281,13 @@ double LearnerSVM::getAccuracy(const sgpp::base::DataVector& referenceLabels,
   size_t correct = 0;
 
   for (size_t i = 0; i < predictedLabels.getSize(); i++) {
-    if ((predictedLabels.get(i) >= threshold &&
-         referenceLabels.get(i) >= 0.0) ||
+    if ((predictedLabels.get(i) >= threshold && referenceLabels.get(i) >= 0.0) ||
         (predictedLabels.get(i) < threshold && referenceLabels.get(i) < 0.0)) {
       correct++;
     }
   }
 
-  result = static_cast<double>(correct) /
-           static_cast<double>(predictedLabels.getSize());
+  result = static_cast<double>(correct) / static_cast<double>(predictedLabels.getSize());
 
   return result;
 }
@@ -314,8 +305,7 @@ void LearnerSVM::predict(sgpp::base::DataMatrix& testData,
   }
 }
 
-double LearnerSVM::getError(sgpp::base::DataMatrix& data,
-                            sgpp::base::DataVector& labels,
+double LearnerSVM::getError(sgpp::base::DataMatrix& data, sgpp::base::DataVector& labels,
                             std::string errorType) {
   size_t numData = data.getNrows();
   size_t dim = data.getNcols();
@@ -339,9 +329,7 @@ double LearnerSVM::getError(sgpp::base::DataMatrix& data,
     for (size_t i = 0; i < numData; i++) {
       sgpp::base::DataVector x(dim);
       data.getRow(i, x);
-      error.set(
-          i,
-          std::max(0.0, 1.0 - labels.get(i) * svm->predictRaw(*grid, x, dim)));
+      error.set(i, std::max(0.0, 1.0 - labels.get(i) * svm->predictRaw(*grid, x, dim)));
     }
     // loss (Hinge)
     double sum = 0;

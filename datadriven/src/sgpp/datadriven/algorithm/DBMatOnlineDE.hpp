@@ -14,6 +14,7 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -22,7 +23,8 @@ using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
 /**
- * Class that stores, generates and manipulates a density function during online phase in on/off
+ * Class that stores, generates and manipulates a density function during online
+ * phase in on/off
  * learning.
  */
 class DBMatOnlineDE : public DBMatOnline {
@@ -35,56 +37,63 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param lambda The regularization strength (TODO(fuchsgruber) remove this)
    * @param beta The initial weighting factor
    */
-  explicit DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, double beta = 0.);
+  explicit DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda,
+                         double beta = 0.);
 
   /**
-   * Restructures the rhs (b vector) of the system matrix. This is only availible for streaming,
+   * Restructures the rhs (b vector) of the system matrix. This is only
+   * availible for streaming,
    * i.e. when computeDensityFunction was called with save_b = true.
-   * First b is coarsened, then extended according to the new grid size (refinement).
+   * First b is coarsened, then extended according to the new grid size
+   * (refinement).
    *
-   * @param gridSize grid size after coarsening and refinement (inherently gives the number of
+   * @param gridSize grid size after coarsening and refinement (inherently gives
+   * the number of
    * points added during refinement after coarsening)
    * @param deletedPoints pointer to list of indexes that will be removed from b
    */
-  void updateRhs(size_t gridSize, std::list<size_t>* deletedPoints);
+  void updateRhs(size_t gridSize, std::vector<size_t>& deletedPoints);
 
   /**
-   * Computes the density function again based on the saved b's (only applicable for streaming)
+   * Computes the density function again based on the saved b's (only applicable
+   * for streaming)
    *
-   * @param alpha the vector where surplusses for the density function will be stored
+   * @param alpha the vector where surplusses for the density function will be
+   * stored
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    *        combined with the new right hand side (aka streaming)
    * @param do_cv Indicates whether crossvalidation should take place
    */
-  void computeDensityFunction(DataVector& alpha, Grid& grid,
-                              DensityEstimationConfiguration& densityEstimationConfig,
-                              bool do_cv = false);
+  void computeDensityFunction(
+      DataVector& alpha, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      bool do_cv = false);
 
   /**
    * Computes the density function for a certain data matrix
    *
-   * @param alpha the vector where surplusses for the density function will be stored
+   * @param alpha the vector where surplusses for the density function will be
+   * stored
    * @param m the matrix that contains the data points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    * @param save_b Indicates whether the old right hand side should be saved and
    *        combined with the new right hand side (aka streaming)
    * @param do_cv Indicates whether crossvalidation should take place
-   * @param deletedPoints indicates the indices of removed grid points due to
-   * coarsening
-   * @param newPoints indicates the amount of added points due to refinement
    */
-  void computeDensityFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
-                              DensityEstimationConfiguration& densityEstimationConfig,
-                              bool save_b = false, bool do_cv = false,
-                              std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+  void computeDensityFunction(
+      DataVector& alpha, DataMatrix& m, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      bool save_b = false, bool do_cv = false);
 
   /**
-   * Computes the density function again based on the saved b's (only applicable for streaming) in
+   * Computes the density function again based on the saved b's (only applicable
+   * for streaming) in
    * parallel on a cluster using ScaLAPACK
    *
-   * @param alpha the vector where surplusses for the density function will be stored
+   * @param alpha the vector where surplusses for the density function will be
+   * stored
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    *        combined with the new right hand side (aka streaming)
@@ -92,17 +101,20 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param processGrid pointer to BlacsProcessGrid
    * @param do_cv Indicates whether crossvalidation should take place
    */
-  void computeDensityFunctionParallel(DataVectorDistributed& alpha, Grid& grid,
-                                      DensityEstimationConfiguration& densityEstimationConfig,
-                                      const ParallelConfiguration& parallelConfig,
-                                      std::shared_ptr<BlacsProcessGrid> processGrid,
-                                      bool do_cv = false);
+  void computeDensityFunctionParallel(
+      DataVectorDistributed& alpha, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig,
+      std::shared_ptr<BlacsProcessGrid> processGrid, bool do_cv = false);
 
   /**
-   * Computes the density function for a certain data matrix in parallel using ScaLAPACK.
+   * Computes the density function for a certain data matrix in parallel using
+   * ScaLAPACK.
    *
-   * @param alpha the distributed vector where surplusses for the density function will be stored
-   * @param m the matrix that contains the data points, currently every process has to have the data
+   * @param alpha the distributed vector where surplusses for the density
+   * function will be stored
+   * @param m the matrix that contains the data points, currently every process
+   * has to have the data
    * points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
@@ -115,13 +127,13 @@ class DBMatOnlineDE : public DBMatOnline {
    * coarsening
    * @param newPoints indicates the amount of added points due to refinement
    */
-  void computeDensityFunctionParallel(DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
-                                      DensityEstimationConfiguration& densityEstimationConfig,
-                                      const ParallelConfiguration& parallelConfig,
-                                      std::shared_ptr<BlacsProcessGrid> processGrid,
-                                      bool save_b = false, bool do_cv = false,
-                                      std::list<size_t>* deletedPoints = nullptr,
-                                      size_t newPoints = 0);
+  void computeDensityFunctionParallel(
+      DataVectorDistributed& alpha, DataMatrix& m, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig,
+      std::shared_ptr<BlacsProcessGrid> processGrid, bool save_b = false,
+      bool do_cv = false, std::list<size_t>* deletedPoints = nullptr,
+      size_t newPoints = 0);
 
   /**
    * Computes/updates the b vector for the given batch of data
@@ -130,13 +142,16 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    */
-  DataVector computeBFromBatch(DataMatrix& m, Grid& grid,
-                               DensityEstimationConfiguration& densityEstimationConfig);
+  DataVector computeBFromBatch(
+      DataMatrix& m, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig);
 
   /**
-   * Computes/updates the b vector for the given batch of data in parallel using ScaLAPACK
+   * Computes/updates the b vector for the given batch of data in parallel using
+   * ScaLAPACK
    *
-   * @param m the matrix that contains the data points, currently every process has to have the data
+   * @param m the matrix that contains the data points, currently every process
+   * has to have the data
    * points
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
@@ -144,8 +159,10 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param processGrid process grid for ScaLAPACK
    */
   DataVectorDistributed computeBFromBatchParallel(
-      DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
-      const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid);
+      DataMatrix& m, Grid& grid,
+      const DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig,
+      std::shared_ptr<BlacsProcessGrid> processGrid);
 
   /**
    * Evaluates the density function at a certain point
@@ -153,10 +170,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param alpha the vector of surplusses
    * @param p the point at which the function is evaluated
    * @param grid the underlying grid
-   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
+   * @param force if set, it will even try to evaluate if the internal state
+   * recommends otherwise
    * @return the result of the evaluation
    */
-  double eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force = false);
+  double eval(DataVector& alpha, const DataVector& p, Grid& grid,
+              bool force = false);
 
   /**
    * Evaluates the density function on multiple points
@@ -165,10 +184,11 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param values the points at which the function is evaluated
    * @param results the result of the evaluation
    * @param grid the underlying grid
-   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
+   * @param force if set, it will even try to evaluate if the internal state
+   * recommends otherwise
    */
-  void eval(DataVector& alpha, DataMatrix& values, DataVector& results, Grid& grid,
-            bool force = false);
+  void eval(DataVector& alpha, DataMatrix& values, DataVector& results,
+            Grid& grid, bool force = false);
 
   /**
    * Evaluates the density function on multiple points using parallization
@@ -177,10 +197,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param values the points at which the function is evaluated
    * @param results the result of the evaluation
    * @param grid the underlying grid
-   * @param force if set, it will even try to evaluate if the internal state recommends otherwise
+   * @param force if set, it will even try to evaluate if the internal state
+   * recommends otherwise
    */
-  void evalParallel(DataVector& alpha, DataMatrix& values, DataVectorDistributed& results,
-                    Grid& grid, bool force = false);
+  void evalParallel(DataVector& alpha, DataMatrix& values,
+                    DataVectorDistributed& results, Grid& grid,
+                    bool force = false);
 
   /**
    * Returns if the surplus has already been computed
@@ -218,10 +240,12 @@ class DBMatOnlineDE : public DBMatOnline {
   double normalizeQuadrature(DataVector& alpha, Grid& grid);
 
   /**
-   * Synchronizes the distributed decomposition, only has an effect if scalapack is used.
+   * Synchronizes the distributed decomposition, only has an effect if scalapack
+   * is used.
    */
-  virtual void syncDistributedDecomposition(std::shared_ptr<BlacsProcessGrid> processGrid,
-                                            const ParallelConfiguration& parallelConfig);
+  virtual void syncDistributedDecomposition(
+      std::shared_ptr<BlacsProcessGrid> processGrid,
+      const ParallelConfiguration& parallelConfig);
 
   /**
    * Resets the training state of the model.
@@ -230,11 +254,13 @@ class DBMatOnlineDE : public DBMatOnline {
 
  protected:
   virtual void solveSLE(DataVector& alpha, DataVector& b, Grid& grid,
-                        DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) = 0;
+                        DensityEstimationConfiguration& densityEstimationConfig,
+                        bool do_cv) = 0;
 
-  virtual void solveSLEParallel(DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
-                                DensityEstimationConfiguration& densityEstimationConfig,
-                                bool do_cv = 0) = 0;
+  virtual void solveSLEParallel(
+      DataVectorDistributed& alpha, DataVectorDistributed& b, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      bool do_cv = 0) = 0;
   double computeL2Error(DataVector& alpha, Grid& grid);
   double resDensity(DataVector& alpha, Grid& grid);
 
@@ -249,7 +275,8 @@ class DBMatOnlineDE : public DBMatOnline {
   // flag for initialization of bSaveDistributed and bTotalPointsDistributed
   bool distributedVectorsInitialized;
 
-  // pointer to distributed b (vector is only created if ScaLAPACK version is enables)
+  // pointer to distributed b (vector is only created if ScaLAPACK version is
+  // enables)
   std::unique_ptr<DataVectorDistributed> bSaveDistributed;
 
   // pointer to distributed b total points

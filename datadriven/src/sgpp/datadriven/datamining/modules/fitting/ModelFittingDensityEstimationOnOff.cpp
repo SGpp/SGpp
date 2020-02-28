@@ -3,9 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
-
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
@@ -14,6 +11,8 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatPermutationFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_blas.h>
@@ -23,12 +22,11 @@
 #include <gsl/gsl_vector.h>
 #endif /* USE_GSL */
 
+#include <fstream>
+#include <iostream>
 #include <list>
 #include <string>
 #include <vector>
-
-#include <fstream>
-#include <iostream>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
@@ -172,13 +170,12 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOff::refine(size_t newNoPoints,
-                                                std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationOnOff::adapt(size_t newNoPoints,
+                                               std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();
@@ -190,7 +187,7 @@ bool ModelFittingDensityEstimationOnOff::refine(size_t newNoPoints,
 
   // Update online object: lhs, rhs and recompute the density function based on the b stored
   online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
-                                          newNoPoints - oldNoPoints, *deletedGridPoints,
+                                          newNoPoints - oldNoPoints, deletedGridPoints,
                                           config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
   return true;

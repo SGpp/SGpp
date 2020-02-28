@@ -4,27 +4,21 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/GridStorage.hpp>
-
-#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
-#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
-
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/generation/StretchedBoundaryGridGenerator.hpp>
-
+#include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
+#include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
+#include <sgpp/globaldef.hpp>
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
 
-StretchedBoundaryGridGenerator::StretchedBoundaryGridGenerator(
-  GridStorage& storage) : storage(storage) {
-}
+StretchedBoundaryGridGenerator::StretchedBoundaryGridGenerator(GridStorage& storage)
+    : storage(storage) {}
 
-StretchedBoundaryGridGenerator::~StretchedBoundaryGridGenerator() {
-}
+StretchedBoundaryGridGenerator::~StretchedBoundaryGridGenerator() {}
 
 void StretchedBoundaryGridGenerator::regular(size_t level) {
   HashGenerator gen;
@@ -52,15 +46,17 @@ size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePoints() {
 }
 
 void StretchedBoundaryGridGenerator::coarsen(CoarseningFunctor& func,
-    DataVector& alpha) {
+                                             std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void StretchedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
-    DataVector& alpha, size_t numFirstOnly) {
+void StretchedBoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                                       std::vector<size_t>* removedSeq,
+                                                       size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
+                                  removedSeq);
 }
 
 size_t StretchedBoundaryGridGenerator::getNumberOfRemovablePoints() {
@@ -68,14 +64,12 @@ size_t StretchedBoundaryGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void StretchedBoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func,
-    size_t maxLevel) {
+void StretchedBoundaryGridGenerator::refineMaxLevel(RefinementFunctor& func, size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   refine.refineToMaxLevel(this->storage, func, static_cast<level_t>(maxLevel));
 }
 
-size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(
-  size_t maxLevel) {
+size_t StretchedBoundaryGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
   HashRefinementBoundariesMaxLevel refine;
   return refine.getNumberOfRefinablePointsToMaxLevel(this->storage, static_cast<level_t>(maxLevel));
 }

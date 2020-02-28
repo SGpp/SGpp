@@ -6,12 +6,12 @@
 #include <random>
 #include <string>
 
+#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "sgpp/base/operation/BaseOpFactory.hpp"
 #include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
 #include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
 #include "sgpp/globaldef.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 
 void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, std::mt19937 mt,
@@ -23,8 +23,8 @@ void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::ba
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -47,10 +47,10 @@ int main(int argc, char** argv) {
 
   sgpp::base::AdaptivityConfiguration adaptConfig;
   adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
+  adaptConfig.numRefinementPoints_ = 80;
   adaptConfig.numRefinements_ = 0;
   adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,

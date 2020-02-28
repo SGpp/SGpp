@@ -11,6 +11,11 @@ To generate the Debian package, the following steps need to be performed:
   2. Run the script directly from this folder:
 
       ./create_deb.sh
+      
+      
+Please note that create_deb.sh can take one optional argument. 
+If given, it will build a test package without asking the user for version numbers and author
+This is used for automated testing. Manually, you should stick to calling the script without any parameters
 
 ~~~
 To install the packages, copy the Debian packages to a folder on the target system, 
@@ -18,6 +23,7 @@ and run the following commands in that folder:
 
       sudo apt install ./libsgpp_<ver>.deb
       sudo apt install ./libsgpp-python_<ver>.deb
+      sudo apt install ./libsgpp-java<ver>.deb
 
 Root rights are needed, and the user will be prompted to allow for installing the
 needed dependencies.
@@ -26,5 +32,9 @@ needed dependencies.
 The minimal package requirements for the machine running the Debian package build, 
 besides the manually added dependencies specified in the run script, are:
 
-      gcc, python3-dev, python3-numpy, swig, scons, python3-jinja2, fakeroot
+      gcc, python3-dev, python3-numpy, swig, scons, python3-jinja2, fakeroot, javahelper
 ~~~
+
+Note about java: In order for the java package to work, the user (or his IDE) needs to set the classpath to the standard ubuntu folder:
+
+export CLASSPATH=/usr/share/java/jsgpp.jar:$(pwd):$CLASSPATH

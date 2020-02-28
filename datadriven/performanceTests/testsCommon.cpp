@@ -5,18 +5,18 @@
 
 #ifdef ZLIB
 
-#include <boost/lexical_cast.hpp>
 #include <zlib.h>
+#include <boost/lexical_cast.hpp>
 
+#include <fstream>
 #include <iostream>
+#include <random>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
-#include <random>
-#include <fstream>
 
-#include "testsCommon.hpp"
 #include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
+#include "testsCommon.hpp"
 
 std::string uncompressFile(std::string fileName) {
   gzFile inFileZ = gzopen(fileName.c_str(), "rb");
@@ -66,8 +66,8 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -90,8 +90,8 @@ void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgp
   }
 
   for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
