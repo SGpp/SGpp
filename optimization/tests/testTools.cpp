@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include "ObjectiveFunctions.hpp"
+#include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/tools/Printer.hpp>
@@ -15,11 +15,10 @@
 #include <sgpp/optimization/tools/FileIO.hpp>
 #include <sgpp/optimization/tools/Math.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <string>
 #include <vector>
 
+#include "ObjectiveFunctions.hpp"
 
 using sgpp::base::Printer;
 using sgpp::base::RandomNumberGenerator;
@@ -101,26 +100,31 @@ void generateRandomMatrix(sgpp::base::DataMatrix& A) {
 
 template <class T>
 void randomMatrixEntry(T& x) {
-  x = static_cast<T>(RandomNumberGenerator::getInstance().getUniformIndexRN(100));
+  x = static_cast<T>(
+      RandomNumberGenerator::getInstance().getUniformIndexRN(100));
 }
 
 template <>
 void randomMatrixEntry(float& x) {
-  x = static_cast<float>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
+  x = static_cast<float>(
+      RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(double& x) {
-  x = static_cast<double>(RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
+  x = static_cast<double>(
+      RandomNumberGenerator::getInstance().getUniformRN(-100.0, 100.0));
 }
 
 template <>
 void randomMatrixEntry(std::string& x) {
-  const size_t length = RandomNumberGenerator::getInstance().getUniformIndexRN(100);
+  const size_t length =
+      RandomNumberGenerator::getInstance().getUniformIndexRN(100);
   x.clear();
 
   for (size_t i = 0; i < length; i++) {
-    x += static_cast<char>(32 + RandomNumberGenerator::getInstance().getUniformIndexRN(96));
+    x += static_cast<char>(
+        32 + RandomNumberGenerator::getInstance().getUniformIndexRN(96));
   }
 }
 
@@ -161,7 +165,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
   RandomNumberGenerator::getInstance().setSeed(42);
 
   for (size_t d = 1; d < 6; d++) {
-    std::unique_ptr<sgpp::base::Grid> grid1(sgpp::base::Grid::createLinearGrid(d)),
+    std::unique_ptr<sgpp::base::Grid> grid1(
+        sgpp::base::Grid::createLinearGrid(d)),
         grid2(sgpp::base::Grid::createLinearGrid(d));
     grid1->getGenerator().regular(3);
 
@@ -183,9 +188,12 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 
     {
       const std::string fileName = "testTools_grid.tmp";
-      sgpp::optimization::file_io::writeGrid(fileName, grid1->getStorage(), functionValues1);
-      std::unique_ptr<sgpp::base::Grid> grid2(sgpp::base::Grid::createLinearGrid(d));
-      sgpp::optimization::file_io::readGrid(fileName, grid2->getStorage(), functionValues2);
+      sgpp::optimization::file_io::writeGrid(fileName, grid1->getStorage(),
+                                             functionValues1);
+      std::unique_ptr<sgpp::base::Grid> grid2(
+          sgpp::base::Grid::createLinearGrid(d));
+      sgpp::optimization::file_io::readGrid(fileName, grid2->getStorage(),
+                                            functionValues2);
       std::remove(fileName.c_str());
     }
 
@@ -199,7 +207,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteGrid) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
-  // Test sgpp::optimization::sgpp::optimization::file_io::readMatrix/writeMatrix.
+  // Test
+  // sgpp::optimization::sgpp::optimization::file_io::readMatrix/writeMatrix.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t m1 = 100;
@@ -275,7 +284,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteMatrix) {
 }
 
 BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
-  // Test sgpp::optimization::sgpp::optimization::file_io::readVector/writeVector.
+  // Test
+  // sgpp::optimization::sgpp::optimization::file_io::readVector/writeVector.
   Printer::getInstance().setVerbosity(-1);
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 100;
@@ -326,7 +336,8 @@ BOOST_AUTO_TEST_CASE(TestFileIOReadWriteVector) {
 }
 
 BOOST_AUTO_TEST_CASE(TestHouseholderTransformation) {
-  // Test sgpp::optimization::sgpp::optimization::math::householderTransformation.
+  // Test
+  // sgpp::optimization::sgpp::optimization::math::householderTransformation.
   RandomNumberGenerator::getInstance().setSeed(42);
   const size_t n = 20;
   sgpp::base::DataMatrix A(n, n);

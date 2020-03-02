@@ -4,7 +4,8 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include "BasisEval.hpp"
+
+#include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
@@ -19,11 +20,10 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <vector>
 #include <random>
 
+#include "BasisEval.hpp"
 
 using sgpp::base::BoundingBox;
 using sgpp::base::BoundingBox1D;
@@ -43,11 +43,14 @@ using sgpp::base::SPolyBoundaryBase;
 using sgpp::base::SPolyModifiedBase;
 using sgpp::base::SPolyClenshawCurtisBoundaryBase;
 
-double basisEval(SBasis& basis, GridPoint::level_type l, GridPoint::index_type i, double x) {
+double basisEval(SBasis& basis, GridPoint::level_type l,
+                 GridPoint::index_type i, double x) {
   return basis.eval(l, i, x);
 }
 
-void checkClose(double x, double y, double tol = 1e-8) { BOOST_CHECK_CLOSE(x, y, tol); }
+void checkClose(double x, double y, double tol = 1e-8) {
+  BOOST_CHECK_CLOSE(x, y, tol);
+}
 
 void checkClose(const DataVector& x, const DataVector& y, double tol = 1e-8) {
   BOOST_CHECK_EQUAL(x.getSize(), y.getSize());
@@ -68,8 +71,8 @@ void checkClose(const DataMatrix& x, const DataMatrix& y, double tol = 1e-8) {
   }
 }
 
-void checkClose(const std::vector<DataMatrix>& x, const std::vector<DataMatrix>& y,
-                double tol = 5e-8) {
+void checkClose(const std::vector<DataMatrix>& x,
+                const std::vector<DataMatrix>& y, double tol = 5e-8) {
   BOOST_CHECK_EQUAL(x.size(), y.size());
 
   for (size_t k = 0; k < x.size(); k++) {
@@ -100,23 +103,36 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   std::vector<std::unique_ptr<Grid>> grids;
   grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createBsplineClenshawCurtisGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalNakSplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createFundamentalSplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createWeaklyFundamentalNakSplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createModWeaklyFundamentalNakSplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createModBsplineClenshawCurtisGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(
+      Grid::createFundamentalNakSplineBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createFundamentalSplineGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createFundamentalSplineBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createModFundamentalSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(
+      Grid::createWeaklyFundamentalNakSplineBoundaryGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(
+      Grid::createModWeaklyFundamentalNakSplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<Grid>(
+      Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createLinearBoundaryGrid(d)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisBoundaryGrid(d)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisGrid(d)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createLinearClenshawCurtisBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModLinearGrid(d)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createNaturalBsplineBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createNakBsplineBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createNaturalBsplineBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createNakBsplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModNakBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletGrid(d)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createWaveletBoundaryGrid(d)));
@@ -124,39 +140,63 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createPolyBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<Grid>(Grid::createModPolyGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisBoundaryGrid(d, p)));
-  grids.push_back(std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisBoundaryGrid(d, p)));
+  grids.push_back(
+      std::unique_ptr<Grid>(Grid::createPolyClenshawCurtisGrid(d, p)));
 
   std::vector<std::unique_ptr<SBasis>> bases;
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineBoundaryBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineClenshawCurtisBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalNakSplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineModifiedBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalNakSplineBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SBsplineBoundaryBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SBsplineClenshawCurtisBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SBsplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SBsplineModifiedClenshawCurtisBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SFundamentalNakSplineBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SFundamentalSplineBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SFundamentalSplineModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SWeaklyFundamentalNakSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(
       new sgpp::base::SWeaklyFundamentalNakSplineModifiedBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalSplineBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SWeaklyFundamentalSplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBoundaryBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNaturalBsplineBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SLinearBoundaryBase()));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SLinearClenshawCurtisBase()));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SLinearClenshawCurtisBoundaryBase()));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SLinearModifiedBase()));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SNaturalBsplineBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNakBsplineBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SNakBsplineModifiedBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SNakBsplineModifiedBase(p)));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SWaveletModifiedBase()));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SWaveletBoundaryBase()));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SWaveletModifiedBase()));
   bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyBoundaryBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyModifiedBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBoundaryBase(p)));
-  bases.push_back(std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SPolyBoundaryBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SPolyModifiedBase(p)));
+  bases.push_back(std::unique_ptr<SBasis>(
+      new sgpp::base::SPolyClenshawCurtisBoundaryBase(p)));
+  bases.push_back(
+      std::unique_ptr<SBasis>(new sgpp::base::SPolyClenshawCurtisBase(p)));
 
   for (size_t k = 0; k < grids.size(); k++) {
     Grid& grid = *grids[k];
@@ -200,14 +240,18 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
     }
 
     // create operations
-    std::unique_ptr<OperationEval> opEval(sgpp::op_factory::createOperationEvalNaive(grid));
+    std::unique_ptr<OperationEval> opEval(
+        sgpp::op_factory::createOperationEvalNaive(grid));
     std::unique_ptr<OperationEvalGradient> opEvalGradient(nullptr);
     std::unique_ptr<OperationEvalHessian> opEvalHessian(nullptr);
-    std::unique_ptr<OperationEvalPartialDerivative> opEvalPartialDerivative(nullptr);
+    std::unique_ptr<OperationEvalPartialDerivative> opEvalPartialDerivative(
+        nullptr);
 
     if (hasGradients) {
-      opEvalGradient.reset(sgpp::op_factory::createOperationEvalGradientNaive(grid));
-      opEvalHessian.reset(sgpp::op_factory::createOperationEvalHessianNaive(grid));
+      opEvalGradient.reset(
+          sgpp::op_factory::createOperationEvalGradientNaive(grid));
+      opEvalHessian.reset(
+          sgpp::op_factory::createOperationEvalHessianNaive(grid));
       opEvalPartialDerivative.reset(
           sgpp::op_factory::createOperationEvalPartialDerivativeNaive(grid));
     }
@@ -231,7 +275,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         // evaluate at random point
         for (size_t t = 0; t < d; t++) {
           x[t] = uniformDistribution(generator);
-          y[t] = boundingBox.getIntervalOffset(t) + boundingBox.getIntervalWidth(t) * x[t];
+          y[t] = boundingBox.getIntervalOffset(t) +
+                 boundingBox.getIntervalWidth(t) * x[t];
         }
 
         fx = 0.0;
@@ -260,7 +305,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
             for (size_t t = 0; t < d; t++) {
               if (t == j) {
                 val *=
-                    basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
+                    basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                    innerDerivative[t];
               } else {
                 val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
               }
@@ -276,11 +322,13 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
               for (size_t t = 0; t < d; t++) {
                 if ((t == j) && (t == k)) {
-                  val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                  val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t),
+                                       x[t]) *
                          innerDerivative[t] * innerDerivative[t];
                 } else if ((t == j) || (t == k)) {
                   val *=
-                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                      innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -308,7 +356,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         // test partial derivative evaluation
         for (size_t t = 0; t < d; t++) {
           double partDeriv2;
-          fx2 = opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, partDeriv2);
+          fx2 = opEvalPartialDerivative->evalPartialDerivative(alpha, y, t,
+                                                               partDeriv2);
           checkClose(fx, fx2);
           checkClose(fxGradient[t], partDeriv2);
         }
@@ -344,7 +393,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
         // evaluate at random point
         for (size_t t = 0; t < d; t++) {
           x[t] = uniformDistribution(generator);
-          y[t] = boundingBox.getIntervalOffset(t) + boundingBox.getIntervalWidth(t) * x[t];
+          y[t] = boundingBox.getIntervalOffset(t) +
+                 boundingBox.getIntervalWidth(t) * x[t];
         }
 
         fx.setAll(0.0);
@@ -375,7 +425,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
               for (size_t t = 0; t < d; t++) {
                 if (t == j) {
                   val *=
-                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) * innerDerivative[t];
+                      basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                      innerDerivative[t];
                 } else {
                   val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                 }
@@ -391,13 +442,16 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
                 for (size_t t = 0; t < d; t++) {
                   if ((t == j) && (t == k)) {
-                    val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                    val *= basisEvalDxDx(basis, gp.getLevel(t), gp.getIndex(t),
+                                         x[t]) *
                            innerDerivative[t] * innerDerivative[t];
                   } else if ((t == j) || (t == k)) {
-                    val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t), x[t]) *
+                    val *= basisEvalDx(basis, gp.getLevel(t), gp.getIndex(t),
+                                       x[t]) *
                            innerDerivative[t];
                   } else {
-                    val *= basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
+                    val *=
+                        basisEval(basis, gp.getLevel(t), gp.getIndex(t), x[t]);
                   }
                 }
 
@@ -431,7 +485,8 @@ BOOST_AUTO_TEST_CASE(TestOperationEvalNaive) {
 
           fx2.setAll(0.0);
           DataVector fxPartDeriv2(m);
-          opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, fx2, fxPartDeriv2);
+          opEvalPartialDerivative->evalPartialDerivative(alpha, y, t, fx2,
+                                                         fxPartDeriv2);
 
           checkClose(fx, fx2);
           checkClose(fxPartDeriv, fxPartDeriv2);

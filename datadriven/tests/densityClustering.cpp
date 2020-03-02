@@ -7,7 +7,7 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include "test_datadrivenCommon.hpp"
+#include <boost/test/unit_test.hpp>
 
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OperationCreateGraphOCLSingleDevice.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
@@ -21,7 +21,6 @@
 #include <sgpp/globaldef.hpp>
 
 #include <zlib.h>
-#include <boost/test/unit_test.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -30,6 +29,7 @@
 #include <tuple>
 #include <vector>
 
+#include "test_datadrivenCommon.hpp"
 
 void multiply_and_test(
     sgpp::base::OCLOperationConfiguration *parameters,

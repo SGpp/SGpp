@@ -4,17 +4,16 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
-#include "GridCreator.hpp"
+#include <boost/test/unit_test.hpp>
 
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/optimization/operation/OptimizationOpFactory.hpp>
 #include <sgpp/optimization/test_problems/unconstrained/Sphere.hpp>
 
-#include <boost/test/unit_test.hpp>
-
 #include <vector>
 
+#include "GridCreator.hpp"
 
 using sgpp::base::Printer;
 using sgpp::base::RandomNumberGenerator;
@@ -70,7 +69,8 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
 
     for (size_t i = 0; i < grid->getSize(); i++) {
       for (size_t j = 0; j < m; j++) {
-        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j), functionValuesMatrix2(i, j), tol);
+        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j),
+                          functionValuesMatrix2(i, j), tol);
       }
     }
   }
