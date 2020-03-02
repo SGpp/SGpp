@@ -1241,29 +1241,17 @@ void DataMiningConfigParser::parseDataTransformationConfig(
   // If type Rosenblatt parse RosenblattTransformationConfig
   if (config.type == DataTransformationType::ROSENBLATT) {
     auto rosenblattTransformationConfig = static_cast<DictNode *>(
-        &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
-    parseRosenblattTransformationConfig(*rosenblattTransformationConfig, config.rosenblattConfig,
-                                        defaults.rosenblattConfig, "rosenblattConfig");
+           &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+       parseRosenblattTransformationConfig(
+           *rosenblattTransformationConfig, config.rosenblattConfig,
+           defaults.rosenblattConfig, "rosenblattConfig");
   // If type Normalization parse Normalizationconfig
   } else if (config.type == DataTransformationType::NORMALIZATION) {
     auto normalizationTransformationConfig = static_cast<DictNode *>(
-      &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
-    parseNormalizationTransformationConfig(*normalizationTransformationConfig,
-                                           config.normalizationConfig,
-                                           defaults.normalizationConfig, "normalizationConfig");
-  } else {
-      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
-                   "Using default values." << std::endl;
-     }
-    parseRosenblattTransformationConfig(
-        *rosenblattTransformationConfig, config.rosenblattConfig,
-        defaults.rosenblattConfig, "rosenblattConfig");
-  } else {
-    std::cout << "# Could not find specification of "
-                 "dataSource[dataTransformationConfig]"
-                 "[rosenblattConfig]. Falling back to default values."
-              << std::endl;
-    config.rosenblattConfig = defaults.rosenblattConfig;
+           &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
+    parseNormalizationTransformationConfig(
+           *normalizationTransformationConfig, config.normalizationConfig,
+           defaults.normalizationConfig, "normalizationConfig");
   }
 }
 
