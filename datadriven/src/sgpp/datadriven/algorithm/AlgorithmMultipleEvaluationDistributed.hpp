@@ -54,12 +54,9 @@ class AlgorithmMultipleEvaluationDistributed {
     size_t source_size = source.getSize();
 
     sgpp::base::DataVector privateResult(result.getGlobalRows());
-    privateResult.setAll(0.0);
 
     sgpp::base::DataVector line(x.getNcols());
     sgpp::base::AlgorithmEvaluationTransposed<BASIS> AlgoEvalTrans(storage);
-
-    privateResult.setAll(0.0);
 
     // distribute into approximately even blocks
     auto processGrid = result.getProcessGrid();

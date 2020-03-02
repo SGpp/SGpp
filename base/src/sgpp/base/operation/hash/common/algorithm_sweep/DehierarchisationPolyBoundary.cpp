@@ -24,7 +24,6 @@ DehierarchisationPolyBoundary::~DehierarchisationPolyBoundary() {
 void DehierarchisationPolyBoundary::operator()(DataVector& source,
     DataVector& result, grid_iterator& index, size_t dim) {
   DataVector coeffs(index.getGridDepth(dim) + 2);
-  coeffs.setAll(0.0);
 
   // init coefficients at the boundary
   size_t seq;

@@ -3,19 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/exception/application_exception.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 using sgpp::base::DataVector;
 using sgpp::base::DataMatrix;

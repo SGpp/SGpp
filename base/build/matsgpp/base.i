@@ -143,6 +143,10 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/OperationSecondMoment.hpp"
 
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
+%include "base/src/sgpp/base/grid/GridTypeParser.hpp"
+%include "base/src/sgpp/base/grid/GeneralGridTypeParser.hpp"
+%include "base/src/sgpp/base/grid/RefinementConfiguration.hpp"
+%include "base/src/sgpp/base/grid/RefinementFunctorTypeParser.hpp"
 
 /*%include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystem.hpp"
 %include "pde/src/sgpp/pde/operation/hash/OperationParabolicPDESolverSystemDirichlet.hpp"

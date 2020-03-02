@@ -10,7 +10,6 @@
 
 #include <sgpp/globaldef.hpp>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -29,16 +28,15 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    * @param alpha output the coefficients of the sparse grid's basis functions
    * @param final judgement the final step of this base learner
    */
-  virtual void alphaSolver(double& lambda, base::DataVector& weight,
-                           base::DataVector& alpha, bool final);
+  virtual void alphaSolver(double& lambda, base::DataVector& weight, base::DataVector& alpha,
+                           bool final);
 
  public:
   /**
    * Std-Constructor
    *
    * @param SparseGrid reference to the sparse grid
-   * @param gridType reference to the of grid type(1 = Linear Grid, 2 = LinearL0Boundary Grid, 
-   *   3 = ModLinear Grid)
+   * @param gridType reference to the type of grid
    * @param gridLevel reference to the level of grid
    * @param trainData reference to the training dataset
    * @param trainDataClass reference to the class of training dataset
@@ -61,7 +59,7 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
    * @param percentOfAda the percentage of Grid points to refine
    * @param mode the adaboost type to choose
    */
-  AlgorithmAdaBoostIdentity(base::Grid& SparseGrid, size_t gridType,
+  AlgorithmAdaBoostIdentity(base::Grid& SparseGrid, base::GridType gridType,
                             base::level_t gridLevel, base::DataMatrix& trainData,
                             base::DataVector& trainDataClass, size_t NUM, double lambda,
                             size_t IMAX, double eps, size_t IMAX_final, double eps_final,
@@ -79,5 +77,3 @@ class AlgorithmAdaBoostIdentity : public AlgorithmAdaBoostBase {
 }  // namespace datadriven
 }  // namespace sgpp
 #endif
-
-

@@ -1,22 +1,19 @@
-# !/usr/bin/python
-# Copyright (C) 2013 Technische Universitaet Muenchen
+#!/usr/bin/python
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice at http://www5.in.tum.de/SGpp
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
 #
+"""
+@file    ASGC.py
+@brief   Adaptive Sparse Grid Collocation method for UQ
+@version  0.1
+
+"""
 from pysgpp.extensions.datadriven.uq.dists.KDEDist import KDEDist
 from pysgpp.extensions.datadriven.uq.dists.SGDEdist import SGDEdist
 from scipy.stats.mstats_basic import moment
 from pysgpp.pysgpp_swig import BandwidthOptimizationType_SILVERMANSRULE
-"""
-@file    ASGC.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Tue Jul 23 12:58:31 2013
-
-@brief   Adaptive Sparse Grid Collocation method for UQ
-
-@version  0.1
-
-"""
 from pysgpp.extensions.datadriven.uq.tools import writeDataARFF
 import numpy as np
 

@@ -7,8 +7,17 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <zlib.h>
 #include <boost/test/unit_test.hpp>
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <zlib.h>
 
 #include <fstream>
 #include <iostream>
@@ -17,13 +26,6 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 #include "test_datadrivenCommon.hpp"
 
 namespace TestStreamingOCLMultiPlatformMultTransposeFixture {
@@ -33,29 +35,30 @@ struct FilesNamesAndErrorFixture {
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-18),
+          "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-18),
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-26)};
+          "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-26)};
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorFloat = {
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E+5),
+          "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E+5),
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-8)};
+          "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-8)};
 
   uint32_t level = 5;
 };
 }  // namespace TestStreamingOCLMultiPlatformMultTransposeFixture
 
-BOOST_FIXTURE_TEST_SUITE(
-    TestStreamingOCLMultiPlatformMultTranspose,
-    TestStreamingOCLMultiPlatformMultTransposeFixture::FilesNamesAndErrorFixture)
+BOOST_FIXTURE_TEST_SUITE(TestStreamingOCLMultiPlatformMultTranspose,
+                         TestStreamingOCLMultiPlatformMultTransposeFixture::
+                             FilesNamesAndErrorFixture)
 
 BOOST_AUTO_TEST_CASE(Simple) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
@@ -69,15 +72,16 @@ BOOST_AUTO_TEST_CASE(Simple) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear, level,
-                           configuration);
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(Blocking) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsSingleDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
@@ -91,15 +95,16 @@ BOOST_AUTO_TEST_CASE(Blocking) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear, level,
-                           configuration);
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDevice) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiDevice();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -113,15 +118,16 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear, level,
-                           configuration);
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatform) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
       getConfigurationDefaultsMultiPlatform();
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -135,8 +141,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear, level,
-                           configuration);
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
@@ -145,7 +151,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -159,7 +166,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear, level, configuration);
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
@@ -168,7 +176,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -182,7 +191,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear, level, configuration);
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
@@ -191,7 +201,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -205,7 +216,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear, level, configuration);
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
@@ -214,7 +226,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
 
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
@@ -228,7 +241,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
       sgpp::datadriven::OperationMultipleEvalSubType::OCLMP, *parameters);
 
-  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear, level, configuration);
+  compareDatasetsTranspose(fileNamesErrorFloat, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

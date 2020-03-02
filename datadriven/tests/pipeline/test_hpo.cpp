@@ -45,7 +45,7 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
   void fit(Dataset &dataset) override {}
 
-  bool refine() override { return false; }
+  bool adapt() override { return false; }
 
   void update(Dataset &dataset) override {}
 

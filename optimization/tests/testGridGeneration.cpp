@@ -81,11 +81,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     const double adaptivity = 0.42;
     gridGen.setAdaptivity(adaptivity);
 
-    const IterativeGridGeneratorSOO::AdaptivityFunction adaptivityFunction = [](size_t n) {
-      return n * n;
-    };
+    const IterativeGridGeneratorSOO::AdaptivityFunction adaptivityFunction = [](
+        size_t n) { return n * n; };
     gridGen.setAdaptivity(adaptivityFunction);
-    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42), static_cast<size_t>(42 * 42));
+    BOOST_CHECK_EQUAL(gridGen.getAdaptivity()(42),
+                      static_cast<size_t>(42 * 42));
   }
 
   for (auto& grid : grids) {
@@ -95,10 +95,11 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
     IterativeGridGeneratorLinearSurplus gridGenLS(f, *grid, N, 0.85);
     IterativeGridGeneratorSOO gridGenSOO(f, *grid, N, 0.85);
 
-    gridGenRNFastPow.setPowMethod(IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
+    gridGenRNFastPow.setPowMethod(
+        IterativeGridGeneratorRitterNovak::PowMethod::FAST_POW);
 
-    std::vector<IterativeGridGenerator*> gridGens = {&gridGenRN, &gridGenRNFastPow, &gridGenLS,
-                                                     &gridGenSOO};
+    std::vector<IterativeGridGenerator*> gridGens = {
+        &gridGenRN, &gridGenRNFastPow, &gridGenLS, &gridGenSOO};
 
     for (auto& gridGen : gridGens) {
       // empty grid
@@ -112,11 +113,13 @@ BOOST_AUTO_TEST_CASE(TestIterativeGridGenerators) {
       BOOST_CHECK_LE(n, N);
 
       // test size of function value vector
-      const sgpp::base::DataVector& functionValues = gridGen->getFunctionValues();
+      const sgpp::base::DataVector& functionValues =
+          gridGen->getFunctionValues();
       BOOST_CHECK_EQUAL(n, functionValues.getSize());
 
       for (size_t i = 0; i < n; i++) {
-        sgpp::base::DataVector x(grid->getStorage().getCoordinates((grid->getStorage())[i]));
+        sgpp::base::DataVector x(
+            grid->getStorage().getCoordinates((grid->getStorage())[i]));
         // test function value
         BOOST_CHECK_CLOSE(functionValues[i], f.eval(x), 1e-10);
       }

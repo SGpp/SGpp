@@ -200,18 +200,6 @@ class CombinationGrid {
    */
   static std::vector<LevelVector> enumerateLevelsWithSumWithoutBoundary(size_t dim, level_t n);
 
-  /**
-   * Helper function to find a grid point in a full grid.
-   *
-   * @param[in] fullGrid    full grid to search
-   * @param[in] gridPoint   grid point to find
-   * @param[out] index      index of the grid point after calling
-   *                        (if the grid point is contained in the full grid)
-   * @return whether the grid point is in the full grid
-   */
-  static bool findGridPointInFullGrid(const FullGrid& fullGrid, const base::GridPoint& gridPoint,
-      IndexVector& index);
-
  protected:
   /// vector of full grids
   std::vector<FullGrid> fullGrids;

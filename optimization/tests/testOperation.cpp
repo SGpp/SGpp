@@ -69,7 +69,8 @@ BOOST_AUTO_TEST_CASE(TestOperationMultipleHierarchisation) {
 
     for (size_t i = 0; i < grid->getSize(); i++) {
       for (size_t j = 0; j < m; j++) {
-        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j), functionValuesMatrix2(i, j), tol);
+        BOOST_CHECK_CLOSE(functionValuesMatrix(i, j),
+                          functionValuesMatrix2(i, j), tol);
       }
     }
   }

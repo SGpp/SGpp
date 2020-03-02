@@ -1,11 +1,10 @@
 branches:
   only:
   - master
-  - testing
 
 language: cpp
 
-dist: xenial
+dist: bionic
 
 addons:
   apt:
@@ -20,6 +19,24 @@ matrix:
         - scons
     script:
     - scons -j 2 SG_PYTHON=0 SG_JAVA=0 RUN_CPP_EXAMPLES=1
+  - name: "SGpp-travis-package"
+    before_install:
+      - ./tools/travis_scripts/install_pip_packaging_tools.sh
+    addons:
+      apt:
+        packages:
+        - fakeroot
+        - scons
+        - swig
+        - python3-pip
+        - python3-dev
+        - libgomp1
+        - doxygen
+        - openjdk-11-jdk
+        - javahelper
+    script:
+    - bash tools/travis_scripts/create_deb_install_deb_and_test.sh
+    - bash tools/travis_scripts/create_and_patch_python_wheel.sh
   - name: "SGpp-travis-medium"
     addons:
       apt:

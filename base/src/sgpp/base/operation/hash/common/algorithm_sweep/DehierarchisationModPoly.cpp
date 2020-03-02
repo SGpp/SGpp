@@ -22,7 +22,7 @@ DehierarchisationModPoly::~DehierarchisationModPoly() {}
 void DehierarchisationModPoly::operator()(DataVector& source, DataVector& result,
                                           grid_iterator& index, size_t dim) {
   DataVector coeffs(index.getGridDepth(dim) + 1);
-  coeffs.setAll(0.0);
+
   rec(source, result, index, dim, coeffs);
 }
 

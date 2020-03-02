@@ -132,8 +132,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   errors.componentwise_mult(weights);
 
   // Refine the grid using the weighted errors.
-  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
-                                                      adaptivityConfig.threshold_);
+  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.numRefinementPoints_,
+                                                      adaptivityConfig.refinementThreshold_);
   if (terms.size() > 0) {
     grid->getGenerator().refineInter(refineFunctor, terms);
   } else {
@@ -183,7 +183,6 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
     grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
   }
   weights = base::DataVector(grid->getSize());
-  weights.setAll(0.0);
 }
 
 // maybe pass regularizationConfig instead of state.
@@ -217,8 +216,8 @@ RegressionLearner::Solver RegressionLearner::createSolver(size_t n_rows) {
   using solver::SLESolverType;
   switch (solverConfig.type_) {
     case SLESolverType::CG:
-      return Solver(std::make_unique<solver::ConjugateGradients>(
-          solverConfig.maxIterations_, solverConfig.eps_));
+      return Solver(std::make_unique<solver::ConjugateGradients>(solverConfig.maxIterations_,
+                                                                 solverConfig.eps_));
     case SLESolverType::BiCGSTAB:
       return Solver(
           std::make_unique<solver::BiCGStab>(solverConfig.maxIterations_, solverConfig.eps_));
