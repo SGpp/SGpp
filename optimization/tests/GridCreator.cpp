@@ -7,6 +7,7 @@
 
 #include <vector>
 
+
 void createSupportedGrids(
     size_t d, size_t p, std::vector<std::unique_ptr<sgpp::base::Grid>>& grids) {
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(

@@ -6,17 +6,18 @@
 #ifdef USE_SCALAPACK
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "test_datadrivenCommon.hpp"
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
+#include <boost/test/unit_test.hpp>
+
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "test_datadrivenCommon.hpp"
 
 using sgpp::datadriven::BlacsProcessGrid;
 using sgpp::datadriven::OperationMultipleEvalConfiguration;

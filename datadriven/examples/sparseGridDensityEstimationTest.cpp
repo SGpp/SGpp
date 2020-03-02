@@ -8,16 +8,16 @@
  * This examples demonstrates density estimation.
  */
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/KernelDensityEstimator.hpp>
+#include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
+#include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <random>
 #include <string>
-
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/application/KernelDensityEstimator.hpp"
-#include "sgpp/datadriven/application/SparseGridDensityEstimator.hpp"
-#include "sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
-#include "sgpp/globaldef.hpp"
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;

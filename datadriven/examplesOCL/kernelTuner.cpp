@@ -3,17 +3,18 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/application/StaticParameterTuner.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
 
 #include <iostream>
 #include <string>
 
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/application/StaticParameterTuner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
 
 int main(int argc, char **argv) {
   std::string scenarioFileName;

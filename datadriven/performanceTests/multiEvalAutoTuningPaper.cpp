@@ -7,11 +7,15 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <boost/test/unit_test.hpp>
+#include "testsCommon.hpp"
 
-#include <boost/filesystem.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/application/StaticParameterTuner.hpp>
 
 #include <zlib.h>
+#include <boost/test/unit_test.hpp>
+#include <boost/filesystem.hpp>
 
 #include <chrono>
 #include <fstream>
@@ -21,11 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "testsCommon.hpp"
-
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/application/StaticParameterTuner.hpp"
 
 std::string scenarioBaseDir = "datadriven/performanceTests/scenarios/";
 
