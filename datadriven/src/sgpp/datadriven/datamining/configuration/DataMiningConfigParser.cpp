@@ -1242,7 +1242,6 @@ void DataMiningConfigParser::parseDataTransformationConfig(
   if (config.type == DataTransformationType::ROSENBLATT) {
     auto rosenblattTransformationConfig = static_cast<DictNode *>(
         &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
-<<<<<<< HEAD
     parseRosenblattTransformationConfig(*rosenblattTransformationConfig, config.rosenblattConfig,
                                         defaults.rosenblattConfig, "rosenblattConfig");
   // If type Normalization parse Normalizationconfig
@@ -1256,7 +1255,6 @@ void DataMiningConfigParser::parseDataTransformationConfig(
       std::cout << "# Could not find specification of dataSource[dataTransformationConfig]"
                    "Using default values." << std::endl;
      }
-=======
     parseRosenblattTransformationConfig(
         *rosenblattTransformationConfig, config.rosenblattConfig,
         defaults.rosenblattConfig, "rosenblattConfig");
@@ -1267,7 +1265,6 @@ void DataMiningConfigParser::parseDataTransformationConfig(
               << std::endl;
     config.rosenblattConfig = defaults.rosenblattConfig;
   }
->>>>>>> 8f17edef3b5573af92d9e2d34566b46379ad1ac2
 }
 
 void DataMiningConfigParser::parseRosenblattTransformationConfig(
