@@ -3,20 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp>
+
+#include <sgpp/base/opencl/OCLClonedBuffer.hpp>
+#include <sgpp/base/opencl/OCLManager.hpp>
+#include <sgpp/base/opencl/OCLStretchedBuffer.hpp>
+
 #include <iostream>
 
 #include <chrono>
 #include <random>
 #include <thread>  // NOLINT(build/c++11)
 
-#include "sgpp/base/opencl/OCLClonedBufferMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/opencl/OCLStretchedBufferMultiPlatform.hpp"
-
-#include "sgpp/base/opencl/OCLClonedBuffer.hpp"
-#include "sgpp/base/opencl/OCLManager.hpp"
-#include "sgpp/base/opencl/OCLStretchedBuffer.hpp"
 
 void doStuffOld(std::shared_ptr<sgpp::base::OCLManager> manager, double* values, size_t valueSize) {
   //    OCLClonedBuffer buffer(manager);

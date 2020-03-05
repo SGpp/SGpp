@@ -66,11 +66,12 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   const size_t l = 6;
   const size_t N = 1000;
 
-  std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
+  std::unique_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createModBsplineGrid(d, p));
   sgpp::base::DataVector alpha(0);
   createSampleGrid(*grid, l, f, alpha);
   std::unique_ptr<OperationMultipleHierarchisation> op(
-    sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
+      sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
   op->doHierarchisation(alpha);
   InterpolantScalarFunction ft(*grid, alpha);
   InterpolantScalarFunctionGradient ftGradient(*grid, alpha);
@@ -78,7 +79,8 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
   // test getters/setters
   {
-    sgpp::optimization::optimizer::GradientDescent gradientDescent(f, fGradient, N);
+    sgpp::optimization::optimizer::GradientDescent gradientDescent(f, fGradient,
+                                                                   N);
 
     checkEqualFunction(gradientDescent.getObjectiveFunction(), f);
     checkEqualFunction(*gradientDescent.getObjectiveGradient(), fGradient);
@@ -163,10 +165,12 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   }
 
   {
-    sgpp::optimization::optimizer::AdaptiveGradientDescent adaptiveGradientDescent(f, fGradient, N);
+    sgpp::optimization::optimizer::AdaptiveGradientDescent
+        adaptiveGradientDescent(f, fGradient, N);
 
     checkEqualFunction(adaptiveGradientDescent.getObjectiveFunction(), f);
-    checkEqualFunction(*adaptiveGradientDescent.getObjectiveGradient(), fGradient);
+    checkEqualFunction(*adaptiveGradientDescent.getObjectiveGradient(),
+                       fGradient);
 
     const double tolerance = 1e-2;
     adaptiveGradientDescent.setTolerance(tolerance);
@@ -174,19 +178,23 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     const double stepSizeIncreaseFactor = 0.42;
     adaptiveGradientDescent.setStepSizeIncreaseFactor(stepSizeIncreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getStepSizeIncreaseFactor(), stepSizeIncreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getStepSizeIncreaseFactor(),
+                      stepSizeIncreaseFactor);
 
     const double stepSizeDecreaseFactor = 0.43;
     adaptiveGradientDescent.setStepSizeDecreaseFactor(stepSizeDecreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getStepSizeDecreaseFactor(), stepSizeDecreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getStepSizeDecreaseFactor(),
+                      stepSizeDecreaseFactor);
 
     const double lineSearchAccuracy = 1e-3;
     adaptiveGradientDescent.setLineSearchAccuracy(lineSearchAccuracy);
-    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getLineSearchAccuracy(), lineSearchAccuracy);
+    BOOST_CHECK_EQUAL(adaptiveGradientDescent.getLineSearchAccuracy(),
+                      lineSearchAccuracy);
   }
 
   {
-    sgpp::optimization::optimizer::AdaptiveNewton adaptiveNewton(f, fHessian, N);
+    sgpp::optimization::optimizer::AdaptiveNewton adaptiveNewton(f, fHessian,
+                                                                 N);
 
     checkEqualFunction(adaptiveNewton.getObjectiveFunction(), f);
     checkEqualFunction(*adaptiveNewton.getObjectiveHessian(), fHessian);
@@ -197,23 +205,28 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     const double stepSizeIncreaseFactor = 0.42;
     adaptiveNewton.setStepSizeIncreaseFactor(stepSizeIncreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveNewton.getStepSizeIncreaseFactor(), stepSizeIncreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveNewton.getStepSizeIncreaseFactor(),
+                      stepSizeIncreaseFactor);
 
     const double stepSizeDecreaseFactor = 0.43;
     adaptiveNewton.setStepSizeDecreaseFactor(stepSizeDecreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveNewton.getStepSizeDecreaseFactor(), stepSizeDecreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveNewton.getStepSizeDecreaseFactor(),
+                      stepSizeDecreaseFactor);
 
     const double dampingIncreaseFactor = 0.44;
     adaptiveNewton.setDampingIncreaseFactor(dampingIncreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveNewton.getDampingIncreaseFactor(), dampingIncreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveNewton.getDampingIncreaseFactor(),
+                      dampingIncreaseFactor);
 
     const double dampingDecreaseFactor = 0.45;
     adaptiveNewton.setDampingDecreaseFactor(dampingDecreaseFactor);
-    BOOST_CHECK_EQUAL(adaptiveNewton.getDampingDecreaseFactor(), dampingDecreaseFactor);
+    BOOST_CHECK_EQUAL(adaptiveNewton.getDampingDecreaseFactor(),
+                      dampingDecreaseFactor);
 
     const double lineSearchAccuracy = 1e-3;
     adaptiveNewton.setLineSearchAccuracy(lineSearchAccuracy);
-    BOOST_CHECK_EQUAL(adaptiveNewton.getLineSearchAccuracy(), lineSearchAccuracy);
+    BOOST_CHECK_EQUAL(adaptiveNewton.getLineSearchAccuracy(),
+                      lineSearchAccuracy);
   }
 
   {
@@ -255,11 +268,13 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     const double stepSizeIncreaseFactor = 0.42;
     rprop.setStepSizeIncreaseFactor(stepSizeIncreaseFactor);
-    BOOST_CHECK_EQUAL(rprop.getStepSizeIncreaseFactor(), stepSizeIncreaseFactor);
+    BOOST_CHECK_EQUAL(rprop.getStepSizeIncreaseFactor(),
+                      stepSizeIncreaseFactor);
 
     const double stepSizeDecreaseFactor = 0.43;
     rprop.setStepSizeDecreaseFactor(stepSizeDecreaseFactor);
-    BOOST_CHECK_EQUAL(rprop.getStepSizeDecreaseFactor(), stepSizeDecreaseFactor);
+    BOOST_CHECK_EQUAL(rprop.getStepSizeDecreaseFactor(),
+                      stepSizeDecreaseFactor);
   }
 
   {
@@ -295,17 +310,20 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
   }
 
   {
-    sgpp::optimization::optimizer::DifferentialEvolution differentialEvolution(f, N);
+    sgpp::optimization::optimizer::DifferentialEvolution differentialEvolution(
+        f, N);
 
     checkEqualFunction(differentialEvolution.getObjectiveFunction(), f);
 
     const size_t populationSize = 42;
     differentialEvolution.setPopulationSize(populationSize);
-    BOOST_CHECK_EQUAL(differentialEvolution.getPopulationSize(), populationSize);
+    BOOST_CHECK_EQUAL(differentialEvolution.getPopulationSize(),
+                      populationSize);
 
     const double crossoverProbability = 0.42;
     differentialEvolution.setCrossoverProbability(crossoverProbability);
-    BOOST_CHECK_EQUAL(differentialEvolution.getCrossoverProbability(), crossoverProbability);
+    BOOST_CHECK_EQUAL(differentialEvolution.getCrossoverProbability(),
+                      crossoverProbability);
 
     const double scalingFactor = 0.43;
     differentialEvolution.setScalingFactor(scalingFactor);
@@ -313,15 +331,18 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
 
     const size_t idleGenerationsCount = 43;
     differentialEvolution.setIdleGenerationsCount(idleGenerationsCount);
-    BOOST_CHECK_EQUAL(differentialEvolution.getIdleGenerationsCount(), idleGenerationsCount);
+    BOOST_CHECK_EQUAL(differentialEvolution.getIdleGenerationsCount(),
+                      idleGenerationsCount);
 
     const double avgImprovementThreshold = 0.44;
     differentialEvolution.setAvgImprovementThreshold(avgImprovementThreshold);
-    BOOST_CHECK_EQUAL(differentialEvolution.getAvgImprovementThreshold(), avgImprovementThreshold);
+    BOOST_CHECK_EQUAL(differentialEvolution.getAvgImprovementThreshold(),
+                      avgImprovementThreshold);
 
     const double maxDistanceThreshold = 0.45;
     differentialEvolution.setMaxDistanceThreshold(maxDistanceThreshold);
-    BOOST_CHECK_EQUAL(differentialEvolution.getMaxDistanceThreshold(), maxDistanceThreshold);
+    BOOST_CHECK_EQUAL(differentialEvolution.getMaxDistanceThreshold(),
+                      maxDistanceThreshold);
   }
 
   {
@@ -346,29 +367,45 @@ BOOST_AUTO_TEST_CASE(TestUnconstrainedOptimizers) {
     }
 
     // Test All the Optimizers!
-    std::vector<std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>> optimizers;
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-        new sgpp::optimization::optimizer::GradientDescent(*curF, *curFGradient, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::NLCG(*curF, *curFGradient, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::Newton(*curF, *curFHessian, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-        new sgpp::optimization::optimizer::AdaptiveGradientDescent(*curF, *curFGradient, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-        new sgpp::optimization::optimizer::AdaptiveNewton(*curF, *curFHessian, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::BFGS(*curF, *curFGradient, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::Rprop(*curF, *curFGradient, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::NelderMead(*curF, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::MultiStart(*curF, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::DifferentialEvolution(*curF, N)));
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
-                             new sgpp::optimization::optimizer::CMAES(*curF, N)));
+    std::vector<std::unique_ptr<
+        sgpp::optimization::optimizer::UnconstrainedOptimizer>> optimizers;
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::GradientDescent(
+                *curF, *curFGradient, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::NLCG(*curF, *curFGradient, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::Newton(*curF, *curFHessian, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::AdaptiveGradientDescent(
+                *curF, *curFGradient, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::AdaptiveNewton(
+                *curF, *curFHessian, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::BFGS(*curF, *curFGradient, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::Rprop(*curF, *curFGradient, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::NelderMead(*curF, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::MultiStart(*curF, N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::DifferentialEvolution(*curF,
+                                                                     N)));
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::UnconstrainedOptimizer>(
+            new sgpp::optimization::optimizer::CMAES(*curF, N)));
 
     for (auto& optimizer : optimizers) {
       // set starting point
@@ -403,18 +440,20 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
   DeformedLinearPhiFunction phi(d);
   DeformedLinearPhiGradient phiGradient(d);
 
-  std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createModBsplineGrid(d, p));
+  std::unique_ptr<sgpp::base::Grid> grid(
+      sgpp::base::Grid::createModBsplineGrid(d, p));
   sgpp::base::DataMatrix alpha(0, 0);
   createSampleGrid(*grid, l, phi, alpha);
   std::unique_ptr<OperationMultipleHierarchisation> op(
-    sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
+      sgpp::op_factory::createOperationMultipleHierarchisation(*grid));
   op->doHierarchisation(alpha);
   InterpolantVectorFunction phit(*grid, alpha);
   InterpolantVectorFunctionGradient phitGradient(*grid, alpha);
 
   // test getters/setters
   {
-    sgpp::optimization::optimizer::LevenbergMarquardt levenbergMarquardt(phi, phiGradient, N);
+    sgpp::optimization::optimizer::LevenbergMarquardt levenbergMarquardt(
+        phi, phiGradient, N);
 
     checkEqualFunction(levenbergMarquardt.getPhiFunction(), phi);
     checkEqualFunction(levenbergMarquardt.getPhiGradient(), phiGradient);
@@ -429,11 +468,13 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
 
     const double acceptanceThreshold = 0.44;
     levenbergMarquardt.setAcceptanceThreshold(acceptanceThreshold);
-    BOOST_CHECK_EQUAL(levenbergMarquardt.getAcceptanceThreshold(), acceptanceThreshold);
+    BOOST_CHECK_EQUAL(levenbergMarquardt.getAcceptanceThreshold(),
+                      acceptanceThreshold);
 
     const double effectivenessThreshold = 0.45;
     levenbergMarquardt.setEffectivenessThreshold(effectivenessThreshold);
-    BOOST_CHECK_EQUAL(levenbergMarquardt.getEffectivenessThreshold(), effectivenessThreshold);
+    BOOST_CHECK_EQUAL(levenbergMarquardt.getEffectivenessThreshold(),
+                      effectivenessThreshold);
   }
 
   for (size_t k = 0; k < 2; k++) {
@@ -449,9 +490,12 @@ BOOST_AUTO_TEST_CASE(TestLeastSquaresOptimizers) {
     }
 
     // Test All the Optimizers!
-    std::vector<std::unique_ptr<sgpp::optimization::optimizer::LeastSquaresOptimizer>> optimizers;
-    optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::LeastSquaresOptimizer>(
-            new sgpp::optimization::optimizer::LevenbergMarquardt(*curPhi, *curPhiGradient, N)));
+    std::vector<std::unique_ptr<
+        sgpp::optimization::optimizer::LeastSquaresOptimizer>> optimizers;
+    optimizers.push_back(
+        std::unique_ptr<sgpp::optimization::optimizer::LeastSquaresOptimizer>(
+            new sgpp::optimization::optimizer::LevenbergMarquardt(
+                *curPhi, *curPhiGradient, N)));
 
     for (auto& optimizer : optimizers) {
       // optimize
@@ -487,7 +531,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
     std::unique_ptr<VectorFunctionGradient> gGradient(nullptr);
     std::unique_ptr<VectorFunction> h(nullptr);
     std::unique_ptr<VectorFunctionGradient> hGradient(nullptr);
-    std::vector<std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>> optimizers;
+    std::vector<std::unique_ptr<
+        sgpp::optimization::optimizer::ConstrainedOptimizer>> optimizers;
 
     if (i == 0) {
       d = 3;
@@ -507,12 +552,14 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       hGradient.reset(new G3ConstraintGradient(d));
 
       optimizers.clear();
-      optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
-          new sgpp::optimization::optimizer::SquaredPenalty(*f, *fGradient, *g, *gGradient, *h,
-                                                            *hGradient, N)));
-      optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
-          new sgpp::optimization::optimizer::AugmentedLagrangian(*f, *fGradient, *g, *gGradient, *h,
-                                                                 *hGradient, N)));
+      optimizers.push_back(
+          std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
+              new sgpp::optimization::optimizer::SquaredPenalty(
+                  *f, *fGradient, *g, *gGradient, *h, *hGradient, N)));
+      optimizers.push_back(
+          std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
+              new sgpp::optimization::optimizer::AugmentedLagrangian(
+                  *f, *fGradient, *g, *gGradient, *h, *hGradient, N)));
     } else {
       d = 2;
       x0.resize(2);
@@ -531,24 +578,30 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
       EmptyVectorFunctionGradient::getInstance().clone(hGradient);
 
       optimizers.clear();
-      optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
-          new sgpp::optimization::optimizer::SquaredPenalty(*f, *fGradient, *g, *gGradient, *h,
-                                                            *hGradient, N)));
-      optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
-          new sgpp::optimization::optimizer::LogBarrier(*f, *fGradient, *g, *gGradient, N)));
-      optimizers.push_back(std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
-          new sgpp::optimization::optimizer::AugmentedLagrangian(*f, *fGradient, *g, *gGradient, *h,
-                                                                 *hGradient, N)));
+      optimizers.push_back(
+          std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
+              new sgpp::optimization::optimizer::SquaredPenalty(
+                  *f, *fGradient, *g, *gGradient, *h, *hGradient, N)));
+      optimizers.push_back(
+          std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
+              new sgpp::optimization::optimizer::LogBarrier(*f, *fGradient, *g,
+                                                            *gGradient, N)));
+      optimizers.push_back(
+          std::unique_ptr<sgpp::optimization::optimizer::ConstrainedOptimizer>(
+              new sgpp::optimization::optimizer::AugmentedLagrangian(
+                  *f, *fGradient, *g, *gGradient, *h, *hGradient, N)));
     }
 
     // test getters/setters
     {
-      sgpp::optimization::optimizer::SquaredPenalty squaredPenalty(*f, *fGradient, *g, *gGradient,
-                                                                   *h, *hGradient, N);
+      sgpp::optimization::optimizer::SquaredPenalty squaredPenalty(
+          *f, *fGradient, *g, *gGradient, *h, *hGradient, N);
 
       checkEqualFunction(*squaredPenalty.getObjectiveGradient(), *fGradient);
-      checkEqualFunction(*squaredPenalty.getInequalityConstraintGradient(), *gGradient);
-      checkEqualFunction(*squaredPenalty.getEqualityConstraintGradient(), *hGradient);
+      checkEqualFunction(*squaredPenalty.getInequalityConstraintGradient(),
+                         *gGradient);
+      checkEqualFunction(*squaredPenalty.getEqualityConstraintGradient(),
+                         *hGradient);
 
       const double xTolerance = 1e-2;
       squaredPenalty.setXTolerance(xTolerance);
@@ -556,22 +609,27 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       const double constraintTolerance = 1e-3;
       squaredPenalty.setConstraintTolerance(constraintTolerance);
-      BOOST_CHECK_EQUAL(squaredPenalty.getConstraintTolerance(), constraintTolerance);
+      BOOST_CHECK_EQUAL(squaredPenalty.getConstraintTolerance(),
+                        constraintTolerance);
 
       const double penaltyStartValue = 1e-4;
       squaredPenalty.setPenaltyStartValue(penaltyStartValue);
-      BOOST_CHECK_EQUAL(squaredPenalty.getPenaltyStartValue(), penaltyStartValue);
+      BOOST_CHECK_EQUAL(squaredPenalty.getPenaltyStartValue(),
+                        penaltyStartValue);
 
       const double penaltyIncreaseFactor = 1e-5;
       squaredPenalty.setPenaltyIncreaseFactor(penaltyIncreaseFactor);
-      BOOST_CHECK_EQUAL(squaredPenalty.getPenaltyIncreaseFactor(), penaltyIncreaseFactor);
+      BOOST_CHECK_EQUAL(squaredPenalty.getPenaltyIncreaseFactor(),
+                        penaltyIncreaseFactor);
     }
 
     {
-      sgpp::optimization::optimizer::LogBarrier logBarrier(*f, *fGradient, *g, *gGradient, N);
+      sgpp::optimization::optimizer::LogBarrier logBarrier(*f, *fGradient, *g,
+                                                           *gGradient, N);
 
       checkEqualFunction(*logBarrier.getObjectiveGradient(), *fGradient);
-      checkEqualFunction(*logBarrier.getInequalityConstraintGradient(), *gGradient);
+      checkEqualFunction(*logBarrier.getInequalityConstraintGradient(),
+                         *gGradient);
 
       const double tolerance = 1e-2;
       logBarrier.setTolerance(tolerance);
@@ -583,16 +641,20 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       const double barrierDecreaseFactor = 1e-4;
       logBarrier.setBarrierDecreaseFactor(barrierDecreaseFactor);
-      BOOST_CHECK_EQUAL(logBarrier.getBarrierDecreaseFactor(), barrierDecreaseFactor);
+      BOOST_CHECK_EQUAL(logBarrier.getBarrierDecreaseFactor(),
+                        barrierDecreaseFactor);
     }
 
     {
       sgpp::optimization::optimizer::AugmentedLagrangian augmentedLagrangian(
-        *f, *fGradient, *g, *gGradient, *h, *hGradient, N);
+          *f, *fGradient, *g, *gGradient, *h, *hGradient, N);
 
-      checkEqualFunction(*augmentedLagrangian.getObjectiveGradient(), *fGradient);
-      checkEqualFunction(*augmentedLagrangian.getInequalityConstraintGradient(), *gGradient);
-      checkEqualFunction(*augmentedLagrangian.getEqualityConstraintGradient(), *hGradient);
+      checkEqualFunction(*augmentedLagrangian.getObjectiveGradient(),
+                         *fGradient);
+      checkEqualFunction(*augmentedLagrangian.getInequalityConstraintGradient(),
+                         *gGradient);
+      checkEqualFunction(*augmentedLagrangian.getEqualityConstraintGradient(),
+                         *hGradient);
 
       const double xTolerance = 1e-2;
       augmentedLagrangian.setXTolerance(xTolerance);
@@ -600,15 +662,18 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
       const double constraintTolerance = 1e-3;
       augmentedLagrangian.setConstraintTolerance(constraintTolerance);
-      BOOST_CHECK_EQUAL(augmentedLagrangian.getConstraintTolerance(), constraintTolerance);
+      BOOST_CHECK_EQUAL(augmentedLagrangian.getConstraintTolerance(),
+                        constraintTolerance);
 
       const double penaltyStartValue = 1e-4;
       augmentedLagrangian.setPenaltyStartValue(penaltyStartValue);
-      BOOST_CHECK_EQUAL(augmentedLagrangian.getPenaltyStartValue(), penaltyStartValue);
+      BOOST_CHECK_EQUAL(augmentedLagrangian.getPenaltyStartValue(),
+                        penaltyStartValue);
 
       const double penaltyIncreaseFactor = 1e-5;
       augmentedLagrangian.setPenaltyIncreaseFactor(penaltyIncreaseFactor);
-      BOOST_CHECK_EQUAL(augmentedLagrangian.getPenaltyIncreaseFactor(), penaltyIncreaseFactor);
+      BOOST_CHECK_EQUAL(augmentedLagrangian.getPenaltyIncreaseFactor(),
+                        penaltyIncreaseFactor);
     }
 
     for (auto& optimizer : optimizers) {
@@ -632,7 +697,8 @@ BOOST_AUTO_TEST_CASE(TestConstrainedOptimizers) {
 
     // test AugmentedLagrangian::findFeasiblePoint
     sgpp::optimization::optimizer::AugmentedLagrangian* optimizer =
-      dynamic_cast<sgpp::optimization::optimizer::AugmentedLagrangian*>(optimizers.back().get());
+        dynamic_cast<sgpp::optimization::optimizer::AugmentedLagrangian*>(
+            optimizers.back().get());
 
     sgpp::base::DataVector x = optimizer->findFeasiblePoint();
     sgpp::base::DataVector gx(g->getNumberOfComponents());

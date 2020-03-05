@@ -10,6 +10,7 @@
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 
 #include <chrono>
 #include <iostream>
@@ -17,7 +18,6 @@
 #include <vector>
 #include <memory>
 
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
   size_t dimension = 4, tiefe = 10;

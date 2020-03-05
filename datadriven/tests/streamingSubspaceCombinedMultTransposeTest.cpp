@@ -8,8 +8,17 @@
 #ifdef __AVX__
 
 #define BOOST_TEST_DYN_LINK
-#include <zlib.h>
 #include <boost/test/unit_test.hpp>
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <zlib.h>
 
 #include <fstream>
 #include <iostream>
@@ -18,13 +27,6 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 #include "test_datadrivenCommon.hpp"
 
 namespace TestStreamingSubspaceCombinedMultTransposeFixture {
@@ -34,25 +36,25 @@ struct FilesNamesAndErrorFixture {
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-18),
+          "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-18),
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-26)};
+          "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-26)};
 
   uint32_t level = 5;
 };
 }  // namespace TestStreamingSubspaceCombinedMultTransposeFixture
 
-BOOST_FIXTURE_TEST_SUITE(
-    TestStreamingSubspaceCombinedMultTranspose,
-    TestStreamingSubspaceCombinedMultTransposeFixture::FilesNamesAndErrorFixture)
+BOOST_FIXTURE_TEST_SUITE(TestStreamingSubspaceCombinedMultTranspose,
+                         TestStreamingSubspaceCombinedMultTransposeFixture::
+                             FilesNamesAndErrorFixture)
 
 BOOST_AUTO_TEST_CASE(Simple) {
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::SUBSPACELINEAR,
       sgpp::datadriven::OperationMultipleEvalSubType::COMBINED);
 
-  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear, level,
-                           configuration);
+  compareDatasetsTranspose(fileNamesErrorDouble, sgpp::base::GridType::Linear,
+                           level, configuration);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

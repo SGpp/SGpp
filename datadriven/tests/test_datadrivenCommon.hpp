@@ -10,17 +10,17 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/globaldef.hpp>
+
+#if USE_OCL == 1
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+using sgpp::base::OCLOperationConfiguration;
+#endif
 
 #include <string>
 #include <tuple>
 #include <vector>
 
-#if USE_OCL == 1
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-using sgpp::base::OCLOperationConfiguration;
-#endif
-
-#include "sgpp/globaldef.hpp"
 
 using sgpp::datadriven::BlacsProcessGrid;
 

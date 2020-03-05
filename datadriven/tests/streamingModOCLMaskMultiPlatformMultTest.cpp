@@ -7,8 +7,17 @@
 #if USE_OCL == 1
 
 #define BOOST_TEST_DYN_LINK
-#include <zlib.h>
 #include <boost/test/unit_test.hpp>
+
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/tools/ConfigurationParameters.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
+#include <zlib.h>
 
 #include <fstream>
 #include <iostream>
@@ -17,13 +26,6 @@
 #include <tuple>
 #include <vector>
 
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/base/tools/ConfigurationParameters.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 #include "test_datadrivenCommon.hpp"
 
 using sgpp::datadriven::OperationMultipleEvalConfiguration;
@@ -37,22 +39,23 @@ struct FilesNamesAndErrorFixture {
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorDouble = {
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-22),
+          "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-22),
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-16)};
+          "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E-16)};
 
   std::vector<std::tuple<std::string, double>> fileNamesErrorFloat = {
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-4),
+          "datadriven/datasets/friedman/friedman2_4d_10000.arff.gz", 1E-4),
       std::tuple<std::string, double>(
-        "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E1)};
+          "datadriven/datasets/friedman/friedman1_10d_2000.arff.gz", 1E1)};
 
   uint32_t level = 5;
 };
 }  // namespace TestStreamingModOCLMaskMultiPlatformMultFixture
 
-BOOST_FIXTURE_TEST_SUITE(TestStreamingModOCLMaskMultiPlatformMult,
-                         TestStreamingModOCLMaskMultiPlatformMultFixture::FilesNamesAndErrorFixture)
+BOOST_FIXTURE_TEST_SUITE(
+    TestStreamingModOCLMaskMultiPlatformMult,
+    TestStreamingModOCLMaskMultiPlatformMultFixture::FilesNamesAndErrorFixture)
 
 BOOST_AUTO_TEST_CASE(Simple) {
   std::shared_ptr<sgpp::base::OCLOperationConfiguration> parameters =
@@ -60,7 +63,8 @@ BOOST_AUTO_TEST_CASE(Simple) {
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(1));
@@ -68,9 +72,11 @@ BOOST_AUTO_TEST_CASE(Simple) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(Local) {
@@ -79,7 +85,8 @@ BOOST_AUTO_TEST_CASE(Local) {
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -87,9 +94,11 @@ BOOST_AUTO_TEST_CASE(Local) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(Blocking) {
@@ -98,7 +107,8 @@ BOOST_AUTO_TEST_CASE(Blocking) {
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -107,9 +117,11 @@ BOOST_AUTO_TEST_CASE(Blocking) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDevice) {
@@ -118,7 +130,8 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -127,9 +140,11 @@ BOOST_AUTO_TEST_CASE(MultiDevice) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatform) {
@@ -138,7 +153,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
 
   (*parameters)["INTERNAL_PRECISION"].set("double");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -147,9 +163,11 @@ BOOST_AUTO_TEST_CASE(MultiPlatform) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorDouble, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
@@ -158,7 +176,8 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", false);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(1));
@@ -166,9 +185,11 @@ BOOST_AUTO_TEST_CASE(SimpleSinglePrecision) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
@@ -177,7 +198,8 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -185,9 +207,11 @@ BOOST_AUTO_TEST_CASE(LocalSinglePrecision) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
@@ -196,7 +220,8 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -205,9 +230,11 @@ BOOST_AUTO_TEST_CASE(BlockingSinglePrecision) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
@@ -216,7 +243,8 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -225,9 +253,11 @@ BOOST_AUTO_TEST_CASE(MultiDeviceSinglePrecision) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
@@ -236,7 +266,8 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
 
   (*parameters)["INTERNAL_PRECISION"].set("float");
 
-  std::vector<std::reference_wrapper<json::Node>> deviceNodes = parameters->getAllDeviceNodes();
+  std::vector<std::reference_wrapper<json::Node>> deviceNodes =
+      parameters->getAllDeviceNodes();
   for (json::Node &deviceNode : deviceNodes) {
     deviceNode.replaceIDAttr("KERNEL_USE_LOCAL_MEMORY", true);
     deviceNode.replaceIDAttr("KERNEL_MAX_DIM_UNROLL", UINT64_C(10));
@@ -245,9 +276,11 @@ BOOST_AUTO_TEST_CASE(MultiPlatformSinglePrecision) {
   }
 
   OperationMultipleEvalConfiguration configuration(
-      OperationMultipleEvalType::STREAMING, OperationMultipleEvalSubType::OCLMASKMP, *parameters);
+      OperationMultipleEvalType::STREAMING,
+      OperationMultipleEvalSubType::OCLMASKMP, *parameters);
 
-  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level, configuration);
+  compareDatasets(fileNamesErrorFloat, sgpp::base::GridType::ModLinear, level,
+                  configuration);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
