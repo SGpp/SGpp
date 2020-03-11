@@ -22,7 +22,7 @@ namespace combigrid {
 class FullGrid {
  public:
   /**
-   * how many points are occupied per level in each dimension, "growth rate"
+   * LevelOccupancy : how many points are occupied per level in each dimension, "growth rate"
    */
   enum class LevelOccupancy {
     TwoToThePowerOfL,  ///< the default case: each level l adds 2^l points
@@ -30,6 +30,14 @@ class FullGrid {
     Linear,  ///< each level adds one point (except level 0, if present, which adds the two boundary
              ///< points)
   };
+
+  static index_t getNumberOfPointsOnLevel(
+      level_t level,
+      FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);
+
+  static index_t getNumberOfPointsOnLevel(
+      const LevelVector& level,
+      FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);
 
   /**
    * Default constructor, corresponds to the zero-dimensional case.

@@ -13,15 +13,20 @@
 namespace sgpp {
 namespace combigrid {
 
-double AveragingPriorityEstimator::estimatePriority(const LevelVector& levelVector,
+AveragingPriorityEstimator::AveragingPriorityEstimator(FullGrid::LevelOccupancy levelOccupancy)
+    : levelOccupancy(levelOccupancy) {}
+
+double AveragingPriorityEstimator::estimatePriority(
+    const LevelVector& levelVector,
     const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const {
   double sumOfNormDividedByNumberOfPoints = 0.;
 
   for (const std::pair<const std::vector<unsigned int>, double>& mapEntry :
-      deltasOfDownwardNeighbors) {
-    const index_t sumOfLevelVector = static_cast<index_t>(1) << std::accumulate(
-                                          mapEntry.first.begin(), mapEntry.first.end(), 0);
-    sumOfNormDividedByNumberOfPoints += mapEntry.second / sumOfLevelVector;
+       deltasOfDownwardNeighbors) {
+    // TODO(pollinta) should this be cumulative number of points (depending on boundary etc.)?
+    const index_t numberOfPoints =
+        FullGrid::getNumberOfPointsOnLevel(mapEntry.first, levelOccupancy);
+    sumOfNormDividedByNumberOfPoints += mapEntry.second / static_cast<double>(numberOfPoints);
   }
 
   return sumOfNormDividedByNumberOfPoints / static_cast<double>(deltasOfDownwardNeighbors.size());

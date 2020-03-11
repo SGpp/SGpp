@@ -7,6 +7,7 @@
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/adaptive/RelevanceCalculator.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
 
 namespace sgpp {
 namespace combigrid {
@@ -16,12 +17,15 @@ namespace combigrid {
  */
 class WeightedRelevanceCalculator : public RelevanceCalculator {
  public:
-  explicit WeightedRelevanceCalculator(double weightDeltaInRelationToNumberOfPoints = 1.);
+  explicit WeightedRelevanceCalculator(
+      double weightDeltaInRelationToNumberOfPoints = 1.,
+      FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);
 
   double calculate(const LevelVector& levelVector, double delta) const override;
 
  private:
   double weightDeltaInRelationToNumberOfPoints;
+  FullGrid::LevelOccupancy levelOccupancy;
 };
 
 }  // namespace combigrid

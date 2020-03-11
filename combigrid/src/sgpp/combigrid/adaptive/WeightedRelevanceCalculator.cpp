@@ -12,15 +12,17 @@ namespace sgpp {
 namespace combigrid {
 
 WeightedRelevanceCalculator::WeightedRelevanceCalculator(
-    double weightDeltaInRelationToNumberOfPoints)
-    : weightDeltaInRelationToNumberOfPoints(weightDeltaInRelationToNumberOfPoints) {}
+    double weightDeltaInRelationToNumberOfPoints, FullGrid::LevelOccupancy levelOccupancy)
+    : weightDeltaInRelationToNumberOfPoints(weightDeltaInRelationToNumberOfPoints),
+      levelOccupancy(levelOccupancy) {}
 
-double WeightedRelevanceCalculator::calculate(
-    const LevelVector& levelVector, double delta) const {
-  const index_t numPoints = static_cast<index_t>(1)
-                            << std::accumulate(levelVector.begin(), levelVector.end(), 0);
-  return std::max(weightDeltaInRelationToNumberOfPoints * delta,
-                  (1. - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numPoints));
+double WeightedRelevanceCalculator::calculate(const LevelVector& levelVector, double delta) const {
+  // TODO(pollinta) should this be cumulative number of points (depending on boundary etc.)?
+  const index_t numberOfPoints = FullGrid::getNumberOfPointsOnLevel(levelVector, levelOccupancy);
+
+  return std::max(
+      weightDeltaInRelationToNumberOfPoints * delta,
+      (1. - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numberOfPoints));
 }
 
 }  // namespace combigrid

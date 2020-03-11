@@ -7,6 +7,7 @@
 
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/adaptive/PriorityEstimator.hpp>
+#include <sgpp/combigrid/grid/FullGrid.hpp>
 
 #include <map>
 
@@ -23,9 +24,15 @@ namespace combigrid {
  */
 class AveragingPriorityEstimator : public PriorityEstimator {
  public:
+  AveragingPriorityEstimator(
+      FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);
+
   double estimatePriority(
       const LevelVector& levelVector,
       const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const override;
+
+ private:
+  FullGrid::LevelOccupancy levelOccupancy;
 };
 
 }  // namespace combigrid
