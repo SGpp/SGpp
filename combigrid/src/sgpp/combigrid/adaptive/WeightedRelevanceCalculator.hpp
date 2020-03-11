@@ -14,6 +14,9 @@ namespace combigrid {
 
 /**
  * @brief the weighted relevance calculator introduced in [0]
+ *
+ * [0] Gerstner, T. and Griebel, M., 2003. Dimension–adaptive tensor–product quadrature.
+ * Computing, 71(1), pp.65-87.
  */
 class WeightedRelevanceCalculator : public RelevanceCalculator {
  public:

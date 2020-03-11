@@ -23,9 +23,9 @@ double AveragingPriorityEstimator::estimatePriority(
 
   for (const std::pair<const std::vector<unsigned int>, double>& mapEntry :
        deltasOfDownwardNeighbors) {
-    // TODO(pollinta) should this be cumulative number of points (depending on boundary etc.)?
+    // get the number of grid points, assuming grids have boundary points
     const index_t numberOfPoints =
-        FullGrid::getNumberOfPointsOnLevel(mapEntry.first, levelOccupancy);
+        FullGrid::getNumberOfPointsFromLevel(mapEntry.first, levelOccupancy);
     sumOfNormDividedByNumberOfPoints += mapEntry.second / static_cast<double>(numberOfPoints);
   }
 

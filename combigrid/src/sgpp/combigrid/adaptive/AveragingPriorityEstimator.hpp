@@ -18,9 +18,6 @@ namespace combigrid {
  * @brief the AveragingLevelManager from @holzmudd's combigrid module:
  * The priority returned is the average of delta divided by the number of grid points (as a measure
  * for work intensity) over all the predecessor grids.
- *
- * This assumes that 2^l points are added per level l, cf. LevelOccupancy::TwoToThePowerOfL; for all
- * other LevelOccupancies or more appropriate load models another PriorityEstimator should be used.
  */
 class AveragingPriorityEstimator : public PriorityEstimator {
  public:

@@ -17,8 +17,8 @@ WeightedRelevanceCalculator::WeightedRelevanceCalculator(
       levelOccupancy(levelOccupancy) {}
 
 double WeightedRelevanceCalculator::calculate(const LevelVector& levelVector, double delta) const {
-  // TODO(pollinta) should this be cumulative number of points (depending on boundary etc.)?
-  const index_t numberOfPoints = FullGrid::getNumberOfPointsOnLevel(levelVector, levelOccupancy);
+  // get the number of grid points, assuming grids have boundary points
+  const index_t numberOfPoints = FullGrid::getNumberOfPointsFromLevel(levelVector, levelOccupancy);
 
   return std::max(
       weightDeltaInRelationToNumberOfPoints * delta,

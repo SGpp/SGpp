@@ -11,13 +11,14 @@
 namespace sgpp {
 namespace combigrid {
 
-index_t FullGrid::getNumberOfPointsOnLevel(level_t level, FullGrid::LevelOccupancy levelOccupancy) {
+static index_t getNumberOfPointsOnHierarchicalLevel(level_t level,
+                                                    FullGrid::LevelOccupancy levelOccupancy) {
   switch (levelOccupancy) {
     case FullGrid::LevelOccupancy::TwoToThePowerOfL:
       if (level == 0) {
         return 2;
       } else {
-        return static_cast<index_t>(1) << level;
+        return static_cast<index_t>(1) << (level - 1);
       }
       break;
     case FullGrid::LevelOccupancy::Linear:
@@ -27,12 +28,22 @@ index_t FullGrid::getNumberOfPointsOnLevel(level_t level, FullGrid::LevelOccupan
   }
 }
 
-index_t FullGrid::getNumberOfPointsOnLevel(const LevelVector& level,
-                                           FullGrid::LevelOccupancy levelOccupancy) {
+index_t FullGrid::getNumberOfPointsFromLevel(level_t level, FullGrid::LevelOccupancy levelOccupancy,
+                                             bool hasBoundary) {
+  auto numberOfPoints = getNumberOfPointsOnHierarchicalLevel(level, levelOccupancy);
+  for (level_t l = level - 1; l >= (hasBoundary) ? 0 : 1; ++l) {
+    numberOfPoints += getNumberOfPointsOnHierarchicalLevel(l, levelOccupancy);
+  }
+  return numberOfPoints;
+}
+
+index_t FullGrid::getNumberOfPointsFromLevel(const LevelVector& level,
+                                             FullGrid::LevelOccupancy levelOccupancy,
+                                             bool hasBoundary) {
   std::vector<index_t> pointsInEachDimension;
   std::transform(
       level.begin(), level.end(), std::back_inserter(pointsInEachDimension),
-      [levelOccupancy](index_t l) { return getNumberOfPointsOnLevel(l, levelOccupancy); });
+      [levelOccupancy](index_t l) { return getNumberOfPointsFromLevel(l, levelOccupancy); });
   return std::accumulate(pointsInEachDimension.begin(), pointsInEachDimension.end(), 1,
                          std::multiplies<index_t>());
 }

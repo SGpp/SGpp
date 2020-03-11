@@ -136,11 +136,14 @@ class IndexVectorRange {
     size_t i = 0;
     points.resize(range.totalNumberOfIndexVectors, range.dim);
 
+    if (grid.getLevelOccupancy() != FullGrid::LevelOccupancy::TwoToThePowerOfL) {
+      throw sgpp::base::not_implemented_exception();
+    }
+
     for (const IndexVector& index : range) {
       for (size_t d = 0; d < range.dim; d++) {
-        points(i, d) =
-            static_cast<double>(index[d]) / static_cast<double>(FullGrid::getNumberOfPointsOnLevel(
-                                                level[d], grid.getLevelOccupancy()));
+        points(i, d) = static_cast<double>(index[d]) /
+                       static_cast<double>(static_cast<index_t>(1) << level[d]);
       }
 
       i++;
