@@ -26,9 +26,11 @@ namespace combigrid {
 
 AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
     const std::vector<LevelVector>& levelVectors,
+    std::function<double(double, double)> summationFunction,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
     std::unique_ptr<PriorityEstimator> priorityEstimator)
-    : relevanceCalculator(std::move(relevanceCalculator)),
+    : summationFunction(summationFunction),
+      relevanceCalculator(std::move(relevanceCalculator)),
       priorityEstimator(std::move(priorityEstimator)) {
   assert(levelVectors.size() > 0);
 
@@ -53,7 +55,7 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
 }
 
 AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinationGrid(
-    const CombinationGrid& combinationGrid,
+    const CombinationGrid& combinationGrid, std::function<double(double, double)> summationFunction,
     std::unique_ptr<RelevanceCalculator> relevanceCalculator,
     std::unique_ptr<PriorityEstimator> priorityEstimator) {
   std::vector<LevelVector> subspaces;
@@ -62,14 +64,14 @@ AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinati
     subspaces.push_back(fullGrid.getLevel());
   }
 
-  return AdaptiveCombinationGridGenerator(subspaces, std::move(relevanceCalculator),
-                                          std::move(priorityEstimator));
+  return AdaptiveCombinationGridGenerator(
+      subspaces, summationFunction, std::move(relevanceCalculator), std::move(priorityEstimator));
 }
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
     const HeterogeneousBasis& basis) const {
   const bool hasBoundary = std::find(minimumLevelVector.begin(), minimumLevelVector.end(), 0) !=
-                     minimumLevelVector.end();
+                           minimumLevelVector.end();
   return CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
 }
 
@@ -131,7 +133,9 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
       hammingDistance += levelVector[d] - lowerHypercube[i][d];
     }
 
-    neighborStencilSum += subspacesAndQoI.at(lowerHypercube[i]) * std::pow(-1, hammingDistance);
+    neighborStencilSum = summationFunction(
+        neighborStencilSum,
+        static_cast<double>(subspacesAndQoI.at(lowerHypercube[i]) * std::pow(-1, hammingDistance)));
   }
 
   return subspacesAndQoI.at(levelVector) - neighborStencilSum;

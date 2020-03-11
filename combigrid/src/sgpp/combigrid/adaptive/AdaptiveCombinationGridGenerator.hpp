@@ -12,6 +12,7 @@
 #include <sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 
+#include <functional>
 #include <list>
 #include <map>
 #include <memory>
@@ -55,6 +56,7 @@ class AdaptiveCombinationGridGenerator {
    * @brief Construct a new AdaptiveCombinationGridGenerator object
    *
    * @param levelVectors           start with these level vectors, cannot be empty
+   * @param summationFunction      the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
@@ -64,6 +66,7 @@ class AdaptiveCombinationGridGenerator {
    */
   AdaptiveCombinationGridGenerator(
       const std::vector<LevelVector>& levelVectors,
+      std::function<double(double, double)> summationFunction = std::plus<double>(),
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::unique_ptr<PriorityEstimator> priorityEstimator =
@@ -74,6 +77,7 @@ class AdaptiveCombinationGridGenerator {
    *
    * @param combinationGrid     start with the subspaces contained in combinationGrid (must be at
    *                            least one)
+   * @param summationFunction      the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
@@ -83,6 +87,7 @@ class AdaptiveCombinationGridGenerator {
    */
   static AdaptiveCombinationGridGenerator fromCombinationGrid(
       const CombinationGrid& combinationGrid,
+      std::function<double(double, double)> summationFunction = std::plus<double>(),
       std::unique_ptr<RelevanceCalculator> relevanceCalculator =
           std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::unique_ptr<PriorityEstimator> priorityEstimator =
@@ -125,6 +130,13 @@ class AdaptiveCombinationGridGenerator {
    * @return std::vector<LevelVector> the old set
    */
   std::vector<LevelVector> getOldSet() const { return oldSet; }
+
+  /**
+   * @brief Get current result based on the old set
+   *
+   * @return the combined QoI
+   */
+  double getCurrentResult() const;
 
   /**
    * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
@@ -190,6 +202,10 @@ class AdaptiveCombinationGridGenerator {
   // TODO(pollinta) allow results to be something else than a double / scalar ... how to do this?
   //                ( = function, vector...)
   std::map<LevelVector, double> subspacesAndQoI;
+
+  // the function by which the individual QoIs will be combined to compute deltas and to give the
+  // total result. Default is linear summation, variance adaptation would use quadratic summation
+  std::function<double(double, double)> summationFunction;
 
   // the minimum level vector, from where the adaptation is started
   LevelVector minimumLevelVector;
