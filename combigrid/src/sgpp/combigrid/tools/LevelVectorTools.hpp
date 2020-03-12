@@ -89,8 +89,7 @@ class LevelVectorTools {
    * @return the updated, downward closed level set containing subspaceLevels
    */
   static std::vector<LevelVector> makeDownwardClosed(
-      LevelVector minLevel,
-      const std::vector<LevelVector>& subspaceLevels);
+      LevelVector minLevel, const std::vector<LevelVector>& subspaceLevels);
 
   static void sort(std::vector<LevelVector>& levels);
 
@@ -100,7 +99,7 @@ class LevelVectorTools {
       std::hash<level_t> hasher;
       size_t seed = 0;
       for (level_t l : level) {
-        seed ^= hasher(l) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+        seed ^= hasher(l) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
       }
       return seed;
     }
@@ -133,10 +132,8 @@ class LevelVectorTools {
    * @param[in] curDim    the dimension of the remaining hypercube
    * @param[out] result   a colexicographically ordered vector of level vectors in the hypercube
    */
-  static void generateHyperCubeRecursive(const LevelVector& minLevel,
-                                         const LevelVector& maxLevel,
-                                         LevelVector& curLevel,
-                                         size_t curDim,
+  static void generateHyperCubeRecursive(const LevelVector& minLevel, const LevelVector& maxLevel,
+                                         LevelVector& curLevel, size_t curDim,
                                          std::vector<LevelVector>& result);
 
   /**
@@ -152,11 +149,8 @@ class LevelVectorTools {
    * @param[in] curDim        the dimension of the remaining diagonal
    * @param[out] result       a colexicographically ordered vector of levels of desired level sum
    */
-  static void generateDiagonalRecursive(const LevelVector& minLevel,
-                                        level_t minLevelSum,
-                                        level_t levelSum,
-                                        LevelVector& curLevel,
-                                        size_t curDim,
+  static void generateDiagonalRecursive(const LevelVector& minLevel, level_t minLevelSum,
+                                        level_t levelSum, LevelVector& curLevel, size_t curDim,
                                         std::vector<LevelVector>& result);
 };
 

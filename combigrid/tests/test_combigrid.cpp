@@ -30,6 +30,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 #include <numeric>
 #include <vector>

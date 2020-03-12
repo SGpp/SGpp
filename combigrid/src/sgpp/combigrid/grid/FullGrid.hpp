@@ -27,8 +27,8 @@ class FullGrid {
   enum class LevelOccupancy {
     TwoToThePowerOfL,  ///< the default case: each level l adds 2^(l-1) points
                        ///< (except level 0, if present, which adds the two boundary points)
-    Linear,            ///< each level adds one point (except level 0, if present, which adds the two boundary
-                       ///< points)
+    Linear,            ///< each level adds one point (except level 0, if present, which adds
+                       ///< the two boundary points)
   };
 
   static index_t getNumberOfPointsFromLevel(

@@ -6,26 +6,28 @@
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 
 #include <algorithm>
+#include <functional>
 #include <numeric>
+#include <vector>
 
 namespace sgpp {
 namespace combigrid {
 
 static index_t getNumberOfPointsOnHierarchicalLevel(level_t level,
                                                     FullGrid::LevelOccupancy levelOccupancy) {
+  index_t n = 0;
   switch (levelOccupancy) {
     case FullGrid::LevelOccupancy::TwoToThePowerOfL:
       if (level == 0) {
-        return 2;
+        n = 2;
       } else {
-        return static_cast<index_t>(1) << (level - 1);
+        n = static_cast<index_t>(1) << (level - 1);
       }
-      break;
+    break;
     case FullGrid::LevelOccupancy::Linear:
-    default:
       throw sgpp::base::not_implemented_exception();
-      break;
   }
+  return n;
 }
 
 index_t FullGrid::getNumberOfPointsFromLevel(level_t level, FullGrid::LevelOccupancy levelOccupancy,

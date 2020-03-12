@@ -15,7 +15,7 @@ namespace sgpp {
 namespace combigrid {
 
 /**
- * @brief the AveragingLevelManager from @holzmudd's combigrid module:
+ * @brief the AveragingLevelManager from holzmudd's combigrid module:
  * The priority returned is the average of delta divided by the number of grid points (as a measure
  * for work intensity) over all the predecessor grids.
  */
