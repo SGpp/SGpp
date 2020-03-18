@@ -5,25 +5,24 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <list>
+#include <vector>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -76,14 +75,15 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   }
 
   /**
-   * Performs a refinement given the new grid size and the points to coarsened
+   * Performs refinement and coarsening given the new grid size and the points
+   * to coarsened
    * @param newNoPoints the grid size after refinement and coarsening
    * @param deletedGridPoints a list of indexes for grid points that will be
    * removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints,
-              std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints,
+             std::vector<size_t>& deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
   void update(Dataset&, Dataset&) override {
@@ -140,19 +140,18 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   }
 
   /**
-    * Should compute some kind of Residual to evaluate the fit of the model.
-    *
-    * In the case of density estimation, this is
-    * || R * alpha_lambda - b_val ||_2
-    *
-    * This is useful for unsupervised learning models, where normal evaluation
-   * cannot be used as
-    * there are no targets.
-    *
-    * @param validationData Matrix for validation data
-    *
-    * @returns the residual score
-    */
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation
+   * cannot be used as there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
         "ModelFittingDensityEstimationCG::computeResidual() is not "

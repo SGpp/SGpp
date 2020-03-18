@@ -4,14 +4,16 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
+
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 namespace sgpp {
 namespace datadriven {
 
-DensityEstimationFitterFactory::DensityEstimationFitterFactory
-    (const DataMiningConfigParser &parser) : baseConfig() {
+DensityEstimationFitterFactory::DensityEstimationFitterFactory(
+    const DataMiningConfigParser &parser)
+    : baseConfig() {
   baseConfig.readParams(parser);
 
   parser.getHyperparameters(conpar, dispar, catpar, basisFunctions);
@@ -32,13 +34,16 @@ ModelFittingBase *DensityEstimationFitterFactory::buildFitter() {
     config->getGridConfig().level_ = dispar["level"].getValue();
   }
   if (catpar.count("basisFunction")) {
-    config->getGridConfig().type_ = basisFunctions[catpar["basisFunction"].getValue()];
+    config->getGridConfig().type_ =
+        basisFunctions[catpar["basisFunction"].getValue()];
   }
   if (dispar.count("noPoints")) {
-    config->getRefinementConfig().noPoints_ = static_cast<size_t>(dispar["noPoints"].getValue());
+    config->getRefinementConfig().numRefinementPoints_ =
+        static_cast<size_t>(dispar["noPoints"].getValue());
   }
   if (conpar.count("threshold")) {
-    config->getRefinementConfig().threshold_ = conpar["threshold"].getValue();
+    config->getRefinementConfig().refinementThreshold_ =
+        conpar["threshold"].getValue();
   }
   if (conpar.count("lambda")) {
     config->getRegularizationConfig().lambda_ = conpar["lambda"].getValue();

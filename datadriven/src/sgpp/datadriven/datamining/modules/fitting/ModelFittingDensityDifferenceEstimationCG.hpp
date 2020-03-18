@@ -24,8 +24,6 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 
-#include <list>
-
 using sgpp::base::DataMatrix;
 using sgpp::base::Grid;
 using sgpp::base::DataVector;
@@ -87,7 +85,7 @@ class ModelFittingDensityDifferenceEstimationCG
    * removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints);
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints);
 
   void update(Dataset& datasetP, Dataset& datasetQ) override;
   void update(Dataset& dataset) override {

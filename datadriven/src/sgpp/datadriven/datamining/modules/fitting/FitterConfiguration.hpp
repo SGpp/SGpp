@@ -233,7 +233,7 @@ class FitterConfiguration {
   /**
    * print out all parameters to stream
    */
-  void dumpParamsToStdout(std::ostream &stream_out = std::cout) const;
+  void dumpToStream(std::ostream &stream_out = std::cout) const;
 
  protected:
   /**

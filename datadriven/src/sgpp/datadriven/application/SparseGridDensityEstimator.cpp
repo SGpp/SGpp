@@ -4,23 +4,23 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/storage/hashmap/HashGridStorage.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/base/tools/json/json_exception.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/application/SparseGridDensityEstimator.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/solver/TypesSolver.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
 
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -32,8 +32,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -67,7 +67,7 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
     if (this->contains("refinement_numSteps"))
       adaptivityConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
-      adaptivityConfig.noPoints_ = (*this)["refinement_numPoints"].getUInt();
+      adaptivityConfig.numRefinementPoints_ = (*this)["refinement_numPoints"].getUInt();
 
     // configure solver
     if (this->contains("solver_type"))
@@ -162,7 +162,7 @@ void SparseGridDensityEstimatorConfiguration::initConfig() {
 
   // configure adaptive refinement
   adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.noPoints_ = 5;
+  adaptivityConfig.numRefinementPoints_ = 5;
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
@@ -401,9 +401,8 @@ double SparseGridDensityEstimator::optimizeLambdaCV() {
 
   for (size_t i = 0; i < crossvalidationConfig.lambdaSteps_; i++) {
     // compute current lambda
-    curLambda = lambdaStart +
-                static_cast<double>(i) * (lambdaEnd - lambdaStart) /
-                    static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
+    curLambda = lambdaStart + static_cast<double>(i) * (lambdaEnd - lambdaStart) /
+                                  static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
 
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 
@@ -507,8 +506,8 @@ void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.noPoints_,
-                                         adaptivityConfig.threshold_);
+      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.numRefinementPoints_,
+                                         adaptivityConfig.refinementThreshold_);
       gridGen.refine(srf);
 
       if (!crossvalidationConfig.silent_) {

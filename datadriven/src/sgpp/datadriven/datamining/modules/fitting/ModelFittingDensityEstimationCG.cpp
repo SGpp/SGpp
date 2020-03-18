@@ -3,29 +3,31 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
-#include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+
+#include <list>
 #include <string>
 #include <vector>
-#include <list>
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -80,16 +82,14 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   update(newDataset);
 }
 
-bool ModelFittingDensityEstimationCG::refine(
-    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationCG::adapt(
+    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
-                                    std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
-    bNum.remove(idxToDelete);
-    bDenom.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
+    bNum.remove(deletedGridPoints);
+    bDenom.remove(deletedGridPoints);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();
@@ -146,7 +146,9 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
     DataVector rhsUpdate(grid->getSize());
     datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C,
                                             regularizationConfig.lambda_);
+
     SMatrix.computeUnweightedRhs(rhsUpdate);
+
     double numInstances = static_cast<double>(newDataset.getNrows());
     double beta = this->config->getLearnerConfig().learningRate;  // forgetRate
     // Update numerator

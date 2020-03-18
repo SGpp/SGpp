@@ -17,10 +17,10 @@ namespace datadriven {
 struct CrossvalidationConfiguration {
   // parameters for cross-validation
   bool enable_ = false;   // enables cross-validation
-  size_t kfold_ = 5;  // number of batches for cross validation
-  int seed_ = 0;      // seed for randomized k-fold
-  bool shuffle_ = 0;  // randomized/sequential k-fold
-  bool silent_ = 1;   // verbosity
+  size_t kfold_ = 5;      // number of batches for cross validation
+  int seed_ = 0;          // seed for randomized k-fold
+  bool shuffle_ = false;  // randomized/sequential k-fold
+  bool silent_ = true;    // verbosity
 
   // regularization parameter optimization
   double lambda_ = 1e-3;       // regularization parameter
@@ -31,6 +31,22 @@ struct CrossvalidationConfiguration {
   // must be > 1
   size_t lambdaSteps_ = 0;
   bool logScale_ = false;  // search the optimization interval on a log-scale
+
+  /*
+  // Debug method to neatly print internal data
+  void dumpToStream(std::ostream& stream_out = std::cout) const {
+    stream_out << "enable \t\t\t" << std::boolalpha << enable_ << std::endl;
+    stream_out << "kfold \t\t\t" << kfold_ << std::endl;
+    stream_out << "seed \t\t\t" << seed_ << std::endl;
+    stream_out << "shuffle \t\t" << std::boolalpha << shuffle_ << std::endl;
+    stream_out << "silent \t\t\t" << std::boolalpha << silent_ << std::endl;
+    stream_out << "lambda \t\t\t" << lambda_ << std::endl;
+    stream_out << "lambdaEnd \t\t" << lambdaEnd_ << std::endl;
+    stream_out << "lambdaStart \t\t" << lambdaStart_ << std::endl;
+    stream_out << "lambdaSteps \t\t" << lambdaSteps_ << std::endl;
+    stream_out << "logScale \t\t" << std::boolalpha << logScale_ << std::endl;
+  }
+  */
 };
 
 }  // namespace datadriven

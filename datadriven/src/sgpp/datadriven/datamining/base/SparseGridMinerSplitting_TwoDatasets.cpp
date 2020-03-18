@@ -85,7 +85,7 @@ double SparseGridMinerSplitting_TwoDatasets::learn(bool verbose) {
                             avgScoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
-        fitter->refine();
+        fitter->adapt();
       }
       if (verbose) {
         std::cout << "###############"

@@ -8,11 +8,8 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
@@ -20,7 +17,7 @@ namespace base {
 /**
  * GridGenerator for prewavelet grids without boundaries
  */
-class PrewaveletGridGenerator: public GridGenerator {
+class PrewaveletGridGenerator : public GridGenerator {
  protected:
   /// reference to the storage object
   GridStorage& storage;
@@ -41,9 +38,8 @@ class PrewaveletGridGenerator: public GridGenerator {
    * @param iter iterator for grid storage
    * @param shadowIter iterator for shadow storage
    */
-  void addNeighbours(index_type& index, size_t current_dim,
-                     level_t target_level, GridStorage::grid_iterator& iter,
-                     GridStorage::grid_iterator& shadowIter);
+  void addNeighbours(index_type& index, size_t current_dim, level_t target_level,
+                     GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter);
 
   /**
    * This function ensures that the special adaptive prewavelet grid points have parents.
@@ -51,8 +47,7 @@ class PrewaveletGridGenerator: public GridGenerator {
    * @param iter iterator for grid storage
    * @param shadowIter iterator for shadow storage
    */
-  void insertParents(GridStorage::grid_iterator& iter,
-                     GridStorage::grid_iterator& shadowIter);
+  void insertParents(GridStorage::grid_iterator& iter, GridStorage::grid_iterator& shadowIter);
 
   /**
    * If during the refinement one or more points of the shadow register are added
@@ -68,7 +63,8 @@ class PrewaveletGridGenerator: public GridGenerator {
    * for data transport, thus they do not have an influence on the final function.
    * Please refer to sgpp::pde::UpDownOneOpDimWithShadow for more information.
    *
-   * @param storage the grid storage object of the the grid, on which the hierarchisation should be executed
+   * @param storage the grid storage object of the the grid, on which the hierarchisation should be
+   * executed
    * @param shadowstorage shadow points (see detailed description)
    */
   PrewaveletGridGenerator(GridStorage& storage, GridStorage& shadowstorage);
@@ -86,9 +82,9 @@ class PrewaveletGridGenerator: public GridGenerator {
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                         size_t numFirstOnly) override;
+  void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq, size_t minIndexConsidered) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

@@ -3,16 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
 
 #include <sgpp/base/exception/generation_exception.hpp>
-
+#include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementInteraction.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <set>
@@ -21,7 +19,8 @@
 namespace sgpp {
 namespace base {
 
-StandardGridGenerator::StandardGridGenerator(GridStorage& storage) : storage(storage) {}
+StandardGridGenerator::StandardGridGenerator(GridStorage& storage)
+    : storage(storage) {}
 
 StandardGridGenerator::~StandardGridGenerator() {}
 
@@ -35,8 +34,8 @@ void StandardGridGenerator::regular(size_t level, double T) {
   gen.regular(this->storage, static_cast<level_t>(level), T);
 }
 
-void StandardGridGenerator::regularInter(size_t level,
-                                         const std::set<std::set<size_t>>& terms, double T) {
+void StandardGridGenerator::regularInter(
+    size_t level, const std::set<std::set<size_t>>& terms, double T) {
   HashGenerator gen;
   gen.regularInter(this->storage, static_cast<level_t>(level), terms, T);
 }
@@ -46,7 +45,8 @@ void StandardGridGenerator::cliques(size_t level, size_t clique_size) {
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size);
 }
 
-void StandardGridGenerator::cliques(size_t level, size_t clique_size, double T) {
+void StandardGridGenerator::cliques(size_t level, size_t clique_size,
+                                    double T) {
   HashGenerator gen;
   gen.cliques(this->storage, static_cast<level_t>(level), clique_size, T);
 }
@@ -61,19 +61,21 @@ void StandardGridGenerator::anisotropicFull(std::vector<size_t> dimlevels) {
   gen.anisotropicFull(this->storage, dimlevels);
 }
 
-void StandardGridGenerator::refine(RefinementFunctor& func, std::vector<size_t>* addedPoints) {
+void StandardGridGenerator::refine(RefinementFunctor& func,
+                                   std::vector<size_t>* addedPoints) {
   HashRefinement refine;
   refine.free_refine(this->storage, func, addedPoints);
 }
 
-void StandardGridGenerator::refineInter(RefinementFunctor& func,
-                                        const std::unordered_set<std::vector<bool>>& interactions) {
+void StandardGridGenerator::refineInter(
+    RefinementFunctor& func,
+    const std::unordered_set<std::vector<bool>>& interactions) {
   auto refine = HashRefinementInteraction(interactions);
   refine.free_refine(this->storage, func);
 }
 
-void StandardGridGenerator::refineInter(RefinementFunctor& func,
-                                        const std::set<std::set<size_t>>& interactions) {
+void StandardGridGenerator::refineInter(
+    RefinementFunctor& func, const std::set<std::set<size_t>>& interactions) {
   auto interset = std::unordered_set<std::vector<bool>>();
   const auto dim = storage.getDimension();
   for (const auto& interaction : interactions) {
@@ -91,15 +93,19 @@ size_t StandardGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void StandardGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha) {
+void StandardGridGenerator::coarsen(CoarseningFunctor& func,
+                                    std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                              size_t numFirstOnly) {
+void StandardGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func,
+                                              size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq,
+                                              size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly,
+                                  minIndexConsidered, nullptr, removedSeq);
 }
 
 size_t StandardGridGenerator::getNumberOfRemovablePoints() {
@@ -107,11 +113,14 @@ size_t StandardGridGenerator::getNumberOfRemovablePoints() {
   return coarsen.getNumberOfRemovablePoints(this->storage);
 }
 
-void StandardGridGenerator::refineMaxLevel(RefinementFunctor& func, size_t maxLevel) {
-  throw generation_exception("StandardGridGenerator::refineMaxLevel is not implemented");
+void StandardGridGenerator::refineMaxLevel(RefinementFunctor& func,
+                                           size_t maxLevel) {
+  throw generation_exception(
+      "StandardGridGenerator::refineMaxLevel is not implemented");
 }
 
-size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) {
+size_t StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel(
+    size_t maxLevel) {
   throw generation_exception(
       "StandardGridGenerator::getNumberOfRefinablePointsToMaxLevel "
       "is not implemented");

@@ -17,7 +17,15 @@ namespace datadriven {
 
 enum class DensityEstimationType { CG, Decomposition };
 
-enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
+enum class MatrixDecompositionType {
+  LU,
+  Eigen,
+  Chol,
+  DenseIchol,
+  OrthoAdapt,
+  SMW_ortho,
+  SMW_chol
+};
 
 struct DensityEstimationConfiguration {
   // Type of density estimation
@@ -25,7 +33,8 @@ struct DensityEstimationConfiguration {
   // Type of matrix decomposition
   MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt;
   /**
-   * Defines whether offline permutation should be used if decomposition allows it.
+   * Defines whether offline permutation should be used if decomposition allows
+   * it.
    */
   bool useOfflinePermutation = true;
 
@@ -37,6 +46,28 @@ struct DensityEstimationConfiguration {
   size_t iCholSweepsRefine_ = 4;
   size_t iCholSweepsUpdateLambda_ = 2;
   size_t iCholSweepsSolver_ = 2;
+
+  /*
+  // Debug method to neatly print internal data
+  void dumpToStream(std::ostream& stream_out = std::cout) const {
+    stream_out << "type: \t\t\t" << DensityEstimationTypeParser::toString(type_)
+               << std::endl;
+    stream_out << "decomposition: \t"
+               << datadriven::MatrixDecompositionTypeParser::toString(
+                      decomposition_)
+               << std::endl;
+    stream_out << "useOfflinePermutation: \t" << std::boolalpha
+               << useOfflinePermutation << std::endl;
+    stream_out << "normalize: \t\t" << std::boolalpha << normalize_
+               << std::endl;
+    stream_out << "iCholSweepsDecompose \t" << iCholSweepsDecompose_
+               << std::endl;
+    stream_out << "iCholSweepsRefine \t" << iCholSweepsRefine_ << std::endl;
+    stream_out << "iCholSweepsUpdateLambda " << iCholSweepsUpdateLambda_
+               << std::endl;
+    stream_out << "iCholSweepsSolver \t" << iCholSweepsSolver_ << std::endl;
+  }
+  */
 };
 
 }  // namespace datadriven

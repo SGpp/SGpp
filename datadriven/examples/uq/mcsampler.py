@@ -1,4 +1,9 @@
-# coding: utf-8
+# -*- coding: utf-8 -*-
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 try:
     from pysgpp.extensions.datadriven.uq.parameters import ParameterBuilder
     from pysgpp.extensions.datadriven.uq.sampler import MCSampler

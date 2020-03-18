@@ -76,13 +76,13 @@ void ModelFittingDensityRatioEstimation::fit(Dataset &newDatasetP,
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
 
-bool ModelFittingDensityRatioEstimation::refine() {
+bool ModelFittingDensityRatioEstimation::adapt() {
   if (grid != nullptr) {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(
-          alpha, config->getRefinementConfig().noPoints_,
-          config->getRefinementConfig().threshold_);
+          alpha, config->getRefinementConfig().numRefinementPoints_,
+          config->getRefinementConfig().refinementThreshold_);
       // refine grid
       auto noPoints = grid->getSize();
 

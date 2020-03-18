@@ -7,7 +7,7 @@
 
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <gsl/gsl_linalg.h>
 #include <gsl/gsl_math.h>
@@ -87,7 +87,7 @@ DBMatOfflineLU::DBMatOfflineLU(const std::string& fileName)
   filestream.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
   auto size = std::stoi(tokens[0]);
 

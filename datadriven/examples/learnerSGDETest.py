@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 try:
     import sklearn.datasets as data
     import numpy as np
@@ -56,7 +61,7 @@ def main():
     print("create adaptive refinement config... ", end=' ')
     adapt = sg.AdaptivityConfiguration()
     adapt.numRefinements_ = 0
-    adapt.noPoints_ = 10
+    adapt.numRefinementPoints_ = 10
     print("Done")
     
     # Config solver

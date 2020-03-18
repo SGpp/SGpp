@@ -24,7 +24,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
 
 using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
@@ -98,18 +97,16 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
   update(newDatasetP, newDatasetQ);
 }
 
-bool ModelFittingDensityDifferenceEstimationCG::refine(
-    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityDifferenceEstimationCG::adapt(
+    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
-                                    std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
-    bNumP.remove(idxToDelete);
-    bDenomP.remove(idxToDelete);
-    bNumQ.remove(idxToDelete);
-    bDenomQ.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
+    bNumP.remove(deletedGridPoints);
+    bDenomP.remove(deletedGridPoints);
+    bNumQ.remove(deletedGridPoints);
+    bDenomQ.remove(deletedGridPoints);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();

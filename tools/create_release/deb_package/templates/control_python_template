@@ -5,7 +5,7 @@ Priority: optional
 Architecture: amd64
 Depends: {{pysgpp_deps}}
 Maintainer: {{maintainer_name}} <{{maintainer_email}}>
-Description: The sparse grids toolkit SG++
+Description: Python bindings for the sparse grids toolkit SG++
  SG++ is a collection of numerical algorithms for sparse grids. It
  contains modules for interpolation, quadrature, data mining
  (regression, classification, clustering), optimization, PDEs, and

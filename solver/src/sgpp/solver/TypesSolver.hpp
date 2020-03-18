@@ -22,6 +22,18 @@ struct SLESolverConfiguration {
   size_t maxIterations_;
   double threshold_;
   bool verbose_;
+
+  /*
+  // Debug method to neatly print internal data
+  void dumpToStream(std::ostream& stream_out = std::cout) const {
+    stream_out << "type: \t\t" << SLESolverTypeParser::toString(type_)
+               << std::endl;
+    stream_out << "eps: \t\t" << eps_ << std::endl;
+    stream_out << "maxIterations: \t" << maxIterations_ << std::endl;
+    stream_out << "threshold: \t" << threshold_ << std::endl;
+    stream_out << "verbose: \t" << std::boolalpha << verbose_ << std::endl;
+  }
+  */
 };
 
 struct SLESolverSPConfiguration {

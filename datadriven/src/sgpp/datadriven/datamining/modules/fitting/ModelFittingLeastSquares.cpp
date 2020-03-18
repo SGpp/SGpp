@@ -16,9 +16,9 @@
 // TODO(lettrich): allow different refinement types
 // TODO(lettrich): allow different refinement criteria
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 using sgpp::base::SurplusRefinementFunctor;
 
 using sgpp::base::application_exception;
@@ -68,13 +68,13 @@ void ModelFittingLeastSquares::fit(Dataset &newDataset) {
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
 
-bool ModelFittingLeastSquares::refine() {
+bool ModelFittingLeastSquares::adapt() {
   if (grid != nullptr) {
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement functor
       SurplusRefinementFunctor refinementFunctor(
-          alpha, config->getRefinementConfig().noPoints_,
-          config->getRefinementConfig().threshold_);
+          alpha, config->getRefinementConfig().numRefinementPoints_,
+          config->getRefinementConfig().refinementThreshold_);
       // refine grid
       auto noPoints = grid->getSize();
 

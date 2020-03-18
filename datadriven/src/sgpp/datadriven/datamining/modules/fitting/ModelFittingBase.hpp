@@ -11,6 +11,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
@@ -104,7 +105,7 @@ class ModelFittingBase {
    * refinement of the grid.
    * @return true if refinement was performed, else false.
    */
-  virtual bool refine() = 0;
+  virtual bool adapt() = 0;
 
   // TODO(lettrich): dataset should be const
   /**

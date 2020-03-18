@@ -4,8 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/hpo/FitterFactory.hpp>
-#include <sgpp/datadriven/datamining/configuration/GridTypeParser.hpp>
-
+#include <sgpp/base/grid/GridTypeParser.hpp>
 #include <vector>
 #include <string>
 
@@ -69,7 +68,8 @@ std::string FitterFactory::printConfig() {
   std::stringstream s;
   for (auto &pair : catpar) {
     if (pair.first == "basisFunction") {
-      s << ", " << GridTypeParser::toString(basisFunctions[catpar["basisFunction"].getValue()]);
+      s << ", " << base::GridTypeParser::toString(
+                       basisFunctions[catpar["basisFunction"].getValue()]);
     } else {
       s << ", " << pair.second.getValue();
     }

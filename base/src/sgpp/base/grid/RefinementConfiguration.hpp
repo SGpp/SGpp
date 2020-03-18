@@ -20,13 +20,5 @@ enum class RefinementFunctorType {
   Classification
 };
 
-/**
- * Enumeration that defines the different types of refinement monitors (that trigger refinements)
- */
-enum class RefinementMonitorType {
-  Periodic,
-  Error
-};
 }  // namespace base
 }  // namespace sgpp
-

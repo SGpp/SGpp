@@ -14,10 +14,12 @@
 
 #include <list>
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
+using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 
@@ -51,7 +53,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * points added during refinement after coarsening)
    * @param deletedPoints pointer to list of indexes that will be removed from b
    */
-  void updateRhs(size_t gridSize, std::list<size_t>* deletedPoints);
+  void updateRhs(size_t gridSize, std::vector<size_t>& deletedPoints);
 
   /**
    * Computes the density function again based on the saved b's (only applicable
@@ -97,15 +99,11 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param save_b Indicates whether the old right hand side should be saved and
    *        combined with the new right hand side (aka streaming)
    * @param do_cv Indicates whether crossvalidation should take place
-   * @param deletedPoints indicates the indices of removed grid points due to
-   * coarsening
-   * @param newPoints indicates the amount of added points due to refinement
    */
   void computeDensityFunction(
       DataVector& alpha, DataMatrix& m, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig,
-      bool save_b = false, bool do_cv = false,
-      std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+      bool save_b = false, bool do_cv = false);
 
   /**
    * Computes the density difference function for two data matrix instances
@@ -189,6 +187,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param weighted Flag to decide whether to weight the b vector with the no.
    * of points
    */
+
   DataVector computeWeightedBFromBatch(
       DataMatrix& m, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig, bool weighted);
@@ -240,8 +239,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param p the point at which the function is evaluated
    * @param grid the underlying grid
    * @param force if set, it will even try to evaluate if the internal state
-   * recommends
-   * otherwise
+   * recommends otherwise
    * @return the result of the evaluation
    */
   double eval(DataVector& alpha, const DataVector& p, Grid& grid,

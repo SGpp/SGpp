@@ -72,7 +72,7 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
    * configuration, else
    * false.
    */
-  bool refine() override;
+  bool adapt() override;
 
   void update(Dataset &datasetP, Dataset &datasetQ) override;
   void update(Dataset &) override {

@@ -92,8 +92,6 @@ BOOST_AUTO_TEST_CASE(TestBasicHash) {
   grid->getGenerator().regular(level);
 
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
-
 
   // arbitrary choice
   alpha[3] = 1.0;  // level 3 1 1 1
@@ -112,8 +110,6 @@ BOOST_AUTO_TEST_CASE(TestBasicSubspace) {
   grid->getGenerator().regular(level);
 
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
-
 
   // arbitrary choice
   alpha[3] = 1.0;  // level 3 1 1 1
@@ -133,8 +129,6 @@ BOOST_AUTO_TEST_CASE(TestBoundaryHash) {
   grid->getGenerator().regular(level);
 
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
-
 
   // arbitrary choice
   alpha[30] = 1.0;  // level 1 3 0
@@ -153,8 +147,6 @@ BOOST_AUTO_TEST_CASE(TestBoundarySubspace) {
   grid->getGenerator().regular(level);
 
   DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
-
 
   // arbitrary choice
   alpha[30] = 1.0;  // level 1 3 0

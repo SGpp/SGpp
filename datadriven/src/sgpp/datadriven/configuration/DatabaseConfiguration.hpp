@@ -20,10 +20,16 @@ struct DatabaseConfiguration {
    * Filepath to the database
    */
   std::string filePath = "";
+
+  /*
+  // Debug method to neatly print internal data
+  void dumpToStream(std::ostream& stream_out = std::cout) const {
+    stream_out << "filePath: \t\t" << filePath << std::endl;
+  }
+  */
 };
 }  // namespace datadriven
 }  // namespace sgpp
 
-
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_DATABASECONFIGURATION_HPP_ */
+#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_DATABASECONFIGURATION_HPP_ \
+          */

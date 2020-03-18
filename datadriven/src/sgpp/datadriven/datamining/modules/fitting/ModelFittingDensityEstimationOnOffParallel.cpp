@@ -173,14 +173,12 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOffParallel::refine(
-    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationOnOffParallel::adapt(
+    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
-                                    std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
   }
 
   // oldNoPoint refers to the grid size after coarsening
@@ -212,7 +210,7 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(
         static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
     online_SMW_pointer->updateSystemMatrixDecompositionParallel(
         config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints,
-        *deletedGridPoints, config->getRegularizationConfig().lambda_,
+        deletedGridPoints, config->getRegularizationConfig().lambda_,
         processGrid, parallelConfig);
 #endif      /* USE_SCALAPACK */
   } else {  // every other decomposition type than SMW
@@ -220,7 +218,7 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(
     // on the b stored
     online->updateSystemMatrixDecomposition(
         config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints,
-        *deletedGridPoints, config->getRegularizationConfig().lambda_);
+        deletedGridPoints, config->getRegularizationConfig().lambda_);
   }
   online->updateRhs(newNoPoints, deletedGridPoints);
 

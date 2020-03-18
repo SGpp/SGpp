@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
@@ -126,14 +126,14 @@ class ModelFittingDensityEstimationCombi
    * Refines the component with the biggest error
    * @return if a component was refined
    */
-  bool refine() override;
+  bool adapt() override;
 
   /**
    * Currently not implemented for this class due to missing strategy for
    * dimensional adaptive refinement. Throws an application_exception.
    */
-  bool refine(size_t newNoPoints,
-              std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints,
+             std::vector<size_t>& deletedGridPoints) override;
 
   /**
    * Resets the state of the entire model

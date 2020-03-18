@@ -11,9 +11,7 @@
 #include <string>
 
 namespace sgpp {
-namespace datadriven {
-
-using sgpp::solver::SLESolverType;
+namespace solver {
 
 /**
  * Convenience class to convert strings to #sgpp::solver::SLESolverType and generate
@@ -46,5 +44,5 @@ class SLESolverTypeParser {
    */
   static const SLESolverTypeMap_t sleSolverTypeMap;
 };
-} /* namespace datadriven */
+} /* namespace solver */
 } /* namespace sgpp */

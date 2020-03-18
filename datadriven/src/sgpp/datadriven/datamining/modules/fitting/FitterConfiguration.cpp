@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-
 #include <string>
 #include <vector>
 
@@ -117,95 +116,48 @@ FitterConfiguration::getMultipleEvalConfig() {
       static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
 
-void FitterConfiguration::dumpParamsToStdout(std::ostream &stream_out) const {
+void FitterConfiguration::dumpToStream(std::ostream &stream_out) const {
+  /*
   stream_out << "\n~~~ gridConfig ~~~\n" << std::endl;
-
-  stream_out << "boundaryLevel \t\t" << gridConfig.boundaryLevel_ << std::endl;
-  stream_out << "dim \t\t\t" << gridConfig.dim_ << std::endl;
-  stream_out << "filename \t\t" << gridConfig.filename_ << std::endl;
-  // stream_out << gridConfig.generalType_ << std::endl;
-  stream_out << "level \t\t\t" << gridConfig.level_ << std::endl;
-  stream_out << "maxDegree \t\t" << gridConfig.maxDegree_ << std::endl;
-  stream_out << "t \t\t\t" << gridConfig.t_ << std::endl;
-  // stream_out << gridConfig.type_ << std::endl;
+  gridConfig.dumpToStream();
 
   stream_out << "\n~~~ adaptivityConfig ~~~\n" << std::endl;
-
-  stream_out << "maxLevelType \t\t" << adaptivityConfig.maxLevelType_
-             << std::endl;
-  stream_out << "noPoints \t\t" << adaptivityConfig.noPoints_ << std::endl;
-  stream_out << "numRefinements \t\t" << adaptivityConfig.numRefinements_
-             << std::endl;
-  stream_out << "percent \t\t" << adaptivityConfig.percent_ << std::endl;
+  adaptivityConfig.dumpToStream();
 
   stream_out << "\n~~~ crossvalidationConfig ~~~\n" << std::endl;
-
-  stream_out << "enable \t\t\t" << crossvalidationConfig.enable_ << std::endl;
-  stream_out << "kfold \t\t\t" << crossvalidationConfig.kfold_ << std::endl;
-  stream_out << "lambdaEnd \t\t" << crossvalidationConfig.lambdaEnd_
-             << std::endl;
-  stream_out << "lambdaStart \t\t" << crossvalidationConfig.lambdaStart_
-             << std::endl;
-  stream_out << "lambdaSteps \t\t" << crossvalidationConfig.lambdaSteps_
-             << std::endl;
-  stream_out << "lambda \t\t\t" << crossvalidationConfig.lambda_ << std::endl;
-  stream_out << "logScale \t\t" << crossvalidationConfig.logScale_ << std::endl;
-  stream_out << "seed \t\t\t" << crossvalidationConfig.seed_ << std::endl;
-  stream_out << "shuffle \t\t" << crossvalidationConfig.shuffle_ << std::endl;
-  stream_out << "silent \t\t\t" << crossvalidationConfig.silent_ << std::endl;
+  crossvalidationConfig.dumpToStream();
 
   stream_out << "\n~~~ densityEstimationConfig ~~~\n" << std::endl;
-
-  // stream_out << densityEstimationConfig.decomposition_ << std::endl;
-  stream_out << "iCholSweepsDecompose \t"
-             << densityEstimationConfig.iCholSweepsDecompose_ << std::endl;
-  stream_out << "iCholSweepsRefine \t"
-             << densityEstimationConfig.iCholSweepsRefine_ << std::endl;
-  stream_out << "iCholSweepsSolver \t"
-             << densityEstimationConfig.iCholSweepsSolver_ << std::endl;
-  stream_out << "iCholSweepsUpdateLambda "
-             << densityEstimationConfig.iCholSweepsUpdateLambda_ << std::endl;
-  // stream_out << densityEstimationConfig.type_ << std::endl;
+  densityEstimationConfig.dumpToStream();
 
   stream_out << "\n~~~ databaseConfig ~~~\n" << std::endl;
-
-  stream_out << "filepath \t\t" << databaseConfig.filePath << std::endl;
-
-  stream_out << "\n~~~ solverFinalConfig ~~~\n" << std::endl;
-
-  stream_out << "eps \t\t\t" << solverFinalConfig.eps_ << std::endl;
-  stream_out << "maxIterations \t" << solverFinalConfig.maxIterations_
-             << std::endl;
-  stream_out << "threshold \t\t" << solverFinalConfig.threshold_ << std::endl;
-  // stream_out << solverFinalConfig.type_ << std::endl;
-  stream_out << "verbose \t\t" << solverFinalConfig.verbose_ << std::endl;
+  databaseConfig.dumpToStream();
 
   stream_out << "\n~~~ solverRefineConfig ~~~\n" << std::endl;
 
-  stream_out << "eps \t\t\t" << solverRefineConfig.eps_ << std::endl;
-  stream_out << "maxIterations \t\t" << solverRefineConfig.maxIterations_
-             << std::endl;
-  stream_out << "threshold \t\t" << solverRefineConfig.threshold_ << std::endl;
-  // stream_out << solverRefineConfig.type_ << std::endl;
-  stream_out << "verbose \t\t" << solverRefineConfig.verbose_ << std::endl;
+  solverRefineConfig.dumpToStream();
+
+  stream_out << "\n~~~ solverFinalConfig ~~~\n" << std::endl;
+
+  solverFinalConfig.dumpToStream();
 
   stream_out << "\n~~~ regularizationConfig ~~~\n" << std::endl;
 
-  stream_out << "exponentBase \t\t" << regularizationConfig.exponentBase_
-             << std::endl;
-  stream_out << "l1Ratio \t\t" << regularizationConfig.l1Ratio_ << std::endl;
-  stream_out << "lambda \t\t\t" << regularizationConfig.lambda_ << std::endl;
-  // stream_out << regularizationConfig.type_ << std::endl;
-
-  stream_out << "\n~~~ multipleEvalConfig ~~~\n" << std::endl;
-
-  // stream_out << multipleEvalConfig.getMPIType() << std::endl;
-  stream_out << "getName() \t\t" << multipleEvalConfig.getName() << std::endl;
+  regularizationConfig.dumpToStream();
 
   stream_out << "\n~~~ learnerConfig ~~~\n" << std::endl;
 
-  stream_out << "beta \t\t\t" << learnerConfig.learningRate << std::endl;
-  stream_out << "usePrior \t\t" << learnerConfig.usePrior << std::endl;
+  learnerConfig.dumpToStream();
+
+  stream_out << "\n~~~ parallelConfig ~~~\n" << std::endl;
+
+  parallelConfig.dumpToStream();
+
+  // For now these are not included
+  // stream_out << "\n~~~ geometryConfig ~~~\n" << std::endl;
+
+  // stream_out << "\n~~~ multipleEvalConfig ~~~\n" << std::endl;
+  */
 }
 
 void FitterConfiguration::setupDefaults() {
@@ -222,9 +174,12 @@ void FitterConfiguration::setupDefaults() {
   gridConfig.t_ = 0.0;  // mirrors struct default
 
   adaptivityConfig.numRefinements_ = 1;
-  adaptivityConfig.threshold_ = 0.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.coarseningThreshold_ = 0.0;
   adaptivityConfig.maxLevelType_ = false;
-  adaptivityConfig.noPoints_ = 1;
+  adaptivityConfig.numRefinementPoints_ = 1;
+  adaptivityConfig.numCoarseningPoints_ = 1;
+  adaptivityConfig.coarsenInitialPoints_ = false;
   adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
   adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
   adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
@@ -233,8 +188,10 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.refinementPeriod = 1;               // mirrors struct default
   adaptivityConfig.refinementFunctorType =
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptivityConfig.precomputeEvaluations = true;   // mirrors struct default
-  adaptivityConfig.levelPenalize = false;          // mirrors struct default
+  adaptivityConfig.coarseningFunctorType =         // mirrors struct default
+      sgpp::base::CoarseningFunctorType::Surplus;
+  adaptivityConfig.precomputeEvaluations = true;  // mirrors struct default
+  adaptivityConfig.levelPenalize = false;         // mirrors struct default
   adaptivityConfig.scalingCoefficients =
       std::vector<double>();  // mirrors struct default;
 

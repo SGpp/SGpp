@@ -6,6 +6,7 @@
 #ifdef USE_MPI
 #ifndef USE_SCALAPACK  // this test interferes with the ScaLAPACK tests
 
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/test_tools.hpp>
 #include <boost/test/unit_test_suite.hpp>
 #include <sgpp/base/exception/algorithm_exception.hpp>
@@ -14,7 +15,6 @@
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
 #include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
 
-#define BOOST_TEST_DYN_LINK
 #define SCHEDULER_BATCH_SIZE 1337
 #define TEST_DIMENSION 3
 #define TEST_DATASET_SIZE 3
@@ -74,8 +74,8 @@ void createInstance() {
 
     sgpp::base::AdaptivityConfiguration adaptConfig;
     adaptConfig.numRefinements_ = 2;
-    adaptConfig.noPoints_ = 7;
-    adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
+    adaptConfig.numRefinementPoints_ = 7;
+    adaptConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
     sgpp::datadriven::Dataset trainData(TEST_DATASET_SIZE, TEST_DIMENSION);
     sgpp::datadriven::Dataset testData(TEST_DATASET_SIZE, TEST_DIMENSION);

@@ -18,7 +18,6 @@
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -135,14 +134,12 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(
   }
 }
 
-bool ModelFittingDensityDifferenceEstimationOnOff::refine(
-    size_t newNoPoints, std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityDifferenceEstimationOnOff::adapt(
+    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints),
-                                    std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
   }
   // oldNoPoint refers to the grid size after coarsening
   auto oldNoPoints = alpha.size();
@@ -156,7 +153,7 @@ bool ModelFittingDensityDifferenceEstimationOnOff::refine(
   // the b stored
   online->updateSystemMatrixDecomposition(
       config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints,
-      *deletedGridPoints, config->getRegularizationConfig().lambda_);
+      deletedGridPoints, config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
   return true;
 }
