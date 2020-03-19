@@ -5,8 +5,8 @@
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
-#include <sgpp/combigrid/grid/IndexVectorRange.hpp>
 #include <sgpp/combigrid/operation/OperationUPFullGrid.hpp>
+#include <sgpp/combigrid/tools/IndexVectorRange.hpp>
 
 #include <memory>
 #include <vector>

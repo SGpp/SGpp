@@ -5,13 +5,13 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <vector>
 
@@ -49,7 +49,7 @@ class CombinationGrid {
    * @return CombinationGrid corresponding to the combination technique for the regular sparse grid
    */
   static CombinationGrid fromRegularSparse(size_t dim, level_t n, const HeterogeneousBasis& basis,
-      bool hasBoundary = true);
+                                           bool hasBoundary = true);
 
   /**
    * Factory method to create a CombinationGrid corresponding to the combination technique for
@@ -66,7 +66,7 @@ class CombinationGrid {
    * @return CombinationGrid corresponding to the combination technique for the sparse grid
    */
   static CombinationGrid fromSubspaces(const std::vector<LevelVector>& subspaceLevels,
-      const HeterogeneousBasis& basis, bool hasBoundary = true);
+                                       const HeterogeneousBasis& basis, bool hasBoundary = true);
 
   /**
    * Combine the grid points of all full grids of this combination grid and store the grid points
@@ -111,7 +111,8 @@ class CombinationGrid {
    * @param[out] result       vector resulting from the combination, same order as \c gridStorage
    */
   void combineSparseGridValues(const base::GridStorage& gridStorage,
-      const std::vector<base::DataVector>& values, base::DataVector& result) const;
+                               const std::vector<base::DataVector>& values,
+                               base::DataVector& result) const;
 
   /**
    * Combine vectors associated to every full grid point using a weighted sum
@@ -128,7 +129,8 @@ class CombinationGrid {
    *                          combined grid)
    */
   void combineSparseGridValues(const base::GridStorage& gridStorage,
-      const std::vector<base::DataMatrix>& values, base::DataMatrix& result) const;
+                               const std::vector<base::DataMatrix>& values,
+                               base::DataMatrix& result) const;
 
   /**
    * Distribute values given on the combined grid to a specific full grid
@@ -141,7 +143,8 @@ class CombinationGrid {
    *                          points of the full grid (the order is given by IndexVectorRange)
    */
   void distributeValuesToFullGrid(const base::GridStorage& gridStorage,
-      const base::DataVector& values, const FullGrid& fullGrid, base::DataVector& result) const;
+                                  const base::DataVector& values, const FullGrid& fullGrid,
+                                  base::DataVector& result) const;
 
   /**
    * Distribute values given on the combined grid to the full grids contained in this combination
@@ -156,7 +159,8 @@ class CombinationGrid {
    *                          IndexVectorRange)
    */
   void distributeValuesToFullGrids(const base::GridStorage& gridStorage,
-      const base::DataVector& values, std::vector<base::DataVector>& result) const;
+                                   const base::DataVector& values,
+                                   std::vector<base::DataVector>& result) const;
 
   /**
    * @return dimensionality
@@ -178,27 +182,7 @@ class CombinationGrid {
    * @param coefficients vector of coefficients, same size as \c fullGrids
    */
   void setFullGridsAndCoefficients(const std::vector<FullGrid>& fullGrids,
-      const base::DataVector& coefficients);
-
-  /**
-   * Helper function to enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 0}^{dim}\f$
-   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
-   *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (with boundary)
-   */
-  static std::vector<LevelVector> enumerateLevelsWithSumWithBoundary(size_t dim, level_t n);
-
-  /**
-   * Helper function to enumerate all levels \f$\vec{\ell} \in \mathbb{N}_{\ge 1}^{dim}\f$
-   * with \f$\sum_{d=1}^{dim} \ell_d = n\f$.
-   *
-   * @param dim   dimensionality
-   * @param n     level sum
-   * @return vector of levels of sum \f$n\f$ (without boundary)
-   */
-  static std::vector<LevelVector> enumerateLevelsWithSumWithoutBoundary(size_t dim, level_t n);
+                                   const base::DataVector& coefficients);
 
  protected:
   /// vector of full grids
