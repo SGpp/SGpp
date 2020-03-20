@@ -52,6 +52,11 @@ import string
 import sys
 import unicodedata
 
+try:
+  xrange          # Python 2
+except NameError:
+  xrange = range  # Python 3
+
 
 _USAGE = """
 Syntax: cpplint.py [--verbose=#] [--output=vs7] [--filter=-x,+y,...]
@@ -4408,7 +4413,7 @@ def GetLineWidth(line):
     The width of the line in column positions, accounting for Unicode
     combining characters and wide characters.
   """
-  if isinstance(line, unicode):
+  if (sys.version_info >= (3, 0)) or isinstance(line, unicode):
     width = 0
     for uc in unicodedata.normalize('NFC', line):
       if unicodedata.east_asian_width(uc) in ('W', 'F'):
@@ -4498,7 +4503,7 @@ def CheckStyle(filename, clean_lines, linenum, file_extension, nesting_state,
   if (not line.startswith('#include') and not is_header_guard and
       not Match(r'^\s*//.*http(s?)://\S*$', line) and
       not Match(r'^// \$Id:.*#[0-9]+ \$$', line) and
-      not Match(r'^\s* <td>\image', line)):
+      not Match(r'^\s* <td>\\image', line)):
     line_width = GetLineWidth(line)
     extended_length = int((_line_length * 1.25))
     if line_width > extended_length:
@@ -4752,7 +4757,7 @@ def _GetTextInside(text, start_pattern):
 
   # Give opening punctuations to get the matching close-punctuations.
   matching_punctuation = {'(': ')', '{': '}', '[': ']'}
-  closing_punctuation = set(matching_punctuation.itervalues())
+  closing_punctuation = set(matching_punctuation.values())
 
   # Find the position to start extracting text.
   match = re.search(start_pattern, text, re.M)
@@ -6360,10 +6365,12 @@ def main():
 
   # Change stderr to write with replacement characters so we don't die
   # if we try to print something containing non-ASCII characters.
-  sys.stderr = codecs.StreamReaderWriter(sys.stderr,
-                                         codecs.getreader('utf8'),
-                                         codecs.getwriter('utf8'),
-                                         'replace')
+  #sys.stderr = codecs.StreamReaderWriter(sys.stderr,
+  #                                       codecs.getreader('utf8'),
+  #                                       codecs.getwriter('utf8'),
+  #                                       'replace')
+  # disabled: if we do this, the Python script may die silently, because
+  # Python exceptions will not be visible anymore
 
   _cpplint_state.ResetErrorCounts()
   for filename in filenames:

@@ -8,7 +8,7 @@
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
-#include <sgpp/combigrid/grid/IndexVectorIterator.hpp>
+#include <sgpp/combigrid/tools/IndexVectorIterator.hpp>
 #include <sgpp/globaldef.hpp>
 
 #include <vector>
@@ -135,6 +135,10 @@ class IndexVectorRange {
     const LevelVector& level = grid.getLevel();
     size_t i = 0;
     points.resize(range.totalNumberOfIndexVectors, range.dim);
+
+    if (grid.getLevelOccupancy() != FullGrid::LevelOccupancy::TwoToThePowerOfL) {
+      throw sgpp::base::not_implemented_exception();
+    }
 
     for (const IndexVector& index : range) {
       for (size_t d = 0; d < range.dim; d++) {

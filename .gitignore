@@ -121,3 +121,4 @@ GSYMS
 GTAGS
 custom.py
 gmon.out
+/buildVars.out
