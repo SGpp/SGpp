@@ -5,13 +5,11 @@
 
 #pragma once
 
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
-
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -261,7 +259,36 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
     }
   }
 
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @param x     evaluation point
+   * @return      value of derivative of wavelet basis function
+   */
+  inline double evalDx(LT l, IT i, double x) {
+    std::cerr
+        << "NakBsplineMOdifiedBasis::evalDx not implemented. Use NakBsplineModifiedBAsisDeriv1\n";
+    return 0;
+  }
+
   inline double getIntegral(LT level, IT index) override { return -1.0; }
+
+  /**
+   * Calculates the mean \int b_i(x) \rho(x) dx of a basis function b_i w.r.t. the probability
+   * density function \rho
+   *
+   * @param l     		level of basis function
+   * @param i     		index of basis function
+   * @param pdf   		probability density function
+   * @param quadOrder	order of the Gauss Legendre quadrature
+   * @return      		mean of basis function
+   */
+  inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
+                        std::shared_ptr<sgpp::base::DataVector> quadCoordinates,
+                        std::shared_ptr<sgpp::base::DataVector> quadWeights) {
+    std::cerr << "NakBsplineMOdifiedBasis::getMean not implemented\n";
+    return 0;
+  }
 
   /**
    * @return      B-spline degree

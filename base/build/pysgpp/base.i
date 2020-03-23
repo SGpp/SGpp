@@ -359,7 +359,6 @@ const bool UMFPACK_ENABLED;
 %template(SNakBsplineModifiedBaseDeriv1) sgpp::base::NakBsplineModifiedBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBaseDeriv2) sgpp::base::NakBsplineModifiedBasisDeriv2<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
-%template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBoundaryBase) sgpp::base::NakBsplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SNakBsplineExtendedBase) sgpp::base::NakBsplineExtendedBasis<unsigned int, unsigned int>;
 
