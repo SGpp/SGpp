@@ -6,9 +6,6 @@
 #
 """
 @file    ASGC.py
-@author  Fabian Franzelin <franzefn@ipvs.uni-stuttgart.de>
-@date    Tue Jul 23 12:58:31 2013
-
 @brief   Adaptive Sparse Grid Collocation method for UQ
 
 @version  0.1

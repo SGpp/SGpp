@@ -3,21 +3,22 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <random>
 #include <string>
 
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 
 int main(int argc, char** argv) {
   //  std::string fileName = "friedman_4d_2000.arff";
   std::string fileName = "debugging.arff";
 
   sgpp::datadriven::ARFFTools arffTools;
-  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromeFile(fileName);
+  sgpp::datadriven::Dataset dataset = arffTools.readARFFFromFile(fileName);
 
   // sgpp::base::DataVector *classes = dataset.getClasses();
   sgpp::base::DataMatrix& trainingData = dataset.getData();
@@ -35,7 +36,6 @@ int main(int argc, char** argv) {
 
   // create coefficient vector
   sgpp::base::DataVector alpha(gridStorage.getSize());
-  alpha.setAll(0.0);
 
   std::random_device rd;
   std::mt19937 mt(rd());

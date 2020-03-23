@@ -134,8 +134,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   errors.componentwise_mult(weights);
 
   // Refine the grid using the weighted errors.
-  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.noPoints_,
-                                                      adaptivityConfig.threshold_);
+  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.numRefinementPoints_,
+                                                      adaptivityConfig.refinementThreshold_);
   if (terms.size() > 0) {
     grid->getGenerator().refineInter(refineFunctor, terms);
   } else {
@@ -195,7 +195,6 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
     grid->getGenerator().regular(gridConfig.level_, gridConfig.t_);
   }
   weights = base::DataVector(grid->getSize());
-  weights.setAll(0.0);
 }
 
 // maybe pass regularizationConfig instead of state.

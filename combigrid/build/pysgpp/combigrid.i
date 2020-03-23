@@ -13,7 +13,6 @@
 %include "combigrid/src/sgpp/combigrid/basis/HeterogeneousBasis.hpp"
 
 %include "combigrid/src/sgpp/combigrid/grid/FullGrid.hpp"
-%include "combigrid/src/sgpp/combigrid/grid/IndexVectorRange.hpp"
 %include "combigrid/src/sgpp/combigrid/grid/CombinationGrid.hpp"
 
 %include "combigrid/src/sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp"
@@ -25,6 +24,8 @@
 %include "combigrid/src/sgpp/combigrid/operation/OperationPoleNodalisationLinear.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/OperationUPFullGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/OperationUPCombinationGrid.hpp"
+
+%include "combigrid/src/sgpp/combigrid/tools/IndexVectorRange.hpp"
 
 namespace std {
   %template(BasisVector) vector<sgpp::base::Basis<sgpp::combigrid::level_t, sgpp::combigrid::index_t>*>;

@@ -3,8 +3,9 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#define BOOST_TEST_DYN_LINK
 #include <boost/test/test_tools.hpp>
-#include <boost/test/unit_test_suite.hpp>
+#include <boost/test/unit_test.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflinePermutable.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>

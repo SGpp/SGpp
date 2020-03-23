@@ -1,6 +1,6 @@
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 ###############################################################################
@@ -156,7 +156,7 @@ class TestRefinementANOVAStrategy(unittest.TestCase):
                           learner.alpha,
                           generator.getNumberOfRemovablePoints(),
                           learner.specification.getAdaptThreshold())
-                generator.coarsen(functor, learner.alpha)
+                generator.coarsen(functor)
             
             self.plotGrid(learner, suffix)
             

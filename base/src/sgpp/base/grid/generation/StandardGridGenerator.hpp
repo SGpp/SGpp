@@ -8,7 +8,6 @@
 
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <set>
@@ -37,20 +36,25 @@ class StandardGridGenerator : public GridGenerator {
 
   void regular(size_t level) override;
   void regular(size_t level, double T) override;
-  void regularInter(size_t level, const std::set<std::set<size_t>>& terms, double T) override;
+  void regularInter(size_t level, const std::set<std::set<size_t>>& terms,
+                    double T) override;
   void cliques(size_t level, size_t clique_size) override;
   void cliques(size_t level, size_t clique_size, double T) override;
   void full(size_t level) override;
   void anisotropicFull(std::vector<size_t> dimlevels) override;
-  void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override;
+  void refine(RefinementFunctor& func,
+              std::vector<size_t>* addedPoints = nullptr) override;
   void refineInter(RefinementFunctor& func,
                    const std::unordered_set<std::vector<bool>>& interactions);
   void refineInter(RefinementFunctor& func,
                    const std::set<std::set<size_t>>& interactions) override;
   size_t getNumberOfRefinablePoints() override;
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha) override;
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha, size_t numFirstOnly) override;
+  void coarsen(CoarseningFunctor& func,
+               std::vector<size_t>* removedSeq) override;
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq,
+                         size_t minIndexConsidered) override;
   size_t getNumberOfRemovablePoints() override;
 
   void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override;

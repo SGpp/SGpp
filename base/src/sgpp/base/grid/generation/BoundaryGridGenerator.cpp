@@ -4,15 +4,12 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/grid/GridStorage.hpp>
-
+#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashCoarsening.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashGenerator.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundariesMaxLevel.hpp>
-
-#include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -34,13 +31,6 @@ void BoundaryGridGenerator::regular(size_t level) {
   gen.regularWithBoundaries(this->storage, static_cast<level_t>(level), boundaryLevel);
 }
 
-void BoundaryGridGenerator::regular(size_t level, double T) {
-  std::cerr << "BoundaryGridGenerator::regular : Parameter T not implemented for this grid type! "
-               "Using T=0 instead of T="
-            << T << "\n";
-  regular(level);
-}
-
 void BoundaryGridGenerator::cliques(size_t level, size_t clique_size) {
   throw generation_exception("Method is not implemented");
 }
@@ -60,15 +50,17 @@ size_t BoundaryGridGenerator::getNumberOfRefinablePoints() {
   return refine.getNumberOfRefinablePoints(this->storage);
 }
 
-void BoundaryGridGenerator::coarsen(CoarseningFunctor& func, DataVector& alpha) {
+void BoundaryGridGenerator::coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen(this->storage, func, alpha);
+  coarsen.free_coarsen(this->storage, func, nullptr, removedSeq);
 }
 
-void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                                              size_t numFirstOnly) {
+void BoundaryGridGenerator::coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                                              std::vector<size_t>* removedSeq,
+                                              size_t minIndexConsidered) {
   HashCoarsening coarsen;
-  coarsen.free_coarsen_NFirstOnly(this->storage, func, alpha, numFirstOnly);
+  coarsen.free_coarsen_NFirstOnly(this->storage, func, numFirstOnly, minIndexConsidered, nullptr,
+                                  removedSeq);
 }
 
 size_t BoundaryGridGenerator::getNumberOfRemovablePoints() {

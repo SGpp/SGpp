@@ -7,11 +7,8 @@
 #define SQUAREROOTGRIDGENERATOR_HPP_
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/grid/generation/GridGenerator.hpp>
-
 #include <sgpp/globaldef.hpp>
-
 #include <vector>
-
 
 namespace sgpp {
 namespace base {
@@ -38,22 +35,15 @@ class SquareRootGridGenerator : public GridGenerator {
   void cliques(size_t level, size_t clique_size) override;
   void full(size_t level) override {}
   void refine(RefinementFunctor& func, std::vector<size_t>* addedPoints = nullptr) override {}
-  size_t getNumberOfRefinablePoints() override {
-    return 0;
-  }
+  size_t getNumberOfRefinablePoints() override { return 0; }
 
-  void coarsen(CoarseningFunctor& func, DataVector& alpha) override {}
-  void coarsenNFirstOnly(CoarseningFunctor& func, DataVector& alpha,
-                         size_t numFirstOnly) override {}
-  size_t getNumberOfRemovablePoints() override {
-    return 0;
-  }
+  void coarsen(CoarseningFunctor& func, std::vector<size_t>* removedSeq) override {}
+  void coarsenNFirstOnly(CoarseningFunctor& func, size_t numFirstOnly,
+                         std::vector<size_t>* removedSeq, size_t minIndexConsidered) override {}
+  size_t getNumberOfRemovablePoints() override { return 0; }
 
-  void refineMaxLevel(RefinementFunctor& func,
-                      size_t maxLevel) override {}
-  size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override {
-    return 0;
-  }
+  void refineMaxLevel(RefinementFunctor& func, size_t maxLevel) override {}
+  size_t getNumberOfRefinablePointsToMaxLevel(size_t maxLevel) override { return 0; }
 
  protected:
   /// reference to the grid's storage object

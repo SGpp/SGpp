@@ -112,8 +112,8 @@ class NakBsplineModifiedBasisDeriv2 : public Basis<LT, IT> {
         if (l == 1) {
           // l = 1, i = 1
           return 0.0;
-        } else if ((i > 1) && (i < hInv - 1)) {
-          // l >= 3, 1 < i < 2^l - 1
+        } else if ((i > 3) && (i < hInv - 3)) {
+          // l >= 3, 3 < i < 2^l - 3
           return nakBsplineBasisDeriv2.eval(l, i, x);
         } else {
           if (i > hInv / 2) {
@@ -122,97 +122,95 @@ class NakBsplineModifiedBasisDeriv2 : public Basis<LT, IT> {
           }
 
           if (l == 2) {
-            // l = 2, i = 1
-            double result = -18.0 / 35.0;
-            result = 19.0 / 35.0 + result * t;
-            result = 37.0 / 35.0 + result * t;
+            // l = 2, i = 1 (Lagrange)
+            double result = -6.0 / 23.0;
+            result = 12.0 / 23.0 + result * t;
+            result = 18.0 / 23.0 + result * t;
             return innerDeriv * result;
-          } else {
-            // l >= 3, i = 1
-            if ((t < -1.0) || (t > 3.0)) {
+          } else if ((l == 3) && (i == 3)) {
+            // l = 3, i=3
+            if ((t < -3.0) || (t > 5.0)) {
               return 0.0;
-            } else if (t < 2.0) {
-              t += 1.0;
-              double result = 3.2627865961199293e-02;
-              result = -2.2222222222222221e-01 + result * t;
-              result = 3.8095238095238093e-01 + result * t;
+            } else if (t < 0.0) {
+              t += 3.0;
+              double result = 5.5114638447971778e-03;
+              result = 8.2539682539682538e-02 + result * t;
+              result = -3.3650793650793653e-01 + result * t;
               result *= t;
+              return innerDeriv * result;
+            } else if (t < 1.0) {
+              double result = -1.4510582010582010e-01;
+              result = 1.3214285714285715e-01 + result * t;
+              result = 3.0753968253968256e-01 + result * t;
+              result = -1.1785714285714285e-01 + result * t;
+              return innerDeriv * result;
+            } else if (t < 2.0) {
+              t -= 1.0;
+              double result = 1.1494708994708995e-01;
+              result = -3.0317460317460315e-01 + result * t;
+              result = 1.3650793650793649e-01 + result * t;
+              result = 1.7671957671957672e-01 + result * t;
               return innerDeriv * result;
             } else {
               t -= 2.0;
-              double result = -2.3809523809523808e-02;
-              result = 7.1428571428571425e-02 + result * t;
-              result = -7.1428571428571425e-02 + result * t;
-              result = 2.3809523809523808e-02 + result * t;
-              return innerDeriv * result;
-            }
-          }
-        }
-
-      case 7:
-        if (l == 1) {
-          // l = 1, i = 1
-          return 0.0;
-        } else if ((i > 1) && (i < hInv - 1)) {
-          // l >= 3, 1 < i < 2^l - 1
-          return nakBsplineBasisDeriv2.eval(l, i, x);
-        } else {
-          if (i > hInv / 2) {
-            i = hInv - i;
-            t *= -1.0;
-          }
-
-          if (l == 2) {
-            // l = 2, i = 1
-            double result = -18.0 / 35.0;
-            result = 19.0 / 35.0 + result * t;
-            result = 37.0 / 35.0 + result * t;
-            return innerDeriv * result;
-          } else if (l == 3) {
-            // l = 3, i = 1
-            if ((t < -1.0) || (t > 7.0)) {
-              return 0.0;
-            } else if (t < 3.0) {
-              t += 1.0;
-              double result = 2.6345182595182597e-04;
-              result = -5.0990675990675990e-03 + result * t;
-              result = 3.8073038073038072e-02 + result * t;
-              result = -1.3053613053613053e-01 + result * t;
-              result = 1.7404817404817405e-01 + result * t;
-              result *= t;
-              return innerDeriv * result;
-            } else {
-              t -= 3.0;
-              double result = -8.4984459984459984e-06;
-              result = 1.6996891996891997e-04 + result * t;
-              result = -1.3597513597513598e-03 + result * t;
-              result = 5.4390054390054390e-03 + result * t;
-              result = -1.0878010878010878e-02 + result * t;
-              result = 8.7024087024087024e-03 + result * t;
+              double result = -4.6296296296296294e-03;
+              result = 4.1666666666666664e-02 + result * t;
+              result = -1.2500000000000000e-01 + result * t;
+              result = 1.2500000000000000e-01 + result * t;
               return innerDeriv * result;
             }
           } else {
-            // l >= 4, i = 1
-            if ((t < -1.0) || (t > 4.0)) {
-              return 0.0;
-            } else if (t < 3.0) {
-              t += 1.0;
-              double result = 5.6993272569444441e-04;
-              result = -1.0009765625000000e-02 + result * t;
-              result = 6.6189236111111105e-02 + result * t;
-              result = -1.9531250000000000e-01 + result * t;
-              result = 2.1701388888888890e-01 + result * t;
-              result *= t;
-              return innerDeriv * result;
+            if (i == 1) {
+              // l >= 3, i = 1
+              if ((t < -1.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 2.0) {
+                t += 1.0;
+                double result = 3.2627865961199293e-02;
+                result = -2.2222222222222221e-01 + result * t;
+                result = 3.8095238095238093e-01 + result * t;
+                result *= t;
+                return innerDeriv * result;
+              } else {
+                t -= 2.0;
+                double result = -2.3809523809523808e-02;
+                result = 7.1428571428571425e-02 + result * t;
+                result = -7.1428571428571425e-02 + result * t;
+                result = 2.3809523809523808e-02 + result * t;
+                return innerDeriv * result;
+              }
             } else {
-              t -= 3.0;
-              double result = -2.7777777777777778e-04;
-              result = 1.3888888888888889e-03 + result * t;
-              result = -2.7777777777777779e-03 + result * t;
-              result = 2.7777777777777779e-03 + result * t;
-              result = -1.3888888888888889e-03 + result * t;
-              result = 2.7777777777777778e-04 + result * t;
-              return innerDeriv * result;
+              // l >= 4, i = 3
+              if ((t < -3.0) || (t > 3.0)) {
+                return 0.0;
+              } else if (t < 0.0) {
+                t += 3.0;
+                double result = 1.0 / 63.0;
+                result = 2.0 / 35.0 + result * t;
+                result = -12.0 / 35.0 + result * t;
+                result *= t;
+                return innerDeriv * result;
+              } else if (t < 1.0) {
+                double result = -79.0 / 315.0;
+                result = 1.0 / 5.0 + result * t;
+                result = 3.0 / 7.0 + result * t;
+                result = -3.0 / 35.0 + result * t;
+                return innerDeriv * result;
+              } else if (t < 2.0) {
+                t -= 1.0;
+                double result = 83.0 / 315.0;
+                result = -58.0 / 105.0 + result * t;
+                result = 8.0 / 105.0 + result * t;
+                result = 92.0 / 315.0 + result * t;
+                return innerDeriv * result;
+              } else {
+                t -= 2.0;
+                double result = -5.0 / 63.0;
+                result = 5.0 / 21.0 + result * t;
+                result = -5.0 / 21.0 + result * t;
+                result = 5.0 / 63.0 + result * t;
+                return innerDeriv * result;
+              }
             }
           }
         }
@@ -222,15 +220,7 @@ class NakBsplineModifiedBasisDeriv2 : public Basis<LT, IT> {
     }
   }
 
-  double evalDx(LT level, IT index, double x) override {
-    std::cerr << "NakBsplineModifiedBasisDeriv2: evalDx not implemented" << std::endl;
-    return -1;
-  }
-
-  inline double getIntegral(LT level, IT index) override {
-    std::cerr << "NakBsplineModifiedBasisDeriv2: getIntegral not implemented" << std::endl;
-    return -1.0;
-  }
+  inline double getIntegral(LT level, IT index) override { return -1.0; }
 
   /**
    * @return      B-spline degree

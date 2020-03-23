@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/opencl/OCLManagerMultiPlatform.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+
 #include <iostream>
 
-#include "sgpp/base/opencl/OCLManagerMultiPlatform.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
 
 int main(int argc, char **argv) {
   sgpp::base::OCLManagerMultiPlatform manager(true);

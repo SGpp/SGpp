@@ -38,7 +38,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   gridConfig.maxDegree_ = 3;
 
   auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
-  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.numRefinementPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();

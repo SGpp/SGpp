@@ -4,9 +4,10 @@
 // sgpp.sparsegrids.org
 
 #define BOOST_TEST_DYN_LINK
+#include "BasisEval.hpp"
+
 #include <boost/test/unit_test.hpp>
 
-#include "BasisEval.hpp"
 
 double basisEvalDx(sgpp::base::SBasis& basis, sgpp::base::level_t l, sgpp::base::index_t i,
                    double x) {

@@ -172,7 +172,12 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/PeriodicGridGenerator.hpp"
+
 %include "base/src/sgpp/base/grid/GridDataBase.hpp"
+%include "base/src/sgpp/base/grid/GridTypeParser.hpp"
+%include "base/src/sgpp/base/grid/GeneralGridTypeParser.hpp"
+%include "base/src/sgpp/base/grid/RefinementConfiguration.hpp"
+%include "base/src/sgpp/base/grid/RefinementFunctorTypeParser.hpp"
 
 %include "base/src/sgpp/base/algorithm/AlgorithmDGEMV.hpp"
 %include "base/src/sgpp/base/algorithm/AlgorithmMultipleEvaluation.hpp"

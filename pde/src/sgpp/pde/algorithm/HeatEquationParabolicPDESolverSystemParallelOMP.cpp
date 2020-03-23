@@ -91,7 +91,6 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorComplete(
   result.setAll(0.0);
 
   sgpp::base::DataVector temp(alpha.getSize());
-  temp.setAll(0.0);
 
   std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();
@@ -146,7 +145,6 @@ void HeatEquationParabolicPDESolverSystemParallelOMP::applyLOperatorInner(
   result.setAll(0.0);
 
   sgpp::base::DataVector temp(alpha.getSize());
-  temp.setAll(0.0);
 
   std::vector<size_t> algoDims = this->InnerGrid->getStorage().getAlgorithmicDimensions();
   size_t nDims = algoDims.size();

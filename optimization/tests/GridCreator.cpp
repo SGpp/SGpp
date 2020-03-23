@@ -7,8 +7,9 @@
 
 #include <vector>
 
-void createSupportedGrids(size_t d, size_t p,
-                          std::vector<std::unique_ptr<sgpp::base::Grid>>& grids) {
+
+void createSupportedGrids(
+    size_t d, size_t p, std::vector<std::unique_ptr<sgpp::base::Grid>>& grids) {
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createBsplineGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
@@ -33,8 +34,8 @@ void createSupportedGrids(size_t d, size_t p,
       sgpp::base::Grid::createWeaklyFundamentalSplineBoundaryGrid(d, p)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModWeaklyFundamentalNakSplineGrid(d, p)));
-  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
-      sgpp::base::Grid::createLinearGrid(d)));
+  grids.push_back(
+      std::unique_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createLinearBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
@@ -61,7 +62,8 @@ void createSupportedGrids(size_t d, size_t p,
       sgpp::base::Grid::createNakBsplineExtendedGrid(d, p)));
 }
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::ScalarFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l,
+                      sgpp::base::ScalarFunction& f,
                       sgpp::base::DataVector& functionValues) {
   sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();
@@ -80,7 +82,8 @@ void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::ScalarFuncti
   }
 }
 
-void createSampleGrid(sgpp::base::Grid& grid, size_t l, sgpp::base::VectorFunction& f,
+void createSampleGrid(sgpp::base::Grid& grid, size_t l,
+                      sgpp::base::VectorFunction& f,
                       sgpp::base::DataMatrix& functionValues) {
   sgpp::base::GridStorage& gridStorage = grid.getStorage();
   const size_t d = f.getNumberOfParameters();

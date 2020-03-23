@@ -537,8 +537,7 @@ void SilvermansRule::optimizeBandwidths(KernelDensityEstimator* kde, base::DataV
   size_t numDims = kde->getDim();
   bandwidths.resize(numDims);
 
-  base::DataVector flag(numDims);
-  flag.setAll(1.);
+  base::DataVector flag(numDims, 1.0);
 
   // get min and max in each direction
   double datamin = 0.0;

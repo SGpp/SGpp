@@ -11,7 +11,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 
 #include <gsl/gsl_blas.h>
@@ -45,7 +45,7 @@ sgpp::datadriven::DBMatOfflineEigen::DBMatOfflineEigen(const std::string& fileNa
   filestream.close();
 
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
 
   auto nCols = std::stoi(tokens[0]);
   auto nRows = std::stoi(tokens[1]);

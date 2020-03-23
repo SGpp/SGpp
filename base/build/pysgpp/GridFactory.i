@@ -92,16 +92,22 @@ struct RegularGridConfiguration {
 struct AdaptivityConfiguration {
   /// number of refinements
   size_t numRefinements_;
-  /// refinement threshold for surpluses
-  double threshold_;
+  /// refinement threshold
+  double refinementThreshold_;
+  /// coarsening threshold
+  double coarseningThreshold_;
   /// refinement type: false: classic, true: maxLevel
   bool maxLevelType_;
   /// max. number of points to be refined
-  size_t noPoints_;
+  size_t numRefinementPoints_;
+  /// max. number of points to be coarsened
+  size_t numCoarseningPoints_;
   /// max. percent of points to be refined
   double percent_;
   /// other refinement strategy, that is more expensive, but yields better results
   bool errorBasedRefinement = false;
+  /// prevent coarsening of initial grid points, needed for some decompositions
+  bool coarsenInitialPoints_;
 };
 
 enum class GridType {

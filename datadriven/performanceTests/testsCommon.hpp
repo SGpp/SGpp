@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <string>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/globaldef.hpp"
+#include <string>
 
 std::string uncompressFile(std::string fileName);
 

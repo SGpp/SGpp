@@ -3,6 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/grid/generation/GridGenerator.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+#include <sgpp/solver/sle/ConjugateGradients.hpp>
+
 #include <boost/program_options.hpp>
 
 #include <chrono>
@@ -11,19 +25,6 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/base/datatypes/DataVector.hpp"
-#include "sgpp/base/grid/Grid.hpp"
-#include "sgpp/base/grid/GridStorage.hpp"
-#include "sgpp/base/grid/generation/GridGenerator.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/OperationDensityMultiplicationAVX/OperationDensityMultiplicationAVX.hpp"
-#include "sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/solver/sle/ConjugateGradients.hpp"
 
 int main(int argc, char **argv) {
   std::string datasetFileName;
@@ -95,9 +96,8 @@ int main(int argc, char **argv) {
   size_t gridsize = grid->getStorage().getSize();
   std::cout << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector alpha(gridsize, 1.0);
   sgpp::base::DataVector result(gridsize);
-  alpha.setAll(1.0);
 
   sgpp::solver::ConjugateGradients *solver = new sgpp::solver::ConjugateGradients(1000, 0.0001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity *operation_mult =

@@ -7,7 +7,7 @@
 
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/exception/data_exception.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/CSVFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp>
@@ -65,7 +65,7 @@ DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
 DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
   // Create a shuffling functor
   DataShufflingFunctorFactory shufflingFunctorFactory;
-  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctor* shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
 
   SampleProvider* sampleProvider = nullptr;
 
@@ -74,7 +74,7 @@ DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
   } else if (config.fileType == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(shuffling);
   } else {
-    data_exception("Unknown file type");
+    throw data_exception("DataSourceBuilder::splittingAssemble() unknown file type");
   }
 
   if (config.isCompressed) {
@@ -101,8 +101,8 @@ DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConf
 DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
   // Create a shuffling functor
   DataShufflingFunctorFactory shufflingFunctorFactory;
-  DataShufflingFunctor *shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
-  DataShufflingFunctorCrossValidation *crossValidationShuffling =
+  DataShufflingFunctor* shuffling = shufflingFunctorFactory.buildDataShufflingFunctor(config);
+  DataShufflingFunctorCrossValidation* crossValidationShuffling =
       new DataShufflingFunctorCrossValidation(crossValidationConfig, shuffling);
 
   SampleProvider* sampleProvider = nullptr;
@@ -112,7 +112,7 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
   } else if (config.fileType == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(crossValidationShuffling);
   } else {
-    data_exception("Unknown file type");
+    throw data_exception("DataSourceBuilder::crossValidationAssemble() unknown file type");
   }
 
   if (config.isCompressed) {
@@ -124,7 +124,7 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
 #endif
   }
   auto t = new DataSourceCrossValidation(config, crossValidationConfig, crossValidationShuffling,
-      sampleProvider);
+                                         sampleProvider);
   return t;
 }
 
@@ -143,7 +143,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;
   // split the string
-  StringTokenizer::tokenize(config.filePath, ".", tokens);
+  sgpp::base::StringTokenizer::tokenize(config.filePath, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
     // TODO(Michael Lettrich): test if this works with umlauts
