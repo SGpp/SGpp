@@ -4,7 +4,7 @@
 set -e
 
 # set paths
-export LD_LIBRARY_PATH=$(pwd)/lib/sgpp:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$(pwd)/lib:$LD_LIBRARY_PATH
 
 # create wheel and patch dependencies
 python3 setup.py bdist_wheel
