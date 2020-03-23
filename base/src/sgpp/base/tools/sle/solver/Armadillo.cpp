@@ -51,7 +51,13 @@ bool Armadillo::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
   A.zeros();
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz, rowsDone) default(none)
+// ToDo (rehmemk): On my Ubuntu 19.10 instance the following did not work anymore
+// and I replaced it by a simple default(shared). Does this introduce problems?
+// (same in Eigen.cpp)
+#pragma omp parallel if (system.isCloneable()) \
+    shared(system, A, nnz, rowsDone, ompi_mpi_comm_world, ompi_mpi_int) default(none)
+  // #pragma omp parallel if (system.isCloneable()) default(shared)
+
   {
     SLE* system2 = &system;
 #ifdef _OPENMP

@@ -76,7 +76,11 @@ bool Eigen::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
   size_t rowsDone = 0;
 
 // parallelize only if the system is cloneable
+// ToDo (rehmemk): On my Ubuntu 19.10 instance the following did not work anymore
+// and I replaced it by a simple default(shared). Does this introduce problems?
+// (same in Armadillo.cpp)
 #pragma omp parallel if (system.isCloneable()) shared(system, A, nnz, rowsDone) default(none)
+  // #pragma omp parallel if (system.isCloneable()) default(shared)
   {
     SLE* system2 = &system;
 #ifdef _OPENMP
@@ -111,9 +115,8 @@ bool Eigen::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
       if (rowsDone % 100 == 0) {
         char str[10];
         snprintf(str, sizeof(str), "%.1f%%",
-               static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
-        Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) +
-                                                 ")");
+                 static_cast<double>(rowsDone) / static_cast<double>(n) * 100.0);
+        Printer::getInstance().printStatusUpdate("constructing matrix (" + std::string(str) + ")");
       }
     }
   }
