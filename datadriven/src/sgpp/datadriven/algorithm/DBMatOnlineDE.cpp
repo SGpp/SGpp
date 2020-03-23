@@ -239,7 +239,7 @@ void DBMatOnlineDE::computeDensityFunction(
 void DBMatOnlineDE::computeDensityDifferenceFunction(
     DataVector& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool save_b,
-    bool do_cv, std::list<size_t>* deletedPoints, size_t newPoints) {
+    bool do_cv) {
   if (!localVectorsInitialized) {
     // init bsave and bTotalPoints only here, as they are not needed in the
     // parallel version

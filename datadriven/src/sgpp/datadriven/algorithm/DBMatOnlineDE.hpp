@@ -119,16 +119,12 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param save_b Indicates whether the old right hand side should be saved and
    *        combined with the new right hand side (aka streaming)
    * @param do_cv Indicates whether crossvalidation should take place
-   * @param deletedPoints indicates the indices of removed grid points due to
-   * coarsening
-   * @param newPoints indicates the amount of added points due to refinement
    */
 
   void computeDensityDifferenceFunction(
       DataVector& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
       DensityEstimationConfiguration& densityEstimationConfig,
-      bool save_b = false, bool do_cv = false,
-      std::list<size_t>* deletedPoints = nullptr, size_t newPoints = 0);
+      bool save_b = false, bool do_cv = false);
 
   /**
    * Computes the density function again based on the saved b's (only applicable
