@@ -39,29 +39,6 @@ struct RegularizationConfiguration {
 
   RegularizationMetricType regularizationMetric_ =
       RegularizationMetricType::residual;
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    stream_out << "type: \t\t\t" << RegularizationTypeParser::toString(type_)
-               << std::endl;
-    stream_out << "lambda: \t\t\t" << lambda_ << std::endl;
-    stream_out << "l1Ratio: \t\t\t" << l1Ratio_ << std::endl;
-    stream_out << "exponentBase: \t\t" << exponentBase_ << std::endl;
-    stream_out << "lambda_start: \t\t" << lamda_start_ << std::endl;
-    stream_out << "lambda_end: \t\t" << lambda_end_ << std::endl;
-    stream_out << "lambda_steps: \t\t" << lambda_steps_ << std::endl;
-    stream_out << "lambda_log_scale: \t" << std::boolalpha << lambda_log_scale_
-               << std::endl;
-    stream_out << "optimizeLambda: \t" << std::boolalpha << optimizeLambda_
-               << std::endl;
-    stream_out << "optimizerTolerance: \t" << optimizerTolerance_ << std::endl;
-    stream_out << "convergenceThreshold: \t" << convergenceThreshold_
-               << std::endl;
-    stream_out << "intervalA: \t\t" << intervalA_ << std::endl;
-    stream_out << "intervalB: \t\t" << intervalB_ << std::endl;
-  }
-  */
 };
 }  // namespace datadriven
 }  // namespace sgpp

@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SparseGridMinerSplitting_TwoDatasets.hpp
- *
- * Author: Paul Sarbu
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -15,18 +9,19 @@
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 
 #include <memory>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
 
 /**
- * SparseGridMinerSplitting_TwoDatasets models a datamining process that
+ * SparseGridMinerSplittingTwoDatasets models a datamining process that
  * involves two input datasets
  * that are first split into validation and training data. The model is then
  * trained on the training
  * data for several epochs.
  */
-class SparseGridMinerSplitting_TwoDatasets : public SparseGridMiner {
+class SparseGridMinerSplittingTwoDatasets : public SparseGridMiner {
  public:
   /**
    * Constructor
@@ -43,7 +38,7 @@ class SparseGridMinerSplitting_TwoDatasets : public SparseGridMiner {
    * will take ownership
    * of the passed object.
    */
-  SparseGridMinerSplitting_TwoDatasets(
+  SparseGridMinerSplittingTwoDatasets(
       std::vector<DataSourceSplitting*> dataSource, ModelFittingBase* fitter,
       Scorer* scorer, Visualizer* visualizer);
 
@@ -51,34 +46,34 @@ class SparseGridMinerSplitting_TwoDatasets : public SparseGridMiner {
    * Copy constructor deleted - not all members can be copied or cloned .
    * @param rhs the object to copy from
    */
-  SparseGridMinerSplitting_TwoDatasets(
-      const SparseGridMinerSplitting_TwoDatasets& rhs) = delete;
+  SparseGridMinerSplittingTwoDatasets(
+      const SparseGridMinerSplittingTwoDatasets& rhs) = delete;
 
   /**
    * Default Move constructor .
    * @param rhs the object to move from
    */
-  SparseGridMinerSplitting_TwoDatasets(
-      SparseGridMinerSplitting_TwoDatasets&& rhs) = default;
+  SparseGridMinerSplittingTwoDatasets(
+      SparseGridMinerSplittingTwoDatasets&& rhs) = default;
 
   /**
    * Default Move assign operator.
    * @param rhs the object to move from
    */
-  SparseGridMinerSplitting_TwoDatasets& operator=(
-      SparseGridMinerSplitting_TwoDatasets&& rhs) = default;
+  SparseGridMinerSplittingTwoDatasets& operator=(
+      SparseGridMinerSplittingTwoDatasets&& rhs) = default;
 
   /**
    * Default copy assign operator deleted because not all members can be copied.
    * @param rhs the object to copy from
    */
-  SparseGridMinerSplitting_TwoDatasets& operator=(
-      const SparseGridMinerSplitting_TwoDatasets& rhs) = delete;
+  SparseGridMinerSplittingTwoDatasets& operator=(
+      const SparseGridMinerSplittingTwoDatasets& rhs) = delete;
 
   /**
    * Default destructor.
    */
-  ~SparseGridMinerSplitting_TwoDatasets() = default;
+  ~SparseGridMinerSplittingTwoDatasets() = default;
 
   /**
    * Perform Learning cycle: Get samples from data source and based on the

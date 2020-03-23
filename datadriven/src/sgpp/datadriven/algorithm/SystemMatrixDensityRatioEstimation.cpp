@@ -1,22 +1,13 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SystemMatrixDensityRatioEstimation.cpp
- *
- * Author: Paul Sarbu
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include "sgpp/base/exception/operation_exception.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "SystemMatrixDensityRatioEstimation.hpp"
-#include "sgpp/globaldef.hpp"
+#include <sgpp/datadriven/algorithm/SystemMatrixDensityRatioEstimation.hpp>
 
-// #include <iostream>
-
-// using namespace std;
+#include <sgpp/base/exception/operation_exception.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -65,7 +56,7 @@ void SystemMatrixDensityRatioEstimation::mult(base::DataVector& alpha,
   result.axpy(static_cast<double>(this->instancesQ) * this->lambda_, alpha);
 
   // Compute (np * B_q * B_q^T + lambda * np * nq * I) * alpha
-  result.mult(this->instancesP);
+  result.mult(static_cast<double>(this->instancesP));
 }
 
 void SystemMatrixDensityRatioEstimation::generateb(base::DataVector& b) {

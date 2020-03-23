@@ -9,7 +9,6 @@
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/GridFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>

@@ -46,28 +46,6 @@ struct DensityEstimationConfiguration {
   size_t iCholSweepsRefine_ = 4;
   size_t iCholSweepsUpdateLambda_ = 2;
   size_t iCholSweepsSolver_ = 2;
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    stream_out << "type: \t\t\t" << DensityEstimationTypeParser::toString(type_)
-               << std::endl;
-    stream_out << "decomposition: \t"
-               << datadriven::MatrixDecompositionTypeParser::toString(
-                      decomposition_)
-               << std::endl;
-    stream_out << "useOfflinePermutation: \t" << std::boolalpha
-               << useOfflinePermutation << std::endl;
-    stream_out << "normalize: \t\t" << std::boolalpha << normalize_
-               << std::endl;
-    stream_out << "iCholSweepsDecompose \t" << iCholSweepsDecompose_
-               << std::endl;
-    stream_out << "iCholSweepsRefine \t" << iCholSweepsRefine_ << std::endl;
-    stream_out << "iCholSweepsUpdateLambda " << iCholSweepsUpdateLambda_
-               << std::endl;
-    stream_out << "iCholSweepsSolver \t" << iCholSweepsSolver_ << std::endl;
-  }
-  */
 };
 
 }  // namespace datadriven

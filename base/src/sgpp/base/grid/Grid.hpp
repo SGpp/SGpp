@@ -103,23 +103,6 @@ struct GeneralGridConfiguration {
   double t_ = 0.0;
   /// virtual destructor, since GeneralGridConfiguration is used as base class
   virtual ~GeneralGridConfiguration() {}
-  /*
-    // Debug method to neatly print internal data
-    void dumpToStream(std::ostream& stream_out = std::cout) const {
-      stream_out << "type: \t\t\t" << GridTypeParser::toString(type_)
-                 << std::endl;
-      stream_out << "dim: \t\t\t" << dim_ << std::endl;
-      stream_out << "level: \t\t\t" << level_ << std::endl;
-      stream_out << "levelVector: \t";
-      for (auto i = levelVector_.begin(); i != levelVector_.end(); ++i)
-        stream_out << *i << ' ';
-      stream_out << std::endl;
-      stream_out << "maxDegree: \t\t" << maxDegree_ << std::endl;
-      stream_out << "boundaryLevel: \t" << boundaryLevel_ << std::endl;
-      stream_out << "filename: \t\t" << filename_ << std::endl;
-      stream_out << "t: \t\t\t" << t_ << std::endl;
-    }
-    */
 };
 
 /**
@@ -130,15 +113,6 @@ struct RegularGridConfiguration : GeneralGridConfiguration {
   RegularGridConfiguration() {
     generalType_ = GeneralGridType::RegularSparseGrid;
   }
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    GeneralGridConfiguration::dumpToStream();
-    stream_out << "type: \t\t\t"
-               << GeneralGridTypeParser::toString(generalType_) << std::endl;
-  }
-  */
 
   ~RegularGridConfiguration() override {}
 };
@@ -153,15 +127,6 @@ struct CombiGridConfiguration : GeneralGridConfiguration {
     generalType_ = GeneralGridType::ComponentGrid;
     level_ = -1;
   }
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    GeneralGridConfiguration::dumpToStream();
-    stream_out << "type: \t\t\t"
-               << GeneralGridTypeParser::toString(generalType_) << std::endl;
-  }
-  */
 
   ~CombiGridConfiguration() override {}
 };
@@ -227,51 +192,6 @@ struct AdaptivityConfiguration {
   /// in case of data based refinements: determines the scaling coefficients for
   /// each class
   std::vector<double> scalingCoefficients = std::vector<double>();
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    stream_out << "numRefinements: \t\t" << numRefinements_ << std::endl;
-    stream_out << "thresholdType: \t\t"
-               << AdaptivityThresholdTypeParser::toString(thresholdType_)
-               << std::endl;
-    stream_out << "refinementThreshold: \t" << refinementThreshold_
-               << std::endl;
-    stream_out << "refinementThreshold: \t" << coarseningThreshold_
-               << std::endl;
-    stream_out << std::boolalpha << "coarsenInitialPoints: \t"
-               << coarsenInitialPoints_ << std::endl;
-    stream_out << std::boolalpha << "maxLevelType: \t" << maxLevelType_
-               << std::endl;
-    stream_out << "numRefinementPoints: \t" << numRefinementPoints_
-               << std::endl;
-    stream_out << "numCoarseningPoints: \t" << numCoarseningPoints_
-               << std::endl;
-    stream_out << "percent: \t\t" << percent_ << std::endl;
-    stream_out << std::boolalpha << "errorBasedRefinement: \t"
-               << errorBasedRefinement << std::endl;
-    stream_out << "errorConvergenceThreshold: \t" << errorConvergenceThreshold
-               << std::endl;
-    stream_out << "errorBufferSize: \t\t" << errorBufferSize << std::endl;
-    stream_out << "errorMinInterval: \t\t" << errorMinInterval << std::endl;
-    stream_out << "refinementPeriod: \t\t" << refinementPeriod << std::endl;
-    stream_out << "refinementFunctorType: \t"
-               << RefinementFunctorTypeParser::toString(refinementFunctorType)
-               << std::endl;
-    stream_out << "coarseningFunctorType: \t"
-               << CoarseningFunctorTypeParser::toString(coarseningFunctorType)
-               << std::endl;
-    stream_out << std::boolalpha << "precomputeEvaluations: \t"
-               << precomputeEvaluations << std::endl;
-    stream_out << std::boolalpha << "levelPenalize: \t\t" << levelPenalize
-               << std::endl;
-    stream_out << "scalingCoefficients: \t";
-    for (auto i = scalingCoefficients.begin(); i != scalingCoefficients.end();
-         ++i)
-      stream_out << *i << ' ';
-    stream_out << std::endl;
-  }
-  */
 };
 
 /**

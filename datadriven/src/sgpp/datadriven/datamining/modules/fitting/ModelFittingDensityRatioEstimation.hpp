@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * ModelFittingDensityRatioEstimation.hpp
- *
- * Author: Paul Sarbu
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #pragma once
 
@@ -16,10 +10,10 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/solver/SLESolver.hpp>
-#include "ModelFittingBase.hpp"
-#include "ModelFittingBaseSingleGrid.hpp"
 
 using sgpp::solver::SLESolver;
 using sgpp::base::DataMatrix;

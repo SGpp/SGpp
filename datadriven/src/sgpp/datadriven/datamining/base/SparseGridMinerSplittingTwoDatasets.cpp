@@ -1,15 +1,10 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * SparseGridMinerSplitting_TwoDatasets.cpp
- *
- * Author: Paul Sarbu
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting_TwoDatasets.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
+
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
@@ -20,14 +15,14 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMinerSplitting_TwoDatasets::SparseGridMinerSplitting_TwoDatasets(
+SparseGridMinerSplittingTwoDatasets::SparseGridMinerSplittingTwoDatasets(
     std::vector<DataSourceSplitting*> dataSource, ModelFittingBase* fitter,
     Scorer* scorer, Visualizer* visualizer)
     : SparseGridMiner(fitter, scorer, visualizer),
       dataSourceP{dataSource[0]},
       dataSourceQ{dataSource[1]} {}
 
-double SparseGridMinerSplitting_TwoDatasets::learn(bool verbose) {
+double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;

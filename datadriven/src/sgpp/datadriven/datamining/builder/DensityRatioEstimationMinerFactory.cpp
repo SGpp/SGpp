@@ -1,22 +1,16 @@
-/*
- * Copyright (C) 2008-today The SG++ project
- * This file is part of the SG++ project. For conditions of distribution and
- * use, please see the copyright notice provided with SG++ or at
- * sgpp.sparsegrids.org
- *
- * DensityRatioEstimationMinerFactory.cpp
- *
- * Author: Paul Sarbu
- */
+// Copyright (C) 2008-today The SG++ project
+// This file is part of the SG++ project. For conditions of distribution and
+// use, please see the copyright notice provided with SG++ or at
+// sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting_TwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
@@ -36,7 +30,7 @@ SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(
         createDataSourceCrossValidation(parser), createFitter(parser),
         createScorer(parser), createVisualizer(parser));
   } else {
-    return new SparseGridMinerSplitting_TwoDatasets(
+    return new SparseGridMinerSplittingTwoDatasets(
         createDataSourceSplitting_TwoDatasets(parser), createFitter(parser),
         createScorer(parser), createVisualizer(parser));
   }

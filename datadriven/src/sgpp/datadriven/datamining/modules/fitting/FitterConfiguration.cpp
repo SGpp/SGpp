@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/tools/DMConfigTools.hpp>
+
 #include <string>
 #include <vector>
 
@@ -117,47 +119,40 @@ FitterConfiguration::getMultipleEvalConfig() {
 }
 
 void FitterConfiguration::dumpToStream(std::ostream &stream_out) const {
-  /*
   stream_out << "\n~~~ gridConfig ~~~\n" << std::endl;
-  gridConfig.dumpToStream();
+  DMConfigTools::dumpToStream(gridConfig);
 
   stream_out << "\n~~~ adaptivityConfig ~~~\n" << std::endl;
-  adaptivityConfig.dumpToStream();
+  DMConfigTools::dumpToStream(adaptivityConfig);
 
   stream_out << "\n~~~ crossvalidationConfig ~~~\n" << std::endl;
-  crossvalidationConfig.dumpToStream();
+  DMConfigTools::dumpToStream(crossvalidationConfig);
 
   stream_out << "\n~~~ densityEstimationConfig ~~~\n" << std::endl;
-  densityEstimationConfig.dumpToStream();
+  DMConfigTools::dumpToStream(densityEstimationConfig);
 
   stream_out << "\n~~~ databaseConfig ~~~\n" << std::endl;
-  databaseConfig.dumpToStream();
+  DMConfigTools::dumpToStream(databaseConfig);
 
   stream_out << "\n~~~ solverRefineConfig ~~~\n" << std::endl;
-
-  solverRefineConfig.dumpToStream();
+  DMConfigTools::dumpToStream(solverRefineConfig);
 
   stream_out << "\n~~~ solverFinalConfig ~~~\n" << std::endl;
-
-  solverFinalConfig.dumpToStream();
+  DMConfigTools::dumpToStream(solverFinalConfig);
 
   stream_out << "\n~~~ regularizationConfig ~~~\n" << std::endl;
-
-  regularizationConfig.dumpToStream();
+  DMConfigTools::dumpToStream(regularizationConfig);
 
   stream_out << "\n~~~ learnerConfig ~~~\n" << std::endl;
-
-  learnerConfig.dumpToStream();
+  DMConfigTools::dumpToStream(learnerConfig);
 
   stream_out << "\n~~~ parallelConfig ~~~\n" << std::endl;
-
-  parallelConfig.dumpToStream();
+  DMConfigTools::dumpToStream(parallelConfig);
 
   // For now these are not included
   // stream_out << "\n~~~ geometryConfig ~~~\n" << std::endl;
 
   // stream_out << "\n~~~ multipleEvalConfig ~~~\n" << std::endl;
-  */
 }
 
 void FitterConfiguration::setupDefaults() {

@@ -23,18 +23,6 @@ struct ParallelConfiguration {
   int processCols_ = -1;
   size_t rowBlockSize_ = 64;
   size_t columnBlockSize_ = 64;
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    stream_out << "scalapackEnabled: \t\t" << std::boolalpha
-               << scalapackEnabled_ << std::endl;
-    stream_out << "processRows: \t\t" << processRows_ << std::endl;
-    stream_out << "processCols: \t\t" << processCols_ << std::endl;
-    stream_out << "rowBlockSize: \t\t" << rowBlockSize_ << std::endl;
-    stream_out << "columnBlockSize: \t\t" << columnBlockSize_ << std::endl;
-  }
-  */
 };
 
 }  // namespace datadriven

@@ -25,14 +25,6 @@ struct LearnerConfiguration {
    * (false corresponds to a uniform prior)
    */
   bool usePrior = false;
-
-  /*
-  // Debug method to neatly print internal data
-  void dumpToStream(std::ostream& stream_out = std::cout) const {
-    stream_out << "learningRate: \t\t" << learningRate << std::endl;
-    stream_out << "usePrior: \t\t" << std::boolalpha << usePrior << std::endl;
-  }
-  */
 };
 }  // namespace datadriven
 }  // namespace sgpp
