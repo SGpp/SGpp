@@ -10,6 +10,7 @@
 
 #include <bits/stdc++.h>
 #include <chrono>
+#include <set>
 #include <vector>
 
 using sgpp::base::DataMatrix;
@@ -35,7 +36,7 @@ void genAllInteractions(std::set<std::set<size_t>> &inter, size_t d) {
 }
 
 int main() {
-  std::vector<size_t> dims = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  std::vector<size_t> dims = {1, 2, 3};
   size_t lvl_start = 3;
   size_t lvl_end = 5;
 
