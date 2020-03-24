@@ -986,6 +986,33 @@ std::vector<double> DataMiningConfigParser::parseDoubleArray(
   }
 }
 
+// (Niklas) Adapted from parseArrayOfIntArrays
+std::vector<std::vector<double>> DataMiningConfigParser::parseArrayOfDoubleArrays(
+    DictNode &dict, const std::string &key, std::vector<std::vector<double>> defaultValue,
+    const std::string &parentNode) const {
+  if (dict.contains(key)) {
+    try {
+      std::vector<std::vector<double>> array;
+      for (size_t i = 0; i < dict[key].size(); ++i) {
+        std::vector<double> entry;
+        for (size_t j = 0; j < dict[key][i].size(); j++) {
+          entry.push_back(dict[key][i][j].getDouble());
+        }
+        array.push_back(entry);
+      }
+      return array;
+    } catch (json_exception &e) {
+      std::string errorMsg = "# Failed to parse array of double arrays" + parentNode + "[" + key +
+                             "] from string" + dict[key].get() + ": " + e.what();
+      throw data_exception(errorMsg.c_str());
+    }
+  } else {
+    std::cout << "# Did not find " << parentNode << "[" << key << "]. Setting to default value."
+              << std::endl;
+    return defaultValue;
+  }
+}
+
 std::vector<std::string> DataMiningConfigParser::parseStringArray(
     json::JSON::DictNode &dict, const std::string &key,
     std::vector<std::string> defaultValue,
@@ -1214,16 +1241,17 @@ void DataMiningConfigParser::parseDataTransformationConfig(
   // If type Rosenblatt parse RosenblattTransformationConfig
   if (config.type == DataTransformationType::ROSENBLATT) {
     auto rosenblattTransformationConfig = static_cast<DictNode *>(
-        &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
-    parseRosenblattTransformationConfig(
-        *rosenblattTransformationConfig, config.rosenblattConfig,
-        defaults.rosenblattConfig, "rosenblattConfig");
-  } else {
-    std::cout << "# Could not find specification of "
-                 "dataSource[dataTransformationConfig]"
-                 "[rosenblattConfig]. Falling back to default values."
-              << std::endl;
-    config.rosenblattConfig = defaults.rosenblattConfig;
+           &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+       parseRosenblattTransformationConfig(
+           *rosenblattTransformationConfig, config.rosenblattConfig,
+           defaults.rosenblattConfig, "rosenblattConfig");
+  // If type Normalization parse Normalizationconfig
+  } else if (config.type == DataTransformationType::NORMALIZATION) {
+    auto normalizationTransformationConfig = static_cast<DictNode *>(
+           &(*configFile)[dataSource]["dataTransformation"]["normalizationConfig"]);
+    parseNormalizationTransformationConfig(
+           *normalizationTransformationConfig, config.normalizationConfig,
+           defaults.normalizationConfig, "normalizationConfig");
   }
 }
 
@@ -1242,6 +1270,24 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
       parseDouble(dict, "solverEps", defaults.solverEps, parentNode);
   config.solverThreshold = parseDouble(dict, "solverThreshold",
                                        defaults.solverThreshold, parentNode);
+}
+
+void DataMiningConfigParser::parseNormalizationTransformationConfig(
+    DictNode &dict, NormalizationTransformationConfig &config,
+    const NormalizationTransformationConfig &defaults, const std::string &parentNode) const {
+  config.method = parseString(dict, "method", defaults.method, parentNode);
+  config.manualInput = parseBool(dict, "manualInput", defaults.manualInput, parentNode);
+  config.minmaxInput = parseArrayOfDoubleArrays(dict, "minmaxInput", defaults.minmaxInput,
+                                                parentNode);
+  config.searchInstances = static_cast<unsigned int>(parseInt(dict, "searchInstances",
+                                                     defaults.searchInstances, parentNode));
+  config.stdDeviationHeuristic = parseBool(dict, "stdDeviationHeuristic",
+                                           defaults.stdDeviationHeuristic, parentNode);
+  config.deviationHeuristic = parseDouble(dict, "deviationHeuristic", defaults.deviationHeuristic,
+                                          parentNode);
+  config.minmaxStdDeviation = parseDouble(dict, "minmaxStdDeviation", defaults.minmaxStdDeviation,
+                                       parentNode);
+  config.outOfBound = parseString(dict, "outOfBound", defaults.outOfBound, parentNode);
 }
 
 bool DataMiningConfigParser::getFitterDatabaseConfig(

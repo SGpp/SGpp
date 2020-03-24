@@ -22,6 +22,7 @@ void DataSourceSplitting::reset() {
   size_t validationSize = static_cast<size_t>(config.validationPortion *
       static_cast<double>(sampleProvider->getNumSamples()));
   validationData = sampleProvider->getNextSamples(validationSize);
+  validationData = DataSource::getTransformedSamples(validationData);
 }
 
 } /* namespace datadriven */

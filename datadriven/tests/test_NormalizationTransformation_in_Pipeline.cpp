@@ -11,11 +11,12 @@
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/ArffFileSampleProvider.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/SampleProvider.hpp>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformation.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationTypeParser.hpp>
-#include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformation.hpp>
 
 #include <vector>
 #include <string>
@@ -29,22 +30,24 @@ using sgpp::datadriven::DataTransformation;
 using sgpp::datadriven::DataTransformationBuilder;
 using sgpp::datadriven::DataTransformationType;
 using sgpp::datadriven::DataTransformationTypeParser;
-using sgpp::datadriven::RosenblattTransformation;
+using sgpp::datadriven::NormalizationTransformation;
 using sgpp::datadriven::DataMiningConfigParser;
 using sgpp::base::DataVector;
+using sgpp::base::DataMatrix;
 
-BOOST_AUTO_TEST_SUITE(testRosenblattTransformationInPipeline)
+BOOST_AUTO_TEST_SUITE(testNormalizationTransformationInPipeline)
 
-BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
+BOOST_AUTO_TEST_CASE(testNormalizationWrapper) {
   double tolerance = 1e-10;
   DataSourceConfig config;
-  config.dataTransformationConfig.type = DataTransformationType::ROSENBLATT;
-  config.dataTransformationConfig.rosenblattConfig.numSamples = 1000;
+  config.dataTransformationConfig.type = DataTransformationType::NORMALIZATION;
 
-  // read arff file
-  ArffFileSampleProvider arffsp = ArffFileSampleProvider();
-  arffsp.readFile("datadriven/datasets/chess/chess_5d_2000.arff", true);
-  Dataset* dataset = arffsp.getAllSamples();
+
+  Dataset* dataset = new Dataset {100, 2};
+  DataMatrix& data = dataset->getData();
+  for (int i = 0; i < 200; i++) {
+    data[i] = i;
+  }
 
   // do transformations
   DataTransformationBuilder dataTrBuilder;
@@ -69,6 +72,7 @@ BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
       BOOST_CHECK_SMALL(inversionError, tolerance);
     }
   }
+  delete dataset;
 }
 
 BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
@@ -77,7 +81,7 @@ BOOST_AUTO_TEST_CASE(testDataTransformationParser) {
   DataSourceConfig defaults;
 
   // Config for "automatic" transformation
-  std::string path = "datadriven/tests/pipeline/config_rosenblattTransformation.json";
+  std::string path = "datadriven/tests/test_Normalization_in_Pipeline.json";
   DataSourceBuilder builder;
   DataMiningConfigParser parser(path);
   parser.getDataSourceConfig(config, defaults);

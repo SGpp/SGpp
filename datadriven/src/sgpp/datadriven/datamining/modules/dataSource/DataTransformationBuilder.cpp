@@ -5,6 +5,7 @@
 
 #include <sgpp/datadriven/datamining/modules/dataSource/DataTransformationBuilder.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/RosenblattTransformation.hpp>
+#include <sgpp/datadriven/datamining/modules/dataSource/NormalizationTransformation.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -14,6 +15,10 @@ DataTransformation *DataTransformationBuilder::buildTransformation(
   if (config.type == DataTransformationType::ROSENBLATT) {
     RosenblattTransformation *rosenblattTransformation = new RosenblattTransformation;
     return static_cast<DataTransformation *>(rosenblattTransformation);
+  }
+  if (config.type == DataTransformationType::NORMALIZATION) {
+      NormalizationTransformation *normalizationTransformation = new NormalizationTransformation;
+      return static_cast<DataTransformation *>(normalizationTransformation);
   } else {
     return nullptr;
   }

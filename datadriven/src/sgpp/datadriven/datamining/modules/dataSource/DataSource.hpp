@@ -55,6 +55,13 @@ class DataSource {
   virtual Dataset* getAllSamples();
 
   /**
+   * Does DataTransformation of Sample, if specified. If also initialization is also wanted,
+   * set init = true.
+   * @return #sgpp::datadriven::Dataset with transformed values (if asked for in configuration).
+   */
+  virtual Dataset* getTransformedSamples(Dataset* dataset);
+
+  /**
    * Return an iterator object pointing to the first batch of this DataSource. Can be used to obtain
    * new batches in batch learning scenarios as often as specified inside the configuration. Allows
    * convenient range based for loops for batch learning.
