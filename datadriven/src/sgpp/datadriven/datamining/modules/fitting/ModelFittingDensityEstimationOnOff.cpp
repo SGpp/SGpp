@@ -117,17 +117,17 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     // Initialize the permutation factory. If a database path is specified, the path is pased to the
     // permutation factory
     DBMatPermutationFactory permutationFactory;
-    if (databaseConfig.filePath.empty()) {
+    if (databaseConfig.filePath_.empty()) {
       permutationFactory = DBMatPermutationFactory(this->objectStore);
     } else {
-      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath_);
     }
     offline = permutationFactory.getPermutedObject(
         config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
         config->getRegularizationConfig(), config->getDensityEstimationConfig());
     offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  } else if (!databaseConfig.filePath_.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {

@@ -1256,11 +1256,11 @@ bool DataMiningConfigParser::getFitterDatabaseConfig(
 
     // Parse filepath
     if (databaseConfig->contains("filePath")) {
-      config.filePath = (*databaseConfig)["filePath"].get();
+      config.filePath_ = (*databaseConfig)["filePath"].get();
     } else {
       std::cout << "# Did not find databaseConfig[filepath]. No database loaded"
                 << std::endl;
-      config.filePath = defaults.filePath;
+      config.filePath_ = defaults.filePath_;
     }
   }
 

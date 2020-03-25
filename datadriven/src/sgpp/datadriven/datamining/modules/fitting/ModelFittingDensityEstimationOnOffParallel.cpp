@@ -106,8 +106,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   DBMatOffline* offline = nullptr;
 
   // Intialize database if it is provided
-  if (!databaseConfig.filePath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  if (!databaseConfig.filePath_.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig,
                                regularizationConfig, densityEstimationConfig)) {

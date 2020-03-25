@@ -159,7 +159,7 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default;
   densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default;
 
-  databaseConfig.filePath = "";
+  databaseConfig.filePath_ = "";
 
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.eps_ = 1e-12;
