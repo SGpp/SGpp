@@ -38,7 +38,7 @@ std::unique_ptr<RefinementFunctor>
 ModelFittingDensityEstimation::getRefinementFunctor() {
   sgpp::base::AdaptivityConfiguration &refinementConfig =
       this->config->getRefinementConfig();
-  switch (refinementConfig.refinementFunctorType) {
+  switch (refinementConfig.refinementFunctorType_) {
     case RefinementFunctorType::Surplus: {
       return std::make_unique<SurplusRefinementFunctor>(
           alpha, config->getRefinementConfig().numRefinementPoints_,
@@ -87,7 +87,7 @@ std::unique_ptr<CoarseningFunctor>
 ModelFittingDensityEstimation::getCoarseningFunctor() {
   sgpp::base::AdaptivityConfiguration &adaptivityConfig =
       this->config->getRefinementConfig();
-  switch (adaptivityConfig.coarseningFunctorType) {
+  switch (adaptivityConfig.coarseningFunctorType_) {
     case CoarseningFunctorType::Surplus: {
       return std::make_unique<SurplusCoarseningFunctor>(
           alpha, config->getRefinementConfig().numRefinementPoints_,

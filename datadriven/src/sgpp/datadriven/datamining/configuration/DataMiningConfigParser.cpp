@@ -391,26 +391,26 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
                   defaults.coarsenInitialPoints_, "adaptivityConfig");
     config.percent_ = parseDouble(*adaptivityConfig, "percent",
                                   defaults.percent_, "adaptivityConfig");
-    config.errorBasedRefinement =
+    config.errorBasedRefinement_ =
         parseBool(*adaptivityConfig, "errorBasedRefinement",
-                  defaults.errorBasedRefinement, "adaptivityConfig");
-    config.errorConvergenceThreshold =
+                  defaults.errorBasedRefinement_, "adaptivityConfig");
+    config.errorConvergenceThreshold_ =
         parseDouble(*adaptivityConfig, "errorConvergenceThreshold",
-                    defaults.errorConvergenceThreshold, "adaptivityConfig");
-    config.errorBufferSize =
+                    defaults.errorConvergenceThreshold_, "adaptivityConfig");
+    config.errorBufferSize_ =
         parseUInt(*adaptivityConfig, "errorBufferSize",
-                  defaults.errorBufferSize, "adaptivityConfig");
-    config.errorMinInterval =
+                  defaults.errorBufferSize_, "adaptivityConfig");
+    config.errorMinInterval_ =
         parseUInt(*adaptivityConfig, "errorMinInterval",
-                  defaults.errorMinInterval, "adaptivityConfig");
-    config.refinementPeriod =
+                  defaults.errorMinInterval_, "adaptivityConfig");
+    config.refinementPeriod_ =
         parseUInt(*adaptivityConfig, "refinementPeriod",
-                  defaults.refinementPeriod, "adaptivityConfig");
-    config.precomputeEvaluations =
+                  defaults.refinementPeriod_, "adaptivityConfig");
+    config.precomputeEvaluations_ =
         parseBool(*adaptivityConfig, "precomputeEvaluations",
-                  defaults.precomputeEvaluations, "adaptivityConfig");
-    config.levelPenalize =
-        parseBool(*adaptivityConfig, "penalizeLevels", defaults.levelPenalize,
+                  defaults.precomputeEvaluations_, "adaptivityConfig");
+    config.levelPenalize_ =
+        parseBool(*adaptivityConfig, "penalizeLevels", defaults.levelPenalize_,
                   "adaptivityConfig");
 
     // Parse scaling coefficients if present
@@ -418,34 +418,34 @@ bool DataMiningConfigParser::getFitterAdaptivityConfig(
       json::ListNode &coefs = dynamic_cast<json::ListNode &>(
           (*adaptivityConfig)["scalingCoefficients"]);
       for (size_t i = 0; i < coefs.size(); i++) {
-        config.scalingCoefficients.push_back(coefs[i].getDouble());
+        config.scalingCoefficients_.push_back(coefs[i].getDouble());
       }
     }
 
     // Parse refinement indicator
     if (adaptivityConfig->contains("refinementIndicator")) {
-      config.refinementFunctorType = base::RefinementFunctorTypeParser::parse(
+      config.refinementFunctorType_ = base::RefinementFunctorTypeParser::parse(
           (*adaptivityConfig)["refinementIndicator"].get());
     } else {
       std::cout << "# Did not find adaptivityConfig[refinementIndicator]. "
                    "Setting default "
                 << "value " << base::RefinementFunctorTypeParser::toString(
-                                   defaults.refinementFunctorType)
+                                   defaults.refinementFunctorType_)
                 << "." << std::endl;
-      config.refinementFunctorType = defaults.refinementFunctorType;
+      config.refinementFunctorType_ = defaults.refinementFunctorType_;
     }
 
     // Parse coarsening indicator
     if (adaptivityConfig->contains("coarseningIndicator")) {
-      config.coarseningFunctorType = base::CoarseningFunctorTypeParser::parse(
+      config.coarseningFunctorType_ = base::CoarseningFunctorTypeParser::parse(
           (*adaptivityConfig)["coarseningIndicator"].get());
     } else {
       std::cout << "# Did not find adaptivityConfig[coarseningIndicator]. "
                    "Setting default "
                 << "value " << base::CoarseningFunctorTypeParser::toString(
-                                   defaults.coarseningFunctorType)
+                                   defaults.coarseningFunctorType_)
                 << "." << std::endl;
-      config.coarseningFunctorType = defaults.coarseningFunctorType;
+      config.coarseningFunctorType_ = defaults.coarseningFunctorType_;
     }
 
     // Parse threshold type

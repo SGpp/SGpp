@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   defaults.numCoarseningPoints_ = 42;
   defaults.coarsenInitialPoints_ = true;
   defaults.percent_ = 0.42;
-  defaults.errorBasedRefinement = true;
+  defaults.errorBasedRefinement_ = true;
   AdaptivityConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   BOOST_CHECK_EQUAL(config.numCoarseningPoints_, 0);
   BOOST_CHECK_EQUAL(config.coarsenInitialPoints_, false);
   BOOST_CHECK_CLOSE(config.percent_, 0, tolerance);
-  BOOST_CHECK_EQUAL(config.errorBasedRefinement, false);
+  BOOST_CHECK_EQUAL(config.errorBasedRefinement_, false);
 }
 
 BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {

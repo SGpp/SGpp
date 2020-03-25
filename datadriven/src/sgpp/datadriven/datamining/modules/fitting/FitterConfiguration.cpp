@@ -122,18 +122,18 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.numCoarseningPoints_ = 1;
   adaptivityConfig.coarsenInitialPoints_ = false;
   adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
-  adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
-  adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
-  adaptivityConfig.errorBufferSize = 3;                // mirrors struct default
-  adaptivityConfig.errorMinInterval = 0;               // mirrors struct default
-  adaptivityConfig.refinementPeriod = 1;               // mirrors struct default
-  adaptivityConfig.refinementFunctorType =
+  adaptivityConfig.errorBasedRefinement_ = false;       // mirrors struct default
+  adaptivityConfig.errorConvergenceThreshold_ = 0.001;  // mirrors struct default
+  adaptivityConfig.errorBufferSize_ = 3;                // mirrors struct default
+  adaptivityConfig.errorMinInterval_ = 0;               // mirrors struct default
+  adaptivityConfig.refinementPeriod_ = 1;               // mirrors struct default
+  adaptivityConfig.refinementFunctorType_ =
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptivityConfig.coarseningFunctorType =         // mirrors struct default
+  adaptivityConfig.coarseningFunctorType_ =         // mirrors struct default
       sgpp::base::CoarseningFunctorType::Surplus;
-  adaptivityConfig.precomputeEvaluations = true;                 // mirrors struct default
-  adaptivityConfig.levelPenalize = false;                        // mirrors struct default
-  adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default;
+  adaptivityConfig.precomputeEvaluations_ = true;                 // mirrors struct default
+  adaptivityConfig.levelPenalize_ = false;                        // mirrors struct default
+  adaptivityConfig.scalingCoefficients_ = std::vector<double>();  // mirrors struct default;
 
   crossvalidationConfig.enable_ = false;  // mirrors struct default
   crossvalidationConfig.kfold_ = 5;       // mirrors struct default

@@ -249,27 +249,27 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     std::vector<double> priors) {
   sgpp::base::AdaptivityConfiguration& refinementConfig =
       this->config->getRefinementConfig();
-  switch (refinementConfig.refinementFunctorType) {
+  switch (refinementConfig.refinementFunctorType_) {
     case RefinementFunctorType::Surplus: {
       return new MultiSurplusRefinementFunctor(
           grids, surpluses, refinementConfig.numRefinementPoints_,
-          refinementConfig.levelPenalize,
+          refinementConfig.levelPenalize_,
           refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::ZeroCrossing: {
       return new ZeroCrossingRefinementFunctor(
           grids, surpluses, priors, refinementConfig.numRefinementPoints_,
-          refinementConfig.levelPenalize,
-          refinementConfig.precomputeEvaluations);
+          refinementConfig.levelPenalize_,
+          refinementConfig.precomputeEvaluations_);
     }
     case RefinementFunctorType::DataBased: {
-      if (refinementConfig.scalingCoefficients.size() != 0) {
-        if (refinementConfig.scalingCoefficients.size() < models.size()) {
+      if (refinementConfig.scalingCoefficients_.size() != 0) {
+        if (refinementConfig.scalingCoefficients_.size() < models.size()) {
           std::string errorMessage =
               "Not enough scaling coefficients were given for the amount"
               "of classes";
           throw application_exception(errorMessage.c_str());
-        } else if (refinementConfig.scalingCoefficients.size() >
+        } else if (refinementConfig.scalingCoefficients_.size() >
                    models.size()) {
           std::cout << "Did not train on at least one sample for every class. "
                        "Data based "
@@ -281,7 +281,7 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
       return new DataBasedRefinementFunctor(
           grids, surpluses, priors, &(dataset->getData()),
           &(dataset->getTargets()), refinementConfig.numRefinementPoints_,
-          refinementConfig.levelPenalize, refinementConfig.scalingCoefficients);
+          refinementConfig.levelPenalize_, refinementConfig.scalingCoefficients_);
     }
     case RefinementFunctorType::SurplusVolume: {
       std::string errorMessage =
@@ -292,8 +292,8 @@ MultiGridRefinementFunctor* ModelFittingClassification::getRefinementFunctor(
     case RefinementFunctorType::GridPointBased: {
       return new GridPointBasedRefinementFunctor(
           grids, surpluses, priors, refinementConfig.numRefinementPoints_,
-          refinementConfig.levelPenalize,
-          refinementConfig.precomputeEvaluations,
+          refinementConfig.levelPenalize_,
+          refinementConfig.precomputeEvaluations_,
           refinementConfig.refinementThreshold_);
     }
     case RefinementFunctorType::MultipleClass: {
@@ -359,13 +359,13 @@ bool ModelFittingClassification::adapt() {
     if (func) {
       // Refinement for multiple class is fundamentaly different! this needs to
       // be fixed!
-      if (refinementConfig.refinementFunctorType ==
+      if (refinementConfig.refinementFunctorType_ ==
           RefinementFunctorType::MultipleClass) {
         // The functor handles refinements for all grids
         MultipleClassRefinementFunctor* multifunc =
             dynamic_cast<MultipleClassRefinementFunctor*>(func);
         multifunc->refine();
-      } else if (refinementConfig.refinementFunctorType ==
+      } else if (refinementConfig.refinementFunctorType_ ==
                  RefinementFunctorType::Classification) {
         ClassificationRefinementFunctor* classfunc =
             dynamic_cast<ClassificationRefinementFunctor*>(func);
@@ -375,12 +375,12 @@ bool ModelFittingClassification::adapt() {
         for (size_t idx = 0; idx < models.size(); idx++) {
           // Precompute evaluations in case of data based / zero crossing
           // refinement
-          if (refinementConfig.precomputeEvaluations &&
-              (refinementConfig.refinementFunctorType ==
+          if (refinementConfig.precomputeEvaluations_ &&
+              (refinementConfig.refinementFunctorType_ ==
                    RefinementFunctorType::DataBased ||
-               refinementConfig.refinementFunctorType ==
+               refinementConfig.refinementFunctorType_ ==
                    RefinementFunctorType::ZeroCrossing ||
-               refinementConfig.refinementFunctorType ==
+               refinementConfig.refinementFunctorType_ ==
                    RefinementFunctorType::GridPointBased)) {
             func->preComputeEvaluations();
           }

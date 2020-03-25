@@ -98,7 +98,7 @@ struct AdaptivityConfiguration {
     /// max. percent of points to be refined
     double percent_;
     /// other refinement strategy, that is more expensive, but yields better results
-    bool errorBasedRefinement = false;
+    bool errorBasedRefinement_ = false;
     /// prevent coarsening of initial grid points, needed for some decompositions
     bool coarsenInitialPoints_;
     };

@@ -202,7 +202,7 @@ LearnerTiming LearnerBase::train(
       myStopwatch2->start();
 
       // disable refinement here!
-      if (AdaptConfig.errorBasedRefinement) {
+      if (AdaptConfig.errorBasedRefinement_) {
         std::unique_ptr<sgpp::base::DataVector> residuals =
             std::make_unique<sgpp::base::DataVector>(alpha->getSize());
         this->predict(trainDataset, *residuals);
