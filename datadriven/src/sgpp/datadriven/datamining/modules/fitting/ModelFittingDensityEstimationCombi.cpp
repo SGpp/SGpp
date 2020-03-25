@@ -37,7 +37,7 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
   // If no object store is passed but the offline permutation is configured and
   // the decomposition
   // type allows offline permutation, an object store is instanciated
-  if (config.getDensityEstimationConfig().useOfflinePermutation &&
+  if (config.getDensityEstimationConfig().useOfflinePermutation_ &&
       DBMatOfflinePermutable::PermutableDecompositions.find(
           config.getDensityEstimationConfig().decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end()) {

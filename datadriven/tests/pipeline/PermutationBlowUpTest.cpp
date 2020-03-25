@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
   modelWithPerm.fit(samples);
 
   // turn off offline permutation
-  config.getDensityEstimationConfig().useOfflinePermutation = false;
+  config.getDensityEstimationConfig().useOfflinePermutation_ = false;
   sgpp::datadriven::ModelFittingDensityEstimationCombi modelConventional(config);
   modelConventional.fit(samples);
 

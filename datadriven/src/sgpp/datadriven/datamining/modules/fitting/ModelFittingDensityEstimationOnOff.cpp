@@ -80,7 +80,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
-  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation_;
 
   // clear model
   reset();

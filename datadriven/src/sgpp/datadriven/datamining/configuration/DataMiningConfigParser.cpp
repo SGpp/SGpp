@@ -540,9 +540,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
         parseBool(*densityEstimationConfig, "normalize", defaults.normalize_,
                   "densityEstimationConfig");
 
-    config.useOfflinePermutation =
+    config.useOfflinePermutation_ =
         parseBool(*densityEstimationConfig, "useOfflinePermutation",
-                  defaults.useOfflinePermutation, "densityEstimationConfig");
+                  defaults.useOfflinePermutation_, "densityEstimationConfig");
 
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
