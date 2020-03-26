@@ -40,9 +40,9 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   sgpp::datadriven::RegularizationConfiguration regConfig;
   regConfig.lambda_ = 0;
 
-  sgpp::datadriven::DensityEstimationConfiguration densConfig;
-  densConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
-  densConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   // build grids
   std::cout << "Build Grid" << std::endl;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> desiredOff{
       dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(
           sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
-              desiredGridConfig, adaptivityConfig, regConfig, densConfig))};
+              desiredGridConfig, adaptivityConfig, regConfig, densityEstimationConfig))};
 
   // object store
   std::shared_ptr<sgpp::datadriven::DBMatObjectStore> store =
@@ -65,19 +65,19 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
 
   // build and decompose
   std::cout << "Build and decompose" << std::endl;
-  // sgpp::datadriven::DBMatBaseObjectStore store2(adaptivityConfig, regConfig, densConfig);
+  // sgpp::datadriven::DBMatBaseObjectStore store2(adaptivityConfig, regConfig, densityEstimationConfig);
   // Add base to store
   sgpp::datadriven::GeometryConfiguration gc;
   sgpp::datadriven::DBMatPermutationFactory factory(store);
   // put base object into store
-  factory.getPermutedObject(baseGridConfig, gc, adaptivityConfig, regConfig, densConfig);
+  factory.getPermutedObject(baseGridConfig, gc, adaptivityConfig, regConfig, densityEstimationConfig);
   // build and decompose desired offline object
   desiredOff->buildMatrix(desiredGrid.get(), regConfig);
-  desiredOff->decomposeMatrix(regConfig, densConfig);
+  desiredOff->decomposeMatrix(regConfig, densityEstimationConfig);
   // get permuted base object from factory
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> permOff(
       dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(factory.getPermutedObject(
-          desiredGridConfig, gc, adaptivityConfig, regConfig, densConfig)));
+          desiredGridConfig, gc, adaptivityConfig, regConfig, densityEstimationConfig)));
 
   // build online objects
   std::unique_ptr<sgpp::datadriven::DBMatOnlineDEOrthoAdapt> online1{
@@ -107,8 +107,8 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   sgpp::base::DataVector alpha2(desiredOff->getGridSize());
 
   // compute alphas
-  online1->computeDensityFunction(alpha1, samples, *desiredGrid, densConfig, false);
-  online2->computeDensityFunction(alpha2, samples, *desiredGrid, densConfig, false);
+  online1->computeDensityFunction(alpha1, samples, *desiredGrid, densityEstimationConfig, false);
+  online2->computeDensityFunction(alpha2, samples, *desiredGrid, densityEstimationConfig, false);
 
   for (size_t i = 0; i < alpha1.getSize(); i++) {
     BOOST_CHECK(std::abs(alpha1[i] - alpha2[i]) / std::abs(alpha2[i]) < 0.001);
@@ -129,14 +129,14 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
   sgpp::datadriven::RegularizationConfiguration regConfig;
   regConfig.lambda_ = 0;
 
-  sgpp::datadriven::DensityEstimationConfiguration densConfig;
-  densConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
-  densConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
+  densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
 
   sgpp::datadriven::FitterConfigurationDensityEstimation config;
   config.getGridConfig() = gridConfig;
   config.getRefinementConfig() = adaptivityConfig;
-  config.getDensityEstimationConfig() = densConfig;
+  config.getDensityEstimationConfig() = densityEstimationConfig;
   config.getRegularizationConfig() = regConfig;
 
   // generate samples
