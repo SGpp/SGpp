@@ -67,17 +67,17 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   std::cout << "Build and decompose" << std::endl;
   // sgpp::datadriven::DBMatBaseObjectStore store2(adaptConfig, regConfig, densityEstimationConfig);
   // Add base to store
-  sgpp::datadriven::GeometryConfiguration gc;
+  sgpp::datadriven::GeometryConfiguration geometryConfig;
   sgpp::datadriven::DBMatPermutationFactory factory(store);
   // put base object into store
-  factory.getPermutedObject(baseGridConfig, gc, adaptConfig, regConfig, densityEstimationConfig);
+  factory.getPermutedObject(baseGridConfig, geometryConfig, adaptConfig, regConfig, densityEstimationConfig);
   // build and decompose desired offline object
   desiredOff->buildMatrix(desiredGrid.get(), regConfig);
   desiredOff->decomposeMatrix(regConfig, densityEstimationConfig);
   // get permuted base object from factory
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> permOff(
       dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(factory.getPermutedObject(
-          desiredGridConfig, gc, adaptConfig, regConfig, densityEstimationConfig)));
+          desiredGridConfig, geometryConfig, adaptConfig, regConfig, densityEstimationConfig)));
 
   // build online objects
   std::unique_ptr<sgpp::datadriven::DBMatOnlineDEOrthoAdapt> online1{

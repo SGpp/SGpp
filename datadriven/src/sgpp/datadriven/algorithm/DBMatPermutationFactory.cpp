@@ -79,7 +79,7 @@ DBMatOfflinePermutable* DBMatPermutationFactory::getPermutedObject(
       sgpp::datadriven::GridFactory gridFactory;
 
       // a regular sparse grid is created, if no geometryConfig is defined,
-      if (geometryConfig.stencils.empty()) {
+      if (geometryConfig.stencils_.empty()) {
         // interaction with size 0
         std::set<std::set<size_t>> interactions = std::set<std::set<size_t>>();
         grid = std::unique_ptr<Grid>{gridFactory.createGrid(baseGridConfig, interactions)};

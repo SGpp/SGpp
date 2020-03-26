@@ -1298,18 +1298,18 @@ bool DataMiningConfigParser::getGeometryConfig(
     auto geometryConfig =
         static_cast<DictNode *>(&(*configFile)[fitter]["geometryConfig"]);
 
-    config.dim = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim,
+    config.dim_ = parseArrayOfIntArrays(*geometryConfig, "dim", defaults.dim_,
                                        "geometryConfig");
 
     // check if global color available
     int64_t colorIndexDefault =
         parseInt(*geometryConfig, "colorIndex", -1, "geometryConfig");
     std::vector<size_t> layerDefault;
-    for (size_t i = 0; i < config.dim.size(); i++) {
+    for (size_t i = 0; i < config.dim_.size(); i++) {
       layerDefault.push_back(i);
     }
 
-    config.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
+    config.stencils_ = std::vector<sgpp::datadriven::StencilConfiguration>();
 
     if ((*geometryConfig).contains("stencils")) {
       size_t nStencils = (*geometryConfig)["stencils"].size();
@@ -1317,40 +1317,40 @@ bool DataMiningConfigParser::getGeometryConfig(
         StencilConfiguration stencil;
         auto stencilConfig =
             static_cast<DictNode *>(&(*geometryConfig)["stencils"][i]);
-        stencil.applyOnLayers = parseUIntArray(*stencilConfig, "applyOnLayers",
+        stencil.applyOnLayers_ = parseUIntArray(*stencilConfig, "applyOnLayers",
                                                layerDefault, "stencils");
-        stencil.colorIndex = parseInt(*stencilConfig, "colorIndex",
+        stencil.colorIndex_ = parseInt(*stencilConfig, "colorIndex",
                                       colorIndexDefault, "stencils");
-        stencil.stencilType = GeometryConfigurationParser::parseStencil(
+        stencil.stencilType_ = GeometryConfigurationParser::parseStencil(
             (*geometryConfig)["stencils"][i]["stencil"].get());
-        if (stencil.stencilType == sgpp::datadriven::StencilType::Block) {
-          stencil.blockLenght =
+        if (stencil.stencilType_ == sgpp::datadriven::StencilType::Block) {
+          stencil.blockLenght_ =
               parseInt(*stencilConfig, "blockLenght", 2, "stencils");
         } else {
-          stencil.blockLenght = 0;
+          stencil.blockLenght_ = 0;
         }
-        config.stencils.push_back(stencil);
+        config.stencils_.push_back(stencil);
       }
     } else {
-      config.stencils = defaults.stencils;
+      config.stencils_ = defaults.stencils_;
     }
 
     // Validate configuration
-    size_t numberOfLayers = config.dim.size();
+    size_t numberOfLayers = config.dim_.size();
     if (numberOfLayers > 0) {
-      size_t numberOfAxes = config.dim[0].size();
-      for (const std::vector<int64_t> &res : config.dim) {
+      size_t numberOfAxes = config.dim_[0].size();
+      for (const std::vector<int64_t> &res : config.dim_) {
         if (numberOfAxes != res.size())
           throw data_exception(
               "Each layer has to have identical number of axes");
       }
       for (const sgpp::datadriven::StencilConfiguration &stencilConf :
-           config.stencils) {
-        if (stencilConf.colorIndex != -1 &&
-            static_cast<size_t>(stencilConf.colorIndex) >= numberOfAxes) {
+           config.stencils_) {
+        if (stencilConf.colorIndex_ != -1 &&
+            static_cast<size_t>(stencilConf.colorIndex_) >= numberOfAxes) {
           throw data_exception("ColorIndex is not a valid index for an axis:");
         }
-        for (size_t layerIndex : stencilConf.applyOnLayers) {
+        for (size_t layerIndex : stencilConf.applyOnLayers_) {
           if (layerIndex >= numberOfAxes) {
             throw data_exception(
                 "There is an invalid index contained in ApplyOnLayers");

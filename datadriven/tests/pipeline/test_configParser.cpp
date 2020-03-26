@@ -267,7 +267,7 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   sgpp::datadriven::GeometryConfiguration defaults;
-  defaults.dim = std::vector<std::vector<int64_t>>();
+  defaults.dim_ = std::vector<std::vector<int64_t>>();
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
   std::vector<std::vector<int64_t>> dim = {{1, 2}, {3, 4}};
@@ -276,23 +276,23 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
 
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils_.at(0).stencilType_),
                     static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers.size(), 2);
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[0], 0);
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[1], 1);
-  BOOST_CHECK_EQUAL(config.stencils[0].colorIndex, 0);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_.size(), 2);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_[1], 1);
+  BOOST_CHECK_EQUAL(config.stencils_[0].colorIndex_, 0);
 
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(1).stencilType),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils_.at(1).stencilType_),
                     static_cast<int>(sgpp::datadriven::StencilType::Block));
-  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers.size(), 1);
-  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers[0], 0);
-  BOOST_CHECK_EQUAL(config.stencils[1].colorIndex, 1);
-  BOOST_CHECK_EQUAL(config.stencils[1].blockLenght, 2);
+  BOOST_CHECK_EQUAL(config.stencils_[1].applyOnLayers_.size(), 1);
+  BOOST_CHECK_EQUAL(config.stencils_[1].applyOnLayers_[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils_[1].colorIndex_, 1);
+  BOOST_CHECK_EQUAL(config.stencils_[1].blockLenght_, 2);
 
-  BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
-  for (size_t i = 0; i < config.dim.size(); i++) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(), dim[i].begin(),
+  BOOST_CHECK_EQUAL(config.dim_.size(), dim.size());
+  for (size_t i = 0; i < config.dim_.size(); i++) {
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim_[i].begin(), config.dim_[i].end(), dim[i].begin(),
                                   dim[i].end());
   }
 }

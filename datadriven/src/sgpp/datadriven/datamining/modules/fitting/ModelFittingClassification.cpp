@@ -388,11 +388,11 @@ bool ModelFittingClassification::adapt() {
           // TODO(fuchgsdk): Interaction refinement
           // In case of multiple class refinement the refinement is organized by
           // the functor
-          GeometryConfiguration geoConf = config->getGeometryConfig();
-          if (!geoConf.stencils.empty()) {
+          GeometryConfiguration geometryConfig = config->getGeometryConfig();
+          if (!geometryConfig.stencils_.empty()) {
             GridFactory gridFactory;
             grids[idx]->getGenerator().refineInter(
-                *func, gridFactory.getInteractions(geoConf));
+                *func, gridFactory.getInteractions(geometryConfig));
           } else {
             grids[idx]->getGenerator().refine(*func);
           }
