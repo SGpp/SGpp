@@ -50,7 +50,7 @@ static const int MINIMUM_CONSISTENT_GRID_VERSION = 10;
 
 LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
     sgpp::base::RegularGridConfiguration &gridConfig,
-    sgpp::base::AdaptivityConfiguration &adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration &adaptConfig,
     sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
     sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
     Dataset &trainData, Dataset &testData, Dataset *validationData,
@@ -72,14 +72,14 @@ LearnerSGDEOnOffParallel::LearnerSGDEOnOffParallel(
       mpiTaskScheduler(mpiTaskScheduler),
       refinementHandler(nullptr, 0),
       gridConfig{gridConfig},
-      adaptivityConfig{adaptivityConfig},
+      adaptConfig{adaptConfig},
       regularizationConfig{regularizationConfig},
       densityEstimationConfig{densityEstimationConfig} {
   // initialize offline object
   // Create an offline object that serves as template for all classes
   offline =
       std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
-          gridConfig, adaptivityConfig, regularizationConfig,
+          gridConfig, adaptConfig, regularizationConfig,
           densityEstimationConfig)};
 
   // Create a grid TODO(fuchsgruber): Maybe remove the learner class entirely??
@@ -295,7 +295,7 @@ void LearnerSGDEOnOffParallel::trainParallel(
       size_t refinementsNecessary = refinementHandler.checkRefinementNecessary(
           refMonitor, refPeriod, batchSize, currentValidError,
           currentTrainError, numberOfCompletedRefinements, monitor,
-          adaptivityConfig);
+          adaptConfig);
       while (refinementsNecessary > 0) {
         while (!refinementHandler.checkReadyForRefinement()) {
           D(std::cout << "Waiting for " << MPIMethods::getQueueSize()
@@ -396,7 +396,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   // Zero-crossing-based refinement
   ZeroCrossingRefinementFunctor funcZrcr{
       gridVector,    alphas,
-      priorVector,   adaptivityConfig.numRefinementPoints_,
+      priorVector,   adaptConfig.numRefinementPoints_,
       levelPenalize, preCompute};
 
   // Data-based refinement. Needs a problem dependent coeffA. The values
@@ -411,7 +411,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
   DataVector *trainLabelsRef = &(trainData.getTargets());
   DataBasedRefinementFunctor funcData = DataBasedRefinementFunctor{
       gridVector,    alphas,         priorVector,
-      trainDataRef,  trainLabelsRef, adaptivityConfig.numRefinementPoints_,
+      trainDataRef,  trainLabelsRef, adaptConfig.numRefinementPoints_,
       levelPenalize, coeffA};
 
   if (refinementFunctorType == "zero") {
@@ -427,7 +427,7 @@ void LearnerSGDEOnOffParallel::doRefinementForAll(
         refinementFunctorType,
         &(refinementHandler.getRefinementResult(classIndex)), onlineObjects,
         *(grids[classIndex]), *(alphas[classIndex]), preCompute, func,
-        classIndex, adaptivityConfig);
+        classIndex, adaptConfig);
   }
 
   // Wait for all new system matrix decompositions to come back

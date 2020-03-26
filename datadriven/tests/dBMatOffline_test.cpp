@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteOrthoAdapt) {
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
-                                                                adaptivityConfig,
+                                                                adaptConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
   offline->buildMatrix(grid.get(), regularizationConfig);
@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteCholesky) {
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
-                                                                adaptivityConfig,
+                                                                adaptConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
   offline->buildMatrix(grid.get(), regularizationConfig);
@@ -161,7 +161,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteEigen) {
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
-                                                                adaptivityConfig,
+                                                                adaptConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
   offline->buildMatrix(grid.get(), regularizationConfig);
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -224,7 +224,7 @@ BOOST_AUTO_TEST_CASE(testReadWriteLU) {
 
   auto offline = std::unique_ptr<sgpp::datadriven::DBMatOffline>{
       sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(gridConfig,
-                                                                adaptivityConfig,
+                                                                adaptConfig,
                                                                 regularizationConfig,
                                                                 densityEstimationConfig)};
   offline->buildMatrix(grid.get(), regularizationConfig);

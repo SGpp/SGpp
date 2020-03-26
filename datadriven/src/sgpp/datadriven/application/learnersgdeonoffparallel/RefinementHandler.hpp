@@ -63,7 +63,7 @@ class RefinementHandler {
    * @param grid The current classes grid
    * @param alpha The current surpluss vector
    * @param gridGen The current grid's grid generator
-   * @param adaptivityConfig the configuration for the adaptivity
+   * @param adaptConfig the configuration for the adaptivity
    * @return The number of added grid points
    */
   size_t
@@ -71,7 +71,7 @@ class RefinementHandler {
                                Grid &grid,
                                DataVector& alpha,
                                base::GridGenerator &gridGen,
-                               sgpp::base::AdaptivityConfiguration adaptivityConfig) const;
+                               sgpp::base::AdaptivityConfiguration adaptConfig) const;
 
  public:
   /**
@@ -118,7 +118,7 @@ class RefinementHandler {
    * @param currentTrainError The current training error
    * @param numberOfCompletedRefinements The number of refinement cycles already completed
    * @param monitor The convergence monitor, if any
-   * @param adaptivityConfig the configuration for the adaptivity of the grids
+   * @param adaptConfig the configuration for the adaptivity of the grids
    * @return How many refinement cycles should be started
    */
   size_t checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
@@ -126,7 +126,7 @@ class RefinementHandler {
                                 double currentValidError, double currentTrainError,
                                 size_t numberOfCompletedRefinements,
                                 RefinementMonitor &monitor,
-                                sgpp::base::AdaptivityConfiguration adaptivityConfig);
+                                sgpp::base::AdaptivityConfiguration adaptConfig);
 
   /**
    * Handles refinement for a specific class.
@@ -138,7 +138,7 @@ class RefinementHandler {
    * @param preCompute Whether to precompute the functor's evaluation step
    * @param refinementFunctor The refinement functor to use
    * @param classIndex The index of the current class for which refinement is taking place
-   * @param adaptivityConfig the configuration for the adaptivity of the grids
+   * @param adaptConfig the configuration for the adaptivity of the grids
    */
   void doRefinementForClass(const std::string &refType,
                             RefinementResult *refinementResult,
@@ -148,7 +148,7 @@ class RefinementHandler {
                             bool preCompute,
                             MultiGridRefinementFunctor *refinementFunctor,
                             size_t classIndex,
-                            sgpp::base::AdaptivityConfiguration& adaptivityConfig);
+                            sgpp::base::AdaptivityConfiguration& adaptConfig);
 };
 }  // namespace datadriven
 }  // namespace sgpp

@@ -13,13 +13,13 @@ namespace sgpp {
 namespace datadriven {
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdaptivityConfiguration adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration adaptConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
     const std::set<std::set<size_t>> terms)
     : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
@@ -27,12 +27,12 @@ ClassificationLearner::ClassificationLearner(
 
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdaptivityConfiguration adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration adaptConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
@@ -61,10 +61,10 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
     auto newY = generateYOneVsAll(classes, uniqueClass);
     auto learner = [this]() {
       if (terms.size() > 0) {
-        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
+        return RegressionLearner(gridConfig, adaptConfig, solverConfig, finalSolverConfig,
                                  regularizationConfig, terms);
       } else {
-        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
+        return RegressionLearner(gridConfig, adaptConfig, solverConfig, finalSolverConfig,
                                  regularizationConfig);
       }
     }();

@@ -34,10 +34,10 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
-  adaptivityConfig.numRefinementPoints_ = 0;
-  adaptivityConfig.numCoarseningPoints_ = 0;
-  adaptivityConfig.numRefinements_ = 0;
+  auto adaptConfig = sgpp::base::AdaptivityConfiguration();
+  adaptConfig.numRefinementPoints_ = 0;
+  adaptConfig.numCoarseningPoints_ = 0;
+  adaptConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
@@ -49,7 +49,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   regularizationConfig.lambda_ = 0.00001;
   regularizationConfig.exponentBase_ = 0.25;
 
-  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig,
+  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptConfig,
                                                  solverConfig, solverConfig,
                                                  regularizationConfig);
 }

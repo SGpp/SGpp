@@ -68,10 +68,10 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
 
     // configure adaptive refinement
     if (this->contains("refinement_numSteps"))
-      adaptivityConfig.numRefinements_ =
+      adaptConfig.numRefinements_ =
           (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
-      adaptivityConfig.numRefinementPoints_ =
+      adaptConfig.numRefinementPoints_ =
           (*this)["refinement_numPoints"].getUInt();
 
     // configure solver
@@ -133,8 +133,8 @@ void LearnerSGDEConfiguration::initConfig() {
   gridConfig.boundaryLevel_ = 0;
 
   // configure adaptive refinement
-  adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.numRefinementPoints_ = 5;
+  adaptConfig.numRefinements_ = 0;
+  adaptConfig.numRefinementPoints_ = 5;
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
@@ -252,7 +252,7 @@ sgpp::solver::SLESolverType LearnerSGDEConfiguration::stringToSolverType(
 // --------------------------------------------------------------------------------------------
 LearnerSGDE::LearnerSGDE(
     sgpp::base::RegularGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptConfig,
     sgpp::solver::SLESolverConfiguration& solverConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     CrossvalidationConfiguration& crossvalidationConfig)
@@ -264,14 +264,14 @@ LearnerSGDE::LearnerSGDE(
       usePrior(false),
       lambdaReg(1e-6),
       gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       regularizationConfig(regularizationConfig),
       crossvalidationConfig(crossvalidationConfig) {}
 
 LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
     : LearnerSGDE(learnerSGDEConfig.gridConfig,
-                  learnerSGDEConfig.adaptivityConfig,
+                  learnerSGDEConfig.adaptConfig,
                   learnerSGDEConfig.solverConfig,
                   learnerSGDEConfig.regularizationConfig,
                   learnerSGDEConfig.crossvalidationConfig) {}
@@ -284,7 +284,7 @@ LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   usePrior = false;
   lambdaReg = 1e-6;
   gridConfig = learnerSGDE.gridConfig;
-  adaptivityConfig = learnerSGDE.adaptivityConfig;
+  adaptConfig = learnerSGDE.adaptConfig;
   solverConfig = learnerSGDE.solverConfig;
   regularizationConfig = learnerSGDE.regularizationConfig;
   crossvalidationConfig = learnerSGDE.crossvalidationConfig;
@@ -504,7 +504,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
     std::cout << "# LearnerSGDE: grid points " << grid.getSize() << std::endl;
   }
 
-  for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
+  for (size_t ref = 0; ref <= adaptConfig.numRefinements_; ref++) {
     auto C = computeRegularizationMatrix(grid);
 
     datadriven::DensitySystemMatrix SMatrix(grid, trainData, C, lambdaReg);
@@ -523,7 +523,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
           "LearnerSGDE - train: conjugate gradients is not converged");
     }
 
-    if (ref < adaptivityConfig.numRefinements_) {
+    if (ref < adaptConfig.numRefinements_) {
       if (!crossvalidationConfig.silent_) {
         std::cout << "# LearnerSGDE: Refine grid ... ";
       }
@@ -540,13 +540,13 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
       }
 
       base::SurplusRefinementFunctor srf(alphaWeight,
-                                         adaptivityConfig.numRefinementPoints_,
-                                         adaptivityConfig.refinementThreshold_);
+                                         adaptConfig.numRefinementPoints_,
+                                         adaptConfig.refinementThreshold_);
       gridGen.refine(srf);
 
       if (!crossvalidationConfig.silent_) {
         std::cout << "# LearnerSGDE: ref " << ref << "/"
-                  << adaptivityConfig.numRefinements_ - 1 << ": "
+                  << adaptConfig.numRefinements_ - 1 << ": "
                   << grid.getSize() << std::endl;
       }
 
@@ -670,7 +670,7 @@ void LearnerSGDE::trainOnline(
 
       // check if refinement should be performed
       size_t refinementsNecessary = 0;
-      if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 &&
+      if (refCnt < adaptConfig.numRefinements_ && processedPoints > 0 &&
           monitor) {
         currentValidError = getError(*validData, *validLabels, 0.0, "Acc");
         // if train dataset is large use a subset for error evaluation
@@ -706,7 +706,7 @@ void LearnerSGDE::trainOnline(
         // Zero-crossing-based refinement
         sgpp::datadriven::ZeroCrossingRefinementFunctor funcZrcr(
             refGrids, refAlphas, refPriors,
-            adaptivityConfig.numRefinementPoints_, levelPenalize, preCompute);
+            adaptConfig.numRefinementPoints_, levelPenalize, preCompute);
         // Data-based refinement. Needs a problem dependent coeffA. The values
         // can be determined by testing (aim at ~10 % of the training data is
         // to be marked relevant). Cross-validation or similar can/should be
@@ -719,7 +719,7 @@ void LearnerSGDE::trainOnline(
         base::DataVector* refTrainLabels = trainLabels.get();
         sgpp::datadriven::DataBasedRefinementFunctor funcData(
             refGrids, refAlphas, refPriors, refTrainData, refTrainLabels,
-            adaptivityConfig.numRefinementPoints_, levelPenalize, coeffA);
+            adaptConfig.numRefinementPoints_, levelPenalize, coeffA);
         if (refType == "zero") {
           func = &funcZrcr;
         } else if (refType == "data") {
@@ -745,11 +745,11 @@ void LearnerSGDE::trainOnline(
             }
 
             base::SurplusRefinementFunctor srf(
-                alphaWeight, adaptivityConfig.numRefinementPoints_,
-                adaptivityConfig.refinementThreshold_);
+                alphaWeight, adaptConfig.numRefinementPoints_,
+                adaptConfig.refinementThreshold_);
             // base::SurplusRefinementFunctor srf(
-            //  *alpha, adaptivityConfig.numRefinementPoints_,
-            //  adaptivityConfig.threshold_);
+            //  *alpha, adaptConfig.numRefinementPoints_,
+            //  adaptConfig.threshold_);
             // refine grid
             grid->getGenerator().refine(srf);
           } else if ((refType == "data") || (refType == "zero")) {
@@ -764,7 +764,7 @@ void LearnerSGDE::trainOnline(
             grid->getGenerator().refine(*func);
           }
           std::cout << "# LearnerSGDE (class " << gIdx << "): ref "
-                    << refCnt + 1 << "/" << adaptivityConfig.numRefinements_
+                    << refCnt + 1 << "/" << adaptConfig.numRefinements_
                     << " new grid size: " << grid->getSize() << std::endl;
 
           // keep computed alpha values and append zeros only for new points

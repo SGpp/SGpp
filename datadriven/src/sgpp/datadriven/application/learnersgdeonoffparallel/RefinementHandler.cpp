@@ -36,7 +36,7 @@ void RefinementHandler::doRefinementForClass(
     bool preCompute,
     MultiGridRefinementFunctor *refinementFunctor,
     size_t classIndex,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration& adaptConfig) {
   // perform refinement/coarsening for grid which corresponds to current
   // index
   std::cout << "Refinement and coarsening for class: " << classIndex
@@ -53,7 +53,7 @@ void RefinementHandler::doRefinementForClass(
 
   if (refType == "surplus") {
     numberOfNewPoints = handleSurplusBasedRefinement(densEst, grid, alpha, gridGen,
-        adaptivityConfig);
+        adaptConfig);
   } else if ((refType == "data") || (refType == "zero")) {
     numberOfNewPoints = handleDataAndZeroBasedRefinement(preCompute, refinementFunctor,
                                                          classIndex, grid,
@@ -207,14 +207,14 @@ size_t RefinementHandler::checkRefinementNecessary(
     double currentTrainError,
     size_t numberOfCompletedRefinements,
     RefinementMonitor &monitor,
-    sgpp::base::AdaptivityConfiguration adaptivityConfig) {
+    sgpp::base::AdaptivityConfiguration adaptConfig) {
   auto &offline = learnerInstance->getOffline();
   // access DBMatOnlineDE-objects of all classes in order
   // to apply adaptivity to the specific sparse grids later on
 
   // check if and how many refinements should be performed
   size_t refinementsNecessary = 0;
-  if (offline->isRefineable() && numberOfCompletedRefinements < adaptivityConfig.numRefinements_) {
+  if (offline->isRefineable() && numberOfCompletedRefinements < adaptConfig.numRefinements_) {
     currentValidError = learnerInstance->getError(*learnerInstance->getValidationData());
     currentTrainError = learnerInstance->getError(
         learnerInstance->getTrainData());  // if train dataset is large
@@ -250,7 +250,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
     base::Grid &grid,
     DataVector& alpha,
     base::GridGenerator &gridGen,
-    sgpp::base::AdaptivityConfiguration adaptivityConfig) const {
+    sgpp::base::AdaptivityConfiguration adaptConfig) const {
   DataVector *alphaWork;  // required for surplus refinement
   // auxiliary variables
   DataVector p(learnerInstance->getTrainData().getDimension());
@@ -300,7 +300,7 @@ size_t RefinementHandler::handleSurplusBasedRefinement(
   // simple refinement based on surpluses
   sgpp::base::SurplusRefinementFunctor srf(
       alphaWeight,
-      adaptivityConfig.numRefinementPoints_);
+      adaptConfig.numRefinementPoints_);
   gridGen.refine(srf);
   size_t sizeAfterRefine = grid.getSize();
   return sizeAfterRefine - sizeBeforeRefine;

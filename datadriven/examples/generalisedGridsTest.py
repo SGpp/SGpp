@@ -44,10 +44,10 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     gridConfig.t_ = T
     gridConfig.type_ = sg.GridType_ModLinear
 
-    adapt = sg.AdaptivityConfiguration()
-    adapt.numRefinements_ = 5
-    adapt.numRefinementPoints_ = 3
-    adapt.numCoarseningPoints_ = 3
+    adaptConfig = sg.AdaptivityConfiguration()
+    adaptConfig.numRefinements_ = 5
+    adaptConfig.numRefinementPoints_ = 3
+    adaptConfig.numCoarseningPoints_ = 3
 
     solv = sg.SLESolverConfiguration()
     solv.maxIterations_ = 50
@@ -65,7 +65,7 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
 
     ## Create the estimator, train it with the training data and then return the error
     ## for the testing set.
-    estimator = sg.RegressionLearner(gridConfig, adapt, solv, final_solv,regular)
+    estimator = sg.RegressionLearner(gridConfig, adaptConfig, solv, final_solv,regular)
     estimator.train(X_tr,y_tr)
     print(estimator.getGridSize())
     return estimator.getMSE(X_te,y_te)

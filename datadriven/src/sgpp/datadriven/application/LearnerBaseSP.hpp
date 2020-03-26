@@ -132,7 +132,7 @@ class LearnerBaseSP {
    * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
    *   the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
-   * @param AdaptConfig configuration of the adaptivity strategy
+   * @param adaptConfig configuration of the adaptivity strategy
    * @param testAccDuringAdapt set to true if the training accuracy should be determined in evert
    *   refinement step
    * @param lambdaRegularization regularization parameter lambda
@@ -142,7 +142,7 @@ class LearnerBaseSP {
                               const sgpp::base::RegularGridConfiguration& gridConfig,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdaptivityConfiguration& AdaptConfig,
+                              const sgpp::base::AdaptivityConfiguration& adaptConfig,
                               bool testAccDuringAdapt, const float lambdaRegularization);
 
   /**

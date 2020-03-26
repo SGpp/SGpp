@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;

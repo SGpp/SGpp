@@ -47,7 +47,7 @@ class LearnerSGDEOnOffParallel {
  public:
   LearnerSGDEOnOffParallel(
       sgpp::base::RegularGridConfiguration &gridConfig,
-      sgpp::base::AdaptivityConfiguration &adaptivityConfig,
+      sgpp::base::AdaptivityConfiguration &adaptConfig,
       sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
       sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
       Dataset &trainData, Dataset &testData, Dataset *validationData,
@@ -387,7 +387,7 @@ class LearnerSGDEOnOffParallel {
   sgpp::base::GeneralGridConfiguration &gridConfig;
 
   // Configuration for the adaptivity TODO(fuchsgruber): Move outwards
-  sgpp::base::AdaptivityConfiguration &adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration &adaptConfig;
 
   // Configuration for the regularization TODO(fuchsgruber): Move outwards
   sgpp::datadriven::RegularizationConfiguration &regularizationConfig;

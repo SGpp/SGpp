@@ -71,7 +71,7 @@ class SparseGridDensityEstimatorConfiguration : public json::JSON {
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
@@ -84,14 +84,14 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
    * Constructor
    *
    * @param gridConfig grid configuration
-   * @param adaptivityConfig adaptive refinement configuration
+   * @param adaptConfig adaptive refinement configuration
    * @param solverConfig solver configuration (CG)
    * @param regularizationConfig config for regularization operator
    * @param crossvalidationConfig configuration for the cross validation
    * @param sgdeConfig configuration for the sparse grid density estimation
    */
   SparseGridDensityEstimator(sgpp::base::RegularGridConfiguration& gridConfig,
-                             sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                             sgpp::base::AdaptivityConfiguration& adaptConfig,
                              sgpp::solver::SLESolverConfiguration& solverConfig,
                              sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                              CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
@@ -279,7 +279,7 @@ class SparseGridDensityEstimator : public datadriven::DensityEstimator {
   std::shared_ptr<base::DataMatrix> samples;
 
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   CrossvalidationForRegularizationConfiguration crossvalidationConfig;

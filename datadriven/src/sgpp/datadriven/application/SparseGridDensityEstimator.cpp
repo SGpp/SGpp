@@ -65,9 +65,9 @@ SparseGridDensityEstimatorConfiguration::SparseGridDensityEstimatorConfiguration
 
     // configure adaptive refinement
     if (this->contains("refinement_numSteps"))
-      adaptivityConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
+      adaptConfig.numRefinements_ = (*this)["refinement_numSteps"].getUInt();
     if (this->contains("refinement_numPoints"))
-      adaptivityConfig.numRefinementPoints_ = (*this)["refinement_numPoints"].getUInt();
+      adaptConfig.numRefinementPoints_ = (*this)["refinement_numPoints"].getUInt();
 
     // configure solver
     if (this->contains("solver_type"))
@@ -161,8 +161,8 @@ void SparseGridDensityEstimatorConfiguration::initConfig() {
   gridConfig.boundaryLevel_ = 0;
 
   // configure adaptive refinement
-  adaptivityConfig.numRefinements_ = 0;
-  adaptivityConfig.numRefinementPoints_ = 5;
+  adaptConfig.numRefinements_ = 0;
+  adaptConfig.numRefinementPoints_ = 5;
 
   // configure solver
   solverConfig.type_ = solver::SLESolverType::CG;
@@ -229,7 +229,7 @@ sgpp::solver::SLESolverType SparseGridDensityEstimatorConfiguration::stringToSol
 // --------------------------------------------------------------------------------------------
 SparseGridDensityEstimator::SparseGridDensityEstimator(
     sgpp::base::RegularGridConfiguration& gridConfig,
-    sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+    sgpp::base::AdaptivityConfiguration& adaptConfig,
     sgpp::solver::SLESolverConfiguration& solverConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     CrossvalidationForRegularizationConfiguration& crossvalidationConfig,
@@ -238,7 +238,7 @@ SparseGridDensityEstimator::SparseGridDensityEstimator(
       alpha(nullptr),
       samples(nullptr),
       gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       regularizationConfig(regularizationConfig),
       crossvalidationConfig(crossvalidationConfig),
@@ -247,7 +247,7 @@ SparseGridDensityEstimator::SparseGridDensityEstimator(
 SparseGridDensityEstimator::SparseGridDensityEstimator(
     SparseGridDensityEstimatorConfiguration& learnerSGDEConfig)
     : SparseGridDensityEstimator(
-          learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptivityConfig,
+          learnerSGDEConfig.gridConfig, learnerSGDEConfig.adaptConfig,
           learnerSGDEConfig.solverConfig, learnerSGDEConfig.regularizationConfig,
           learnerSGDEConfig.crossvalidationConfig, learnerSGDEConfig.sgdeConfig) {}
 
@@ -257,7 +257,7 @@ SparseGridDensityEstimator::SparseGridDensityEstimator(
   alpha = learnerSGDE.alpha;
   samples = learnerSGDE.samples;
   gridConfig = learnerSGDE.gridConfig;
-  adaptivityConfig = learnerSGDE.adaptivityConfig;
+  adaptConfig = learnerSGDE.adaptConfig;
   solverConfig = learnerSGDE.solverConfig;
   regularizationConfig = learnerSGDE.regularizationConfig;
   crossvalidationConfig = learnerSGDE.crossvalidationConfig;
@@ -476,7 +476,7 @@ void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha
     std::cout << "# LearnerSGDE: grid points " << grid.getSize() << std::endl;
   }
 
-  for (size_t ref = 0; ref <= adaptivityConfig.numRefinements_; ref++) {
+  for (size_t ref = 0; ref <= adaptConfig.numRefinements_; ref++) {
     auto sMatrix = computeDensitySystemMatrix(grid, train, lambdaReg);
     sMatrix->generateb(rhs);
 
@@ -491,7 +491,7 @@ void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha
       throw base::operation_exception("LearnerSGDE - train: conjugate gradients is not converged");
     }
 
-    if (ref < adaptivityConfig.numRefinements_) {
+    if (ref < adaptConfig.numRefinements_) {
       if (!crossvalidationConfig.silent_) {
         std::cout << "# LearnerSGDE: Refine grid ... ";
       }
@@ -506,12 +506,12 @@ void SparseGridDensityEstimator::train(base::Grid& grid, base::DataVector& alpha
         alphaWeight[i] = alpha[i] * opEval->eval(alpha, p);
       }
 
-      base::SurplusRefinementFunctor srf(alphaWeight, adaptivityConfig.numRefinementPoints_,
-                                         adaptivityConfig.refinementThreshold_);
+      base::SurplusRefinementFunctor srf(alphaWeight, adaptConfig.numRefinementPoints_,
+                                         adaptConfig.refinementThreshold_);
       gridGen.refine(srf);
 
       if (!crossvalidationConfig.silent_) {
-        std::cout << "# LearnerSGDE: ref " << ref << "/" << adaptivityConfig.numRefinements_ - 1
+        std::cout << "# LearnerSGDE: ref " << ref << "/" << adaptConfig.numRefinements_ - 1
                   << ": " << grid.getSize() << std::endl;
       }
 

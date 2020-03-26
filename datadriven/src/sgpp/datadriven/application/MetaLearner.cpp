@@ -25,13 +25,13 @@ namespace datadriven {
 MetaLearner::MetaLearner(sgpp::base::RegularGridConfiguration gridConfig,
                          sgpp::solver::SLESolverConfiguration solverConfig,
                          sgpp::solver::SLESolverConfiguration solverFinalStep,
-                         sgpp::base::AdaptivityConfiguration adaptivityConfiguration, double lambda,
+                         sgpp::base::AdaptivityConfiguration adaptConfig, double lambda,
                          bool verbose) {
   this->csvSep = "& ";
   this->gridConfig = gridConfig;
   this->solverConfig = solverConfig;
   this->solverFinalStep = solverFinalStep;
-  this->adaptivityConfiguration = adaptivityConfiguration;
+  this->adaptConfig = adaptConfig;
   this->lambda = lambda;
   this->verbose = verbose;
   this->instances = 0;
@@ -75,7 +75,7 @@ void MetaLearner::learnString(
 
   LearnerTiming timings =
       myLearner->train(trainingData, classesVector, this->gridConfig, this->solverConfig,
-                       this->solverFinalStep, this->adaptivityConfiguration, false, this->lambda);
+                       this->solverFinalStep, this->adaptConfig, false, this->lambda);
 
   this->myTiming = timings;
   this->ExecTimesOnStep = myLearner->getRefinementExecTimes();
@@ -131,7 +131,7 @@ void MetaLearner::learnReferenceString(std::string &content, bool isRegression) 
 
   LearnerTiming timings =
       referenceLearner->train(trainingData, classesVector, gridConfig, solverConfig,
-                              solverFinalStep, adaptivityConfiguration, false, lambda);
+                              solverFinalStep, adaptConfig, false, lambda);
   this->referenceTiming = timings;
   this->ExecTimesOnStepReference = referenceLearner->getRefinementExecTimes();
 

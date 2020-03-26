@@ -34,8 +34,8 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   desiredGridConfig.levelVector_ = std::vector<size_t>{2, 3, 2, 1, 1};
   desiredGridConfig.dim_ = 5;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
-  adaptivityConfig.numRefinements_ = 0;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
+  adaptConfig.numRefinements_ = 0;
 
   sgpp::datadriven::RegularizationConfiguration regConfig;
   regConfig.lambda_ = 0;
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> desiredOff{
       dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(
           sgpp::datadriven::DBMatOfflineFactory::buildOfflineObject(
-              desiredGridConfig, adaptivityConfig, regConfig, densityEstimationConfig))};
+              desiredGridConfig, adaptConfig, regConfig, densityEstimationConfig))};
 
   // object store
   std::shared_ptr<sgpp::datadriven::DBMatObjectStore> store =
@@ -65,19 +65,19 @@ BOOST_AUTO_TEST_CASE(ComponentGridOrthoTest) {
 
   // build and decompose
   std::cout << "Build and decompose" << std::endl;
-  // sgpp::datadriven::DBMatBaseObjectStore store2(adaptivityConfig, regConfig, densityEstimationConfig);
+  // sgpp::datadriven::DBMatBaseObjectStore store2(adaptConfig, regConfig, densityEstimationConfig);
   // Add base to store
   sgpp::datadriven::GeometryConfiguration gc;
   sgpp::datadriven::DBMatPermutationFactory factory(store);
   // put base object into store
-  factory.getPermutedObject(baseGridConfig, gc, adaptivityConfig, regConfig, densityEstimationConfig);
+  factory.getPermutedObject(baseGridConfig, gc, adaptConfig, regConfig, densityEstimationConfig);
   // build and decompose desired offline object
   desiredOff->buildMatrix(desiredGrid.get(), regConfig);
   desiredOff->decomposeMatrix(regConfig, densityEstimationConfig);
   // get permuted base object from factory
   std::unique_ptr<sgpp::datadriven::DBMatOfflineOrthoAdapt> permOff(
       dynamic_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt *>(factory.getPermutedObject(
-          desiredGridConfig, gc, adaptivityConfig, regConfig, densityEstimationConfig)));
+          desiredGridConfig, gc, adaptConfig, regConfig, densityEstimationConfig)));
 
   // build online objects
   std::unique_ptr<sgpp::datadriven::DBMatOnlineDEOrthoAdapt> online1{
@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
   gridConfig.dim_ = 10;
   gridConfig.level_ = 3;
 
-  sgpp::base::AdaptivityConfiguration adaptivityConfig;
-  adaptivityConfig.numRefinements_ = 0;
+  sgpp::base::AdaptivityConfiguration adaptConfig;
+  adaptConfig.numRefinements_ = 0;
 
   sgpp::datadriven::RegularizationConfiguration regConfig;
   regConfig.lambda_ = 0;
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(FullCombiSchemeOrthoTest) {
 
   sgpp::datadriven::FitterConfigurationDensityEstimation config;
   config.getGridConfig() = gridConfig;
-  config.getRefinementConfig() = adaptivityConfig;
+  config.getRefinementConfig() = adaptConfig;
   config.getDensityEstimationConfig() = densityEstimationConfig;
   config.getRegularizationConfig() = regConfig;
 

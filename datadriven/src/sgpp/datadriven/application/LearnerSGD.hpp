@@ -27,7 +27,7 @@ class LearnerSGD {
    * Constructor.
    *
    * @param gridConfig The grid configuration
-   * @param adaptivityConfig The refinement configuration
+   * @param adaptConfig The refinement configuration
    * @param pTrainData The training dataset
    * @param pTrainLabels The corresponding training labels
    * @param pTestData The test dataset
@@ -42,7 +42,7 @@ class LearnerSGD {
    *        for all error computations
    */
   LearnerSGD(base::RegularGridConfiguration& gridConfig,
-             base::AdaptivityConfiguration& adaptivityConfig,
+             base::AdaptivityConfiguration& adaptConfig,
              base::DataMatrix& pTrainData,
              base::DataVector& pTrainLabels,
              base::DataMatrix& pTestData,
@@ -179,7 +179,7 @@ class LearnerSGD {
   base::DataVector batchError;
 
   base::RegularGridConfiguration gridConfig;
-  base::AdaptivityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptConfig;
 
   double lambda;
   double gamma;

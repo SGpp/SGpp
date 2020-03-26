@@ -36,7 +36,7 @@ class LearnerSVM {
   base::DataVector* validLabels;
 
   base::RegularGridConfiguration gridConfig;
-  base::AdaptivityConfiguration adaptivityConfig;
+  base::AdaptivityConfiguration adaptConfig;
 
   // the svm object
   std::unique_ptr<PrimalDualSVM> svm;

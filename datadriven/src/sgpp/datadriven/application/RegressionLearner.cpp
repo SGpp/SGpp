@@ -32,13 +32,13 @@ namespace sgpp {
 namespace datadriven {
 
 RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
-                                     base::AdaptivityConfiguration adaptivityConfig,
+                                     base::AdaptivityConfiguration adaptConfig,
                                      solver::SLESolverConfiguration solverConfig,
                                      solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig,
                                      std::set<std::set<size_t>> terms)
     : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
@@ -47,12 +47,12 @@ RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
 }
 
 RegressionLearner::RegressionLearner(base::RegularGridConfiguration gridConfig,
-                                     base::AdaptivityConfiguration adaptivityConfig,
+                                     base::AdaptivityConfiguration adaptConfig,
                                      solver::SLESolverConfiguration solverConfig,
                                      solver::SLESolverConfiguration finalSolverConfig,
                                      datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
-      adaptivityConfig(adaptivityConfig),
+      adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
@@ -75,11 +75,11 @@ void RegressionLearner::train(base::DataMatrix& trainDataset, base::DataVector& 
   std::unique_ptr<base::OperationMultipleEval> op(
       op_factory::createOperationMultipleEval(*grid, trainDataset));
 
-  for (size_t curStep = 0; curStep <= adaptivityConfig.numRefinements_; ++curStep) {
+  for (size_t curStep = 0; curStep <= adaptConfig.numRefinements_; ++curStep) {
     if (curStep > 0) {
       refine(trainDataset, classes);
     }
-    if (curStep == adaptivityConfig.numRefinements_) {
+    if (curStep == adaptConfig.numRefinements_) {
       solverConfig = finalSolverConfig;
     }
     fit(solver, classes);
@@ -132,8 +132,8 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
   errors.componentwise_mult(weights);
 
   // Refine the grid using the weighted errors.
-  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptivityConfig.numRefinementPoints_,
-                                                      adaptivityConfig.refinementThreshold_);
+  auto refineFunctor = base::SurplusRefinementFunctor(errors, adaptConfig.numRefinementPoints_,
+                                                      adaptConfig.refinementThreshold_);
   if (terms.size() > 0) {
     grid->getGenerator().refineInter(refineFunctor, terms);
   } else {

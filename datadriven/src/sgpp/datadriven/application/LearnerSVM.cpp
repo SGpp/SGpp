@@ -44,7 +44,7 @@ LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
       validData(pValidData),
       validLabels(pValidLabels),
       gridConfig(gridConfig),
-      adaptivityConfig(adaptConfig) {}
+      adaptConfig(adaptConfig) {}
 
 LearnerSVM::~LearnerSVM() {}
 
@@ -132,7 +132,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std:
       }
 
       size_t refinementsNecessary = 0;
-      if (refCnt < adaptivityConfig.numRefinements_ && processedPoints > 0 && monitor) {
+      if (refCnt < adaptConfig.numRefinements_ && processedPoints > 0 && monitor) {
         // check if refinement should be performed
         currentValidError = getError(*validData, *validLabels, "Hinge");
         currentTrainError = getError(trainData, trainLabels, "Hinge");
@@ -152,7 +152,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std:
           // generate indicator
           ForwardSelectorRefinementIndicator indicator(
               *grid, svm->svs, svm->alphas, svm->w, svm->w2, betaRef,
-              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
+              adaptConfig.refinementThreshold_, adaptConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         } else if (refType == "impurity") {
@@ -164,7 +164,7 @@ void LearnerSVM::train(size_t maxDataPasses, double lambda, double betaRef, std:
           // generate indicator
           ImpurityRefinementIndicator indicator(
               *grid, svm->svs, &(svm->alphas), &(svm->w), &(svm->w2), svsClassesComputed,
-              adaptivityConfig.refinementThreshold_, adaptivityConfig.numRefinementPoints_);
+              adaptConfig.refinementThreshold_, adaptConfig.numRefinementPoints_);
           // refine points according to indicator
           decorator.free_refine(gridStorage, indicator);
         }
