@@ -79,20 +79,20 @@ LearnerBase::LearnerBase(const LearnerBase& copyMe) {
 LearnerBase::~LearnerBase() {}
 
 void LearnerBase::InitializeGrid(
-    const sgpp::base::RegularGridConfiguration& GridConfig) {
-  if (GridConfig.type_ == sgpp::base::GridType::LinearBoundary) {
-    grid = std::make_unique<sgpp::base::LinearBoundaryGrid>(GridConfig.dim_);
-  } else if (GridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid = std::make_unique<sgpp::base::ModLinearGrid>(GridConfig.dim_);
-  } else if (GridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid = std::make_unique<sgpp::base::LinearGrid>(GridConfig.dim_);
+    const sgpp::base::RegularGridConfiguration& gridConfig) {
+  if (gridConfig.type_ == sgpp::base::GridType::LinearBoundary) {
+    grid = std::make_unique<sgpp::base::LinearBoundaryGrid>(gridConfig.dim_);
+  } else if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid = std::make_unique<sgpp::base::ModLinearGrid>(gridConfig.dim_);
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid = std::make_unique<sgpp::base::LinearGrid>(gridConfig.dim_);
   } else {
     throw base::application_exception(
         "LearnerBase::InitializeGrid: An unsupported grid type was chosen!");
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid->getGenerator().regular(GridConfig.level_);
+  grid->getGenerator().regular(gridConfig.level_);
 
   // Create alpha
   alpha = std::make_unique<sgpp::base::DataVector>(grid->getSize());
@@ -113,7 +113,7 @@ void LearnerBase::postProcessing(const sgpp::base::DataMatrix& trainDataset,
 
 LearnerTiming LearnerBase::train(
     sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
-    const sgpp::base::RegularGridConfiguration& GridConfig,
+    const sgpp::base::RegularGridConfiguration& gridConfig,
     const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
     const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
     const sgpp::base::AdaptivityConfiguration& AdaptConfig,
@@ -148,7 +148,7 @@ LearnerTiming LearnerBase::train(
 
   if (isTrained == true) isTrained = false;
 
-  InitializeGrid(GridConfig);
+  InitializeGrid(gridConfig);
 
   // check if grid was created
   if (!grid.operator bool()) {
@@ -341,7 +341,7 @@ LearnerTiming LearnerBase::train(
 
 LearnerTiming LearnerBase::train(
     sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
-    const sgpp::base::RegularGridConfiguration& GridConfig,
+    const sgpp::base::RegularGridConfiguration& gridConfig,
     const sgpp::solver::SLESolverConfiguration& SolverConfig,
     const double lambdaRegularization) {
   sgpp::base::AdaptivityConfiguration AdaptConfig;
@@ -352,7 +352,7 @@ LearnerTiming LearnerBase::train(
   AdaptConfig.percent_ = 0.0;
   AdaptConfig.refinementThreshold_ = 0.0;
 
-  return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig,
+  return train(trainDataset, classes, gridConfig, SolverConfig, SolverConfig,
                AdaptConfig, false, lambdaRegularization);
 }
 

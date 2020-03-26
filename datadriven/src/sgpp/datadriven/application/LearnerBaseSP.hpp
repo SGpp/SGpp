@@ -77,9 +77,9 @@ class LearnerBaseSP {
   /**
    * Initialize the grid and its coefficients
    *
-   * @param GridConfig structure which describes the regular start grid
+   * @param gridConfig structure which describes the regular start grid
    */
-  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig);
+  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& gridConfig);
 
   /**
    * abstract method that constructs the corresponding system of linear equations
@@ -128,7 +128,7 @@ class LearnerBaseSP {
    *
    * @param testDataset the training dataset
    * @param classes classes corresponding to the training dataset
-   * @param GridConfig configuration of the regular start grid
+   * @param gridConfig configuration of the regular start grid
    * @param SolverConfigRefine configuration of the SLE solver during the adaptive refinements of
    *   the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the refined grid
@@ -139,7 +139,7 @@ class LearnerBaseSP {
    */
   virtual LearnerTiming train(sgpp::base::DataMatrixSP& testDataset,
                               sgpp::base::DataVectorSP& classes,
-                              const sgpp::base::RegularGridConfiguration& GridConfig,
+                              const sgpp::base::RegularGridConfiguration& gridConfig,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
                               const sgpp::base::AdaptivityConfiguration& AdaptConfig,
@@ -150,12 +150,12 @@ class LearnerBaseSP {
    *
    * @param testDataset the training dataset
    * @param classes classes corresponding to the training dataset
-   * @param GridConfig configuration of the regular grid
+   * @param gridConfig configuration of the regular grid
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
   LearnerTiming train(sgpp::base::DataMatrixSP& testDataset, sgpp::base::DataVectorSP& classes,
-                      const sgpp::base::RegularGridConfiguration& GridConfig,
+                      const sgpp::base::RegularGridConfiguration& gridConfig,
                       const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                       const float lambdaRegularization);
 

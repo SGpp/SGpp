@@ -51,10 +51,10 @@ def main():
     
     # Config grid
     print("create grid config... ", end=' ')
-    grid = sg.RegularGridConfiguration()
-    grid.dim_ = 10
-    grid.level_ = 3
-    grid.type_ = sg.GridType_Linear
+    gridConfig = sg.RegularGridConfiguration()
+    gridConfig.dim_ = 10
+    gridConfig.level_ = 3
+    gridConfig.type_ = sg.GridType_Linear
     print("Done")
 
     # Config adaptivity
@@ -99,7 +99,7 @@ def main():
     # Create the learner with the given configuration
     #
     print("create the learner... ")
-    learner = sg.LearnerSGDE(grid, adapt, solv, regular, crossValid)
+    learner = sg.LearnerSGDE(gridConfig, adapt, solv, regular, crossValid)
     learner.initialize(data_tr)
     
     # Train the learner
@@ -122,7 +122,7 @@ def main():
     print("var_SGDE = ", learner.variance(), " ~ ", kde.variance(), " = var_KDE")
     
     # Print the covariances
-    C = sg.DataMatrix(grid.dim_, grid.dim_)
+    C = sg.DataMatrix(gridConfig.dim_, gridConfig.dim_)
     print("----------------------- Cov_SGDE -----------------------")
     learner.cov(C)
     print(C)
@@ -138,7 +138,7 @@ def main():
     #
     print("-----------------------------------------------")
     opInvRos = sg.createOperationInverseRosenblattTransformation(learner.getGrid())
-    points = sg.DataMatrix(randu_mat(12, grid.dim_))
+    points = sg.DataMatrix(randu_mat(12, gridConfig.dim_))
     print(points)
     
     pointsCdf = sg.DataMatrix(points.getNrows(), points.getNcols())
