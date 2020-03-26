@@ -81,25 +81,25 @@ def main():
 
     # Config cross validation for learner
     print("create learner config... ", end=' ')
-    #crossValid = sg.CrossvalidationConfiguration()
-    crossValid = sg.CrossvalidationConfiguration()
-    crossValid.enable_ = False
-    crossValid.kfold_ = 3
-    crossValid.lambda_ = 3.16228e-06
-    crossValid.lambdaStart_ = 1e-1
-    crossValid.lambdaEnd_ = 1e-10
-    crossValid.lambdaSteps_ = 3
-    crossValid.logScale_ = True
-    crossValid.shuffle_ = True
-    crossValid.seed_ = 1234567
-    crossValid.silent_ = False
+    #crossValidationConfig = sg.CrossvalidationConfiguration()
+    crossValidationConfig = sg.CrossvalidationConfiguration()
+    crossValidationConfig.enable_ = False
+    crossValidationConfig.kfold_ = 3
+    crossValidationConfig.lambda_ = 3.16228e-06
+    crossValidationConfig.lambdaStart_ = 1e-1
+    crossValidationConfig.lambdaEnd_ = 1e-10
+    crossValidationConfig.lambdaSteps_ = 3
+    crossValidationConfig.logScale_ = True
+    crossValidationConfig.shuffle_ = True
+    crossValidationConfig.seed_ = 1234567
+    crossValidationConfig.silent_ = False
     print("Done")
 
     #
     # Create the learner with the given configuration
     #
     print("create the learner... ")
-    learner = sg.LearnerSGDE(gridConfig, adaptConfig, solv, regular, crossValid)
+    learner = sg.LearnerSGDE(gridConfig, adaptConfig, solv, regular, crossValidationConfig)
     learner.initialize(data_tr)
     
     # Train the learner

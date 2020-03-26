@@ -94,11 +94,11 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Laplace;
 
   // configure learner
-  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
-  crossvalidationConfig.enable_ = false;
+  sgpp::datadriven::CrossvalidationConfiguration crossValidationConfig;
+  crossValidationConfig.enable_ = false;
 
   sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-                                        crossvalidationConfig);
+                                        crossValidationConfig);
   return learner;
 }
 } /* namespace datadriven */

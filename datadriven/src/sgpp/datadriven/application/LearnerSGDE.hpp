@@ -47,7 +47,7 @@ class LearnerSGDEConfiguration : public json::JSON {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossValidationConfig;
 };
 
 class LearnerSGDE : public datadriven::DensityEstimator {
@@ -65,7 +65,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
               sgpp::base::AdaptivityConfiguration& adaptConfig,
               sgpp::solver::SLESolverConfiguration& solverConfig,
               sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-              CrossvalidationConfiguration& crossvalidationConfig);
+              CrossvalidationConfiguration& crossValidationConfig);
 
   explicit LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig);
 
@@ -333,7 +333,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
   sgpp::base::AdaptivityConfiguration adaptConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
-  sgpp::datadriven::CrossvalidationConfiguration crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationConfiguration crossValidationConfig;
 };
 
 }  // namespace datadriven

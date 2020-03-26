@@ -91,33 +91,33 @@ LearnerSGDEConfiguration::LearnerSGDEConfiguration(const std::string& fileName)
 
     // configure learner
     if (this->contains("crossValidation_lambda"))
-      crossvalidationConfig.lambda_ =
+      crossValidationConfig.lambda_ =
           (*this)["crossValidation_lambda"].getDouble();
     if (this->contains("crossValidation_enable"))
-      crossvalidationConfig.enable_ =
+      crossValidationConfig.enable_ =
           (*this)["crossValidation_enable"].getBool();
     if (this->contains("crossValidation_kfold"))
-      crossvalidationConfig.kfold_ = (*this)["crossValidation_kfold"].getUInt();
+      crossValidationConfig.kfold_ = (*this)["crossValidation_kfold"].getUInt();
     if (this->contains("crossValidation_lambdaStart"))
-      crossvalidationConfig.lambdaStart_ =
+      crossValidationConfig.lambdaStart_ =
           (*this)["crossValidation_lambdaStart"].getDouble();
     if (this->contains("crossValidation_lambdaEnd"))
-      crossvalidationConfig.lambdaEnd_ =
+      crossValidationConfig.lambdaEnd_ =
           (*this)["crossValidation_lambdaEnd"].getDouble();
     if (this->contains("crossValidation_lambdaSteps"))
-      crossvalidationConfig.lambdaSteps_ =
+      crossValidationConfig.lambdaSteps_ =
           (*this)["crossValidation_lambdaSteps"].getUInt();
     if (this->contains("crossValidation_logScale"))
-      crossvalidationConfig.logScale_ =
+      crossValidationConfig.logScale_ =
           (*this)["crossValidation_logScale"].getBool();
     if (this->contains("crossValidation_shuffle"))
-      crossvalidationConfig.shuffle_ =
+      crossValidationConfig.shuffle_ =
           (*this)["crossValidation_shuffle"].getBool();
     if (this->contains("crossValidation_seed"))
-      crossvalidationConfig.seed_ =
+      crossValidationConfig.seed_ =
           static_cast<int>((*this)["crossValidation_seed"].getInt());
     if (this->contains("crossValidation_silent"))
-      crossvalidationConfig.silent_ =
+      crossValidationConfig.silent_ =
           (*this)["crossValidation_silent"].getBool();
   } catch (json::json_exception& e) {
     std::cout << e.what() << std::endl;
@@ -146,16 +146,16 @@ void LearnerSGDEConfiguration::initConfig() {
   regularizationConfig.type_ = datadriven::RegularizationType::Laplace;
 
   // configure learner
-  crossvalidationConfig.enable_ = true;
-  crossvalidationConfig.kfold_ = 5;
-  crossvalidationConfig.lambda_ = 1e-5;
-  crossvalidationConfig.lambdaStart_ = 1e-1;
-  crossvalidationConfig.lambdaEnd_ = 1e-10;
-  crossvalidationConfig.lambdaSteps_ = 5;
-  crossvalidationConfig.logScale_ = true;
-  crossvalidationConfig.shuffle_ = false;
-  crossvalidationConfig.seed_ = 1234567;
-  crossvalidationConfig.silent_ = true;
+  crossValidationConfig.enable_ = true;
+  crossValidationConfig.kfold_ = 5;
+  crossValidationConfig.lambda_ = 1e-5;
+  crossValidationConfig.lambdaStart_ = 1e-1;
+  crossValidationConfig.lambdaEnd_ = 1e-10;
+  crossValidationConfig.lambdaSteps_ = 5;
+  crossValidationConfig.logScale_ = true;
+  crossValidationConfig.shuffle_ = false;
+  crossValidationConfig.seed_ = 1234567;
+  crossValidationConfig.silent_ = true;
 }
 
 LearnerSGDEConfiguration* LearnerSGDEConfiguration::clone() {
@@ -255,7 +255,7 @@ LearnerSGDE::LearnerSGDE(
     sgpp::base::AdaptivityConfiguration& adaptConfig,
     sgpp::solver::SLESolverConfiguration& solverConfig,
     sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
-    CrossvalidationConfiguration& crossvalidationConfig)
+    CrossvalidationConfiguration& crossValidationConfig)
     : error(0.0),
       grid(nullptr),
       alpha(nullptr),
@@ -267,14 +267,14 @@ LearnerSGDE::LearnerSGDE(
       adaptConfig(adaptConfig),
       solverConfig(solverConfig),
       regularizationConfig(regularizationConfig),
-      crossvalidationConfig(crossvalidationConfig) {}
+      crossValidationConfig(crossValidationConfig) {}
 
 LearnerSGDE::LearnerSGDE(LearnerSGDEConfiguration& learnerSGDEConfig)
     : LearnerSGDE(learnerSGDEConfig.gridConfig,
                   learnerSGDEConfig.adaptConfig,
                   learnerSGDEConfig.solverConfig,
                   learnerSGDEConfig.regularizationConfig,
-                  learnerSGDEConfig.crossvalidationConfig) {}
+                  learnerSGDEConfig.crossValidationConfig) {}
 
 LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   error = 0.0;
@@ -287,7 +287,7 @@ LearnerSGDE::LearnerSGDE(const LearnerSGDE& learnerSGDE) {
   adaptConfig = learnerSGDE.adaptConfig;
   solverConfig = learnerSGDE.solverConfig;
   regularizationConfig = learnerSGDE.regularizationConfig;
-  crossvalidationConfig = learnerSGDE.crossvalidationConfig;
+  crossValidationConfig = learnerSGDE.crossValidationConfig;
 }
 
 LearnerSGDE::~LearnerSGDE() {}
@@ -302,10 +302,10 @@ void LearnerSGDE::initialize(base::DataMatrix& samples) {
   alpha = std::make_shared<base::DataVector>(grid->getSize());
 
   // optimize the regularization parameter if cv enabled
-  if (crossvalidationConfig.enable_) {
+  if (crossValidationConfig.enable_) {
     lambdaReg = optimizeLambdaCV();
   } else {
-    lambdaReg = crossvalidationConfig.lambda_;
+    lambdaReg = crossValidationConfig.lambda_;
   }
 
   std::cout << "lambda: " << lambdaReg << std::endl;
@@ -406,34 +406,34 @@ double LearnerSGDE::optimizeLambdaCV() {
   double curMeanAcc = 0;
   double bestMeanAcc = 0;
 
-  size_t kfold = crossvalidationConfig.kfold_;
+  size_t kfold = crossValidationConfig.kfold_;
 
   std::vector<std::shared_ptr<base::DataMatrix>> kfold_train(kfold);
   std::vector<std::shared_ptr<base::DataMatrix>> kfold_test(kfold);
   splitset(kfold_train, kfold_test);
 
-  double lambdaStart = crossvalidationConfig.lambdaStart_;
-  double lambdaEnd = crossvalidationConfig.lambdaEnd_;
+  double lambdaStart = crossValidationConfig.lambdaStart_;
+  double lambdaEnd = crossValidationConfig.lambdaEnd_;
 
-  if (crossvalidationConfig.logScale_) {
+  if (crossValidationConfig.logScale_) {
     lambdaStart = std::log(lambdaStart);
     lambdaEnd = std::log(lambdaEnd);
   }
 
-  for (size_t i = 0; i < crossvalidationConfig.lambdaSteps_; i++) {
+  for (size_t i = 0; i < crossValidationConfig.lambdaSteps_; i++) {
     // compute current lambda
     curLambda = lambdaStart +
                 static_cast<double>(i) * (lambdaEnd - lambdaStart) /
-                    static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
+                    static_cast<double>(crossValidationConfig.lambdaSteps_ - 1);
 
-    if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
+    if (crossValidationConfig.logScale_) curLambda = exp(curLambda);
 
     if (i % static_cast<size_t>(std::max(
-                static_cast<double>(crossvalidationConfig.lambdaSteps_) / 10.0,
+                static_cast<double>(crossValidationConfig.lambdaSteps_) / 10.0,
                 static_cast<double>(1.0))) ==
         0) {
-      if (!crossvalidationConfig.silent_) {
-        std::cout << i + 1 << "/" << crossvalidationConfig.lambdaSteps_
+      if (!crossValidationConfig.silent_) {
+        std::cout << i + 1 << "/" << crossValidationConfig.lambdaSteps_
                   << " (lambda = " << curLambda << ") " << std::endl;
         std::cout.flush();
       }
@@ -456,7 +456,7 @@ double LearnerSGDE::optimizeLambdaCV() {
       curMean = computeResidual(*grid, alpha, *(kfold_test[j]), 0.0);
       curMeanAcc += curMean;
 
-      if (!crossvalidationConfig.silent_) {
+      if (!crossValidationConfig.silent_) {
         std::cout << "# " << curLambda << " " << i << " " << j << " "
                   << curMeanAcc << " " << curMean << "; alpha in ["
                   << alpha.min() << ", " << alpha.max() << "]"
@@ -472,13 +472,13 @@ double LearnerSGDE::optimizeLambdaCV() {
       bestLambda = curLambda;
     }
 
-    if (!crossvalidationConfig.silent_) {
+    if (!crossValidationConfig.silent_) {
       std::cout << "# " << curLambda << " " << bestLambda << " " << i << " "
                 << curMeanAcc << std::endl;
     }
   }
 
-  if (!crossvalidationConfig.silent_) {
+  if (!crossValidationConfig.silent_) {
     std::cout << "# -> best lambda = " << bestLambda << std::endl;
   }
 
@@ -500,7 +500,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
   alpha.resize(grid.getSize());
   alpha.setAll(0.0);
 
-  if (!crossvalidationConfig.silent_) {
+  if (!crossValidationConfig.silent_) {
     std::cout << "# LearnerSGDE: grid points " << grid.getSize() << std::endl;
   }
 
@@ -510,7 +510,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
     datadriven::DensitySystemMatrix SMatrix(grid, trainData, C, lambdaReg);
     SMatrix.generateb(rhs);
 
-    if (!crossvalidationConfig.silent_) {
+    if (!crossValidationConfig.silent_) {
       std::cout << "# LearnerSGDE: Solving " << std::endl;
     }
 
@@ -524,7 +524,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
     }
 
     if (ref < adaptConfig.numRefinements_) {
-      if (!crossvalidationConfig.silent_) {
+      if (!crossValidationConfig.silent_) {
         std::cout << "# LearnerSGDE: Refine grid ... ";
       }
 
@@ -544,7 +544,7 @@ void LearnerSGDE::train(base::Grid& grid, base::DataVector& alpha,
                                          adaptConfig.refinementThreshold_);
       gridGen.refine(srf);
 
-      if (!crossvalidationConfig.silent_) {
+      if (!crossValidationConfig.silent_) {
         std::cout << "# LearnerSGDE: ref " << ref << "/"
                   << adaptConfig.numRefinements_ - 1 << ": "
                   << grid.getSize() << std::endl;
@@ -1011,17 +1011,17 @@ void LearnerSGDE::splitset(
   base::DataVector p(trainData->getNcols());
   base::DataVector tmp(trainData->getNcols());
 
-  size_t kfold = crossvalidationConfig.kfold_;
+  size_t kfold = crossValidationConfig.kfold_;
 
   std::vector<size_t> s(kfold);        // size of partition
   std::vector<size_t> ind(kfold + 1);  // index of partition
   size_t n = mydata->getNrows();       // size of data
 
-  if (crossvalidationConfig.shuffle_) {
-    if (crossvalidationConfig.seed_ == -1)
+  if (crossValidationConfig.shuffle_) {
+    if (crossValidationConfig.seed_ == -1)
       srand(static_cast<unsigned int>(time(nullptr)));
     else
-      srand(crossvalidationConfig.seed_);
+      srand(crossValidationConfig.seed_);
 
     for (size_t i = 0; i < mydata->getNrows(); i++) {
       size_t r = i + (static_cast<size_t>(rand()) % (mydata->getNrows() - i));
@@ -1033,7 +1033,7 @@ void LearnerSGDE::splitset(
   }
 
   // set size of partitions
-  if (!crossvalidationConfig.silent_) std::cout << "# kfold: ";
+  if (!crossValidationConfig.silent_) std::cout << "# kfold: ";
 
   ind[0] = 0;
 
@@ -1041,15 +1041,15 @@ void LearnerSGDE::splitset(
     s[i] = n / kfold;
     ind[i + 1] = ind[i] + s[i];
 
-    if (!crossvalidationConfig.silent_) std::cout << s[i] << " ";
+    if (!crossValidationConfig.silent_) std::cout << s[i] << " ";
   }
 
   ind[kfold] = n;
   s[kfold - 1] = n - (kfold - 1) * (n / kfold);
 
-  if (!crossvalidationConfig.silent_) std::cout << s[kfold - 1] << std::endl;
+  if (!crossValidationConfig.silent_) std::cout << s[kfold - 1] << std::endl;
 
-  if (!crossvalidationConfig.silent_) {
+  if (!crossValidationConfig.silent_) {
     std::cout << "# kfold ind: ";
 
     for (size_t i = 0; i <= kfold; i++) std::cout << ind[i] << " ";
