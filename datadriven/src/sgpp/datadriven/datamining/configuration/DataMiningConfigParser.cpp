@@ -1248,11 +1248,11 @@ bool DataMiningConfigParser::getFitterDatabaseConfig(
     datadriven::DatabaseConfiguration &config,
     const datadriven::DatabaseConfiguration &defaults) const {
   bool hasDatabaseConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("database") : false;
+      hasFitterConfig() ? (*configFile)[fitter].contains("databaseConfig") : false;
 
   if (hasDatabaseConfig) {
     auto databaseConfig =
-        static_cast<DictNode *>(&(*configFile)[fitter]["database"]);
+        static_cast<DictNode *>(&(*configFile)[fitter]["databaseConfig"]);
 
     // Parse filepath
     if (databaseConfig->contains("filePath")) {
@@ -1271,11 +1271,11 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
     datadriven::LearnerConfiguration &config,
     const datadriven::LearnerConfiguration &defaults) const {
   bool hasLearnerConfig =
-      hasFitterConfig() ? (*configFile)[fitter].contains("learner") : false;
+      hasFitterConfig() ? (*configFile)[fitter].contains("learnerConfig") : false;
 
   if (hasLearnerConfig) {
     auto learnerConfig =
-        static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
+        static_cast<DictNode *>(&(*configFile)[fitter]["learnerConfig"]);
 
     config.learningRate_ = parseDouble(*learnerConfig, "learningRate",
                                       defaults.learningRate_, "learnerConfig");
