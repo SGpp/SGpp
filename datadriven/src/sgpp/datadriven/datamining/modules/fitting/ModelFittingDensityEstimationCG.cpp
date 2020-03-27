@@ -143,7 +143,7 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
     // Rescale the rhs such that it is not normalized by the number of instances
     rhsUpdate.mult(static_cast<double>(numInstances));
     // Weigh the current right hand side with learningRate (decay)
-    bNum.mult(this->config->getLearnerConfig().learningRate);
+    bNum.mult(this->config->getLearnerConfig().learningRate_);
 
     bNum.add(rhsUpdate);
     // Update the denominator (dataset size) as well

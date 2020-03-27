@@ -19,7 +19,7 @@ void DataSourceSplitting::reset() {
   sampleProvider->reset();
   // Retrieve new validation data
   delete validationData;
-  size_t validationSize = static_cast<size_t>(config.validationPortion *
+  size_t validationSize = static_cast<size_t>(config.validationPortion_ *
       static_cast<double>(sampleProvider->getNumSamples()));
   validationData = sampleProvider->getNextSamples(validationSize);
 }

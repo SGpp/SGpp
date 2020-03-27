@@ -169,7 +169,7 @@ std::vector<double> ModelFittingClassification::getClassPriors() const {
   std::vector<double> priors(models.size());
   for (auto& p : classIdx) {
     size_t idx = p.second;
-    if (learnerConfig.usePrior) {
+    if (learnerConfig.usePrior_) {
       // Prior is realtive frequency of instances of this class
       priors[idx] = static_cast<double>(classNumberInstances[idx]) /
                     static_cast<double>(numInstances);
@@ -334,7 +334,7 @@ bool ModelFittingClassification::adapt() {
     std::vector<double> priors;
     grids.reserve(models.size());
     surpluses.reserve(models.size());
-    bool usePrior = this->config->getLearnerConfig().usePrior;
+    bool usePrior = this->config->getLearnerConfig().usePrior_;
     size_t numInstances = 0;
     for (auto& p : classIdx) {
       size_t idx = p.second;

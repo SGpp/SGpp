@@ -75,8 +75,8 @@ def main():
 
     # Config regularization
     print("create regularization config... ", end=' ')
-    regular = sg.RegularizationConfiguration()
-    regular.regType_ = sg.RegularizationType_Laplace  
+    regularizationConfig = sg.RegularizationConfiguration()
+    regularizationConfig.regType_ = sg.RegularizationType_Laplace  
     print("Done")
 
     # Config cross validation for learner
@@ -99,7 +99,7 @@ def main():
     # Create the learner with the given configuration
     #
     print("create the learner... ")
-    learner = sg.LearnerSGDE(gridConfig, adaptConfig, solv, regular, crossValidationConfig)
+    learner = sg.LearnerSGDE(gridConfig, adaptConfig, solv, regularizationConfig, crossValidationConfig)
     learner.initialize(data_tr)
     
     # Train the learner

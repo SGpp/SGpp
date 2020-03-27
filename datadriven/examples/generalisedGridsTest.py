@@ -58,14 +58,14 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     final_solv = solv
     final_solv.maxIterations = 200
 
-    regular = sg.RegularizationConfiguration()
-    regular.type_ = sg.RegularizationType_Identity
-    regular.exponentBase_ = 1.0
-    regular.lambda_ = 1e-3
+    regularizationConfig = sg.RegularizationConfiguration()
+    regularizationConfig.type_ = sg.RegularizationType_Identity
+    regularizationConfig.exponentBase_ = 1.0
+    regularizationConfig.lambda_ = 1e-3
 
     ## Create the estimator, train it with the training data and then return the error
     ## for the testing set.
-    estimator = sg.RegressionLearner(gridConfig, adaptConfig, solv, final_solv,regular)
+    estimator = sg.RegressionLearner(gridConfig, adaptConfig, solv, final_solv,regularizationConfig)
     estimator.train(X_tr,y_tr)
     print(estimator.getGridSize())
     return estimator.getMSE(X_te,y_te)

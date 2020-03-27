@@ -187,8 +187,8 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.intervalA_ = 1e-15;
   regularizationConfig.intervalB_ = 1.0;
 
-  learnerConfig.learningRate = 1.0;  // mirrors struct default
-  learnerConfig.usePrior = false;    // mirrors struct default
+  learnerConfig.learningRate_ = 1.0;  // mirrors struct default
+  learnerConfig.usePrior_ = false;    // mirrors struct default
 
   // configure geometry configuration
   geometryConfig.dim_ = std::vector<std::vector<int64_t>>();

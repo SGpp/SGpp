@@ -136,39 +136,39 @@ bool DataMiningConfigParser::getDataSourceConfig(
   if (hasDataSource) {
     auto dataSourceConfig = static_cast<DictNode *>(&(*configFile)[dataSource]);
 
-    config.filePath = parseString(*dataSourceConfig, "filePath",
-                                  defaults.filePath, "dataSource");
-    config.isCompressed = parseBool(*dataSourceConfig, "compression",
-                                    defaults.isCompressed, "dataSource");
-    config.numBatches = parseUInt(*dataSourceConfig, "numBatches",
-                                  defaults.numBatches, "dataSource");
-    config.batchSize = parseUInt(*dataSourceConfig, "batchSize",
-                                 defaults.batchSize, "dataSource");
-    config.hasTargets = parseBool(*dataSourceConfig, "hasTargets",
-                                  defaults.hasTargets, "dataSource");
-    config.validationPortion =
+    config.filePath_ = parseString(*dataSourceConfig, "filePath",
+                                  defaults.filePath_, "dataSource");
+    config.isCompressed_ = parseBool(*dataSourceConfig, "compression",
+                                    defaults.isCompressed_, "dataSource");
+    config.numBatches_ = parseUInt(*dataSourceConfig, "numBatches",
+                                  defaults.numBatches_, "dataSource");
+    config.batchSize_ = parseUInt(*dataSourceConfig, "batchSize",
+                                 defaults.batchSize_, "dataSource");
+    config.hasTargets_ = parseBool(*dataSourceConfig, "hasTargets",
+                                  defaults.hasTargets_, "dataSource");
+    config.validationPortion_ =
         parseDouble(*dataSourceConfig, "validationPortion",
-                    defaults.validationPortion, "dataSource");
+                    defaults.validationPortion_, "dataSource");
     // if negative we want UINT_MAX here, so all should be fine
-    config.readinCutoff =
+    config.readinCutoff_ =
         static_cast<size_t>(parseInt(*dataSourceConfig, "readinCutoff",
-                                     defaults.readinCutoff, "dataSource"));
-    config.readinClasses =
+                                     defaults.readinCutoff_, "dataSource"));
+    config.readinClasses_ =
         parseDoubleArray(*dataSourceConfig, "readinClasses",
-                         defaults.readinClasses, "dataSource");
-    config.readinColumns = parseUIntArray(*dataSourceConfig, "readinColumns",
-                                          defaults.readinColumns, "dataSource");
+                         defaults.readinClasses_, "dataSource");
+    config.readinColumns_ = parseUIntArray(*dataSourceConfig, "readinColumns",
+                                          defaults.readinColumns_, "dataSource");
 
     // parse file type
     if (dataSourceConfig->contains("fileType")) {
-      config.fileType = DataSourceFileTypeParser::parse(
+      config.fileType_ = DataSourceFileTypeParser::parse(
           (*dataSourceConfig)["fileType"].get());
     } else {
       std::cout << "# Did not find " << dataSource
                 << "[fileType]. Setting default value "
-                << DataSourceFileTypeParser::toString(defaults.fileType) << "."
+                << DataSourceFileTypeParser::toString(defaults.fileType_) << "."
                 << std::endl;
-      config.fileType = defaults.fileType;
+      config.fileType_ = defaults.fileType_;
     }
 
     // parse dataTransformationConfig
@@ -178,69 +178,69 @@ bool DataMiningConfigParser::getDataSourceConfig(
       auto dataTransformationConfig = static_cast<DictNode *>(
           &(*configFile)[dataSource]["dataTransformation"]);
       parseDataTransformationConfig(
-          *dataTransformationConfig, config.dataTransformationConfig,
-          defaults.dataTransformationConfig, "dataTransformation");
+          *dataTransformationConfig, config.dataTransformationConfig_,
+          defaults.dataTransformationConfig_, "dataTransformation");
     } else {
       std::cout << "# Could not find specification of "
                    "dataSource[dataTransformationConfig]. "
                    "Falling back to default values."
                 << std::endl;
-      config.dataTransformationConfig = defaults.dataTransformationConfig;
+      config.dataTransformationConfig_ = defaults.dataTransformationConfig_;
     }
 
     // parse theshuffling
     if (dataSourceConfig->contains("shuffling")) {
-      config.shuffling = DataSourceShufflingTypeParser::parse(
+      config.shuffling_ = DataSourceShufflingTypeParser::parse(
           (*dataSourceConfig)["shuffling"].get());
     } else {
       std::cout
           << "# Did not find dataSource[shuffling]. Setting default value "
-          << DataSourceShufflingTypeParser::toString(defaults.shuffling) << "."
+          << DataSourceShufflingTypeParser::toString(defaults.shuffling_) << "."
           << std::endl;
-      config.shuffling = defaults.shuffling;
+      config.shuffling_ = defaults.shuffling_;
     }
 
-    config.randomSeed = parseUInt(*dataSourceConfig, "randomSeed",
-                                  defaults.randomSeed, "dataSource");
-    config.epochs =
-        parseUInt(*dataSourceConfig, "epochs", defaults.epochs, "dataSource");
+    config.randomSeed_ = parseUInt(*dataSourceConfig, "randomSeed",
+                                  defaults.randomSeed_, "dataSource");
+    config.epochs_ =
+        parseUInt(*dataSourceConfig, "epochs", defaults.epochs_, "dataSource");
 
     // Parse info for test data
-    config.testFilePath = parseString(*dataSourceConfig, "testFilePath",
-                                      defaults.filePath, "dataSource");
+    config.testFilePath_ = parseString(*dataSourceConfig, "testFilePath",
+                                      defaults.filePath_, "dataSource");
 
     // parse file type of test data
     if (dataSourceConfig->contains("testFileType")) {
-      config.testFileType = DataSourceFileTypeParser::parse(
+      config.testFileType_ = DataSourceFileTypeParser::parse(
           (*dataSourceConfig)["testFileType"].get());
     } else {
       std::cout << "# Did not find " << dataSource
                 << "[testFileType]. Setting default value "
-                << DataSourceFileTypeParser::toString(defaults.testFileType)
+                << DataSourceFileTypeParser::toString(defaults.testFileType_)
                 << "." << std::endl;
 
-      config.testFileType = defaults.testFileType;
+      config.testFileType_ = defaults.testFileType_;
     }
 
-    config.testIsCompressed =
+    config.testIsCompressed_ =
         parseBool(*dataSourceConfig, "testCompression",
-                  defaults.testIsCompressed, "dataSource");
-    config.testNumBatches = parseUInt(*dataSourceConfig, "testNumBatches",
-                                      defaults.testNumBatches, "dataSource");
-    config.testBatchSize = parseUInt(*dataSourceConfig, "testBatchSize",
-                                     defaults.testBatchSize, "dataSource");
-    config.testHasTargets = parseBool(*dataSourceConfig, "testHasTargets",
-                                      defaults.testHasTargets, "dataSource");
+                  defaults.testIsCompressed_, "dataSource");
+    config.testNumBatches_ = parseUInt(*dataSourceConfig, "testNumBatches",
+                                      defaults.testNumBatches_, "dataSource");
+    config.testBatchSize_ = parseUInt(*dataSourceConfig, "testBatchSize",
+                                     defaults.testBatchSize_, "dataSource");
+    config.testHasTargets_ = parseBool(*dataSourceConfig, "testHasTargets",
+                                      defaults.testHasTargets_, "dataSource");
 
-    config.testReadinCutoff =
+    config.testReadinCutoff_ =
         static_cast<size_t>(parseInt(*dataSourceConfig, "testReadinCutoff",
-                                     defaults.testReadinCutoff, "dataSource"));
-    config.testReadinClasses =
+                                     defaults.testReadinCutoff_, "dataSource"));
+    config.testReadinClasses_ =
         parseDoubleArray(*dataSourceConfig, "testReadinClasses",
-                         defaults.testReadinClasses, "dataSource");
-    config.testReadinColumns =
+                         defaults.testReadinClasses_, "dataSource");
+    config.testReadinColumns_ =
         parseUIntArray(*dataSourceConfig, "testReadinColumns",
-                       defaults.testReadinColumns, "dataSource");
+                       defaults.testReadinColumns_, "dataSource");
 
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back "
@@ -1202,13 +1202,13 @@ void DataMiningConfigParser::parseDataTransformationConfig(
     const std::string &parentNode) const {
   // Parse transformation type
   if (dict.contains("type")) {
-    config.type = DataTransformationTypeParser::parse(dict["type"].get());
+    config.type_ = DataTransformationTypeParser::parse(dict["type"].get());
   } else {
     std::cout
         << "# Did not find [dataTransformationType]. Setting default value "
         << DataTransformationTypeParser::toString(defaults.type) << "."
         << std::endl;
-    config.type = defaults.type;
+    config.type_ = defaults.type_;
   }
 
   // If type Rosenblatt parse RosenblattTransformationConfig
@@ -1216,14 +1216,14 @@ void DataMiningConfigParser::parseDataTransformationConfig(
     auto rosenblattTransformationConfig = static_cast<DictNode *>(
         &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
     parseRosenblattTransformationConfig(
-        *rosenblattTransformationConfig, config.rosenblattConfig,
-        defaults.rosenblattConfig, "rosenblattConfig");
+        *rosenblattTransformationConfig, config.rosenblattConfig_,
+        defaults.rosenblattConfig_, "rosenblattConfig");
   } else {
     std::cout << "# Could not find specification of "
                  "dataSource[dataTransformationConfig]"
                  "[rosenblattConfig]. Falling back to default values."
               << std::endl;
-    config.rosenblattConfig = defaults.rosenblattConfig;
+    config.rosenblattConfig_ = defaults.rosenblattConfig_;
   }
 }
 
@@ -1277,9 +1277,9 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
     auto learnerConfig =
         static_cast<DictNode *>(&(*configFile)[fitter]["learner"]);
 
-    config.learningRate = parseDouble(*learnerConfig, "learningRate",
-                                      defaults.learningRate, "learnerConfig");
-    config.usePrior = parseBool(*learnerConfig, "usePrior", defaults.usePrior,
+    config.learningRate_ = parseDouble(*learnerConfig, "learningRate",
+                                      defaults.learningRate_, "learnerConfig");
+    config.usePrior_ = parseBool(*learnerConfig, "usePrior", defaults.usePrior_,
                                 "learnerConfig");
   }
 
