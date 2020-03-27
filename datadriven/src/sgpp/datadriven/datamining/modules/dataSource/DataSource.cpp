@@ -48,7 +48,7 @@ Dataset* DataSource::getAllSamples() {
 
   sampleProvider->getNextSamples(currentIteration*config.batchSize_);
   // Transform dataset if wanted
-  if (!(config.dataTransformationConfig_.type == DataTransformationType::NONE)) {
+  if (!(config.dataTransformationConfig_.type_ == DataTransformationType::NONE)) {
     dataTransformation->initialize(dataset, config.dataTransformationConfig_);
     return dataTransformation->doTransformation(dataset);
   } else {
@@ -65,7 +65,7 @@ Dataset* DataSource::getNextSamples() {
     dataset = sampleProvider->getAllSamples();
 
     // Transform dataset if wanted
-    if (!(config.dataTransformationConfig_.type == DataTransformationType::NONE)) {
+    if (!(config.dataTransformationConfig_.type_ == DataTransformationType::NONE)) {
       dataTransformation->initialize(dataset, config.dataTransformationConfig_);
       return dataTransformation->doTransformation(dataset);
     } else {
@@ -78,13 +78,13 @@ Dataset* DataSource::getNextSamples() {
 
     // If data transformation wanted and first batch -> initialize transformation
     if (currentIteration == 1 &&
-        !(config.dataTransformationConfig_.type == DataTransformationType::NONE)) {
+        !(config.dataTransformationConfig_.type_ == DataTransformationType::NONE)) {
       dataTransformation->initialize(dataset, config.dataTransformationConfig_);
       return dataTransformation->doTransformation(dataset);
     }
 
     // Transform dataset if wanted
-    if (!(config.dataTransformationConfig_.type == DataTransformationType::NONE))
+    if (!(config.dataTransformationConfig_.type_ == DataTransformationType::NONE))
       return dataTransformation->doTransformation(dataset);
     else
       return dataset;

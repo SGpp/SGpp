@@ -88,9 +88,9 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(static_cast<int>(config.fileType_), static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.numBatches_, 1);
   BOOST_CHECK_EQUAL(config.batchSize_, 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig_.type),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig_.type_),
                     static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(config.dataTransformationConfig_.rosenblattConfig.solverMaxIterations, 1000);
+  BOOST_CHECK_EQUAL(config.dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_, 1000);
   BOOST_CHECK_EQUAL(config.validationPortion_, 0.634);
   BOOST_CHECK_EQUAL(config.epochs_, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling_),
@@ -107,14 +107,14 @@ BOOST_AUTO_TEST_CASE(testScorerConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   ScorerConfiguration defaults;
-  defaults.metric = ScorerMetricType::nll;
+  defaults.metric_ = ScorerMetricType::nll;
   ScorerConfiguration config;
   bool hasConfig;
 
   hasConfig = parser.getScorerConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.metric_), static_cast<int>(ScorerMetricType::mse));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
@@ -324,11 +324,11 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationGeneralConfig defaults;
 
-  defaults.algorithm = std::vector<std::string>({"otherAlgorithm"});
-  defaults.targetDirectory = "./targetDirectory";
-  defaults.targetFileType = VisualizationFileType::json;
-  defaults.numBatches = 5;
-  defaults.crossValidation = false;
+  defaults.algorithm_ = std::vector<std::string>({"otherAlgorithm"});
+  defaults.targetDirectory_ = "./targetDirectory";
+  defaults.targetFileType_ = VisualizationFileType::json;
+  defaults.numBatches_ = 5;
+  defaults.crossValidation_ = false;
 
   VisualizationGeneralConfig config;
   bool hasConfig;
@@ -342,25 +342,25 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm_.begin(), config.algorithm_.end(),
                                 expectedAlgorithm.begin(), expectedAlgorithm.end());
-  BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
+  BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory_.c_str(), "./output"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType_),
                     static_cast<int>(VisualizationFileType::json));
-  BOOST_CHECK_EQUAL(defaults.numBatches, 5);
-  BOOST_CHECK_EQUAL(defaults.crossValidation, false);
+  BOOST_CHECK_EQUAL(defaults.numBatches_, 5);
+  BOOST_CHECK_EQUAL(defaults.crossValidation_, false);
 }
 
 BOOST_AUTO_TEST_CASE(testVisualizationParameters) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationParameters defaults;
 
-  defaults.perplexity = 22;
-  defaults.theta = 0.1;
-  defaults.targetDimension = 2;
-  defaults.seed = 50;
-  defaults.numberCores = 3;
-  defaults.maxNumberIterations = 200;
+  defaults.perplexity_ = 22;
+  defaults.theta_ = 0.1;
+  defaults.targetDimension_ = 2;
+  defaults.seed_ = 50;
+  defaults.numberCores_ = 3;
+  defaults.maxNumberIterations_ = 200;
 
   VisualizationParameters config;
   bool hasVisualizationParameters;
@@ -371,12 +371,12 @@ BOOST_AUTO_TEST_CASE(testVisualizationParameters) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasVisualizationParameters, true);
-  BOOST_CHECK_EQUAL(config.perplexity, 30);
-  BOOST_CHECK_EQUAL(config.theta, 0.5);
-  BOOST_CHECK_EQUAL(config.targetDimension, 2);
-  BOOST_CHECK_EQUAL(config.seed, 150);
-  BOOST_CHECK_EQUAL(config.numberCores, 3);
-  BOOST_CHECK_EQUAL(config.maxNumberIterations, 500);
+  BOOST_CHECK_EQUAL(config.perplexity_, 30);
+  BOOST_CHECK_EQUAL(config.theta_, 0.5);
+  BOOST_CHECK_EQUAL(config.targetDimension_, 2);
+  BOOST_CHECK_EQUAL(config.seed_, 150);
+  BOOST_CHECK_EQUAL(config.numberCores_, 3);
+  BOOST_CHECK_EQUAL(config.maxNumberIterations_, 500);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

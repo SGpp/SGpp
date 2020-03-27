@@ -260,11 +260,11 @@ bool DataMiningConfigParser::getScorerConfig(
 
     // parse metric type
     if (scorerConfig->contains("metric")) {
-      config.metric =
+      config.metric_ =
           ScorerMetricTypeParser::parse((*scorerConfig)["metric"].get());
     } else {
       std::cout << "# Did not find scorer[metric]. Setting default value "
-                << ScorerMetricTypeParser::toString(defaults.metric) << "."
+                << ScorerMetricTypeParser::toString(defaults.metric_) << "."
                 << std::endl;
     }
   } else {
@@ -696,9 +696,9 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
   bool hasVisualization = hasVisualizationConfig();
 
   if (!hasVisualization) {
-    config.execute = false;
+    config.execute_ = false;
   } else {
-    config.execute = true;
+    config.execute_ = true;
   }
   bool hasGeneralConfig = hasVisualizationGeneralConfig();
 
@@ -707,28 +707,28 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
         static_cast<DictNode *>(&(*configFile)[visualization]["generalConfig"]);
 
     std::cout << "Starting reading visualization " << std::endl;
-    config.algorithm =
+    config.algorithm_ =
         parseStringArray(*visualizationGeneralConfig, "algorithm",
-                         defaults.algorithm, "visualization");
+                         defaults.algorithm_, "visualization");
 
-    config.targetDirectory =
+    config.targetDirectory_ =
         parseString(*visualizationGeneralConfig, "targetDirectory",
-                    defaults.targetDirectory, "visualization");
+                    defaults.targetDirectory_, "visualization");
 
     // parse file type
     if (visualizationGeneralConfig->contains("targetFileType")) {
-      config.targetFileType = VisualizationTypesParser::parseFileType(
+      config.targetFileType_ = VisualizationTypesParser::parseFileType(
           (*visualizationGeneralConfig)["targetFileType"].get());
     } else {
       std::cout << "# Did not find " << dataSource
                 << "[fileType]. Setting default value "
-                << VisualizationTypesParser::toString(defaults.targetFileType)
+                << VisualizationTypesParser::toString(defaults.targetFileType_)
                 << "." << std::endl;
-      config.targetFileType = defaults.targetFileType;
+      config.targetFileType_ = defaults.targetFileType_;
     }
 
-    config.numBatches = parseUInt(*visualizationGeneralConfig, "numBatches",
-                                  defaults.numBatches, "visualization");
+    config.numBatches_ = parseUInt(*visualizationGeneralConfig, "numBatches",
+                                  defaults.numBatches_, "visualization");
   } else {
     std::cout << "# Could not find specification of "
                  "visualization general config. Falling Back to default values."
@@ -744,11 +744,11 @@ bool DataMiningConfigParser::getVisualizationGeneralConfig(
   if (hasFitterCrossvalidationConfig) {
     auto crossvalidationConfig =
         static_cast<DictNode *>(&(*configFile)[fitter]["crossValidation"]);
-    config.crossValidation =
-        parseBool(*crossvalidationConfig, "enable", defaults.crossValidation,
+    config.crossValidation_ =
+        parseBool(*crossvalidationConfig, "enable", defaults.crossValidation_,
                   "crossValidation");
   } else {
-    config.crossValidation = false;
+    config.crossValidation_ = false;
   }
   return hasGeneralConfig;
 }
@@ -762,25 +762,25 @@ bool DataMiningConfigParser::getVisualizationParameters(
     auto visualizationParameters =
         static_cast<DictNode *>(&(*configFile)[visualization]["parameters"]);
 
-    config.perplexity = parseDouble(*visualizationParameters, "perplexity",
-                                    defaults.perplexity, "visualization");
+    config.perplexity_ = parseDouble(*visualizationParameters, "perplexity",
+                                    defaults.perplexity_, "visualization");
 
-    config.theta = parseDouble(*visualizationParameters, "theta",
-                               defaults.theta, "visualization");
+    config.theta_ = parseDouble(*visualizationParameters, "theta",
+                               defaults.theta_, "visualization");
 
-    config.seed = parseUInt(*visualizationParameters, "seed", defaults.seed,
+    config.seed_ = parseUInt(*visualizationParameters, "seed", defaults.seed_,
                             "visualization");
 
-    config.maxNumberIterations =
+    config.maxNumberIterations_ =
         parseUInt(*visualizationParameters, "maxNumberIterations",
-                  defaults.maxNumberIterations, "visualization");
+                  defaults.maxNumberIterations_, "visualization");
 
-    config.targetDimension =
+    config.targetDimension_ =
         parseUInt(*visualizationParameters, "targetDimension",
-                  defaults.targetDimension, "visualization");
+                  defaults.targetDimension_, "visualization");
 
-    config.numberCores = parseUInt(*visualizationParameters, "numberCores",
-                                   defaults.numberCores, "visualization");
+    config.numberCores_ = parseUInt(*visualizationParameters, "numberCores",
+                                   defaults.numberCores_, "visualization");
   } else {
     std::cout << "# Could not find specification of visualization parameters. "
                  "Falling Back to default values."
@@ -1206,13 +1206,13 @@ void DataMiningConfigParser::parseDataTransformationConfig(
   } else {
     std::cout
         << "# Did not find [dataTransformationType]. Setting default value "
-        << DataTransformationTypeParser::toString(defaults.type) << "."
+        << DataTransformationTypeParser::toString(defaults.type_) << "."
         << std::endl;
     config.type_ = defaults.type_;
   }
 
   // If type Rosenblatt parse RosenblattTransformationConfig
-  if (config.type == DataTransformationType::ROSENBLATT) {
+  if (config.type_ == DataTransformationType::ROSENBLATT) {
     auto rosenblattTransformationConfig = static_cast<DictNode *>(
         &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
     parseRosenblattTransformationConfig(
@@ -1231,17 +1231,17 @@ void DataMiningConfigParser::parseRosenblattTransformationConfig(
     DictNode &dict, RosenblattTransformationConfig &config,
     const RosenblattTransformationConfig &defaults,
     const std::string &parentNode) const {
-  config.numSamples =
-      parseUInt(dict, "numSamples", defaults.numSamples, parentNode);
-  config.gridLevel =
-      parseUInt(dict, "gridLevel", defaults.gridLevel, parentNode);
+  config.numSamples_ =
+      parseUInt(dict, "numSamples", defaults.numSamples_, parentNode);
+  config.gridLevel_ =
+      parseUInt(dict, "gridLevel", defaults.gridLevel_, parentNode);
 
-  config.solverMaxIterations = parseUInt(
-      dict, "solverMaxIterations", defaults.solverMaxIterations, parentNode);
-  config.solverEps =
-      parseDouble(dict, "solverEps", defaults.solverEps, parentNode);
-  config.solverThreshold = parseDouble(dict, "solverThreshold",
-                                       defaults.solverThreshold, parentNode);
+  config.solverMaxIterations_ = parseUInt(
+      dict, "solverMaxIterations", defaults.solverMaxIterations_, parentNode);
+  config.solverEps_ =
+      parseDouble(dict, "solverEps", defaults.solverEps_, parentNode);
+  config.solverThreshold_ = parseDouble(dict, "solverThreshold",
+                                       defaults.solverThreshold_, parentNode);
 }
 
 bool DataMiningConfigParser::getFitterDatabaseConfig(

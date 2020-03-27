@@ -36,8 +36,8 @@ BOOST_AUTO_TEST_SUITE(testRosenblattTransformationInPipeline)
 BOOST_AUTO_TEST_CASE(testRosenblattWrapper) {
   double tolerance = 1e-10;
   DataSourceConfig config;
-  config.dataTransformationConfig_.type = DataTransformationType::ROSENBLATT;
-  config.dataTransformationConfig_.rosenblattConfig.numSamples = 1000;
+  config.dataTransformationConfig_.type_ = DataTransformationType::ROSENBLATT;
+  config.dataTransformationConfig_.rosenblattConfig_.numSamples_ = 1000;
 
   // read arff file
   ArffFileSampleProvider arffsp = ArffFileSampleProvider();
