@@ -23,8 +23,8 @@ print("Welcome to the SG++ deb-package creation utility")
 print("(please run this utility from the \"deb_pkg\" folder)")
 
 # make sure that SG++ was actually built
-if not os.path.exists("../../../lib/sgpp/libsgppbase.so"):
-    print("Aborting: At least \"libsgppbase.so\" has to exist in \"../../../lib/sgpp\"")
+if not os.path.exists("../../../lib/libsgppbase.so"):
+    print("Aborting: At least \"libsgppbase.so\" has to exist in \"../../../lib\"")
     sys.exit(1)
 
 # make sure that SG++ was built with python spport
@@ -34,7 +34,7 @@ if not os.path.exists("../../../lib/pysgpp/_pysgpp_swig.so"):
 
 # figure out which modules were built
 modules = []
-for so_file in os.listdir("../../../lib/sgpp/"):
+for so_file in os.listdir("../../../lib/"):
     if not so_file.endswith(".so"):
         continue
     modules.append(re.search(r"libsgpp(.*?)\.so", so_file).group(1))
@@ -127,7 +127,7 @@ os.makedirs(package_name + "/usr/lib")
 os.makedirs(package_name + "/usr/include")
 # copy library files
 for module in modules:
-    shutil.copy("../../../lib/sgpp/libsgpp" + module +".so", package_name + "/usr/lib")
+    shutil.copy("../../../lib/libsgpp" + module +".so", package_name + "/usr/lib")
 # copy C++-headers
 for module in modules:
     copy_headers.copy_headers(module, package_name)

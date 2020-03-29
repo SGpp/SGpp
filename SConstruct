@@ -286,7 +286,7 @@ Parameters are:
            for line in vars.GenerateHelpText(env).splitlines()]))
 
 # add trailing slashes were required and if not present
-BUILD_DIR = Dir(os.path.join("lib", "sgpp"))
+BUILD_DIR = Dir(os.path.join("lib"))
 Export("BUILD_DIR")
 PYSGPP_PACKAGE_PATH = Dir(os.path.join("lib"))
 Export("PYSGPP_PACKAGE_PATH")
@@ -314,7 +314,7 @@ if env["PLATFORM"] == "win32":
 else:
   Helper.setSpawn(env)
 
-# add #/lib/sgpp to LIBPATH
+# add #/lib to LIBPATH
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
 
@@ -503,7 +503,7 @@ if env["SG_PYTHON"]:
 if env["SG_JAVA"]:
   env.SConscript("#/jsgpp/SConscript", {"env": env, "moduleName": "jsgpp"})
 
-# compile jsgpp
+# compile matsgpp
 if env["SG_MATLAB"]:
   env.SConscript("#/matsgpp/SConscript", {"env": env, "moduleName": "matsgpp"})
 
@@ -579,7 +579,7 @@ if env["RUN_PYTHON_EXAMPLES"]:
 #########################################################################
 
 installLibSGpp = env.Alias("install-lib-sgpp",
-                           env.Install(os.path.join(env.get("LIBDIR"), "sgpp"),
+                           env.Install(os.path.join(env.get("LIBDIR")),
                                        libraryTargetList))
 
 headerFinalDestList = []
