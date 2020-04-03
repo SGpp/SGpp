@@ -50,7 +50,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
-  void fit(Dataset&, Dataset&) override {
+  void fit(Dataset& datasetP, Dataset& datasetQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 
@@ -61,7 +61,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
-  void fit(DataMatrix&, DataMatrix&) override {
+  void fit(DataMatrix& datasetP, DataMatrix& datasetQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 
@@ -74,7 +74,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
-  void update(Dataset&, Dataset&) override {
+  void update(Dataset& datasetP, Dataset& datasetQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 
@@ -84,7 +84,7 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;
-  void update(DataMatrix&, DataMatrix&) override {
+  void update(DataMatrix& samplesP, DataMatrix& samplesQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 

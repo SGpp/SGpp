@@ -37,8 +37,7 @@ class ModelFittingClassification : public ModelFittingBase {
   /**
    * Constructor
    *
-   * @param config configuration object that specifies grid, refinement, and
-   * regularization
+   * @param config configuration object that specifies grid, refinement, and regularization
    */
   explicit ModelFittingClassification(const FitterConfigurationClassification& config);
 
@@ -56,14 +55,14 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param dataset the training dataset that is used to fit the models
    */
   void fit(Dataset& dataset) override;
-  void fit(Dataset&, Dataset&) override {
+  void fit(Dataset& datasetP, Dataset& datasetQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 
   /**
    * Improve the accuracy of the classification by refining or coarsening the grids of each class.
    * Coarsening is currently only implemented for RefinementFunctorType::Classification
-   * @return true if refinement could be performed for any grid based on the refinement
+   *  @return true if refinement could be performed for any grid based on the refinement
    * configuration, else false.
    */
   bool adapt() override;
@@ -73,7 +72,7 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param dataset the new data
    */
   void update(Dataset& dataset) override;
-  void update(Dataset&, Dataset&) override {
+  void update(Dataset& datasetP, Dataset& datasetQ) override {
     throw base::application_exception("This model requires a single input dataset");
   }
 
@@ -108,8 +107,7 @@ class ModelFittingClassification : public ModelFittingBase {
    */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationCombi::computeResidual() is not "
-        "implemented!");
+        "ModelFittingDensityEstimationCombi::computeResidual() is not implemented!");
   }
 
   /**

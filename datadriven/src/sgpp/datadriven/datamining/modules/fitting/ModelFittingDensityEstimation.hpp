@@ -38,6 +38,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   virtual void fit(DataMatrix& datasetP, DataMatrix& datasetQ) = 0;
 
   void fit(Dataset& dataset) override = 0;
+  void fit(Dataset& datasetP, Dataset& datasetQ) override = 0;
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only the data
@@ -48,6 +49,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   virtual void update(DataMatrix& samplesP, DataMatrix& samplesQ) = 0;
 
   void update(Dataset& dataset) override = 0;
+  void update(Dataset& datasetP, Dataset& datasetQ) override = 0;
 
   double evaluate(const DataVector& sample) override = 0;
 
