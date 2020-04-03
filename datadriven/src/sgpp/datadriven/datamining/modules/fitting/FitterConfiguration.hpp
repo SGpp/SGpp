@@ -27,8 +27,7 @@ namespace datadriven {
 class DataMiningConfigParser;
 
 /**
- * Different fitter scenarios have different default values and support
- * different operations
+ * Different fitter scenarios have different default values and support different operations
  */
 enum class FitterType {
   RegressionLeastSquares,
@@ -39,8 +38,7 @@ enum class FitterType {
 };
 
 /**
- * General configuration object for fitters. Bundles all structures needed to
- * build a sparse grid,
+ * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
  * fit a sparse grid based model, and perform adaptive refinement.
  */
 class FitterConfiguration {
@@ -103,27 +101,23 @@ class FitterConfiguration {
    * Get how the crossvalidation should behave.
    * @return immutable CrossvalidationConfiguration
    */
-  const datadriven::CrossvalidationConfiguration &getCrossvalidationConfig()
-      const;
+  const datadriven::CrossvalidationConfiguration &getCrossvalidationConfig() const;
 
   /**
    * Get how the density estimation should behave.
    * @return immutable DensityEstimationConfiguration
    */
-  const datadriven::DensityEstimationConfiguration &getDensityEstimationConfig()
-      const;
+  const datadriven::DensityEstimationConfiguration &getDensityEstimationConfig() const;
 
   /**
-   * Get configuration for the linear system solver which should be used while
-   * building
-   * adaptive grids
+   * Get configuration for the linear system solver which should be used while building adaptive
+   * grids
    * @return immutable SLESolverConfiguration
    */
   const solver::SLESolverConfiguration &getSolverRefineConfig() const;
 
   /**
-   * Get configuration for the linear system solver when solving the final,
-   * refined system
+   * Get configuration for the linear system solver when solving the final, refined system
    * @return immutable SLESolverConfiguration
    */
   const solver::SLESolverConfiguration &getSolverFinalConfig() const;
@@ -132,16 +126,14 @@ class FitterConfiguration {
    * Get the type of regularization operation to use
    * @return immutable RegularizationConfiguration
    */
-  const datadriven::RegularizationConfiguration &getRegularizationConfig()
-      const;
+  const datadriven::RegularizationConfiguration &getRegularizationConfig() const;
 
   /**
    * Get implementation (openMP, MPI, GPU) that should be used for
    * #sgpp::base::OperationMultipleEval.
    * @return immutable OperationMultipleEvalConfiguration
    */
-  const datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig()
-      const;
+  const datadriven::OperationMultipleEvalConfiguration &getMultipleEvalConfig() const;
 
   /**
    * Returns the database configuration, i.e. the filepath
@@ -192,16 +184,14 @@ class FitterConfiguration {
   datadriven::DensityEstimationConfiguration &getDensityEstimationConfig();
 
   /**
-   * Get or set configuration for the linear system solver which should be used
-   * while building
+   * Get or set configuration for the linear system solver which should be used while building
    * adaptive grids
    * @return SLESolverConfiguration
    */
   solver::SLESolverConfiguration &getSolverRefineConfig();
 
   /**
-   * Get or set configuration for the linear system solver when solving the
-   * final, refined system
+   * Get or set configuration for the linear system solver when solving the final, refined system
    * @return SLESolverConfiguration
    */
   solver::SLESolverConfiguration &getSolverFinalConfig();
@@ -262,20 +252,17 @@ class FitterConfiguration {
   datadriven::DatabaseConfiguration databaseConfig;
 
   /**
-   * Configuration for the linear system solver which should be used while
-   * building adaptive grids
+   * Configuration for the linear system solver which should be used while building adaptive grids
    */
   solver::SLESolverConfiguration solverRefineConfig;
 
   /**
-   * Configuration for the linear system solver when solving the final, refined
-   * system
+   * Configuration for the linear system solver when solving the final, refined system
    */
   solver::SLESolverConfiguration solverFinalConfig;
 
   /**
-   * Set the type of regularization operation to use and specify the influence
-   * of the regularization
+   * Set the type of regularization operation to use and specify the influence of the regularization
    * term vs data term from 0 (no regularization) to 1 (no data term).
    */
   datadriven::RegularizationConfiguration regularizationConfig;

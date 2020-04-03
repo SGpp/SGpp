@@ -8,8 +8,8 @@
 #include <sgpp/globaldef.hpp>
 
 /**
- * Struct that stores all the configuration information
- * for an offline object for matrix based density estimation
+ * Struct that stores all the configuration information for an offline object for matrix based
+ * density estimation
  */
 
 namespace sgpp {
@@ -17,15 +17,7 @@ namespace datadriven {
 
 enum class DensityEstimationType { CG, Decomposition };
 
-enum class MatrixDecompositionType {
-  LU,
-  Eigen,
-  Chol,
-  DenseIchol,
-  OrthoAdapt,
-  SMW_ortho,
-  SMW_chol
-};
+enum class MatrixDecompositionType { LU, Eigen, Chol, DenseIchol, OrthoAdapt, SMW_ortho, SMW_chol };
 
 struct DensityEstimationConfiguration {
   // Type of density estimation
@@ -33,8 +25,7 @@ struct DensityEstimationConfiguration {
   // Type of matrix decomposition
   MatrixDecompositionType decomposition_ = MatrixDecompositionType::OrthoAdapt;
   /**
-   * Defines whether offline permutation should be used if decomposition allows
-   * it.
+   * Defines whether offline permutation should be used if decomposition allows it.
    */
   bool useOfflinePermutation = true;
 

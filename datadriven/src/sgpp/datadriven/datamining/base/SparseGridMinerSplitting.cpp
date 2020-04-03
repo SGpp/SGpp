@@ -16,9 +16,9 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMinerSplitting::SparseGridMinerSplitting(
-    DataSourceSplitting* dataSource, ModelFittingBase* fitter, Scorer* scorer,
-    Visualizer* visualizer)
+SparseGridMinerSplitting::SparseGridMinerSplitting(DataSourceSplitting* dataSource,
+                                                   ModelFittingBase* fitter, Scorer* scorer,
+                                                   Visualizer* visualizer)
     : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerSplitting::learn(bool verbose) {
@@ -38,9 +38,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       fitter->getFitterConfiguration().getRefinementConfig());
 
   // optimize lambda
-  if (fitter->getFitterConfiguration()
-          .getRegularizationConfig()
-          .optimizeLambda_) {
+  if (fitter->getFitterConfiguration().getRegularizationConfig().optimizeLambda_) {
     if (verbose) {
       std::ostringstream out;
       out << "Optimizing lambda";
@@ -48,8 +46,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     }
 
     double lambda = this->optimizeLambda(verbose);
-    this->fitter->getFitterConfiguration().getRegularizationConfig().lambda_ =
-        lambda;
+    this->fitter->getFitterConfiguration().getRegularizationConfig().lambda_ = lambda;
     this->fitter->updateRegularization(lambda);
 
     if (verbose) {
@@ -88,8 +85,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
 
       // Evaluate the score on the training and validation data
       double scoreTrain = scorer->test(*fitter, *dataset);
-      double scoreVal =
-          scorer->test(*fitter, *(dataSource->getValidationData()));
+      double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()));
 
       if (verbose) {
         std::ostringstream out;
@@ -119,9 +115,8 @@ double SparseGridMinerSplitting::learn(bool verbose) {
 double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
   // init the scorer
   std::unique_ptr<ScorerFactory> factory = std::make_unique<ScorerFactory>();
-  lambdaOptimizationScorer =
-      std::unique_ptr<Scorer>(factory->buildRegularizationScorer(
-          fitter->getFitterConfiguration().getRegularizationConfig()));
+  lambdaOptimizationScorer = std::unique_ptr<Scorer>(factory->buildRegularizationScorer(
+      fitter->getFitterConfiguration().getRegularizationConfig()));
 
   // 1 / phi
   double phiInversed = (std::sqrt(5) - 1) / 2;
@@ -130,16 +125,11 @@ double SparseGridMinerSplitting::optimizeLambda(bool verbose) {
   double phiInversedSquared = (3 - std::sqrt(5)) / 2;
 
   // get configuration parameters
-  double tolerance = fitter->getFitterConfiguration()
-                         .getRegularizationConfig()
-                         .optimizerTolerance_;
-  double convergenceThreshold = fitter->getFitterConfiguration()
-                                    .getRegularizationConfig()
-                                    .convergenceThreshold_;
-  double a =
-      fitter->getFitterConfiguration().getRegularizationConfig().intervalA_;
-  double b =
-      fitter->getFitterConfiguration().getRegularizationConfig().intervalB_;
+  double tolerance = fitter->getFitterConfiguration().getRegularizationConfig().optimizerTolerance_;
+  double convergenceThreshold =
+      fitter->getFitterConfiguration().getRegularizationConfig().convergenceThreshold_;
+  double a = fitter->getFitterConfiguration().getRegularizationConfig().intervalA_;
+  double b = fitter->getFitterConfiguration().getRegularizationConfig().intervalB_;
 
   double interval = std::abs(a - b);
 
@@ -219,8 +209,7 @@ double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
   }
 
   // score the model
-  double scoreVal =
-      scorer->test(*fitter, *(dataSource->getValidationData()), true);
+  double scoreVal = scorer->test(*fitter, *(dataSource->getValidationData()), true);
 
   // reset the fitter (but only the online part)
   fitter->resetTraining();

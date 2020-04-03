@@ -35,8 +35,7 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
     return new ModelFittingDensityEstimationOnOffParallel(config);
   }
 #endif
-  if (config.getGridConfig().generalType_ ==
-      base::GeneralGridType::ComponentGrid) {
+  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityEstimationCombi(config);
   }
   switch (config.getDensityEstimationConfig().type_) {
@@ -51,15 +50,14 @@ ModelFittingBase *DensityEstimationMinerFactory::createFitter(
   throw base::application_exception("Unknown density estimation type");
 }
 
-HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(
-    const std::string &path) const {
+HyperparameterOptimizer *DensityEstimationMinerFactory::buildHPO(const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(
-        buildMiner(path), new DensityEstimationFitterFactory(parser), parser);
+    return new HarmonicaHyperparameterOptimizer(buildMiner(path),
+                                                new DensityEstimationFitterFactory(parser), parser);
   } else {
-    return new BoHyperparameterOptimizer(
-        buildMiner(path), new DensityEstimationFitterFactory(parser), parser);
+    return new BoHyperparameterOptimizer(buildMiner(path),
+                                         new DensityEstimationFitterFactory(parser), parser);
   }
 }
 FitterFactory *DensityEstimationMinerFactory::createFitterFactory(

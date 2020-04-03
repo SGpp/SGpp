@@ -27,10 +27,9 @@ class CSVWriter {
                        size_t instanceCutoff = -1,
                        std::vector<size_t> selectedCols = std::vector<size_t>());
 
-  static void writeCSVToFile(const std::string& filename, const Dataset& dataset, bool hasTargets =
-                                 true,
-                             size_t instanceCutoff = -1, std::vector<size_t> selectedCols =
-                                 std::vector<size_t>());
+  static void writeCSVToFile(const std::string& filename, const Dataset& dataset,
+                             bool hasTargets = true, size_t instanceCutoff = -1,
+                             std::vector<size_t> selectedCols = std::vector<size_t>());
 
  private:
   /**

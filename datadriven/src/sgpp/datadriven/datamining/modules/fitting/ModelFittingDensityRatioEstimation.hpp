@@ -25,12 +25,10 @@ namespace datadriven {
 
 // TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid based regression
- * with identity as
+ * Fitter object that encapsulates the usage of sparse grid based regression with identity as
  * regularization.
  *
- * Allows usage of different grids, different solvers and different
- * regularization techniques based
+ * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  */
 class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
@@ -38,20 +36,15 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   /**
    * Constructor
    *
-   * @param config configuration object that specifies grid, refinement, and
-   * regularization
+   * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingDensityRatioEstimation(
-      const FitterConfigurationLeastSquares &config);
+  explicit ModelFittingDensityRatioEstimation(const FitterConfigurationLeastSquares &config);
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial
-   * grid by a least
+   * Fit the grid to the given dataset by determining the weights of the initial grid by a least
    * squares approach.
-   * @param newDatasetP the training dataset of first density that is used to
-   * fit the model
-   * @param newDatasetQ the training dataset of first density that is used to
-   * fit the model
+   * @param newDatasetP the training dataset of first density that is used to fit the model
+   * @param newDatasetQ the training dataset of first density that is used to fit the model
    */
   void fit(Dataset &newDatasetP, Dataset &newDatasetQ) override;
   void fit(Dataset &) override {
@@ -59,11 +52,9 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   }
 
   /**
-   * Improve accuracy of the fit on the given training data by adaptive
-   * refinement of the grid and
+   * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
    * recalculate weights.
-   * @return true if refinement could be performed based on the refinement
-   * configuration, else
+   * @return true if refinement could be performed based on the refinement configuration, else
    * false.
    */
   bool adapt() override;
@@ -74,21 +65,17 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   }
 
   /**
-   * Evaluate the fitted regression model at a single data point - requires a
-   * trained grid.
+   * Evaluate the fitted regression model at a single data point - requires a trained grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
   double evaluate(const DataVector &sample) override;
 
   /**
-   * Evaluate the fitted model on a set of data points - requires a trained
-   * grid.
-   * @param samples matrix where each row represents a sample and the columns
-   * contain the
+   * Evaluate the fitted model on a set of data points - requires a trained grid.
+   * @param samples matrix where each row represents a sample and the columns contain the
    * coordinates in all dimensions of that sample.
-   * @param results vector where each row will contain the evaluation of the
-   * respective sample on
+   * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
   void evaluate(DataMatrix &samples, DataVector &results) override;
@@ -99,45 +86,39 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   void reset() override;
 
   /**
-        * Should compute some kind of Residual to evaluate the fit of the model.
-        *
-        * In the case of density estimation, this is
-        * || R * alpha_lambda - b_val ||_2
-        *
-        * This is useful for unsupervised learning models, where normal
-   * evaluation
-       * cannot be used as
-        * there are no targets.
-        *
-        * @param validationData Matrix for validation data
-        *
-        * @returns the residual score
-        */
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
   double computeResidual(DataMatrix &validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityRatioEstimation::computeResidual() is "
-        "not implemented!");
+        "ModelFittingDensityRatioEstimation::computeResidual() is not implemented!");
   }
 
   /**
-     * Updates the regularization parameter lambda of the underlying model.
-     *
-     * @param lambda the new lambda parameter
-     */
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityRatioEstimation::updateRegularization() "
-        "is not implemented!");
+        "ModelFittingDensityRatioEstimation::updateRegularization() is not implemented!");
   }
 
   /**
-       * Resets any trained representations of the model, but does not reset the
-       * entire state.
-       */
+   * Resets any trained representations of the model, but does not reset the entire state.
+   */
   void resetTraining() override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityRatioEstimation::resetTraining() is not "
-        "implemented!");
+        "ModelFittingDensityRatioEstimation::resetTraining() is not implemented!");
   }
 
  private:
@@ -146,30 +127,24 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
    */
   size_t refinementsPerformed;
 
-  // TODO(lettrich): grid and train dataset as well as
-  // OperationMultipleEvalConfiguration should be
+  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.
   /**
-   * Factory function to build the System matrix for least squares regression
-   * with identity as
+   * Factory function to build the System matrix for least squares regression with identity as
    * regularization.
    */
-  DMSystemMatrixDRE *buildSystemMatrix(
-      Grid &grid, DataMatrix &trainDatasetP, DataMatrix &trainDatasetQ,
-      double lambda, OperationMultipleEvalConfiguration &config) const;
+  DMSystemMatrixDRE *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
+                                       DataMatrix &trainDatasetQ, double lambda,
+                                       OperationMultipleEvalConfiguration &config) const;
 
   /**
-   * based on the current dataset and grid, assemble a system of linear
-   * equations and solve for the
+   * Based on the current dataset and grid, assemble a system of linear equations and solve for the
    * hierarchical surplus vector alpha.
-   * @param solverConfig: Configuration of the SLESolver (refinement, or final
-   * solver).
-   * @param alpha: Reference to a data vector where hierarchical surpluses will
-   * be stored into. Make
+   * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
    * sure the vector size is equal to the amount of grid points.
    */
-  void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig,
-                              DataVector &alpha) const;
+  void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig, DataVector &alpha) const;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -59,9 +59,7 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
   double evaluate(const DataVector &sample) override { return -420; }
 
-  void evaluate(DataMatrix &samples, DataVector &results) override {
-    results[0] = sqrt(value);
-  }
+  void evaluate(DataMatrix &samples, DataVector &results) override { results[0] = sqrt(value); }
 
   double computeResidual(DataMatrix &validationData) const override {
     throw sgpp::base::not_implemented_exception(
@@ -87,8 +85,8 @@ class FitterFactoryTester : public sgpp::datadriven::FitterFactory {
 
   sgpp::datadriven::ModelFittingBase *buildFitter() override {
     // making model from parameter values directly
-    return new ModelFittingTester(
-        conpar["x"].getValue(), dispar["y"].getValue(), catpar["c"].getValue());
+    return new ModelFittingTester(conpar["x"].getValue(), dispar["y"].getValue(),
+                                  catpar["c"].getValue());
   }
 };
 
@@ -113,11 +111,8 @@ class FitterFactoryTesterHarm : public sgpp::datadriven::FitterFactory {
 
 class HarmonicaTester : public sgpp::datadriven::Harmonica {
  public:
-  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft)
-      : Harmonica(fft) {}
-  std::vector<std::vector<ConfigurationBit *>> &getParityrow() {
-    return parityrow;
-  }
+  explicit HarmonicaTester(sgpp::datadriven::FitterFactory *fft) : Harmonica(fft) {}
+  std::vector<std::vector<ConfigurationBit *>> &getParityrow() { return parityrow; }
   std::vector<ConfigurationBit *> getFreeBits() { return freeBits; }
 };
 
@@ -135,10 +130,10 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // parser.getDataSourceConfig(config, config);
   sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac{};
 
-  sgpp::datadriven::BoHyperparameterOptimizer bohpo(
-      minfac.buildMiner(path), new FitterFactoryTester(), parser);
-  sgpp::datadriven::HarmonicaHyperparameterOptimizer harmhpo(
-      minfac.buildMiner(path), new FitterFactoryTester(), parser);
+  sgpp::datadriven::BoHyperparameterOptimizer bohpo(minfac.buildMiner(path),
+                                                    new FitterFactoryTester(), parser);
+  sgpp::datadriven::HarmonicaHyperparameterOptimizer harmhpo(minfac.buildMiner(path),
+                                                             new FitterFactoryTester(), parser);
   double res1 = bohpo.run(false);
   double res2 = harmhpo.run(false);
   // testing arbitrary performance lower bound
@@ -148,9 +143,8 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
 }
 
 BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
-  // tests the bit management, especially setParameters and addConstraint by
-  // comparing
-  // to a vector of all possible bit configurations
+  // tests the bit management, especially setParameters and addConstraint by comparing to a vector
+  // of all possible bit configurations
   std::mt19937 generator(34);
   FitterFactoryTesterHarm fft{};
   HarmonicaTester harmonica(&fft);
@@ -165,8 +159,7 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
     harmonica.prepareConfigs(fitters, 33, configStrings);
     std::uniform_int_distribution<int> distcons(
         0, static_cast<int>(harmonica.getParityrow().size() - 1));
-    std::geometric_distribution<int> distgeo(
-        0.05 + 0.2 * i);  // not completely safe but okay
+    std::geometric_distribution<int> distgeo(0.05 + 0.2 * i);  // not completely safe but okay
     std::uniform_int_distribution<int> distbias(0, 1);
     for (int k = 0; k < 4096; ++k) {
       oldidar[k] = -1;
@@ -225,16 +218,15 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
           cnttrue++;
         }
       }
-      bool added = harmonica.addConstraint(
-          consid, bias);  // if not added, freebits broken
-                          /*
-                           std::cout << "Counter true: " << cnttrue << " | Added: "<< added
-                           <<std::endl;
-                           for (auto &bit : fft.exconfBits) {
-                           std::cout << bit.getName() << ": " << bit.getValue() << ", ";
-                           }
-                           std::cout << std::endl;
-                           */
+      bool added = harmonica.addConstraint(consid, bias);  // if not added, freebits broken
+                                                           /*
+                                                            std::cout << "Counter true: " << cnttrue << " | Added: "<< added
+                                                            <<std::endl;
+                                                            for (auto &bit : fft.exconfBits) {
+                                                            std::cout << bit.getName() << ": " << bit.getValue() << ", ";
+                                                            }
+                                                            std::cout << std::endl;
+                                                            */
       // either all, none or half are viable
       BOOST_CHECK(((!added) == (cnttrue == 0)));
       BOOST_CHECK((added == (cnttrue == nIDs || 2 * cnttrue == nIDs)));
@@ -250,8 +242,8 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
 }
 
 BOOST_AUTO_TEST_CASE(DistanceCalculation) {
-  // comparing the two methods of calculating distance in bayesian optimization,
-  // should be equal
+  // Comparing the two methods of calculating distance in bayesian optimization.
+  // Should be equal
   std::mt19937 generator(123);
   std::uniform_real_distribution<double> rand(0.0, 1.0);
   std::vector<int> discOptions = {2, 3};
@@ -309,8 +301,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
   double noise = pow(10, -scales.back() * 10);
   for (size_t i = 0; i < initialConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
-      double tmp = bo.kernel(
-          initialConfigs[i].getScaledDistance(initialConfigs[k], scales));
+      double tmp = bo.kernel(initialConfigs[i].getScaledDistance(initialConfigs[k], scales));
       kernelmatrix.set(k, i, tmp);
       kernelmatrix.set(i, k, tmp);
     }
@@ -321,8 +312,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   DataVector dscores(scores);
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
@@ -348,8 +338,7 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
 
   for (size_t i = 0; i < initialConfigs.size(); ++i) {
     for (size_t k = 0; k < i; ++k) {
-      double tmp = bo.kernel(
-          initialConfigs[i].getScaledDistance(initialConfigs[k], scales));
+      double tmp = bo.kernel(initialConfigs[i].getScaledDistance(initialConfigs[k], scales));
       kernelmatrix.set(k, i, tmp);
       kernelmatrix.set(i, k, tmp);
     }
@@ -357,16 +346,14 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
   }
 
   dscores.normalize();
-  dscores.sub(DataVector(dscores.size(),
-                         dscores.sum() / static_cast<double>(dscores.size())));
+  dscores.sub(DataVector(dscores.size(), dscores.sum() / static_cast<double>(dscores.size())));
 
   for (size_t i = 0; i < initialConfigs.size(); i++) {
     kernelmatrix.getColumn(i, kernelrow);
     BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
     BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
     // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |
-    // Original: "
-    // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
+    // Original: " << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
 }
 
@@ -405,8 +392,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     BOConfig npoint(prototype);
     npoint.randomize(generator);
     for (size_t i = 0; i < initialConfigs.size(); i++) {
-      kernelrow[i] = genprocess.kernel(
-          npoint.getScaledDistance(initialConfigs[i], scales));
+      kernelrow[i] = genprocess.kernel(npoint.getScaledDistance(initialConfigs[i], scales));
     }
     double mean = genprocess.mean(kernelrow);
     double var = genprocess.var(kernelrow, 1.001);
@@ -434,8 +420,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     // sizeratio << std::endl;
     if (j > 90) {
       // difference is allowed to rise with the squareroot of the dimensionality
-      BOOST_CHECK_LE(avscales.l2Norm(),
-                     sqrt(static_cast<double>(prototype.getNPar() + 1)) * 0.25);
+      BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar() + 1)) * 0.25);
     }
     avscales.add(scales);
   }
@@ -451,29 +436,24 @@ BOOST_AUTO_TEST_CASE(validAcquisitionFunction) {
   double oldvar = ranvar(generator);
   double oldmean = ranmean(generator);
   double oldbest = ranmean(generator);
-  double oldAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(
-      oldmean, oldvar, oldbest);
+  double oldAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(oldmean, oldvar, oldbest);
   for (int j = 0; j < 1000; ++j) {
     double curvar = ranvar(generator);
     double curmean = ranmean(generator);
     double curbest = ranmean(generator);
-    double curAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(
-        curmean, curvar, oldbest);
+    double curAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(curmean, curvar, oldbest);
     if (curmean < oldmean && curvar > oldvar) {
       BOOST_CHECK_LT(curAc, oldAc);
       if (oldAc < curAc) {
-        std::cout << curmean << "," << curvar << "," << curbest << "," << curAc
-                  << std::endl;
-        std::cout << oldmean << "," << oldvar << "," << oldbest << "," << oldAc
-                  << std::endl;
+        std::cout << curmean << "," << curvar << "," << curbest << "," << curAc << std::endl;
+        std::cout << oldmean << "," << oldvar << "," << oldbest << "," << oldAc << std::endl;
         std::cout << std::endl;
       }
     }
     oldvar = curvar;
     oldmean = curmean;
     oldbest = curbest;
-    oldAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(
-        curmean, curvar, curbest);
+    oldAc = sgpp::datadriven::BayesianOptimization::acquisitionEI(curmean, curvar, curbest);
   }
 }
 

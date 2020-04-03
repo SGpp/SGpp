@@ -28,28 +28,23 @@ using sgpp::solver::SLESolver;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingLeastSquares::ModelFittingLeastSquares(
-    const FitterConfigurationLeastSquares &config)
+ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config)
     : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
-  solver = std::unique_ptr<SLESolver>{
-      buildSolver(this->config->getSolverFinalConfig())};
+  solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingLeastSquares::evaluate(const DataVector &sample) {
-  auto opEval = std::unique_ptr<base::OperationEval>{
-      op_factory::createOperationEval(*grid)};
+  auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingLeastSquares::evaluate(DataMatrix &samples,
-                                        DataVector &results) {
+void ModelFittingLeastSquares::evaluate(DataMatrix &samples, DataVector &results) {
   auto opMultEval = std::unique_ptr<base::OperationMultipleEval>{
-      op_factory::createOperationMultipleEval(*grid, samples,
-                                              config->getMultipleEvalConfig())};
+      op_factory::createOperationMultipleEval(*grid, samples, config->getMultipleEvalConfig())};
   opMultEval->eval(alpha, results);
 }
 
@@ -81,15 +76,13 @@ bool ModelFittingLeastSquares::adapt() {
       GeometryConfiguration geoConf = config->getGeometryConfig();
       if (!geoConf.stencils.empty()) {
         GridFactory gridFactory;
-        grid->getGenerator().refineInter(refinementFunctor,
-                                         gridFactory.getInteractions(geoConf));
+        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf));
       } else {
         grid->getGenerator().refine(refinementFunctor);
       }
 
       if (grid->getSize() > noPoints) {
-        // Tell the SLE manager that the grid changed (for interal data
-        // structures)
+        // Tell the SLE manager that the grid changed (for internal data structures)
         alpha.resizeZero(grid->getSize());
 
         assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
@@ -103,8 +96,7 @@ bool ModelFittingLeastSquares::adapt() {
     }
   } else {
     throw application_exception(
-        "ModelFittingLeastSquares: Can't refine before initial grid is "
-        "created");
+        "ModelFittingLeastSquares: Can't refine before initial grid is created");
   }
 }
 
@@ -123,8 +115,7 @@ void ModelFittingLeastSquares::update(Dataset &newDataset) {
 DMSystemMatrixBase *ModelFittingLeastSquares::buildSystemMatrix(
     Grid &grid, DataMatrix &trainDataset, double lambda,
     OperationMultipleEvalConfiguration &mutipleEvalconfig) const {
-  auto systemMatrix =
-      new SystemMatrixLeastSquaresIdentity(grid, trainDataset, lambda);
+  auto systemMatrix = new SystemMatrixLeastSquaresIdentity(grid, trainDataset, lambda);
   systemMatrix->setImplementation(mutipleEvalconfig);
 
   return systemMatrix;
@@ -135,18 +126,17 @@ void ModelFittingLeastSquares::reset() {
   refinementsPerformed = 0;
 }
 
-void ModelFittingLeastSquares::assembleSystemAndSolve(
-    const SLESolverConfiguration &solverConfig, DataVector &alpha) const {
-  auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(buildSystemMatrix(
-      *grid, dataset->getData(), config->getRegularizationConfig().lambda_,
-      config->getMultipleEvalConfig()));
+void ModelFittingLeastSquares::assembleSystemAndSolve(const SLESolverConfiguration &solverConfig,
+                                                      DataVector &alpha) const {
+  auto systemMatrix = std::unique_ptr<DMSystemMatrixBase>(
+      buildSystemMatrix(*grid, dataset->getData(), config->getRegularizationConfig().lambda_,
+                        config->getMultipleEvalConfig()));
 
   DataVector b(grid->getSize());
   systemMatrix->generateb(dataset->getTargets(), b);
 
   reconfigureSolver(*solver, solverConfig);
-  solver->solve(*systemMatrix, alpha, b, true, verboseSolver,
-                DEFAULT_RES_THRESHOLD);
+  solver->solve(*systemMatrix, alpha, b, true, verboseSolver, DEFAULT_RES_THRESHOLD);
 }
 }  // namespace datadriven
 }  // namespace sgpp

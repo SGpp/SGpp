@@ -18,14 +18,13 @@ namespace datadriven {
 DataSourceCrossValidation::DataSourceCrossValidation(
     const DataSourceConfig& dataSourceConfig,
     const CrossvalidationConfiguration& crossValidationConfig,
-    DataShufflingFunctorCrossValidation* shuffling,
-    SampleProvider* sampleProvider) : DataSource{dataSourceConfig, sampleProvider},
-        validationData{nullptr}, crossValidationConfig{crossValidationConfig}, shuffling(shuffling)
-         { }
+    DataShufflingFunctorCrossValidation* shuffling, SampleProvider* sampleProvider)
+    : DataSource{dataSourceConfig, sampleProvider},
+      validationData{nullptr},
+      crossValidationConfig{crossValidationConfig},
+      shuffling(shuffling) {}
 
-Dataset* DataSourceCrossValidation::getValidationData() {
-  return validationData;
-}
+Dataset* DataSourceCrossValidation::getValidationData() { return validationData; }
 
 void DataSourceCrossValidation::reset() {
   sampleProvider->reset();
@@ -36,10 +35,7 @@ void DataSourceCrossValidation::reset() {
   validationData = sampleProvider->getNextSamples(validationSize);
 }
 
-void DataSourceCrossValidation::setFold(size_t foldIdx) {
-  shuffling->setFold(foldIdx);
-}
-
+void DataSourceCrossValidation::setFold(size_t foldIdx) { shuffling->setFold(foldIdx); }
 
 const CrossvalidationConfiguration& DataSourceCrossValidation::getCrossValidationConfig() const {
   return crossValidationConfig;
@@ -47,11 +43,3 @@ const CrossvalidationConfiguration& DataSourceCrossValidation::getCrossValidatio
 
 } /* namespace datadriven */
 } /* namespace sgpp */
-
-
-
-
-
-
-
-

@@ -11,12 +11,10 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Struct that stores all the configuration information
- * for parallelization with ScaLAPACK.
+ * Struct that stores all the configuration information for parallelization with ScaLAPACK.
  */
 struct ParallelConfiguration {
-  // disable by default, enable if config is found. Does not have to be set in
-  // the config file.
+  // disable by default, enable if config is found. Does not have to be set in the config file.
   bool scalapackEnabled_ = false;
 
   int processRows_ = -1;

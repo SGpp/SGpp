@@ -43,16 +43,13 @@ ModelFittingDensityEstimationCG::ModelFittingDensityEstimationCG(
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityEstimationCG::evaluate(const DataVector& sample) {
-  std::unique_ptr<base::OperationEval> opEval(
-      op_factory::createOperationEval(*grid));
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples,
-                                               DataVector& results) {
-  sgpp::op_factory::createOperationMultipleEval(*grid, samples)
-      ->eval(alpha, results);
+void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples, DataVector& results) {
+  sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
 }
 
 void ModelFittingDensityEstimationCG::fit(Dataset& newDataset) {
@@ -82,8 +79,8 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   update(newDataset);
 }
 
-bool ModelFittingDensityEstimationCG::adapt(
-    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityEstimationCG::adapt(size_t newNoPoints,
+                                            std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
@@ -109,14 +106,13 @@ void ModelFittingDensityEstimationCG::update(Dataset& newDataset) {
   update(newDataset.getData());
 }
 
-base::OperationMatrix*
-ModelFittingDensityEstimationCG::computeRegularizationMatrix(base::Grid& grid) {
+base::OperationMatrix* ModelFittingDensityEstimationCG::computeRegularizationMatrix(
+    base::Grid& grid) {
   base::OperationMatrix* C;
   auto& regularizationConfig = this->config->getRegularizationConfig();
   if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ ==
-             datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
@@ -144,8 +140,7 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
     //    (M_new + beta * M_old) / (M_new + M_old)
     // This creates a linear transition between the two edge cases.
     DataVector rhsUpdate(grid->getSize());
-    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C,
-                                            regularizationConfig.lambda_);
+    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C, regularizationConfig.lambda_);
 
     SMatrix.computeUnweightedRhs(rhsUpdate);
 
@@ -164,10 +159,8 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();
-    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_,
-                                        solverConfig.eps_);
-    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_,
-                   solverConfig.threshold_);
+    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_, solverConfig.eps_);
+    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_, solverConfig.threshold_);
   }
 }
 

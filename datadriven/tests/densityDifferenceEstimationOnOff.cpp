@@ -47,61 +47,51 @@ double testDistributionDDE_OnOff(std::string testCSV, std::string config) {
 BOOST_AUTO_TEST_SUITE(testDensityDifferenceEstimationOnOff)
 
 BOOST_AUTO_TEST_CASE(Test_2D_B2_64_B2_2) {
-  std::string samplesP =
-      "datadriven/datasets/densityEstimation/2D_B2-64_B2-2_testP.csv";
-  std::string samplesQ =
-      "datadriven/datasets/densityEstimation/2D_B2-64_B2-2_testQ.csv";
+  std::string samplesP = "datadriven/datasets/densityEstimation/2D_B2-64_B2-2_testP.csv";
+  std::string samplesQ = "datadriven/datasets/densityEstimation/2D_B2-64_B2-2_testQ.csv";
 
   // Create config file for direct density difference estimation
   std::string config = "tmpsgdeconfigDDE.json";
   std::ofstream stream(config);
-  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\""
-         << samplesQ << "\"], \"hasTargets\" : false },"
+  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\"" << samplesQ << "\"], "
+         << "\"hasTargets\" : false },"
          << "\"scorer\" : { \"metric\" : \"NLL\"}, "
          << "\"fitter\" : { \"type\" : \"densityDifferenceEstimation\", "
          << "\"gridConfig\" : { \"gridType\" : \"linear\", \"level\" : 5}, "
-         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : "
-            "0.001, \"maxLevelType\" : false, \"noPoints\" : 3}, "
+         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001, "
+            "\"maxLevelType\" : false, \"noPoints\" : 3}, "
          << "\"regularizationConfig\" : { \"lambda\" : 1}, "
-         << "\"densityEstimationConfig\" : { \"densityEstimationType\" : "
-            "\"decomposition\" } } }"
+         << "\"densityEstimationConfig\" : { \"densityEstimationType\" : \"decomposition\" } } }"
          << std::endl;
 
   double mse = testDistributionDDE_OnOff(
-      "datadriven/datasets/densityEstimation/2D_DDE_B2-64_B2-2_val.csv",
-      config);
-  std::cout << "MSE between estimation and ground truth density " << mse
-            << std::endl;
+      "datadriven/datasets/densityEstimation/2D_DDE_B2-64_B2-2_val.csv", config);
+  std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());
 }
 
 BOOST_AUTO_TEST_CASE(Test_3D_B2_64_B2_2_B2_2) {
-  std::string samplesP =
-      "datadriven/datasets/densityEstimation/3D_B2-64_B2-2_B2-2_testP.csv";
-  std::string samplesQ =
-      "datadriven/datasets/densityEstimation/3D_B2-64_B2-2_B2-2_testQ.csv";
+  std::string samplesP = "datadriven/datasets/densityEstimation/3D_B2-64_B2-2_B2-2_testP.csv";
+  std::string samplesQ = "datadriven/datasets/densityEstimation/3D_B2-64_B2-2_B2-2_testQ.csv";
 
   // Create config file
   std::string config = "tmpsgdeconfigDDE.json";
   std::ofstream stream(config);
-  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\""
-         << samplesQ << "\"], \"hasTargets\" : false },"
+  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\"" << samplesQ << "\"], "
+         << "\"hasTargets\" : false },"
          << "\"scorer\" : { \"metric\" : \"NLL\"}, "
          << "\"fitter\" : { \"type\" : \"densityDifferenceEstimation\", "
          << "\"gridConfig\" : { \"gridType\" : \"linear\", \"level\" : 5}, "
-         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : "
-            "0.001, \"maxLevelType\" : false, \"noPoints\" : 3}, "
+         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001, "
+            "\"maxLevelType\" : false, \"noPoints\" : 3}, "
          << "\"regularizationConfig\" : { \"lambda\" : 1}, "
-         << "\"densityEstimationConfig\" : { \"densityEstimationType\" : "
-            "\"decomposition\" } } }"
+         << "\"densityEstimationConfig\" : { \"densityEstimationType\" : \"decomposition\" } } }"
          << std::endl;
 
   double mse = testDistributionDDE_OnOff(
-      "datadriven/datasets/densityEstimation/3D_DDE_B2-64_B2-2_B2-2_val.csv",
-      config);
-  std::cout << "MSE between estimation and ground truth density " << mse
-            << std::endl;
+      "datadriven/datasets/densityEstimation/3D_DDE_B2-64_B2-2_B2-2_val.csv", config);
+  std::cout << "MSE between estimation and ground truth density " << mse << std::endl;
   BOOST_CHECK(mse <= 5e-2);
   remove(config.c_str());
 }

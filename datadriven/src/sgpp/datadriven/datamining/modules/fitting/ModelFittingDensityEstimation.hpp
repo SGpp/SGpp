@@ -18,8 +18,7 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Abstract super class to encapsulate density estimation models such as using
- * offline/-online
+ * Abstract super class to encapsulate density estimation models such as using offline/-online
  * splitting or conjugate gradients in order to solve the system.
  */
 class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
@@ -30,11 +29,9 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   ModelFittingDensityEstimation();
 
   /**
-   * Fit the grid to the given dataset by determining the surpluses of the
-   * initial grid by the
-   * SGDE approach. Requires only data samples and no targets (since those are
-   * irrelevant for the
-   * density estimation whatsoever)
+   * Fit the grid to the given dataset by determining the surpluses of the initial grid by the SGDE
+   * approach. Requires only data samples and no targets (since those are irrelevant for the density
+   * estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void fit(DataMatrix& dataset) = 0;
@@ -43,11 +40,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void fit(Dataset& dataset) override = 0;
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning).
-   * Requires only
-   * the data samples and no targets (since those are irrelevant for the density
-   * estimation
-   * whatsoever)
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
+   * samples and no targets (since those are irrelevant for the density estimation whatsoever)
    * @param samples the new data samples
    */
   virtual void update(DataMatrix& samples) = 0;
@@ -60,22 +54,17 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void evaluate(DataMatrix& samples, DataVector& results) override = 0;
 
   /**
-   * Performs refinement and coarsening given the new grid size and the points
-   * to coarsened
+   * Performs refinement and coarsening given the new grid size and the points to coarsened
    * @param newNoPoints the grid size after refinement and coarsening
-   * @param deletedGridPoints a list of indexes for grid points that will be
-   * removed
+   * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  virtual bool adapt(size_t newNoPoints,
-                     std::vector<size_t>& deletedGridPoints) = 0;
+  virtual bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) = 0;
 
   /**
-   * Improve accuracy of the fit on the given training data by adaptive
-   * refinement or coarsening of
+   * Improve accuracy of the fit on the given training data by adaptive refinement or coarsening of
    * the grid and recalculate weights.
-   * @return true if refinement or coarsening could be performed based on the
-   * refinement
+   * @return true if refinement or coarsening could be performed based on the refinement
    * configuration, else false.
    */
   bool adapt() override;
@@ -83,9 +72,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   /**
    * Computes a residual to evaluate the fit of the model.
    *
-   * This is useful for density estimation, because other Scores cannot be used
-   * as
-   * there are no targets.
+   * This is useful for density estimation, because other Scores cannot be used as there are no
+   * targets.
    *
    * @param validationData Matrix for validation data
    */
@@ -99,8 +87,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void updateRegularization(double lambda) override = 0;
 
   /**
-   * Resets any trained representations of the model, but does not reset the
-   * entire state.
+   * Resets any trained representations of the model, but does not reset the entire state.
    *
    * The decomposition from the offline phase is kept so that it can be reused.
    */
@@ -120,8 +107,7 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   std::unique_ptr<sgpp::base::CoarseningFunctor> getCoarseningFunctor();
 
   /**
-   * Function that indicates whether a model is refinable at all (certain on/off
-   * settings do not
+   * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement)
    * @return whether the model is refinable
    */

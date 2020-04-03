@@ -34,10 +34,8 @@ namespace datadriven {
 ModelFittingDensityEstimation::ModelFittingDensityEstimation()
     : refinementsPerformed(0), initialGridSize(0) {}
 
-std::unique_ptr<RefinementFunctor>
-ModelFittingDensityEstimation::getRefinementFunctor() {
-  sgpp::base::AdaptivityConfiguration &refinementConfig =
-      this->config->getRefinementConfig();
+std::unique_ptr<RefinementFunctor> ModelFittingDensityEstimation::getRefinementFunctor() {
+  sgpp::base::AdaptivityConfiguration &refinementConfig = this->config->getRefinementConfig();
   switch (refinementConfig.refinementFunctorType) {
     case RefinementFunctorType::Surplus: {
       return std::make_unique<SurplusRefinementFunctor>(
@@ -83,10 +81,8 @@ ModelFittingDensityEstimation::getRefinementFunctor() {
   return nullptr;
 }
 
-std::unique_ptr<CoarseningFunctor>
-ModelFittingDensityEstimation::getCoarseningFunctor() {
-  sgpp::base::AdaptivityConfiguration &adaptivityConfig =
-      this->config->getRefinementConfig();
+std::unique_ptr<CoarseningFunctor> ModelFittingDensityEstimation::getCoarseningFunctor() {
+  sgpp::base::AdaptivityConfiguration &adaptivityConfig = this->config->getRefinementConfig();
   switch (adaptivityConfig.coarseningFunctorType) {
     case CoarseningFunctorType::Surplus: {
       return std::make_unique<SurplusCoarseningFunctor>(
@@ -116,26 +112,23 @@ bool ModelFittingDensityEstimation::adapt() {
 
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
       // create refinement and coarsening functors
-      std::unique_ptr<RefinementFunctor> refinementFunc =
-          getRefinementFunctor();
+      std::unique_ptr<RefinementFunctor> refinementFunc = getRefinementFunctor();
       auto oldNoPoints = grid->getSize();
 
-      std::unique_ptr<CoarseningFunctor> coarseningFunc =
-          getCoarseningFunctor();
+      std::unique_ptr<CoarseningFunctor> coarseningFunc = getCoarseningFunctor();
       std::vector<size_t> deletedGridPoints;
 
-      // do coarsening before refinement to prevent refined grid points from
-      // being coarsened immediately
+      // do coarsening before refinement to prevent refined grid points from being coarsened
+      // immediately
 
       if (coarseningFunc) {
         // coarsen grid
         if (config->getRefinementConfig().coarsenInitialPoints_) {
-          grid->getGenerator().coarsenNFirstOnly(
-              *coarseningFunc, grid->getSize(), &deletedGridPoints, 0);
+          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
+                                                 &deletedGridPoints, 0);
         } else {
-          grid->getGenerator().coarsenNFirstOnly(
-              *coarseningFunc, grid->getSize(), &deletedGridPoints,
-              this->initialGridSize);
+          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
+                                                 &deletedGridPoints, this->initialGridSize);
         }
       } else {
         throw application_exception(
@@ -149,8 +142,7 @@ bool ModelFittingDensityEstimation::adapt() {
         GeometryConfiguration geoConf = config->getGeometryConfig();
         if (!geoConf.stencils.empty()) {
           GridFactory gridFactory;
-          grid->getGenerator().refineInter(
-              *refinementFunc, gridFactory.getInteractions(geoConf));
+          grid->getGenerator().refineInter(*refinementFunc, gridFactory.getInteractions(geoConf));
         } else {
           grid->getGenerator().refine(*refinementFunc);
         }
@@ -177,7 +169,7 @@ bool ModelFittingDensityEstimation::adapt() {
         "ModelFittingDensityEstimation: Can't refine before initial grid is "
         "created");
   }
-}  // namespace datadriven
+}
 
 }  // namespace datadriven
 }  // namespace sgpp

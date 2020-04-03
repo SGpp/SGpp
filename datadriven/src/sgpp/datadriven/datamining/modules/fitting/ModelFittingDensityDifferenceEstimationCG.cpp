@@ -32,35 +32,25 @@ using sgpp::base::application_exception;
 namespace sgpp {
 namespace datadriven {
 
-ModelFittingDensityDifferenceEstimationCG::
-    ModelFittingDensityDifferenceEstimationCG(
-        const FitterConfigurationDensityEstimation& config)
-    : ModelFittingDensityEstimation{},
-      bNumP{0},
-      bDenomP{0},
-      bNumQ{0},
-      bDenomQ{0} {
+ModelFittingDensityDifferenceEstimationCG::ModelFittingDensityDifferenceEstimationCG(
+    const FitterConfigurationDensityEstimation& config)
+    : ModelFittingDensityEstimation{}, bNumP{0}, bDenomP{0}, bNumQ{0}, bDenomQ{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-double ModelFittingDensityDifferenceEstimationCG::evaluate(
-    const DataVector& sample) {
-  std::unique_ptr<base::OperationEval> opEval(
-      op_factory::createOperationEval(*grid));
+double ModelFittingDensityDifferenceEstimationCG::evaluate(const DataVector& sample) {
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityDifferenceEstimationCG::evaluate(DataMatrix& samples,
-                                                         DataVector& results) {
-  sgpp::op_factory::createOperationMultipleEval(*grid, samples)
-      ->eval(alpha, results);
+void ModelFittingDensityDifferenceEstimationCG::evaluate(DataMatrix& samples, DataVector& results) {
+  sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
 }
 
-void ModelFittingDensityDifferenceEstimationCG::fit(Dataset& newDatasetP,
-                                                    Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::fit(Dataset& newDatasetP, Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   fit(newDatasetP.getData(), newDatasetQ.getData());
@@ -73,10 +63,8 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
 
   // Setup new grid
   auto& gridConfig = this->config->getGridConfig();
-  gridConfig.dim_ =
-      newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
-  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass
-  // interactions from config?)
+  gridConfig.dim_ = newDatasetP.getNcols();  // newDatasetQ.getNcols() works as well
+  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig)};
   // build surplus vector
   alpha = DataVector(grid->getSize());
@@ -91,8 +79,8 @@ void ModelFittingDensityDifferenceEstimationCG::fit(DataMatrix& newDatasetP,
   update(newDatasetP, newDatasetQ);
 }
 
-bool ModelFittingDensityDifferenceEstimationCG::adapt(
-    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityDifferenceEstimationCG::adapt(size_t newNoPoints,
+                                                      std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
@@ -117,33 +105,29 @@ bool ModelFittingDensityDifferenceEstimationCG::adapt(
   return true;
 }
 
-void ModelFittingDensityDifferenceEstimationCG::update(Dataset& newDatasetP,
-                                                       Dataset& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::update(Dataset& newDatasetP, Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
   update(newDatasetP.getData(), newDatasetQ.getData());
 }
 
-base::OperationMatrix*
-ModelFittingDensityDifferenceEstimationCG::computeRegularizationMatrix(
+base::OperationMatrix* ModelFittingDensityDifferenceEstimationCG::computeRegularizationMatrix(
     base::Grid& grid) {
   base::OperationMatrix* C;
   auto& regularizationConfig = this->config->getRegularizationConfig();
   if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ ==
-             datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
-        "ModelFittingDensityDifferenceEstimationCG : unsupported "
-        "regularization type");
+        "ModelFittingDensityDifferenceEstimationCG : unsupported regularization type");
   }
   return C;
 }
 
-void ModelFittingDensityDifferenceEstimationCG::update(
-    DataMatrix& newDatasetP, DataMatrix& newDatasetQ) {
+void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
+                                                       DataMatrix& newDatasetQ) {
   if (grid == nullptr) {
     // Initial fitting of datasets
     fit(newDatasetP, newDatasetQ);
@@ -158,8 +142,8 @@ void ModelFittingDensityDifferenceEstimationCG::update(
     //    0 = equal weighting
     DataVector rhsUpdate(grid->getSize());
     DataVector rhsUpdateExtra(grid->getSize());
-    datadriven::DensityDifferenceSystemMatrix SMatrix(
-        *grid, newDatasetP, newDatasetQ, C, regularizationConfig.lambda_);
+    datadriven::DensityDifferenceSystemMatrix SMatrix(*grid, newDatasetP, newDatasetQ, C,
+                                                      regularizationConfig.lambda_);
     SMatrix.computeUnweightedRhs(rhsUpdate, rhsUpdateExtra);
     double numInstancesP = static_cast<double>(newDatasetP.getNrows());
     double numInstancesQ = static_cast<double>(newDatasetQ.getNrows());
@@ -185,10 +169,8 @@ void ModelFittingDensityDifferenceEstimationCG::update(
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();
-    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_,
-                                        solverConfig.eps_);
-    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_,
-                   solverConfig.threshold_);
+    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_, solverConfig.eps_);
+    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_, solverConfig.threshold_);
   }
 }
 

@@ -12,62 +12,54 @@
 namespace sgpp {
 namespace datadriven {
 
-const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig()
-    const {
+const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const {
   return gridConfig;
 }
 
-const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig()
-    const {
+const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() const {
   return adaptivityConfig;
 }
 
-const datadriven::CrossvalidationConfiguration &
-FitterConfiguration::getCrossvalidationConfig() const {
+const datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig()
+    const {
   return crossvalidationConfig;
 }
 
-const datadriven::DensityEstimationConfiguration &
-FitterConfiguration::getDensityEstimationConfig() const {
+const datadriven::DensityEstimationConfiguration &FitterConfiguration::getDensityEstimationConfig()
+    const {
   return densityEstimationConfig;
 }
 
-const solver::SLESolverConfiguration &
-FitterConfiguration::getSolverRefineConfig() const {
+const solver::SLESolverConfiguration &FitterConfiguration::getSolverRefineConfig() const {
   return solverRefineConfig;
 }
 
-const solver::SLESolverConfiguration &
-FitterConfiguration::getSolverFinalConfig() const {
+const solver::SLESolverConfiguration &FitterConfiguration::getSolverFinalConfig() const {
   return solverFinalConfig;
 }
 
-const datadriven::RegularizationConfiguration &
-FitterConfiguration::getRegularizationConfig() const {
+const datadriven::RegularizationConfiguration &FitterConfiguration::getRegularizationConfig()
+    const {
   return regularizationConfig;
 }
 
-const datadriven::OperationMultipleEvalConfiguration &
-FitterConfiguration::getMultipleEvalConfig() const {
+const datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultipleEvalConfig()
+    const {
   return multipleEvalConfig;
 }
 
-const datadriven::DatabaseConfiguration &
-FitterConfiguration::getDatabaseConfig() const {
+const datadriven::DatabaseConfiguration &FitterConfiguration::getDatabaseConfig() const {
   return databaseConfig;
 }
 
-const datadriven::LearnerConfiguration &FitterConfiguration::getLearnerConfig()
-    const {
+const datadriven::LearnerConfiguration &FitterConfiguration::getLearnerConfig() const {
   return learnerConfig;
 }
-const datadriven::GeometryConfiguration &
-FitterConfiguration::getGeometryConfig() const {
+const datadriven::GeometryConfiguration &FitterConfiguration::getGeometryConfig() const {
   return geometryConfig;
 }
 
-const datadriven::ParallelConfiguration &
-FitterConfiguration::getParallelConfig() const {
+const datadriven::ParallelConfiguration &FitterConfiguration::getParallelConfig() const {
   return parallelConfig;
 }
 
@@ -81,18 +73,14 @@ base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() {
       static_cast<const FitterConfiguration &>(*this).getRefinementConfig());
 }
 
-datadriven::CrossvalidationConfiguration &
-FitterConfiguration::getCrossvalidationConfig() {
+datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig() {
   return const_cast<datadriven::CrossvalidationConfiguration &>(
-      static_cast<const FitterConfiguration &>(*this)
-          .getCrossvalidationConfig());
+      static_cast<const FitterConfiguration &>(*this).getCrossvalidationConfig());
 }
 
-datadriven::DensityEstimationConfiguration &
-FitterConfiguration::getDensityEstimationConfig() {
+datadriven::DensityEstimationConfiguration &FitterConfiguration::getDensityEstimationConfig() {
   return const_cast<datadriven::DensityEstimationConfiguration &>(
-      static_cast<const FitterConfiguration &>(*this)
-          .getDensityEstimationConfig());
+      static_cast<const FitterConfiguration &>(*this).getDensityEstimationConfig());
 }
 
 solver::SLESolverConfiguration &FitterConfiguration::getSolverRefineConfig() {
@@ -105,15 +93,12 @@ solver::SLESolverConfiguration &FitterConfiguration::getSolverFinalConfig() {
       static_cast<const FitterConfiguration &>(*this).getSolverFinalConfig());
 }
 
-datadriven::RegularizationConfiguration &
-FitterConfiguration::getRegularizationConfig() {
+datadriven::RegularizationConfiguration &FitterConfiguration::getRegularizationConfig() {
   return const_cast<datadriven::RegularizationConfiguration &>(
-      static_cast<const FitterConfiguration &>(*this)
-          .getRegularizationConfig());
+      static_cast<const FitterConfiguration &>(*this).getRegularizationConfig());
 }
 
-datadriven::OperationMultipleEvalConfiguration &
-FitterConfiguration::getMultipleEvalConfig() {
+datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultipleEvalConfig() {
   return const_cast<datadriven::OperationMultipleEvalConfiguration &>(
       static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
@@ -156,9 +141,9 @@ void FitterConfiguration::dumpToStream(std::ostream &stream_out) const {
 }
 
 void FitterConfiguration::setupDefaults() {
-  // (Sebastian Kreisel) The comments "mirrors struct default" are no longer
-  // applicable since all structs now have default values that (should)
-  // match the ones set here. The comments are kept for history / debugging.
+  // (Sebastian Kreisel) The comments "mirrors struct default" are no longer applicable since all
+  // structs now have default values that (should) match the ones set here. The comments are kept
+  // for history / debugging.
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
@@ -185,10 +170,9 @@ void FitterConfiguration::setupDefaults() {
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
   adaptivityConfig.coarseningFunctorType =         // mirrors struct default
       sgpp::base::CoarseningFunctorType::Surplus;
-  adaptivityConfig.precomputeEvaluations = true;  // mirrors struct default
-  adaptivityConfig.levelPenalize = false;         // mirrors struct default
-  adaptivityConfig.scalingCoefficients =
-      std::vector<double>();  // mirrors struct default;
+  adaptivityConfig.precomputeEvaluations = true;                 // mirrors struct default
+  adaptivityConfig.levelPenalize = false;                        // mirrors struct default
+  adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default
 
   crossvalidationConfig.enable_ = false;  // mirrors struct default
   crossvalidationConfig.kfold_ = 5;       // mirrors struct default
@@ -201,21 +185,18 @@ void FitterConfiguration::setupDefaults() {
   crossvalidationConfig.lambdaSteps_ = 0;
   crossvalidationConfig.logScale_ = false;
 
-  // (Sebastian) The following two values were previously set
-  // in the subclass FitterConfigurationDensityEstimation but were moved here
-  // to have all of the default value config in this file.
-  densityEstimationConfig.type_ =
-      sgpp::datadriven::DensityEstimationType::Decomposition;
-  densityEstimationConfig.decomposition_ =
-      sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
+  // (Sebastian) The following two values were previously set in the subclass
+  // FitterConfigurationDensityEstimation but were moved here to have all of the default value
+  // config in this file.
+  densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
+  densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
   // Offline permutation is used per default
   densityEstimationConfig.useOfflinePermutation = true;
 
-  densityEstimationConfig.iCholSweepsDecompose_ = 4;  // mirrors struct default;
-  densityEstimationConfig.iCholSweepsRefine_ = 4;     // mirrors struct default;
-  densityEstimationConfig.iCholSweepsUpdateLambda_ =
-      2;                                           // mirrors struct default;
-  densityEstimationConfig.iCholSweepsSolver_ = 2;  // mirrors struct default;
+  densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default
+  densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default
+  densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default
+  densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default
 
   databaseConfig.filePath = "";
 
@@ -250,8 +231,7 @@ void FitterConfiguration::setupDefaults() {
 
   // configure geometry configuration
   geometryConfig.dim = std::vector<std::vector<int64_t>>();
-  geometryConfig.stencils =
-      std::vector<sgpp::datadriven::StencilConfiguration>();
+  geometryConfig.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
 }
 
 }  // namespace datadriven

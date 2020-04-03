@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DENSITYSYSTEMMATRIX_HPP
-#define DENSITYSYSTEMMATRIX_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -18,14 +17,12 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Class that implements the virtual class OperationMatrix for the
- * application of classification for the Systemmatrix by using a
- * density function
+ * Class that implements the virtual class OperationMatrix for the application of classification for
+ * the Systemmatrix by using a density function
  */
 class DensitySystemMatrix : public base::OperationMatrix {
  private:
-  /// Operation A for calculating the data matrix
-  /// (L2 Dot-Product of basis functions)
+  /// Operation A for calculating the data matrix (L2 Dot-Product of basis functions)
   std::unique_ptr<base::OperationMatrix> A;
   /// OperationB for calculating the data matrix
   std::unique_ptr<base::OperationMultipleEval> B;
@@ -46,10 +43,8 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param lambda the regression parameter
    * @param numSamples number of data samples
    */
-  DensitySystemMatrix(sgpp::base::OperationMatrix* A,
-                      sgpp::base::OperationMultipleEval* B,
-                      sgpp::base::OperationMatrix* C, double lambda,
-                      size_t numSamples);
+  DensitySystemMatrix(sgpp::base::OperationMatrix* A, sgpp::base::OperationMultipleEval* B,
+                      sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
 
   /**
    * Std-Constructor
@@ -59,8 +54,8 @@ class DensitySystemMatrix : public base::OperationMatrix {
    * @param C the regression functional
    * @param lambda the regression parameter
    */
-  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData,
-                      base::OperationMatrix* C, double lambda);
+  DensitySystemMatrix(base::Grid& grid, base::DataMatrix& trainData, base::OperationMatrix* C,
+                      double lambda);
 
   /**
    * Generates the left hand side of the classification equation
@@ -73,16 +68,16 @@ class DensitySystemMatrix : public base::OperationMatrix {
   /**
    * Generates the right hand side of the classification equation
    *
-   * @param b reference to the vector which will contain the result of the
-   * matrix vector multiplication on the rhs
+   * @param b reference to the vector which will contain the result of the matrix vector
+   * multiplication on the rhs
    */
   void generateb(base::DataVector& b);
 
   /**
    * Computes the unweighted right hand side of the classification equation
    *
-   * @param b reference to the vector which will contain the result of the
-   * matrix vector multiplication on the rhs
+   * @param b reference to the vector which will contain the result of the matrix vector
+   * multiplication on the rhs
    */
   void computeUnweightedRhs(base::DataVector& b);
 
@@ -94,5 +89,3 @@ class DensitySystemMatrix : public base::OperationMatrix {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DENSITYSYSTEMMATRIX_HPP */

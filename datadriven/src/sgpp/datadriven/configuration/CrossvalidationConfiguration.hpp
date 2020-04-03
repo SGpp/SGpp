@@ -26,8 +26,7 @@ struct CrossvalidationConfiguration {
   double lambda_ = 1e-3;       // regularization parameter
   double lambdaStart_ = 1e-3;  // lower bound for lambda search range
   double lambdaEnd_ = 1e-3;    // upper bound for lambda search range
-  // number of lambdas to be tested within the range defined by lambdaStart and
-  // lambdaEdns;
+  // number of lambdas to be tested within the range defined by lambdaStart and lambdaEdns;
   // must be > 1
   size_t lambdaSteps_ = 0;
   bool logScale_ = false;  // search the optimization interval on a log-scale

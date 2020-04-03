@@ -22,12 +22,9 @@ DMSystemMatrixDRE::DMSystemMatrixDRE(sgpp::base::DataMatrix& trainDataP,
   myTimer_ = new sgpp::base::SGppStopwatch();
 }
 
-DMSystemMatrixDRE::~DMSystemMatrixDRE() {
-  delete myTimer_;
-}
+DMSystemMatrixDRE::~DMSystemMatrixDRE() { delete myTimer_; }
 
-void DMSystemMatrixDRE::prepareGrid() {
-}
+void DMSystemMatrixDRE::prepareGrid() {}
 
 void DMSystemMatrixDRE::resetTimers() {
   completeTimeMult_ = 0.0;

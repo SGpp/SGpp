@@ -17,9 +17,9 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * CSVFileSampleProvider allows reading data in CSV format into a #sgpp::datadriven::Dataset
- * object. Data can currently only be a file containing CSV data with the first line containing
- * column titles (is skipped).
+ * CSVFileSampleProvider allows reading data in CSV format into a #sgpp::datadriven::Dataset object.
+ * Data can currently only be a file containing CSV data with the first line containing column
+ * titles (is skipped).
  *
  */
 class CSVFileSampleProvider : public FileSampleProvider {
@@ -77,9 +77,10 @@ class CSVFileSampleProvider : public FileSampleProvider {
 
   /**
    * Explicit destructor to avoid memory leaks
-  */
-  ~CSVFileSampleProvider() {
-    if (shuffling != nullptr) delete shuffling;
+   */
+  ~CSVFileSampleProvider() override {
+    if (shuffling != nullptr)
+      delete shuffling;
   }
 
  private:
@@ -95,8 +96,8 @@ class CSVFileSampleProvider : public FileSampleProvider {
 
   /**
    * Indicates the index in dataset where #getNextSamples will start grabbing new samples in its
-   * next call. After each call of #getNextSamples, the counter is set to the amount of min(counter
-   * + requestedSamplesSize, dataset.getSize()).
+   * next call. After each call of #getNextSamples, the counter is set to the amount of
+   * min(counter + requestedSamplesSize, dataset.getSize()).
    */
   size_t counter;
 

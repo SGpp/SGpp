@@ -17,10 +17,12 @@
 namespace sgpp {
 namespace datadriven {
 
-DensityDifferenceSystemMatrix::DensityDifferenceSystemMatrix(
-    sgpp::base::OperationMatrix* A, sgpp::base::OperationMultipleEval* B_p,
-    sgpp::base::OperationMultipleEval* B_q, sgpp::base::OperationMatrix* C,
-    double lambda, size_t numSamples_P, size_t numSamples_Q)
+DensityDifferenceSystemMatrix::DensityDifferenceSystemMatrix(sgpp::base::OperationMatrix* A,
+                                                             sgpp::base::OperationMultipleEval* B_p,
+                                                             sgpp::base::OperationMultipleEval* B_q,
+                                                             sgpp::base::OperationMatrix* C,
+                                                             double lambda, size_t numSamples_P,
+                                                             size_t numSamples_Q)
     : A(A),
       B_p(B_p),
       B_q(B_q),
@@ -29,13 +31,12 @@ DensityDifferenceSystemMatrix::DensityDifferenceSystemMatrix(
       numSamples_P(numSamples_P),
       numSamples_Q(numSamples_Q) {}
 
-DensityDifferenceSystemMatrix::DensityDifferenceSystemMatrix(
-    sgpp::base::Grid& grid, sgpp::base::DataMatrix& trainData_P,
-    sgpp::base::DataMatrix& trainData_Q, sgpp::base::OperationMatrix* pC,
-    double lambda)
-    : lambda(lambda),
-      numSamples_P(trainData_P.getNrows()),
-      numSamples_Q(trainData_Q.getNrows()) {
+DensityDifferenceSystemMatrix::DensityDifferenceSystemMatrix(sgpp::base::Grid& grid,
+                                                             sgpp::base::DataMatrix& trainData_P,
+                                                             sgpp::base::DataMatrix& trainData_Q,
+                                                             sgpp::base::OperationMatrix* pC,
+                                                             double lambda)
+    : lambda(lambda), numSamples_P(trainData_P.getNrows()), numSamples_Q(trainData_Q.getNrows()) {
   A.reset(op_factory::createOperationLTwoDotProduct(grid));
   B_p.reset(op_factory::createOperationMultipleEval(grid, trainData_P));
   B_q.reset(op_factory::createOperationMultipleEval(grid, trainData_Q));

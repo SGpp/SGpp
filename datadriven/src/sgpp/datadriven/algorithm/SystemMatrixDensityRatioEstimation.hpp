@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-// #ifndef DMSYSTEMMATRIXDENSITYRATIOESTIMATION_HPP
-// #define DMSYSTEMMATRIXDENSITYRATIOESTIMATION_HPP
 #pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
@@ -25,13 +23,12 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Class that implements the virtual class base::OperationMatrix for the
- * application of regression for the SystemMatrixDRE
+ * Class that implements the virtual class base::OperationMatrix for the application of regression
+ * for the SystemMatrixDRE
  *
  * The Identity matrix is used as regularization operator.
  *
- * For the Operation B's mult and mutlTransposed functions
- * vectorized formulations are used.
+ * For the Operation B's mult and mutlTransposed functions vectorized formulations are used.
  */
 class SystemMatrixDensityRatioEstimation : public datadriven::DMSystemMatrixDRE {
  private:
@@ -84,5 +81,3 @@ class SystemMatrixDensityRatioEstimation : public datadriven::DMSystemMatrixDRE 
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-// #endif /* DMSYSTEMMATRIXDENSITYRATIOESTIMATION_HPP */

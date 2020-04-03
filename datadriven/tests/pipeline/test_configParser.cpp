@@ -21,8 +21,7 @@
 #include <vector>
 
 const auto datasetPath = "datadriven/tests/pipeline/config_configParser.json";
-const auto multiDatasetPath =
-    "datadriven/tests/pipeline/config_multiDatasetConfigParser.json";
+const auto multiDatasetPath = "datadriven/tests/pipeline/config_multiDatasetConfigParser.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
@@ -86,24 +85,18 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
-  BOOST_CHECK_EQUAL(
-      std::strcmp(config.filePath.c_str(), "/path/to/some/file.arff"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.fileType),
-                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(std::strcmp(config.filePath.c_str(), "/path/to/some/file.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.fileType), static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.numBatches, 1);
   BOOST_CHECK_EQUAL(config.batchSize, 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig.type),
                     static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(
-      config.dataTransformationConfig.rosenblattConfig.solverMaxIterations,
-      1000);
+  BOOST_CHECK_EQUAL(config.dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
   BOOST_CHECK_EQUAL(config.validationPortion, 0.634);
   BOOST_CHECK_EQUAL(config.epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(
-      std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"),
-      0);
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config.testNumBatches, 2);
@@ -134,33 +127,27 @@ BOOST_AUTO_TEST_CASE(testMultiDataSourceConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
-  BOOST_CHECK_EQUAL(
-      std::strcmp(config[0].filePath.c_str(), "/path/to/some/file1.arff"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config[0].filePath.c_str(), "/path/to/some/file1.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config[0].fileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config[0].numBatches, 1);
   BOOST_CHECK_EQUAL(config[0].batchSize, 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config[0].dataTransformationConfig.type),
                     static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(
-      config[0].dataTransformationConfig.rosenblattConfig.solverMaxIterations,
-      1000);
+  BOOST_CHECK_EQUAL(config[0].dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
   BOOST_CHECK_EQUAL(config[0].validationPortion, 0.634);
   BOOST_CHECK_EQUAL(config[0].epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config[0].shuffling),
                     static_cast<int>(DataSourceShufflingType::random));
 
-  BOOST_CHECK_EQUAL(
-      std::strcmp(config[1].filePath.c_str(), "/path/to/some/file2.arff"), 0);
+  BOOST_CHECK_EQUAL(std::strcmp(config[1].filePath.c_str(), "/path/to/some/file2.arff"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config[1].fileType),
                     static_cast<int>(DataSourceFileType::ARFF));
   BOOST_CHECK_EQUAL(config[1].numBatches, 1);
   BOOST_CHECK_EQUAL(config[1].batchSize, 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config[1].dataTransformationConfig.type),
                     static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(
-      config[1].dataTransformationConfig.rosenblattConfig.solverMaxIterations,
-      1000);
+  BOOST_CHECK_EQUAL(config[1].dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
   BOOST_CHECK_EQUAL(config[1].validationPortion, 0.634);
   BOOST_CHECK_EQUAL(config[1].epochs, 12);
   BOOST_CHECK_EQUAL(static_cast<int>(config[1].shuffling),
@@ -178,8 +165,7 @@ BOOST_AUTO_TEST_CASE(testScorerConfig) {
   hasConfig = parser.getScorerConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric),
-                    static_cast<int>(ScorerMetricType::mse));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
@@ -192,8 +178,7 @@ BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
   hasConfig = parser.getFitterConfigType(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config),
-                    static_cast<int>(FitterType::RegressionLeastSquares));
+  BOOST_CHECK_EQUAL(static_cast<int>(config), static_cast<int>(FitterType::RegressionLeastSquares));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
@@ -212,8 +197,7 @@ BOOST_AUTO_TEST_CASE(testFitterGridConfig) {
   hasConfig = parser.getFitterGridConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
-                    static_cast<int>(GridType::Linear));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(GridType::Linear));
   BOOST_CHECK_EQUAL(config.dim_, 0);
   BOOST_CHECK_EQUAL(config.level_, 2);
   BOOST_CHECK_EQUAL(config.maxDegree_, 0);
@@ -270,8 +254,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
   hasConfig = parser.getFitterSolverRefineConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
-                    static_cast<int>(SLESolverType::CG));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(SLESolverType::CG));
   BOOST_CHECK_CLOSE(config.eps_, 1e-14, tolerance);
   BOOST_CHECK_EQUAL(config.maxIterations_, 100);
   BOOST_CHECK_EQUAL(config.threshold_, 1);
@@ -292,8 +275,7 @@ BOOST_AUTO_TEST_CASE(testFitterSolverFinalConfig) {
   hasConfig = parser.getFitterSolverFinalConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
-                    static_cast<int>(SLESolverType::CG));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(SLESolverType::CG));
   BOOST_CHECK_CLOSE(config.eps_, 1e-14, tolerance);
   BOOST_CHECK_EQUAL(config.maxIterations_, 100);
   BOOST_CHECK_EQUAL(config.threshold_, 1);
@@ -319,8 +301,7 @@ BOOST_AUTO_TEST_CASE(testFitterRegularizationConfig) {
   hasConfig = parser.getFitterRegularizationConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.type_),
-                    static_cast<int>(RegularizationType::Identity));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.type_), static_cast<int>(RegularizationType::Identity));
   BOOST_CHECK_CLOSE(config.lambda_, 1e-6, tolerance);
   BOOST_CHECK_CLOSE(config.exponentBase_, 3.0, tolerance);
   BOOST_CHECK_CLOSE(config.l1Ratio_, 4.0, tolerance);
@@ -346,9 +327,8 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
 
-  BOOST_CHECK_EQUAL(
-      static_cast<int>(config.stencils.at(0).stencilType),
-      static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
+                    static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
   BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers.size(), 2);
   BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[0], 0);
   BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[1], 1);
@@ -363,8 +343,8 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
   for (size_t i = 0; i < config.dim.size(); i++) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(),
-                                  dim[i].begin(), dim[i].end());
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(), dim[i].begin(),
+                                  dim[i].end());
   }
 }
 
@@ -404,8 +384,7 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   VisualizationGeneralConfig config;
   bool hasConfig;
   bool hasGeneralVisualizationConfig;
-  std::vector<std::string> expectedAlgorithm =
-      std::vector<std::string>({"tsne", "heatmaps"});
+  std::vector<std::string> expectedAlgorithm = std::vector<std::string>({"tsne", "heatmaps"});
 
   hasGeneralVisualizationConfig = parser.hasVisualizationGeneralConfig();
 
@@ -414,9 +393,8 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(
-      config.algorithm.begin(), config.algorithm.end(),
-      expectedAlgorithm.begin(), expectedAlgorithm.end());
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
+                                expectedAlgorithm.begin(), expectedAlgorithm.end());
   BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
   BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
                     static_cast<int>(VisualizationFileType::json));

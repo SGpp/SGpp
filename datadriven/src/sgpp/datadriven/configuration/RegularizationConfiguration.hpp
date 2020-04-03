@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef REGULARIZATIONCONFIGURATION_HPP_
-#define REGULARIZATIONCONFIGURATION_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -13,14 +12,7 @@ namespace datadriven {
 
 enum class RegularizationMetricType { mse, nll, accuracy, residual };
 
-enum class RegularizationType {
-  Identity,
-  Laplace,
-  Diagonal,
-  Lasso,
-  ElasticNet,
-  GroupLasso
-};
+enum class RegularizationType { Identity, Laplace, Diagonal, Lasso, ElasticNet, GroupLasso };
 
 struct RegularizationConfiguration {
   RegularizationType type_ = RegularizationType::Identity;
@@ -37,10 +29,7 @@ struct RegularizationConfiguration {
   double intervalA_ = 1e-15;
   double intervalB_ = 1.0;
 
-  RegularizationMetricType regularizationMetric_ =
-      RegularizationMetricType::residual;
+  RegularizationMetricType regularizationMetric_ = RegularizationMetricType::residual;
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* REGULARIZATIONCONFIGURATION_HPP_ */

@@ -20,7 +20,6 @@ namespace datadriven {
  * ArffFileSampleProvider allows reading data in ARFF format into a #sgpp::datadriven::Dataset
  * object. Data can currently be either be a string formatted in ARFF or a file containing ARFF
  * data.
- *
  */
 class ArffFileSampleProvider : public FileSampleProvider {
  public:
@@ -79,8 +78,9 @@ class ArffFileSampleProvider : public FileSampleProvider {
   /**
    * Explicit destructor to avoid memory leaks
    */
-  ~ArffFileSampleProvider() {
-    if (shuffling != nullptr) delete shuffling;
+  ~ArffFileSampleProvider() override {
+    if (shuffling != nullptr)
+      delete shuffling;
   }
 
  private:
@@ -96,8 +96,8 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   /**
    * Indicates the index in dataset where #getNextSamples will start grabbing new samples in its
-   * next call. After each call of #getNextSamples, the counter is set to the amount of min(counter
-   * + requestedSamplesSize, dataset.getSize()).
+   * next call. After each call of #getNextSamples, the counter is set to the amount of
+   * min(counter + requestedSamplesSize, dataset.getSize()).
    */
   size_t counter;
 

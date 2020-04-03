@@ -42,16 +42,11 @@ ModelFittingBase::ModelFittingBase()
       extraDataset{nullptr},
       solver{nullptr} {}
 
-const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const {
-  return *config;
-}
+const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
 
-FitterConfiguration &ModelFittingBase::getFitterConfiguration() {
-  return *config;
-}
+FitterConfiguration &ModelFittingBase::getFitterConfiguration() { return *config; }
 
-Grid *ModelFittingBase::buildGrid(
-    const sgpp::base::GeneralGridConfiguration &gridConfig) const {
+Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig) const {
   GridFactory gridFactory;
 
   // pass interactions with size 0
@@ -59,9 +54,8 @@ Grid *ModelFittingBase::buildGrid(
   return gridFactory.createGrid(gridConfig, interactions);
 }
 
-Grid *ModelFittingBase::buildGrid(
-    const sgpp::base::GeneralGridConfiguration &gridConfig,
-    const GeometryConfiguration &geometryConfig) const {
+Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gridConfig,
+                                  const GeometryConfiguration &geometryConfig) const {
   GridFactory gridFactory;
 
   // a regular sparse grid is created, if no geometryConfig is defined,
@@ -71,8 +65,7 @@ Grid *ModelFittingBase::buildGrid(
     return gridFactory.createGrid(gridConfig, interactions);
   }
 
-  return gridFactory.createGrid(gridConfig,
-                                gridFactory.getInteractions(geometryConfig));
+  return gridFactory.createGrid(gridConfig, gridFactory.getInteractions(geometryConfig));
 }
 
 std::set<std::set<size_t>> ModelFittingBase::getInteractions(
@@ -83,15 +76,14 @@ std::set<std::set<size_t>> ModelFittingBase::getInteractions(
       interactions = std::make_unique<std::set<std::set<size_t>>>();
     } else {
       GridFactory gridFactory;
-      interactions = std::make_unique<std::set<std::set<size_t>>>(
-          gridFactory.getInteractions(geometryConfig));
+      interactions =
+          std::make_unique<std::set<std::set<size_t>>>(gridFactory.getInteractions(geometryConfig));
     }
   }
   return *interactions;
 }
 
-SLESolver *ModelFittingBase::buildSolver(
-    const SLESolverConfiguration &sleConfig) const {
+SLESolver *ModelFittingBase::buildSolver(const SLESolverConfiguration &sleConfig) const {
   if (sleConfig.type_ == SLESolverType::CG) {
     return new ConjugateGradients(sleConfig.maxIterations_, sleConfig.eps_);
   } else if (sleConfig.type_ == SLESolverType::BiCGSTAB) {
@@ -103,8 +95,8 @@ SLESolver *ModelFittingBase::buildSolver(
   }
 }
 
-void ModelFittingBase::reconfigureSolver(
-    SLESolver &solver, const SLESolverConfiguration &sleConfig) const {
+void ModelFittingBase::reconfigureSolver(SLESolver &solver,
+                                         const SLESolverConfiguration &sleConfig) const {
   solver.setMaxIterations(sleConfig.maxIterations_);
   solver.setEpsilon(sleConfig.eps_);
 }

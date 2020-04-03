@@ -23,8 +23,7 @@ class DataSourceSplitting : public DataSource {
    * @param config configuration object used for the data source
    * @param sampleProvider the sample provider to operate on.
    */
-  DataSourceSplitting(const DataSourceConfig& config,
-                      SampleProvider* sampleProvider);
+  DataSourceSplitting(const DataSourceConfig& config, SampleProvider* sampleProvider);
 
   /**
    * Returns the data that is used for validation
@@ -40,7 +39,7 @@ class DataSourceSplitting : public DataSource {
   /**
    * Clean up memory
    */
-  ~DataSourceSplitting() {
+  ~DataSourceSplitting() override {
     if (validationData != nullptr) {
       delete validationData;
     }

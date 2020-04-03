@@ -63,8 +63,7 @@ double ModelFittingDensityEstimationOnOff::evaluate(const DataVector& sample) {
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimationOnOff::evaluate(DataMatrix& samples,
-                                                  DataVector& results) {
+void ModelFittingDensityEstimationOnOff::evaluate(DataMatrix& samples, DataVector& results) {
   online->eval(alpha, samples, results, *grid);
 }
 
@@ -81,8 +80,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
-  bool useOfflinePermutation =
-      this->config->getDensityEstimationConfig().useOfflinePermutation;
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
 
   // clear model
   reset();
@@ -90,8 +88,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   // build grid
   gridConfig.dim_ = newDataset.getNcols();
   // std::cout << "Dataset dimension " << gridConfig.dim_ << std::endl;
-  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass
-  // interactions from config?)
+  // TODO(fuchsgruber): Support for geometry aware sparse grids (pass interactions from config?)
   grid = std::unique_ptr<Grid>{buildGrid(gridConfig, geometryConfig)};
 
   // build surplus vector
@@ -99,13 +96,13 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
 
   // Build the offline instance first
 
-  // If the permutation and blow-up approach is applicable to the decomposition
-  // type, an object store is given and the offline permutation method is
-  // configured, the offline object is obtained from the permutation factory
+  // If the permutation and blow-up approach is applicable to the decomposition type, an object
+  // store is given and the offline permutation method is configured, the offline object is obtained
+  // from the permutation factory
   if (this->hasObjectStore) {
-    const DBMatOffline* objectFromStore = this->objectStore->getObject(
-        gridConfig, geometryConfig, refinementConfig, regularizationConfig,
-        densityEstimationConfig);
+    const DBMatOffline* objectFromStore =
+        this->objectStore->getObject(gridConfig, geometryConfig, refinementConfig,
+                                     regularizationConfig, densityEstimationConfig);
 
     if (objectFromStore != nullptr) {
       offline = std::unique_ptr<DBMatOffline>{objectFromStore->clone()};
@@ -116,71 +113,56 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
           densityEstimationConfig.decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end() &&
       this->hasObjectStore && useOfflinePermutation) {
-    // Initialize the permutation factory. If a database path is specified, the
-    // path is pased to the
+    // Initialize the permutation factory. If a database path is specified, the path is pased to the
     // permutation factory
     DBMatPermutationFactory permutationFactory;
     if (databaseConfig.filePath.empty()) {
       permutationFactory = DBMatPermutationFactory(this->objectStore);
     } else {
-      permutationFactory =
-          DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
     }
-    offline =
-        std::unique_ptr<DBMatOffline>{permutationFactory.getPermutedObject(
-            config->getGridConfig(), config->getGeometryConfig(),
-            config->getRefinementConfig(), config->getRegularizationConfig(),
-            config->getDensityEstimationConfig())};
+    offline = std::unique_ptr<DBMatOffline>{permutationFactory.getPermutedObject(
+        config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
+        config->getRegularizationConfig(), config->getDensityEstimationConfig())};
     offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filePath
-                  .empty()) {  // Intialize database if it is provided
+  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
     datadriven::DBMatDatabase database(databaseConfig.filePath);
     // Check if database holds a fitting lhs matrix decomposition
-    if (database.hasDataMatrix(gridConfig, refinementConfig,
-                               regularizationConfig, densityEstimationConfig)) {
-      std::string offlineFilepath =
-          database.getDataMatrix(gridConfig, refinementConfig,
-                                 regularizationConfig, densityEstimationConfig);
-      offline = std::unique_ptr<DBMatOffline>{
-          DBMatOfflineFactory::buildFromFile(offlineFilepath)};
+    if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
+                               densityEstimationConfig)) {
+      std::string offlineFilepath = database.getDataMatrix(
+          gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+      offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(offlineFilepath)};
     }
   }
 
   // Build and decompose offline object if not loaded from database
   if (!offline) {
     // Build offline object by factory, build matrix and decompose
-    offline =
-        std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
-            gridConfig, refinementConfig, regularizationConfig,
-            densityEstimationConfig)};
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
 
     if (this->hasObjectStore) {
       this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
-                                   regularizationConfig,
-                                   densityEstimationConfig, offline->clone());
+                                   regularizationConfig, densityEstimationConfig, offline->clone());
     }
   }
 
-  online =
-      std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
-          *offline, *grid, regularizationConfig.lambda_, 0,
-          densityEstimationConfig.decomposition_)};
+  online = std::unique_ptr<DBMatOnlineDE>{DBMatOnlineDEFactory::buildDBMatOnlineDE(
+      *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
 
-  // in SMW decomposition type case, the inverse of the matrix needs to be
-  // computed explicitly
-  if (densityEstimationConfig.decomposition_ ==
-          MatrixDecompositionType::SMW_ortho ||
-      densityEstimationConfig.decomposition_ ==
-          MatrixDecompositionType::SMW_chol) {
+  // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+  if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+      densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
     offline->compute_inverse();
   }
 
-  online->computeDensityFunction(
-      alpha, newDataset, *grid, this->config->getDensityEstimationConfig(),
-      true, this->config->getCrossvalidationConfig().enable_);
+  online->computeDensityFunction(alpha, newDataset, *grid,
+                                 this->config->getDensityEstimationConfig(), true,
+                                 this->config->getCrossvalidationConfig().enable_);
   online->setBeta(this->config->getLearnerConfig().learningRate);
 
   if (densityEstimationConfig.normalize_) {
@@ -188,8 +170,8 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOff::adapt(
-    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityEstimationOnOff::adapt(size_t newNoPoints,
+                                               std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints.size() > 0) {
     // Restructure alpha
@@ -203,11 +185,10 @@ bool ModelFittingDensityEstimationOnOff::adapt(
     alpha.resizeZero(newNoPoints);
   }
 
-  // Update online object: lhs, rhs and recompute the density function based on
-  // the b stored
-  online->updateSystemMatrixDecomposition(
-      config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints,
-      deletedGridPoints, config->getRegularizationConfig().lambda_);
+  // Update online object: lhs, rhs and recompute the density function based on the b stored
+  online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
+                                          newNoPoints - oldNoPoints, deletedGridPoints,
+                                          config->getRegularizationConfig().lambda_);
   online->updateRhs(newNoPoints, deletedGridPoints);
   return true;
 }
@@ -224,9 +205,9 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
   } else {
     // Update the fit (streaming)
 
-    online->computeDensityFunction(
-        alpha, newDataset, *grid, this->config->getDensityEstimationConfig(),
-        true, this->config->getCrossvalidationConfig().enable_);
+    online->computeDensityFunction(alpha, newDataset, *grid,
+                                   this->config->getDensityEstimationConfig(), true,
+                                   this->config->getCrossvalidationConfig().enable_);
 
     if (this->config->getDensityEstimationConfig().normalize_) {
       online->normalize(alpha, *grid);
@@ -234,8 +215,7 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
   }
 }
 
-double ModelFittingDensityEstimationOnOff::computeResidual(
-    DataMatrix& validationData) const {
+double ModelFittingDensityEstimationOnOff::computeResidual(DataMatrix& validationData) const {
   DataVector bValidation = online->computeWeightedBFromBatch(
       validationData, *grid, this->config->getDensityEstimationConfig(), true);
 
@@ -243,16 +223,14 @@ double ModelFittingDensityEstimationOnOff::computeResidual(
 
 #ifdef USE_GSL
 
-  gsl_matrix_view R_view = gsl_matrix_view_array(
-      rMatrix.getPointer(), rMatrix.getNrows(), rMatrix.getNcols());
+  gsl_matrix_view R_view =
+      gsl_matrix_view_array(rMatrix.getPointer(), rMatrix.getNrows(), rMatrix.getNcols());
   gsl_vector_const_view alpha_view =
       gsl_vector_const_view_array(alpha.getPointer(), alpha.getSize());
-  gsl_vector_view b_view =
-      gsl_vector_view_array(bValidation.getPointer(), bValidation.getSize());
+  gsl_vector_view b_view = gsl_vector_view_array(bValidation.getPointer(), bValidation.getSize());
 
   // R * alpha - b_val
-  gsl_blas_dgemv(CblasNoTrans, 1.0, &R_view.matrix, &alpha_view.vector, -1.0,
-                 &b_view.vector);
+  gsl_blas_dgemv(CblasNoTrans, 1.0, &R_view.matrix, &alpha_view.vector, -1.0, &b_view.vector);
 #else
   throw base::not_implemented_exception("built withot GSL");
 #endif /* USE_GSL */
@@ -268,10 +246,8 @@ void ModelFittingDensityEstimationOnOff::updateRegularization(double lambda) {
 
     // in SMW decomposition type case, the inverse of the matrix needs to be
     // computed explicitly
-    if (densityEstimationConfig.decomposition_ ==
-            MatrixDecompositionType::SMW_ortho ||
-        densityEstimationConfig.decomposition_ ==
-            MatrixDecompositionType::SMW_chol) {
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       online->getOfflineObject().compute_inverse();
     }
   }

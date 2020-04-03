@@ -18,7 +18,7 @@ namespace sgpp {
 
 namespace datadriven {
 
-ArffFileSampleProvider::ArffFileSampleProvider(DataShufflingFunctor *shuffling)
+ArffFileSampleProvider::ArffFileSampleProvider(DataShufflingFunctor* shuffling)
     : shuffling{shuffling}, dataset(Dataset{}), counter(0) {}
 
 SampleProvider* ArffFileSampleProvider::clone() const {
@@ -41,14 +41,12 @@ size_t ArffFileSampleProvider::getNumSamples() const {
   }
 }
 
-void ArffFileSampleProvider::readFile(const std::string& fileName,
-                                      bool hasTargets,
-                                      size_t readinCutoff,
-                                      std::vector<size_t> readinColumns,
+void ArffFileSampleProvider::readFile(const std::string& fileName, bool hasTargets,
+                                      size_t readinCutoff, std::vector<size_t> readinColumns,
                                       std::vector<double> readinClasses) {
   try {
-    dataset = ARFFTools::readARFFFromFile(fileName, hasTargets, readinCutoff,
-        readinColumns, readinClasses);
+    dataset = ARFFTools::readARFFFromFile(fileName, hasTargets, readinCutoff, readinColumns,
+                                          readinClasses);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.
@@ -72,14 +70,12 @@ Dataset* ArffFileSampleProvider::getAllSamples() {
   }
 }
 
-void ArffFileSampleProvider::readString(const std::string& input,
-                                        bool hasTargets,
-                                        size_t readinCutoff,
-                                        std::vector<size_t> readinColumns,
+void ArffFileSampleProvider::readString(const std::string& input, bool hasTargets,
+                                        size_t readinCutoff, std::vector<size_t> readinColumns,
                                         std::vector<double> readinClasses) {
   try {
-    dataset = ARFFTools::readARFFFromString(input, hasTargets, readinCutoff,
-        readinColumns, readinClasses);
+    dataset = ARFFTools::readARFFFromString(input, hasTargets, readinCutoff, readinColumns,
+                                            readinClasses);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to ARFFTools with
     // exception safe implementation.
@@ -114,9 +110,7 @@ Dataset* ArffFileSampleProvider::splitDataset(size_t howMany) {
   return tmpDataset.release();
 }
 
-void ArffFileSampleProvider::reset() {
-  counter = 0;
-}
+void ArffFileSampleProvider::reset() { counter = 0; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */

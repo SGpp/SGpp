@@ -32,8 +32,7 @@ namespace datadriven {
 
 /**
  * Fitter object that encapsulates the usage of sparse grid density estimation
- * with identity as
- * regularization.
+ * with identity as regularization.
  *
  * Based on ModelFittingDensityEstimationOnOff, but uses ScaLAPACK for
  * parallelization.
@@ -63,22 +62,27 @@ class ModelFittingDensityEstimationOnOffParallel
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial
-   * grid by the
-   * SGDE approach.
+   * grid by the SGDE approach.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset&, Dataset&) override {
+    throw base::application_exception(
+        "This model requires a single input dataset");
+  }
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial
-   * grid by the
-   * SGDE approach. Requires only data samples and no targets (since those are
-   * irrelevant for the
-   * density estimation whatsoever).
+   * grid by the SGDE approach. Requires only data samples and no targets (since
+   * those are irrelevant for the density estimation whatsoever).
    * This method makes use of parallelization using ScaLAPACK.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
+  void fit(DataMatrix&, DataMatrix&) override {
+    throw base::application_exception(
+        "This model requires a single input dataset");
+  }
 
   /**
    * Performs refinement and coarsening given the new grid size and the points
@@ -96,17 +100,23 @@ class ModelFittingDensityEstimationOnOffParallel
    * @param dataset
    */
   void update(Dataset& dataset) override;
+  void update(Dataset&, Dataset&) override {
+    throw base::application_exception(
+        "This model requires a single input dataset");
+  }
 
   /**
    * Updates the model based on new data samples (streaming, batch learning).
-   * Requires only
-   * the data samples and no targets (since those are irrelevant for the density
-   * estimation
-   * whatsoever).
+   * Requires only the data samples and no targets (since those are irrelevant
+   * for the density estimation whatsoever).
    * This method makes use of parallelization using ScaLAPACK.
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;
+  void update(DataMatrix&, DataMatrix&) override {
+    throw base::application_exception(
+        "This model requires a single input dataset");
+  }
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained
@@ -120,18 +130,15 @@ class ModelFittingDensityEstimationOnOffParallel
    * Evaluate the fitted density on a set of data points - requires a trained
    * grid.
    * @param samples matrix where each row represents a sample and the columns
-   * contain the
-   * coordinates in all dimensions of that sample.
+   * contain the coordinates in all dimensions of that sample.
    * @param results vector where each row will contain the evaluation of the
-   * respective sample on
-   * the current model.
+   * respective sample on the current model.
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
    * Function that indicates whether a model is refinable at all (certain on/off
-   * settings do not
-   * allow for refinement)
+   * settings do not allow for refinement)
    * @return whether the model is refinable
    */
   bool isRefinable() override;

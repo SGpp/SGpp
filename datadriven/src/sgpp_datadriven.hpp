@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_HPP
-#define DATADRIVEN_HPP
+#pragma once
 
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
@@ -205,5 +204,3 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
-
-#endif /* DATADRIVEN_HPP */

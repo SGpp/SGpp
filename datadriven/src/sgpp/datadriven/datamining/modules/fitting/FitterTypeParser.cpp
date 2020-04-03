@@ -17,8 +17,7 @@ using sgpp::base::data_exception;
 
 FitterType FitterTypeParser::parse(const std::string &input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
-                 ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
 
   if (inputLower == "regressionleastsquares") {
     return FitterType::RegressionLeastSquares;
@@ -31,27 +30,21 @@ FitterType FitterTypeParser::parse(const std::string &input) {
   } else if (inputLower == "classification") {
     return FitterType::Classification;
   } else {
-    std::string errorMsg =
-        "Failed to convert string \"" + input + "\" to any known FitterType";
+    std::string errorMsg = "Failed to convert string \"" + input + "\" to any known FitterType";
     throw data_exception(errorMsg.c_str());
   }
 }
 
-const std::string &FitterTypeParser::toString(FitterType type) {
-  return fitterTypeMap.at(type);
-}
+const std::string &FitterTypeParser::toString(FitterType type) { return fitterTypeMap.at(type); }
 
 const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
   return FitterTypeParser::FitterTypeMap_t{
-      std::make_pair(FitterType::RegressionLeastSquares,
-                     "ModelFittingLeastSquares"),
-      std::make_pair(FitterType::DensityEstimation,
-                     "ModelFittingDensityEstimation"),
-      std::make_pair(FitterType::DensityRatioEstimation,
-                     "ModelFittingDensityRatioEstimation"),
+      std::make_pair(FitterType::RegressionLeastSquares, "ModelFittingLeastSquares"),
+      std::make_pair(FitterType::DensityEstimation, "ModelFittingDensityEstimation"),
+      std::make_pair(FitterType::DensityRatioEstimation, "ModelFittingDensityRatioEstimation"),
       std::make_pair(FitterType::DensityDifferenceEstimation,
-                     "ModelFittingDensityDifferenceEstimation")};
-  std::make_pair(FitterType::Classification, "ModelFittingClassification");
+                     "ModelFittingDensityDifferenceEstimation"),
+      std::make_pair(FitterType::Classification, "ModelFittingClassification")};
 }();
 
 } /* namespace datadriven */

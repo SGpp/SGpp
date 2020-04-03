@@ -21,23 +21,22 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(
-    const std::string& path) const {
+SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::string& path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
     // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(
-        createDataSourceCrossValidation(parser), createFitter(parser),
-        createScorer(parser), createVisualizer(parser));
+    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
+                                              createFitter(parser), createScorer(parser),
+                                              createVisualizer(parser));
   } else {
-    return new SparseGridMinerSplittingTwoDatasets(
-        createDataSourceSplitting_TwoDatasets(parser), createFitter(parser),
-        createScorer(parser), createVisualizer(parser));
+    return new SparseGridMinerSplittingTwoDatasets(createDataSourceSplittingTwoDatasets(parser),
+                                                   createFitter(parser), createScorer(parser),
+                                                   createVisualizer(parser));
   }
 }
 
 std::vector<DataSourceSplitting*>
-DensityRatioEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
+DensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets(
     const DataMiningConfigParser& parser) const {
   std::vector<DataSourceConfig> configs(2);
 
@@ -62,7 +61,7 @@ DensityRatioEstimationMinerFactory::createDataSourceSplitting_TwoDatasets(
 
 /*
  std::vector<DataSourceCrossValidation*>
- DensityRatioEstimationMinerFactory::createDataSourceCrossValidation_TwoDatasets(
+ DensityRatioEstimationMinerFactory::createDataSourceCrossValidationTwoDatasets(
  const DataMiningConfigParser& parser) const {
  DataSourceConfig config { };
 

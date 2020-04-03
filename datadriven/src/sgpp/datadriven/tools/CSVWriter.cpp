@@ -73,8 +73,7 @@ void CSVWriter::writeCSV(std::ostream& stream, const Dataset& dataset, bool hasT
 
     line = stringifyLine(rowEntries);
     stream << line;
-    if (hasTargets)
-      stream << "," << std::to_string(t.get(i));
+    if (hasTargets) stream << "," << std::to_string(t.get(i));
     stream << std::endl;
 
     rowIndex++;

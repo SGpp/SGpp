@@ -19,8 +19,7 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Concrete Factory that builds an instance of
- * #sgpp::datadriven::SparseGridMiner for Density
+ * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Density
  * Estimation
  */
 class DensityDifferenceEstimationMinerFactory : public MinerFactory {
@@ -32,53 +31,40 @@ class DensityDifferenceEstimationMinerFactory : public MinerFactory {
 
   /**
    * Factory method to build a miner object based on a configuration file.
-   * @param path Path to a configuration file that defines the structure of the
-   * miner object.
+   * @param path Path to a configuration file that defines the structure of the miner object.
    */
   SparseGridMiner* buildMiner(const std::string& path) const override;
 
-  // sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string
-  // &path) const override;
+  // sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
 
  private:
   /**
-   * Factory method to build a splitting based data source, i.e. a data source
-   * that splits
-   * data into validation and training data.
-   * @param parser the datamining configuration parser instance to create the
-   * data source from
+   * Factory method to build a splitting based data source, i.e. a data source that splits data into
+   * validation and training data.
+   * @param parser the datamining configuration parser instance to create the data source from
    * @return the data source instances (2 instances)
    */
-  std::vector<DataSourceSplitting*> createDataSourceSplitting_TwoDatasets(
+  std::vector<DataSourceSplitting*> createDataSourceSplittingTwoDatasets(
       const DataMiningConfigParser& parser) const override;
 
   /**
-   * Build an instance of a #sgpp::datadriven::ModelFittingBase object as
-   * specified in the
-   * configuration
-   * file.
-   * @param parser parser object that provides methods to query the
+   * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
    * configuration file.
-   * @return Fully configured fitter (instance of a
-   * #sgpp::datadriven::ModelFittingBase object) as
-   * specified in the
-   * configuration file.
+   * @param parser parser object that provides methods to query the configuration file.
+   * @return Fully configured fitter (instance of a #sgpp::datadriven::ModelFittingBase object) as
+   * specified in the configuration file.
    */
-  ModelFittingBase* createFitter(
-      const DataMiningConfigParser& parser) const override;
+  ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  FitterFactory* createFitterFactory(
-      const DataMiningConfigParser& parser) const override {
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override {
     throw base::application_exception("HPO is not enabled for this model");
   }
 
   /* Factory method to build a visualizer instance base on a configuration file.
-     * @param parser the datamining configuration parser instance to create the
-   * scorer from
-     * @return the scorer instance
-     */
-  Visualizer* createVisualizer(
-      const DataMiningConfigParser& parser) const override;
+   * @param parser the datamining configuration parser instance to create the scorer from
+   * @return the scorer instance
+   */
+  Visualizer* createVisualizer(const DataMiningConfigParser& parser) const override;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

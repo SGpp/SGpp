@@ -31,11 +31,10 @@ class DataSourceCrossValidation : public DataSource {
    * provider instance
    * @param sampleProvider the sample provider to operate on.
    */
-  DataSourceCrossValidation(
-      const DataSourceConfig& dataSourceConfig,
-      const CrossvalidationConfiguration& crossValidationconfig,
-      DataShufflingFunctorCrossValidation* shuffling,
-      SampleProvider* sampleProvider);
+  DataSourceCrossValidation(const DataSourceConfig& dataSourceConfig,
+                            const CrossvalidationConfiguration& crossValidationconfig,
+                            DataShufflingFunctorCrossValidation* shuffling,
+                            SampleProvider* sampleProvider);
 
   /**
    * Returns the data that is used for validation, i.e. the current fold.d If
@@ -64,8 +63,8 @@ class DataSourceCrossValidation : public DataSource {
 
   /**
    * Clean up memory
-  */
-  ~DataSourceCrossValidation() {
+   */
+  ~DataSourceCrossValidation() override {
     if (validationData != nullptr) {
       delete validationData;
     }

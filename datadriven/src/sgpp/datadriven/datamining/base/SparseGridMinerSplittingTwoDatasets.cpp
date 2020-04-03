@@ -16,8 +16,8 @@ namespace sgpp {
 namespace datadriven {
 
 SparseGridMinerSplittingTwoDatasets::SparseGridMinerSplittingTwoDatasets(
-    std::vector<DataSourceSplitting*> dataSource, ModelFittingBase* fitter,
-    Scorer* scorer, Visualizer* visualizer)
+    std::vector<DataSourceSplitting*> dataSource, ModelFittingBase* fitter, Scorer* scorer,
+    Visualizer* visualizer)
     : SparseGridMiner(fitter, scorer, visualizer),
       dataSourceP{dataSource[0]},
       dataSourceQ{dataSource[1]} {}
@@ -29,8 +29,7 @@ double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
   RefinementMonitor* monitor = monitorFactory.createRefinementMonitor(
       fitter->getFitterConfiguration().getRefinementConfig());
 
-  // We use only the parameters set for the first dataSource instance; Batching
-  // is not implemented
+  // We use only the parameters set for the first dataSource instance; Batching is not implemented
   for (size_t epoch = 0; epoch < dataSourceP->getConfig().epochs; epoch++) {
     if (verbose) {
       std::cout << "###############"
@@ -54,30 +53,25 @@ double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
       if (verbose) {
         std::cout << "###############"
                   << "Itertation #" << (iteration++) << std::endl
-                  << "Batch size: " << numInstancesP << ", " << numInstancesQ
-                  << std::endl;
+                  << "Batch size: " << numInstancesP << ", " << numInstancesQ << std::endl;
       }
       // Train model on new batch
       fitter->update(*datasetP, *datasetQ);
 
-      // Evaluate the score on the training and validation data, for each of the
-      // input datasets
+      // Evaluate the score on the training and validation data, for each of the input datasets
       // We average the scores of the two datasets
-      double avgScoreTrain = (scorer->test(*fitter, *datasetP) +
-                              scorer->test(*fitter, *datasetQ)) /
-                             2.;
-      double avgScoreVal =
-          (scorer->test(*fitter, *(dataSourceP->getValidationData())) +
-           scorer->test(*fitter, *(dataSourceQ->getValidationData()))) /
-          2.;
+      double avgScoreTrain =
+          (scorer->test(*fitter, *datasetP) + scorer->test(*fitter, *datasetQ)) / 2.;
+      double avgScoreVal = (scorer->test(*fitter, *(dataSourceP->getValidationData())) +
+                            scorer->test(*fitter, *(dataSourceQ->getValidationData()))) /
+                           2.;
 
       if (verbose) {
         std::cout << "Score on batch: " << avgScoreTrain << std::endl
                   << "Score on validation data: " << avgScoreVal << std::endl;
       }
       // Refine the model if neccessary
-      monitor->pushToBuffer(numInstancesP + numInstancesQ, avgScoreVal,
-                            avgScoreTrain);
+      monitor->pushToBuffer(numInstancesP + numInstancesQ, avgScoreVal, avgScoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
         fitter->adapt();
