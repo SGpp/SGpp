@@ -18,7 +18,7 @@ namespace datadriven {
 
 /**
  * Class that implements the virtual class OperationMatrix for the application of density estimation
- * for the Systemmatrix by using a density function for two input datasets
+ * for the Systemmatrix by using a density difference function for two input datasets
  */
 class DensityDifferenceSystemMatrix : public base::OperationMatrix {
  private:

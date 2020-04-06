@@ -23,8 +23,8 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Class that implements the virtual class base::OperationMatrix for the application of regression
- * for the SystemMatrixDRE
+ * Class that implements the virtual class base::OperationMatrix for the application of density
+ * ratio estimation for SystemMatrixDRE
  *
  * The Identity matrix is used as regularization operator.
  *

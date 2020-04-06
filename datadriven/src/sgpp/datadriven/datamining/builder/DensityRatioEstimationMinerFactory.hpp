@@ -20,8 +20,8 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Least Squares
- * Regression
+ * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Density Ratio
+ * Estimation
  */
 class DensityRatioEstimationMinerFactory : public MinerFactory {
  public:

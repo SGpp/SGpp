@@ -25,8 +25,8 @@ namespace datadriven {
 
 // TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid based regression with identity as
- * regularization.
+ * Fitter object that encapsulates the usage of sparse grid based density ratio estimation, based on
+ * the regression model with identity as regularization.
  *
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
@@ -130,8 +130,8 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.
   /**
-   * Factory function to build the System matrix for least squares regression with identity as
-   * regularization.
+   * Factory function to build the System matrix for density ratio estimation with identity as
+   * regularization
    */
   DMSystemMatrixDRE *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
                                        DataMatrix &trainDatasetQ, double lambda,

@@ -30,11 +30,6 @@
 #include <gsl/gsl_blas.h>
 #endif /* USE_GSL */
 
-// #ifdef USE_OPENCV
-// #include <flann/flann.hpp>
-// #include <opencv2/opencv.hpp>
-// #endif /* USE_OPENCV */
-
 #include <algorithm>
 #include <iostream>
 #include <list>

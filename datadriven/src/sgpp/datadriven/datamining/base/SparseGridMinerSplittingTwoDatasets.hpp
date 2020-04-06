@@ -79,10 +79,14 @@ class SparseGridMinerSplittingTwoDatasets : public SparseGridMiner {
 
  private:
   /**
-   * DataSource provides samples that will be used by fitter to generalize data and scorer to
-   * validate and assess model robustness.
+   * Sample source for first dataset. DataSource provides samples that will be used by fitter to
+   * generalize data and scorer to validate and assess model robustness.
    */
   std::unique_ptr<DataSourceSplitting> dataSourceP;
+  /**
+   * Sample source for second dataset. DataSource provides samples that will be used by fitter to
+   * generalize data and scorer to validate and assess model robustness.
+   */
   std::unique_ptr<DataSourceSplitting> dataSourceQ;
 };
 

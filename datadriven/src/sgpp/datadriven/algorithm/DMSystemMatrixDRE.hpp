@@ -16,8 +16,8 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Abstract class that defines the virtual class base::OperationMatrix for classification and
- * regression problems
+ * Abstract class that defines the virtual class base::OperationMatrix for the density ratio
+ * estimation problem
  */
 class DMSystemMatrixDRE : public base::OperationMatrix {
  protected:

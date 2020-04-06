@@ -29,8 +29,8 @@ namespace datadriven {
 
 // TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
- * regularization.
+ * Fitter object that encapsulates the usage of sparse grid density difference estimation with
+ * identity as regularization.
  *
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.

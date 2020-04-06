@@ -99,6 +99,7 @@ Visualizer* DensityRatioEstimationMinerFactory::createVisualizer(
   VisualizerConfiguration config;
   config.readParams(parser);
 
+  // TODO(spc90): implement visualization for this model
   return new VisualizerDummy();
 }
 

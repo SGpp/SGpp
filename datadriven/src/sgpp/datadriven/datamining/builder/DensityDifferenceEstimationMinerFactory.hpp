@@ -20,7 +20,7 @@ namespace datadriven {
 
 /**
  * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Density
- * Estimation
+ * Difference Estimation
  */
 class DensityDifferenceEstimationMinerFactory : public MinerFactory {
  public:

@@ -18,7 +18,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 
 #include <string>
 #include <vector>
@@ -106,7 +106,8 @@ Visualizer *DensityDifferenceEstimationMinerFactory::createVisualizer(
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  return new VisualizerDensityEstimation(config);
+  // TODO(spc90): implement visualization for this model
+  return new VisualizerDummy();
 }
 
 } /* namespace datadriven */
