@@ -150,6 +150,10 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyNaive.hpp>
 
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeModBsplineNaive.hpp>
+
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
@@ -460,8 +464,8 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
 
 base::OperationConvert* createOperationConvert(base::Grid& grid) {
   if (grid.getType() == base::GridType::Prewavelet) {
-    return new base::OperationConvertPrewavelet(grid.getStorage(),
-        dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage());
+    return new base::OperationConvertPrewavelet(
+        grid.getStorage(), dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage());
   } else {
     throw base::factory_exception("createOperationConvert is not implemented for this grid type.");
   }
@@ -500,8 +504,8 @@ base::OperationEval* createOperationEval(base::Grid& grid) {
     return new base::OperationEvalPeriodic(grid.getStorage());
   } else {
     throw base::factory_exception(
-        "createOperationEval is not implemented for this grid type. "
-        "Try createOperationEvalNaive instead.");
+        "createOperationEval is not implemented for this grid type. Try createOperationEvalNaive "
+        "instead.");
   }
 }
 
@@ -597,6 +601,23 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   }
 }
 
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+    base::Grid& grid, base::DataMatrix& dataset, size_t derivDim) {
+  if (grid.getType() == base::GridType::Bspline) {
+    return new base::OperationMultipleEvalPartialDerivativeBsplineNaive(
+        grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    return new base::OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive(
+        grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    return new base::OperationMultipleEvalPartialDerivativeModBsplineNaive(
+        grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalPartialDerivativeNaive is not implemented for this grid type.");
+  }
+}
+
 base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   if (grid.getType() == base::GridType::Linear) {
     return new base::OperationEvalLinearNaive(grid.getStorage());
@@ -634,8 +655,7 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalWaveletBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::FundamentalNakSplineBoundary) {
     return new base::OperationEvalFundamentalNakSplineNaive(
-        grid.getStorage(),
-        dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
@@ -681,12 +701,12 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
         dynamic_cast<base::WeaklyFundamentalSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::WeaklyFundamentalNakSplineBoundary) {
     return new base::OperationEvalWeaklyFundamentalNakSplineBoundaryNaive(
-        grid.getStorage(), dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).
-        getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::WeaklyFundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWeaklyFundamentalNakSpline) {
     return new base::OperationEvalModWeaklyFundamentalNakSplineNaive(
-        grid.getStorage(), dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).
-        getDegree());
+        grid.getStorage(),
+        dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEval and/or createOperationEvalNaive is not implemented for this grid "
@@ -718,8 +738,7 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
     return new base::OperationEvalGradientWaveletBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::FundamentalNakSplineBoundary) {
     return new base::OperationEvalGradientFundamentalNakSplineNaive(
-        grid.getStorage(),
-        dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalGradientFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
@@ -743,8 +762,7 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
         dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalGradientNakBsplineBoundaryNaive(
-        grid.getStorage(),
-        dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModNakBspline) {
     return new base::OperationEvalGradientModNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid&>(grid).getDegree());
@@ -778,8 +796,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
     return new base::OperationEvalHessianWaveletBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::FundamentalNakSplineBoundary) {
     return new base::OperationEvalHessianFundamentalNakSplineNaive(
-        grid.getStorage(),
-        dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalHessianFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
@@ -803,8 +820,7 @@ base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid) {
         dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalHessianNakBsplineBoundaryNaive(
-        grid.getStorage(),
-        dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModNakBspline) {
     return new base::OperationEvalHessianModNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid&>(grid).getDegree());
@@ -838,8 +854,7 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
     return new base::OperationEvalPartialDerivativeWaveletBoundaryNaive(grid.getStorage());
   } else if (grid.getType() == base::GridType::FundamentalNakSplineBoundary) {
     return new base::OperationEvalPartialDerivativeFundamentalNakSplineNaive(
-        grid.getStorage(),
-        dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::FundamentalNakSplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::FundamentalSpline) {
     return new base::OperationEvalPartialDerivativeFundamentalSplineNaive(
         grid.getStorage(), dynamic_cast<base::FundamentalSplineGrid&>(grid).getDegree());
@@ -863,15 +878,13 @@ base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(
         dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
     return new base::OperationEvalPartialDerivativeNakBsplineBoundaryNaive(
-        grid.getStorage(),
-        dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModNakBspline) {
     return new base::OperationEvalPartialDerivativeModNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
-        "createOperationEvalPartialDerivative is not implemented for "
-        "this grid type.");
+        "createOperationEvalPartialDerivative is not implemented for this grid type.");
   }
 }
 

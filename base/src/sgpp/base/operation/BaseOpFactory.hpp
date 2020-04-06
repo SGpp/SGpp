@@ -43,7 +43,7 @@ namespace op_factory {
  * @return Pointer to the new OperationMatrix object for the Grid grid
  */
 base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
-                                                               double multiplicationFactor = 0.25);
+                                               double multiplicationFactor = 0.25);
 /**
  * Factory method, returning an OperationHierarchisation for the grid at hand.
  * Note: object has to be freed after use.
@@ -51,12 +51,11 @@ base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationHierarchisation object for the Grid grid
  */
-base::OperationHierarchisation* createOperationHierarchisation(
-  base::Grid& grid);
+base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
 /**
  * Factory method, returning an OperationArbitraryBoundaryHierarchisation for the grid at hand.
- * Note: object has to be freed after use. This operation should be used if the boundary level
- * of your grid is larger than 1.
+ * Note: object has to be freed after use. This operation should be used if the boundary level of
+ * your grid is larger than 1.
  *
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationArbitraryBoundaryHierarchisation object for the Grid grid
@@ -97,8 +96,7 @@ base::OperationConvert* createOperationConvert(base::Grid& grid);
 /**
  * Factory method, returning an OperationIdentity for the grid at hand.
  * Note: object has to be freed after use.
- * Just calls OperationIdentity() independent of grid; factory method
- * provided for uniform use.
+ * Just calls OperationIdentity() independent of grid; factory method provided for uniform use.
  *
  * @return Pointer to the new OperationIdentity object
  */
@@ -116,43 +114,55 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
- * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
- * the sparse grid function
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
-    base::DataMatrix& dataset);
+                                                         base::DataMatrix& dataset);
 /**
  * Similar to createOperationMultipleEval, but makes use of interaction terms during evaluation
- * 
+ *
  * @param grid Grid which is to be used
- * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
- * the sparse grid function
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
  * @param interactions A list of Interaction the SG is reduced to
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
-base::OperationMultipleEval* createOperationMultipleEvalInter(base::Grid& grid,
-    base::DataMatrix& dataset, std::set<std::set<size_t>> interactions);
+base::OperationMultipleEval* createOperationMultipleEvalInter(
+    base::Grid& grid, base::DataMatrix& dataset, std::set<std::set<size_t>> interactions);
 
 /**
  * Factory method, returning an OperationMultipleEvalNaive for the grid at hand.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
- * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for
- * the sparse grid function
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
 base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
                                                               base::DataMatrix& dataset);
 
 /**
+ * Factory method, returning an OperationMultipleEvalPartialDerivativeNaive for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
+ * @param derivDim The partial derivative dimension
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+    base::Grid& grid, base::DataMatrix& dataset, size_t derivDim);
+
+/**
  * Factory method, returning an OperationEval for the grid at hand.
- * In contrast to OperationEval, implementations of OperationEval
- * returned by this function should
- * use a "naive" method for evaluating sparse grid functions, e.g. evaluate
- * all basis functions by brute force.
+ * In contrast to OperationEval, implementations of OperationEval returned by this function should
+ * use a "naive" method for evaluating sparse grid functions, e.g. evaluate all basis functions by
+ * brute force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
@@ -161,42 +171,39 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
 base::OperationEval* createOperationEvalNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalGradient for the grid at hand.
- * Implementations of OperationEvalGradientNaive returned by this function should
- * use a "naive" method for evaluating sparse grid function gradients, e.g. evaluate
- * all basis functions by brute force.
+ * Implementations of OperationEvalGradientNaive returned by this function should use a "naive"
+ * method for evaluating sparse grid function gradients, e.g. evaluate all basis functions by brute
+ * force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalGradient object for the Grid grid
  */
 
-base::OperationEvalGradient* createOperationEvalGradientNaive(
-  base::Grid& grid);
+base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalHessian for the grid at hand.
- * Implementations of OperationEvalHessianNaive returned by this function should
- * use a "naive" method for evaluating sparse grid function Hessians, e.g. evaluate
- * all basis functions by brute force.
+ * Implementations of OperationEvalHessianNaive returned by this function should use a "naive"
+ * method for evaluating sparse grid function Hessians, e.g. evaluate all basis functions by brute
+ * force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalHessian object for the Grid grid
  */
 
-base::OperationEvalHessian* createOperationEvalHessianNaive(
-  base::Grid& grid);
+base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalPartialDerivative for the grid at hand.
- * Implementations of OperationEvalPartialDerivativeNaive returned by this function should
- * use a "naive" method for evaluating sparse grid function partial derivatives, e.g. evaluate
- * all basis functions by brute force.
+ * Implementations of OperationEvalPartialDerivativeNaive returned by this function should use a
+ * "naive" method for evaluating sparse grid function partial derivatives, e.g. evaluate all basis
+ * functions by brute force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
  * @return Pointer to the new OperationEvalPartialDerivative object for the Grid grid
  */
-base::OperationEvalPartialDerivative*
-createOperationEvalPartialDerivativeNaive(base::Grid& grid);
+base::OperationEvalPartialDerivative* createOperationEvalPartialDerivativeNaive(base::Grid& grid);
 
 }  // namespace op_factory
 }  // namespace sgpp
