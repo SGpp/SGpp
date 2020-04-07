@@ -59,7 +59,7 @@ class LearnerSGDE : public datadriven::DensityEstimator {
    * @param adaptConfig adaptive refinement configuration
    * @param solverConfig solver configuration (CG)
    * @param regularizationConfig config for regularization operator
-   * @param crossvalidationConfig configuration for the cross validation
+   * @param crossValidationConfig configuration for the cross validation
    */
   LearnerSGDE(sgpp::base::RegularGridConfiguration& gridConfig,
               sgpp::base::AdaptivityConfiguration& adaptConfig,
