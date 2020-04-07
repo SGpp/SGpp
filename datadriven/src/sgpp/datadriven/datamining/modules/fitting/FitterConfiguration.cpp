@@ -4,6 +4,8 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
+#include <sgpp/datadriven/tools/DMConfigTools.hpp>
+
 #include <string>
 #include <vector>
 
@@ -101,10 +103,47 @@ datadriven::OperationMultipleEvalConfiguration &FitterConfiguration::getMultiple
       static_cast<const FitterConfiguration &>(*this).getMultipleEvalConfig());
 }
 
+void FitterConfiguration::dumpToStream(std::ostream &stream_out) const {
+  stream_out << "\n~~~ gridConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(gridConfig);
+
+  stream_out << "\n~~~ adaptConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(adaptConfig);
+
+  stream_out << "\n~~~ crossvalidationConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(crossvalidationConfig);
+
+  stream_out << "\n~~~ densityEstimationConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(densityEstimationConfig);
+
+  stream_out << "\n~~~ databaseConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(databaseConfig);
+
+  stream_out << "\n~~~ solverRefineConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(solverRefineConfig);
+
+  stream_out << "\n~~~ solverFinalConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(solverFinalConfig);
+
+  stream_out << "\n~~~ regularizationConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(regularizationConfig);
+
+  stream_out << "\n~~~ learnerConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(learnerConfig);
+
+  stream_out << "\n~~~ parallelConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(parallelConfig);
+
+  // For now these are not included
+  // stream_out << "\n~~~ geometryConfig ~~~\n" << std::endl;
+
+  // stream_out << "\n~~~ multipleEvalConfig ~~~\n" << std::endl;
+}
+
 void FitterConfiguration::setupDefaults() {
-  // (Sebastian Kreisel) The comments "mirrors struct default" are no longer
-  // applicable since all structs now have default values that (should)
-  // match the ones set here. The comments are kept for history / debugging.
+  // (Sebastian Kreisel) The comments "mirrors struct default" are no longer applicable since all
+  // structs now have default values that (should) match the ones set here. The comments are kept
+  // for history / debugging.
   gridConfig.type_ = sgpp::base::GridType::Linear;  // mirrors struct default
   gridConfig.dim_ = 0;
   gridConfig.level_ = 3;
@@ -121,7 +160,7 @@ void FitterConfiguration::setupDefaults() {
   adaptConfig.numRefinementPoints_ = 1;
   adaptConfig.numCoarseningPoints_ = 1;
   adaptConfig.coarsenInitialPoints_ = false;
-  adaptConfig.percent_ = 1.0;                     // mirrors struct default
+  adaptConfig.percent_ = 1.0;                      // mirrors struct default
   adaptConfig.errorBasedRefinement_ = false;       // mirrors struct default
   adaptConfig.errorConvergenceThreshold_ = 0.001;  // mirrors struct default
   adaptConfig.errorBufferSize_ = 3;                // mirrors struct default
@@ -129,7 +168,7 @@ void FitterConfiguration::setupDefaults() {
   adaptConfig.refinementPeriod_ = 1;               // mirrors struct default
   adaptConfig.refinementFunctorType_ =
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptConfig.coarseningFunctorType_ =         // mirrors struct default
+  adaptConfig.coarseningFunctorType_ =             // mirrors struct default
       sgpp::base::CoarseningFunctorType::Surplus;
   adaptConfig.precomputeEvaluations_ = true;                 // mirrors struct default
   adaptConfig.levelPenalize_ = false;                        // mirrors struct default
@@ -146,18 +185,18 @@ void FitterConfiguration::setupDefaults() {
   crossvalidationConfig.lambdaSteps_ = 0;
   crossvalidationConfig.logScale_ = false;
 
-  // (Sebastian) The following two values were previously set
-  // in the subclass FitterConfigurationDensityEstimation but were moved here
-  // to have all of the default value config in this file.
+  // (Sebastian) The following two values were previously set in the subclass
+  // FitterConfigurationDensityEstimation but were moved here to have all of the default value
+  // config in this file.
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
   // Offline permutation is used per default
   densityEstimationConfig.useOfflinePermutation_ = true;
 
-  densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default;
-  densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default;
-  densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default;
-  densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default;
+  densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default
+  densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default
+  densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default
+  densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default
 
   databaseConfig.filePath_ = "";
 
@@ -194,5 +233,6 @@ void FitterConfiguration::setupDefaults() {
   geometryConfig.dim_ = std::vector<std::vector<int64_t>>();
   geometryConfig.stencils_ = std::vector<sgpp::datadriven::StencilConfiguration>();
 }
+
 }  // namespace datadriven
 }  // namespace sgpp

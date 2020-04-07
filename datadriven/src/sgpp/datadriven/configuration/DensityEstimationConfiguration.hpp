@@ -8,8 +8,8 @@
 #include <sgpp/globaldef.hpp>
 
 /**
- * Struct that stores all the configuration information
- * for an offline object for matrix based density estimation
+ * Struct that stores all the configuration information for an offline object for matrix based
+ * density estimation
  */
 
 namespace sgpp {

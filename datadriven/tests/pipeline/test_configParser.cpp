@@ -21,6 +21,7 @@
 #include <vector>
 
 const auto datasetPath = "datadriven/tests/pipeline/config_configParser.json";
+const auto multiDatasetPath = "datadriven/tests/pipeline/config_multiDatasetConfigParser.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
@@ -101,6 +102,58 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   BOOST_CHECK_EQUAL(config.testNumBatches_, 2);
   BOOST_CHECK_EQUAL(config.testBatchSize_, 16);
   BOOST_CHECK_EQUAL(config.testIsCompressed_, false);
+}
+
+BOOST_AUTO_TEST_CASE(testMultiDataSourceConfig) {
+  DataMiningConfigParser parser{multiDatasetPath};
+
+  std::vector<DataSourceConfig> defaults(2);
+  defaults[0].filePath_ = "something/false";
+  defaults[0].fileType_ = DataSourceFileType::NONE;
+  defaults[0].isCompressed_ = true;
+  defaults[0].numBatches_ = 2;
+  defaults[0].batchSize_ = 10;
+  defaults[0].epochs_ = 1;
+  defaults[0].shuffling_ = DataSourceShufflingType::sequential;
+  defaults[0].validationPortion_ = 0.1;
+  defaults[0].randomSeed_ = 1337;
+
+  std::vector<DataSourceConfig> config(2);
+  bool hasConfig;
+  bool hasDataTransformationConfig;
+
+  hasConfig = parser.getMultiDataSourceConfig(config, defaults);
+  hasDataTransformationConfig = parser.hasDataTransformationConfig();
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
+  BOOST_CHECK_EQUAL(std::strcmp(config[0].filePath_.c_str(), "/path/to/some/file1.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].fileType_),
+                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config[0].numBatches_, 1);
+  BOOST_CHECK_EQUAL(config[0].batchSize_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].dataTransformationConfig_.type_),
+                    static_cast<int>(DataTransformationType::ROSENBLATT));
+  BOOST_CHECK_EQUAL(config[0].dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_,
+                    1000);
+  BOOST_CHECK_EQUAL(config[0].validationPortion_, 0.634);
+  BOOST_CHECK_EQUAL(config[0].epochs_, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].shuffling_),
+                    static_cast<int>(DataSourceShufflingType::random));
+
+  BOOST_CHECK_EQUAL(std::strcmp(config[1].filePath_.c_str(), "/path/to/some/file2.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].fileType_),
+                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config[1].numBatches_, 1);
+  BOOST_CHECK_EQUAL(config[1].batchSize_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].dataTransformationConfig_.type_),
+                    static_cast<int>(DataTransformationType::ROSENBLATT));
+  BOOST_CHECK_EQUAL(config[1].dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_,
+                    1000);
+  BOOST_CHECK_EQUAL(config[1].validationPortion_, 0.634);
+  BOOST_CHECK_EQUAL(config[1].epochs_, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].shuffling_),
+                    static_cast<int>(DataSourceShufflingType::random));
 }
 
 BOOST_AUTO_TEST_CASE(testScorerConfig) {

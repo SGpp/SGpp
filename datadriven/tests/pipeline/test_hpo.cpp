@@ -45,9 +45,13 @@ class ModelFittingTester : public sgpp::datadriven::ModelFittingBase {
 
   void fit(Dataset &dataset) override {}
 
+  void fit(Dataset &, Dataset &) override {}
+
   bool adapt() override { return false; }
 
   void update(Dataset &dataset) override {}
+
+  void update(Dataset &, Dataset &) override {}
 
   void reset() override {}
 
@@ -125,6 +129,7 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
   // sgpp::datadriven::DataSourceConfig config;
   // parser.getDataSourceConfig(config, config);
   sgpp::datadriven::LeastSquaresRegressionMinerFactory minfac{};
+
   sgpp::datadriven::BoHyperparameterOptimizer bohpo(minfac.buildMiner(path),
                                                     new FitterFactoryTester(), parser);
   sgpp::datadriven::HarmonicaHyperparameterOptimizer harmhpo(minfac.buildMiner(path),
@@ -138,8 +143,8 @@ BOOST_AUTO_TEST_CASE(upperLevelTest) {
 }
 
 BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
-  // tests the bit management, especially setParameters and addConstraint by comparing
-  // to a vector of all possible bit configurations
+  // tests the bit management, especially setParameters and addConstraint by comparing to a vector
+  // of all possible bit configurations
   std::mt19937 generator(34);
   FitterFactoryTesterHarm fft{};
   HarmonicaTester harmonica(&fft);
@@ -181,12 +186,12 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
 
       constraints.emplace_back(harmonica.getParityrow()[consid], bias);
       /*
-      std::cout << "New Bit: ";
-      for(auto &bit : harmonica.getParityrow()[consid]){
-        std::cout << bit->getName() << ",";
-      }
-      std::cout << "Bias: " << bias << std::endl;
-      */
+       std::cout << "New Bit: ";
+       for(auto &bit : harmonica.getParityrow()[consid]){
+       std::cout << bit->getName() << ",";
+       }
+       std::cout << "Bias: " << bias << std::endl;
+       */
       int cnttrue = 0;
 
       for (int k = 0; k < 4096; ++k) {
@@ -214,13 +219,14 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
         }
       }
       bool added = harmonica.addConstraint(consid, bias);  // if not added, freebits broken
-      /*
-      std::cout << "Counter true: " << cnttrue << " | Added: "<< added <<std::endl;
-      for (auto &bit : fft.exconfBits) {
-        std::cout << bit.getName() << ": " << bit.getValue() << ", ";
-      }
-      std::cout << std::endl;
-      */
+                                                           /*
+                                                            std::cout << "Counter true: " << cnttrue << " | Added: "<< added
+                                                            <<std::endl;
+                                                            for (auto &bit : fft.exconfBits) {
+                                                            std::cout << bit.getName() << ": " << bit.getValue() << ", ";
+                                                            }
+                                                            std::cout << std::endl;
+                                                            */
       // either all, none or half are viable
       BOOST_CHECK(((!added) == (cnttrue == 0)));
       BOOST_CHECK((added == (cnttrue == nIDs || 2 * cnttrue == nIDs)));
@@ -236,7 +242,8 @@ BOOST_AUTO_TEST_CASE(harmonicaConfigs) {
 }
 
 BOOST_AUTO_TEST_CASE(DistanceCalculation) {
-  // comparing the two methods of calculating distance in bayesian optimization, should be equal
+  // Comparing the two methods of calculating distance in bayesian optimization.
+  // Should be equal
   std::mt19937 generator(123);
   std::uniform_real_distribution<double> rand(0.0, 1.0);
   std::vector<int> discOptions = {2, 3};
@@ -311,7 +318,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
     kernelmatrix.getColumn(i, kernelrow);
     BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
     BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
-    // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
+    // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |
+    // Original: "
     // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
 
@@ -344,8 +352,8 @@ BOOST_AUTO_TEST_CASE(addSamplesGP) {
     kernelmatrix.getColumn(i, kernelrow);
     BOOST_CHECK_CLOSE(bo.mean(kernelrow), dscores[i], 1e-5);
     BOOST_CHECK_CLOSE(bo.var(kernelrow, 1), 0, 1e-5);
-    // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |  Original: "
-    // << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
+    // std::cout << "Mean " << i << ": " << bo.mean(kernelrow) << "  |
+    // Original: " << dscores[i] << " | Var: " << bo.var(kernelrow, 1) <<std::endl;
   }
 }
 
@@ -359,7 +367,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
   size_t nCont = 6;
   BOConfig prototype{&discOptions, &catOptions, nCont};
 
-  DataVector scores{-0.1, 0.1};
+  DataVector scores{std::vector<double>({-0.1, 0.1})};
 
   initialConfigs.reserve(scores.size());
 
@@ -374,6 +382,7 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
   sgpp::datadriven::BayesianOptimization fitprocess(initialConfigs);
 
   DataVector scales{1, 0.1, 0.3, 0.4, 0.01, 0.9, 0.2, 0.8, 1, 0.5, 0.3};
+
   scales.resize(prototype.getNPar() + 1);
   genprocess.setScales(scales, 1);
   DataVector avscales(scales.size(), 1);
@@ -405,8 +414,10 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
     avscales.mult(0.9);
     avscales.add(fitscales);
     avscales.sub(scales);
-    // std::cout << "################################ AvDiff: " << avscales.l2Norm()
-    // << " | Max Norm: " << avscales.maxNorm() << " | size ratio: " << sizeratio << std::endl;
+    // std::cout << "################################ AvDiff: " <<
+    // avscales.l2Norm()
+    // << " | Max Norm: " << avscales.maxNorm() << " | size ratio: " <<
+    // sizeratio << std::endl;
     if (j > 90) {
       // difference is allowed to rise with the squareroot of the dimensionality
       BOOST_CHECK_LE(avscales.l2Norm(), sqrt(static_cast<double>(prototype.getNPar() + 1)) * 0.25);
@@ -416,7 +427,8 @@ BOOST_AUTO_TEST_CASE(fitScalesGP) {
 }
 
 BOOST_AUTO_TEST_CASE(validAcquisitionFunction) {
-  // testing acquisition function for monotonicity with respect to mean and variance
+  // testing acquisition function for monotonicity with respect to mean and
+  // variance
   // not every acquisition function fullfills this but expected improvement does
   std::mt19937 generator(123);
   std::uniform_real_distribution<double> ranvar(0.0, 1.0);

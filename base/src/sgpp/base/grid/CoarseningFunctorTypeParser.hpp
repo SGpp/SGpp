@@ -12,13 +12,11 @@
 
 namespace sgpp {
 namespace base {
-using sgpp::base::CoarseningFunctorType;
 
 class CoarseningFunctorTypeParser {
  public:
   /**
-   * Convert strings to values #sgpp::base::CoarseningFunctorType. Throws if
-   * there is no valid
+   * Convert strings to values #sgpp::base::CoarseningFunctorType. Throws if there is no valid
    * representation
    * @param input case insensitive string representation of a
    * #sgpp::base::CoarseningFunctorType.
@@ -35,13 +33,11 @@ class CoarseningFunctorTypeParser {
   static const std::string& toString(CoarseningFunctorType type);
 
  private:
-  typedef std::map<CoarseningFunctorType, std::string>
-      CoarseningFunctorTypeMap_t;
+  typedef std::map<CoarseningFunctorType, std::string> CoarseningFunctorTypeMap_t;
 
   /**
-   * Map containing all values of #sgpp::base::CoarseningFunctorType and the
-   * corresponding
-   * string representation.
+   * Map containing all values of #sgpp::base::CoarseningFunctorType and the corresponding string
+   * representation.
    */
   static const CoarseningFunctorTypeMap_t coarseningFunctorTypeMap;
 };

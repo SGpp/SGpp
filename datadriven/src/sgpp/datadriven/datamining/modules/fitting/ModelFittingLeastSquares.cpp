@@ -75,12 +75,14 @@ bool ModelFittingLeastSquares::adapt() {
       GeometryConfiguration geometryConfig = config->getGeometryConfig();
       if (!geometryConfig.stencils_.empty()) {
         GridFactory gridFactory;
-        grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geometryConfig));
+        grid->getGenerator().refineInter(refinementFunctor,
+                                         gridFactory.getInteractions(geometryConfig));
       } else {
         grid->getGenerator().refine(refinementFunctor);
       }
+
       if (grid->getSize() > noPoints) {
-        // Tell the SLE manager that the grid changed (for interal data structures)
+        // Tell the SLE manager that the grid changed (for internal data structures)
         alpha.resizeZero(grid->getSize());
 
         assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);

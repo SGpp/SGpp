@@ -23,6 +23,10 @@ FitterType FitterTypeParser::parse(const std::string &input) {
     return FitterType::RegressionLeastSquares;
   } else if (inputLower == "densityestimation") {
     return FitterType::DensityEstimation;
+  } else if (inputLower == "densityratioestimation") {
+    return FitterType::DensityRatioEstimation;
+  } else if (inputLower == "densitydifferenceestimation") {
+    return FitterType::DensityDifferenceEstimation;
   } else if (inputLower == "classification") {
     return FitterType::Classification;
   } else {
@@ -37,7 +41,11 @@ const FitterTypeParser::FitterTypeMap_t FitterTypeParser::fitterTypeMap = []() {
   return FitterTypeParser::FitterTypeMap_t{
       std::make_pair(FitterType::RegressionLeastSquares, "ModelFittingLeastSquares"),
       std::make_pair(FitterType::DensityEstimation, "ModelFittingDensityEstimation"),
+      std::make_pair(FitterType::DensityRatioEstimation, "ModelFittingDensityRatioEstimation"),
+      std::make_pair(FitterType::DensityDifferenceEstimation,
+                     "ModelFittingDensityDifferenceEstimation"),
       std::make_pair(FitterType::Classification, "ModelFittingClassification")};
 }();
+
 } /* namespace datadriven */
 } /* namespace sgpp */

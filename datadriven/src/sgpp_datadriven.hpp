@@ -3,12 +3,12 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_HPP
-#define DATADRIVEN_HPP
+#pragma once
 
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
@@ -138,6 +138,7 @@
  * ************************/
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
@@ -184,6 +185,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
@@ -200,5 +204,3 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
-
-#endif /* DATADRIVEN_HPP */

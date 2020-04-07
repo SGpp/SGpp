@@ -9,9 +9,11 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 #include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
+
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -27,7 +29,13 @@ class DataMiningConfigParser;
 /**
  * Different fitter scenarios have different default values and support different operations
  */
-enum class FitterType { RegressionLeastSquares, DensityEstimation, Classification };
+enum class FitterType {
+  RegressionLeastSquares,
+  DensityEstimation,
+  DensityRatioEstimation,
+  DensityDifferenceEstimation,
+  Classification
+};
 
 /**
  * General configuration object for fitters. Bundles all structures needed to build a sparse grid,
@@ -102,8 +110,8 @@ class FitterConfiguration {
   const datadriven::DensityEstimationConfiguration &getDensityEstimationConfig() const;
 
   /**
-   * Get configuration for the linear system solver which should be used while building
-   * adaptive grids
+   * Get configuration for the linear system solver which should be used while building adaptive
+   * grids
    * @return immutable SLESolverConfiguration
    */
   const solver::SLESolverConfiguration &getSolverRefineConfig() const;
@@ -211,6 +219,11 @@ class FitterConfiguration {
    * @param parser: the parser object to read from
    */
   virtual void readParams(const DataMiningConfigParser &parser) = 0;
+
+  /**
+   * print out all parameters to stream
+   */
+  void dumpToStream(std::ostream &stream_out = std::cout) const;
 
  protected:
   /**

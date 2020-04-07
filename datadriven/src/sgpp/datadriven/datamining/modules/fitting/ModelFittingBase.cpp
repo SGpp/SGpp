@@ -39,6 +39,7 @@ ModelFittingBase::ModelFittingBase()
       interactions{nullptr},
       config{nullptr},
       dataset{nullptr},
+      extraDataset{nullptr},
       solver{nullptr} {}
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
