@@ -72,6 +72,7 @@ bool ModelFittingLeastSquares::adapt() {
           config->getRefinementConfig().refinementThreshold_);
       // refine grid
       auto noPoints = grid->getSize();
+
       GeometryConfiguration geoConf = config->getGeometryConfig();
       if (!geoConf.stencils.empty()) {
         GridFactory gridFactory;
@@ -79,8 +80,9 @@ bool ModelFittingLeastSquares::adapt() {
       } else {
         grid->getGenerator().refine(refinementFunctor);
       }
+
       if (grid->getSize() > noPoints) {
-        // Tell the SLE manager that the grid changed (for interal data structures)
+        // Tell the SLE manager that the grid changed (for internal data structures)
         alpha.resizeZero(grid->getSize());
 
         assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);

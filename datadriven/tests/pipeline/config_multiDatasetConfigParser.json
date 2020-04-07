@@ -1,0 +1,24 @@
+{
+	"dataSource": {
+		"filePath": ["/path/to/some/file1.arff",
+		             "/path/to/some/file2.arff"],
+		"fileType": "arff",
+		"compression": false,
+		"numBatches": 1,
+		"batchSize": 0,
+		"dataTransformation": {
+			"type": "rosenblatt",
+			"rosenblattConfig": {
+				"numSamples": 1000,
+				"gridLevel": 2,
+				"solverMaxIterations": 1000,
+				"solverEps": 1e-10,
+				"solverThreshold": 1e-10
+			}
+		},
+		"validationPortion" : 0.634,
+		"epochs" : 12,
+		"shuffling" : "random",
+		"randomSeed" : 37
+	}
+}

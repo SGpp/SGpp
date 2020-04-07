@@ -49,12 +49,12 @@ std::vector<size_t> DBMatOnline::updateSystemMatrixDecomposition(
     double lambda) {
   if (!getOfflineObject().isRefineable()) {
     throw base::not_implemented_exception(
-        "Attempted to update system matrix on decomposition "
-        "that doesn't support it.");
+        "Attempted to update system matrix on decomposition that doesn't "
+        "support it.");
   }
   throw base::application_exception(
-      "Decomposition reports refineable but does not "
-      "override updateSystemMatrixDecomposition()");
+      "Decomposition reports refineable but does not override "
+      "updateSystemMatrixDecomposition()");
 }
 
 }  // namespace datadriven

@@ -14,7 +14,6 @@ namespace datadriven {
 struct LearnerConfiguration {
   /**
   * Weigting factor for older batches
-  * TODO(fuchsgruber): This is not yet part of DBMatOnlineDE and also not the CG Model
   */
   double learningRate = 1.0;
 
