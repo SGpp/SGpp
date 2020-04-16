@@ -86,8 +86,7 @@ int main(int argc, char** argv) {
     grid = std::unique_ptr<sgpp::base::Grid>{sgpp::base::Grid::createLinearGrid(gridConfig.dim_)};
   } else {
     throw sgpp::base::algorithm_exception(
-        "LearnerBase::InitializeGrid: An unsupported grid type "
-        "was chosen!");
+        "An unsupported grid type was chosen!");
   }
 
   sgpp::base::GridGenerator& gridGen = grid->getGenerator();

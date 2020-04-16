@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 
 #include <string>
 
@@ -18,15 +19,15 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for Least Squares
- * Regression
+ * Concrete Factory that builds an instance of #sgpp::datadriven::SparseGridMiner for
+ * Density-Derivative-Ratio Estimation
  */
-class LeastSquaresRegressionMinerFactory : public MinerFactory {
+class DensityDerivativeRatioEstimationMinerFactory : public MinerFactory {
  public:
   /**
    * Default constructor
    */
-  LeastSquaresRegressionMinerFactory() = default;
+  DensityDerivativeRatioEstimationMinerFactory() = default;
 
  private:
   /**
@@ -38,7 +39,15 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
+  /**
+   * Method that checks whether the parameters given allow for the fitter to be applicable. Will
+   * throw if conditions are not met.
+   */
+  void sanityCheck(const FitterConfigurationLeastSquares& config) const;
+
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override {
+    throw base::application_exception("HPO is not enabled for this model");
+  }
 
   /* Factory method to build a visualizer instance base on a configuration file.
    * @param parser the datamining configuration parser instance to create the scorer from

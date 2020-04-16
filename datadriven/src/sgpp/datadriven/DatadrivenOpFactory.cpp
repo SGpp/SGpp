@@ -140,16 +140,16 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
              grid.getType() == base::GridType::LinearBoundary) {
     return new datadriven::OperationTestLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return new datadriven::OperationTestModBspline(&grid.getStorage(),
-        dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+    return new datadriven::OperationTestModBspline(
+        &grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new datadriven::OperationTestModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new datadriven::OperationTestPoly(&grid.getStorage(),
-        dynamic_cast<base::PolyGrid&>(grid).getDegree());
+                                             dynamic_cast<base::PolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new datadriven::OperationTestModPoly(&grid.getStorage(),
-        dynamic_cast<base::ModPolyGrid&>(grid).getDegree());
+                                                dynamic_cast<base::ModPolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return new datadriven::OperationTestModWavelet(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
@@ -433,7 +433,15 @@ base::OperationMultipleEval* createOperationMultipleEval(
 
   // can now assume that MPI type is NONE
   if (configuration.getType() == sgpp::datadriven::OperationMultipleEvalType::DEFAULT) {
-    return createOperationMultipleEval(grid, dataset);
+    // For Bspline bases, we need to call the naive implementation
+    if (grid.getType() == base::GridType::Bspline ||
+        grid.getType() == base::GridType::BsplineBoundary ||
+        grid.getType() == base::GridType::BsplineClenshawCurtis) {
+      return createOperationMultipleEvalNaive(grid, dataset);
+    } else {
+      // For linear and poly bases,
+      return createOperationMultipleEval(grid, dataset);
+    }
   }
 
   if (grid.getType() == base::GridType::Linear) {

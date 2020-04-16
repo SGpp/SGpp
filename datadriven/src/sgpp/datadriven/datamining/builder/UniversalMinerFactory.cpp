@@ -17,6 +17,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeRatioEstimation.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerClassification.hpp>
@@ -43,6 +46,18 @@ ModelFittingBase *UniversalMinerFactory::createFitter(const DataMiningConfigPars
 #else
     model = new ModelFittingDensityEstimationOnOff(config);
 #endif /* USE_SCALAPACK */
+  } else if (fType == FitterType::DensityDifferenceEstimation) {
+    FitterConfigurationDensityEstimation config{};
+    config.readParams(parser);
+    model = new ModelFittingDensityDifferenceEstimationOnOff(config);
+  } else if (fType == FitterType::DensityRatioEstimation) {
+    FitterConfigurationLeastSquares config{};
+    config.readParams(parser);
+    model = new ModelFittingDensityRatioEstimation(config);
+  } else if (fType == FitterType::DensityDerivativeRatioEstimation) {
+    FitterConfigurationLeastSquares config{};
+    config.readParams(parser);
+    model = new ModelFittingDensityDerivativeRatioEstimation(config);
   } else if (fType == FitterType::RegressionLeastSquares) {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);

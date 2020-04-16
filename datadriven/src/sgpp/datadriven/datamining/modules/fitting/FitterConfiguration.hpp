@@ -34,6 +34,7 @@ enum class FitterType {
   DensityEstimation,
   DensityRatioEstimation,
   DensityDifferenceEstimation,
+  DensityDerivativeRatioEstimation,
   Classification
 };
 

@@ -136,8 +136,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationCG::computeResidual() is not "
-        "implemented!");
+        "ModelFittingDensityEstimationCG::computeResidual() is not implemented!");
   }
 
   /**
@@ -147,8 +146,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationCG::updateRegularization() is not "
-        "implemented!");
+        "ModelFittingDensityEstimationCG::updateRegularization() is not implemented!");
   }
 
  private:

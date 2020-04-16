@@ -153,6 +153,7 @@ class DMConfigTools {
                << std::endl;
     stream_out << "iCholSweepsSolver \t\t" << densityEstimationConfig.iCholSweepsSolver_
                << std::endl;
+    stream_out << "derivDim \t\t" << densityEstimationConfig.derivDim_ << std::endl;
   }
 
   static void dumpToStream(const DatabaseConfiguration& databaseConfig,

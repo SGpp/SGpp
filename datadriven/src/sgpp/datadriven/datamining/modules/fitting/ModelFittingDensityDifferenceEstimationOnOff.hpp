@@ -134,8 +134,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::computeResidual() is "
-        "not implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::computeResidual() is not implemented!");
   }
 
   /**
@@ -145,8 +144,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() "
-        "is not implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() is not implemented!");
   }
 
   /**
@@ -154,8 +152,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   void resetTraining() override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::resetTraining() is not "
-        "implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::resetTraining() is not implemented!");
   }
 
  private:

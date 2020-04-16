@@ -37,6 +37,9 @@ struct DensityEstimationConfiguration {
   size_t iCholSweepsRefine_ = 4;
   size_t iCholSweepsUpdateLambda_ = 2;
   size_t iCholSweepsSolver_ = 2;
+
+  // Partial derivative direction for derivative-based density estimation
+  size_t derivDim_ = 0;
 };
 
 }  // namespace datadriven
