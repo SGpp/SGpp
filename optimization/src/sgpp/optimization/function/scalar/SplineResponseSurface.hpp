@@ -5,6 +5,10 @@
 
 #pragma once
 
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <memory>
 #include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
@@ -25,11 +29,6 @@
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
 #include <sgpp/optimization/optimizer/unconstrained/GradientDescent.hpp>
-
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <memory>
 
 namespace sgpp {
 namespace optimization {
@@ -170,6 +169,70 @@ class SplineResponseSurface : public ResponseSurface {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
     }
     calculateInterpolationCoefficients();
+    interpolant =
+        std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
+    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+        *grid, coefficients);
+  }
+
+  /**
+   * Constructor
+   *
+   * @param objectiveFunc		objective Function
+   * @param gridType			type of the interpolants grid/basis
+   * @param degree				degree of the interpolants basis
+   */
+  SplineResponseSurface(std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
+                        sgpp::base::DataVector lb, sgpp::base::DataVector ub, size_t degree = 3)
+      : ResponseSurface(grid->getDimension()),
+        degree(degree),
+        grid(grid),
+        coefficients(coefficients) {
+    this->lb = lb;
+    this->ub = ub;
+    // dummy values for mean and variance
+    mean = 777;
+    variance = -1;
+    computedMeanFlag = false;
+    unitLBounds = sgpp::base::DataVector(numDim, 0.0);
+    unitUBounds = sgpp::base::DataVector(numDim, 1.0);
+    gridType = grid->getType();
+    if (gridType == sgpp::base::GridType::Bspline) {
+      basis = std::make_unique<sgpp::base::SBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineBoundary) {
+      basis = std::make_unique<sgpp::base::SBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModBspline) {
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::BsplineClenshawCurtis) {
+      basis = std::make_unique<sgpp::base::SBsplineClenshawCurtisBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::FundamentalSpline) {
+      basis = std::make_unique<sgpp::base::SFundamentalSplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::ModFundamentalSpline) {
+      basis = std::make_unique<sgpp::base::SFundamentalSplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBspline) {
+      basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
+      basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModNakBspline) {
+      basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
+      basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::NakPBspline) {
+      basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
+      boundary = false;
+    } else {
+      throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
+    }
     interpolant =
         std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
     interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
