@@ -58,6 +58,7 @@ class SystemMatrixDensityDerivativeRatioEstimation : public datadriven::DMSystem
    * @param SparseGrid reference to the sparse grid
    * @param trainData reference to base::DataMatrix that contains the training data
    * @param lambda the lambda, the regression parameter
+   * @param derivDim direction along which to compute the derivative
    */
   SystemMatrixDensityDerivativeRatioEstimation(base::Grid& SparseGrid, base::DataMatrix& trainData,
                                                double lambda, size_t derivDim);
