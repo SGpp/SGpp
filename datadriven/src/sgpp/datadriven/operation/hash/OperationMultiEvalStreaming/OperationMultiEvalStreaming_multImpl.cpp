@@ -409,7 +409,11 @@ void OperationMultiEvalStreaming::multImpl(
         eval_11 = _mm512_castsi512_pd(_mm512_and_epi64(abs2Mask, _mm512_castpd_si512(eval_11)));
 #endif
 
+#if defined(__MIC__)
         __m512d one = _mm512_set_1to8_pd(1.0);
+#else
+        __m512d one = _mm512_set1_pd(1.0);
+#endif
 
         eval_0 = _mm512_sub_pd(one, eval_0);
         eval_1 = _mm512_sub_pd(one, eval_1);
