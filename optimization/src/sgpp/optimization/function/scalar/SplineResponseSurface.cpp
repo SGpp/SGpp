@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
-
 #include <algorithm>
+#include <sgpp/optimization/function/scalar/SplineResponseSurface.hpp>
 
 namespace sgpp {
 namespace optimization {
@@ -162,7 +161,8 @@ void SplineResponseSurface::calculateInterpolationCoefficients() {
     transformPoint(p, unitLBounds, unitUBounds, lb, ub);
     functionValues[i] = objectiveFunc->eval(p);
   }
-  sgpp::base::sle_solver::Armadillo sleSolver;
+  // sgpp::base::sle_solver::Armadillo sleSolver;
+  sgpp::base::sle_solver::Eigen sleSolver;
   sgpp::base::Printer::getInstance().setVerbosity(-1);
   sgpp::base::HierarchisationSLE hierSLE(*grid);
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {

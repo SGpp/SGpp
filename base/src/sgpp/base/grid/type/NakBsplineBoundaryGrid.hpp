@@ -36,7 +36,7 @@ class NakBsplineBoundaryGrid : public Grid {
    *                      1 means same level,
    *                      2 means one level coarser, etc.
    */
-  NakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 0);
+  NakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
 
   /**
    * Destructor.
