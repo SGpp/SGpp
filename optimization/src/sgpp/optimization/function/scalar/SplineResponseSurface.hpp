@@ -45,10 +45,13 @@ class SplineResponseSurface : public ResponseSurface {
    * @param objectiveFunc		objective Function
    * @param gridType			type of the interpolants grid/basis
    * @param degree				degree of the interpolants basis
+   * 
+   * Note: Currently boundaryLevel is only available for gridType nakBsplineBoundary
    */
   SplineResponseSurface(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                         sgpp::base::DataVector lb, sgpp::base::DataVector ub,
-                        sgpp::base::GridType gridType, size_t degree = 3)
+                        sgpp::base::GridType gridType, size_t degree = 3, 
+                        size_t boundaryLevel = 1)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
         gridType(gridType),
@@ -90,7 +93,7 @@ class SplineResponseSurface : public ResponseSurface {
       basis = std::make_unique<sgpp::base::SNakBsplineBase>(degree);
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakBsplineBoundary) {
-      grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
+      grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree, boundaryLevel);
       basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
       boundary = true;
     } else if (gridType == sgpp::base::GridType::ModNakBspline) {
