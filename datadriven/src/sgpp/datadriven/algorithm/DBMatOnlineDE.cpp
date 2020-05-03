@@ -155,7 +155,7 @@ void DBMatOnlineDE::computeDensityDerivativeFunction(
       for (size_t i = 0; i < b.size(); i++) {
         // In general: (-1)^|j| / M
         // For first derivative: |j| = 1
-        // -1 / M * Bt * 1
+        // (1. / M) * Bt * (-1)
         // bSave NEEDS to already contain the sign!!!
         b.set(i, bSave.get(i) * (1. / bTotalPoints.get(i)));
       }
@@ -640,7 +640,7 @@ DataVector DBMatOnlineDE::computeWeightedDerivativeBFromBatch(
 
     // Decide if we want to have the final weighted b, or just the simple eval
     if (weighted) {
-      // (1. / M) * Bt * 1
+      // (1. / M) * Bt * 1 * (-1)^|j|
       b.mult(1. / static_cast<double>(numberOfPoints));
     }
 
@@ -712,7 +712,7 @@ DataVectorDistributed DBMatOnlineDE::computeWeightedBFromBatchParallel(
 
     // Decide if we want to have the final weighted b, or just the simple eval
     if (weighted) {
-      // 1/M * (Bt * 1)
+      // (1. / M) * Bt * 1
       b.scale(1. / static_cast<double>(numberOfPoints));
     }
 

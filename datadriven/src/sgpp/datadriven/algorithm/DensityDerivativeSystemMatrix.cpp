@@ -55,18 +55,19 @@ void DensityDerivativeSystemMatrix::mult(sgpp::base::DataVector& alpha,
 
 // Matrix-Multiplikation verwenden
 void DensityDerivativeSystemMatrix::generateb(sgpp::base::DataVector& rhs) {
+  // Compute unweighted rhs; contains the sign!!!
   computeUnweightedRhs(rhs);
 
-  // In general: (-1)^|j| / M
-  // For first derivative: |j| = 1
-  // -1 / M * Bt * 1
-  rhs.mult(-1. / static_cast<double>(numSamples));
+  // 1 / M * Bt * (-1)
+  rhs.mult(1. / static_cast<double>(numSamples));
 }
 
 void DensityDerivativeSystemMatrix::computeUnweightedRhs(sgpp::base::DataVector& b) {
   sgpp::base::DataVector y(numSamples);
-  y.setAll(1.0);
-  // Bt * 1
+  // In general: (-1)^|j| / M
+  // For first derivative: |j| = 1
+  // Bt * (-1)
+  y.setAll(-1.0);
   B->multTranspose(y, b);
 }
 
