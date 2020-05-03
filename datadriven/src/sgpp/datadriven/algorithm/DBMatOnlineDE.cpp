@@ -53,7 +53,6 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
       lambda(lambda) {
   functionComputed = false;
   oDim = grid.getDimension();
-  derivDim = 0;  // default to first variable
 }
 
 void DBMatOnlineDE::updateRhs(size_t gridSize, std::vector<size_t>& deletedPoints) {
@@ -312,11 +311,8 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
 
 void DBMatOnlineDE::computeDensityDerivativeFunction(
     DataVector& alpha, DataMatrix& m, Grid& grid,
-    DensityEstimationConfiguration& densityEstimationConfig, size_t derivDim, bool save_b,
-    bool do_cv) {
+    DensityEstimationConfiguration& densityEstimationConfig, bool save_b, bool do_cv) {
   // ---
-  this->derivDim = derivDim;  // update derivDim first
-
   if (!localVectorsInitialized) {
     // init bsave and bTotalPoints only here, as they are not needed in the parallel version
     bSave = DataVector(offlineObject.getDecomposedMatrix().getNcols(), 0.0);
@@ -327,8 +323,7 @@ void DBMatOnlineDE::computeDensityDerivativeFunction(
 
   if (m.getNrows() > 0) {
     // b NEEDS to contain the sign!!! (- for odd order derivatives; + for even order derivatives)
-    DataVector b =
-        computeWeightedDerivativeBFromBatch(m, grid, densityEstimationConfig, derivDim, false);
+    DataVector b = computeWeightedDerivativeBFromBatch(m, grid, densityEstimationConfig, false);
     size_t numberOfPoints = m.getNrows();
 
     if (save_b) {
@@ -576,7 +571,7 @@ std::vector<DataVector> DBMatOnlineDE::computeWeightedBFromBatchTwoDatasets(
 
 DataVector DBMatOnlineDE::computeWeightedDerivativeBFromBatch(
     DataMatrix& m, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
-    size_t derivDim, bool weighted) {
+    bool weighted) {
   if (m.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
@@ -622,7 +617,8 @@ DataVector DBMatOnlineDE::computeWeightedDerivativeBFromBatch(
                                                                  offlineObject.interactions));
     */
     std::unique_ptr<sgpp::base::OperationMultipleEval> B(
-        sgpp::op_factory::createOperationMultipleEvalPartialDerivativeNaive(grid, m, derivDim));
+        sgpp::op_factory::createOperationMultipleEvalPartialDerivativeNaive(
+            grid, m, densityEstimationConfig.derivDim_));
 
     // Bt * 1 * (-1)^|j|
     // For 1st order derivative: Bt * (-1)

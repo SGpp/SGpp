@@ -136,8 +136,7 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   void computeDensityDerivativeFunction(DataVector& alpha, DataMatrix& m, Grid& grid,
                                         DensityEstimationConfiguration& densityEstimationConfig,
-                                        size_t derivDim = 0, bool save_b = false,
-                                        bool do_cv = false);
+                                        bool save_b = false, bool do_cv = false);
 
   /**
    * Computes the density function again based on the saved b's (only applicable for streaming) in
@@ -199,12 +198,11 @@ class DBMatOnlineDE : public DBMatOnline {
      * @param m the matrix that contains the data points
      * @param grid The underlying grid
      * @param densityEstimationConfig Configuration for the density estimation
-     * @param derivDim Dimension along which to compute the derivative
      * @param weighted Flag to decide whether to weight the b vector with the no. of points
      */
   DataVector computeWeightedDerivativeBFromBatch(
       DataMatrix& m, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
-      size_t derivDim, bool weighted);
+      bool weighted);
 
   /**
    * Initializes the b vector for the given batch of data in two datasets scenarios.
@@ -358,9 +356,6 @@ class DBMatOnlineDE : public DBMatOnline {
   double normFactor;
   double lambda;
   size_t oDim;
-
-  // Dimension along which derivative is computed (for derivative-based methods)
-  size_t derivDim;
 };
 
 }  // namespace datadriven

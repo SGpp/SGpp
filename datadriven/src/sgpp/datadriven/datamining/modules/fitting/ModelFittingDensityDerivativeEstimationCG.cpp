@@ -13,7 +13,7 @@
 #include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDerivativeSystemMatrix.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
