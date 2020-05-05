@@ -256,7 +256,7 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
    */
   // TODO(pollinta) is this the most sensible place for this functionality?
   inline double getStandardCoordinate(size_t d, bool hasBoundary) {  // todo make const
-    auto hInv = hasBoundary ? (maxIndex[d] - minIndex[d] - 1) : (maxIndex[d] - minIndex[d] + 1);
+    auto hInv = hasBoundary ? (maxIndex[d] - minIndex[d]) : (maxIndex[d] - minIndex[d] + 2);
     return static_cast<double>(hasBoundary ? (operator*()[d]) : (operator*()[d]) + 1) /
            static_cast<double>(hInv);
   }
