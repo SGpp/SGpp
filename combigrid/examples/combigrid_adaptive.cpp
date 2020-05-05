@@ -4,7 +4,7 @@
 // sgpp.sparsegrids.org
 
 /**
- * \page example_combigrid_cpp Combigrid Example Dimensional Adaptivity (C++)
+ * \page example_combigrid_adaptive_cpp Combigrid Example Dimensional Adaptivity (C++)
  *
  * In this example, we use the combigrid module to adapt a combination grid solution to
  * best interpolate a test function at a given point.
@@ -15,6 +15,7 @@
 #include <sgpp_base.hpp>
 #include <sgpp_combigrid.hpp>
 
+#include <cassert>
 #include <cmath>
 #include <iostream>
 #include <memory>
@@ -85,7 +86,7 @@ int main() {
    * We start an AdaptiveCombinationGridGenerator from the full grids that are already in the
    * combiGrid we have now. This object is going to store the LevelVectors that are currently
    * adapted and the QoI results we know about them, as well as QoIs of grids that are not currently
-   * adapted yet.
+   * adapted to yet.
    */
 
   // default parameters are linear summation for the QoIs, AveragingPriorityEstimator, and
@@ -100,41 +101,48 @@ int main() {
     {
       sgpp::combigrid::OperationEvalFullGrid opEval(fullGrid);
       const double y = opEval.eval(surpluses[fullGridIndex], x);
-      std::cout << "Value of full grid interpolant at [" << x[0] << " " << x[1] << "]: " << y
-                << "\n";
+      std::cout << "Value of full grid [" << l[0] << " " << l[1] << "] interpolant at [" << x[0]
+                << " " << x[1] << "]: " << y << "\n";
       adaptiveCombinationGridGenerator.setQoIInformation(l, y);
     }
   }
 
   // all of the full grids known so far should already be in the generator's 'old set', so this call
   // here would return false:
-  adaptiveCombinationGridGenerator.adaptAllKnown();
+  bool adapted = adaptiveCombinationGridGenerator.adaptAllKnown();
+  assert(!adapted);
 
   // looking at the 'active set', we see which full grid spaces could potentially be interesting
   // next, they are the upper neighbors of the old set
   const auto activeSet = adaptiveCombinationGridGenerator.getActiveSet();
 
   // we also get the values at x for those full grids and add the QoI information to the generator
-  sgpp::base::DataVector z(dim);
   for (const auto& levelVector : activeSet) {
     const sgpp::combigrid::FullGrid fullGrid{levelVector, basis, hasBoundary};
-    std::cout << "Level of selected full grid: [" << levelVector[0] << " " << levelVector[1]
-              << "]\n";
 
     // to evaluate, we fill the full grid with values of f
     // TODO(pollinta) this feels like a really ugly way to evaluate a function on the grid
+    // TODO(pollinta) I am happy about syntax suggestions to make this more readable
     sgpp::base::DataVector fullGridValues(fullGrid.getNumberOfIndexVectors());
     auto range = sgpp::combigrid::IndexVectorRange(fullGrid);
     for (auto it = range.begin(); it != range.end(); ++it) {
+      sgpp::base::DataVector z(dim);
       it.getStandardCoordinates(z);
       fullGridValues[it.getSequenceNumber()] = f(z);
+      // std::cout << "Value of full grid [" << levelVector[0] << " " << levelVector[1] << "] at ["
+      //           << z[0] << " " << z[1] << "]: " << f(z) << "\n";
     }
 
+    // like before, hierarchize the full grid to evaluate using the basis functions
+    sgpp::combigrid::OperationUPCombinationGrid opHierSingleGrid(
+        sgpp::combigrid::CombinationGrid(fullGrid), opPole);
+    auto fullGridSurpluses = std::vector<sgpp::base::DataVector>(1, fullGridValues);
+    opHierSingleGrid.apply(fullGridSurpluses);
+
     sgpp::combigrid::OperationEvalFullGrid opEval(fullGrid);
-    const double y =
-        opEval.eval(fullGridValues, x);  // TODO(pollinta) use surpluses or nodal basis somehow?
-    // TODO(pollinta) and apparently, it does not even work
-    std::cout << "Value of full grid interpolant at [" << x[0] << " " << x[1] << "]: " << y << "\n";
+    const double y = opEval.eval(fullGridSurpluses[0], x);
+    std::cout << "Value of full grid [" << levelVector[0] << " " << levelVector[1]
+              << "] interpolant at [" << x[0] << " " << x[1] << "]: " << y << "\n";
     adaptiveCombinationGridGenerator.setQoIInformation(levelVector, y);
   }
 
@@ -146,29 +154,35 @@ int main() {
   // estimate which levels should be calculated first
   // auto priorityQueue = adaptiveCombinationGridGenerator.getPriorityQueue();
 
-  // finally, we adapt the generator to all calculated values
-  adaptiveCombinationGridGenerator.adaptAllKnown();
-  const auto oldSet = adaptiveCombinationGridGenerator.getOldSet();
+  // finally, we may adapt the generator to all calculated values
+  // (if you uncomment this, you will see by comparison that adding the two grids above
+  // already gave the biggest improvements)
+  // adaptiveCombinationGridGenerator.adaptAllKnown();
 
   /**
    * Now, we can generate a new combination grid that contains all the subspaces / full grids that
    * we have adapted to. We again interpolate the value at x and see whether it has become more
    * accurate.
    */
+  // get the set of grids we have adapted to and generate CombinationGrid
+  const auto oldSet = adaptiveCombinationGridGenerator.getOldSet();
   sgpp::combigrid::CombinationGrid combiGridAdapted =
       sgpp::combigrid::CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
 
+  // fill the combination grid with analytical values
   sgpp::base::HashGridStorage gridStorageAdapted(dim);
   combiGridAdapted.combinePoints(gridStorageAdapted);
 
-  sgpp::base::DataVector fXAdapted(gridStorageAdapted.getSize());
+  sgpp::base::DataVector fAdapted(gridStorageAdapted.getSize());
   for (size_t k = 0; k < gridStorageAdapted.getSize(); k++) {
-    gridStorageAdapted.getPoint(k).getStandardCoordinates(x);
-    fXAdapted[k] = f(x);
+    sgpp::base::DataVector z(dim);
+    gridStorageAdapted.getPoint(k).getStandardCoordinates(z);
+    fAdapted[k] = f(z);
   }
 
+  // distribute the values to the full grids again and hierarchize
   std::vector<sgpp::base::DataVector> valuesAdapted;
-  combiGridAdapted.distributeValuesToFullGrids(gridStorageAdapted, fXAdapted, valuesAdapted);
+  combiGridAdapted.distributeValuesToFullGrids(gridStorageAdapted, fAdapted, valuesAdapted);
 
   std::vector<sgpp::base::DataVector> surplusesAdapted(valuesAdapted);
   sgpp::combigrid::OperationUPCombinationGrid opHierAdapted(combiGridAdapted, opPole);
@@ -186,11 +200,10 @@ int main() {
 
 /**
  * The example program outputs the following results:
- * \verbinclude combigrid.output.txt
+ * \verbinclude combigrid_adaptive.output.txt
  *
- * We see that the value of the combined sparse grid interpolant at the
- * evaluation point is
- * closer to the actual value of the test function than the value of the chosen
- * full grid
- * interpolant, which corresponds to the full grid of level \f$(3, 1)\f$.
+ * We see that the value of the adapted combined sparse grid interpolant at the
+ * evaluation point is even
+ * closer to the actual value of the test function than the smaller non-adapted combination grid we
+ * used in the last example.
  */
