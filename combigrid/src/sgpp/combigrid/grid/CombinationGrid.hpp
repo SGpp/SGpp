@@ -38,6 +38,13 @@ class CombinationGrid {
   CombinationGrid(const std::vector<FullGrid>& fullGrids, const base::DataVector& coefficients);
 
   /**
+   * Constructor for a CombinationGrid consisting of only one FullGrid.
+   *
+   * @param fullGrid      the full grid
+   */
+  explicit CombinationGrid(const FullGrid& fullGrid);
+
+  /**
    * Factory method to create a CombinationGrid corresponding to the combination technique for
    * a regular sparse grid.
    *

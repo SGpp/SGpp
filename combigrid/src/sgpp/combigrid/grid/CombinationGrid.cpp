@@ -23,6 +23,9 @@ CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
                                  const base::DataVector& coefficients)
     : fullGrids(fullGrids), coefficients(coefficients) {}
 
+CombinationGrid::CombinationGrid(const FullGrid& fullGrid)
+    : fullGrids(std::vector<FullGrid>(1, fullGrid)), coefficients(base::DataVector(1, 1)) {}
+
 CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
                                                    const HeterogeneousBasis& basis,
                                                    bool hasBoundary) {
