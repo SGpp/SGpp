@@ -110,6 +110,14 @@ base::OperationMatrix* createOperationIdentity(base::Grid& grid);
  */
 base::OperationEval* createOperationEval(base::Grid& grid);
 /**
+ * Factory method, returning the best OperationEval option for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @return Pointer to the new OperationEval object for the Grid grid
+ */
+base::OperationEval* createOperationEvalDefault(base::Grid& grid);
+/**
  * Factory method, returning an OperationMultipleEval for the grid at hand.
  * Note: object has to be freed after use.
  *
@@ -118,9 +126,19 @@ base::OperationEval* createOperationEval(base::Grid& grid);
  * sparse grid function
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
-
 base::OperationMultipleEval* createOperationMultipleEval(base::Grid& grid,
                                                          base::DataMatrix& dataset);
+/**
+ * Factory method, returning the best OperationMultipleEval option for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalDefault(base::Grid& grid,
+                                                                base::DataMatrix& dataset);
 /**
  * Similar to createOperationMultipleEval, but makes use of interaction terms during evaluation
  *
