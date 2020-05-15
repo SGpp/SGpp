@@ -47,8 +47,8 @@ DBMatOnlineDE::DBMatOnlineDE(DBMatOffline& offline, Grid& grid, double lambda, d
       distributedVectorsInitialized(false),
       useExtraLocalVectors(false),
       beta(beta),
-      testMat(nullptr),
-      testMatRes(nullptr),
+      // testMat(nullptr),
+      // testMatRes(nullptr),
       normFactor(1.),
       lambda(lambda) {
   functionComputed = false;
@@ -717,20 +717,22 @@ DataVectorDistributed DBMatOnlineDE::computeWeightedBFromBatchParallel(
   return DataVectorDistributed(processGrid, 0, 1);
 }
 
+/*
 double DBMatOnlineDE::resDensity(DataVector& alpha, Grid& grid) {
   auto C = sgpp::op_factory::createOperationIdentity(grid);
   DataVector rhs(grid.getSize());
   DataVector res(grid.getSize());
+
   sgpp::datadriven::DensitySystemMatrix SMatrix(grid, *testMat, C, 0.0);
-
   SMatrix.generateb(rhs);
-
   SMatrix.mult(alpha, res);
 
   for (size_t i = 0; i < res.getSize(); i++) res[i] -= rhs[i];
   return res.l2Norm();
 }
+*/
 
+/*
 double DBMatOnlineDE::computeL2Error(DataVector& alpha, Grid& grid) {
   size_t nRows = testMatRes->getNrows();
   DataVector r(nRows);
@@ -745,11 +747,13 @@ double DBMatOnlineDE::computeL2Error(DataVector& alpha, Grid& grid) {
   }
   return sqrt(l2err) / static_cast<double>(nRows);
 }
+*/
 
 double DBMatOnlineDE::eval(DataVector& alpha, const DataVector& p, Grid& grid, bool force) {
   if (functionComputed || force == true) {
     double res;
-    std::unique_ptr<sgpp::base::OperationEval> opEval(sgpp::op_factory::createOperationEval(grid));
+    std::unique_ptr<sgpp::base::OperationEval> opEval(
+        sgpp::op_factory::createOperationEvalDefault(grid));
     res = opEval->eval(alpha, p);
     return res * normFactor;
   } else {
@@ -762,7 +766,7 @@ void DBMatOnlineDE::eval(DataVector& alpha, DataMatrix& values, DataVector& resu
   if (functionComputed || force == true) {
     std::unique_ptr<sgpp::base::OperationMultipleEval> opEval(
         (offlineObject.interactions.size() == 0)
-            ? sgpp::op_factory::createOperationMultipleEval(grid, values)
+            ? sgpp::op_factory::createOperationMultipleEvalDefault(grid, values)
             : sgpp::op_factory::createOperationMultipleEvalInter(grid, values,
                                                                  offlineObject.interactions));
     opEval->eval(alpha, results);

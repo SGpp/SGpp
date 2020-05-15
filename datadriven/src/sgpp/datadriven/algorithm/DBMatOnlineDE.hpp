@@ -324,8 +324,10 @@ class DBMatOnlineDE : public DBMatOnline {
                                 DensityEstimationConfiguration& densityEstimationConfig,
                                 bool do_cv = 0) = 0;
 
-  double computeL2Error(DataVector& alpha, Grid& grid);
+  /*
   double resDensity(DataVector& alpha, Grid& grid);
+  double computeL2Error(DataVector& alpha, Grid& grid);
+  */
 
   bool functionComputed;
 
@@ -352,7 +354,7 @@ class DBMatOnlineDE : public DBMatOnline {
 
   // Note(Sebastian Kreisel) In the learner config this is called learningRate
   double beta;
-  DataMatrix *testMat, *testMatRes;
+  // DataMatrix *testMat, *testMatRes;
   double normFactor;
   double lambda;
   size_t oDim;

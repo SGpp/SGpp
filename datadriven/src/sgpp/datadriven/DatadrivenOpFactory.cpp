@@ -433,15 +433,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
 
   // can now assume that MPI type is NONE
   if (configuration.getType() == sgpp::datadriven::OperationMultipleEvalType::DEFAULT) {
-    // For Bspline bases, we need to call the naive implementation
-    if (grid.getType() == base::GridType::Bspline ||
-        grid.getType() == base::GridType::BsplineBoundary ||
-        grid.getType() == base::GridType::BsplineClenshawCurtis) {
-      return createOperationMultipleEvalNaive(grid, dataset);
-    } else {
-      // For linear and poly bases,
-      return createOperationMultipleEval(grid, dataset);
-    }
+    return createOperationMultipleEvalDefault(grid, dataset);
   }
 
   if (grid.getType() == base::GridType::Linear) {
