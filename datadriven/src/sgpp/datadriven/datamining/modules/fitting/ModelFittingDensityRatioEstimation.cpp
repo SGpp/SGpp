@@ -109,7 +109,7 @@ void ModelFittingDensityRatioEstimation::update(Dataset &newDatasetP, Dataset &n
   }
 }
 
-DMSystemMatrixDRE *ModelFittingDensityRatioEstimation::buildSystemMatrix(
+DMSystemMatrixTwoDatasets *ModelFittingDensityRatioEstimation::buildSystemMatrix(
     Grid &grid, DataMatrix &trainDatasetP, DataMatrix &trainDatasetQ, double lambda,
     OperationMultipleEvalConfiguration &mutipleEvalconfig) const {
   auto systemMatrix =
@@ -126,7 +126,7 @@ void ModelFittingDensityRatioEstimation::reset() {
 
 void ModelFittingDensityRatioEstimation::assembleSystemAndSolve(
     const SLESolverConfiguration &solverConfig, DataVector &alpha) const {
-  auto systemMatrix = std::unique_ptr<DMSystemMatrixDRE>(buildSystemMatrix(
+  auto systemMatrix = std::unique_ptr<DMSystemMatrixTwoDatasets>(buildSystemMatrix(
       *grid, dataset->getData(), extraDataset->getData(), config->getRegularizationConfig().lambda_,
       config->getMultipleEvalConfig()));
 

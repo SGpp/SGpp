@@ -16,7 +16,7 @@ SystemMatrixDensityRatioEstimation::SystemMatrixDensityRatioEstimation(base::Gri
                                                                        base::DataMatrix& trainDataP,
                                                                        base::DataMatrix& trainDataQ,
                                                                        double lambda)
-    : DMSystemMatrixDRE(trainDataP, trainDataQ, lambda),
+    : DMSystemMatrixTwoDatasets(trainDataP, trainDataQ, lambda),
       instancesP(0),
       paddedInstancesP(0),
       instancesQ(0),
@@ -38,7 +38,7 @@ SystemMatrixDensityRatioEstimation::SystemMatrixDensityRatioEstimation(base::Gri
 SystemMatrixDensityRatioEstimation::~SystemMatrixDensityRatioEstimation() {}
 
 void SystemMatrixDensityRatioEstimation::mult(base::DataVector& alpha, base::DataVector& result) {
-  base::DataVector tempQ(this->paddedInstancesP);
+  base::DataVector tempQ(this->paddedInstancesQ);
 
   // Compute (B_q^T * alpha)
   this->myTimer_->start();
@@ -60,7 +60,7 @@ void SystemMatrixDensityRatioEstimation::mult(base::DataVector& alpha, base::Dat
 }
 
 void SystemMatrixDensityRatioEstimation::generateb(base::DataVector& b) {
-  base::DataVector y(this->instancesP, static_cast<double>(this->instancesQ));
+  base::DataVector y(this->paddedInstancesP, static_cast<double>(this->instancesQ));
 
   // Compute nq * B_p * 1
   this->myTimer_->start();
@@ -81,6 +81,10 @@ void SystemMatrixDensityRatioEstimation::setImplementation(
                                                           this->implementationConfiguration));
   this->B_q.reset(op_factory::createOperationMultipleEval(this->grid, this->datasetQ_,
                                                           this->implementationConfiguration));
+  // padded during Operator construction, fetch new size
+  this->paddedInstancesP = this->datasetP_.getNrows();
+  // padded during Operator construction, fetch new size
+  this->paddedInstancesQ = this->datasetQ_.getNrows();
 }
 
 }  // namespace datadriven

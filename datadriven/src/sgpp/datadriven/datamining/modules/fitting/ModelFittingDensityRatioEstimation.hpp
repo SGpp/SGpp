@@ -8,7 +8,7 @@
 #include <sgpp/globaldef.hpp>
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
@@ -133,9 +133,9 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
    * Factory function to build the System matrix for density ratio estimation with identity as
    * regularization
    */
-  DMSystemMatrixDRE *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
-                                       DataMatrix &trainDatasetQ, double lambda,
-                                       OperationMultipleEvalConfiguration &config) const;
+  DMSystemMatrixTwoDatasets *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
+                                               DataMatrix &trainDatasetQ, double lambda,
+                                               OperationMultipleEvalConfiguration &config) const;
 
   /**
    * Based on the current dataset and grid, assemble a system of linear equations and solve for the

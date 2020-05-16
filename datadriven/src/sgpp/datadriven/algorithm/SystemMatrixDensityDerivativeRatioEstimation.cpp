@@ -75,6 +75,8 @@ void SystemMatrixDensityDerivativeRatioEstimation::setImplementation(
                                                         this->implementationConfiguration));
   this->Bderiv.reset(op_factory::createOperationMultipleEvalPartialDerivativeNaive(
       grid, this->dataset_, derivDim));
+  // padded during Operator construction, fetch new size
+  this->paddedInstances = this->dataset_.getNrows();
 }
 
 }  // namespace datadriven

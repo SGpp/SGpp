@@ -8,9 +8,11 @@
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDerivativeSystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>

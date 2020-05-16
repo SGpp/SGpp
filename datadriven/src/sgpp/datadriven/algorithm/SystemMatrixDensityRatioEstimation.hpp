@@ -7,7 +7,7 @@
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -30,7 +30,7 @@ namespace datadriven {
  *
  * For the Operation B's mult and mutlTransposed functions vectorized formulations are used.
  */
-class SystemMatrixDensityRatioEstimation : public datadriven::DMSystemMatrixDRE {
+class SystemMatrixDensityRatioEstimation : public datadriven::DMSystemMatrixTwoDatasets {
  private:
   /// vectorization mode
   // ComputeKernelType kernelType;
