@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
-#include <sgpp/datadriven/algorithm/DensityDerivativeSystemMatrix.hpp>
+
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
@@ -127,10 +127,13 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
-#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -146,6 +149,8 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
