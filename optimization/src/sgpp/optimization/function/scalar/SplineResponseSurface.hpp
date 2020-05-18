@@ -62,6 +62,7 @@ class SplineResponseSurface : public ResponseSurface {
     mean = 777;
     variance = -1;
     computedMeanFlag = false;
+    computedCoefficientsFlag = false;
     unitLBounds = sgpp::base::DataVector(numDim, 0.0);
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
     if (gridType == sgpp::base::GridType::Bspline) {
@@ -133,6 +134,7 @@ class SplineResponseSurface : public ResponseSurface {
     mean = 777;
     variance = -1;
     computedMeanFlag = false;
+    computedCoefficientsFlag = false;
     unitLBounds = sgpp::base::DataVector(numDim, 0.0);
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
     gridType = grid->getType();
@@ -198,6 +200,7 @@ class SplineResponseSurface : public ResponseSurface {
     mean = 777;
     variance = -1;
     computedMeanFlag = false;
+    computedCoefficientsFlag = true;
     unitLBounds = sgpp::base::DataVector(numDim, 0.0);
     unitUBounds = sgpp::base::DataVector(numDim, 1.0);
     gridType = grid->getType();
@@ -271,6 +274,20 @@ class SplineResponseSurface : public ResponseSurface {
    */
   void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3,
                        bool verbose = false);
+
+    /**
+   *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   *@param verbose        print information on the refine points
+   */
+  void refineSurplusAdaptive(size_t refinementsNum, bool verbose = false);
+
+  /**
+   * refines the grid surplus adaptive but does not recalculate interpolation coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   *@param verbose        print information on the refine points
+   */
+  void nextSurplusAdaptiveGrid(size_t refinementsNum, bool verbose = false);
 
   /**
    * creates an adaptive grid based on Ritter-Novak
@@ -387,14 +404,12 @@ class SplineResponseSurface : public ResponseSurface {
   double variance;
   // mean computation flag for variance computation
   bool computedMeanFlag;
+  // coefficients computationi flag indicating whether the coefficients for the current grid have
+  // already been calculated
+  bool computedCoefficientsFlag;
   sgpp::base::DataVector unitLBounds;
   sgpp::base::DataVector unitUBounds;
 
-  /**
-   *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
-   *@param refinementsNum	number of grid points which should be refined
-   */
-  void refineSurplusAdaptive(size_t refinementsNum);
 
   /**
    * calculates the interpolation coefficients on a given grid

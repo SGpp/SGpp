@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_SUITE(TestResponseSurfaces)
 // create regular SplineResponseSurface and evaluate
 BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
   // default values
-  std::vector<double> epsilons{0.06, 1e-15, 1e-15};
+  std::vector<double> epsilons{0.06, 1e-14, 1e-14};
   size_t dim = 3;
   size_t level = 3;
   auto testFunction = std::make_shared<scalarTestFunction>(dim);
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
 
 // create adaptive SplineResponseSurface and evaluate
 BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
-  std::vector<double> epsilons{0.3, 1e-15, 1e-15};
+  std::vector<double> epsilons{0.3, 1e-14, 1e-14};
   size_t dim = 3;
   size_t maxNumGridPoints = 30;
   size_t initialLevel = 1;
@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
   }
 }
 
-// create regular SplineResponseSurfaceVector and evaluate jacobian
+// create regular SplineResponseSurface and evaluate jacobian
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceEvalGradient) {
   double epsilon = 1e-13;
   size_t dim = 3;
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
 
 // create regular SplineResponseSurfaceVector and evaluate
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorEval) {
-  std::vector<double> epsilons{0.8, 1e-14, 1e-14};
+  std::vector<double> epsilons{0.8, 1e-13, 1e-13};
   size_t dim = 3;
   size_t m = 2;
   size_t level = 4;
@@ -554,7 +554,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorNRMSE) {
 
 // create regular SplineResponseSurfaceVector and integrate
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorIntegral) {
-  std::vector<double> epsilons{1e-12};
+  std::vector<double> epsilons{1e-11};
   size_t dim = 3;
   size_t m = 2;
   size_t level = 3;
@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorVariance) {
 // create regular SplineResponseSurfaceVector, serialize it to files and create
 // new  SplineResponseSurfaceVector by unserializing from files
 BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorSerialize) {
-  double epsilon = 1e-14;
+  double epsilon = 1e-13;
   size_t dim = 3;
   size_t m = 2;
   size_t level = 1;  // small level to keep I/O operations quick

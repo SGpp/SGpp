@@ -42,7 +42,7 @@ void SplineResponseSurface::surplusAdaptive(size_t maxNumGridPoints, size_t init
                                             size_t refinementsNum, bool verbose) {
   regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
-    refineSurplusAdaptive(refinementsNum);
+    refineSurplusAdaptive(refinementsNum,verbose);
     if (verbose)
       std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
   }
@@ -50,6 +50,25 @@ void SplineResponseSurface::surplusAdaptive(size_t maxNumGridPoints, size_t init
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
   interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
       *grid, coefficients);
+}
+
+void SplineResponseSurface::refineSurplusAdaptive(size_t refinementsNum, bool verbose) {
+  if (computedCoefficientsFlag == true) {
+    nextSurplusAdaptiveGrid(refinementsNum, verbose);
+    if (verbose) std::cout << "Refined to a grid with " << grid->getSize() << " points.\n";
+  }
+  calculateInterpolationCoefficients();
+}
+
+/**
+ * refines the grid surplus adaptive but does not recalculate interpolation coefficients
+ *@param refinementsNum	number of grid points which should be refined
+ *@param verbose        print information on the refine points
+ */
+void SplineResponseSurface::nextSurplusAdaptiveGrid(size_t refinementsNum, bool verbose) {
+  sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
+  grid->getGenerator().refine(functor);
+  computedCoefficientsFlag = false;
 }
 
 void SplineResponseSurface::ritterNovak(size_t maxNumGridPoints, double gamma, size_t initialLevel,
@@ -143,12 +162,6 @@ sgpp::base::DataVector SplineResponseSurface::optimize() {
 
 // ----------------- auxiliary routines -----------
 
-void SplineResponseSurface::refineSurplusAdaptive(size_t refinementsNum) {
-  sgpp::base::SurplusRefinementFunctor functor(coefficients, refinementsNum);
-  grid->getGenerator().refine(functor);
-  calculateInterpolationCoefficients();
-}
-
 void SplineResponseSurface::calculateInterpolationCoefficients() {
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   functionValues.resizeZero(gridStorage.getSize());
@@ -168,6 +181,7 @@ void SplineResponseSurface::calculateInterpolationCoefficients() {
   if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
     std::cout << "Solving failed!" << std::endl;
   }
+  computedCoefficientsFlag = true;
 }
 
 }  // namespace optimization
