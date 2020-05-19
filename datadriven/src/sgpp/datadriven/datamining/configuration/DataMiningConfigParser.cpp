@@ -550,6 +550,9 @@ bool DataMiningConfigParser::getFitterDensityEstimationConfig(
     config.derivDim_ = parseUInt(*densityEstimationConfig, "derivDim", defaults.derivDim_,
                                  "densityEstimationConfig");
 
+    config.omega_ =
+        parseDouble(*densityEstimationConfig, "omega", defaults.omega_, "densityEstimationConfig");
+
     // parse  density estimation type
     if (densityEstimationConfig->contains("densityEstimationType")) {
       config.type_ = DensityEstimationTypeParser::parse(

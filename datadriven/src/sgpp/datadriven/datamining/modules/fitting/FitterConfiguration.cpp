@@ -198,6 +198,7 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default
   densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default
   densityEstimationConfig.derivDim_ = 0;
+  densityEstimationConfig.omega_ = 0;
 
   databaseConfig.filePath = "";
 
