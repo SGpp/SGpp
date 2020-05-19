@@ -52,13 +52,14 @@ BOOST_AUTO_TEST_CASE(Test_2D_Unif) {
   // Create config file for direct density derivative ratio estimation
   std::string config = "tmpsgdeconfigDRE.json";
   std::ofstream stream(config);
-  stream << "{ \"dataSource\": { \"filePath\" : \"" << samples << "\", \"hasTargets\" : false},"
-         << "\"scorer\" : { \"metric\" : \"NLL\"}, "
+  stream << "{ \"dataSource\": { \"filePath\" : \"" << samples << "\", \"hasTargets\" : false}, "
+         << "\"scorer\" : { \"metric\" : \"NLL\" }, "
          << "\"fitter\" : { \"type\" : \"densityDerivativeRatioEstimation\", "
-         << "\"gridConfig\" : { \"gridType\" : \"bspline\", \"level\" : 5, \"maxDegree\" : 3}, "
-         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001, "
-            "\"maxLevelType\" : false, \"noPoints\" : 3}, "
-         << "\"regularizationConfig\" : { \"lambda\" : 1} } }" << std::endl;
+         << "\"gridConfig\" : { \"gridType\" : \"bspline\", \"level\" : 5, \"maxDegree\" : 3 }, "
+         << "\"adaptivityConfig\" : { \"numRefinements\" : 3, \"threshold\" : 0.001, "
+            "\"maxLevelType\" : false, \"noPoints\" : 3 }, "
+         << "\"regularizationConfig\" : { \"lambda\" : 1 }, "
+         << "\"densityEstimationConfig\" : { \"derivDim\" : 0 } } }" << std::endl;
 
   // Reuse existing dataset for computing MSE
   double mse = testDistributionDDerivRE(

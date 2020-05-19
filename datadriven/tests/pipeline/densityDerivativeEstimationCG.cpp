@@ -57,13 +57,15 @@ BOOST_AUTO_TEST_CASE(Test_2D_DDeriv_Gauss) {
   std::string config = "tmpsgdeconfig.json";
   std::ofstream stream(config);
   stream << "{ \"dataSource\" : { \"filePath\" : \"" << samples
-         << "\", \"hasTargets\" : false}, \"scorer\" : { \"metric\" : \"NLL\"},"
-         << "\"fitter\" : { \"type\" : \"densityDerivativeEstimation\","
-         << "\"gridConfig\" : { \"gridType\" : \"bspline\", \"level\" : 3, \"maxDegree\" : 3},"
-         << "\"adaptivityConfig\" : {\"numRefinements\" : 3, \"threshold\" : 0.001,"
-         << "\"maxLevelType\" : false, \"noPoints\" : 3},"
-         << "\"regularizationConfig\" : {\"lambda\" : 0.001},"
-         << "\"densityEstimationConfig\" : { \"densityEstimationType\" : \"cg\"}}}" << std::endl;
+         << "\", \"hasTargets\" : false}, \"scorer\" : { \"metric\" : \"NLL\" },"
+         << "\"fitter\" : { \"type\" : \"densityDerivativeEstimation\", "
+         << "\"gridConfig\" : { \"gridType\" : \"bspline\", \"level\" : 3, \"maxDegree\" : 3 }, "
+         << "\"adaptivityConfig\" : { \"numRefinements\" : 3, \"threshold\" : 0.001, "
+         << "\"maxLevelType\" : false, \"noPoints\" : 3 }, "
+         << "\"regularizationConfig\" : { \"lambda\" : 0.001 }, "
+         << "\"densityEstimationConfig\" : { \"derivDim\" : 0, "
+            "\"densityEstimationType\" : \"cg\" } } }"
+         << std::endl;
 
   double mse = testDistributionDDerivE_CG(
       "datadriven/datasets/densityEstimation/2D_DDeriv_Gauss_val.csv", config);
