@@ -37,14 +37,14 @@ class DBMatObjectStore {
    *
    * @param gridConfig Grid configuration
    * @param geometryConfig Geometry configuration for geometry aware sparse grids
-   * @param adaptConfig Adaptivity configuration
+   * @param adaptivityConfig Adaptivity configuration
    * @param regularizationConfig Regularization configuration
    * @param densityEstimationConfig Density estimation configuration
    * @param object The object to be stored
    */
   void putObject(const sgpp::base::GeneralGridConfiguration& gridConfig,
                  const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-                 const sgpp::base::AdaptivityConfiguration& adaptConfig,
+                 const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                  const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
                  const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
                  const DBMatOffline* object);
@@ -55,7 +55,7 @@ class DBMatObjectStore {
    *
    * @param gridConfig Grid configuration of the desired offline object
    * @param geometryConfig Geometry configuration for geometry aware sparse grids
-   * @param adaptConfig Adaptivity configuration
+   * @param adaptivityConfig Adaptivity configuration
    * @param regularizationConfig Regularization configuration
    * @param densityEstimationConfig Density estimation configuration
    * @param baseGridConfig Reference to a grid configuration. Gets overridden by the grid
@@ -65,7 +65,7 @@ class DBMatObjectStore {
   const DBMatOfflinePermutable* getBaseObject(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-      const sgpp::base::AdaptivityConfiguration& adaptConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       sgpp::base::GeneralGridConfiguration& baseGridConfig);
@@ -76,7 +76,7 @@ class DBMatObjectStore {
    *
    * @param gridConfig Grid configuration
    * @param geometryConfig Geometry configuration for geometry aware sparse grids
-   * @param adaptConfig Adaptivity configuration
+   * @param adaptivityConfig Adaptivity configuration
    * @param regularizationConfig Regularization configuration
    * @param densityEstimationConfig Density estimation configuration
    * @return const DBMatOffline*
@@ -84,7 +84,7 @@ class DBMatObjectStore {
   const DBMatOffline* getObject(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-      const sgpp::base::AdaptivityConfiguration& adaptConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 
@@ -102,7 +102,7 @@ class DBMatObjectStore {
      *
      * @param gridConfig Grid configuration
      * @param geometryConfig Geometry configuration for geometry aware sparse grids
-     * @param adaptConfig Adaptivity configuration
+     * @param adaptivityConfig Adaptivity configuration
      * @param regularizationConfig Regularization configuration
      * @param densityEstimationConfig Density estimation configuration
      * @param offlineObject Unique pointer to an offline object. Ownership of this object gets
@@ -111,7 +111,7 @@ class DBMatObjectStore {
     explicit ObjectContainer(
         const sgpp::base::GeneralGridConfiguration& gridConfig,
         const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-        const sgpp::base::AdaptivityConfiguration& adaptConfig,
+        const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
         const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
         const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
         std::unique_ptr<const DBMatOffline> offlineObject);
@@ -137,7 +137,7 @@ class DBMatObjectStore {
      *
      * @param gridConfig Grid configuration
      * @param geometryConfig Geometry configuration for geometry aware sparse grids
-     * @param adaptConfig Adaptivity configuration
+     * @param adaptivityConfig Adaptivity configuration
      * @param regularizationConfig Regularization configuration
      * @param densityEstimationConfig Density estimation configuration
      * @param searchBase Flag to specify whether an identical offline object or a suitable base
@@ -148,7 +148,7 @@ class DBMatObjectStore {
     bool configMatches(
         const sgpp::base::GeneralGridConfiguration& gridConfig,
         const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-        const sgpp::base::AdaptivityConfiguration& adaptConfig,
+        const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
         const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
         const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
         bool searchBase);
@@ -157,7 +157,7 @@ class DBMatObjectStore {
     // Member variables, i.e. the offline object and its configuration.
     sgpp::base::GeneralGridConfiguration gridConfig;
     sgpp::datadriven::GeometryConfiguration geometryConfig;
-    sgpp::base::AdaptivityConfiguration adaptConfig;
+    sgpp::base::AdaptivityConfiguration adaptivityConfig;
     RegularizationConfiguration regularizationConfig;
     DensityEstimationConfiguration densityEstimationConfig;
     std::unique_ptr<const DBMatOffline> offlineObject;
@@ -176,7 +176,7 @@ class DBMatObjectStore {
    *
    * @param gridConfig Grid configuration
    * @param geometryConfig Geometry configuration for geometry aware sparse grids
-   * @param adaptConfig Adaptivity configuration
+   * @param adaptivityConfig Adaptivity configuration
    * @param regularizationConfig Regularization configuration
    * @param densityEstimationConfig Density estimation configuration
    * @param searchBase Flag to specify whether an identical offline object or a suitable base object
@@ -186,7 +186,7 @@ class DBMatObjectStore {
   size_t getObjectContainerIndex(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-      const sgpp::base::AdaptivityConfiguration& adaptConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
       bool searchBase = false);

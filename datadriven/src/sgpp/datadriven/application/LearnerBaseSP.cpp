@@ -122,7 +122,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    const sgpp::base::RegularGridConfiguration& gridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                                   const sgpp::base::AdaptivityConfiguration& adaptConfig,
+                                   const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                                    const bool testAccDuringAdapt,
                                    const float lambdaRegularization) {
   LearnerTiming result;
@@ -188,7 +188,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
   // execute adaptsteps
   sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_ + 1; i++) {
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_ + 1; i++) {
     if (isVerbose_) std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
     myStopwatch->start();
@@ -197,8 +197,8 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     if (i > 0) {
       sgpp::base::DataVector alphaDP(alpha_->getSize());
       sgpp::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
-      sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaDP, adaptConfig.numRefinementPoints_,
-                                                        adaptConfig.refinementThreshold_);
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
+          alphaDP, adaptivityConfig.numRefinementPoints_, adaptivityConfig.refinementThreshold_);
       grid_->getGenerator().refine(myRefineFunc);
       DMSystem->rebuildLevelAndIndex();
 
@@ -212,7 +212,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     sgpp::base::DataVectorSP b(alpha_->getSize());
     DMSystem->generateb(classes, b);
 
-    if (i == adaptConfig.numRefinements_) {
+    if (i == adaptivityConfig.numRefinements_) {
       myCG->setMaxIterations(SolverConfigFinal.maxIterations_);
       myCG->setEpsilon(SolverConfigFinal.eps_);
     }
@@ -227,7 +227,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     }
 
     // use post-processing to determine Flops and time
-    if (i < adaptConfig.numRefinements_) {
+    if (i < adaptivityConfig.numRefinements_) {
       postProcessing(trainDataset, SolverConfigRefine.type_, myCG->getNumberIterations());
     } else {
       postProcessing(trainDataset, SolverConfigFinal.type_, myCG->getNumberIterations());
@@ -292,16 +292,16 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    const sgpp::base::RegularGridConfiguration& gridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                                    const float lambdaRegularization) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 0;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 0.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 0;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 0.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
-  return train(trainDataset, classes, gridConfig, SolverConfig, SolverConfig, adaptConfig, false,
-               lambdaRegularization);
+  return train(trainDataset, classes, gridConfig, SolverConfig, SolverConfig, adaptivityConfig,
+               false, lambdaRegularization);
 }
 
 sgpp::base::DataVectorSP LearnerBaseSP::predict(sgpp::base::DataMatrixSP& testDataset) {

@@ -72,10 +72,10 @@ void createInstance() {
     sgpp::datadriven::DensityEstimationConfiguration densityEstimationConfig;
     densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::DenseIchol;
 
-    sgpp::base::AdaptivityConfiguration adaptConfig;
-    adaptConfig.numRefinements_ = 2;
-    adaptConfig.numRefinementPoints_ = 7;
-    adaptConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
+    sgpp::base::AdaptivityConfiguration adaptivityConfig;
+    adaptivityConfig.numRefinements_ = 2;
+    adaptivityConfig.numRefinementPoints_ = 7;
+    adaptivityConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
     sgpp::datadriven::Dataset trainData(TEST_DATASET_SIZE, TEST_DIMENSION);
     sgpp::datadriven::Dataset testData(TEST_DATASET_SIZE, TEST_DIMENSION);
@@ -84,8 +84,8 @@ void createInstance() {
     classLabels[1] = 1;
     scheduler = new RoundRobinScheduler(SCHEDULER_BATCH_SIZE);
     learnerInstance = new sgpp::datadriven::LearnerSGDEOnOffParallel(
-        gridConfig, adaptConfig, regularizationConfig, densityEstimationConfig, trainData, testData,
-        nullptr, classLabels, 2, false, 0.0, *scheduler);
+        gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig, trainData,
+        testData, nullptr, classLabels, 2, false, 0.0, *scheduler);
 
     atexit(freeInstance);
   }

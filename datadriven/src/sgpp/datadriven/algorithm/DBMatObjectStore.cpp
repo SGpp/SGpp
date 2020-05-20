@@ -24,14 +24,14 @@ DBMatObjectStore::DBMatObjectStore(const std::string& filePath)
 size_t DBMatObjectStore::getObjectContainerIndex(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool searchBase) {
   // Iterate over objects to find match
   for (size_t i = 0; i < this->objects.size(); i++) {
     // Check whether configuration of the container matches
-    if (this->objects[i].configMatches(gridConfig, geometryConfig, adaptConfig,
+    if (this->objects[i].configMatches(gridConfig, geometryConfig, adaptivityConfig,
                                        regularizationConfig, densityEstimationConfig, searchBase))
       return i;
   }
@@ -46,11 +46,11 @@ const DBMatObjectStore::ObjectContainer& DBMatObjectStore::getObjectContainer(si
 const DBMatOffline* DBMatObjectStore::getObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Search for suitable offline object
-  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptConfig,
+  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
                                                regularizationConfig, densityEstimationConfig);
   // If no suitable object is found, return nullptr
   if (index == SIZE_MAX) {
@@ -63,12 +63,12 @@ const DBMatOffline* DBMatObjectStore::getObject(
 const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Search for suitable base offline object
-  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptConfig,
+  size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
                                                regularizationConfig, densityEstimationConfig, true);
   // If no suitable base object is found, return nullptr
   if (index == SIZE_MAX) {
@@ -83,12 +83,12 @@ const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
 void DBMatObjectStore::putObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     const DBMatOffline* object) {
   // Add a new object container to stored containers
-  this->objects.push_back(ObjectContainer{gridConfig, geometryConfig, adaptConfig,
+  this->objects.push_back(ObjectContainer{gridConfig, geometryConfig, adaptivityConfig,
                                           regularizationConfig, densityEstimationConfig,
                                           std::unique_ptr<const DBMatOffline>(object)});
 }
@@ -96,13 +96,13 @@ void DBMatObjectStore::putObject(
 DBMatObjectStore::ObjectContainer::ObjectContainer(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     std::unique_ptr<const DBMatOffline> offlineObject)
     : gridConfig(gridConfig),
       geometryConfig(geometryConfig),
-      adaptConfig(adaptConfig),
+      adaptivityConfig(adaptivityConfig),
       regularizationConfig(regularizationConfig),
       densityEstimationConfig(densityEstimationConfig),
       // Transfers ownership to container
@@ -120,7 +120,7 @@ const sgpp::base::GeneralGridConfiguration& DBMatObjectStore::ObjectContainer::g
 bool DBMatObjectStore::ObjectContainer::configMatches(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
     const sgpp::datadriven::GeometryConfiguration& geometryConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool searchBase) {
@@ -149,23 +149,23 @@ bool DBMatObjectStore::ObjectContainer::configMatches(
   return configMatch && gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
          gridConfig.type_ == this->gridConfig.type_ && gridConfig.type_ == this->gridConfig.type_ &&
          // adaptivity config
-         adaptConfig.errorBasedRefinement_ == this->adaptConfig.errorBasedRefinement_ &&
-         adaptConfig.errorBufferSize_ == this->adaptConfig.errorBufferSize_ &&
-         adaptConfig.errorConvergenceThreshold_ ==
-             this->adaptConfig.errorConvergenceThreshold_ &&
-         adaptConfig.errorMinInterval_ == this->adaptConfig.errorMinInterval_ &&
-         adaptConfig.levelPenalize_ == this->adaptConfig.levelPenalize_ &&
-         adaptConfig.maxLevelType_ == this->adaptConfig.maxLevelType_ &&
-         adaptConfig.numRefinementPoints_ == this->adaptConfig.numRefinementPoints_ &&
-         adaptConfig.numRefinements_ == this->adaptConfig.numRefinements_ &&
-         adaptConfig.percent_ == this->adaptConfig.percent_ &&
-         adaptConfig.precomputeEvaluations_ == this->adaptConfig.precomputeEvaluations_ &&
-         adaptConfig.refinementFunctorType_ == this->adaptConfig.refinementFunctorType_ &&
-         adaptConfig.refinementPeriod_ == this->adaptConfig.refinementPeriod_ &&
-         adaptConfig.scalingCoefficients_ == this->adaptConfig.scalingCoefficients_ &&
-         adaptConfig.refinementThreshold_ == this->adaptConfig.refinementThreshold_ &&
-         adaptConfig.coarseningThreshold_ == this->adaptConfig.coarseningThreshold_ &&
-         adaptConfig.coarseningFunctorType_ == this->adaptConfig.coarseningFunctorType_ &&
+         adaptivityConfig.errorBasedRefinement_ == this->adaptivityConfig.errorBasedRefinement_ &&
+         adaptivityConfig.errorBufferSize_ == this->adaptivityConfig.errorBufferSize_ &&
+         adaptivityConfig.errorConvergenceThreshold_ ==
+             this->adaptivityConfig.errorConvergenceThreshold_ &&
+         adaptivityConfig.errorMinInterval_ == this->adaptivityConfig.errorMinInterval_ &&
+         adaptivityConfig.levelPenalize_ == this->adaptivityConfig.levelPenalize_ &&
+         adaptivityConfig.maxLevelType_ == this->adaptivityConfig.maxLevelType_ &&
+         adaptivityConfig.numRefinementPoints_ == this->adaptivityConfig.numRefinementPoints_ &&
+         adaptivityConfig.numRefinements_ == this->adaptivityConfig.numRefinements_ &&
+         adaptivityConfig.percent_ == this->adaptivityConfig.percent_ &&
+         adaptivityConfig.precomputeEvaluations_ == this->adaptivityConfig.precomputeEvaluations_ &&
+         adaptivityConfig.refinementFunctorType_ == this->adaptivityConfig.refinementFunctorType_ &&
+         adaptivityConfig.refinementPeriod_ == this->adaptivityConfig.refinementPeriod_ &&
+         adaptivityConfig.scalingCoefficients_ == this->adaptivityConfig.scalingCoefficients_ &&
+         adaptivityConfig.refinementThreshold_ == this->adaptivityConfig.refinementThreshold_ &&
+         adaptivityConfig.coarseningThreshold_ == this->adaptivityConfig.coarseningThreshold_ &&
+         adaptivityConfig.coarseningFunctorType_ == this->adaptivityConfig.coarseningFunctorType_ &&
          // remaining regularization config
          regularizationConfig.exponentBase_ == this->regularizationConfig.exponentBase_ &&
          regularizationConfig.l1Ratio_ == this->regularizationConfig.l1Ratio_ &&

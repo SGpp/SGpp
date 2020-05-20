@@ -17,7 +17,7 @@ const base::GeneralGridConfiguration &FitterConfiguration::getGridConfig() const
 }
 
 const base::AdaptivityConfiguration &FitterConfiguration::getRefinementConfig() const {
-  return adaptConfig;
+  return adaptivityConfig;
 }
 
 const datadriven::CrossvalidationConfiguration &FitterConfiguration::getCrossvalidationConfig()
@@ -107,8 +107,8 @@ void FitterConfiguration::dumpToStream(std::ostream &stream_out) const {
   stream_out << "\n~~~ gridConfig ~~~\n" << std::endl;
   DMConfigTools::dumpToStream(gridConfig);
 
-  stream_out << "\n~~~ adaptConfig ~~~\n" << std::endl;
-  DMConfigTools::dumpToStream(adaptConfig);
+  stream_out << "\n~~~ adaptivityConfig ~~~\n" << std::endl;
+  DMConfigTools::dumpToStream(adaptivityConfig);
 
   stream_out << "\n~~~ crossvalidationConfig ~~~\n" << std::endl;
   DMConfigTools::dumpToStream(crossvalidationConfig);
@@ -153,26 +153,26 @@ void FitterConfiguration::setupDefaults() {
   gridConfig.filename_ = "";
   gridConfig.t_ = 0.0;  // mirrors struct default
 
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.refinementThreshold_ = 0.0;
-  adaptConfig.coarseningThreshold_ = 0.0;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 1;
-  adaptConfig.numCoarseningPoints_ = 1;
-  adaptConfig.coarsenInitialPoints_ = false;
-  adaptConfig.percent_ = 1.0;                      // mirrors struct default
-  adaptConfig.errorBasedRefinement_ = false;       // mirrors struct default
-  adaptConfig.errorConvergenceThreshold_ = 0.001;  // mirrors struct default
-  adaptConfig.errorBufferSize_ = 3;                // mirrors struct default
-  adaptConfig.errorMinInterval_ = 0;               // mirrors struct default
-  adaptConfig.refinementPeriod_ = 1;               // mirrors struct default
-  adaptConfig.refinementFunctorType_ =
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.coarseningThreshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 1;
+  adaptivityConfig.numCoarseningPoints_ = 1;
+  adaptivityConfig.coarsenInitialPoints_ = false;
+  adaptivityConfig.percent_ = 1.0;                      // mirrors struct default
+  adaptivityConfig.errorBasedRefinement_ = false;       // mirrors struct default
+  adaptivityConfig.errorConvergenceThreshold_ = 0.001;  // mirrors struct default
+  adaptivityConfig.errorBufferSize_ = 3;                // mirrors struct default
+  adaptivityConfig.errorMinInterval_ = 0;               // mirrors struct default
+  adaptivityConfig.refinementPeriod_ = 1;               // mirrors struct default
+  adaptivityConfig.refinementFunctorType_ =
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptConfig.coarseningFunctorType_ =             // mirrors struct default
+  adaptivityConfig.coarseningFunctorType_ =        // mirrors struct default
       sgpp::base::CoarseningFunctorType::Surplus;
-  adaptConfig.precomputeEvaluations_ = true;                 // mirrors struct default
-  adaptConfig.levelPenalize_ = false;                        // mirrors struct default
-  adaptConfig.scalingCoefficients_ = std::vector<double>();  // mirrors struct default;
+  adaptivityConfig.precomputeEvaluations_ = true;                 // mirrors struct default
+  adaptivityConfig.levelPenalize_ = false;                        // mirrors struct default
+  adaptivityConfig.scalingCoefficients_ = std::vector<double>();  // mirrors struct default;
 
   crossvalidationConfig.enable_ = false;  // mirrors struct default
   crossvalidationConfig.kfold_ = 5;       // mirrors struct default

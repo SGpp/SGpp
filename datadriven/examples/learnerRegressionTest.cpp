@@ -34,9 +34,9 @@ sgpp::datadriven::RegressionLearner getLearner(
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  auto adaptConfig = sgpp::base::AdaptivityConfiguration();
-  adaptConfig.numRefinementPoints_ = 0;
-  adaptConfig.numRefinements_ = 0;
+  auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
+  adaptivityConfig.numRefinementPoints_ = 0;
+  adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
   solverConfig.type_ = sgpp::solver::SLESolverType::CG;
@@ -44,7 +44,7 @@ sgpp::datadriven::RegressionLearner getLearner(
   solverConfig.eps_ = 1e-8;
   solverConfig.threshold_ = 1e-5;
 
-  return sgpp::datadriven::RegressionLearner(gridConfig, adaptConfig, solverConfig,
+  return sgpp::datadriven::RegressionLearner(gridConfig, adaptivityConfig, solverConfig,
                                              solverConfig, regularizationConfig);
 }
 

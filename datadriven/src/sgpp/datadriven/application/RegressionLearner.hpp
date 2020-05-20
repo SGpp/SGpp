@@ -31,10 +31,10 @@ namespace datadriven {
  */
 class RegressionLearner {
  public:
-  // Fista and (Bi)-CG do not share a common interace.
-  // This is why we need this slightly dirty solution.
-  // Excluded from SWIG.
-  #ifndef SWIG
+// Fista and (Bi)-CG do not share a common interace.
+// This is why we need this slightly dirty solution.
+// Excluded from SWIG.
+#ifndef SWIG
   class Solver {
    public:
     enum class solverCategory { cg, fista, none } type = solverCategory::none;
@@ -113,12 +113,12 @@ class RegressionLearner {
       std::unique_ptr<sgpp::solver::FistaBase> solverFista;
     };
   };
-  #endif  // end inner class
+#endif  // end inner class
 
   /**
    * @brief RegressionLearner
    * @param gridConfig
-   * @param adaptConfig
+   * @param adaptivityConfig
    * @param solverConfig is the solver used during each adaptivity step
    * @param finalSolverConfig is the solver used to build the final model
    * @param regularizationConfig
@@ -128,7 +128,7 @@ class RegressionLearner {
    * include the vector [1,2] in terms.
    */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                    sgpp::base::AdaptivityConfiguration adaptConfig,
+                    sgpp::base::AdaptivityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig,
@@ -137,13 +137,13 @@ class RegressionLearner {
   /**
    * @brief RegressionLearner
    * @param gridConfig
-   * @param adaptConfig
+   * @param adaptivityConfig
    * @param solverConfig is the solver used during each adaptivity step
    * @param finalSolverConfig is the solver used to build the final model
    * @param regularizationConfig
    */
   RegressionLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                    sgpp::base::AdaptivityConfiguration adaptConfig,
+                    sgpp::base::AdaptivityConfiguration adaptivityConfig,
                     sgpp::solver::SLESolverConfiguration solverConfig,
                     sgpp::solver::SLESolverConfiguration finalSolverConfig,
                     datadriven::RegularizationConfiguration regularizationConfig);
@@ -189,7 +189,7 @@ class RegressionLearner {
 
  private:
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   datadriven::RegularizationConfiguration regularizationConfig;

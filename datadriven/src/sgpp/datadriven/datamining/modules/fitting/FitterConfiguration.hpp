@@ -234,7 +234,7 @@ class FitterConfiguration {
   /**
    * Configure how the adaptivity algorithms for the grid should behave.
    */
-  base::AdaptivityConfiguration adaptConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
 
   /**
    * Configure how the crossvalidation should behave.

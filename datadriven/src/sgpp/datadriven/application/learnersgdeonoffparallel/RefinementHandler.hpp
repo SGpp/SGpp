@@ -28,13 +28,11 @@
 #include <utility>
 #include <vector>
 
-
 namespace sgpp {
 namespace datadriven {
 
 // Forward declare learner, as we use only pointer
 class LearnerSGDEOnOffParallel;
-
 
 class RefinementHandler {
  protected:
@@ -50,12 +48,9 @@ class RefinementHandler {
    * @param gridGen The grid's generator for the current grid
    * @return The number of added grid points
    */
-  size_t
-  handleDataAndZeroBasedRefinement(bool preCompute,
-                                   MultiGridRefinementFunctor *func,
-                                   size_t idx,
-                                   base::Grid &grid,
-                                   base::GridGenerator &gridGen) const;
+  size_t handleDataAndZeroBasedRefinement(bool preCompute, MultiGridRefinementFunctor *func,
+                                          size_t idx, base::Grid &grid,
+                                          base::GridGenerator &gridGen) const;
 
   /**
    * Logic that handles surplus based refinement functors
@@ -63,15 +58,12 @@ class RefinementHandler {
    * @param grid The current classes grid
    * @param alpha The current surpluss vector
    * @param gridGen The current grid's grid generator
-   * @param adaptConfig the configuration for the adaptivity
+   * @param adaptivityConfig the configuration for the adaptivity
    * @return The number of added grid points
    */
-  size_t
-  handleSurplusBasedRefinement(DBMatOnlineDE *densEst,
-                               Grid &grid,
-                               DataVector& alpha,
-                               base::GridGenerator &gridGen,
-                               sgpp::base::AdaptivityConfiguration adaptConfig) const;
+  size_t handleSurplusBasedRefinement(DBMatOnlineDE *densEst, Grid &grid, DataVector &alpha,
+                                      base::GridGenerator &gridGen,
+                                      sgpp::base::AdaptivityConfiguration adaptivityConfig) const;
 
  public:
   /**
@@ -79,22 +71,21 @@ class RefinementHandler {
    * @param learnerInstance The instance of the learner to handle refinement for
    * @param numClasses The number of classes for the current problem
    */
-  RefinementHandler(LearnerSGDEOnOffParallel *learnerInstance,
-                                  size_t numClasses);
+  RefinementHandler(LearnerSGDEOnOffParallel *learnerInstance, size_t numClasses);
 
   /**
-    * After refinement completes locally or refinement results have been received over MPI, this method uses the results to adjust the grid and alpha vector.
+    * After refinement completes locally or refinement results have been received over MPI, this
+   * method uses the results to adjust the grid and alpha vector.
     * If this is run on the master, the grid changes will be exported over MPI.
-    * If the system matrix is refineable, a system matrix update will be assigned to workers over MPI.
+    * If the system matrix is refineable, a system matrix update will be assigned to workers over
+   * MPI.
     * @param classIndex The index of the class being updated
     * @param refinementResult The grid changes from the refinement cycle
     * @param densEst A pointer to the online object specfic to this class
     * @param grid the grid of the current density function
     */
-  void updateClassVariablesAfterRefinement(size_t classIndex,
-                                           RefinementResult *refinementResult,
-                                           DBMatOnlineDE *densEst,
-                                           Grid& grid);
+  void updateClassVariablesAfterRefinement(size_t classIndex, RefinementResult *refinementResult,
+                                           DBMatOnlineDE *densEst, Grid &grid);
 
   /**
    * Fetches the currently stored refinement results for a specific class
@@ -118,15 +109,13 @@ class RefinementHandler {
    * @param currentTrainError The current training error
    * @param numberOfCompletedRefinements The number of refinement cycles already completed
    * @param monitor The convergence monitor, if any
-   * @param adaptConfig the configuration for the adaptivity of the grids
+   * @param adaptivityConfig the configuration for the adaptivity of the grids
    * @return How many refinement cycles should be started
    */
-  size_t checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod,
-                                size_t batchSize,
-                                double currentValidError, double currentTrainError,
-                                size_t numberOfCompletedRefinements,
-                                RefinementMonitor &monitor,
-                                sgpp::base::AdaptivityConfiguration adaptConfig);
+  size_t checkRefinementNecessary(const std::string &refMonitor, size_t refPeriod, size_t batchSize,
+                                  double currentValidError, double currentTrainError,
+                                  size_t numberOfCompletedRefinements, RefinementMonitor &monitor,
+                                  sgpp::base::AdaptivityConfiguration adaptivityConfig);
 
   /**
    * Handles refinement for a specific class.
@@ -138,17 +127,13 @@ class RefinementHandler {
    * @param preCompute Whether to precompute the functor's evaluation step
    * @param refinementFunctor The refinement functor to use
    * @param classIndex The index of the current class for which refinement is taking place
-   * @param adaptConfig the configuration for the adaptivity of the grids
+   * @param adaptivityConfig the configuration for the adaptivity of the grids
    */
-  void doRefinementForClass(const std::string &refType,
-                            RefinementResult *refinementResult,
-                            const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
-                            Grid& grid,
-                            DataVector& alpha,
-                            bool preCompute,
-                            MultiGridRefinementFunctor *refinementFunctor,
-                            size_t classIndex,
-                            sgpp::base::AdaptivityConfiguration& adaptConfig);
+  void doRefinementForClass(
+      const std::string &refType, RefinementResult *refinementResult,
+      const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
+      Grid &grid, DataVector &alpha, bool preCompute, MultiGridRefinementFunctor *refinementFunctor,
+      size_t classIndex, sgpp::base::AdaptivityConfiguration &adaptivityConfig);
 };
 }  // namespace datadriven
 }  // namespace sgpp

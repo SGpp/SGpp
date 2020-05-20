@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
   gridConfig.level_ = 3;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -47,8 +47,7 @@ BOOST_AUTO_TEST_CASE(offline_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())};
 
   sgpp::datadriven::DBMatOfflineOrthoAdapt off_object;
   off_object.buildMatrix(grid.get(), regularizationConfig);
@@ -166,7 +165,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   gridConfig.level_ = 2;
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   sgpp::datadriven::RegularizationConfiguration regularizationConfig;
   regularizationConfig.type_ = sgpp::datadriven::RegularizationType::Identity;
@@ -177,8 +176,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
 
   sgpp::datadriven::GridFactory gridFactory;
   std::unique_ptr<sgpp::base::Grid> grid = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::set<std::set <size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())};
 
   // creating offline objects
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_base;
@@ -198,8 +196,7 @@ BOOST_AUTO_TEST_CASE(online_object) {
   // creating offline object of one bigger lvl as source for points to refine
   gridConfig.level_++;
   std::unique_ptr<sgpp::base::Grid> grid_source = std::unique_ptr<sgpp::base::Grid>{
-    gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())
-  };
+      gridFactory.createGrid(gridConfig, std::set<std::set<size_t>>())};
   sgpp::datadriven::DBMatOfflineOrthoAdapt offline_source;
   offline_source.buildMatrix(&(*grid_source), regularizationConfig);
 

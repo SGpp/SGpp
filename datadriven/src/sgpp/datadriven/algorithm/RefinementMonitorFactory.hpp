@@ -20,13 +20,12 @@ class RefinementMonitorFactory {
 
   /**
    * Creates a refinement monitor
-   * @param adaptConfig configuration for the adaptivity of the sparse grid
+   * @param adaptivityConfig configuration for the adaptivity of the sparse grid
    * @return a new refinement monitor instance
    */
   RefinementMonitor* createRefinementMonitor(
-      const sgpp::base::AdaptivityConfiguration& adaptConfig) const;
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig) const;
 };
 
 }  // namespace datadriven
 }  // namespace sgpp
-

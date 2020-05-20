@@ -28,7 +28,7 @@ class DBMatPermutationFactory {
    *
    * @param gridConfig The desired grid configuration.
    * @param geometryConfig The desired geometry configuration.
-   * @param adaptConfig The desired adaptivity configuration.
+   * @param adaptivityConfig The desired adaptivity configuration.
    * @param regularizationConfig The desired regularization configuration.
    * @param densityEstimationConfig The desired desnity estimation configuration.
    * @return A offline object that matches the configuration.
@@ -36,7 +36,7 @@ class DBMatPermutationFactory {
   DBMatOfflinePermutable* getPermutedObject(
       const sgpp::base::GeneralGridConfiguration& gridConfig,
       const sgpp::datadriven::GeometryConfiguration geometryConfig,
-      const sgpp::base::AdaptivityConfiguration& adaptConfig,
+      const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
       const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
       const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig);
 

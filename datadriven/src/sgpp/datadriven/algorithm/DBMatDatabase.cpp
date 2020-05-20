@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -49,30 +48,30 @@ DBMatDatabase::DBMatDatabase(const std::string& filepath) {
 
 bool DBMatDatabase::hasDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   return entry_index >= 0;
 }
 
 bool DBMatDatabase::hasBaseDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Call with base matrix flag
-  return entryIndexByConfiguration(gridConfig, adaptConfig, regularizationConfig,
+  return entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                    densityEstimationConfig, true) >= 0;
 }
 
 std::string& DBMatDatabase::getDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   if (entry_index < 0) {
     // No decomposition in database
@@ -88,12 +87,12 @@ std::string& DBMatDatabase::getDataMatrix(
 
 std::string& DBMatDatabase::getBaseDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Get index of suitable base object if existing
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig, true);
   // If none is found throw exception
   if (entry_index < 0) {
@@ -123,12 +122,12 @@ std::string& DBMatDatabase::getBaseDataMatrix(
 
 void DBMatDatabase::putDataMatrix(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     const std::string filepath, bool overwriteEntry) {
   // Check if for this setting an entry is already definied
-  int entry_index = entryIndexByConfiguration(gridConfig, adaptConfig, regularizationConfig,
+  int entry_index = entryIndexByConfiguration(gridConfig, adaptivityConfig, regularizationConfig,
                                               densityEstimationConfig);
   if (entry_index < 0) {
     // Create a new list node in the json object
@@ -315,7 +314,7 @@ bool DBMatDatabase::densityEstimationConfigurationMatches(
 
 int DBMatDatabase::entryIndexByConfiguration(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig,
     bool findBaseConfig) {

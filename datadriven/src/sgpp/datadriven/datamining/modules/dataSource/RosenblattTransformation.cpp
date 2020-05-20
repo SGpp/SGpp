@@ -79,8 +79,8 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // configure adaptive refinement
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.numRefinements_ = 0;
 
   // configure solver
   sgpp::solver::SLESolverConfiguration solverConfig;
@@ -97,8 +97,8 @@ sgpp::datadriven::LearnerSGDE RosenblattTransformation::createSGDELearner(
   sgpp::datadriven::CrossvalidationConfiguration crossValidationConfig;
   crossValidationConfig.enable_ = false;
 
-  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptConfig, solverConfig, regularizationConfig,
-                                        crossValidationConfig);
+  sgpp::datadriven::LearnerSGDE learner(gridConfig, adaptivityConfig, solverConfig,
+                                        regularizationConfig, crossValidationConfig);
   return learner;
 }
 } /* namespace datadriven */

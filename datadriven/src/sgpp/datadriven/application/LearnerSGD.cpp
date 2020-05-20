@@ -34,7 +34,7 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSGD::LearnerSGD(base::RegularGridConfiguration& gridConfig,
-                       base::AdaptivityConfiguration& adaptConfig,
+                       base::AdaptivityConfiguration& adaptivityConfig,
                        base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
                        base::DataMatrix& pTestData, base::DataVector& pTestLabels,
                        base::DataMatrix* pValData, base::DataVector* pValLabels, double lambda,
@@ -50,7 +50,7 @@ LearnerSGD::LearnerSGD(base::RegularGridConfiguration& gridConfig,
       batchLabels(nullptr),
       batchError(base::DataVector(0)),
       gridConfig(gridConfig),
-      adaptConfig(adaptConfig),
+      adaptivityConfig(adaptivityConfig),
       lambda(lambda),
       gamma(gamma),
       currentGamma(gamma),
@@ -110,10 +110,10 @@ void LearnerSGD::train(size_t maxDataPasses, std::string refType, std::string re
   size_t cntDataPasses = 0;
 
   // refinement variables
-  size_t refNum = adaptConfig.numRefinements_;
-  size_t numPoints = adaptConfig.numRefinementPoints_;
+  size_t refNum = adaptivityConfig.numRefinements_;
+  size_t numPoints = adaptivityConfig.numRefinementPoints_;
   size_t refCnt = 0;
-  double threshold = adaptConfig.refinementThreshold_;
+  double threshold = adaptivityConfig.refinementThreshold_;
   double currentBatchError = 0.0;
   double currentTrainError = 0.0;
   RefinementMonitor* monitor = nullptr;

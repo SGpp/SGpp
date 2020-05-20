@@ -31,7 +31,7 @@ class ClassificationLearner {
   /**
    * @brief ClassificationLearner
    * @param gridConfig
-   * @param adaptConfig
+   * @param adaptivityConfig
    * @param solverConfig is the solver used during each adaptivity step
    * @param finalSolverConfig is the solver used to build the final model
    * @param regularizationConfig
@@ -41,7 +41,7 @@ class ClassificationLearner {
    * include the vector [1,2] in terms.
    */
   ClassificationLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                        sgpp::base::AdaptivityConfiguration adaptConfig,
+                        sgpp::base::AdaptivityConfiguration adaptivityConfig,
                         sgpp::solver::SLESolverConfiguration solverConfig,
                         sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig,
@@ -49,13 +49,13 @@ class ClassificationLearner {
   /**
    * @brief ClassificationLearner
    * @param gridConfig
-   * @param adaptConfig
+   * @param adaptivityConfig
    * @param solverConfig is the solver used during each adaptivity step
    * @param finalSolverConfig is the solver used to build the final model
    * @param regularizationConfig
    */
   ClassificationLearner(sgpp::base::RegularGridConfiguration gridConfig,
-                        sgpp::base::AdaptivityConfiguration adaptConfig,
+                        sgpp::base::AdaptivityConfiguration adaptivityConfig,
                         sgpp::solver::SLESolverConfiguration solverConfig,
                         sgpp::solver::SLESolverConfiguration finalSolverConfig,
                         sgpp::datadriven::RegularizationConfiguration regularizationConfig);
@@ -97,7 +97,7 @@ class ClassificationLearner {
   typedef std::pair<class_t, RegressionLearner> learner_t;
 
   sgpp::base::RegularGridConfiguration gridConfig;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::solver::SLESolverConfiguration solverConfig;
   sgpp::solver::SLESolverConfiguration finalSolverConfig;
   RegularizationConfiguration regularizationConfig;

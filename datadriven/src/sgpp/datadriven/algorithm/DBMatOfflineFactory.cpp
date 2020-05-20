@@ -16,7 +16,6 @@
 #include <string>
 #include <vector>
 
-
 namespace sgpp {
 namespace datadriven {
 
@@ -25,7 +24,7 @@ using sgpp::base::GridType;
 
 DBMatOffline* DBMatOfflineFactory::buildOfflineObject(
     const sgpp::base::GeneralGridConfiguration& gridConfig,
-    const sgpp::base::AdaptivityConfiguration& adaptConfig,
+    const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
     const sgpp::datadriven::RegularizationConfiguration& regularizationConfig,
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   auto type = densityEstimationConfig.decomposition_;

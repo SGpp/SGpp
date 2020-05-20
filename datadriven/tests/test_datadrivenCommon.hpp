@@ -21,18 +21,18 @@ using sgpp::base::OCLOperationConfiguration;
 #include <tuple>
 #include <vector>
 
-
 using sgpp::datadriven::BlacsProcessGrid;
 
 std::string uncompressFile(std::string fileName);
 
 sgpp::base::DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage, std::string fileName);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen,
+                         sgpp::base::DataVector& alpha);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);
 
 double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& resultsCompare);
 

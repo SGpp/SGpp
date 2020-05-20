@@ -13,13 +13,13 @@ namespace sgpp {
 namespace datadriven {
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdaptivityConfiguration adaptConfig,
+    sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig,
     const std::set<std::set<size_t>> terms)
     : gridConfig(gridConfig),
-      adaptConfig(adaptConfig),
+      adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
@@ -27,17 +27,16 @@ ClassificationLearner::ClassificationLearner(
 
 ClassificationLearner::ClassificationLearner(
     sgpp::base::RegularGridConfiguration gridConfig,
-    sgpp::base::AdaptivityConfiguration adaptConfig,
+    sgpp::base::AdaptivityConfiguration adaptivityConfig,
     sgpp::solver::SLESolverConfiguration solverConfig,
     sgpp::solver::SLESolverConfiguration finalSolverConfig,
     sgpp::datadriven::RegularizationConfiguration regularizationConfig)
     : gridConfig(gridConfig),
-      adaptConfig(adaptConfig),
+      adaptivityConfig(adaptivityConfig),
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
-      terms() {
-}
+      terms() {}
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
                                   sgpp::base::DataVector& classes) {
@@ -61,10 +60,10 @@ void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
     auto newY = generateYOneVsAll(classes, uniqueClass);
     auto learner = [this]() {
       if (terms.size() > 0) {
-        return RegressionLearner(gridConfig, adaptConfig, solverConfig, finalSolverConfig,
+        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
                                  regularizationConfig, terms);
       } else {
-        return RegressionLearner(gridConfig, adaptConfig, solverConfig, finalSolverConfig,
+        return RegressionLearner(gridConfig, adaptivityConfig, solverConfig, finalSolverConfig,
                                  regularizationConfig);
       }
     }();

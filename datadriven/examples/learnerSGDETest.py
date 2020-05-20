@@ -59,9 +59,9 @@ def main():
 
     # Config adaptivity
     print("create adaptive refinement config... ", end=' ')
-    adaptConfig = sg.AdaptivityConfiguration()
-    adaptConfig.numRefinements_ = 0
-    adaptConfig.numRefinementPoints_ = 10
+    adaptivityConfig = sg.AdaptivityConfiguration()
+    adaptivityConfig.numRefinements_ = 0
+    adaptivityConfig.numRefinementPoints_ = 10
     print("Done")
     
     # Config solver
@@ -99,7 +99,7 @@ def main():
     # Create the learner with the given configuration
     #
     print("create the learner... ")
-    learner = sg.LearnerSGDE(gridConfig, adaptConfig, solv, regularizationConfig, crossValidationConfig)
+    learner = sg.LearnerSGDE(gridConfig, adaptivityConfig, solv, regularizationConfig, crossValidationConfig)
     learner.initialize(data_tr)
     
     # Train the learner
