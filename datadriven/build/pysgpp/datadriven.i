@@ -6,7 +6,9 @@
 // Shared pointers.
 %shared_ptr(sgpp::datadriven::DMSystemMatrixBase)
 %shared_ptr(sgpp::datadriven::DMSystemMatrix)
+%shared_ptr(sgpp::datadriven::DMSystemMatrixDRE)
 %shared_ptr(sgpp::datadriven::DensitySystemMatrix)
+%shared_ptr(sgpp::datadriven::DensityDifferenceSystemMatrix)
 %shared_ptr(sgpp::datadriven::OperationRegularizationDiagonal)
 
 %{
@@ -28,13 +30,24 @@
 %include "datadriven/src/sgpp/datadriven/algorithm/test_dataset.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/DensitySystemMatrix.hpp"
+%include "datadriven/src/sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp"
+
 %include "datadriven/src/sgpp/datadriven/tools/Dataset.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
+
 %include "datadriven/src/sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
 %include "datadriven/src/sgpp/datadriven/configuration/DatabaseConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp"
+//%include "datadriven/src/sgpp/datadriven/configuration/GeometryConfiguration.hpp"
+//%include "datadriven/src/sgpp/datadriven/configuration/GeometryConfigurationParser.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/LearnerConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/ParallelConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/RegularizationConfiguration.hpp"
+%include "datadriven/src/sgpp/datadriven/configuration/RegularizationTypeParser.hpp"
+
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitor.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorConvergence.hpp"
 %include "datadriven/src/sgpp/datadriven/algorithm/RefinementMonitorPeriodic.hpp"
@@ -130,10 +143,6 @@
 %include "datadriven/src/sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp"
 #endif
 
-%include "datadriven/src/sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp"
-%include "datadriven/src/sgpp/datadriven/configuration/RegularizationTypeParser.hpp"
-
 %include "datadriven/src/sgpp/datadriven/datamining/modules/dataSource/DataSourceConfig.hpp"
 %ignore sgpp::datadriven::DataShufflingFunctor::operator();
 %ignore sgpp::datadriven::DataShufflingFunctorRandom::operator();
@@ -176,10 +185,14 @@
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp"
-
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp"
@@ -200,6 +213,7 @@
 %ignore sgpp::datadriven::SparseGridMiner::print;
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMiner.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp"
 
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ScorerFactory.hpp"
@@ -207,6 +221,8 @@
 %include "datadriven/src/sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp"
 %include "datadriven/src/sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp"
+%include "datadriven/src/sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp"
 
 //TODO(lettrich) : parser not wrapable because of unwrapped JSON, but json parsing inside python is easy.
 //%include "datadriven/src/sgpp/datadriven/datamining/configuration/DataMiningConfigParser.hpp"
