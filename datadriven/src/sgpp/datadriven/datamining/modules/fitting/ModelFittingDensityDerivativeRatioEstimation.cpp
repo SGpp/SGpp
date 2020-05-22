@@ -77,7 +77,7 @@ bool ModelFittingDensityDerivativeRatioEstimation::adapt() {
       auto noPoints = grid->getSize();
 
       GeometryConfiguration geoConf = config->getGeometryConfig();
-      if (!geoConf.stencils.empty()) {
+      if (!geoConf.stencils_.empty()) {
         GridFactory gridFactory;
         grid->getGenerator().refineInter(refinementFunctor, gridFactory.getInteractions(geoConf));
       } else {

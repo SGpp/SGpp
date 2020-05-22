@@ -82,7 +82,7 @@ void ModelFittingDensityDerivativeEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
-  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation_;
 
   // clear model
   reset();
@@ -118,17 +118,17 @@ void ModelFittingDensityDerivativeEstimationOnOff::fit(DataMatrix& newDataset) {
     // Initialize the permutation factory. If a database path is specified, the path is pased to the
     // permutation factory
     DBMatPermutationFactory permutationFactory;
-    if (databaseConfig.filePath.empty()) {
+    if (databaseConfig.filePath_.empty()) {
       permutationFactory = DBMatPermutationFactory(this->objectStore);
     } else {
-      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath_);
     }
     offline = std::unique_ptr<DBMatOffline>{permutationFactory.getPermutedObject(
         config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
         config->getRegularizationConfig(), config->getDensityEstimationConfig())};
     offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  } else if (!databaseConfig.filePath_.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -165,7 +165,7 @@ void ModelFittingDensityDerivativeEstimationOnOff::fit(DataMatrix& newDataset) {
   online->computeDensityDerivativeFunction(alpha, newDataset, *grid,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate);
+  online->setBeta(this->config->getLearnerConfig().learningRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
