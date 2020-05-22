@@ -38,16 +38,16 @@ def generate_friedman1(seed):
 ## This function evaluates the performance of a learner with standard settings
 ## and different values of T.
 def evaluate(X_tr, y_tr, X_te, y_te, T):
-    grid = sg.RegularGridConfiguration()
-    grid.dim_ = 10
-    grid.level_ = 4
-    grid.t_ = T
-    grid.type_ = sg.GridType_ModLinear
+    gridConfig = sg.RegularGridConfiguration()
+    gridConfig.dim_ = 10
+    gridConfig.level_ = 4
+    gridConfig.t_ = T
+    gridConfig.type_ = sg.GridType_ModLinear
 
-    adapt = sg.AdaptivityConfiguration()
-    adapt.numRefinements_ = 5
-    adapt.numRefinementPoints_ = 3
-    adapt.numCoarseningPoints_ = 3
+    adaptivityConfig = sg.AdaptivityConfiguration()
+    adaptivityConfig.numRefinements_ = 5
+    adaptivityConfig.numRefinementPoints_ = 3
+    adaptivityConfig.numCoarseningPoints_ = 3
 
     solv = sg.SLESolverConfiguration()
     solv.maxIterations_ = 50
@@ -58,14 +58,14 @@ def evaluate(X_tr, y_tr, X_te, y_te, T):
     final_solv = solv
     final_solv.maxIterations = 200
 
-    regular = sg.RegularizationConfiguration()
-    regular.type_ = sg.RegularizationType_Identity
-    regular.exponentBase_ = 1.0
-    regular.lambda_ = 1e-3
+    regularizationConfig = sg.RegularizationConfiguration()
+    regularizationConfig.type_ = sg.RegularizationType_Identity
+    regularizationConfig.exponentBase_ = 1.0
+    regularizationConfig.lambda_ = 1e-3
 
     ## Create the estimator, train it with the training data and then return the error
     ## for the testing set.
-    estimator = sg.RegressionLearner(grid, adapt, solv, final_solv,regular)
+    estimator = sg.RegressionLearner(gridConfig, adaptivityConfig, solv, final_solv,regularizationConfig)
     estimator.train(X_tr,y_tr)
     print(estimator.getGridSize())
     return estimator.getMSE(X_te,y_te)

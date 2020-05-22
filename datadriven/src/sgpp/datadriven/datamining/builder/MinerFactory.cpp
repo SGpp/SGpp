@@ -51,7 +51,7 @@ DataSourceSplitting* MinerFactory::createDataSourceSplitting(
 
   bool hasSource = parser.getDataSourceConfig(config, config);
 
-  if (hasSource && config.filePath.compare("") != 0) {
+  if (hasSource && config.filePath_.compare("") != 0) {
     DataSourceBuilder builder;
     return builder.splittingFromConfig(config);
   } else {
@@ -68,7 +68,7 @@ DataSourceCrossValidation* MinerFactory::createDataSourceCrossValidation(
 
   bool hasSource = parser.getDataSourceConfig(config, config);
 
-  if (hasSource && config.filePath.compare("") != 0) {
+  if (hasSource && config.filePath_.compare("") != 0) {
     DataSourceBuilder builder;
     return builder.crossValidationFromConfig(config, crossValidationconfig);
   } else {

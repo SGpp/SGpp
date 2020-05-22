@@ -15,13 +15,12 @@
 #include <random>
 #include <string>
 
-
-void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha,
                       std::mt19937 mt, std::uniform_real_distribution<double>& dist) {
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.numRefinementPoints_,
-                                                      adaptConfig.refinementThreshold_);
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptivityConfig.numRefinementPoints_,
+                                                      adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -47,12 +46,12 @@ int main(int argc, char** argv) {
 
   uint32_t level = 10;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 8;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 8;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -89,7 +88,7 @@ int main(int argc, char** argv) {
   std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  doAllRefinements(adaptConfig, *grid, gridGen, alpha, mt, dist);
+  doAllRefinements(adaptivityConfig, *grid, gridGen, alpha, mt, dist);
 
   std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;

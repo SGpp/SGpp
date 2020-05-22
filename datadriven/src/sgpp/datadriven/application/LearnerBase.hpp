@@ -92,9 +92,9 @@ class LearnerBase {
   /**
    * Initialize the grid and its coefficients
    *
-   * @param GridConfig structure which describes the regular start grid
+   * @param gridConfig structure which describes the regular start grid
    */
-  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig);
+  virtual void InitializeGrid(const sgpp::base::RegularGridConfiguration& gridConfig);
 
   /**
    * abstract method that constructs the corresponding system of linear
@@ -133,12 +133,12 @@ class LearnerBase {
    *
    * @param trainDataset the training dataset
    * @param classes classes corresponding to the training dataset
-   * @param GridConfig configuration of the regular start grid
+   * @param gridConfig configuration of the regular start grid
    * @param SolverConfigRefine configuration of the SLE solver during the
    * adaptive refinements of the grid
    * @param SolverConfigFinal configuration of the final SLE solving step on the
    * refined grid
-   * @param AdaptConfig configuration of the adaptivity strategy
+   * @param adaptivityConfig configuration of the adaptivity strategy
    * @param testAccDuringAdapt set to true if the training accuracy should be
    * determined in evert refinement step
    * @param lambdaRegularization regularization parameter lambda
@@ -147,10 +147,10 @@ class LearnerBase {
    * if no output is wished)
    */
   virtual LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
-                              const sgpp::base::RegularGridConfiguration& GridConfig,
+                              const sgpp::base::RegularGridConfiguration& gridConfig,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigRefine,
                               const sgpp::solver::SLESolverConfiguration& SolverConfigFinal,
-                              const sgpp::base::AdaptivityConfiguration& AdaptConfig,
+                              const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                               bool testAccDuringAdapt, const double lambdaRegularization,
                               sgpp::base::DataMatrix* testDataset = nullptr,
                               sgpp::base::DataVector* testClasses = nullptr);
@@ -160,12 +160,12 @@ class LearnerBase {
    *
    * @param trainDataset the training dataset
    * @param classes classes corresponding to the training dataset
-   * @param GridConfig configuration of the regular grid
+   * @param gridConfig configuration of the regular grid
    * @param SolverConfig configuration of the SLE solver
    * @param lambdaRegularization regularization parameter lambda
    */
   LearnerTiming train(sgpp::base::DataMatrix& trainDataset, sgpp::base::DataVector& classes,
-                      const sgpp::base::RegularGridConfiguration& GridConfig,
+                      const sgpp::base::RegularGridConfiguration& gridConfig,
                       const sgpp::solver::SLESolverConfiguration& SolverConfig,
                       const double lambdaRegularization);
 

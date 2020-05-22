@@ -73,7 +73,7 @@ int main(int argc, char** argv) {
    * The database has to be initialized. This is done by passing the file to the json
    * database file to the constructor of the DBMatDatabase class.
    */
-  DBMatDatabase database(databaseConfig.filePath);
+  DBMatDatabase database(databaseConfig.filePath_);
 
   /**
    * Before the matrix can be initialized the underlying grid needs to be created

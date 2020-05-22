@@ -32,111 +32,111 @@ struct DataSourceConfig {
   /**
    * Valid path to a file on disk. Empty for generated artificial datasets
    */
-  std::string filePath = "";
+  std::string filePath_ = "";
   /**
    * Which type of input file are we dealing with? NONE for auto detection or generated artificial
    * datasets.
    */
-  DataSourceFileType fileType = DataSourceFileType::NONE;
+  DataSourceFileType fileType_ = DataSourceFileType::NONE;
   /**
    * The dataset is gzip compressed
    */
-  bool isCompressed = false;
+  bool isCompressed_ = false;
   /**
    * How many batches should the dataset be split into for batch learning - if 1, take the
    * entire dataset
    */
-  size_t numBatches = 1;
+  size_t numBatches_ = 1;
   /*
    * size of a batch - if 0, take all available samples.
    */
-  size_t batchSize = 0;
+  size_t batchSize_ = 0;
   /*
    * The portion of the dataset that is used for validation
    */
-  double validationPortion = 0.3;
+  double validationPortion_ = 0.3;
   /**
    * whether the file has targets (i.e. supervised learning)
    */
-  bool hasTargets = true;
+  bool hasTargets_ = true;
   /*
    * Configuration for possible data transformation on dataset
    */
-  datadriven::DataTransformationConfig dataTransformationConfig;
+  datadriven::DataTransformationConfig dataTransformationConfig_;
   /**
    * The type of shuffling to be applied to the data
    */
-  DataSourceShufflingType shuffling = DataSourceShufflingType::sequential;
+  DataSourceShufflingType shuffling_ = DataSourceShufflingType::sequential;
   /**
    * Seed for the shuffling prng
    */
-  int64_t randomSeed = -1;
+  int64_t randomSeed_ = -1;
   /**
    * The number of epochs to train on
    */
-  size_t epochs = 1;
+  size_t epochs_ = 1;
   /**
    * After how many (valid) lines of the sourcefile to stop reading
    */
-  size_t readinCutoff = -1;
+  size_t readinCutoff_ = -1;
   /**
    * Specifies the set of classes (targets) to be read-in from the data file
    * Any line with a class not contained in this vector is skipped
    * If hasTargets=false this is ignored
    * If empty then all classes/targets are considered (default)
    */
-  std::vector<double> readinClasses = std::vector<double>();
+  std::vector<double> readinClasses_ = std::vector<double>();
   /**
    * Specifies the set of columns (dimensions) to be read-in from the data file
    * Starts at 0, order matters; Any column not contained in this vector is ignored
    * as a dimension
    * If empty, then all columns are read in (default)
    */
-  std::vector<size_t> readinColumns = std::vector<size_t>();
+  std::vector<size_t> readinColumns_ = std::vector<size_t>();
   /**
    * Valid path to a file on disk. Empty for generated artificial datasets
    */
-  std::string testFilePath = "";
+  std::string testFilePath_ = "";
   /**
    * Which type of input file are we dealing with? NONE for auto detection or generated artificial
    * datasets.
    */
-  DataSourceFileType testFileType = DataSourceFileType::NONE;
+  DataSourceFileType testFileType_ = DataSourceFileType::NONE;
   /**
    * whether the file has targets (i.e. supervised learning)
    */
-  bool testHasTargets = true;
+  bool testHasTargets_ = true;
   /**
    * The dataset is gzip compressed
    */
-  bool testIsCompressed = false;
+  bool testIsCompressed_ = false;
   /**
    * How many batches should the dataset be split into for batch learning - if 1, take the
    * entire dataset
    */
-  size_t testNumBatches = 1;
+  size_t testNumBatches_ = 1;
   /*
    * size of a batch - if 0, take all available samples.
    */
-  size_t testBatchSize = 0;
+  size_t testBatchSize_ = 0;
   /**
    * After how many (valid) lines of the sourcefile to stop reading
    */
-  size_t testReadinCutoff = -1;
+  size_t testReadinCutoff_ = -1;
   /**
    * Specifies the set of classes (targets) to be read-in from the data file
    * Any line with a class not contained in this vector is skipped
    * If hasTargets=false this is ignored
    * If empty then all classes/targets are considered (default)
    */
-  std::vector<double> testReadinClasses = std::vector<double>();
+  std::vector<double> testReadinClasses_ = std::vector<double>();
   /**
    * Specifies the set of columns (dimensions) to be read-in from the data file
    * Starts at 0, order matters; Any column not contained in this vector is ignored
    * as a dimension
    * If empty, then all columns are read in (default)
    */
-  std::vector<size_t> testReadinColumns = std::vector<size_t>();
+  std::vector<size_t> testReadinColumns_ = std::vector<size_t>();
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

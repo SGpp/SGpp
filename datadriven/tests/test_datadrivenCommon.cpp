@@ -73,8 +73,7 @@ std::string uncompressFile(std::string fileName) {
   return convert.str();
 }
 
-DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage,
-                                std::string fileName) {
+DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage, std::string fileName) {
   std::string content = uncompressFile(fileName);
 
   std::stringstream contentStream;
@@ -115,18 +114,16 @@ DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage,
   return m;
 }
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
-                         sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen,
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen,
                          sgpp::base::DataVector& alpha) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alpha, adaptConfig.numRefinementPoints_,
-        adaptConfig.refinementThreshold_);
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptivityConfig.numRefinementPoints_,
+                                                      adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -137,9 +134,8 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
   }
 }
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
-                         sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen) {
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
@@ -150,10 +146,9 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
     alphaRefine[i] = dist(mt);
   }
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
     sgpp::base::SurplusRefinementFunctor myRefineFunc(
-        alphaRefine, adaptConfig.numRefinementPoints_,
-        adaptConfig.refinementThreshold_);
+        alphaRefine, adaptivityConfig.numRefinementPoints_, adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -164,8 +159,7 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig,
   }
 }
 
-double compareVectors(sgpp::base::DataVector& results,
-                      sgpp::base::DataVector& resultsCompare) {
+double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& resultsCompare) {
   double mse = 0.0;
 
   bool anyDifferentValue = false;
@@ -187,9 +181,8 @@ double compareVectors(sgpp::base::DataVector& results,
   }
 
   if (anyDifferentValue) {
-    BOOST_TEST_MESSAGE("largestDifference: "
-                       << largestDifference << " value: " << value
-                       << " valueReference: " << valueReference);
+    BOOST_TEST_MESSAGE("largestDifference: " << largestDifference << " value: " << value
+                                             << " valueReference: " << valueReference);
   } else {
     BOOST_TEST_MESSAGE("every value matched exactly");
   }
@@ -198,28 +191,25 @@ double compareVectors(sgpp::base::DataVector& results,
   return mse;
 }
 
-void compareDatasets(
-    const std::vector<std::tuple<std::string, double>>& fileNamesError,
-    sgpp::base::GridType gridType, size_t level,
-    sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
+void compareDatasets(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                     sgpp::base::GridType gridType, size_t level,
+                     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReference(gridType, std::get<0>(fileNameError), level,
-                                    configuration);
+    double mse = compareToReference(gridType, std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
-    std::cout << "expected error: " << std::get<1>(fileNameError)
-              << ", observed error:" << mse << std::endl;
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << std::endl;
   }
 }
 
-double compareToReference(
-    sgpp::base::GridType gridType, const std::string& fileName, size_t level,
-    sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+double compareToReference(sgpp::base::GridType gridType, const std::string& fileName, size_t level,
+                          sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -233,11 +223,9 @@ double compareToReference(
   std::shared_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createModLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -252,12 +240,11 @@ double compareToReference(
   }
 
   auto eval = std::shared_ptr<sgpp::base::OperationMultipleEval>(
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration));
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, gridGen, alpha);
+  doRandomRefinements(adaptivityConfig, *grid, gridGen, alpha);
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
 
@@ -268,40 +255,37 @@ double compareToReference(
   auto evalCompare = std::shared_ptr<sgpp::base::OperationMultipleEval>(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
-  sgpp::base::DataVector dataSizeVectorResultCompare(
-      dataset.getNumberInstances());
+  sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
-  double mse =
-      compareVectors(dataSizeVectorResult, dataSizeVectorResultCompare);
+  double mse = compareVectors(dataSizeVectorResult, dataSizeVectorResultCompare);
 
   BOOST_TEST_MESSAGE("fileName: " << fileName << " mse: " << mse);
   return mse;
 }
 
-void compareDatasetsTranspose(
-    const std::vector<std::tuple<std::string, double>>& fileNamesError,
-    sgpp::base::GridType gridType, size_t level,
-    sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
+void compareDatasetsTranspose(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                              sgpp::base::GridType gridType, size_t level,
+                              sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTranspose(
-        gridType, std::get<0>(fileNameError), level, configuration);
+    double mse =
+        compareToReferenceTranspose(gridType, std::get<0>(fileNameError), level, configuration);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
-    std::cout << "expected error: " << std::get<1>(fileNameError)
-              << ", observed error:" << mse << " (transposed)" << std::endl;
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << " (transposed)" << std::endl;
   }
 }
 
 double compareToReferenceTranspose(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -315,11 +299,9 @@ double compareToReferenceTranspose(
   std::shared_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createModLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -335,12 +317,11 @@ double compareToReferenceTranspose(
   }
 
   auto eval = std::shared_ptr<sgpp::base::OperationMultipleEval>(
-      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                    configuration));
+      sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration));
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, gridGen);
+  doRandomRefinements(adaptivityConfig, *grid, gridGen);
 
   sgpp::base::DataVector alphaResult(gridStorage.getSize());
 
@@ -361,18 +342,16 @@ double compareToReferenceTranspose(
   return mse;
 }
 
-void compareDatasetsDistributed(
-    const std::vector<std::tuple<std::string, double>>& fileNamesError,
-    sgpp::base::GridType gridType, size_t level,
-    sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
-    std::shared_ptr<BlacsProcessGrid> processGrid) {
+void compareDatasetsDistributed(const std::vector<std::tuple<std::string, double>>& fileNamesError,
+                                sgpp::base::GridType gridType, size_t level,
+                                sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
+                                std::shared_ptr<BlacsProcessGrid> processGrid) {
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse =
-        compareToReferenceDistributed(gridType, std::get<0>(fileNameError),
-                                      level, configuration, processGrid);
+    double mse = compareToReferenceDistributed(gridType, std::get<0>(fileNameError), level,
+                                               configuration, processGrid);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
-    std::cout << "expected error: " << std::get<1>(fileNameError)
-              << ", observed error:" << mse << std::endl;
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << std::endl;
   }
 }
 
@@ -380,12 +359,12 @@ double compareToReferenceDistributed(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
     std::shared_ptr<BlacsProcessGrid> processGrid) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -399,11 +378,9 @@ double compareToReferenceDistributed(
   std::shared_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createModLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -419,13 +396,12 @@ double compareToReferenceDistributed(
 
   auto eval = std::shared_ptr<OperationMultipleEvalDistributed>(
       static_cast<OperationMultipleEvalDistributed*>(
-          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                        configuration)));
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration)));
 
   // no random refinement, as randomness causes problems with multiple processes
 
-  DataVectorDistributed dataSizeVectorResultDistributed(
-      processGrid, dataset.getNumberInstances(), 32);
+  DataVectorDistributed dataSizeVectorResultDistributed(processGrid, dataset.getNumberInstances(),
+                                                        32);
 
   eval->prepare();
 
@@ -434,13 +410,11 @@ double compareToReferenceDistributed(
   auto evalCompare = std::shared_ptr<sgpp::base::OperationMultipleEval>(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
-  sgpp::base::DataVector dataSizeVectorResultCompare(
-      dataset.getNumberInstances());
+  sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
-  auto dataSizeVectorResult =
-      dataSizeVectorResultDistributed.toLocalDataVectorBroadcast();
+  auto dataSizeVectorResult = dataSizeVectorResultDistributed.toLocalDataVectorBroadcast();
 
   double mse = 0;
 
@@ -458,12 +432,11 @@ void compareDatasetsTransposeDistributed(
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
     std::shared_ptr<BlacsProcessGrid> processGrid) {
   for (std::tuple<std::string, double> fileNameError : fileNamesError) {
-    double mse = compareToReferenceTransposeDistributed(
-        gridType, std::get<0>(fileNameError), level, configuration,
-        processGrid);
+    double mse = compareToReferenceTransposeDistributed(gridType, std::get<0>(fileNameError), level,
+                                                        configuration, processGrid);
     BOOST_CHECK(mse < std::get<1>(fileNameError));
-    std::cout << "expected error: " << std::get<1>(fileNameError)
-              << ", observed error:" << mse << " (transposed)" << std::endl;
+    std::cout << "expected error: " << std::get<1>(fileNameError) << ", observed error:" << mse
+              << " (transposed)" << std::endl;
   }
 }
 
@@ -471,13 +444,13 @@ double compareToReferenceTransposeDistributed(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
     std::shared_ptr<BlacsProcessGrid> processGrid) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numCoarseningPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numCoarseningPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -491,11 +464,9 @@ double compareToReferenceTransposeDistributed(
   std::shared_ptr<sgpp::base::Grid> grid;
 
   if (gridType == sgpp::base::GridType::Linear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createLinearGrid(dim));
   } else if (gridType == sgpp::base::GridType::ModLinear) {
-    grid = std::shared_ptr<sgpp::base::Grid>(
-        sgpp::base::Grid::createModLinearGrid(dim));
+    grid = std::shared_ptr<sgpp::base::Grid>(sgpp::base::Grid::createModLinearGrid(dim));
   }
 
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
@@ -512,13 +483,11 @@ double compareToReferenceTransposeDistributed(
 
   auto eval = std::shared_ptr<OperationMultipleEvalDistributed>(
       static_cast<OperationMultipleEvalDistributed*>(
-          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData,
-                                                        configuration)));
+          sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration)));
 
   // no random refinement, as randomness causes problems with multiple processes
 
-  DataVectorDistributed alphaResultDistributed(processGrid,
-                                               gridStorage.getSize(), 32);
+  DataVectorDistributed alphaResultDistributed(processGrid, gridStorage.getSize(), 32);
 
   eval->prepare();
 
@@ -544,8 +513,7 @@ double compareToReferenceTransposeDistributed(
 }
 #if USE_OCL == 1
 
-std::shared_ptr<OCLOperationConfiguration>
-getConfigurationDefaultsSingleDevice() {
+std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsSingleDevice() {
   // detects the platform
   OCLManagerMultiPlatform manager;
   auto parameters = manager.getConfiguration();
@@ -582,8 +550,7 @@ getConfigurationDefaultsSingleDevice() {
   return parameters;
 }
 
-std::shared_ptr<OCLOperationConfiguration>
-getConfigurationDefaultsMultiDevice() {
+std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsMultiDevice() {
   // detects the platform
   OCLManagerMultiPlatform manager;
   auto parameters = manager.getConfiguration();
@@ -603,8 +570,7 @@ getConfigurationDefaultsMultiDevice() {
   return parameters;
 }
 
-std::shared_ptr<OCLOperationConfiguration>
-getConfigurationDefaultsMultiPlatform() {
+std::shared_ptr<OCLOperationConfiguration> getConfigurationDefaultsMultiPlatform() {
   // detects the platform
   OCLManagerMultiPlatform manager;
   auto parameters = manager.getConfiguration();

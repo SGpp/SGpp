@@ -97,25 +97,25 @@ class DMConfigTools {
     stream_out << "numCoarseningPoints \t\t" << adaptivityConfig.numCoarseningPoints_ << std::endl;
     stream_out << "percent \t\t\t" << adaptivityConfig.percent_ << std::endl;
     stream_out << std::boolalpha << "errorBasedRefinement \t\t"
-               << adaptivityConfig.errorBasedRefinement << std::endl;
-    stream_out << "errorConvergenceThreshold \t" << adaptivityConfig.errorConvergenceThreshold
+               << adaptivityConfig.errorBasedRefinement_ << std::endl;
+    stream_out << "errorConvergenceThreshold \t" << adaptivityConfig.errorConvergenceThreshold_
                << std::endl;
-    stream_out << "errorBufferSize \t\t" << adaptivityConfig.errorBufferSize << std::endl;
-    stream_out << "errorMinInterval \t\t" << adaptivityConfig.errorMinInterval << std::endl;
-    stream_out << "refinementPeriod \t\t" << adaptivityConfig.refinementPeriod << std::endl;
+    stream_out << "errorBufferSize \t\t" << adaptivityConfig.errorBufferSize_ << std::endl;
+    stream_out << "errorMinInterval \t\t" << adaptivityConfig.errorMinInterval_ << std::endl;
+    stream_out << "refinementPeriod \t\t" << adaptivityConfig.refinementPeriod_ << std::endl;
     stream_out << "refinementFunctorType \t\t" << base::RefinementFunctorTypeParser::toString(
-                                                      adaptivityConfig.refinementFunctorType)
+                                                      adaptivityConfig.refinementFunctorType_)
                << std::endl;
     stream_out << "coarseningFunctorType \t\t" << base::CoarseningFunctorTypeParser::toString(
-                                                      adaptivityConfig.coarseningFunctorType)
+                                                      adaptivityConfig.coarseningFunctorType_)
                << std::endl;
     stream_out << std::boolalpha << "precomputeEvaluations \t\t"
-               << adaptivityConfig.precomputeEvaluations << std::endl;
-    stream_out << std::boolalpha << "levelPenalize \t\t\t" << adaptivityConfig.levelPenalize
+               << adaptivityConfig.precomputeEvaluations_ << std::endl;
+    stream_out << std::boolalpha << "levelPenalize \t\t\t" << adaptivityConfig.levelPenalize_
                << std::endl;
     stream_out << "scalingCoefficients \t\t";
-    for (auto i = adaptivityConfig.scalingCoefficients.begin();
-         i != adaptivityConfig.scalingCoefficients.end(); ++i)
+    for (auto i = adaptivityConfig.scalingCoefficients_.begin();
+         i != adaptivityConfig.scalingCoefficients_.end(); ++i)
       stream_out << *i << ' ';
     stream_out << std::endl;
   }
@@ -142,7 +142,7 @@ class DMConfigTools {
                                                 densityEstimationConfig.decomposition_)
                << std::endl;
     stream_out << "useOfflinePermutation \t\t" << std::boolalpha
-               << densityEstimationConfig.useOfflinePermutation << std::endl;
+               << densityEstimationConfig.useOfflinePermutation_ << std::endl;
     stream_out << "normalize \t\t\t" << std::boolalpha << densityEstimationConfig.normalize_
                << std::endl;
     stream_out << "iCholSweepsDecompose \t\t" << densityEstimationConfig.iCholSweepsDecompose_
@@ -158,7 +158,7 @@ class DMConfigTools {
 
   static void dumpToStream(const DatabaseConfiguration& databaseConfig,
                            std::ostream& stream_out = std::cout) {
-    stream_out << "filePath \t\t" << databaseConfig.filePath << std::endl;
+    stream_out << "filePath \t\t" << databaseConfig.filePath_ << std::endl;
   }
 
   static void dumpToStream(const solver::SLESolverConfiguration& solverConfig,
@@ -194,8 +194,8 @@ class DMConfigTools {
 
   static void dumpToStream(const LearnerConfiguration& learnerConfig,
                            std::ostream& stream_out = std::cout) {
-    stream_out << "learningRate \t\t" << learnerConfig.learningRate << std::endl;
-    stream_out << "usePrior \t\t" << std::boolalpha << learnerConfig.usePrior << std::endl;
+    stream_out << "learningRate \t\t" << learnerConfig.learningRate_ << std::endl;
+    stream_out << "usePrior \t\t" << std::boolalpha << learnerConfig.usePrior_ << std::endl;
   }
 
   static void dumpToStream(const ParallelConfiguration& parallelConfig,

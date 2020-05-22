@@ -49,9 +49,8 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   regularizationConfig.lambda_ = 0.00001;
   regularizationConfig.exponentBase_ = 0.25;
 
-  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig,
-                                                 solverConfig, solverConfig,
-                                                 regularizationConfig);
+  return sgpp::datadriven::ClassificationLearner(gridConfig, adaptivityConfig, solverConfig,
+                                                 solverConfig, regularizationConfig);
 }
 
 /**
@@ -62,8 +61,7 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
  * @return
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain =
-      std::string("../datasets/ripley/ripleyGarcke.train.arff");
+  const auto filenameTrain = std::string("../datasets/ripley/ripleyGarcke.train.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;
@@ -74,6 +72,5 @@ int main(int argc, char** argv) {
   auto learner = getLearner(dimensions);
   learner.train(xTrain, yTrain);
   const auto accuracy = learner.getAccuracy(xTrain, yTrain);
-  std::cout << "Best config got a training acc of " << accuracy << "!"
-            << std::endl;
+  std::cout << "Best config got a training acc of " << accuracy << "!" << std::endl;
 }

@@ -29,7 +29,7 @@
             "noPoints": "5",
             "threshold": "0.0"
         },
-        "learner" : {
+        "learnerConfig" : {
             "usePrior" : false,
             "learningRate" : 0.0
         }

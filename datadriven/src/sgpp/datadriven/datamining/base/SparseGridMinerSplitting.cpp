@@ -56,7 +56,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     }
   }
 
-  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
+  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs_; epoch++) {
     if (verbose) {
       std::ostringstream out;
       out << "###############"

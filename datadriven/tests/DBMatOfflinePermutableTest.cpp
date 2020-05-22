@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(LhsMatrixPermutationTest) {
   DBMatOfflineTest baseTestObject;
   DBMatOfflineTest desiredTestObject;
 
-  sgpp::datadriven::RegularizationConfiguration regConfig;
-  regConfig.lambda_ = 0;
+  sgpp::datadriven::RegularizationConfiguration regularizationConfig;
+  regularizationConfig.lambda_ = 0;
 
   sgpp::base::GeneralGridConfiguration baseConfig;
   baseConfig.generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
@@ -135,8 +135,8 @@ BOOST_AUTO_TEST_CASE(LhsMatrixPermutationTest) {
   std::unique_ptr<sgpp::base::Grid> desiredGrid{
       gridFactory.createGrid(desiredConfig, interactions)};
 
-  baseTestObject.buildMatrix(baseGrid.get(), regConfig);
-  desiredTestObject.buildMatrix(desiredGrid.get(), regConfig);
+  baseTestObject.buildMatrix(baseGrid.get(), regularizationConfig);
+  desiredTestObject.buildMatrix(desiredGrid.get(), regularizationConfig);
 
   baseTestObject.permuteLhsMatrix(baseConfig, desiredConfig);
 

@@ -74,8 +74,8 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   alpha = DataVector(grid->getSize());
 
   // Intialize database if it is provided
-  if (!databaseConfig.filePath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  if (!databaseConfig.filePath_.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -106,7 +106,7 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate);
+  online->setBeta(this->config->getLearnerConfig().learningRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
