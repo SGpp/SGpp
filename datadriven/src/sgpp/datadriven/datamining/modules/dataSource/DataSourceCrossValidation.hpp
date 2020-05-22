@@ -26,13 +26,12 @@ class DataSourceCrossValidation : public DataSource {
   /**
    * Constructor
    * @param dataSourceConfig configuration of the data source
-   * @param crossValidationconfig configuration of the cross validation
-   * @param shuffling cross validation shuffling that is used by the sample
-   * provider instance
+   * @param crossValidationConfig configuration of the cross validation
+   * @param shuffling cross validation shuffling that is used by the sample provider instance
    * @param sampleProvider the sample provider to operate on.
    */
   DataSourceCrossValidation(const DataSourceConfig& dataSourceConfig,
-                            const CrossvalidationConfiguration& crossValidationconfig,
+                            const CrossvalidationConfiguration& crossValidationConfig,
                             DataShufflingFunctorCrossValidation* shuffling,
                             SampleProvider* sampleProvider);
 

@@ -401,8 +401,9 @@ double SparseGridDensityEstimator::optimizeLambdaCV() {
 
   for (size_t i = 0; i < crossvalidationConfig.lambdaSteps_; i++) {
     // compute current lambda
-    curLambda = lambdaStart + static_cast<double>(i) * (lambdaEnd - lambdaStart) /
-                                  static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
+    curLambda = lambdaStart +
+                static_cast<double>(i) * (lambdaEnd - lambdaStart) /
+                    static_cast<double>(crossvalidationConfig.lambdaSteps_ - 1);
 
     if (crossvalidationConfig.logScale_) curLambda = exp(curLambda);
 

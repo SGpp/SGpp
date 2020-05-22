@@ -63,7 +63,7 @@ class LearnerLeastSquaresIdentity : public sgpp::datadriven::LearnerBase {
   void multTranspose(sgpp::base::DataMatrix& dataset, sgpp::base::DataVector& multiplier,
                      sgpp::base::DataVector& result) override;
 
-  double testRegular(const sgpp::base::RegularGridConfiguration& GridConfig,
+  double testRegular(const sgpp::base::RegularGridConfiguration& gridConfig,
                      sgpp::base::DataMatrix& testDataset);
 
   std::vector<std::pair<size_t, double> > getRefinementExecTimes();

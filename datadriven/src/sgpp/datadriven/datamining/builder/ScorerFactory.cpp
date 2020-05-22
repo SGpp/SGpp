@@ -31,7 +31,7 @@ Metric* ScorerFactory::buildMetric(ScorerMetricType config) const {
 Scorer* ScorerFactory::buildScorer(const DataMiningConfigParser& parser) {
   ScorerConfiguration config;
   parser.getScorerConfig(config, config);
-  auto metric = buildMetric(config.metric);
+  auto metric = buildMetric(config.metric_);
   return new Scorer(metric);
 }
 

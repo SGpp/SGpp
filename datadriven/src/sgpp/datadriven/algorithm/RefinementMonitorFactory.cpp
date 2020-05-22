@@ -12,14 +12,14 @@ namespace datadriven {
 
 RefinementMonitor* RefinementMonitorFactory::createRefinementMonitor(
     const sgpp::base::AdaptivityConfiguration& adaptivityConfig) const {
-  if (adaptivityConfig.errorBasedRefinement) {
-    return new RefinementMonitorConvergence(adaptivityConfig.errorConvergenceThreshold,
-        adaptivityConfig.errorBufferSize, adaptivityConfig.errorMinInterval);
+  if (adaptivityConfig.errorBasedRefinement_) {
+    return new RefinementMonitorConvergence(adaptivityConfig.errorConvergenceThreshold_,
+                                            adaptivityConfig.errorBufferSize_,
+                                            adaptivityConfig.errorMinInterval_);
   } else {
-    return new RefinementMonitorPeriodic(adaptivityConfig.refinementPeriod);
+    return new RefinementMonitorPeriodic(adaptivityConfig.refinementPeriod_);
   }
 }
 
 }  // namespace datadriven
 }  // namespace sgpp
-

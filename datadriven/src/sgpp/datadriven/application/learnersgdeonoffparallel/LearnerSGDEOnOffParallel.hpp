@@ -49,10 +49,9 @@ class LearnerSGDEOnOffParallel {
       sgpp::base::RegularGridConfiguration &gridConfig,
       sgpp::base::AdaptivityConfiguration &adaptivityConfig,
       sgpp::datadriven::RegularizationConfiguration &regularizationConfig,
-      sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig,
-      Dataset &trainData, Dataset &testData, Dataset *validationData,
-      DataVector &classLabels, size_t numClassesInit, bool usePrior,
-      double beta, MPITaskScheduler &mpiTaskScheduler);
+      sgpp::datadriven::DensityEstimationConfiguration &densityEstimationConfig, Dataset &trainData,
+      Dataset &testData, Dataset *validationData, DataVector &classLabels, size_t numClassesInit,
+      bool usePrior, double beta, MPITaskScheduler &mpiTaskScheduler);
 
   /**
    * Trains the learner with the given dataset.
@@ -75,9 +74,8 @@ class LearnerSGDEOnOffParallel {
    * convergence-based refinement
    *        is chosen)
    */
-  void trainParallel(size_t batchSize, size_t maxDataPasses,
-                     std::string refinementFunctorType, std::string refMonitor,
-                     size_t refPeriod, double accDeclineThreshold,
+  void trainParallel(size_t batchSize, size_t maxDataPasses, std::string refinementFunctorType,
+                     std::string refMonitor, size_t refPeriod, double accDeclineThreshold,
                      size_t accDeclineBufferSize, size_t minRefInterval);
 
   /**
@@ -156,9 +154,8 @@ class LearnerSGDEOnOffParallel {
    * @param isLastPacketInSeries Whether this merge is the last merge in several
    * for the same class and batch
    */
-  void mergeAlphaValues(size_t classIndex, size_t remoteGridVersion,
-                        DataVector dataVector, size_t batchOffset,
-                        size_t batchSize, bool isLastPacketInSeries);
+  void mergeAlphaValues(size_t classIndex, size_t remoteGridVersion, DataVector dataVector,
+                        size_t batchOffset, size_t batchSize, bool isLastPacketInSeries);
 
   /**
    * Returns the internally stored current version of the grid
@@ -185,8 +182,7 @@ class LearnerSGDEOnOffParallel {
    * decomposition
    * @param gridVersion The new grid version to set after updating the matrix
    */
-  void computeNewSystemMatrixDecomposition(size_t classIndex,
-                                           size_t gridVersion);
+  void computeNewSystemMatrixDecomposition(size_t classIndex, size_t gridVersion);
 
   /**
    * Check whether the grid is in a final state where learning can occur.
@@ -306,16 +302,14 @@ class LearnerSGDEOnOffParallel {
    * @param deletedPoints a list of indexes of deleted points (coarsening)
    * @param newPoints the number of new grid points (refinemenet)
    */
-  void updateAlpha(size_t classIndex, std::list<size_t> *deletedPoints,
-                   size_t newPoints);
+  void updateAlpha(size_t classIndex, std::list<size_t> *deletedPoints, size_t newPoints);
 
   /**
    * Returns the density functions mapped to class labels.
    *
    * @return The density function objects mapped to class labels
    */
-  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>
-      &getDensityFunctions();
+  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &getDensityFunctions();
 
  protected:
   // Grids TODO(fuchsgruber): Move outwards (just in this class so that it
@@ -351,8 +345,7 @@ class LearnerSGDEOnOffParallel {
   // Contains all offline objects
   std::vector<std::unique_ptr<DBMatOffline>> offlineContainer;
   // The online objects (density functions)
-  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>
-      densityFunctions;
+  std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> densityFunctions;
 
   // Counter for total number of data points processed within ona data pass
   size_t processedPoints;
@@ -403,10 +396,9 @@ class LearnerSGDEOnOffParallel {
    * data and label
    * @param classIndices A map of each classes label to its index
    */
-  void allocateClassMatrices(
-      size_t dim,
-      std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
-      std::map<double, int> &classIndices) const;
+  void allocateClassMatrices(size_t dim,
+                             std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
+                             std::map<double, int> &classIndices) const;
 
   /**
    * Do an entire refinement cycle for all classes.
@@ -419,10 +411,8 @@ class LearnerSGDEOnOffParallel {
    * @param monitor The setup of the convergence monitor for refinement
    */
   void doRefinementForAll(
-      const std::string &refinementFunctorType,
-      const std::string &refinementMonitorType,
-      const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>
-          &onlineObjects,
+      const std::string &refinementFunctorType, const std::string &refinementMonitorType,
+      const std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects,
       RefinementMonitor &monitor);
 
   /**
@@ -433,13 +423,11 @@ class LearnerSGDEOnOffParallel {
    */
   void printGridSizeStatistics(
       const char *messageString,
-      std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>>
-          &onlineObjects);
+      std::vector<std::pair<std::unique_ptr<DBMatOnlineDE>, size_t>> &onlineObjects);
 
-  void splitBatchIntoClasses(
-      const Dataset &dataset, size_t dim,
-      const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
-      std::map<double, int> &classIndices) const;
+  void splitBatchIntoClasses(const Dataset &dataset, size_t dim,
+                             const std::vector<std::pair<DataMatrix *, double>> &trainDataClasses,
+                             std::map<double, int> &classIndices) const;
 
   /**
    * Wait for all grids to reach a consistent state before continuing

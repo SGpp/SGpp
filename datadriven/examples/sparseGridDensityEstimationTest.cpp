@@ -51,8 +51,7 @@ void randn(DataVector& rvar, std::mt19937& generator) {
  * Second define another auxiliary function that calls the one defined above
  * multiple times and returns a matrix of random points (uniform, normal)
  */
-void randu(DataMatrix& rvar,
-           std::uint64_t seedValue = std::mt19937_64::default_seed) {
+void randu(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
 
   std::mt19937 generator(seedValue);
@@ -63,8 +62,7 @@ void randu(DataMatrix& rvar,
   }
 }
 
-void randn(DataMatrix& rvar,
-           std::uint64_t seedValue = std::mt19937_64::default_seed) {
+void randn(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
 
   std::mt19937 generator(seedValue);
@@ -108,9 +106,9 @@ int main(int argc, char** argv) {
    * the number of points are specified.
    */
   std::cout << "# create adaptive refinement config" << std::endl;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.numRefinementPoints_ = 10;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.numRefinementPoints_ = 10;
 
   /**
    * Configure the solver. The solver type is set to the conjugent gradient
@@ -144,8 +142,7 @@ int main(int argc, char** argv) {
    * - whether parts of the output shall be kept off.
    */
   std::cout << "# create learner config" << std::endl;
-  sgpp::datadriven::CrossvalidationForRegularizationConfiguration
-      crossvalidationConfig;
+  sgpp::datadriven::CrossvalidationForRegularizationConfiguration crossvalidationConfig;
   crossvalidationConfig.enable_ = false;
   crossvalidationConfig.kfold_ = 3;
   crossvalidationConfig.lambda_ = 3.16228e-06;
@@ -161,10 +158,10 @@ int main(int argc, char** argv) {
   std::cout << "# create learner config" << std::endl;
   sgpp::datadriven::SGDEConfiguration sgdeConfig;
   sgdeConfig.makePositive_ = true;
-  sgdeConfig.makePositive_candidateSearchAlgorithm_ = sgpp::datadriven::
-      MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
-  sgdeConfig.makePositive_interpolationAlgorithm_ = sgpp::datadriven::
-      MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
+  sgdeConfig.makePositive_candidateSearchAlgorithm_ =
+      sgpp::datadriven::MakePositiveCandidateSearchAlgorithm::HybridFullIntersections;
+  sgdeConfig.makePositive_interpolationAlgorithm_ =
+      sgpp::datadriven::MakePositiveInterpolationAlgorithm::InterpolateBoundaries1d;
   sgdeConfig.unitIntegrand_ = true;
 
   /**
@@ -172,9 +169,9 @@ int main(int argc, char** argv) {
    * with the data read from the file in the first step and train the learner.
    */
   std::cout << "# creating the learner" << std::endl;
-  sgpp::datadriven::SparseGridDensityEstimator learner(
-      gridConfig, adaptConfig, solverConfig, regularizationConfig,
-      crossvalidationConfig, sgdeConfig);
+  sgpp::datadriven::SparseGridDensityEstimator learner(gridConfig, adaptivityConfig, solverConfig,
+                                                       regularizationConfig, crossvalidationConfig,
+                                                       sgdeConfig);
   learner.initialize(samples);
 
   /**
@@ -185,14 +182,10 @@ int main(int argc, char** argv) {
   sgpp::base::DataVector x(learner.getDim(), 0.5);
 
   std::cout << "--------------------------------------------------------\n";
-  std::cout << learner.getSurpluses().getSize() << " -> "
-            << learner.getSurpluses().sum() << "\n";
-  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x)
-            << " =pdf_KDE(x)\n";
-  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean()
-            << " = mean_KDE(x)\n";
-  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance()
-            << "=var_KDE(x)\n";
+  std::cout << learner.getSurpluses().getSize() << " -> " << learner.getSurpluses().sum() << "\n";
+  std::cout << "pdf_SGDE(x) = " << learner.pdf(x) << " ~ " << kde.pdf(x) << " =pdf_KDE(x)\n";
+  std::cout << "mean_SGDE(x) = " << learner.mean() << " ~ " << kde.mean() << " = mean_KDE(x)\n";
+  std::cout << "var_SGDE(x) = " << learner.variance() << " ~ " << kde.variance() << "=var_KDE(x)\n";
 
   sgpp::base::DataMatrix* bounds = new DataMatrix(gridConfig.dim_, 2);
   for (size_t idim = 0; idim < gridConfig.dim_; idim++) {
@@ -204,13 +197,11 @@ int main(int argc, char** argv) {
    * Print the covariances.
    */
   sgpp::base::DataMatrix C(gridConfig.dim_, gridConfig.dim_);
-  std::cout << "---------------------- Cov_SGDE ------------------------------"
-            << std::endl;
+  std::cout << "---------------------- Cov_SGDE ------------------------------" << std::endl;
   learner.cov(C, bounds);
   std::cout << C.toString() << std::endl;
 
-  std::cout << "---------------------- Cov KDE--------------------------------"
-            << std::endl;
+  std::cout << "---------------------- Cov KDE--------------------------------" << std::endl;
   kde.cov(C);
   std::cout << C.toString() << std::endl;
 
@@ -220,17 +211,14 @@ int main(int argc, char** argv) {
    * inverse Rosenblatt transformation operation and apply it to the points.
    * Finally print the calculated values.
    */
-  std::cout << "------------------------------------------------------"
-            << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;
   // inverse Rosenblatt transformation
   sgpp::datadriven::OperationInverseRosenblattTransformation* opInvRos(
-      sgpp::op_factory::createOperationInverseRosenblattTransformation(
-          learner.getGrid()));
+      sgpp::op_factory::createOperationInverseRosenblattTransformation(learner.getGrid()));
   sgpp::base::DataMatrix points(12, gridConfig.dim_);
   randu(points);
 
-  std::cout << "------------------------------------------------------"
-            << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;
   std::cout << "uniform space" << std::endl;
   std::cout << points.toString() << std::endl;
 
@@ -244,15 +232,12 @@ int main(int argc, char** argv) {
    */
   points.setAll(0.0);
   sgpp::datadriven::OperationRosenblattTransformation* opRos(
-      sgpp::op_factory::createOperationRosenblattTransformation(
-          learner.getGrid()));
+      sgpp::op_factory::createOperationRosenblattTransformation(learner.getGrid()));
   opRos->doTransformation(&learner.getSurpluses(), &pointsCdf, &points);
-  std::cout << "------------------------------------------------------"
-            << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;
   std::cout << "original space" << std::endl;
   std::cout << pointsCdf.toString() << std::endl;
-  std::cout << "------------------------------------------------------"
-            << std::endl;
+  std::cout << "------------------------------------------------------" << std::endl;
   std::cout << "uniform space" << std::endl;
   std::cout << points.toString() << std::endl;
 }

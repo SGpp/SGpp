@@ -53,7 +53,7 @@ class LearnerSVM {
    * Constructor.
    *
    * @param gridConfig The grid configuration
-   * @param adaptConfig The refinement configuration
+   * @param adaptivityConfig The refinement configuration
    * @param pTrainData The training dataset
    * @param pTrainLabels The corresponding training labels
    * @param pTestData The test dataset
@@ -62,12 +62,9 @@ class LearnerSVM {
    * @param pValidLabels The corresponding validation labels
    */
   LearnerSVM(base::RegularGridConfiguration& gridConfig,
-             base::AdaptivityConfiguration& adaptConfig,
-             base::DataMatrix& pTrainData,
-             base::DataVector& pTrainLabels,
-             base::DataMatrix& pTestData,
-             base::DataVector& pTestLabels,
-             base::DataMatrix* pValidData,
+             base::AdaptivityConfiguration& adaptivityConfig, base::DataMatrix& pTrainData,
+             base::DataVector& pTrainLabels, base::DataMatrix& pTestData,
+             base::DataVector& pTestLabels, base::DataMatrix* pValidData,
              base::DataVector* pValidLabels);
 
   /**
@@ -104,10 +101,9 @@ class LearnerSVM {
    *        is chosen)
    */
 
-  void train(size_t maxDataPasses, double lambda, double betaRef,
-             std::string refType, std::string refMonitor, size_t refPeriod,
-             double errorDeclineThreshold, size_t errorDeclineBufferSize,
-             size_t minRefInterval);
+  void train(size_t maxDataPasses, double lambda, double betaRef, std::string refType,
+             std::string refMonitor, size_t refPeriod, double errorDeclineThreshold,
+             size_t errorDeclineBufferSize, size_t minRefInterval);
   /**
    * Stores classified data, grids and function evaluations to csv files.
    *
@@ -125,8 +121,7 @@ class LearnerSVM {
    * @return The resulting accuracy
    */
   double getAccuracy(sgpp::base::DataMatrix& testDataset,
-                     const sgpp::base::DataVector& referenceLabels,
-                     const double threshold);
+                     const sgpp::base::DataVector& referenceLabels, const double threshold);
 
   /**
    * Computes the classification accuracy.
@@ -137,8 +132,7 @@ class LearnerSVM {
    * @param predictedLabels The predicted class labels
    * @return The resulting accuracy
    */
-  double getAccuracy(const sgpp::base::DataVector& referenceLabels,
-                     const double threshold,
+  double getAccuracy(const sgpp::base::DataVector& referenceLabels, const double threshold,
                      const sgpp::base::DataVector& predictedLabels);
 
   /**
@@ -147,8 +141,7 @@ class LearnerSVM {
    * @param testData The data for which class labels should be predicted
    * @param predictedLabels The predicted class labels
    */
-  void predict(sgpp::base::DataMatrix& testData,
-               sgpp::base::DataVector& predictedLabels);
+  void predict(sgpp::base::DataMatrix& testData, sgpp::base::DataVector& predictedLabels);
 
   /**
    * Computes specified error type (e.g. MSE).

@@ -30,7 +30,7 @@ double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
       fitter->getFitterConfiguration().getRefinementConfig());
 
   // We use only the parameters set for the first dataSource instance; Batching is not implemented
-  for (size_t epoch = 0; epoch < dataSourceP->getConfig().epochs; epoch++) {
+  for (size_t epoch = 0; epoch < dataSourceP->getConfig().epochs_; epoch++) {
     if (verbose) {
       std::cout << "###############"
                 << "Starting training epoch #" << epoch << std::endl;

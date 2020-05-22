@@ -19,13 +19,13 @@ BOOST_AUTO_TEST_SUITE(GridFactoryTest)
 
 BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
   GridFactory grid;
-  sgpp::datadriven::GeometryConfiguration geoConf;
-  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::GeometryConfiguration geometryConfig;
+  geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
-  s.colorIndex = -1;
-  s.applyOnLayers = {0, 1, 2};
-  s.stencilType = sgpp::datadriven::StencilType::NextHierarchicalParent;
-  geoConf.stencils = {s};
+  s.colorIndex_ = -1;
+  s.applyOnLayers_ = {0, 1, 2};
+  s.stencilType_ = sgpp::datadriven::StencilType::NextHierarchicalParent;
+  geometryConfig.stencils_ = {s};
 
   std::set<std::set<size_t>> expected = {
       {0, 9},   {1, 9},   {1, 10}, {2, 10}, {3, 9},  {3, 11}, {4, 9},  {4, 10}, {4, 11},
@@ -33,7 +33,7 @@ BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
       {11, 13}, {12, 13}, {0},     {1},     {2},     {3},     {4},     {5},     {6},
       {7},      {8},      {9},     {10},    {11},    {12},    {13},    {}};
 
-  auto result = grid.getInteractions(geoConf);
+  auto result = grid.getInteractions(geometryConfig);
 
   BOOST_CHECK(result == expected);
 }
@@ -41,13 +41,13 @@ BOOST_AUTO_TEST_CASE(NextHierarchicalParentStencil) {
 BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
   GridFactory grid;
 
-  sgpp::datadriven::GeometryConfiguration geoConf;
-  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::GeometryConfiguration geometryConfig;
+  geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
-  s.colorIndex = -1;
-  s.applyOnLayers = {0};
-  s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
-  geoConf.stencils = {s};
+  s.colorIndex_ = -1;
+  s.applyOnLayers_ = {0};
+  s.stencilType_ = sgpp::datadriven::StencilType::AllHierarchicalParent;
+  geometryConfig.stencils_ = {s};
 
   std::set<std::set<size_t>> expected = {
       {0, 9},  {0, 13}, {1, 9},  {1, 13}, {1, 10}, {1, 13}, {2, 10}, {2, 13}, {3, 9},
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
       {1},     {2},     {3},     {4},     {5},     {6},     {7},     {8},     {9},
       {10},    {11},    {12},    {13},    {}};
 
-  auto result = grid.getInteractions(geoConf);
+  auto result = grid.getInteractions(geometryConfig);
 
   BOOST_CHECK(result == expected);
 }
@@ -64,13 +64,13 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencilOnSpecificLayer) {
 BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencil) {
   GridFactory grid;
 
-  sgpp::datadriven::GeometryConfiguration geoConf;
-  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::GeometryConfiguration geometryConfig;
+  geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
-  s.colorIndex = -1;
-  s.applyOnLayers = {0, 1, 2};
-  s.stencilType = sgpp::datadriven::StencilType::AllHierarchicalParent;
-  geoConf.stencils = {s};
+  s.colorIndex_ = -1;
+  s.applyOnLayers_ = {0, 1, 2};
+  s.stencilType_ = sgpp::datadriven::StencilType::AllHierarchicalParent;
+  geometryConfig.stencils_ = {s};
 
   std::set<std::set<size_t>> expected = {
       {0, 9},   {0, 13},  {1, 9},   {1, 13}, {1, 10}, {1, 13}, {2, 10}, {2, 13}, {3, 9},
@@ -79,27 +79,27 @@ BOOST_AUTO_TEST_CASE(AllHierarchicalParentStencil) {
       {10, 13}, {11, 13}, {12, 13}, {0},     {1},     {2},     {3},     {4},     {5},
       {6},      {7},      {8},      {9},     {10},    {11},    {12},    {13},    {}};
 
-  auto result = grid.getInteractions(geoConf);
+  auto result = grid.getInteractions(geometryConfig);
 
   BOOST_CHECK(result == expected);
 }
 
 BOOST_AUTO_TEST_CASE(DirectNeighbourStencil) {
   GridFactory grid;
-  sgpp::datadriven::GeometryConfiguration geoConf;
-  geoConf.dim = {{3, 3}, {2, 2}, {1, 1}};
+  sgpp::datadriven::GeometryConfiguration geometryConfig;
+  geometryConfig.dim_ = {{3, 3}, {2, 2}, {1, 1}};
   sgpp::datadriven::StencilConfiguration s;
-  s.colorIndex = -1;
-  s.applyOnLayers = {0, 1, 2};
-  s.stencilType = sgpp::datadriven::StencilType::DirectNeighbour;
-  geoConf.stencils = {s};
+  s.colorIndex_ = -1;
+  s.applyOnLayers_ = {0, 1, 2};
+  s.stencilType_ = sgpp::datadriven::StencilType::DirectNeighbour;
+  geometryConfig.stencils_ = {s};
 
   std::set<std::set<size_t>> expected = {
       {0, 1}, {1, 2},  {3, 4},   {4, 5},  {6, 7},   {7, 8}, {0, 3}, {3, 6}, {1, 4}, {4, 7}, {2, 5},
       {5, 8}, {9, 10}, {11, 12}, {9, 11}, {10, 12}, {0},    {1},    {2},    {3},    {4},    {5},
       {6},    {7},     {8},      {9},     {10},     {11},   {12},   {13},   {}};
 
-  auto result = grid.getInteractions(geoConf);
+  auto result = grid.getInteractions(geometryConfig);
 
   BOOST_CHECK(result == expected);
 }

@@ -21,17 +21,17 @@ void VisualizerConfiguration::setupDefaults() {
   srand(static_cast<unsigned int>(time(nullptr)));
 
   std::cout << "Setting up defaults parameters for Visualizer" << std::endl;
-  generalConfig.algorithm = std::vector<std::string>({"tsne", "heatmaps", "linearcuts"});
-  generalConfig.targetDirectory = "./output";
-  generalConfig.targetFileType = VisualizationFileType::CSV;
-  generalConfig.numBatches = 1;
+  generalConfig.algorithm_ = std::vector<std::string>({"tsne", "heatmaps", "linearcuts"});
+  generalConfig.targetDirectory_ = "./output";
+  generalConfig.targetFileType_ = VisualizationFileType::CSV;
+  generalConfig.numBatches_ = 1;
 
-  visualizationParameters.perplexity = 30;
-  visualizationParameters.theta = 0.5;
-  visualizationParameters.maxNumberIterations = 1000;
-  visualizationParameters.seed = rand();
-  visualizationParameters.targetDimension = 2;
-  visualizationParameters.numberCores = 1;
+  visualizationParameters.perplexity_ = 30;
+  visualizationParameters.theta_ = 0.5;
+  visualizationParameters.maxNumberIterations_ = 1000;
+  visualizationParameters.seed_ = rand();
+  visualizationParameters.targetDimension_ = 2;
+  visualizationParameters.numberCores_ = 1;
   std::cout << "Setting up defaults done" << std::endl;
 }
 

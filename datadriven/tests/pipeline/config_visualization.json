@@ -37,7 +37,7 @@
             "densityEstimationType" : "decomposition",
             "matrixDecompositionType" : "chol"
         },
-        "learner" : {
+        "learnerConfig" : {
             "usePrior" : true,
             "learningRate" : 1.0
         }

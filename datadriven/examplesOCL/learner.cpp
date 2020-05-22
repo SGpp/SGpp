@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-
 namespace sgpp {
 namespace base {
 
@@ -153,7 +152,7 @@ int main(int argc, char* argv[]) {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   // setup grid
   gridConfig.dim_ = 0;    // dim is inferred from the data
@@ -161,11 +160,11 @@ int main(int argc, char* argv[]) {
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // setup adaptivity
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   // setup solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -214,20 +213,21 @@ int main(int argc, char* argv[]) {
 
       // adaptivity options
       //    ("adaptivity.maxLevelType",
-      //    boost::program_options::value<bool>(&adaptConfig.maxLevelType_),
+      //    boost::program_options::value<bool>(&adaptivityConfig.maxLevelType_),
       //            "DON'T KNOW WHAT THIS IS FOR")//TODO: seems to be unused,
       //            remove?
-      ("adaptConfig.noPoints",
-       boost::program_options::value<size_t>(&adaptConfig.numRefinementPoints_),
+      ("adaptivityConfig.noPoints",
+       boost::program_options::value<size_t>(&adaptivityConfig.numRefinementPoints_),
        "number of points to refine")(
-          "adaptConfig.numRefinements",
-          boost::program_options::value<size_t>(&adaptConfig.numRefinements_),
+          "adaptivityConfig.numRefinements",
+          boost::program_options::value<size_t>(&adaptivityConfig.numRefinements_),
           "number of refinement steps")(
-          "adaptConfig.percent", boost::program_options::value<double>(&adaptConfig.percent_),
+          "adaptivityConfig.percent",
+          boost::program_options::value<double>(&adaptivityConfig.percent_),
           "maximum number of grid points in percent of the size of the grid "
           "that are considered for refinement")(
-          "adaptConfig.threshold",
-          boost::program_options::value<double>(&adaptConfig.refinementThreshold_),
+          "adaptivityConfig.threshold",
+          boost::program_options::value<double>(&adaptivityConfig.refinementThreshold_),
           "minimum surplus value for a grid point to be considered for "
           "refinement")
 
@@ -291,7 +291,7 @@ int main(int argc, char* argv[]) {
   }
 
   sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
-                                        adaptConfig, lambda, verbose);
+                                        adaptivityConfig, lambda, verbose);
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(type, subType);
 

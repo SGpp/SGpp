@@ -36,7 +36,7 @@ ModelFittingDensityEstimation::ModelFittingDensityEstimation()
 
 std::unique_ptr<RefinementFunctor> ModelFittingDensityEstimation::getRefinementFunctor() {
   sgpp::base::AdaptivityConfiguration &refinementConfig = this->config->getRefinementConfig();
-  switch (refinementConfig.refinementFunctorType) {
+  switch (refinementConfig.refinementFunctorType_) {
     case RefinementFunctorType::Surplus: {
       return std::make_unique<SurplusRefinementFunctor>(
           alpha, config->getRefinementConfig().numRefinementPoints_,
@@ -83,7 +83,7 @@ std::unique_ptr<RefinementFunctor> ModelFittingDensityEstimation::getRefinementF
 
 std::unique_ptr<CoarseningFunctor> ModelFittingDensityEstimation::getCoarseningFunctor() {
   sgpp::base::AdaptivityConfiguration &adaptivityConfig = this->config->getRefinementConfig();
-  switch (adaptivityConfig.coarseningFunctorType) {
+  switch (adaptivityConfig.coarseningFunctorType_) {
     case CoarseningFunctorType::Surplus: {
       return std::make_unique<SurplusCoarseningFunctor>(
           alpha, config->getRefinementConfig().numRefinementPoints_,
@@ -139,10 +139,11 @@ bool ModelFittingDensityEstimation::adapt() {
       if (refinementFunc) {
         // refine grid
         std::cout << "Old number points " << oldNoPoints << std::endl;
-        GeometryConfiguration geoConf = config->getGeometryConfig();
-        if (!geoConf.stencils.empty()) {
+        GeometryConfiguration geometryConfig = config->getGeometryConfig();
+        if (!geometryConfig.stencils_.empty()) {
           GridFactory gridFactory;
-          grid->getGenerator().refineInter(*refinementFunc, gridFactory.getInteractions(geoConf));
+          grid->getGenerator().refineInter(*refinementFunc,
+                                           gridFactory.getInteractions(geometryConfig));
         } else {
           grid->getGenerator().refine(*refinementFunc);
         }

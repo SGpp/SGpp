@@ -147,7 +147,7 @@ void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
     SMatrix.computeUnweightedRhs(rhsUpdate, rhsUpdateExtra);
     double numInstancesP = static_cast<double>(newDatasetP.getNrows());
     double numInstancesQ = static_cast<double>(newDatasetQ.getNrows());
-    double beta = this->config->getLearnerConfig().learningRate;  // forgetRate
+    double beta = this->config->getLearnerConfig().learningRate_;  // forgetRate
     // Update numerators
     bNumP.mult(1. - beta);
     bNumP.add(rhsUpdate);

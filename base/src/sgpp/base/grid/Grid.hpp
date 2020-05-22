@@ -158,28 +158,28 @@ struct AdaptivityConfiguration {
   /// max. percent of points to be refined/coarsened
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results
-  bool errorBasedRefinement = false;
+  bool errorBasedRefinement_ = false;
   /// threshold for convergence in case error based refinement is applied
-  double errorConvergenceThreshold = 0.001;
+  double errorConvergenceThreshold_ = 0.001;
   /// amount of error values to consider when checking for convergence in case of error based
   /// refinement
-  size_t errorBufferSize = 3;
+  size_t errorBufferSize_ = 3;
   /// minimum amount of iterations before the next refinement is allowed to happen in case of error
   /// based refinement
-  size_t errorMinInterval = 0;
+  size_t errorMinInterval_ = 0;
   /// refinement will be triggered each refinementPeriod instances (approximately) in case of non
   /// error based refinement
-  size_t refinementPeriod = 1;
+  size_t refinementPeriod_ = 1;
   /// refinement indicator
-  RefinementFunctorType refinementFunctorType = RefinementFunctorType::Surplus;
-  /// coarsening indicator
-  CoarseningFunctorType coarseningFunctorType = CoarseningFunctorType::Surplus;
-  /// in case of zero crossing based refinement: determines if evaluations should be precomputed
-  bool precomputeEvaluations = true;
+  RefinementFunctorType refinementFunctorType_ = RefinementFunctorType::Surplus;
+  /// in case of zero corssing based refinement: determines if evaluations should be precomupted
+  bool precomputeEvaluations_ = true;
   /// determines if finer grid levels should be penalized when finding points to refine
-  bool levelPenalize = false;
+  bool levelPenalize_ = false;
   /// in case of data based refinements: determines the scaling coefficients for each class
-  std::vector<double> scalingCoefficients = std::vector<double>();
+  std::vector<double> scalingCoefficients_ = std::vector<double>();
+  /// coarsening indicator
+  CoarseningFunctorType coarseningFunctorType_ = CoarseningFunctorType::Surplus;
 };
 
 /**

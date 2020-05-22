@@ -160,19 +160,19 @@ void FitterConfiguration::setupDefaults() {
   adaptivityConfig.numRefinementPoints_ = 1;
   adaptivityConfig.numCoarseningPoints_ = 1;
   adaptivityConfig.coarsenInitialPoints_ = false;
-  adaptivityConfig.percent_ = 1.0;                     // mirrors struct default
-  adaptivityConfig.errorBasedRefinement = false;       // mirrors struct default
-  adaptivityConfig.errorConvergenceThreshold = 0.001;  // mirrors struct default
-  adaptivityConfig.errorBufferSize = 3;                // mirrors struct default
-  adaptivityConfig.errorMinInterval = 0;               // mirrors struct default
-  adaptivityConfig.refinementPeriod = 1;               // mirrors struct default
-  adaptivityConfig.refinementFunctorType =
+  adaptivityConfig.percent_ = 1.0;                      // mirrors struct default
+  adaptivityConfig.errorBasedRefinement_ = false;       // mirrors struct default
+  adaptivityConfig.errorConvergenceThreshold_ = 0.001;  // mirrors struct default
+  adaptivityConfig.errorBufferSize_ = 3;                // mirrors struct default
+  adaptivityConfig.errorMinInterval_ = 0;               // mirrors struct default
+  adaptivityConfig.refinementPeriod_ = 1;               // mirrors struct default
+  adaptivityConfig.refinementFunctorType_ =
       sgpp::base::RefinementFunctorType::Surplus;  // mirrors struct default
-  adaptivityConfig.coarseningFunctorType =         // mirrors struct default
+  adaptivityConfig.coarseningFunctorType_ =        // mirrors struct default
       sgpp::base::CoarseningFunctorType::Surplus;
-  adaptivityConfig.precomputeEvaluations = true;                 // mirrors struct default
-  adaptivityConfig.levelPenalize = false;                        // mirrors struct default
-  adaptivityConfig.scalingCoefficients = std::vector<double>();  // mirrors struct default
+  adaptivityConfig.precomputeEvaluations_ = true;                 // mirrors struct default
+  adaptivityConfig.levelPenalize_ = false;                        // mirrors struct default
+  adaptivityConfig.scalingCoefficients_ = std::vector<double>();  // mirrors struct default;
 
   crossvalidationConfig.enable_ = false;  // mirrors struct default
   crossvalidationConfig.kfold_ = 5;       // mirrors struct default
@@ -191,14 +191,14 @@ void FitterConfiguration::setupDefaults() {
   densityEstimationConfig.type_ = sgpp::datadriven::DensityEstimationType::Decomposition;
   densityEstimationConfig.decomposition_ = sgpp::datadriven::MatrixDecompositionType::OrthoAdapt;
   // Offline permutation is used per default
-  densityEstimationConfig.useOfflinePermutation = true;
+  densityEstimationConfig.useOfflinePermutation_ = true;
 
   densityEstimationConfig.iCholSweepsDecompose_ = 4;     // mirrors struct default
   densityEstimationConfig.iCholSweepsRefine_ = 4;        // mirrors struct default
   densityEstimationConfig.iCholSweepsUpdateLambda_ = 2;  // mirrors struct default
   densityEstimationConfig.iCholSweepsSolver_ = 2;        // mirrors struct default
 
-  databaseConfig.filePath = "";
+  databaseConfig.filePath_ = "";
 
   solverRefineConfig.type_ = sgpp::solver::SLESolverType::CG;
   solverRefineConfig.eps_ = 1e-12;
@@ -226,12 +226,12 @@ void FitterConfiguration::setupDefaults() {
   regularizationConfig.intervalA_ = 1e-15;
   regularizationConfig.intervalB_ = 1.0;
 
-  learnerConfig.learningRate = 1.0;  // mirrors struct default
-  learnerConfig.usePrior = false;    // mirrors struct default
+  learnerConfig.learningRate_ = 1.0;  // mirrors struct default
+  learnerConfig.usePrior_ = false;    // mirrors struct default
 
   // configure geometry configuration
-  geometryConfig.dim = std::vector<std::vector<int64_t>>();
-  geometryConfig.stencils = std::vector<sgpp::datadriven::StencilConfiguration>();
+  geometryConfig.dim_ = std::vector<std::vector<int64_t>>();
+  geometryConfig.stencils_ = std::vector<sgpp::datadriven::StencilConfiguration>();
 }
 
 }  // namespace datadriven

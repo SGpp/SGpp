@@ -26,8 +26,8 @@ VisualizerClassification::VisualizerClassification(VisualizerConfiguration confi
 
 void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSource &dataSource,
   size_t fold, size_t batch) {
-  if (batch % config.getGeneralConfig().numBatches != 0 ||
-    !config.getGeneralConfig().execute) {
+  if (batch % config.getGeneralConfig().numBatches_ != 0 ||
+    !config.getGeneralConfig().execute_) {
     return;
   }
 
@@ -50,36 +50,36 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
   }
 
   createFolder(config.getGeneralConfig().
-    targetDirectory);
+    targetDirectory_);
   // Creating the output directory
-  if (config.getGeneralConfig().crossValidation) {
+  if (config.getGeneralConfig().crossValidation_) {
     currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Fold_" + std::to_string(fold);
+    targetDirectory_+"/Fold_" + std::to_string(fold);
     createFolder(currentDirectory);
     currentDirectory = config.getGeneralConfig().
-        targetDirectory+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
+        targetDirectory_+"/Fold_" + std::to_string(fold) + "/Batch_" + std::to_string(batch);
     createFolder(currentDirectory);
 
   } else {
     currentDirectory = config.getGeneralConfig().
-    targetDirectory+"/Batch_" + std::to_string(batch);
+    targetDirectory_+"/Batch_" + std::to_string(batch);
     createFolder(currentDirectory);
   }
 
-  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory
+  std::cout << "Creating output directory " << config.getGeneralConfig().targetDirectory_
      << std::endl;
 
   createFolder(currentDirectory+"/Classification");
 
-  omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores));
+  omp_set_num_threads(static_cast<int> (config.getVisualizationParameters().numberCores_));
 
   #pragma omp parallel sections
   {
     #pragma omp section
     {
-      if (std::find(config.getGeneralConfig().algorithm.begin(),
-                   config.getGeneralConfig().algorithm.end(), "heatmaps") !=
-                   config.getGeneralConfig().algorithm.end()) {
+      if (std::find(config.getGeneralConfig().algorithm_.begin(),
+                   config.getGeneralConfig().algorithm_.end(), "heatmaps") !=
+                   config.getGeneralConfig().algorithm_.end()) {
         DataMatrix heatMapClassificationMatrix;
         initializeMatrices(model, heatMapClassificationMatrix);
         getHeatmapsClassification(model, currentDirectory, heatMapClassificationMatrix);
@@ -120,14 +120,14 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         DataMatrix cutMatrixThread;
         VisualizerDensityEstimation::initializeMatrices(model, cutMatrixThread,
           heatMapMatrixThread);
-        if (config.getGeneralConfig().crossValidation) {
+        if (config.getGeneralConfig().crossValidation_) {
           currentDirectory = config.getGeneralConfig().
-                   targetDirectory+"/Fold_" + std::to_string(fold)
+                   targetDirectory_+"/Fold_" + std::to_string(fold)
                    + "/Batch_" + std::to_string(batch)
                    +"/Model_Class_" + std::to_string(static_cast<int>(classes.get(index)));
          } else {
            currentDirectory = config.getGeneralConfig().
-                    targetDirectory+"/Batch_" + std::to_string(batch)
+                    targetDirectory_+"/Batch_" + std::to_string(batch)
                     +"/Model_Class_" + std::to_string(static_cast<int>(classes.get(index)));
          }
 
@@ -138,17 +138,17 @@ void VisualizerClassification::runVisualization(ModelFittingBase &model, DataSou
         {
           #pragma omp section
           {
-            if (std::find(config.getGeneralConfig().algorithm.begin(),
-                         config.getGeneralConfig().algorithm.end(), "linearcuts")
-                         != config.getGeneralConfig().algorithm.end()) {
+            if (std::find(config.getGeneralConfig().algorithm_.begin(),
+                         config.getGeneralConfig().algorithm_.end(), "linearcuts")
+                         != config.getGeneralConfig().algorithm_.end()) {
               getLinearCuts(**currentModel, currentDirectory, cutMatrixThread);
             }
           }
           #pragma omp section
           {
-            if (std::find(config.getGeneralConfig().algorithm.begin(),
-                         config.getGeneralConfig().algorithm.end(), "heatmaps")
-                         != config.getGeneralConfig().algorithm.end()) {
+            if (std::find(config.getGeneralConfig().algorithm_.begin(),
+                         config.getGeneralConfig().algorithm_.end(), "heatmaps")
+                         != config.getGeneralConfig().algorithm_.end()) {
               getHeatmap(**currentModel, currentDirectory, heatMapMatrixThread);
             }
           }
@@ -273,11 +273,11 @@ ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) 
         heatMapResults.appendCol(evaluation);
 
         if (iteration == 0) {
-          if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+          if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::CSV) {
             CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
             +std::to_string(variableColumnIndexes.at(0)+1)+"_"+
             std::to_string(variableColumnIndexes.at(combination+1)+1), heatMapResults);
-          } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+          } else if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::json) {
            storeHeatmapJsonClassification(heatMapResults, model,
             variableColumnIndexes, variableColumnIndexes.at(0),
             variableColumnIndexes.at(combination+1),
@@ -287,11 +287,11 @@ ModelFittingBase &model, std::string currentDirectory, DataMatrix &classMatrix) 
           }
           translateColumnsRight(classMatrix, workingIndexes);
         } else {
-          if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+          if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::CSV) {
             CSVTools::writeMatrixToCSVFile(subfolder+"/Heatmap_var_dimensions_"
               +std::to_string(variableColumnIndexes.at((combination < 2)?1:2)+1)+"_"+
               std::to_string(variableColumnIndexes.at((combination < 1)?2:3)+1), heatMapResults);
-          } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+          } else if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::json) {
            storeHeatmapJsonClassification(heatMapResults, model,
              variableColumnIndexes, variableColumnIndexes.at((combination < 2)?1:2),
              variableColumnIndexes.at((combination < 1)?2:3),
@@ -334,12 +334,12 @@ void VisualizerClassification::getHeatmap3DClassification(ModelFittingBase &mode
     heatMapResults.appendCol(evaluation);
 
     translateColumns(classMatrix, classMatrix.getNcols());
-    if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+    if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::CSV) {
       CSVTools::writeMatrixToCSVFile(outputDir+"Heatmap_var_dimensions_"
       +std::to_string(combination+1)
       +"_"+((combination < 2)?std::to_string(combination+2):std::to_string(1)), heatMapResults);
 
-    } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+    } else if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::json) {
       storeHeatmapJsonClassification(heatMapResults,
       model,
       variableColumnIndexes,
@@ -361,9 +361,9 @@ void VisualizerClassification::getHeatmap2DClassification(
 
   heatMapResults.appendCol(evaluation);
 
-  if (config.getGeneralConfig().targetFileType == VisualizationFileType::CSV) {
+  if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::CSV) {
   CSVTools::writeMatrixToCSVFile(outputDir+"ClassificationModel", heatMapResults);
-  } else if (config.getGeneralConfig().targetFileType == VisualizationFileType::json) {
+  } else if (config.getGeneralConfig().targetFileType_ == VisualizationFileType::json) {
     storeHeatmapJsonClassification(heatMapResults,
     model, outputDir+"ClassificationModel");
   }

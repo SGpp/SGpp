@@ -17,8 +17,8 @@ Dataset* DataSourceSplitting::getValidationData() { return validationData; }
 void DataSourceSplitting::reset() {
   sampleProvider->reset();
   // Retrieve new validation data
-  if (validationData != nullptr) delete validationData;
-  size_t validationSize = static_cast<size_t>(config.validationPortion *
+  delete validationData;
+  size_t validationSize = static_cast<size_t>(config.validationPortion_ *
                                               static_cast<double>(sampleProvider->getNumSamples()));
   validationData = sampleProvider->getNextSamples(validationSize);
 }

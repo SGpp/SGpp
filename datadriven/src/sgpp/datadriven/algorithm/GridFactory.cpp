@@ -58,10 +58,10 @@ sgpp::base::Grid* GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
 std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
     sgpp::datadriven::GeometryConfiguration config) const {
   std::set<std::set<size_t>> interactions;
-  std::vector<std::vector<int64_t>> res = config.dim;
+  std::vector<std::vector<int64_t>> res = config.dim_;
 
-  for (StencilConfiguration stencil : config.stencils) {
-    switch (stencil.stencilType) {
+  for (StencilConfiguration stencil : config.stencils_) {
+    switch (stencil.stencilType_) {
       case sgpp::datadriven::StencilType::DirectNeighbour:
         getDirectNeighbours(interactions, config, stencil);
         break;
@@ -80,13 +80,16 @@ std::set<std::set<size_t>> sgpp::datadriven::GridFactory::getInteractions(
 }
 
 void sgpp::datadriven::GridFactory::getBlockInteractions(
-    std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geoConf,
+    std::set<std::set<size_t>>& interactions,
+    sgpp::datadriven::GeometryConfiguration& geometryConfig,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
-  size_t blockLenght = stencilConf.blockLenght;
-  std::vector<std::vector<size_t>> multiplicatorsPerLevel = getMultiplicatorsPerLevel(geoConf.dim);
-  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geoConf.dim, multiplicatorsPerLevel);
-  for (size_t i : stencilConf.applyOnLayers) {
-    size_t dimensions = geoConf.dim[i].size();
+  size_t blockLenght = stencilConf.blockLenght_;
+  std::vector<std::vector<size_t>> multiplicatorsPerLevel =
+      getMultiplicatorsPerLevel(geometryConfig.dim_);
+  std::vector<size_t> offsetsPerLevel =
+      getOffsetPerLevel(geometryConfig.dim_, multiplicatorsPerLevel);
+  for (size_t i : stencilConf.applyOnLayers_) {
+    size_t dimensions = geometryConfig.dim_[i].size();
     size_t offset = offsetsPerLevel[i];
     std::vector<int64_t> position(dimensions, 0);
     while (!position.empty()) {
@@ -95,7 +98,7 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
         for (size_t k = 0; k < blockLenght; k++) {
           for (size_t l = 0; l < dimensions; l++) {
             if (j & static_cast<size_t>(1) << (k * dimensions + l) &&
-                static_cast<int64_t>(position[l] + k) < geoConf.dim[i][l]) {
+                static_cast<int64_t>(position[l] + k) < geometryConfig.dim_[i][l]) {
               position[l] += k;
               tmp.insert(getDataIndex(dimensions, multiplicatorsPerLevel[i], position) + offset);
               position[l] -= k;
@@ -104,7 +107,7 @@ void sgpp::datadriven::GridFactory::getBlockInteractions(
         }
         interactions.insert(tmp);
       }
-      getNextPosition(geoConf.dim[i], position, -1);
+      getNextPosition(geometryConfig.dim_[i], position, -1);
     }
     interactions.insert(std::set<size_t>());
   }
@@ -141,47 +144,49 @@ std::vector<size_t> sgpp::datadriven::GridFactory::getOffsetPerLevel(
 }
 
 void sgpp::datadriven::GridFactory::getHierarchicalParents(
-    std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geometryConf,
+    std::set<std::set<size_t>>& interactions,
+    sgpp::datadriven::GeometryConfiguration& geometryConfig,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
   std::vector<std::vector<size_t>> multiplicatorsPerLevel =
-      getMultiplicatorsPerLevel(geometryConf.dim);
-  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
+      getMultiplicatorsPerLevel(geometryConfig.dim_);
+  std::vector<size_t> offsetsPerLevel =
+      getOffsetPerLevel(geometryConfig.dim_, multiplicatorsPerLevel);
 
-  for (size_t i : stencilConf.applyOnLayers) {
-    for (size_t j = i + 1; j < geometryConf.dim.size(); j++) {
+  for (size_t i : stencilConf.applyOnLayers_) {
+    for (size_t j = i + 1; j < geometryConfig.dim_.size(); j++) {
       std::vector<double> ratio;
-      for (size_t k = 0; k < geometryConf.dim[i].size(); k++) {
-        ratio.push_back(static_cast<double>(geometryConf.dim[j][k]) /
-                        static_cast<double>(geometryConf.dim[i][k]));
+      for (size_t k = 0; k < geometryConfig.dim_[i].size(); k++) {
+        ratio.push_back(static_cast<double>(geometryConfig.dim_[j][k]) /
+                        static_cast<double>(geometryConfig.dim_[i][k]));
       }
 
-      std::vector<int64_t> position(geometryConf.dim[j].size(), 0);
+      std::vector<int64_t> position(geometryConfig.dim_[j].size(), 0);
 
       // Iterate over all positions
       do {
         std::vector<int64_t> parentPosition = std::vector<int64_t>(position.size(), 0);
-        addChildParentInteraction(ratio, geometryConf.dim[i].size(), 0, position, parentPosition,
+        addChildParentInteraction(ratio, geometryConfig.dim_[i].size(), 0, position, parentPosition,
                                   multiplicatorsPerLevel[j], multiplicatorsPerLevel[i],
                                   offsetsPerLevel[j], offsetsPerLevel[i], interactions);
 
-        getNextPosition(geometryConf.dim[i], position, -1);
+        getNextPosition(geometryConfig.dim_[i], position, -1);
       } while (position.size() != 0);
 
-      if (stencilConf.colorIndex != -1) {
-        addColorInteractions(geometryConf.dim[j], stencilConf.colorIndex, offsetsPerLevel[j],
+      if (stencilConf.colorIndex_ != -1) {
+        addColorInteractions(geometryConfig.dim_[j], stencilConf.colorIndex_, offsetsPerLevel[j],
                              multiplicatorsPerLevel[j], interactions);
       }
-      addOneDimensionalInteractions(geometryConf.dim[j], offsetsPerLevel[j], interactions);
+      addOneDimensionalInteractions(geometryConfig.dim_[j], offsetsPerLevel[j], interactions);
 
-      if (stencilConf.stencilType == StencilType::NextHierarchicalParent) {
+      if (stencilConf.stencilType_ == StencilType::NextHierarchicalParent) {
         break;
       }
     }
-    if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf.dim[i], stencilConf.colorIndex, offsetsPerLevel[i],
+    if (stencilConf.colorIndex_ != -1) {
+      addColorInteractions(geometryConfig.dim_[i], stencilConf.colorIndex_, offsetsPerLevel[i],
                            multiplicatorsPerLevel[i], interactions);
     }
-    addOneDimensionalInteractions(geometryConf.dim[i], offsetsPerLevel[i], interactions);
+    addOneDimensionalInteractions(geometryConfig.dim_[i], offsetsPerLevel[i], interactions);
   }
 
   // Add empty interaction
@@ -283,38 +288,40 @@ void sgpp::datadriven::GridFactory::addColorInteractions(
 }
 
 void sgpp::datadriven::GridFactory::getDirectNeighbours(
-    std::set<std::set<size_t>>& interactions, sgpp::datadriven::GeometryConfiguration& geometryConf,
+    std::set<std::set<size_t>>& interactions,
+    sgpp::datadriven::GeometryConfiguration& geometryConfig,
     sgpp::datadriven::StencilConfiguration& stencilConf) const {
   std::vector<std::vector<size_t>> multiplicatorsPerLevel =
-      getMultiplicatorsPerLevel(geometryConf.dim);
-  std::vector<size_t> offsetsPerLevel = getOffsetPerLevel(geometryConf.dim, multiplicatorsPerLevel);
+      getMultiplicatorsPerLevel(geometryConfig.dim_);
+  std::vector<size_t> offsetsPerLevel =
+      getOffsetPerLevel(geometryConfig.dim_, multiplicatorsPerLevel);
 
-  for (size_t i : stencilConf.applyOnLayers) {
-    std::vector<int64_t> position = std::vector<int64_t>(geometryConf.dim[i].size(), 0);
+  for (size_t i : stencilConf.applyOnLayers_) {
+    std::vector<int64_t> position = std::vector<int64_t>(geometryConfig.dim_[i].size(), 0);
 
     do {
-      for (size_t j = 0; j < geometryConf.dim[i].size(); j++) {
-        if (position[j] + 1 < geometryConf.dim[i][j]) {
+      for (size_t j = 0; j < geometryConfig.dim_[i].size(); j++) {
+        if (position[j] + 1 < geometryConfig.dim_[i][j]) {
           std::set<size_t> tmp;
-          tmp.insert(offsetsPerLevel[i] +
-                     getDataIndex(geometryConf.dim[i].size(), multiplicatorsPerLevel[i], position));
+          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConfig.dim_[i].size(),
+                                                       multiplicatorsPerLevel[i], position));
           position[j]++;
-          tmp.insert(offsetsPerLevel[i] +
-                     getDataIndex(geometryConf.dim[i].size(), multiplicatorsPerLevel[i], position));
+          tmp.insert(offsetsPerLevel[i] + getDataIndex(geometryConfig.dim_[i].size(),
+                                                       multiplicatorsPerLevel[i], position));
           position[j]--;
           interactions.insert(tmp);
         }
       }
 
       // Color index set to -1 to also include neighbours with same color
-      getNextPosition(geometryConf.dim[i], position, -1);
+      getNextPosition(geometryConfig.dim_[i], position, -1);
     } while (position.size() != 0);
 
-    if (stencilConf.colorIndex != -1) {
-      addColorInteractions(geometryConf.dim[i], stencilConf.colorIndex, offsetsPerLevel[i],
+    if (stencilConf.colorIndex_ != -1) {
+      addColorInteractions(geometryConfig.dim_[i], stencilConf.colorIndex_, offsetsPerLevel[i],
                            multiplicatorsPerLevel[i], interactions);
     }
-    addOneDimensionalInteractions(geometryConf.dim[i], offsetsPerLevel[i], interactions);
+    addOneDimensionalInteractions(geometryConfig.dim_[i], offsetsPerLevel[i], interactions);
   }
 
   // add empty vector

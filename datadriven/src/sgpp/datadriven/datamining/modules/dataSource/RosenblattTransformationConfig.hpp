@@ -17,13 +17,13 @@ struct RosenblattTransformationConfig {
   /**
    * Parameters for calculation of PDF / density estimation
    */
-  size_t numSamples = 1000;
+  size_t numSamples_ = 1000;
 
-  size_t gridLevel = 2;
+  size_t gridLevel_ = 2;
 
-  size_t solverMaxIterations = 1000;
-  double solverEps = 1e-10;
-  double solverThreshold = 1e-10;
+  size_t solverMaxIterations_ = 1000;
+  double solverEps_ = 1e-10;
+  double solverThreshold_ = 1e-10;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
