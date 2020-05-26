@@ -21,15 +21,14 @@ namespace datadriven {
 DensityDerivativeSystemMatrix::DensityDerivativeSystemMatrix(sgpp::base::OperationMatrix* A,
                                                              sgpp::base::OperationMultipleEval* B,
                                                              sgpp::base::OperationMatrix* C,
-                                                             double lambda, size_t numSamples,
-                                                             size_t derivDim)
-    : A(A), B(B), C(C), lambda(lambda), numSamples(numSamples), derivDim(derivDim) {}
+                                                             double lambda, size_t numSamples)
+    : A(A), B(B), C(C), lambda(lambda), numSamples(numSamples) {}
 
 DensityDerivativeSystemMatrix::DensityDerivativeSystemMatrix(sgpp::base::Grid& grid,
                                                              sgpp::base::DataMatrix& trainData,
                                                              sgpp::base::OperationMatrix* pC,
                                                              double lambda, size_t derivDim)
-    : lambda(lambda), numSamples(trainData.getNrows()), derivDim(derivDim) {
+    : lambda(lambda), numSamples(trainData.getNrows()) {
   A.reset(op_factory::createOperationLTwoDotProduct(grid));
   // B is an evaluation of the partial derivative
   B.reset(op_factory::createOperationMultipleEvalPartialDerivativeNaive(grid, trainData, derivDim));

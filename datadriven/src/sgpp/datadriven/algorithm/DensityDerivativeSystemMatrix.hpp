@@ -32,8 +32,6 @@ class DensityDerivativeSystemMatrix : public base::OperationMatrix {
   double lambda;
   /// number of training samples
   size_t numSamples;
-  /// Direction along which to compute the derivative
-  size_t derivDim;
 
  public:
   /**
@@ -44,12 +42,10 @@ class DensityDerivativeSystemMatrix : public base::OperationMatrix {
    * @param C the regression functional
    * @param lambda the regression parameter
    * @param numSamples number of data samples
-   * @param derivDim direction along which to compute the derivative
    */
   DensityDerivativeSystemMatrix(sgpp::base::OperationMatrix* A,
                                 sgpp::base::OperationMultipleEval* B,
-                                sgpp::base::OperationMatrix* C, double lambda, size_t numSamples,
-                                size_t derivDim);
+                                sgpp::base::OperationMatrix* C, double lambda, size_t numSamples);
 
   /**
    * Std-Constructor

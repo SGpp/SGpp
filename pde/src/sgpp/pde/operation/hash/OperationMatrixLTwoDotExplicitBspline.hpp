@@ -13,6 +13,8 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
+
 namespace sgpp {
 namespace pde {
 
