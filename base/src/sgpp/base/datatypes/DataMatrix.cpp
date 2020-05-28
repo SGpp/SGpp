@@ -176,8 +176,7 @@ void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, siz
   auto regionEnd = oldMatrix.begin() + row_2 * oldMatrix.ncols + col_2;
 
   // copy region row-wise
-  for (auto it = regionBegin; it < regionEnd + 1; it += oldMatrix.ncols)
-  {
+  for (auto it = regionBegin; it < regionEnd + 1; it += oldMatrix.ncols) {
     this->insert(this->end(), it, it + (col_2 - col_1) + 1);
   }
 }
