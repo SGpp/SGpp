@@ -426,9 +426,21 @@ BOOST_AUTO_TEST_CASE(resizeToSubMatrixTests) {
   {
     for (size_t i = 0; i < x2 - x1 + 1; i++) {
       for (size_t j = 0; j < y2 - y1 + 1; j++) {
-        BOOST_CHECK_EQUAL(m(i, j), (i + (x1 - 1)) * cols + (y1 - 1) + j);
+        BOOST_CHECK_EQUAL(m(i, j), (i + x1) * cols + y1 + j);
       }
     }
+  }
+
+  DataMatrix m_narrow(3, 1);
+  {
+    m_narrow(0, 0) = 0.0;
+    m_narrow(1, 0) = 1.0;
+    m_narrow(2, 0) = 2.0;
+  }
+  m_narrow.resizeToSubMatrix(1, 0, 2, 0);
+  {
+    BOOST_CHECK_EQUAL(m_narrow(0, 0), 1.0);
+    BOOST_CHECK_EQUAL(m_narrow(1, 0), 2.0);
   }
 }
 
