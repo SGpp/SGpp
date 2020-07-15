@@ -3,19 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
-#include <sgpp/datadriven/application/RegressionLearner.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
-
+#include <cassert>
+#include <limits>
+#include <random>
+#include <set>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
-
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
@@ -23,11 +25,6 @@
 #include <sgpp/solver/sle/fista/GroupLassoFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/RidgeFunction.hpp>
-
-#include <cassert>
-#include <limits>
-#include <random>
-#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -181,7 +178,7 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
   } else if (gridConfig.type_ == GridType::NakBsplineBoundary) {
     grid = std::make_shared<base::NakBsplineBoundaryGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else if (gridConfig.type_ == GridType::ModNakBspline) {
-    grid = std::make_shared<base::NakBsplineModifiedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+    grid = std::make_shared<base::ModNakBsplineGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else if (gridConfig.type_ == GridType::NakBsplineExtended) {
     grid = std::make_shared<base::NakBsplineExtendedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else {

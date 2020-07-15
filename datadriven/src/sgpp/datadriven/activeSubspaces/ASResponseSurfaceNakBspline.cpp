@@ -17,7 +17,7 @@ void ASResponseSurfaceNakBspline::initialize() {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(activeDim, degree);
     basis = std::make_shared<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::ModNakBspline) {
-    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(activeDim, degree);
+    grid = std::make_shared<sgpp::base::ModNakBsplineGrid>(activeDim, degree);
     basis = std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(activeDim, degree);
@@ -63,7 +63,7 @@ void ASResponseSurfaceNakBspline::createRegularReducedSurfaceFromData_DataDriven
   gridConfig.maxDegree_ = 3;
 
   auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();  // no adaptivity
-  adaptivityConfig.noPoints_ = 0;
+  // adaptivityConfig.noPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();

@@ -5,17 +5,15 @@
 
 #pragma once
 
-#include <sgpp/base/exception/factory_exception.hpp>
+#include <algorithm>
+#include <cmath>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-
 #include <sgpp/globaldef.hpp>
-
-#include <cmath>
 #include <vector>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {

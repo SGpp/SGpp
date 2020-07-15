@@ -5,6 +5,9 @@
 
 #pragma once
 
+#include <algorithm>
+#include <memory>
+#include <set>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -16,10 +19,6 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/fista/FistaBase.hpp>
-
-#include <algorithm>
-#include <memory>
-#include <set>
 #include <utility>
 #include <vector>
 

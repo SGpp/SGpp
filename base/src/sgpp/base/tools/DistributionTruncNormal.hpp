@@ -5,10 +5,9 @@
 
 #pragma once
 
-#include <sgpp/base/tools/Distribution.hpp>
-
 #include <iostream>
 #include <random>
+#include <sgpp/base/tools/Distribution.hpp>
 
 namespace sgpp {
 namespace base {
@@ -16,6 +15,8 @@ namespace base {
 /**
  * Truncated normal distribution.
  * Only accepts samples within [lower,upper]
+ * Results should be normalized by dividing them by mean(f(x)==1) w.r.t. the same truncated
+ * normal distribution
  */
 class DistributionTruncNormal : public Distribution {
  public:

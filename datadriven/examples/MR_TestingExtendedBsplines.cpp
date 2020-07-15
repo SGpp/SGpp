@@ -3,10 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <iostream>
 #include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/tools/Printer.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
@@ -14,8 +15,6 @@
 #include <sgpp/base/tools/sle/solver/Auto.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/datadriven/activeSubspaces/NakBsplineScalarProducts.hpp>
-
-#include <iostream>
 
 double func1(sgpp::base::DataVector v) { return 1; }
 double funcx(sgpp::base::DataVector v) { return v[0]; }

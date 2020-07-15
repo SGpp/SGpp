@@ -14,8 +14,13 @@ void SplineResponseSurface::regular(size_t level) {
   calculateInterpolationCoefficients();
   interpolant =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-      *grid, coefficients);
+
+  // ToDo (rehmemk) poly grid types don't have gradients. They should go into a seperate class
+  if ((gridType != sgpp::base::GridType::PolyBoundary) &&
+      (gridType != sgpp::base::GridType::ModPoly)) {
+    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+        *grid, coefficients);
+  }
 }
 
 void SplineResponseSurface::regularByPoints(size_t numPoints, bool verbose) {
@@ -34,22 +39,30 @@ void SplineResponseSurface::regularByPoints(size_t numPoints, bool verbose) {
   calculateInterpolationCoefficients();
   interpolant =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-      *grid, coefficients);
+  // ToDo (rehmemk) poly grid types don't have gradients. They should go into a seperate class
+  if ((gridType != sgpp::base::GridType::PolyBoundary) &&
+      (gridType != sgpp::base::GridType::ModPoly)) {
+    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+        *grid, coefficients);
+  }
 }
 
 void SplineResponseSurface::surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel,
                                             size_t refinementsNum, bool verbose) {
   regular(initialLevel);
   while (grid->getSize() < maxNumGridPoints) {
-    refineSurplusAdaptive(refinementsNum,verbose);
+    refineSurplusAdaptive(refinementsNum, verbose);
     if (verbose)
       std::cout << "Refining. Calculated a grid with " << grid->getSize() << " points.\n";
   }
   interpolant =
       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-  interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-      *grid, coefficients);
+  // ToDo (rehmemk) poly grid types don't have gradients. They should go into a seperate class
+  if ((gridType != sgpp::base::GridType::PolyBoundary) &&
+      (gridType != sgpp::base::GridType::ModPoly)) {
+    interpolantGradient = std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
+        *grid, coefficients);
+  }
 }
 
 void SplineResponseSurface::refineSurplusAdaptive(size_t refinementsNum, bool verbose) {
@@ -174,12 +187,27 @@ void SplineResponseSurface::calculateInterpolationCoefficients() {
     transformPoint(p, unitLBounds, unitUBounds, lb, ub);
     functionValues[i] = objectiveFunc->eval(p);
   }
-  // sgpp::base::sle_solver::Armadillo sleSolver;
-  sgpp::base::sle_solver::Eigen sleSolver;
-  sgpp::base::Printer::getInstance().setVerbosity(-1);
-  sgpp::base::HierarchisationSLE hierSLE(*grid);
-  if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
-    std::cout << "Solving failed!" << std::endl;
+
+  if ((gridType == sgpp::base::GridType::PolyBoundary) ||
+      (gridType == sgpp::base::GridType::ModPoly)) {
+    /**
+     * For Bungartz Polynomials use hierarchization operation
+     **/
+    std::unique_ptr<sgpp::base::OperationHierarchisation>(
+        sgpp::op_factory::createOperationHierarchisation(*grid))
+        ->doHierarchisation(functionValues);
+    coefficients = functionValues;
+  } else {
+    /**
+     * For spline basis use SLE
+     **/
+    // sgpp::base::sle_solver::Eigen sleSolver;
+    sgpp::base::sle_solver::Eigen sleSolver;
+    sgpp::base::Printer::getInstance().setVerbosity(-1);
+    sgpp::base::HierarchisationSLE hierSLE(*grid);
+    if (!sleSolver.solve(hierSLE, functionValues, coefficients)) {
+      std::cout << "Solving failed!" << std::endl;
+    }
   }
   computedCoefficientsFlag = true;
 }

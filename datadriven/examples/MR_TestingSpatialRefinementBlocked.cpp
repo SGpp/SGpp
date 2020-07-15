@@ -14,9 +14,8 @@
 #include "sgpp/base/grid/GridStorage.hpp"
 #include "sgpp/base/grid/generation/GridGenerator.hpp"
 #include "sgpp/base/grid/storage/hashmap/HashGridPoint.hpp"
+// #include "sgpp/datadriven/grid/spatial_refinement_blocked.hpp"
 #include "sgpp/datadriven/tools/ARFFTools.hpp"
-
-#include "sgpp/datadriven/grid/spatial_refinement_blocked.hpp"
 
 int main(void) {
   /*

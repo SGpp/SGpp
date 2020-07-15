@@ -19,7 +19,7 @@ void ASMatrixBspline::initialize(sgpp::base::GridType gridType) {
     grid = std::make_shared<sgpp::base::NakBsplineBoundaryGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineBoundaryBase>(degree);
   } else if (gridType == sgpp::base::GridType::ModNakBspline) {
-    grid = std::make_shared<sgpp::base::NakBsplineModifiedGrid>(numDim, degree);
+    grid = std::make_shared<sgpp::base::ModNakBsplineGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);

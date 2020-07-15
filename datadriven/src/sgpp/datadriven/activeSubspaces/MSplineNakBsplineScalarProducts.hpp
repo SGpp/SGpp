@@ -6,18 +6,17 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <algorithm>
+#include <functional>
+#include <map>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
 #include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
 #include <sgpp/datadriven/activeSubspaces/MSplineBasis.hpp>
-
-#include <algorithm>
-#include <functional>
-#include <map>
 #include <tuple>
 #include <utility>
 

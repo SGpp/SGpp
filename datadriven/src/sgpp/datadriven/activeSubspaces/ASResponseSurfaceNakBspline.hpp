@@ -5,13 +5,15 @@
 
 #pragma once
 
+#include <algorithm>
+#include <limits>
 #include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/base/function/scalar/InterpolantScalarFunction.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
@@ -29,9 +31,6 @@
 #include <sgpp/datadriven/tools/HaltonSequence.hpp>
 #include <sgpp/datadriven/tools/SobolSequence.hpp>
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
-
-#include <algorithm>
-#include <limits>
 #include <string>
 #include <vector>
 

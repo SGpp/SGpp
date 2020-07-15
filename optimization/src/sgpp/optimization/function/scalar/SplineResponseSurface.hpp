@@ -13,10 +13,12 @@
 #include <sgpp/base/function/scalar/WrapperScalarFunction.hpp>
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -34,6 +36,10 @@
 namespace sgpp {
 namespace optimization {
 
+// ToDo (rehmemk)
+// I included polyBoundary and modpoly basis, because I neded to compare.
+// Obviously these are not actually spline response surfaces, so this must be generalized
+
 /**
  * stores a sparse grid not a knot B-spline interpolant in the framework of a respsonse surface
  */
@@ -45,13 +51,12 @@ class SplineResponseSurface : public ResponseSurface {
    * @param objectiveFunc		objective Function
    * @param gridType			type of the interpolants grid/basis
    * @param degree				degree of the interpolants basis
-   * 
+   *
    * Note: Currently boundaryLevel is only available for gridType nakBsplineBoundary
    */
   SplineResponseSurface(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
                         sgpp::base::DataVector lb, sgpp::base::DataVector ub,
-                        sgpp::base::GridType gridType, size_t degree = 3, 
-                        size_t boundaryLevel = 1)
+                        sgpp::base::GridType gridType, size_t degree = 3, size_t boundaryLevel = 1)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
         gridType(gridType),
@@ -109,6 +114,14 @@ class SplineResponseSurface : public ResponseSurface {
       grid = std::make_shared<sgpp::base::NakPBsplineGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
       boundary = false;
+    } else if (gridType == sgpp::base::GridType::PolyBoundary) {
+      grid = std::make_shared<sgpp::base::PolyBoundaryGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SPolyBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModPoly) {
+      grid = std::make_shared<sgpp::base::ModPolyGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SPolyModifiedBase>(degree);
+      boundary = true;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
     }
@@ -170,6 +183,12 @@ class SplineResponseSurface : public ResponseSurface {
       boundary = false;
     } else if (gridType == sgpp::base::GridType::NakPBspline) {
       basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
+      boundary = false;
+    } else if (gridType == sgpp::base::GridType::PolyBoundary) {
+      basis = std::make_unique<sgpp::base::SPolyBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModPoly) {
+      basis = std::make_unique<sgpp::base::SPolyModifiedBase>(degree);
       boundary = false;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
@@ -237,6 +256,12 @@ class SplineResponseSurface : public ResponseSurface {
     } else if (gridType == sgpp::base::GridType::NakPBspline) {
       basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
       boundary = false;
+    } else if (gridType == sgpp::base::GridType::PolyBoundary) {
+      basis = std::make_unique<sgpp::base::SPolyBoundaryBase>(degree);
+      boundary = true;
+    } else if (gridType == sgpp::base::GridType::ModPoly) {
+      basis = std::make_unique<sgpp::base::SPolyModifiedBase>(degree);
+      boundary = false;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
     }
@@ -275,7 +300,7 @@ class SplineResponseSurface : public ResponseSurface {
   void surplusAdaptive(size_t maxNumGridPoints, size_t initialLevel, size_t refinementsNum = 3,
                        bool verbose = false);
 
-    /**
+  /**
    *refines the grid surplus adaptive and recalculates the interpoaltion coefficients
    *@param refinementsNum	number of grid points which should be refined
    *@param verbose        print information on the refine points
@@ -409,7 +434,6 @@ class SplineResponseSurface : public ResponseSurface {
   bool computedCoefficientsFlag;
   sgpp::base::DataVector unitLBounds;
   sgpp::base::DataVector unitUBounds;
-
 
   /**
    * calculates the interpolation coefficients on a given grid

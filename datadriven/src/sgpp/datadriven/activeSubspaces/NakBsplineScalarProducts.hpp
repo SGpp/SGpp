@@ -6,8 +6,9 @@
 #pragma once
 // #ifdef USE_EIGEN
 
+#include <map>
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/grid/type/NakBsplineModifiedGrid.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
@@ -15,8 +16,6 @@
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/DistributionUniform.hpp>
 #include <sgpp/datadriven/activeSubspaces/GaussQuadrature.hpp>
-
-#include <map>
 #include <tuple>
 #include <utility>
 
