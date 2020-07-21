@@ -3,15 +3,16 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
-
 #include <sgpp/base/exception/factory_exception.hpp>
-
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
-
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
@@ -20,9 +21,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSamplingLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1DLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationDensitySamplingLinear.hpp>
-
-#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBsplineBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DBsplineClenshawCurtis.hpp>
@@ -35,7 +33,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation1DPolyClenshawCurtisBoundary.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationBsplineBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationBsplineClenshawCurtis.hpp>
@@ -48,7 +45,7 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationPolyClenshawCurtisBoundary.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationRegularizationDiagonalLinearBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBsplineBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DBsplineClenshawCurtis.hpp>
@@ -61,7 +58,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation1DPolyClenshawCurtisBoundary.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationBspline.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationBsplineBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationBsplineClenshawCurtis.hpp>
@@ -74,7 +70,6 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyClenshawCurtis.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationPolyClenshawCurtisBoundary.hpp>
-
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinear.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearBoundary.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestLinearStretched.hpp>
@@ -86,23 +81,19 @@
 #include <sgpp/datadriven/operation/hash/simple/OperationTestPoly.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationTestPrewavelet.hpp>
 
-#include <sgpp/datadriven/operation/hash/OperationMultiEvalModMaskStreaming/OperationMultiEvalModMaskStreaming.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultiEvalStreaming/OperationMultiEvalStreaming.hpp>
-
 #ifdef __AVX__
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/combined/OperationMultipleEvalSubspaceCombined.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalSubspace/simple/OperationMultipleEvalSubspaceSimple.hpp>
 #endif
 
 #ifdef USE_OCL
+#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingBSplineOCL/StreamingBSplineOCLOperatorFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLFastMultiPlattform/OperatorFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLMaskMultiPlatform/OperatorFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingModOCLOpt/OperatorFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalStreamingOCLMultiPlatform/OperatorFactory.hpp>
-
-#include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
-#include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
 #endif
 
@@ -123,12 +114,14 @@
 #ifdef USE_SCALAPACK
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed.hpp>
 #endif
 
+#include <cstring>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/globaldef.hpp>
-
-#include <cstring>
 
 namespace sgpp {
 namespace op_factory {
@@ -549,6 +542,37 @@ base::OperationMultipleEval* createOperationMultipleEval(
   }
 
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
+}
+
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+    base::Grid& grid, base::DataMatrix& dataset, size_t derivDim,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
+  if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
+    return createOperationMultipleEvalPartialDerivativeNaive(grid, dataset, derivDim);
+  } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+    if (grid.getType() == base::GridType::Bspline) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else if (grid.getType() == base::GridType::BsplineBoundary) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed(
+          grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else if (grid.getType() == base::GridType::ModBspline) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed(
+          grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else {
+      throw base::factory_exception(
+          "createOperationMultipleEvalPartialDerivativeNaive is not implemented for this grid "
+          "type.");
+    }
+#else
+    throw base::factory_exception(
+        "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif  // USE_SCALAPACK
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalPartialDerivativeNaive: invalid configuration");
+  }
 }
 
 datadriven::OperationMakePositive* createOperationMakePositive(

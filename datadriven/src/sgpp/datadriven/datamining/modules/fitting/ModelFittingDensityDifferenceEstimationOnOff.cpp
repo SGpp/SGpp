@@ -173,5 +173,12 @@ void ModelFittingDensityDifferenceEstimationOnOff::reset() {
   refinementsPerformed = 0;
 }
 
+void ModelFittingDensityDifferenceEstimationOnOff::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
+}
+
 }  // namespace datadriven
 }  // namespace sgpp

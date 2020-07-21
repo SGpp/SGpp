@@ -5,33 +5,29 @@
 
 #pragma once
 
+#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 #include <sgpp/base/grid/Grid.hpp>
-
-#include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSampling.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationCovariance.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditional.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMargTo1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalize.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensityRejectionSampling.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationDensitySampling1D.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformation.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationLimitFunctionValueRange.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationMakePositive.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformation.hpp>
 #include <sgpp/datadriven/operation/hash/simple/OperationRosenblattTransformationKDE.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationInverseRosenblattTransformationKDE.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityMarginalizeKDE.hpp>
-#include <sgpp/datadriven/operation/hash/simple/OperationDensityConditionalKDE.hpp>
-
+#include <sgpp/datadriven/operation/hash/simple/OperationTest.hpp>
+#include <sgpp/datadriven/operation/hash/simple/OperationTransformation1D.hpp>
 #include <sgpp/globaldef.hpp>
-#include <sgpp/base/function/scalar/ScalarFunction.hpp>
 
 namespace sgpp {
 namespace op_factory {
@@ -184,6 +180,21 @@ datadriven::OperationDensityConditionalKDE* createOperationDensityConditionalKDE
  */
 base::OperationMultipleEval* createOperationMultipleEval(
     base::Grid& grid, base::DataMatrix& dataset,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
+
+/**
+ * Factory method, returning an OperationMultipleEvalPartialDerivativeNaive for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used
+ * @param dataset The dataset (DataMatrix, one datapoint per row) that is to be evaluated for the
+ * sparse grid function
+ * @param derivDim The partial derivative dimension
+ * @param configuration configuration to be used
+ * @return Pointer to the new OperationMultipleEval object for the Grid grid
+ */
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+    base::Grid& grid, base::DataMatrix& dataset, size_t derivDim,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 
 /**
