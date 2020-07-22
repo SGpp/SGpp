@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/base/tools/DistributionsVector.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -30,12 +29,20 @@ std::vector<std::shared_ptr<sgpp::base::Distribution>> DistributionsVector::getD
   return distributions;
 }
 
-sgpp::base::DataVector DistributionsVector::sample() {
+sgpp::base::DataVector DistributionsVector::sample() const {
   sgpp::base::DataVector sampleVector(distributions.size(), 0.0);
   for (size_t d = 0; d < distributions.size(); d++) {
     sampleVector[d] = distributions[d]->sample();
   }
   return sampleVector;
+}
+
+sgpp::base::DataMatrix DistributionsVector::getBounds() const {
+  sgpp::base::DataMatrix bounds(distributions.size(), 2);
+  for (size_t d = 0; d < distributions.size(); d++) {
+    bounds.setRow(d, distributions[d]->getBounds());
+  }
+  return bounds;
 }
 
 void DistributionsVector::push_back(std::shared_ptr<sgpp::base::Distribution> pdf) {
@@ -46,7 +53,7 @@ std::shared_ptr<sgpp::base::Distribution> DistributionsVector::get(size_t i) {
   return distributions[i];
 }
 
-size_t DistributionsVector::getSize() { return distributions.size(); }
+size_t DistributionsVector::getSize() const { return distributions.size(); }
 
 void DistributionsVector::clear() { distributions.clear(); }
 

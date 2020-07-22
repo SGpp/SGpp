@@ -23,8 +23,9 @@ class DistributionTruncNormal : public Distribution {
   /**
    * Constructor
    */
-  DistributionTruncNormal(double mean, double stddev, double lower, double upper)
-      : Distribution(),
+  DistributionTruncNormal(double mean, double stddev, double lower, double upper,
+                          long int seed = 777)
+      : Distribution(seed),
         mean(mean),
         stddev(stddev),
         lower(lower),

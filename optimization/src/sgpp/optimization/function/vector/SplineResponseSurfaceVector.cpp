@@ -97,6 +97,41 @@ void SplineResponseSurfaceVector::nextSurplusAdaptiveGrid(size_t refinementsNum,
   computedCoefficientsFlag = false;
 }
 
+void SplineResponseSurfaceVector::distributionAdaptive(size_t maxNumGridPoints, size_t initialLevel,
+                                                       sgpp::base::DistributionsVector pdfs,
+                                                       size_t refinementsNum, bool verbose) {
+  regular(initialLevel);
+  while (grid->getSize() < maxNumGridPoints) {
+    refineDistributionAdaptive(refinementsNum, pdfs, verbose);
+  }
+  interpolants = std::make_unique<sgpp::base::InterpolantVectorFunction>(*grid, coefficients);
+  interpolantGradients =
+      std::make_unique<sgpp::base::InterpolantVectorFunctionGradient>(*grid, coefficients);
+}
+
+void SplineResponseSurfaceVector::refineDistributionAdaptive(size_t refinementsNum,
+                                                             sgpp::base::DistributionsVector pdfs,
+                                                             bool verbose) {
+  if (computedCoefficientsFlag == true) {
+    nextDistributionAdaptiveGrid(refinementsNum, pdfs, verbose);
+    if (verbose) std::cout << "Refined to a grid with " << grid->getSize() << " points.\n";
+  }
+  calculateInterpolationCoefficients(verbose);
+}
+
+/**
+ * refines the grid surplus adaptive but does not recalculate interpolation coefficients
+ *@param refinementsNum	number of grid points which should be refined
+ *@param verbose        print information on the refine points
+ */
+void SplineResponseSurfaceVector::nextDistributionAdaptiveGrid(size_t refinementsNum,
+                                                               sgpp::base::DistributionsVector pdfs,
+                                                               bool verbose) {
+  sgpp::base::VectorDistributionRefinementFunctor functor(coefficients, pdfs, refinementsNum);
+  grid->getGenerator().refine(functor);
+  computedCoefficientsFlag = false;
+}
+
 // void SplineResponseSurfaceVector::ritterNovak(size_t maxNumGridPoints, double gamma,
 //                                                          bool verbose) {
 //   // this uses the default values for Ritter Novaks initial Level, max level, powerMethod

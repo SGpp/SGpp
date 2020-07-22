@@ -12,6 +12,7 @@
 #include <sgpp/base/function/vector/InterpolantVectorFunction.hpp>
 #include <sgpp/base/function/vector/InterpolantVectorFunctionGradient.hpp>
 #include <sgpp/base/function/vector/VectorFunction.hpp>
+#include <sgpp/base/grid/generation/functors/VectorDistributionRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/VectorSurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/hashmap/AbstractRefinement.hpp>
 #include <sgpp/base/grid/generation/hashmap/HashRefinementBoundaries.hpp>
@@ -184,7 +185,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   void regularByPoints(size_t numPoints, bool verbose = false);
 
   /**
-   * creates a surplus adaptive sparse grid inteprolant
+   * creates a surplus adaptive sparse grid interpolant
    * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
    * @param initialLevel		first a regular grid of initialLevel is created.
    * @param refinementsNum		max number of grid points, added in each refinement step
@@ -206,6 +207,36 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
    *@param verbose        print information on the refine points
    */
   void nextSurplusAdaptiveGrid(size_t refinementsNum, bool verbose = false);
+
+  /**
+   * creates a distribution adaptive sparse grid intepolant
+   * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
+   * @param initialLevel		first a regular grid of initialLevel is created.
+   * @param pdfs            the probability density functions 'distributions'
+   * @param refinementsNum		max number of grid points, added in each refinement step
+   * @param verbose		print extra info
+   */
+  void distributionAdaptive(size_t maxNumGridPoints, size_t initialLevel,
+                            sgpp::base::DistributionsVector pdfs, size_t refinementsNum = 3,
+                            bool verbose = false);
+
+  /**
+   *refines the grid distribution adaptive and recalculates the interpoaltion coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   * @param pdfs            the probability density functions 'distributions'
+   *@param verbose        print information on the refine points
+   */
+  void refineDistributionAdaptive(size_t refinementsNum, sgpp::base::DistributionsVector pdfs,
+                                  bool verbose = false);
+
+  /**
+   * refines the grid distribution adaptive but does not recalculate interpolation coefficients
+   *@param refinementsNum	number of grid points which should be refined
+   * @param pdfs            the probability density functions 'distributions'
+   *@param verbose        print information on the refine points
+   */
+  void nextDistributionAdaptiveGrid(size_t refinementsNum, sgpp::base::DistributionsVector pdfs,
+                                    bool verbose = false);
 
   /**
    * creates an adaptive grid based on Ritter-Novak

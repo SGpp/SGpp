@@ -5,8 +5,8 @@
 
 #pragma once
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
-
 #include <vector>
 
 namespace sgpp {
@@ -23,11 +23,13 @@ class DistributionsVector {
 
   std::vector<std::shared_ptr<sgpp::base::Distribution>> getDistributions();
 
-  sgpp::base::DataVector sample();
+  sgpp::base::DataVector sample() const;
+
+  sgpp::base::DataMatrix getBounds() const;
 
   void push_back(std::shared_ptr<sgpp::base::Distribution> pdf);
   std::shared_ptr<sgpp::base::Distribution> get(size_t i);
-  size_t getSize();
+  size_t getSize() const;
   void clear();
 
  private:

@@ -5,11 +5,10 @@
 
 #pragma once
 
-#include <sgpp/base/datatypes/DataVector.hpp>
-
 #include <chrono>
 #include <iostream>
 #include <random>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <string>
 
 namespace sgpp {
@@ -33,10 +32,16 @@ class Distribution {
  public:
   /**
    * Constructor
+   *
+   * @param seed  if a seed should be set, ii.e. for precalculating and reusing grids set one here,
+   * otherwise a pseudo random seed is set automatically
    */
-  Distribution() {
+  Distribution(long int seed = 777) {
     // set seed
-    gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+    if (seed == 777) {
+      seed = std::chrono::system_clock::now().time_since_epoch().count();
+    }
+    gen.seed(seed);
   }
 
   /**
