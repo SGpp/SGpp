@@ -106,7 +106,6 @@ bool ModelFittingDensityDerivativeRatioEstimation::adapt() {
 
 void ModelFittingDensityDerivativeRatioEstimation::update(Dataset &newDataset) {
   if (grid != nullptr) {
-    reset();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix

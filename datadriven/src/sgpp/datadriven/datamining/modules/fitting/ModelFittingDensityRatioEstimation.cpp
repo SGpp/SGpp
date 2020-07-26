@@ -98,7 +98,6 @@ bool ModelFittingDensityRatioEstimation::adapt() {
 
 void ModelFittingDensityRatioEstimation::update(Dataset &newDatasetP, Dataset &newDatasetQ) {
   if (grid != nullptr) {
-    reset();
     // reassign datasets
     dataset = &newDatasetP;
     extraDataset = &newDatasetQ;
