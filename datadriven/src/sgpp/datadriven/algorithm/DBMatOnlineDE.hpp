@@ -180,7 +180,28 @@ class DBMatOnlineDE : public DBMatOnline {
                                       size_t newPoints = 0);
 
   /**
-   * Computes the density function for a certain data matrix in parallel using ScaLAPACK.
+   * Computes the density difference function for two data matrix instances in parallel usinng
+   * ScaLAPACK.
+   *
+   * @param alpha the distributed vector where surplusses for the density function will be stored
+   * @param mp the matrix that contains the data points for the first input dataset
+   * @param mq the matrix that contains the data points for the second input dataset
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   * @param parallelConfig configuration for ScaLAPACK
+   * @param processGrid pointer to BlacsProcessGrid
+   * @param save_b Indicates whether the old right hand side should be saved and combined with the
+   * new right hand side (aka streaming)
+   * @param do_cv Indicates whether crossvalidation should take place
+   */
+  void computeDensityDifferenceFunctionParallel(
+      DataVectorDistributed& alpha, DataMatrix& mp, DataMatrix& mq, Grid& grid,
+      DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
+      bool save_b = false, bool do_cv = false);
+
+  /**
+   * Computes the density derivative function for a certain data matrix in parallel using ScaLAPACK.
    *
    * @param alpha the distributed vector where surplusses for the density function will be stored
    * @param m the matrix that contains the data points, currently every process has to have the data
@@ -271,6 +292,28 @@ class DBMatOnlineDE : public DBMatOnline {
    */
   DataVectorDistributed computeWeightedDerivativeBFromBatchParallel(
       DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
+      const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
+      bool weighted);
+
+  /**
+   * Initializes the b vector for the given batch of data in two datasets scenarios.
+   * Does not compute the actual b, but initializes it and computes the two dataset contributions bp
+   * and bq. All these three vectors are returned, in this order, if weighted is false.
+   * Otherwise, only the final b is returned and usable in the std::vector.
+   *
+   * This version calculates the result in parallel using ScaLAPACK.
+   *
+   * @param mp the matrix that contains the first data points
+   * @param mq the matrix that contains the second data points
+   * @param grid The underlying grid
+   * @param densityEstimationConfig Configuration for the density estimation
+   * @param parallelConfig ScaLAPACK configuration
+   * @param processGrid process grid for ScaLAPACK
+   * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   */
+  std::vector<DataVectorDistributed> computeWeightedBFromBatchTwoDatasetsParallel(
+      DataMatrix& mp, DataMatrix& mq, Grid& grid,
+      const DensityEstimationConfiguration& densityEstimationConfig,
       const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
       bool weighted);
 
@@ -390,6 +433,15 @@ class DBMatOnlineDE : public DBMatOnline {
                               // bTotalPointsExtra
   DataVector bSaveExtra;
   DataVector bTotalPointsExtra;
+
+  // flag for initialization of the distributed extra vectors
+  bool extraDistributedVectorsInitialized;
+
+  // pointer to distributed extra vector of bSave
+  std::unique_ptr<DataVectorDistributed> bSaveExtraDistributed;
+
+  // pointer to distributed extra vector of bTotalPoints
+  std::unique_ptr<DataVectorDistributed> bTotalPointsExtraDistributed;
 
   // Note(Sebastian Kreisel) In the learner config this is called learningRate
   double beta;

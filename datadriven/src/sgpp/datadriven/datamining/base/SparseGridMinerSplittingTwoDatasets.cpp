@@ -8,6 +8,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <iostream>
 #include <vector>
@@ -23,6 +24,15 @@ SparseGridMinerSplittingTwoDatasets::SparseGridMinerSplittingTwoDatasets(
       dataSourceQ{dataSource[1]} {}
 
 double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
+#ifdef USE_SCALAPACK
+  if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
+    auto processGrid = fitter->getProcessGrid();
+    if (!processGrid->isProcessInGrid()) {
+      return 0.0;
+    }
+  }
+#endif /* USE_SCALAPACK */
+
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;

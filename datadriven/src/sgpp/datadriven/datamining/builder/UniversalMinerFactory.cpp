@@ -18,7 +18,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingRelativeDensityRatioEstimation.hpp>
@@ -51,11 +53,27 @@ ModelFittingBase *UniversalMinerFactory::createFitter(const DataMiningConfigPars
   } else if (fType == FitterType::DensityDifferenceEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
+#ifdef USE_SCALAPACK
+    if (parser.hasParallelConfig()) {
+      model = new ModelFittingDensityDifferenceEstimationOnOffParallel(config);
+    } else {
+      model = new ModelFittingDensityDifferenceEstimationOnOff(config);
+    }
+#else
     model = new ModelFittingDensityDifferenceEstimationOnOff(config);
+#endif /* USE_SCALAPACK */
   } else if (fType == FitterType::DensityDerivativeEstimation) {
     FitterConfigurationDensityEstimation config{};
     config.readParams(parser);
+#ifdef USE_SCALAPACK
+    if (parser.hasParallelConfig()) {
+      model = new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
+    } else {
+      model = new ModelFittingDensityDerivativeEstimationOnOff(config);
+    }
+#else
     model = new ModelFittingDensityDerivativeEstimationOnOff(config);
+#endif /* USE_SCALAPACK */
   } else if (fType == FitterType::DensityRatioEstimation) {
     FitterConfigurationLeastSquares config{};
     config.readParams(parser);

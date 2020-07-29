@@ -5,9 +5,7 @@
 
 #pragma once
 
-#include <list>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
-#include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
@@ -26,92 +24,83 @@ using sgpp::base::Grid;
 namespace sgpp {
 namespace datadriven {
 
+// TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid density derivative estimation with
+ * Fitter object that encapsulates the usage of sparse grid density difference estimation with
  * identity as regularization.
  *
  * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  *
- * Based on ModelFittingDensityDerivativeEstimationOnOff, but uses ScaLAPACK for parallelization.
+ * Based on ModelFittingDensityDifferenceEstimationOnOff, but uses ScaLAPACK for parallelization.
  */
-class ModelFittingDensityDerivativeEstimationOnOffParallel : public ModelFittingDensityEstimation {
+class ModelFittingDensityDifferenceEstimationOnOffParallel : public ModelFittingDensityEstimation {
  public:
   /**
    * Constructor
    *
    * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingDensityDerivativeEstimationOnOffParallel(
+  explicit ModelFittingDensityDifferenceEstimationOnOffParallel(
       const FitterConfigurationDensityEstimation& config);
-
-  /**
-   * Constuctor with offline object store.
-   *
-   * @param config Configuration object that specifies grid, refinement, and regularization.
-   * @param objectStore Offline object store
-   * @param processGrid blacs process grid
-   */
-  explicit ModelFittingDensityDerivativeEstimationOnOffParallel(
-      const FitterConfigurationDensityEstimation& config,
-      std::shared_ptr<DBMatObjectStore> objectStore, std::shared_ptr<BlacsProcessGrid> processGrid);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach.
-   * @param dataset the training dataset that is used to fit the model.
+   * @param datasetP the first training dataset that is used to fit the model.
+   * @param datasetQ the second training dataset that is used to fit the model.
    */
-  void fit(Dataset& dataset) override;
+  void fit(Dataset& datasetP, Dataset& datasetQ) override;
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach. Not supported for this model.
-   * @param datasetP the first training dataset that is used to fit the model.
-   * @param datasetQ the second training dataset that is used to fit the model.
+   * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(Dataset& datasetP, Dataset& datasetQ) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void fit(Dataset& dataset) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach. Requires only data samples and no targets (since those are irrelevant for the density
    * estimation whatsoever)
-   * @param dataset the training dataset that is used to fit the model.
+   * @param datasetP the first training dataset that is used to fit the model.
+   * @param datasetQ the second training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& dataset) override;
+  void fit(DataMatrix& datasetP, DataMatrix& datasetQ) override;
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach. Not supported for this model.
-   * @param datasetP the first training dataset that is used to fit the model.
-   * @param datasetQ the second training dataset that is used to fit the model.
+   * @param dataset the training dataset that is used to fit the model.
    */
-  void fit(DataMatrix& datasetP, DataMatrix& datasetQ) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void fit(DataMatrix& dataset) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
-   * Performs refinement and coarsening given the new grid size and the points to coarsened
+   * Performs a refinement given the new grid size and the points to coarsened
    * @param newNoPoints the grid size after refinement and coarsening
-   * @param deletedGridPoints a vector of indexes for grid points that will be removed
+   * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
   bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
-  void update(Dataset& dataset) override;
-  void update(Dataset& datasetP, Dataset& datasetQ) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void update(Dataset& datasetP, Dataset& datasetQ) override;
+  void update(Dataset& dataset) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only the data
    * samples and no targets (since those are irrelevant for the density estimation whatsoever)
-   * @param samples the new data samples
+   * @param samplesP the new data samples for the first dataset
+   * @param samplesQ the new data samples for the second dataset
    */
-  void update(DataMatrix& samples) override;
-  void update(DataMatrix& samplesP, DataMatrix& samplesQ) override {
-    throw base::application_exception("This model requires a single input dataset");
+  void update(DataMatrix& samplesP, DataMatrix& samplesQ) override;
+  void update(DataMatrix& samples) override {
+    throw base::application_exception("This model requires two input datasets");
   }
 
   /**
@@ -131,27 +120,8 @@ class ModelFittingDensityDerivativeEstimationOnOffParallel : public ModelFitting
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
-   * Computes the residual
-   *
-   * || R * alpha_lambda - b_val ||_2
-   *
-   * @param validationData Matrix for validation data
-   *
-   * @returns the residual score
-   */
-  double computeResidual(DataMatrix& validationData) const override;
-
-  /**
-   * Updates the regularization parameter lambda of the underlying model.
-   *
-   * @param lambda the new lambda parameter
-   */
-  void updateRegularization(double lambda) override;
-
-  /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
-   * allow for refinement)
-   * @return whether the model is refinable
+   * allow for refinement) @return whether the model is refinable
    */
   bool isRefinable() override;
 
@@ -161,9 +131,37 @@ class ModelFittingDensityDerivativeEstimationOnOffParallel : public ModelFitting
   void reset() override;
 
   /**
-   * Resets any trained representations of the model, but does not reset the entire state.
+   * Should compute some kind of Residual to evaluate the fit of the model.
    *
-   * Does not reset the offline object and grid.
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
+  double computeResidual(DataMatrix& validationData) const override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityDifferenceEstimationOnOffParallel::computeResidual() is not "
+        "implemented!");
+  }
+
+  /**
+   * Updates the regularization parameter lambda of the underlying model.
+   *
+   * @param lambda the new lambda parameter
+   */
+  void updateRegularization(double lambda) override {
+    throw sgpp::base::not_implemented_exception(
+        "ModelFittingDensityDifferenceEstimationOnOffParallel::updateRegularization() is not "
+        "implemented!");
+  }
+
+  /**
+   * Resets any trained representations of the model, but does not reset the entire state.
    */
   void resetTraining() override;
 
@@ -173,18 +171,6 @@ class ModelFittingDensityDerivativeEstimationOnOffParallel : public ModelFitting
   std::shared_ptr<BlacsProcessGrid> getProcessGrid() const override;
 
  private:
-  /**
-   * @brief The instances offline object store
-   *
-   */
-  std::shared_ptr<DBMatObjectStore> objectStore;
-
-  /**
-   * @brief True if instnce has an offline object store
-   *
-   */
-  bool hasObjectStore;
-
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
 
