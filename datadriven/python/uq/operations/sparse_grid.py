@@ -28,6 +28,7 @@ from pysgpp import OperationMultipleEvalType_DEFAULT, \
     GridType_ModBspline, SBsplineModifiedBase, SBsplineBase, \
     SBsplineBoundaryBase, SBsplineClenshawCurtisBase, \
     SBsplineModifiedClenshawCurtisBase, \
+    SNakPBsplineBase,\
     createOperationMultipleHierarchisation, \
     createOperationArbitraryBoundaryHierarchisation
 from pysgpp.pysgpp_swig import IndexVector
@@ -175,6 +176,8 @@ def getBasis(grid):
         return SBsplineClenshawCurtisBase(grid.getDegree())
     elif gridType == GridType_ModBsplineClenshawCurtis:
         return SBsplineModifiedClenshawCurtisBase(grid.getDegree())
+    elif gridType == GridType_NakPBspline:
+        return SNakPBsplineBase(grid.getDegree())
     else:
         raise AttributeError("basis %i is not supported" % gridType)
 
