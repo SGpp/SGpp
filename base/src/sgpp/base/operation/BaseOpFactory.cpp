@@ -21,6 +21,7 @@
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 
@@ -140,6 +141,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalLinearBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakPBsplineNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
@@ -164,6 +166,7 @@
 #include <sgpp/base/operation/hash/OperationEvalWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakPBsplineNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientBsplineBoundaryNaive.hpp>
@@ -541,6 +544,9 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
              grid.getType() == base::GridType::LinearL0Boundary ||
              grid.getType() == base::GridType::LinearTruncatedBoundary) {
     return new base::OperationMultipleEvalLinearBoundaryNaive(grid, dataset);
+  }else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationMultipleEvalNakPBsplineNaive(
+        grid, dynamic_cast<base::NakPBsplineGrid*>(&grid)->getDegree(), dataset);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalNaive is not implemented for this grid type.");
@@ -609,6 +615,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
     return new base::OperationEvalNakBsplineBoundaryCombigridNaive(
         grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree());
+  }else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationEvalNakPBsplineNaive(
+        grid.getStorage(), dynamic_cast<base::NakPBsplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalNaive is not implemented for this grid type.");

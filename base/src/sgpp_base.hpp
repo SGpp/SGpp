@@ -9,6 +9,7 @@
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineClenshawCurtisBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/BsplineModifiedBasis.hpp>
@@ -98,6 +99,7 @@
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>

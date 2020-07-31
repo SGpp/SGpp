@@ -25,6 +25,7 @@
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearModifiedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
@@ -39,6 +40,7 @@
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 
 #include <cstddef>
 #include <cstring>
@@ -140,6 +142,11 @@ class HierarchisationSLE : public CloneableSLE {
           new base::SNakBsplineBoundaryCombigridBase(
               dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree()));
       basisType = NAK_BSPLINEBOUNDARY_COMBIGRID;
+    }else if (grid.getType() == base::GridType::NakPBspline) {
+      nakPBsplineBasis = std::unique_ptr<base::SNakPBsplineBase>(
+          new base::SNakPBsplineBase(
+              dynamic_cast<base::NakPBsplineGrid&>(grid).getDegree()));
+      basisType = NAK_P_BSPLINE;
     } else {
       throw std::invalid_argument("Grid type not supported.");
     }
@@ -221,6 +228,8 @@ class HierarchisationSLE : public CloneableSLE {
   std::unique_ptr<base::SWaveletModifiedBase> modWaveletBasis;
   /// not-a-knot B-spline Boundary basis
   std::unique_ptr<base::SNakBsplineBoundaryCombigridBase> nakBsplineBoundaryCombigridBasis;
+  /// not an Otter B-spline Boundary basis
+  std::unique_ptr<base::SNakPBsplineBase> nakPBsplineBasis;
 
   /// type of grid/basis functions
   enum {
@@ -240,7 +249,8 @@ class HierarchisationSLE : public CloneableSLE {
     WAVELET,
     WAVELET_BOUNDARY,
     WAVELET_MODIFIED,
-    NAK_BSPLINEBOUNDARY_COMBIGRID
+    NAK_BSPLINEBOUNDARY_COMBIGRID,
+    NAK_P_BSPLINE
   } basisType;
 
   /**
@@ -282,6 +292,8 @@ class HierarchisationSLE : public CloneableSLE {
       return evalWaveletModifiedFunctionAtGridPoint(basisI, pointJ);
     } else if (basisType == NAK_BSPLINEBOUNDARY_COMBIGRID) {
       return evalNakBsplineBoundaryCombigridFunctionAtGridPoint(basisI, pointJ);
+    }else if (basisType == NAK_P_BSPLINE) {
+      return evalNakPBsplineFunctionAtGridPoint(basisI, pointJ);
     } else {
       return 0.0;
     }
@@ -691,6 +703,31 @@ class HierarchisationSLE : public CloneableSLE {
 
     for (size_t t = 0; t < gridStorage.getDimension(); t++) {
       const double result1d = nakBsplineBoundaryCombigridBasis->eval(
+          gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
+
+      if (result1d == 0.0) {
+        return 0.0;
+      }
+
+      result *= result1d;
+    }
+
+    return result;
+  }
+
+    /**
+       * @param basisI    basis function index
+       * @param pointJ    grid point index
+       * @return          value of the basisI-th not an Otter B-spline basis function
+       *                  at the pointJ-th grid point
+       */
+  inline double evalNakPBsplineFunctionAtGridPoint(size_t basisI, size_t pointJ) {
+    const base::GridPoint& gpBasis = gridStorage[basisI];
+    const base::GridPoint& gpPoint = gridStorage[pointJ];
+    double result = 1.0;
+
+    for (size_t t = 0; t < gridStorage.getDimension(); t++) {
+      const double result1d = nakPBsplineBasis->eval(
           gpBasis.getLevel(t), gpBasis.getIndex(t), gridStorage.getCoordinate(gpPoint, t));
 
       if (result1d == 0.0) {

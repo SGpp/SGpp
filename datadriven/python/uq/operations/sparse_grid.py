@@ -9,7 +9,7 @@ from pysgpp import (createOperationHierarchisation,
                     Grid,
                     SLinearBase, SLinearBoundaryBase,
                     SPolyBase, SPolyBoundaryBase,
-                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline)
+                    GridType_Poly, GridType_PolyBoundary, GridType_Linear, GridType_LinearBoundary, GridType_LinearL0Boundary, GridType_Bspline, GridType_NakPBspline)
 
 from scipy.interpolate import interp1d
 
@@ -38,7 +38,8 @@ bsplineBoundaryGridTypes = [GridType_BsplineBoundary,
                             GridType_BsplineClenshawCurtis]
 bsplineNoBoundaryGridTypes = [GridType_Bspline,
                               GridType_ModBspline,
-                              GridType_ModBsplineClenshawCurtis]
+                              GridType_ModBsplineClenshawCurtis,
+                              GridType_NakPBspline]
 bsplineGridTypes = bsplineNoBoundaryGridTypes + bsplineBoundaryGridTypes
 
 polyBoundaryGridTypes = [GridType_PolyBoundary,
@@ -69,7 +70,8 @@ multipleEvalNaiveGridTypes = [GridType_Bspline,
                               GridType_ModLinearClenshawCurtis,
                               GridType_PolyClenshawCurtis,
                               GridType_PolyClenshawCurtisBoundary,
-                              GridType_ModPolyClenshawCurtis]
+                              GridType_ModPolyClenshawCurtis,
+                              GridType_NakPBspline]
 #######################################################################
 
 def createGrid(grid, dim, deg=1, addTruncatedBorder=False):
@@ -792,7 +794,8 @@ def hierarchize(grid, nodalValues, isConsistent=True, ignore=None):
                               GridType_BsplineClenshawCurtis,
                               GridType_BsplineBoundary,
                               GridType_ModBsplineClenshawCurtis,
-                              GridType_ModBspline]:
+                              GridType_ModBspline,
+                              GridType_NakPBspline]:
             opHier = createOperationMultipleHierarchisation(grid)
         elif maxLevel > 1 and \
              grid.getType() in [GridType_LinearBoundary,

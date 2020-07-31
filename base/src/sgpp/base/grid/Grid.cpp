@@ -32,6 +32,7 @@
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
@@ -154,6 +155,10 @@ Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
   return new NakBsplineBoundaryCombigridGrid(dim, degree);
 }
 
+Grid* Grid::createNakPBsplineGrid(size_t dim, size_t degree) {
+  return new NakPBsplineGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -228,6 +233,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createModLinearGridStencil(gridConfig.dim_);
       case GridType::NakBsplineBoundaryCombigrid:
         return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::NakPBspline:
+        return Grid::createNakPBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
       default:
         throw generation_exception("Grid::createGrid - grid type not known");
     }
@@ -357,6 +364,9 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
     case GridType::NakBsplineBoundaryCombigrid:
       degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
       return Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
+    case GridType::NakPBspline:
+      degree = dynamic_cast<NakPBsplineGrid*>(this)->getDegree();
+      return Grid::createNakPBsplineGrid(numDims, degree);
     default:
       throw generation_exception("Grid::clone - grid type not known");
   }
@@ -397,6 +407,7 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::Bspline:
     case GridType::BsplineBoundary:
     case GridType::ModBspline:
+    case GridType::NakPBspline:
       return GridType::Bspline;
     case GridType::Prewavelet:
       return GridType::Prewavelet;
@@ -513,6 +524,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::pair<std::string, Grid::Factory>("periodic", PeriodicGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("linearTruncatedBoundary",
                                                        LinearTruncatedBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakpbspline", NakPBsplineGrid::unserialize));                                                       
 #else
     tMap->insert(std::make_pair("NULL", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -548,8 +560,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
         std::make_pair("modBsplineClenshawCurtis", ModBsplineClenshawCurtisGrid::unserialize));
     tMap->insert(std::make_pair("prewavelet", PrewaveletGrid::unserialize));
     tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
-    tMap->insert(
-        std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("nakpbspline", NakPBsplineGrid::unserialize));
 #endif
   }
 
@@ -618,8 +630,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::pair<sgpp::base::GridType, std::string>(GridType::Prewavelet, "prewavelet"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::Periodic, "periodic"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakPBspline, "nakpbspline"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -660,6 +672,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
+    verboseMap->insert(std::make_pair(GridType::NakPBspline, "nakpbspline"));
 #endif
   }
 
@@ -813,6 +826,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::LinearStencil;
   } else if (gridType.compare("modlinearstencil") == 0) {
     return sgpp::base::GridType::ModLinearStencil;
+  } else if (gridType.compare("nakpbspline") == 0) {
+    return sgpp::base::GridType::NakPBspline;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

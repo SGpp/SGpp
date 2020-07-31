@@ -22,6 +22,7 @@
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/ModFundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineBoundary.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationBsplineClenshawCurtis.hpp>
@@ -37,6 +38,7 @@
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationWavelet.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationFundamentalSpline.hpp>
 #include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationModFundamentalSpline.hpp>
+#include <sgpp/optimization/operation/hash/OperationMultipleHierarchisationNakPBspline.hpp>
 
 #include <cstring>
 
@@ -87,6 +89,9 @@ optimization::OperationMultipleHierarchisation* createOperationMultipleHierarchi
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new optimization::OperationMultipleHierarchisationModFundamentalSpline(
         dynamic_cast<base::ModFundamentalSplineGrid&>(grid));
+  }else if (grid.getType() == base::GridType::NakPBspline) {
+    return new optimization::OperationMultipleHierarchisationNakPBspline(
+        dynamic_cast<base::NakPBsplineGrid&>(grid));
   } else {
     throw base::factory_exception(
         "OperationMultipleHierarchisation is not implemented for this grid type.");
