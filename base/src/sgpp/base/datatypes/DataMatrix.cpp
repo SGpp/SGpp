@@ -166,17 +166,23 @@ void DataMatrix::resizeToSubMatrix(size_t row_1, size_t col_1, size_t row_2, siz
     return;
   }
 
-  // create new matrix
-  DataMatrix oldMatrix(*this);
-  this->resize(0, col_2 - col_1 +1);
-  this->reserveAdditionalRows(row_2 - row_1 + 1);
+  auto regionBegin = this->begin() + row_1 * this->ncols + col_1;
+  auto regionEnd = this->begin() + row_2 * this->ncols + col_2;
+  size_t ncols_new = col_2 - col_1 + 1;
 
-  auto regionBegin = oldMatrix.begin() + (row_1 - 1) * oldMatrix.ncols + (col_1 - 1);
-  auto regionEnd = oldMatrix.begin() + (row_2) * oldMatrix.ncols + (col_1 - 1);
-  for (auto it = regionBegin; it < regionEnd; it += oldMatrix.ncols) {
-    this->insert(this->end(), it, it + (col_2 - col_1 + 1));
-    ++this->nrows;
+  // copy region row-wise
+  size_t resizedOffset = 0;
+  for (auto it = regionBegin; it < regionEnd + 1; it += this->ncols) {
+    std::copy(it, it + (col_2 - col_1) + 1, this->begin() + resizedOffset);
+    resizedOffset += ncols_new;
   }
+
+  this->nrows = row_2 - row_1 + 1;
+  this->ncols = ncols_new;
+
+  // free unused memory
+  this->std::vector<double>::resize(this->nrows * this->ncols);
+  this->shrink_to_fit();
 }
 
 void DataMatrix::reserveAdditionalRows(size_t inc_nrows) {
