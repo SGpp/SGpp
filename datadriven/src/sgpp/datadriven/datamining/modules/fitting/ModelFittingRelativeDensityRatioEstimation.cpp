@@ -101,7 +101,6 @@ bool ModelFittingRelativeDensityRatioEstimation::adapt() {
 void ModelFittingRelativeDensityRatioEstimation::update(Dataset &newDatasetP,
                                                         Dataset &newDatasetQ) {
   if (grid != nullptr) {
-    reset();
     // reassign datasets
     dataset = &newDatasetP;
     extraDataset = &newDatasetQ;

@@ -43,6 +43,7 @@
 #include <map>
 
 using json::DictNode;
+using json::ListNode;
 using json::JSON;
 using json::json_exception;
 using sgpp::base::AdaptivityConfiguration;
@@ -75,8 +76,18 @@ bool DataMiningConfigParser::hasDataSourceConfig() const {
 }
 
 bool DataMiningConfigParser::hasDataTransformationConfig() const {
-  bool hasDataTransformationConfig =
-      hasDataSourceConfig() ? (*configFile)[dataSource].contains("dataTransformation") : false;
+  bool hasDataTransformationConfig = false;
+  try {
+    // if dataSource exists or not, but as a DictNode
+    hasDataTransformationConfig =
+        hasDataSourceConfig() ? (*configFile)[dataSource].contains("dataTransformation") : false;
+  } catch (json_exception &e) {
+    // if dataSource exists or not, but as a ListNode
+    hasDataTransformationConfig =
+        hasDataSourceConfig()
+            ? dynamic_cast<ListNode &>((*configFile)[dataSource])[0].contains("dataTransformation")
+            : false;
+  }
   return hasDataTransformationConfig;
 }
 
@@ -224,76 +235,103 @@ bool DataMiningConfigParser::getMultiDataSourceConfig(
   bool hasDataSource = hasDataSourceConfig();
 
   if (hasDataSource) {
-    auto dataSourceConfig = dynamic_cast<json::DictNode *>(&(*configFile)[dataSource]);
+    auto dataSourceConfig = static_cast<ListNode &>((*configFile)[dataSource]);
 
-    // Fill in all parameters for first dataset (except the filePath)
-    config[0].isCompressed_ =
-        parseBool(*dataSourceConfig, "compression", defaults[0].isCompressed_, "dataSource");
-    config[0].numBatches_ =
-        parseUInt(*dataSourceConfig, "numBatches", defaults[0].numBatches_, "dataSource");
-    config[0].batchSize_ =
-        parseUInt(*dataSourceConfig, "batchSize", defaults[0].batchSize_, "dataSource");
-    config[0].hasTargets_ =
-        parseBool(*dataSourceConfig, "hasTargets", defaults[0].hasTargets_, "dataSource");
-    config[0].validationPortion_ = parseDouble(*dataSourceConfig, "validationPortion",
-                                               defaults[0].validationPortion_, "dataSource");
-    // if negative we want UINT_MAX here, so all should be fine
-    config[0].readinCutoff_ = static_cast<size_t>(
-        parseInt(*dataSourceConfig, "readinCutoff", defaults[0].readinCutoff_, "dataSource"));
-    config[0].readinClasses_ = parseDoubleArray(*dataSourceConfig, "readinClasses",
-                                                defaults[0].readinClasses_, "dataSource");
-    config[0].readinColumns_ = parseUIntArray(*dataSourceConfig, "readinColumns",
-                                              defaults[0].readinColumns_, "dataSource");
+    for (size_t i = 0; i < dataSourceConfig.size(); ++i) {
+      auto dataSourceConfigElem = static_cast<DictNode &>(dataSourceConfig[i]);
 
-    // parse file type
-    if (dataSourceConfig->contains("fileType")) {
-      config[0].fileType_ = DataSourceFileTypeParser::parse((*dataSourceConfig)["fileType"].get());
-    } else {
-      std::cout << "# Did not find " << dataSource << "[fileType]. Setting default value "
-                << DataSourceFileTypeParser::toString(defaults[0].fileType_) << "." << std::endl;
-      config[0].fileType_ = defaults[0].fileType_;
-    }
+      config[i].filePath_ =
+          parseString(dataSourceConfigElem, "filePath", defaults[i].filePath_, "dataSource");
+      config[i].isCompressed_ =
+          parseBool(dataSourceConfigElem, "compression", defaults[i].isCompressed_, "dataSource");
+      config[i].numBatches_ =
+          parseUInt(dataSourceConfigElem, "numBatches", defaults[i].numBatches_, "dataSource");
+      config[i].batchSize_ =
+          parseUInt(dataSourceConfigElem, "batchSize", defaults[i].batchSize_, "dataSource");
+      config[i].hasTargets_ =
+          parseBool(dataSourceConfigElem, "hasTargets", defaults[i].hasTargets_, "dataSource");
+      config[i].validationPortion_ = parseDouble(dataSourceConfigElem, "validationPortion",
+                                                 defaults[i].validationPortion_, "dataSource");
+      // if negative we want UINT_MAX here, so all should be fine
+      config[i].readinCutoff_ = static_cast<size_t>(
+          parseInt(dataSourceConfigElem, "readinCutoff", defaults[i].readinCutoff_, "dataSource"));
+      config[i].readinClasses_ = parseDoubleArray(dataSourceConfigElem, "readinClasses",
+                                                  defaults[i].readinClasses_, "dataSource");
+      config[i].readinColumns_ = parseUIntArray(dataSourceConfigElem, "readinColumns",
+                                                defaults[i].readinColumns_, "dataSource");
 
-    // parse dataTransformationConfig
-    bool hasDataTransformation = hasDataTransformationConfig();
+      // parse file type
+      if (dataSourceConfigElem.contains("fileType")) {
+        config[i].fileType_ =
+            DataSourceFileTypeParser::parse(dataSourceConfigElem["fileType"].get());
+      } else {
+        std::cout << "# Did not find " << dataSource << " [" << i << "]"
+                  << "[fileType]. Setting default value "
+                  << DataSourceFileTypeParser::toString(defaults[i].fileType_) << "." << std::endl;
+        config[i].fileType_ = defaults[i].fileType_;
+      }
 
-    if (hasDataTransformation) {
-      auto dataTransformationConfig =
-          static_cast<DictNode *>(&(*configFile)[dataSource]["dataTransformation"]);
-      parseDataTransformationConfig(*dataTransformationConfig, config[0].dataTransformationConfig_,
-                                    defaults[0].dataTransformationConfig_, "dataTransformation");
-    } else {
-      std::cout << "# Could not find specification of dataSource[dataTransformationConfig]. "
-                   "Falling back to default values."
-                << std::endl;
-      config[0].dataTransformationConfig_ = defaults[0].dataTransformationConfig_;
-    }
+      if (dataSourceConfigElem.contains("dataTransformation")) {
+        auto dataTransformationConfig =
+            static_cast<DictNode *>(&dataSourceConfigElem["dataTransformation"]);
+        parseDataTransformationConfig(*dataTransformationConfig,
+                                      config[i].dataTransformationConfig_,
+                                      defaults[i].dataTransformationConfig_, "dataTransformation");
+      } else {
+        std::cout << "# Could not find specification of dataSource[dataTransformationConfig]. "
+                     "Falling back to default values."
+                  << std::endl;
+        config[i].dataTransformationConfig_ = defaults[i].dataTransformationConfig_;
+      }
 
-    // parse the shuffling
-    if (dataSourceConfig->contains("shuffling")) {
-      config[0].shuffling_ =
-          DataSourceShufflingTypeParser::parse((*dataSourceConfig)["shuffling"].get());
-    } else {
-      std::cout << "# Did not find dataSource[shuffling]. Setting default value "
-                << DataSourceShufflingTypeParser::toString(defaults[0].shuffling_) << "."
-                << std::endl;
-      config[0].shuffling_ = defaults[0].shuffling_;
-    }
+      // parse the shuffling
+      if (dataSourceConfigElem.contains("shuffling")) {
+        config[i].shuffling_ =
+            DataSourceShufflingTypeParser::parse(dataSourceConfigElem["shuffling"].get());
+      } else {
+        std::cout << "# Did not find dataSource[shuffling]. Setting default value "
+                  << DataSourceShufflingTypeParser::toString(defaults[i].shuffling_) << "."
+                  << std::endl;
+        config[i].shuffling_ = defaults[i].shuffling_;
+      }
 
-    config[0].randomSeed_ =
-        parseUInt(*dataSourceConfig, "randomSeed", defaults[0].randomSeed_, "dataSource");
-    config[0].epochs_ = parseUInt(*dataSourceConfig, "epochs", defaults[0].epochs_, "dataSource");
+      config[i].randomSeed_ =
+          parseUInt(dataSourceConfigElem, "randomSeed", defaults[i].randomSeed_, "dataSource");
+      config[i].epochs_ =
+          parseUInt(dataSourceConfigElem, "epochs", defaults[i].epochs_, "dataSource");
 
-    // Parse the filePath field for all config instances
-    json::ListNode &paths = dynamic_cast<json::ListNode &>((*dataSourceConfig)["filePath"]);
+      // Parse info for test data
+      config[i].testFilePath_ =
+          parseString(dataSourceConfigElem, "testFilePath", defaults[i].filePath_, "dataSource");
 
-    // First copy all parameters to all other config instances...
-    for (size_t i = 1; i < paths.size(); i++) {
-      config[i] = config[0];
-    }
-    // ... then fill in the correct paths
-    for (size_t i = 0; i < paths.size(); i++) {
-      config[i].filePath_ = paths[i].get();
+      // parse file type of test data
+      if (dataSourceConfigElem.contains("testFileType")) {
+        config[i].testFileType_ =
+            DataSourceFileTypeParser::parse(dataSourceConfigElem["testFileType"].get());
+      } else {
+        std::cout << "# Did not find " << dataSource << " [" << i << "]"
+                  << "[testFileType]. Setting default value "
+                  << DataSourceFileTypeParser::toString(defaults[i].testFileType_) << "."
+                  << std::endl;
+
+        config[i].testFileType_ = defaults[i].testFileType_;
+      }
+
+      config[i].testIsCompressed_ = parseBool(dataSourceConfigElem, "testCompression",
+                                              defaults[i].testIsCompressed_, "dataSource");
+      config[i].testNumBatches_ = parseUInt(dataSourceConfigElem, "testNumBatches",
+                                            defaults[i].testNumBatches_, "dataSource");
+      config[i].testBatchSize_ = parseUInt(dataSourceConfigElem, "testBatchSize",
+                                           defaults[i].testBatchSize_, "dataSource");
+      config[i].testHasTargets_ = parseBool(dataSourceConfigElem, "testHasTargets",
+                                            defaults[i].testHasTargets_, "dataSource");
+
+      config[i].testReadinCutoff_ = static_cast<size_t>(parseInt(
+          dataSourceConfigElem, "testReadinCutoff", defaults[i].testReadinCutoff_, "dataSource"));
+      config[i].testReadinClasses_ = parseDoubleArray(dataSourceConfigElem, "testReadinClasses",
+                                                      defaults[i].testReadinClasses_, "dataSource");
+      config[i].testReadinColumns_ = parseUIntArray(dataSourceConfigElem, "testReadinColumns",
+                                                    defaults[i].testReadinColumns_, "dataSource");
     }
   } else {
     std::cout << "# Could not find specification of dataSource. Falling Back to default values."
@@ -1133,8 +1171,7 @@ void DataMiningConfigParser::parseDataTransformationConfig(DictNode &dict,
 
   // If type Rosenblatt parse RosenblattTransformationConfig
   if (config.type_ == DataTransformationType::ROSENBLATT) {
-    auto rosenblattTransformationConfig = static_cast<DictNode *>(
-        &(*configFile)[dataSource]["dataTransformation"]["rosenblattConfig"]);
+    auto rosenblattTransformationConfig = static_cast<DictNode *>(&dict["rosenblattConfig"]);
     parseRosenblattTransformationConfig(*rosenblattTransformationConfig, config.rosenblattConfig_,
                                         defaults.rosenblattConfig_, "rosenblattConfig");
   } else {

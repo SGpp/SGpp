@@ -102,7 +102,6 @@ bool ModelFittingLeastSquares::adapt() {
 
 void ModelFittingLeastSquares::update(Dataset &newDataset) {
   if (grid != nullptr) {
-    reset();
     // reassign dataset
     dataset = &newDataset;
     // create sytem matrix

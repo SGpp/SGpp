@@ -55,8 +55,9 @@ BOOST_AUTO_TEST_CASE(Test_2D_B2_64_B2_2) {
   // Create config file
   std::string config = "tmpsgdeconfigRDRE.json";
   std::ofstream stream(config);
-  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\"" << samplesQ << "\"], "
-         << "\"hasTargets\" : false },"
+  stream << "{ \"dataSource\": [ { \"filePath\" : \"" << samplesP
+         << "\", \"hasTargets\" : false}, { \"filePath\" : \"" << samplesQ
+         << "\", \"hasTargets\" : false} ],"
          << "\"scorer\" : { \"metric\" : \"NLL\" }, "
          << "\"fitter\" : { \"type\" : \"relativeDensityRatioEstimation\", "
          << "\"gridConfig\" : { \"gridType\" : \"linear\", \"level\" : 5 }, "
@@ -79,8 +80,9 @@ BOOST_AUTO_TEST_CASE(Test_3D_B2_64_B2_2_B2_2) {
   // Create config file
   std::string config = "tmpsgdeconfigRDRE.json";
   std::ofstream stream(config);
-  stream << "{ \"dataSource\": { \"filePath\" : [\"" << samplesP << "\",\"" << samplesQ << "\"], "
-         << "\"hasTargets\" : false },"
+  stream << "{ \"dataSource\": [ { \"filePath\" : \"" << samplesP
+         << "\", \"hasTargets\" : false}, { \"filePath\" : \"" << samplesQ
+         << "\", \"hasTargets\" : false} ],"
          << "\"scorer\" : { \"metric\" : \"NLL\" }, "
          << "\"fitter\" : { \"type\" : \"densityRatioEstimation\", "
          << "\"gridConfig\" : { \"gridType\" : \"linear\", \"level\" : 5}, "
