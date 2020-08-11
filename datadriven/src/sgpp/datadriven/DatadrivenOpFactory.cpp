@@ -117,6 +117,9 @@
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModBsplineNaiveDistributed.hpp>
 #endif
 
 #include <cstring>
@@ -518,6 +521,34 @@ base::OperationMultipleEval* createOperationMultipleEval(
             "Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       }
+    } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalBsplineBoundaryNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalModBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
     }
   } else if (grid.getType() == base::GridType::Poly) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {

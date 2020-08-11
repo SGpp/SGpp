@@ -15,8 +15,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOff.hpp>
-// #include
-// <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOffParallel.hpp>
 /*
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
@@ -34,13 +33,11 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  /*
   #ifdef USE_SCALAPACK
     if (parser.hasParallelConfig()) {
-      return new ModelFittingDensityEstimationOnOffParallel(config);
+      return new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
     }
   #endif
-  */
   /*
   if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityEstimationCombi(config);

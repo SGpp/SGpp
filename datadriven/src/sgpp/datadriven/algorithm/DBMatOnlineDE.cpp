@@ -1100,6 +1100,7 @@ void DBMatOnlineDE::evalParallel(DataVector& alpha, DataMatrix& values,
       throw sgpp::base::not_implemented_exception(
           "Parallel evaluation operation not yet implemented for offline objects with interations");
     }
+
     std::unique_ptr<OperationMultipleEvalDistributed> opEval(
         static_cast<OperationMultipleEvalDistributed*>(
             sgpp::op_factory::createOperationMultipleEval(grid, values, opConfig)));

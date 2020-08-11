@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifdef USE_GSL
+#ifdef USE_SCALAPACK
 
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/test_tools.hpp>
@@ -28,7 +28,7 @@ using sgpp::datadriven::DensityDerivativeEstimationMinerFactory;
 using sgpp::datadriven::ModelFittingBase;
 using sgpp::datadriven::SparseGridMiner;
 
-double testDistributionDDerivE_OnOff(std::string testCSV, std::string config) {
+double testDistributionDDerivE_OnOffParallel(std::string testCSV, std::string config) {
   // Train model
   DensityDerivativeEstimationMinerFactory factory;
   auto miner = std::unique_ptr<SparseGridMiner>(factory.buildMiner(config));
@@ -46,7 +46,7 @@ double testDistributionDDerivE_OnOff(std::string testCSV, std::string config) {
   return predictions.l2Norm() / static_cast<double>(predictions.getSize());
 }
 
-BOOST_AUTO_TEST_SUITE(testDensityDerivativeEstimationOnOff)
+BOOST_AUTO_TEST_SUITE(testDensityDerivativeEstimationOnOffParallel)
 
 BOOST_AUTO_TEST_CASE(Test_2D_DDeriv_Gauss) {
   std::string samples = "datadriven/datasets/densityEstimation/2D_DDeriv_Gauss_test.csv";
@@ -62,16 +62,18 @@ BOOST_AUTO_TEST_CASE(Test_2D_DDeriv_Gauss) {
          << "\"maxLevelType\" : false, \"noPoints\" : 3 }, "
          << "\"regularizationConfig\" : { \"lambda\" : 0.001 }, "
          << "\"densityEstimationConfig\" : { \"derivDim\" : 0, "
-            "\"densityEstimationType\" : \"decomposition\" } } }"
+            "\"densityEstimationType\" : \"decomposition\" }, \"parallelConfig\" : {} } }"
          << std::endl;
 
-  double mse = testDistributionDDerivE_OnOff(
+  double mse = testDistributionDDerivE_OnOffParallel(
       "datadriven/datasets/densityEstimation/2D_DDeriv_Gauss_val.csv", config);
-  std::cout << "MSE on test " << mse << std::endl;
-  BOOST_CHECK(mse <= 5e-2);
+  if (sgpp::datadriven::BlacsProcessGrid::getCurrentProcess() == 0) {
+    std::cout << "MSE on test " << mse << std::endl;
+    BOOST_CHECK(mse <= 5e-2);
+  }
   remove(config.c_str());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif /* USE_GSL */
+#endif /* USE_SCALAPACK */

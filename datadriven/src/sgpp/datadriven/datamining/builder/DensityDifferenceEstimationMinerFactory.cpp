@@ -14,9 +14,10 @@
 // <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 // #include
 // <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOffParallel.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
 
@@ -76,7 +77,15 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
       return new ModelFittingDensityDifferenceEstimationCG(config);
     case (DensityEstimationType::Decomposition):
       std::cout << "\nDECOMPOSITION\n";
+#ifdef USE_SCALAPACK
+      if (parser.hasParallelConfig()) {
+        return new ModelFittingDensityDifferenceEstimationOnOffParallel(config);
+      } else {
+        return new ModelFittingDensityDifferenceEstimationOnOff(config);
+      }
+#else
       return new ModelFittingDensityDifferenceEstimationOnOff(config);
+#endif /* USE_SCALAPACK */
   }
 
   throw base::application_exception("Unknown density estimation type");
