@@ -3,23 +3,33 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/SystemMatrixLeastSquaresIdentity.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
-// TODO(lettrich): allow different refinement types
-// TODO(lettrich): allow different refinement criteria
+#include <string>
+#include <vector>
 
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
 using sgpp::base::Grid;
+using sgpp::base::CoarseningFunctor;
+using sgpp::base::CoarseningFunctorType;
+using sgpp::base::RefinementFunctor;
+using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusCoarseningFunctor;
 using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeCoarseningFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -29,7 +39,7 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingLeastSquares::ModelFittingLeastSquares(const FitterConfigurationLeastSquares &config)
-    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0} {
+    : ModelFittingBaseSingleGrid{}, refinementsPerformed{0}, initialGridSize{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
@@ -63,29 +73,147 @@ void ModelFittingLeastSquares::fit(Dataset &newDataset) {
   assembleSystemAndSolve(config->getSolverFinalConfig(), alpha);
 }
 
-bool ModelFittingLeastSquares::adapt() {
-  if (grid != nullptr) {
-    if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
-      // create refinement functor
-      SurplusRefinementFunctor refinementFunctor(
+std::unique_ptr<RefinementFunctor> ModelFittingLeastSquares::getRefinementFunctor() {
+  sgpp::base::AdaptivityConfiguration &refinementConfig = this->config->getRefinementConfig();
+  switch (refinementConfig.refinementFunctorType_) {
+    case RefinementFunctorType::Surplus: {
+      return std::make_unique<SurplusRefinementFunctor>(
           alpha, config->getRefinementConfig().numRefinementPoints_,
           config->getRefinementConfig().refinementThreshold_);
-      // refine grid
-      auto noPoints = grid->getSize();
-      GeometryConfiguration geometryConfig = config->getGeometryConfig();
-      if (!geometryConfig.stencils_.empty()) {
-        GridFactory gridFactory;
-        grid->getGenerator().refineInter(refinementFunctor,
-                                         gridFactory.getInteractions(geometryConfig));
+    }
+    case RefinementFunctorType::SurplusVolume: {
+      return std::make_unique<SurplusVolumeRefinementFunctor>(
+          alpha, config->getRefinementConfig().numRefinementPoints_,
+          config->getRefinementConfig().refinementThreshold_);
+    }
+    case RefinementFunctorType::DataBased: {
+      std::string errorMessage =
+          "Unsupported refinement functor type DataBased "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::ZeroCrossing: {
+      std::string errorMessage =
+          "Unsupported refinement functor type ZeroCrossing "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::MultipleClass: {
+      std::string errorMessage =
+          "Unsupported refinement functor type MultipleClass "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::Classification: {
+      std::string errorMessage =
+          "Unsupported refinement functor type Classification "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+    case RefinementFunctorType::GridPointBased: {
+      std::string errorMessage =
+          "Unsupported refinement functor type GridPointBased "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+  }
+  return nullptr;
+}
+
+std::unique_ptr<CoarseningFunctor> ModelFittingLeastSquares::getCoarseningFunctor() {
+  sgpp::base::AdaptivityConfiguration &adaptivityConfig = this->config->getRefinementConfig();
+  switch (adaptivityConfig.coarseningFunctorType_) {
+    case CoarseningFunctorType::Surplus: {
+      return std::make_unique<SurplusCoarseningFunctor>(
+          alpha, config->getRefinementConfig().numCoarseningPoints_,
+          config->getRefinementConfig().coarseningThreshold_);
+    }
+    case CoarseningFunctorType::SurplusVolume: {
+      return std::make_unique<SurplusVolumeCoarseningFunctor>(
+          alpha, config->getRefinementConfig().numCoarseningPoints_,
+          config->getRefinementConfig().coarseningThreshold_);
+    }
+    case CoarseningFunctorType::Classification: {
+      std::string errorMessage =
+          "Unsupported coarsening functor type Classification "
+          "for least squares!";
+      throw application_exception(errorMessage.c_str());
+    }
+  }
+  return nullptr;
+}
+
+bool ModelFittingLeastSquares::adapt() {
+  if (grid != nullptr) {
+    if (this->initialGridSize == 0) {
+      this->initialGridSize = grid->getSize();
+    }
+
+    if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
+      // create refinement and coarsening functors
+      std::unique_ptr<RefinementFunctor> refinementFunc = getRefinementFunctor();
+      auto oldNoPoints = grid->getSize();
+
+      std::unique_ptr<CoarseningFunctor> coarseningFunc = getCoarseningFunctor();
+      std::vector<size_t> deletedGridPoints;
+
+      // do coarsening before refinement to prevent refined grid points from being coarsened
+      // immediately
+
+      if (coarseningFunc) {
+        // coarsen grid
+        if (config->getRefinementConfig().coarsenInitialPoints_) {
+          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
+                                                 &deletedGridPoints, 0);
+        } else {
+          grid->getGenerator().coarsenNFirstOnly(*coarseningFunc, grid->getSize(),
+                                                 &deletedGridPoints, this->initialGridSize);
+        }
       } else {
-        grid->getGenerator().refine(refinementFunctor);
+        throw application_exception(
+            "ModelFittingLeastSquares: No coarsening functor could be "
+            "created!");
       }
 
-      if (grid->getSize() > noPoints) {
-        // Tell the SLE manager that the grid changed (for internal data structures)
-        alpha.resizeZero(grid->getSize());
+      if (refinementFunc) {
+        // refine grid
+        std::cout << "Old number points " << oldNoPoints << std::endl;
+        GeometryConfiguration geometryConfig = config->getGeometryConfig();
+        if (!geometryConfig.stencils_.empty()) {
+          GridFactory gridFactory;
+          grid->getGenerator().refineInter(*refinementFunc,
+                                           gridFactory.getInteractions(geometryConfig));
+        } else {
+          grid->getGenerator().refine(*refinementFunc);
+        }
+      } else {
+        throw application_exception(
+            "ModelFittingLeastSquares: No refinement functor could be "
+            "created!");
+      }
 
+      auto newNoPoints = grid->getSize();
+      std::cout << "New number points " << newNoPoints << std::endl;
+      if (newNoPoints != oldNoPoints || !deletedGridPoints.empty()) {
+        // Tell the SLE manager that the grid changed (for internal data structures)
+
+        // Coarsening, remove idx from alpha
+        if (deletedGridPoints.size() > 0) {
+          // Restructure alpha
+          alpha.remove(deletedGridPoints);
+        }
+
+        // oldNoPoint refers to the grid size after coarsening
+        auto oldNoPoints2 = alpha.size();
+
+        // Refinement, expand alpha
+        if (newNoPoints > oldNoPoints2) {
+          alpha.resizeZero(grid->getSize());
+        }
+
+        // Solve on new grid
         assembleSystemAndSolve(config->getSolverRefineConfig(), alpha);
+
         refinementsPerformed++;
         return true;
       } else {
@@ -96,7 +224,7 @@ bool ModelFittingLeastSquares::adapt() {
     }
   } else {
     throw application_exception(
-        "ModelFittingLeastSquares: Can't refine before initial grid is created");
+        "ModelFittingLeastSquares: Can't adapt before initial grid is created");
   }
 }
 

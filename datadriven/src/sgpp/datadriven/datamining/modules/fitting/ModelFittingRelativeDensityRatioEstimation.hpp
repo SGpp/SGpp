@@ -13,6 +13,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 using sgpp::solver::SLESolver;
@@ -23,13 +25,12 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
-// TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid based relative density ratio estimation,
- * based on the regression model with identity as regularization.
+ * Fitter object that encapsulates the usage of sparse grid based relative density ratio
+ * estimation, based on the regression model with identity as regularization.
  *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Allows usage of different grids, different solvers and different regularization techniques
+ * based on the provided configuration objects.
  */
 class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingleGrid {
  public:
@@ -124,26 +125,43 @@ class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingle
 
  private:
   /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a refinement functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::RefinementFunctor> getRefinementFunctor();
+
+  /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a coarsening functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::CoarseningFunctor> getCoarseningFunctor();
+
+  /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
 
-  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
-  // const.
   /**
-   * Factory function to build the System matrix for relative density ratio estimation with identity
-   * as regularization
+   * Initial number of grid points
+   */
+  size_t initialGridSize;
+
+  // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should
+  // be const.
+  /**
+   * Factory function to build the System matrix for relative density ratio estimation with
+   * identity as regularization
    */
   DMSystemMatrixTwoDatasets *buildSystemMatrix(Grid &grid, DataMatrix &trainDatasetP,
                                                DataMatrix &trainDatasetQ, double lambda,
                                                OperationMultipleEvalConfiguration &config) const;
 
   /**
-   * Based on the current dataset and grid, assemble a system of linear equations and solve for the
-   * hierarchical surplus vector alpha.
+   * Based on the current dataset and grid, assemble a system of linear equations and solve for
+   * the hierarchical surplus vector alpha.
    * @param solverConfig: Configuration of the SLESolver (refinement, or final solver).
-   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into. Make
-   * sure the vector size is equal to the amount of grid points.
+   * @param alpha: Reference to a data vector where hierarchical surpluses will be stored into.
+   * Make sure the vector size is equal to the amount of grid points.
    */
   void assembleSystemAndSolve(const SLESolverConfiguration &solverConfig, DataVector &alpha) const;
 };
