@@ -86,12 +86,12 @@ std::unique_ptr<CoarseningFunctor> ModelFittingDensityEstimation::getCoarseningF
   switch (adaptivityConfig.coarseningFunctorType_) {
     case CoarseningFunctorType::Surplus: {
       return std::make_unique<SurplusCoarseningFunctor>(
-          alpha, config->getRefinementConfig().numRefinementPoints_,
+          alpha, config->getRefinementConfig().numCoarseningPoints_,
           config->getRefinementConfig().coarseningThreshold_);
     }
     case CoarseningFunctorType::SurplusVolume: {
       return std::make_unique<SurplusVolumeCoarseningFunctor>(
-          alpha, config->getRefinementConfig().numRefinementPoints_,
+          alpha, config->getRefinementConfig().numCoarseningPoints_,
           config->getRefinementConfig().coarseningThreshold_);
     }
     case CoarseningFunctorType::Classification: {
