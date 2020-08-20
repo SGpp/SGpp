@@ -102,6 +102,7 @@ std::vector<sgpp::base::GridType> getGridTypes() {
   gridTypes.push_back(sgpp::base::GridType::NakBsplineBoundary);
   // gridTypes.push_back(sgpp::base::GridType::ModNakBspline);
   gridTypes.push_back(sgpp::base::GridType::NakBsplineExtended);
+  gridTypes.push_back(sgpp::base::GridType::NakPBspline);
   return gridTypes;
 }
 
@@ -300,6 +301,8 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceMean) {
       epsilon = 0.007;
     } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
       epsilon = 0.002;
+    } else if (gridType == sgpp::base::GridType::NakPBspline) {
+      epsilon = 0.0017;
     }
     std::vector<size_t> degrees{3};
     for (size_t t = 0; t < degrees.size(); t++) {
@@ -351,8 +354,10 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
       DataVector lb = testFunction->getLowerBounds();
       DataVector ub = testFunction->getUpperBounds();
       sgpp::optimization::SplineResponseSurface reSurf(testFunction, lb, ub, gridType, degree);
+
       // std::cout << "Testing " << reSurf.getGrid()->getTypeAsString() << " of deg" << degree <<
       // "\n";
+
       reSurf.regular(level);
       sgpp::base::DistributionsVector pdfs;
       auto truncnormalpdf = std::make_shared<sgpp::base::DistributionTruncNormal>(0, 1, -2, 2);
@@ -365,9 +370,11 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
       double var = varVec[0];
       double meanSquare = varVec[1];
       double mean = varVec[2];
+
       // std::cout << var << "\n";
       // std::cout << meanSquare << "\n";
       // std::cout << mean << "\n";
+
       // The reference mean is only determined numerically with nakBsplineBoundary level 7 (3809
       // grid points), trusting that the routine worked at this point in time For a foolproof test,
       // one might want to calculate the mean and variance by hand.
@@ -377,7 +384,9 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVariance) {
       double diffVar = fabs(realVar - var);
       double diffMeanSquare = fabs(realMeanSquare - meanSquare);
       double diffMean = fabs(realMean - mean);
+
       // std::cout << diffMean << "\n";
+
       BOOST_CHECK_SMALL(diffVar, epsilon);
       BOOST_CHECK_SMALL(diffMeanSquare, epsilon);
       BOOST_CHECK_SMALL(diffMean, epsilon);

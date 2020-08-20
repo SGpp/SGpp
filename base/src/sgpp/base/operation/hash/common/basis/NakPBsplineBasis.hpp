@@ -5,17 +5,16 @@
 
 #pragma once
 
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
-#include <sgpp/base/tools/Distribution.hpp>
-#include <sgpp/base/tools/DistributionUniform.hpp>
-#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
 #include <memory>
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/Distribution.hpp>
+#include <sgpp/base/tools/DistributionUniform.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -561,8 +560,14 @@ class NakPBsplineBasis : public Basis<LT, IT> {
    * @return      integral of basis function
    */
   inline double getIntegral(LT l, IT i) {
-    std::cout << "NakPBsplineBasis getIntegral not implemented";
-    return -1;
+    size_t quadOrder = getDegree() + 1;
+    auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
+    base::DataVector temp_quadCoordinates, temp_quadWeights;
+    base::GaussLegendreQuadRule1D gauss;
+    gauss.getLevelPointsAndWeightsNormalized(quadOrder, temp_quadCoordinates, temp_quadWeights);
+    auto quadCoordinates = std::make_shared<sgpp::base::DataVector>(temp_quadCoordinates);
+    auto quadWeights = std::make_shared<sgpp::base::DataVector>(temp_quadWeights);
+    return getMean(l, i, pdf_uniform, quadCoordinates, quadWeights);
   }
 
   /**
@@ -573,8 +578,47 @@ class NakPBsplineBasis : public Basis<LT, IT> {
   inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
                         std::shared_ptr<sgpp::base::DataVector> quadCoordinates,
                         std::shared_ptr<sgpp::base::DataVector> quadWeights) {
-    std::cout << "NakPBsplineBasis getMean not implemented";
-    return -1;
+    size_t degree = getDegree();
+    if ((degree != 1) && (degree != 3) && (degree != 5)) {
+      throw std::runtime_error("NakPBsplineBasis: only B spline degrees 1, 3 and 5 are supported.");
+    }
+
+    const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
+    const size_t hInv = 1 << l;             // = 2^lid
+    const double hik = 1.0 / static_cast<double>(hInv);
+    double offset = (i - static_cast<double>(pp1h)) * hik;
+
+    if (degree == 3) {
+      if (i == 3) offset -= hik;
+    } else if (degree == 5) {
+      if (i == 5) offset -= 2 * hik;
+    }
+    // start and stop identify the segments on which the spline is nonzero
+    size_t start = 0, stop = 0;
+    start = ((i > pp1h) ? 0 : (pp1h - i));
+    stop = std::min(degree, hInv + pp1h - i - 1);
+    // nak special cases
+    // TODO (rehmemk) Copied from nakBsplineExtended. Verify that this holds here too
+    if (degree == 3) {
+      if ((i == 3) || (i == hInv - 3)) stop += 1;
+    } else if (degree == 5) {
+      if ((i == 5) || (i == hInv - 5)) stop += 2;
+    }
+    if (l == 2) {
+      start = 1;
+      stop = 4;
+      offset = -0.25;
+    }
+    if ((degree == 5) && (l == 3)) {
+      start = 1;
+      stop = 8;
+      offset = -0.125;
+    }
+
+    double temp_res = basisMean(l, i, start, stop, offset, hik, quadCoordinates, quadWeights, pdf);
+    double integral = temp_res * hik;
+
+    return integral;
   }
 
   /**
@@ -587,7 +631,29 @@ class NakPBsplineBasis : public Basis<LT, IT> {
   BsplineBasis<LT, IT> bsplineBasis;
 
  private:
-};  // namespace base
+  double basisMean(LT l, IT i, size_t start, size_t stop, double offset, double hik,
+                   std::shared_ptr<sgpp::base::DataVector> quadCoordinates,
+                   std::shared_ptr<sgpp::base::DataVector> quadWeights,
+                   std::shared_ptr<sgpp::base::Distribution> pdf) {
+    sgpp::base::DataVector bounds = pdf->getBounds();
+    double left = bounds[0];
+    double right = bounds[1];
+
+    double temp_res = 0.0;
+    // loop over the segments the B-spline is defined on
+    for (size_t n = start; n <= stop; n++) {
+      // loop over quadrature points
+      for (size_t c = 0; c < quadCoordinates->getSize(); c++) {
+        // transform  the quadrature points to the segment on which the Bspline is
+        // evaluated and the support of the pdf
+        double x = offset + hik * (quadCoordinates->get(c) + static_cast<double>(n));
+        double scaledX = left + (right - left) * x;
+        temp_res += quadWeights->get(c) * this->eval(l, i, x) * pdf->eval(scaledX);
+      }
+    }
+    return temp_res * (right - left);
+  }
+};
 // default type-def (unsigned int for level and index)
 typedef NakPBsplineBasis<unsigned int, unsigned int> SNakPBsplineBase;
 }  // namespace base

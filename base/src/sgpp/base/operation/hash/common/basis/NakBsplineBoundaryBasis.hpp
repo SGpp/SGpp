@@ -9,14 +9,13 @@
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 //#include <sgpp/combigrid/GeneralFunction.hpp>
 
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <iostream>
 #include <map>
 #include <memory>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -256,93 +255,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     return integral;
   }
 
-  //#ifdef SG_COMBIGRID
-  /**
-   * @param l     				level of basis function
-   * @param i     				index of basis function
-   * @param weightfunction		weightfunction (usually a probability density function)
-   * @param lbound				left boundary of the definition range
-   * @param rbound 				right boundary of the definition range
-   * @param numAdditionalPoints	number of additional points for the integration of the
-   * weighted spline
-   * @param incrementQuadraturePoints	increment to numAdditionalPoints in each loop cycle
-   * @return      				integral of basis function times weight function
-   */
-  //  inline double getWeightedIntegral(LT l, IT i, sgpp::combigrid::SingleFunction weightfunction,
-  //                                    double lbound, double rbound, size_t numAdditionalPoints =
-  //                                    0, size_t incrementQuadraturePoints = 10) {
-  //    size_t degree = getDegree();
-  //    if ((degree != 1) && (degree != 3) && (degree != 5)) {
-  //      throw std::runtime_error(
-  //          "OperationMatrixLTwoDotNakBsplineBoundary: only B spline degrees 1, 3 and 5 are "
-  //          "supported.");
-  //    }
-  //    size_t quadOrder = degree + 1 + numAdditionalPoints;
-  //    base::DataVector quadCoordinates, quadWeights;
-  //    base::GaussLegendreQuadRule1D gauss;
-  //
-  //    const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
-  //    const size_t hInv = 1 << l;             // = 2^lid
-  //    const double hik = 1.0 / static_cast<double>(hInv);
-  //    double offset = (i - static_cast<double>(pp1h)) * hik;
-  //
-  //    if (degree == 3) {
-  //      if (i == 3) offset -= hik;
-  //    } else if (degree == 5) {
-  //      if (i == 5) offset -= 2 * hik;
-  //    }
-  //    gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
-  //    // start and stop identify the segments on which the spline is nonzero
-  //    size_t start = 0, stop = 0;
-  //    double scaling = hik;
-  //    start = ((i > pp1h) ? 0 : (pp1h - i));
-  //    stop = std::min(degree, hInv + pp1h - i - 1);
-  //    // nak special cases
-  //    if (degree == 3) {
-  //      if ((i == 3) || (i == hInv - 3)) stop += 1;
-  //    } else if (degree == 5) {
-  //      if ((i == 5) || (i == hInv - 5)) stop += 2;
-  //    }
-  //    if (l == 2) {
-  //      start = 1;
-  //      stop = 4;
-  //      offset = -0.25;
-  //      scaling = 0.25;
-  //    }
-  //    if ((degree == 5) && (l == 3)) {
-  //      start = 1;
-  //      stop = 8;
-  //      offset = -0.125;
-  //      scaling = 0.125;
-  //    }
-  //
-  //    double temp_res = integrateWeightedBspline(l, i, start, stop, offset, scaling,
-  //    quadCoordinates,
-  //                                               quadWeights, weightfunction);
-  //    double width = rbound - lbound;
-  //    temp_res *= width;
-  //
-  //    double tol = 1e-14;
-  //    double err = 1e14;
-  //    while (err > tol) {
-  //      numAdditionalPoints += incrementQuadraturePoints;
-  //      quadOrder = degree + 1 + numAdditionalPoints;
-  //      if (quadOrder > 480) {
-  //        break;
-  //      }
-  //      gauss.getLevelPointsAndWeightsNormalized(quadOrder, quadCoordinates, quadWeights);
-  //      double finer_temp_res = integrateWeightedBspline(
-  //          l, i, start, stop, offset, scaling, quadCoordinates, quadWeights, weightfunction);
-  //      finer_temp_res *= width;
-  //      err = fabs(temp_res - finer_temp_res);
-  //      temp_res = finer_temp_res;
-  //    }
-  //
-  //    double integral = temp_res * scaling;
-  //    return integral;
-  //  }
-  //#endif
-
   /**
    * @return      B-spline degree
    */
@@ -375,24 +287,6 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
     }
     return temp_res * (right - left);
   }
-
-  //#ifdef SG_COMBIGRID
-  //  double integrateWeightedBspline(LT l, IT i, size_t start, size_t stop, double offset,
-  //                                  double scaling, base::DataVector quadCoordinates,
-  //                                  base::DataVector quadWeights,
-  //                                  sgpp::combigrid::SingleFunction weightfunction) {
-  //    double temp_res = 0.0;
-  //    for (size_t n = start; n <= stop; n++) {
-  //      for (size_t c = 0; c < quadCoordinates.getSize(); c++) {
-  //        // transform  the quadrature points to the segment on which the Bspline is
-  //        // evaluated
-  //        const double x = offset + scaling * (quadCoordinates[c] + static_cast<double>(n));
-  //        temp_res += quadWeights[c] * this->eval(l, i, x) * weightfunction(x);
-  //      }
-  //    }
-  //    return temp_res;
-  //  }
-  //#endif
 };
 
 // default type-def (unsigned int for level and index)

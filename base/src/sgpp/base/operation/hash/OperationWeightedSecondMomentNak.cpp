@@ -3,9 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
-
 #include <map>
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
 #include <utility>
 
 namespace sgpp {
@@ -21,6 +20,8 @@ std::shared_ptr<sgpp::base::SBasis> OperationWeightedSecondMomentNak::initialize
     return std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     return std::make_shared<sgpp::base::SNakBsplineExtendedBase>(degree);
+  } else if (gridType == sgpp::base::GridType::NakPBspline) {
+    return std::make_shared<sgpp::base::SNakPBsplineBase>(degree);
   } else {
     throw sgpp::base::generation_exception(
         "OperationWeightedSecondMomentNak: gridType not supported.");
