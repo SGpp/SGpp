@@ -80,6 +80,11 @@ double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
         std::cout << "Score on batch: " << avgScoreTrain << std::endl
                   << "Score on validation data: " << avgScoreVal << std::endl;
       }
+
+      // Only uses dataSourceQ, not relevant as the visualizer does not
+      // use the dataSource currently
+      visualizer->runVisualization(*fitter, *dataSourceQ, 0, iteration);
+
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstancesP + numInstancesQ, avgScoreVal, avgScoreTrain);
       size_t refinements = monitor->refinementsNecessary();

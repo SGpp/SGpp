@@ -12,7 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 
 #include <string>
 
@@ -51,7 +51,7 @@ Visualizer* DensityDerivativeRatioEstimationMinerFactory::createVisualizer(
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */

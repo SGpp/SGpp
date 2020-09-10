@@ -122,7 +122,11 @@ Visualizer *UniversalMinerFactory::createVisualizer(const DataMiningConfigParser
   config.readParams(parser);
   FitterType fType = FitterType::RegressionLeastSquares;
   parser.getFitterConfigType(fType, fType);
-  if (fType == FitterType::DensityEstimation) {
+  if (fType == FitterType::DensityEstimation || fType == FitterType::DensityDerivativeEstimation ||
+      fType == FitterType::DensityDerivativeRatioEstimation ||
+      fType == FitterType::DensityDifferenceEstimation ||
+      fType == FitterType::DensityRatioEstimation ||
+      fType == FitterType::RelativeDensityRatioEstimation) {
     visualizer = new VisualizerDensityEstimation(config);
   } else if (fType == FitterType::RegressionLeastSquares) {
     visualizer = new VisualizerDummy();

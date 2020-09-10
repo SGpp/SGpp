@@ -21,8 +21,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 */
-// #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 
 #include <string>
 
@@ -33,11 +32,11 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
-  #ifdef USE_SCALAPACK
-    if (parser.hasParallelConfig()) {
-      return new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
-    }
-  #endif
+#ifdef USE_SCALAPACK
+  if (parser.hasParallelConfig()) {
+    return new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
+  }
+#endif
   /*
   if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityEstimationCombi(config);
@@ -82,7 +81,7 @@ Visualizer *DensityDerivativeEstimationMinerFactory::createVisualizer(
   config.readParams(parser);
 
   // TODO(spc90): implement visualization for this model
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */

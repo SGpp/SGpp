@@ -35,7 +35,10 @@ class DensityDifferenceEstimationMinerFactory : public MinerFactory {
    */
   SparseGridMiner* buildMiner(const std::string& path) const override;
 
-  // sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
+  /**
+   * @return a hyperparameter optimizer for this miner
+   */
+  // sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
 
  private:
   /**

@@ -13,7 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingRelativeDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 
 #include <string>
 #include <vector>
@@ -100,8 +100,7 @@ Visualizer* RelativeDensityRatioEstimationMinerFactory::createVisualizer(
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  // TODO(spc90): implement visualization for this model
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */
