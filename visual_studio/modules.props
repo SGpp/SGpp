@@ -1,0 +1,56 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ActiveModules Include="base\src"/>
+    <ActiveModules Include="optimization\src"/>
+    <ActiveModules Include="solver\src"/>
+    <ActiveModules Include="pde\src"/>
+    <ActiveModules Include="datadriven\src"/>
+    <ActiveModules Include="misc\src"/>
+    <ActiveModules Include="combigrid\src"/>
+    <ActiveModules Include="quadrature\src"/>
+  </ItemGroup>
+  <ItemGroup>
+    <_WildCardClInclude Include="base\src\**\*.hpp" />
+    <_WildCardClCompile Include="base\src\**\*.cpp" />
+    <_WildCardClCompile Include="base\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="solver\src\**\*.hpp" />
+    <_WildCardClCompile Include="solver\src\**\*.cpp" />
+    <_WildCardClCompile Include="solver\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="pde\src\**\*.hpp" />
+    <_WildCardClCompile Include="pde\src\**\*.cpp" />
+    <_WildCardClCompile Include="pde\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="combigrid\src\**\*.hpp" />
+    <_WildCardClCompile Include="combigrid\src\**\*.cpp" />
+    <_WildCardClCompile Include="combigrid\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="optimization\src\**\*.hpp" />
+    <_WildCardClCompile Include="optimization\src\**\*.cpp" />
+    <_WildCardClCompile Include="optimization\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="quadrature\src\**\*.hpp" />
+    <_WildCardClCompile Include="quadrature\src\**\*.cpp" />
+    <_WildCardClCompile Include="quadrature\examples\**\*.cpp" />
+	
+    <_WildCardClInclude Include="misc\src\**\*.hpp" />
+    <_WildCardClCompile Include="misc\src\**\*.cpp" />
+	
+    <_WildCardClInclude Include="datadriven\src\**\*.hpp" />
+    <_WildCardClCompile Include="datadriven\src\**\*.cpp" />
+    <_WildCardClCompile Include="datadriven\examples\**\*.cpp" />
+	
+	
+    <_WildCardHide Include="$(ProjectDir)\**\*.lint" />
+    <_WildCardHide Include="$(ProjectDir)\**\*.os" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="@(_WildCardClInclude)" />
+    <ClCompile Include="@(_WildCardClCompile)" />
+    <None Include="@(_WildCardHide)">
+	  <InProject>false</InProject>
+	  <Visible>false</Visible>
+    </None>
+  </ItemGroup>
+</Project>

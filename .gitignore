@@ -115,6 +115,16 @@ datadriven/tests/uq/analysis/genz/results/
 # ignoring custom.py file
 custom.py
 
+# ignoring VS files
+/.vs/
+/obj/
+/bin/
+*.user
+/run/
+/visual_studio/linux.props
+/visual_studio/build_debug.py
+/visual_studio/build_release.py
+
 GPATH
 GRTAGS
 GSYMS

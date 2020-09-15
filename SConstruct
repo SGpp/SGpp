@@ -70,6 +70,14 @@ Helper.printInfo("Available language support: {}".format(", ".join(languageSuppo
 # Define and read variables
 #########################################################################
 
+AddOption('--buildfile',
+          dest='buildfile',
+          type='string',
+          nargs=1,
+          action='store',
+          help='specify build type specific options input file (see custom.py in scons documentation)')
+build_file = GetOption('buildfile')
+
 AddOption('--configfile',
           dest='configfile',
           type='string',
@@ -77,12 +85,13 @@ AddOption('--configfile',
           action='store',
           help='specify custom options input file (see custom.py in scons documentation)')
 input_file = GetOption('configfile')
+if not input_file:
+  input_file = 'custom.py'
 
-if input_file:
-  vars = Variables(input_file)
-else:
-  vars = Variables("custom.py")
-
+files = [input_file]
+if build_file:
+	files.append(build_file)
+vars = Variables(files=files)
 
 # define the flags
 vars.Add("CFLAGS", "Set additional C compiler flags, they are compiler-dependent "

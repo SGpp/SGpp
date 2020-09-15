@@ -1,0 +1,4 @@
+COMPILER = "GNU"
+OPT = 0
+CPPFLAGS = "-fsanitize=address"
+LINKFLAGS = "-fsanitize=address"
