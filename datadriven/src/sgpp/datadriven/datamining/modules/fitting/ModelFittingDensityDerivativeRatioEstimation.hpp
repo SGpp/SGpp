@@ -14,6 +14,8 @@
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 
 using sgpp::solver::SLESolver;
@@ -24,7 +26,6 @@ using sgpp::base::DataVector;
 namespace sgpp {
 namespace datadriven {
 
-// TODO(lettrich): allow different refinement techniques.
 /**
  * Fitter object that encapsulates the usage of sparse grid based density derivative ratio
  * estimation with identity as regularization.
@@ -109,7 +110,7 @@ class ModelFittingDensityDerivativeRatioEstimation : public ModelFittingBaseSing
    */
   double computeResidual(DataMatrix &validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingLeastSquares::computeResidual() is not implemented!");
+        "ModelFittingDensityDerivativeRatioEstimation::computeResidual() is not implemented!");
   }
 
   /**
@@ -119,14 +120,32 @@ class ModelFittingDensityDerivativeRatioEstimation : public ModelFittingBaseSing
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingLeastSquares::updateRegularization() is not implemented!");
+        "ModelFittingDensityDerivativeRatioEstimation::updateRegularization() is not "
+        "implemented!");
   }
 
  private:
   /**
+     * Returns the refinement functor suitable for the model settings.
+     * @return pointer to a refinement functor that suits the model settings
+     */
+  std::unique_ptr<sgpp::base::RefinementFunctor> getRefinementFunctor();
+
+  /**
+   * Returns the refinement functor suitable for the model settings.
+   * @return pointer to a coarsening functor that suits the model settings
+   */
+  std::unique_ptr<sgpp::base::CoarseningFunctor> getCoarseningFunctor();
+
+  /**
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
+
+  /**
+   * Initial number of grid points
+   */
+  size_t initialGridSize;
 
   // TODO(lettrich): grid and train dataset as well as OperationMultipleEvalConfiguration should be
   // const.

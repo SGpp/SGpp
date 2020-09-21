@@ -167,7 +167,7 @@ bool ModelFittingDensityEstimation::adapt() {
     }
   } else {
     throw application_exception(
-        "ModelFittingDensityEstimation: Can't refine before initial grid is "
+        "ModelFittingDensityEstimation: Can't adapt before initial grid is "
         "created");
   }
 }

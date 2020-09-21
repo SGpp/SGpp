@@ -144,7 +144,8 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() is not implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() is not "
+        "implemented!");
   }
 
   /**
