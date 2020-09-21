@@ -16,11 +16,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOffParallel.hpp>
-/*
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityDerivativeEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-*/
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 
 #include <string>
@@ -54,33 +52,28 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
   throw base::application_exception("Unknown density estimation type");
 }
 
-/*
 HyperparameterOptimizer *DensityDerivativeEstimationMinerFactory::buildHPO(
     const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
-    return new HarmonicaHyperparameterOptimizer(buildMiner(path),
-                                                new DensityEstimationFitterFactory(parser), parser);
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityDerivativeEstimationFitterFactory(parser), parser);
   } else {
-    return new BoHyperparameterOptimizer(buildMiner(path),
-                                         new DensityEstimationFitterFactory(parser), parser);
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityDerivativeEstimationFitterFactory(parser), parser);
   }
 }
-*/
 
-/*
 FitterFactory *DensityDerivativeEstimationMinerFactory::createFitterFactory(
     const DataMiningConfigParser &parser) const {
-  return new DensityEstimationFitterFactory(parser);
+  return new DensityDerivativeEstimationFitterFactory(parser);
 }
-*/
 
 Visualizer *DensityDerivativeEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser &parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  // TODO(spc90): implement visualization for this model
   return new VisualizerDensityEstimation(config);
 }
 

@@ -12,8 +12,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-
+#include <sgpp/datadriven/datamining/modules/hpo/DensityRatioEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 #include <vector>
@@ -87,12 +89,22 @@ ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
   return new ModelFittingDensityRatioEstimation(config);
 }
 
-/*
- FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser& parser) const {
- return new DensityRatioEstimationMinerFactory(parser);
- }
- */
+HyperparameterOptimizer* DensityRatioEstimationMinerFactory::buildHPO(
+    const std::string& path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(buildMiner(path),
+                                         new DensityRatioEstimationFitterFactory(parser), parser);
+  }
+}
+
+FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser& parser) const {
+  return new DensityRatioEstimationFitterFactory(parser);
+}
 
 Visualizer* DensityRatioEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser& parser) const {

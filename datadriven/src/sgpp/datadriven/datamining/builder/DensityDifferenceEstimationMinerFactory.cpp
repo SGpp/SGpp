@@ -10,16 +10,14 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-// #include
-// <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-// #include
-// <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOffParallel.hpp>
-
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityDifferenceEstimationFitterFactory.hpp>
 
 #include <string>
 #include <vector>
@@ -90,25 +88,23 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
 
   throw base::application_exception("Unknown density estimation type");
 }
-/*
- HyperparameterOptimizer
- *DensityDifferenceEstimationMinerFactory::buildHPO(const std::string &path)
- const {
- DataMiningConfigParser parser(path);
- if (parser.getHPOMethod("bayesian") == "harmonica") {
- return new HarmonicaHyperparameterOptimizer(buildMiner(path),
- new DensityEstimationFitterFactory(parser), parser);
- } else {
- return new BoHyperparameterOptimizer(buildMiner(path),
- new DensityEstimationFitterFactory(parser), parser);
- }
- }
 
- FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser &parser) const {
- return new DensityEstimationFitterFactory(parser);
- }
- */
+HyperparameterOptimizer *DensityDifferenceEstimationMinerFactory::buildHPO(
+    const std::string &path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+  }
+}
+
+FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new DensityDifferenceEstimationFitterFactory(parser);
+}
 
 Visualizer *DensityDifferenceEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser &parser) const {
