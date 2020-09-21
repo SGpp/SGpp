@@ -443,7 +443,7 @@ class DBMatOnlineDE : public DBMatOnline {
   // pointer to distributed extra vector of bTotalPoints
   std::unique_ptr<DataVectorDistributed> bTotalPointsExtraDistributed;
 
-  // Note(Sebastian Kreisel) In the learner config this is called learningRate
+  // Note(Sebastian Kreisel) In the learner config this is called forgetRate
   double beta;
   // DataMatrix *testMat, *testMatRes;
   double normFactor;

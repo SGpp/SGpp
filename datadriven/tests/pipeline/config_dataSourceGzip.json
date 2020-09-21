@@ -4,11 +4,18 @@
         "compression": true,
         "fileType": "arff",
         "hasTargets": true,
-        "shuffling" : "random",
-        "randomSeed" : -1,
+        "shuffling": "random",
+        "randomSeed": -1,
         "readinCutoff": -1,
-        "readinClasses": [-1, 1],
-        "readinColumns": [0, 1, 2]
+        "readinClasses": [
+            -1,
+            1
+        ],
+        "readinColumns": [
+            0,
+            1,
+            2
+        ]
     },
     "scorer": {
         "metric": "Accuracy"
@@ -24,23 +31,21 @@
             "threshold": 0.001,
             "maxLevelType": false,
             "noPoints": 10,
-            "refinementIndicator" : "DataBased",
-            "errorBasedRefinement" : true,
-            "errorMinInterval" : 1,
-            "errorBufferSize" : 2,
-            "errorConvergenceThreshold" : 0.001
+            "refinementIndicator": "DataBased",
+            "errorBasedRefinement": true,
+            "errorMinInterval": 1,
+            "errorBufferSize": 2,
+            "errorConvergenceThreshold": 0.001
         },
         "regularizationConfig": {
             "lambda": 1e-2
         },
-        "densityEstimationConfig" : {
-            "densityEstimationType" : "decomposition"
+        "densityEstimationConfig": {
+            "densityEstimationType": "decomposition"
         },
-        "learnerConfig" : {
-            "usePrior" : true,
-            "learningRate" : 1.0
+        "learnerConfig": {
+            "usePrior": true,
+            "forgetRate": 1.0
         }
     }
 }
-
-

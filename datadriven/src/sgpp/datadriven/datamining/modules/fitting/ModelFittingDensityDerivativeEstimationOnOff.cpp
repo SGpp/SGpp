@@ -165,7 +165,7 @@ void ModelFittingDensityDerivativeEstimationOnOff::fit(DataMatrix& newDataset) {
   online->computeDensityDerivativeFunction(alpha, newDataset, *grid,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate_);
+  online->setBeta(this->config->getLearnerConfig().forgetRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);

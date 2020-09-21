@@ -190,7 +190,7 @@ void ModelFittingDensityDerivativeEstimationOnOffParallel::fit(DataMatrix& newDa
       alphaDistributed, newDataset, *grid, this->config->getDensityEstimationConfig(),
       this->config->getParallelConfig(), processGrid, true,
       this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate_);
+  online->setBeta(this->config->getLearnerConfig().forgetRate_);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 

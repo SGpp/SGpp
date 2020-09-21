@@ -43,9 +43,9 @@
 #include <map>
 
 using json::DictNode;
-using json::ListNode;
 using json::JSON;
 using json::json_exception;
+using json::ListNode;
 using sgpp::base::AdaptivityConfiguration;
 using sgpp::base::data_exception;
 using sgpp::base::file_exception;
@@ -1226,8 +1226,8 @@ bool DataMiningConfigParser::getFitterLearnerConfig(
   if (hasLearnerConfig) {
     auto learnerConfig = static_cast<DictNode *>(&(*configFile)[fitter]["learnerConfig"]);
 
-    config.learningRate_ =
-        parseDouble(*learnerConfig, "learningRate", defaults.learningRate_, "learnerConfig");
+    config.forgetRate_ =
+        parseDouble(*learnerConfig, "forgetRate", defaults.forgetRate_, "learnerConfig");
     config.usePrior_ = parseBool(*learnerConfig, "usePrior", defaults.usePrior_, "learnerConfig");
   }
 
