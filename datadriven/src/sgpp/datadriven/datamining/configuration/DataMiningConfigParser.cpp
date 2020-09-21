@@ -136,7 +136,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
 
     config.filePath_ = parseString(*dataSourceConfig, "filePath", defaults.filePath_, "dataSource");
     config.isCompressed_ =
-        parseBool(*dataSourceConfig, "compression", defaults.isCompressed_, "dataSource");
+        parseBool(*dataSourceConfig, "isCompressed", defaults.isCompressed_, "dataSource");
     config.numBatches_ =
         parseUInt(*dataSourceConfig, "numBatches", defaults.numBatches_, "dataSource");
     config.batchSize_ =
@@ -207,7 +207,7 @@ bool DataMiningConfigParser::getDataSourceConfig(DataSourceConfig &config,
     }
 
     config.testIsCompressed_ =
-        parseBool(*dataSourceConfig, "testCompression", defaults.testIsCompressed_, "dataSource");
+        parseBool(*dataSourceConfig, "testIsCompressed", defaults.testIsCompressed_, "dataSource");
     config.testNumBatches_ =
         parseUInt(*dataSourceConfig, "testNumBatches", defaults.testNumBatches_, "dataSource");
     config.testBatchSize_ =
@@ -243,7 +243,7 @@ bool DataMiningConfigParser::getMultiDataSourceConfig(
       config[i].filePath_ =
           parseString(dataSourceConfigElem, "filePath", defaults[i].filePath_, "dataSource");
       config[i].isCompressed_ =
-          parseBool(dataSourceConfigElem, "compression", defaults[i].isCompressed_, "dataSource");
+          parseBool(dataSourceConfigElem, "isCompressed", defaults[i].isCompressed_, "dataSource");
       config[i].numBatches_ =
           parseUInt(dataSourceConfigElem, "numBatches", defaults[i].numBatches_, "dataSource");
       config[i].batchSize_ =
@@ -317,7 +317,7 @@ bool DataMiningConfigParser::getMultiDataSourceConfig(
         config[i].testFileType_ = defaults[i].testFileType_;
       }
 
-      config[i].testIsCompressed_ = parseBool(dataSourceConfigElem, "testCompression",
+      config[i].testIsCompressed_ = parseBool(dataSourceConfigElem, "testIsCompressed",
                                               defaults[i].testIsCompressed_, "dataSource");
       config[i].testNumBatches_ = parseUInt(dataSourceConfigElem, "testNumBatches",
                                             defaults[i].testNumBatches_, "dataSource");

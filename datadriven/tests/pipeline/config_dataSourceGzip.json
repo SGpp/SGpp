@@ -1,7 +1,7 @@
 {
     "dataSource": {
         "filePath": "datadriven/datasets/liver/liver-disorders_normalized_small.arff.gz",
-        "compression": true,
+        "isCompressed": true,
         "fileType": "arff",
         "hasTargets": true,
         "shuffling": "random",
