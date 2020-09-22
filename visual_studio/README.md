@@ -5,7 +5,7 @@
 - Install the following packages on the WSL: `sudo apt install g++ gdb make rsync zip`
 - Start ssh on the WSL using `sudo service ssh start`
 - Fetch the remote headers of the WSL as described [here](https://devblogs.microsoft.com/cppblog/intellisense-for-remote-linux-headers/)
-- Remove the `.default` prefix from the files `sgpp.vcxproj.user.default`, `visual_studio\linux.props.default`, `visual_studio\build_release.py.default`, `visual_studio\build_debug.py.default`
+- Remove the `.default` suffix from the files `sgpp.vcxproj.user.default`, `visual_studio\linux.props.default`, `visual_studio\build_release.py.default`, `visual_studio\build_debug.py.default`
 - Edit the `visual_studio\linux.props` according to the comments
 - Open the solution file `sgpp.sln` with Visual Studio
 - Build the project and run. If any errors occur, please ensure that your `linux.props` is correct and otherwise report them
