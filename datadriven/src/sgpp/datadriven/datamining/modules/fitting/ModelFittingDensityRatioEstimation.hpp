@@ -82,6 +82,24 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
   void evaluate(DataMatrix &samples, DataVector &results) override;
 
   /**
+   * Computes an approximation of the least squares loss between true and estimated density ratio.
+   * Implemented as: 1 / M_q * Sum f(x_q)^2 - 2 / M_p * Sum f(x_p).
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return LS loss approximation
+   */
+  double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+
+  /**
+   * Computes an approximation of the Pearson divergence using the density ratio.
+   * Implemented as: -1/2 * 1 / M_q * Sum f(x_q)^2 + 1 / M_p * Sum f(x_p) - 1/2
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return PE divergence approximation
+   */
+  double PEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;

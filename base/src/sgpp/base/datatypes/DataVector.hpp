@@ -280,6 +280,13 @@ class DataVector : public std::vector<double> {
   double sum() const;
 
   /**
+   * Returns the sum of all elements squared
+   *
+   * @return The sum of all elements squared
+   */
+  double sumsqr() const;
+
+  /**
    * calculates the vector's max norm
    *
    * @return the vector's max norm

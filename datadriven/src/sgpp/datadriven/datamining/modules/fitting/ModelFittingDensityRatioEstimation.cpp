@@ -59,6 +59,28 @@ void ModelFittingDensityRatioEstimation::evaluate(DataMatrix &samples, DataVecto
   opMultEval->eval(alpha, results);
 }
 
+double ModelFittingDensityRatioEstimation::LeastSquaresLossApprox(DataMatrix &samplesP,
+                                                                  DataMatrix &samplesQ) {
+  double numP = static_cast<double>(samplesP.getNrows());
+  double numQ = static_cast<double>(samplesQ.getNrows());
+  DataVector fp(samplesP.getNrows());
+  DataVector fq(samplesQ.getNrows());
+  this->evaluate(samplesP, fp);
+  this->evaluate(samplesQ, fq);
+  return fq.sumsqr() / numQ - 2 * fp.sum() / numP;
+}
+
+double ModelFittingDensityRatioEstimation::PEDivergenceApprox(DataMatrix &samplesP,
+                                                              DataMatrix &samplesQ) {
+  double numP = static_cast<double>(samplesP.getNrows());
+  double numQ = static_cast<double>(samplesQ.getNrows());
+  DataVector fp(samplesP.getNrows());
+  DataVector fq(samplesQ.getNrows());
+  this->evaluate(samplesP, fp);
+  this->evaluate(samplesQ, fq);
+  return -0.5 * fq.sumsqr() / numQ + fp.sum() / numP - 0.5;
+}
+
 void ModelFittingDensityRatioEstimation::fit(Dataset &newDatasetP, Dataset &newDatasetQ) {
   // clear model
   reset();

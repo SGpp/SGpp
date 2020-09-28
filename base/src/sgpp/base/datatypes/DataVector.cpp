@@ -30,14 +30,11 @@ DataVector::DataVector(size_t size) : DataVector(size, 0.0) {}
 
 DataVector::DataVector(size_t size, double value) { this->assign(size, value); }
 
-DataVector::DataVector(double* input, size_t size)
-    : std::vector<double>(input, input + size) {}
+DataVector::DataVector(double* input, size_t size) : std::vector<double>(input, input + size) {}
 
-DataVector::DataVector(std::vector<double> input)
-    : std::vector<double>(input) {}
+DataVector::DataVector(std::vector<double> input) : std::vector<double>(input) {}
 
-DataVector::DataVector(std::initializer_list<double> input)
-    : std::vector<double>(input) {}
+DataVector::DataVector(std::initializer_list<double> input) : std::vector<double>(input) {}
 
 DataVector::DataVector(std::vector<int> input) {
   // copy data
@@ -51,8 +48,7 @@ DataVector DataVector::fromFile(const std::string& fileName) {
   std::ifstream f(fileName, std::ifstream::in);
   f.exceptions(std::ifstream::failbit | std::ifstream::badbit);
   std::string content;
-  content.assign(std::istreambuf_iterator<char>(f),
-                 std::istreambuf_iterator<char>());
+  content.assign(std::istreambuf_iterator<char>(f), std::istreambuf_iterator<char>());
   return DataVector::fromString(content);
 }
 
@@ -82,9 +78,7 @@ DataVector DataVector::fromString(const std::string& serializedVector) {
       //      size_t next;
       //      double value = std::atof(&(serializedVector[i]));
       size_t endNumber = i;
-      while (serializedVector[endNumber] != ',' &&
-             serializedVector[endNumber] != ']')
-        ++endNumber;
+      while (serializedVector[endNumber] != ',' && serializedVector[endNumber] != ']') ++endNumber;
       std::stringstream stream;
       for (size_t j = i; j < endNumber; ++j) {
         stream << serializedVector[j];
@@ -160,8 +154,7 @@ size_t DataVector::append(double value) {
 
 void DataVector::insert(size_t index, double value) {
   if (index > this->size()) {
-    throw sgpp::base::data_exception(
-        "DataVector::insert : index out of bounds");
+    throw sgpp::base::data_exception("DataVector::insert : index out of bounds");
   }
 
   this->insert(this->begin() + index, value);
@@ -179,14 +172,12 @@ void DataVector::copyFrom(const DataVector& vec) {
   if (*this == vec) {
     return;
   }
-  std::copy(vec.begin(), vec.begin() + std::min(this->size(), vec.size()),
-            this->begin());
+  std::copy(vec.begin(), vec.begin() + std::min(this->size(), vec.size()), this->begin());
 }
 
 void DataVector::add(const DataVector& vec) {
   if (this->size() != vec.size()) {
-    throw sgpp::base::data_exception(
-        "DataVector::add : Dimensions do not match");
+    throw sgpp::base::data_exception("DataVector::add : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->size(); ++i) {
@@ -211,8 +202,7 @@ void DataVector::accumulate(const DataVector& vec) {
 
 void DataVector::sub(const DataVector& vec) {
   if (this->size() != vec.size()) {
-    throw sgpp::base::data_exception(
-        "DataVector::sub : Dimensions do not match");
+    throw sgpp::base::data_exception("DataVector::sub : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->size(); ++i) {
@@ -222,8 +212,7 @@ void DataVector::sub(const DataVector& vec) {
 
 void DataVector::componentwise_mult(const DataVector& vec) {
   if (this->size() != vec.size()) {
-    throw sgpp::base::data_exception(
-        "DataVector::componentwise_mult : Dimensions do not match");
+    throw sgpp::base::data_exception("DataVector::componentwise_mult : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->size(); ++i) {
@@ -233,8 +222,7 @@ void DataVector::componentwise_mult(const DataVector& vec) {
 
 void DataVector::componentwise_div(const DataVector& vec) {
   if (this->size() != vec.size()) {
-    throw sgpp::base::data_exception(
-        "DataVector::componentwise_div : Dimensions do not match");
+    throw sgpp::base::data_exception("DataVector::componentwise_div : Dimensions do not match");
   }
 
   for (size_t i = 0; i < this->size(); ++i) {
@@ -281,6 +269,16 @@ double DataVector::sum() const {
 
   for (size_t i = 0; i < this->size(); ++i) {
     result += (*this)[i];
+  }
+
+  return result;
+}
+
+double DataVector::sumsqr() const {
+  double result = 0.0;
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    result += (*this)[i] * (*this)[i];
   }
 
   return result;

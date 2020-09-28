@@ -83,6 +83,18 @@ class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingle
   void evaluate(DataMatrix &samples, DataVector &results) override;
 
   /**
+   * Computes an approximation of the Pearson divergence using the relative density ratio.
+   * Implemented as:
+   *    -omega / 2 * 1 / M_p * Sum f(x_p)^2
+   *    - (1-omega) / 2 * 1 / M_q * Sum f(x_q)^2
+   *    + 1 / M_p * Sum f(x_p) - 1/2
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return omega-relative PE divergence approximation
+   */
+  double relativePEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+
+  /**
    * Resets the state of the entire model
    */
   void reset() override;
