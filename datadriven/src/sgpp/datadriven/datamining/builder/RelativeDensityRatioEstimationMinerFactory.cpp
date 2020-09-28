@@ -43,10 +43,6 @@ RelativeDensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets
 
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
 
-  // Batching is not currently supported
-  configs[0].batchSize_ = configs[1].batchSize_ = 0;
-  configs[0].numBatches_ = configs[1].numBatches_ = 1;
-
   std::vector<DataSourceSplitting*> dataSources(2);
 
   for (size_t i = 0; i < dataSources.size(); ++i)

@@ -17,11 +17,11 @@ namespace solver {
 enum class SLESolverType { CG, BiCGSTAB, FISTA };
 
 struct SLESolverConfiguration {
-  sgpp::solver::SLESolverType type_;
-  double eps_;
-  size_t maxIterations_;
-  double threshold_;
-  bool verbose_;
+  sgpp::solver::SLESolverType type_ = SLESolverType::CG;
+  double eps_ = 1e-12;
+  size_t maxIterations_ = 100;
+  double threshold_ = 1e-12;
+  bool verbose_ = false;
 };
 
 struct SLESolverSPConfiguration {
