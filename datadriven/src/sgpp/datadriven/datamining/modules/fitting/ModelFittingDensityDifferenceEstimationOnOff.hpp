@@ -109,6 +109,32 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Computes the L2 approximate based on the learned density.
+   * It is computed as: $\alpha^T \cdot b$,
+   * i.e. average evaluations in p samples minus average evaluations in q samples
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return the L2 approximate
+   */
+  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ);
+
+  /**
+   * Computes a data-independent L2 approximate based on the learned density.
+   * It is computed as: $\alpha^T \cdot A \cdot \alpha$
+   * @return the L2 approximate
+   */
+  double L2ApproxDataIndep();
+
+  /**
+   * Computes a mixed L2 approximate based on the learned density.
+   * It is computed as: 2 * L2ApproxDataBased - L2ApproxDataIndep
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return the L2 approximate
+   */
+  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ);
+
+  /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement) @return whether the model is refinable
    */

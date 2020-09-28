@@ -50,6 +50,29 @@ void ModelFittingDensityDifferenceEstimationCG::evaluate(DataMatrix& samples, Da
   sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
 }
 
+double ModelFittingDensityDifferenceEstimationCG::L2ApproxDataBased(DataMatrix& samplesP,
+                                                                    DataMatrix& samplesQ) {
+  double numP = static_cast<double>(samplesP.getNrows());
+  double numQ = static_cast<double>(samplesQ.getNrows());
+  DataVector fp(samplesP.getNrows());
+  DataVector fq(samplesQ.getNrows());
+  this->evaluate(samplesP, fp);
+  this->evaluate(samplesQ, fq);
+  return fp.sum() / numP - fq.sum() / numQ;
+}
+
+double ModelFittingDensityDifferenceEstimationCG::L2ApproxDataIndep() {
+  DataVector res(alpha.size());
+  std::unique_ptr<base::OperationMatrix> A(op_factory::createOperationLTwoDotProduct(*grid));
+  A->mult(alpha, res);
+  return res.dotProduct(alpha);
+}
+
+double ModelFittingDensityDifferenceEstimationCG::L2ApproxMixed(DataMatrix& samplesP,
+                                                                DataMatrix& samplesQ) {
+  return 2 * L2ApproxDataBased(samplesP, samplesQ) - L2ApproxDataIndep();
+}
+
 void ModelFittingDensityDifferenceEstimationCG::fit(Dataset& newDatasetP, Dataset& newDatasetQ) {
   dataset = &newDatasetP;
   extraDataset = &newDatasetQ;
