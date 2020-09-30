@@ -13,6 +13,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOffParallel.hpp>
@@ -69,6 +70,9 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
 
+  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
+    return new ModelFittingDensityDifferenceEstimationCombi(config);
+  }
   switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
       std::cout << "\nCG\n";

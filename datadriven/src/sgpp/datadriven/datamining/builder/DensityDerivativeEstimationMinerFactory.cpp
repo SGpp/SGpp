@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-// #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeEstimationOnOff.hpp>
@@ -35,11 +35,9 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
     return new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
   }
 #endif
-  /*
   if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
-    return new ModelFittingDensityEstimationCombi(config);
+    return new ModelFittingDensityDerivativeEstimationCombi(config);
   }
-  */
   switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
       std::cout << "\nCG\n";
