@@ -231,6 +231,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns b vector for the given batch
    */
   DataVector computeWeightedBFromBatch(DataMatrix& m, Grid& grid,
                                        DensityEstimationConfiguration& densityEstimationConfig,
@@ -243,6 +244,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns b vector for the given batch
    */
   DataVector computeWeightedDerivativeBFromBatch(
       DataMatrix& m, Grid& grid, DensityEstimationConfiguration& densityEstimationConfig,
@@ -259,6 +261,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param grid The underlying grid
    * @param densityEstimationConfig Configuration for the density estimation
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns vector of bq and bp or b for the given batch
    */
   std::vector<DataVector> computeWeightedBFromBatchTwoDatasets(
       DataMatrix& mp, DataMatrix& mq, Grid& grid,
@@ -274,6 +277,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param parallelConfig ScaLAPACK configuration
    * @param processGrid process grid for ScaLAPACK
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns b vector for the given batch
    */
   DataVectorDistributed computeWeightedBFromBatchParallel(
       DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
@@ -290,6 +294,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param parallelConfig ScaLAPACK configuration
    * @param processGrid process grid for ScaLAPACK
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns b vector for the given batch
    */
   DataVectorDistributed computeWeightedDerivativeBFromBatchParallel(
       DataMatrix& m, Grid& grid, const DensityEstimationConfiguration& densityEstimationConfig,
@@ -311,6 +316,7 @@ class DBMatOnlineDE : public DBMatOnline {
    * @param parallelConfig ScaLAPACK configuration
    * @param processGrid process grid for ScaLAPACK
    * @param weighted Flag to decide whether to weight the b vector with the no. of points
+   * @returns vector of bq and bp or b for the given batch
    */
   std::vector<DataVectorDistributed> computeWeightedBFromBatchTwoDatasetsParallel(
       DataMatrix& mp, DataMatrix& mq, Grid& grid,

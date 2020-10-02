@@ -264,7 +264,7 @@ void DBMatOnlineDE::computeDensityDifferenceFunction(
   }
 
   // Normally, both datasets should still have data to process, otherwise we can't compute anything
-  if (mp.getNrows() > 0 && mq.getNrows()) {
+  if (mp.getNrows() > 0 && mq.getNrows() > 0) {
     // The order of the DataVectors is: b, bp, bq
     std::vector<DataVector> bs =
         computeWeightedBFromBatchTwoDatasets(mp, mq, grid, densityEstimationConfig, false);
@@ -385,7 +385,7 @@ void DBMatOnlineDE::computeDensityDifferenceFunctionParallel(
   }
 
   // Normally, both datasets should still have data to process, otherwise we can't compute anything
-  if (mp.getNrows() > 0 && mq.getNrows()) {
+  if (mp.getNrows() > 0 && mq.getNrows() > 0) {
     // The order of the DataVectors is: b, bp, bq
     std::vector<DataVectorDistributed> bs = computeWeightedBFromBatchTwoDatasetsParallel(
         mp, mq, grid, densityEstimationConfig, parallelConfig, processGrid, false);
@@ -604,7 +604,7 @@ std::vector<DataVector> DBMatOnlineDE::computeWeightedBFromBatchTwoDatasets(
     DataMatrix& mp, DataMatrix& mq, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool weighted) {
   // Normally, both datasets should still have data to process, otherwise we can't compute anything
-  if (mp.getNrows() > 0 && mq.getNrows()) {
+  if (mp.getNrows() > 0 && mq.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
@@ -932,7 +932,7 @@ std::vector<DataVectorDistributed> DBMatOnlineDE::computeWeightedBFromBatchTwoDa
     const ParallelConfiguration& parallelConfig, std::shared_ptr<BlacsProcessGrid> processGrid,
     bool weighted) {
   // Normally, both datasets should still have data to process, otherwise we can't compute anything
-  if (mp.getNrows() > 0 && mq.getNrows()) {
+  if (mp.getNrows() > 0 && mq.getNrows() > 0) {
     DataMatrix& lhsMatrix = offlineObject.getDecomposedMatrix();
 
     // in case OrthoAdapt or both SMW_, the current size is not lhs size, but B size
