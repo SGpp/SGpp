@@ -15,6 +15,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/globaldef.hpp>
+
 #include <vector>
 
 using sgpp::base::DataMatrix;

@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <list>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
@@ -17,6 +16,8 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/globaldef.hpp>
+
+#include <list>
 #include <vector>
 
 using sgpp::base::DataMatrix;

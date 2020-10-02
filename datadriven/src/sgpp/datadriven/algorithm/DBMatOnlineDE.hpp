@@ -5,14 +5,15 @@
 
 #pragma once
 
-#include <list>
-#include <memory>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
+
+#include <list>
+#include <memory>
 #include <vector>
 
 namespace sgpp {
