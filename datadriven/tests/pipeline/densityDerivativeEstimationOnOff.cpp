@@ -46,7 +46,7 @@ double testDistributionDDerivE_OnOff(std::string testCSV, std::string config) {
   return predictions.l2Norm() / static_cast<double>(predictions.getSize());
 }
 
-BOOST_AUTO_TEST_SUITE(testDensityEstimationOnOff)
+BOOST_AUTO_TEST_SUITE(testDensityDerivativeEstimationOnOff)
 
 BOOST_AUTO_TEST_CASE(Test_2D_DDeriv_Gauss) {
   std::string samples = "datadriven/datasets/densityEstimation/2D_DDeriv_Gauss_test.csv";

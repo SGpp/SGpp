@@ -35,7 +35,10 @@ class DensityDifferenceEstimationMinerFactory : public MinerFactory {
    */
   SparseGridMiner* buildMiner(const std::string& path) const override;
 
-  // sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const override;
+  /**
+   * @return a hyperparameter optimizer for this miner
+   */
+  sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
 
  private:
   /**
@@ -56,9 +59,10 @@ class DensityDifferenceEstimationMinerFactory : public MinerFactory {
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override {
-    throw base::application_exception("HPO is not enabled for this model");
-  }
+  /**
+   * @return a fitter factory for hpo
+   */
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
 
   /* Factory method to build a visualizer instance base on a configuration file.
    * @param parser the datamining configuration parser instance to create the scorer from

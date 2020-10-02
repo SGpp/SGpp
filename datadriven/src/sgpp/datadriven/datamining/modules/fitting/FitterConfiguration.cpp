@@ -232,8 +232,8 @@ void FitterConfiguration::setupDefaults() {
 
   databaseConfig.filePath_ = "";
 
-  learnerConfig.learningRate_ = 1.0;  // mirrors struct default
-  learnerConfig.usePrior_ = false;    // mirrors struct default
+  learnerConfig.forgetRate_ = 1.0;  // mirrors struct default
+  learnerConfig.usePrior_ = false;  // mirrors struct default
 
   parallelConfig.scalapackEnabled_ = false;
   parallelConfig.processRows_ = -1;

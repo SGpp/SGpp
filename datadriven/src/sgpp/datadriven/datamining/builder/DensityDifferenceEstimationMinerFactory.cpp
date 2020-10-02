@@ -10,15 +10,15 @@
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
-// #include
-// <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
-// #include
-// <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
-#include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOffParallel.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityDifferenceEstimationFitterFactory.hpp>
 
 #include <string>
 #include <vector>
@@ -70,44 +70,52 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
 
+  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
+    return new ModelFittingDensityDifferenceEstimationCombi(config);
+  }
   switch (config.getDensityEstimationConfig().type_) {
     case (DensityEstimationType::CG):
       std::cout << "\nCG\n";
       return new ModelFittingDensityDifferenceEstimationCG(config);
     case (DensityEstimationType::Decomposition):
       std::cout << "\nDECOMPOSITION\n";
+#ifdef USE_SCALAPACK
+      if (parser.hasParallelConfig()) {
+        return new ModelFittingDensityDifferenceEstimationOnOffParallel(config);
+      } else {
+        return new ModelFittingDensityDifferenceEstimationOnOff(config);
+      }
+#else
       return new ModelFittingDensityDifferenceEstimationOnOff(config);
+#endif /* USE_SCALAPACK */
   }
 
   throw base::application_exception("Unknown density estimation type");
 }
-/*
- HyperparameterOptimizer
- *DensityDifferenceEstimationMinerFactory::buildHPO(const std::string &path)
- const {
- DataMiningConfigParser parser(path);
- if (parser.getHPOMethod("bayesian") == "harmonica") {
- return new HarmonicaHyperparameterOptimizer(buildMiner(path),
- new DensityEstimationFitterFactory(parser), parser);
- } else {
- return new BoHyperparameterOptimizer(buildMiner(path),
- new DensityEstimationFitterFactory(parser), parser);
- }
- }
 
- FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser &parser) const {
- return new DensityEstimationFitterFactory(parser);
- }
- */
+HyperparameterOptimizer *DensityDifferenceEstimationMinerFactory::buildHPO(
+    const std::string &path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+  }
+}
+
+FitterFactory *DensityDifferenceEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser &parser) const {
+  return new DensityDifferenceEstimationFitterFactory(parser);
+}
 
 Visualizer *DensityDifferenceEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser &parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  // TODO(spc90): implement visualization for this model
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */

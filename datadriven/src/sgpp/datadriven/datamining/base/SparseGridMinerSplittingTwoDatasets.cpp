@@ -8,6 +8,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 
 #include <iostream>
 #include <vector>
@@ -23,6 +24,15 @@ SparseGridMinerSplittingTwoDatasets::SparseGridMinerSplittingTwoDatasets(
       dataSourceQ{dataSource[1]} {}
 
 double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
+#ifdef USE_SCALAPACK
+  if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
+    auto processGrid = fitter->getProcessGrid();
+    if (!processGrid->isProcessInGrid()) {
+      return 0.0;
+    }
+  }
+#endif /* USE_SCALAPACK */
+
   fitter->verboseSolver = verbose;
   // Setup refinement monitor
   RefinementMonitorFactory monitorFactory;
@@ -70,6 +80,11 @@ double SparseGridMinerSplittingTwoDatasets::learn(bool verbose) {
         std::cout << "Score on batch: " << avgScoreTrain << std::endl
                   << "Score on validation data: " << avgScoreVal << std::endl;
       }
+
+      // Only uses dataSourceQ, not relevant as the visualizer does not
+      // use the dataSource currently
+      visualizer->runVisualization(*fitter, *dataSourceQ, 0, iteration);
+
       // Refine the model if neccessary
       monitor->pushToBuffer(numInstancesP + numInstancesQ, avgScoreVal, avgScoreTrain);
       size_t refinements = monitor->refinementsNecessary();

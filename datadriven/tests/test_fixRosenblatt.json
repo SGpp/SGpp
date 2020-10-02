@@ -2,10 +2,10 @@
 	"dataSource": {
 		"filePath": "../datasets/chess/chess_5d_2000.arff",
 		"fileType": "arff",
-		"compression": false,
+		"isCompressed": false,
 		"numBatches": 2,
 		"batchSize": 1000,
-		"validationPortion" : 0.0,
+		"validationPortion": 0.0,
 		"dataTransformation": {
 			"type": "rosenblatt",
 			"rosenblattConfig": {
@@ -62,8 +62,8 @@
 		"regularizationConfig": {
 			"regularizationType": "Identity",
 			"lambda": 1e-6,
-			"exponentBase":0.0,
-			"l1Ratio":0.0
+			"exponentBase": 0.0,
+			"l1Ratio": 0.0
 		}
 	}
 }

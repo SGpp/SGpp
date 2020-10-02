@@ -177,10 +177,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
   /**
    * Resets any trained representations of the model, but does not reset the entire state.
    */
-  void resetTraining() override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::resetTraining() is not implemented!");
-  }
+  void resetTraining() override;
 
  private:
   // The online object

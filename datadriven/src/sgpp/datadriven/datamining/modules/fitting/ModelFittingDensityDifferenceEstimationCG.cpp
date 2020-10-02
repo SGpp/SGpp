@@ -19,13 +19,13 @@
 #include <string>
 #include <vector>
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -170,7 +170,7 @@ void ModelFittingDensityDifferenceEstimationCG::update(DataMatrix& newDatasetP,
     SMatrix.computeUnweightedRhs(rhsUpdate, rhsUpdateExtra);
     double numInstancesP = static_cast<double>(newDatasetP.getNrows());
     double numInstancesQ = static_cast<double>(newDatasetQ.getNrows());
-    double beta = this->config->getLearnerConfig().learningRate_;  // forgetRate
+    double beta = this->config->getLearnerConfig().forgetRate_;  // forgetRate
     // Update numerators
     bNumP.mult(1. - beta);
     bNumP.add(rhsUpdate);

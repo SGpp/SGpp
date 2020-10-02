@@ -16,13 +16,13 @@
 #include <string>
 #include <vector>
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -130,7 +130,7 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate_);
+  online->setBeta(this->config->getLearnerConfig().forgetRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
@@ -195,6 +195,13 @@ void ModelFittingDensityDifferenceEstimationOnOff::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+void ModelFittingDensityDifferenceEstimationOnOff::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
 }
 
 }  // namespace datadriven

@@ -11,8 +11,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDerivativeRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
-
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityDerivativeRatioEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
 
 #include <string>
 
@@ -39,19 +41,29 @@ void DensityDerivativeRatioEstimationMinerFactory::sanityCheck(
         "order at least 3!");
 }
 
-/*
+HyperparameterOptimizer* DensityDerivativeRatioEstimationMinerFactory::buildHPO(
+    const std::string& path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityDerivativeRatioEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityDerivativeRatioEstimationFitterFactory(parser), parser);
+  }
+}
+
 FitterFactory* DensityDerivativeRatioEstimationMinerFactory::createFitterFactory(
     const DataMiningConfigParser& parser) const {
-  return new LeastSquaresRegressionFitterFactory(parser);
+  return new DensityDerivativeRatioEstimationFitterFactory(parser);
 }
-*/
 
 Visualizer* DensityDerivativeRatioEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser& parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */
