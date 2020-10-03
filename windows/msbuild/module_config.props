@@ -18,9 +18,9 @@
     <_WildCardClCompile Include="solver\src\**\*.cpp" />
     <_WildCardClCompile Include="solver\examples\**\*.cpp" />
 	
-    <_WildCardClInclude Include="pde\src\**\*.hpp" />
-    <_WildCardClCompile Include="pde\src\**\*.cpp" />
-    <_WildCardClCompile Include="pde\examples\**\*.cpp" />
+    <_WildCardClInclude Include="$(ProjectDir)\pde\src\**\*.hpp" />
+    <_WildCardClCompile Include="$(ProjectDir)\pde\src\**\*.cpp" />
+    <_WildCardClCompile Include="$(ProjectDir)\pde\examples\**\*.cpp" />
 	
     <_WildCardClInclude Include="combigrid\src\**\*.hpp" />
     <_WildCardClCompile Include="combigrid\src\**\*.cpp" />

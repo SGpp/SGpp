@@ -1,32 +1,23 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-  
     <!-- The path to your headers of your local WSL, usually looks like C:\Users\<Username>\AppData\Local\Microsoft\Linux\Header Cache\1.0\<ID>\
          See README.md on how to install and obtain the WSL headers on your Windows system. -->
-    <LinuxHeadersPath></LinuxHeadersPath>
+    <ProjectDirectory>C:\Projects\sgpp_dev\SGpp</ProjectDirectory>
+	
+    <!-- The path to your headers of your local WSL, usually looks like C:\Users\<Username>\AppData\Local\Microsoft\Linux\Header Cache\1.0\<ID>\
+         See README.md on how to install and obtain the WSL headers on your Windows system. -->
+    <LinuxHeadersPath>C:\Users\cschn\AppData\Local\Microsoft\Linux\Header Cache\1.0\1210576275</LinuxHeadersPath>
 	
 	<!-- The major version of gcc on your WSL, usually 5 or 6 -->
-    <LinuxGCCVersion></LinuxGCCVersion>
+    <LinuxGCCVersion>5</LinuxGCCVersion>
 	
 	<!-- Preprocessor definitions used for IntelliSense separated by semicolons. These are not required to build the project.
 	     Instead they exist to let IntelliSense know, which definitions are used in order to mark possible errors in your code.
          To use Eigen and GSL, the value would be USE_EIGEN;USE_GSL	 -->
-    <LinuxPreprocessorDefinitions></LinuxPreprocessorDefinitions>
+    <LinuxPreprocessorDefinitions>USE_EIGEN</LinuxPreprocessorDefinitions>
 	
 	<!-- Path to the project directory on your WSL. This makes use of the mounted Windows file system.
          For example, if your project directory is C:\Projects\sgpp\, the WSL project directory is /mnt/c/Projects/sgpp/ -->
-    <LinuxProjectDir></LinuxProjectDir>
-	
-	<!-- Path to the working directory used while debugging on your WSL. This makes use of the mounted Windows file system.
-         For example, if your working directory is C:\Projects\sgpp\run\, the WSL working directory is /mnt/c/Projects/sgpp/run/ -->
-    <LinuxWorkingDir></LinuxWorkingDir>
-	
-	<!-- The built program that should be executed by the remote debugger.
-	     Relative paths are used here, e.g. base/examples/tutorial -->
-    <LinuxDebugProgram></LinuxDebugProgram>
-	
-	<!-- The value of $ASAN_OPTIONS for the AddressSanitizer used by the remote debugger.
-	     A commonly used value would be abort_on_error=1:detect_leaks=1 -->
-    <LinuxDebugAsanOptions></LinuxDebugAsanOptions>
+    <LinuxProjectDir>/mnt/c/Projects/sgpp_dev/SGpp</LinuxProjectDir>
   </PropertyGroup>
 </Project>

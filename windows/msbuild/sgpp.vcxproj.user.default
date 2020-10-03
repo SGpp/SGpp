@@ -5,11 +5,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <DebuggerFlavor>LinuxDebugger</DebuggerFlavor>
+    <RemoteTarget>1210576275;localhost (username=, port=22, authentication=Password)</RemoteTarget>
     <DebugChildProcesses>true</DebugChildProcesses>
     <RemoteDebuggingMode>gdb</RemoteDebuggingMode>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DebuggerFlavor>LinuxDebugger</DebuggerFlavor>
+    <RemoteTarget>1210576275;localhost (username=, port=22, authentication=Password)</RemoteTarget>
     <DebugChildProcesses>true</DebugChildProcesses>
     <RemoteDebuggingMode>gdb</RemoteDebuggingMode>
   </PropertyGroup>

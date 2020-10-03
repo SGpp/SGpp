@@ -1,0 +1,19 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+	<!-- Path to the working directory used while debugging on your WSL. This makes use of the mounted Windows file system.
+         For example, if your working directory is C:\Projects\sgpp\run\, the WSL working directory is /mnt/c/Projects/sgpp/run/ -->
+    <LinuxWorkingDir>/mnt/c/Projects/sgpp_dev/SGpp/run/</LinuxWorkingDir>
+	
+	<!-- The built program that should be executed by the remote debugger.
+	     Relative paths are used here, e.g. base/examples/tutorial -->
+    <LinuxDebugProgram>base/examples/tutorial</LinuxDebugProgram>
+	
+	<!-- The built program that should be executed by the remote debugger.
+	     Relative paths are used here, e.g. base/examples/tutorial -->
+    <LinuxDebugPythonProgram>base/examples/tutorial.py</LinuxDebugPythonProgram>
+	
+	<!-- The value of $ASAN_OPTIONS for the AddressSanitizer used by the remote debugger.
+	     A commonly used value would be abort_on_error=1:detect_leaks=1 -->
+    <LinuxDebugAsanOptions>abort_on_error=1:detect_leaks=1</LinuxDebugAsanOptions>
+  </PropertyGroup>
+</Project>
