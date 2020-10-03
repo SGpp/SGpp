@@ -53,7 +53,7 @@
     <RemoteBuildCommandLine>scons --buildfile=windows/msbuild/build_debug.py</RemoteBuildCommandLine>
     <NMakeIncludeSearchPath>@(ActiveModules);$(LinuxHeadersPath)\usr\include\c++\$(LinuxGCCVersion);$(LinuxHeadersPath)\usr\include\x86_64-linux-gnu\c++\$(LinuxGCCVersion);$(LinuxHeadersPath)\usr\include\c++\$(LinuxGCCVersion)\backward;$(LinuxHeadersPath)\usr\lib\gcc\x86_64-linux-gnu\$(LinuxGCCVersion)\include;$(LinuxHeadersPath)\usr\local\include;$(LinuxHeadersPath)\usr\lib\gcc\x86_64-linux-gnu\$(LinuxGCCVersion)\include-fixed;$(LinuxHeadersPath)\usr\include\x86_64-linux-gnu;$(LinuxHeadersPath)\usr\include</NMakeIncludeSearchPath>
     <NMakePreprocessorDefinitions>$(LinuxPreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeForcedIncludes>$(LinuxHeadersPath)\cpp_defines.txt;$(ProjectDir)\windows\msbuild\cpp_version.txt</NMakeForcedIncludes>
+    <NMakeForcedIncludes>$(LinuxHeadersPath)\cpp_defines.txt;$(ProjectDir)\windows\msbuild\cpp_version.txt;$(ProjectDir)\windows\msbuild\windows_undefs.txt</NMakeForcedIncludes>
     <RemoteReBuildCommandLine>scons --clean</RemoteReBuildCommandLine>
     <RemoteBuildOutputs>
     </RemoteBuildOutputs>
@@ -75,7 +75,7 @@
     </AdditionalSourcesToCopyMapping>
     <NMakeIncludeSearchPath>@(ActiveModules);$(LinuxHeadersPath)\usr\include\c++\$(LinuxGCCVersion);$(LinuxHeadersPath)\usr\include\x86_64-linux-gnu\c++\$(LinuxGCCVersion);$(LinuxHeadersPath)\usr\include\c++\$(LinuxGCCVersion)\backward;$(LinuxHeadersPath)\usr\lib\gcc\x86_64-linux-gnu\$(LinuxGCCVersion)\include;$(LinuxHeadersPath)\usr\local\include;$(LinuxHeadersPath)\usr\lib\gcc\x86_64-linux-gnu\$(LinuxGCCVersion)\include-fixed;$(LinuxHeadersPath)\usr\include\x86_64-linux-gnu;$(LinuxHeadersPath)\usr\include</NMakeIncludeSearchPath>
     <NMakePreprocessorDefinitions>$(LinuxPreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeForcedIncludes>$(LinuxHeadersPath)\cpp_defines.txt;$(ProjectDir)\windows\msbuild\cpp_version.txt</NMakeForcedIncludes>
+    <NMakeForcedIncludes>$(LinuxHeadersPath)\cpp_defines.txt;$(ProjectDir)\windows\msbuild\cpp_version.txt;$(ProjectDir)\windows\msbuild\windows_undefs.txt</NMakeForcedIncludes>
     <RemoteReBuildCommandLine>scons --clean</RemoteReBuildCommandLine>
     <RemoteBuildOutputs>
     </RemoteBuildOutputs>

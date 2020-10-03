@@ -121,9 +121,12 @@ custom.py
 /bin/
 *.user
 /run/
-/visual_studio/linux.props
-/visual_studio/build_debug.py
-/visual_studio/build_release.py
+sgpp.sln
+sgpp.vcxproj
+windows/msbuild/build_debug.py
+windows/msbuild/build_release.py
+windows/msbuild/linux_config.props
+windows/msbuild/run_config.props
 
 GPATH
 GRTAGS
