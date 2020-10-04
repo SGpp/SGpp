@@ -82,6 +82,22 @@
     <LocalRemoteCopySources>false</LocalRemoteCopySources>
     <RemoteProjectDir>$(LinuxProjectDir)</RemoteProjectDir>
   </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <RemotePostBuildEvent>
+	  <Command>screen -dmS pysgpp_debug python3 -m debugpy --listen 5678 --wait-for-client $(LinuxProjectDir)/$(LinuxDebugPythonProgram)</Command>
+    </RemotePostBuildEvent>
+    <RemotePreBuildEvent>    
+      <Command>screen -X -S pysgpp_debug quit || :</Command>
+	</RemotePreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <RemotePostBuildEvent>
+	  <Command>screen -dmS pysgpp_debug python3 -m debugpy --listen 5678 --wait-for-client $(LinuxProjectDir)/$(LinuxDebugPythonProgram)</Command>
+    </RemotePostBuildEvent>
+    <RemotePreBuildEvent>    
+      <Command>screen -X -S pysgpp_debug quit || :</Command>
+	</RemotePreBuildEvent>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>

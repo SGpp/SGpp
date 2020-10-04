@@ -13,6 +13,7 @@
     <_WildCardClInclude Include="base\src\**\*.hpp" />
     <_WildCardClCompile Include="base\src\**\*.cpp" />
     <_WildCardClCompile Include="base\examples\**\*.cpp" />
+    <_WildCardPython Include="base\examples\**\*.py" />
 	
     <_WildCardClInclude Include="solver\src\**\*.hpp" />
     <_WildCardClCompile Include="solver\src\**\*.cpp" />
@@ -44,10 +45,12 @@
 	
     <_WildCardHide Include="$(ProjectDir)\**\*.lint" />
     <_WildCardHide Include="$(ProjectDir)\**\*.os" />
+    <_WildCardHide Include="$(ProjectDir)\**\*.o" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="@(_WildCardClInclude)" />
     <ClCompile Include="@(_WildCardClCompile)" />
+    <None Include="@(_WildCardPython)" />
     <None Include="@(_WildCardHide)">
 	  <InProject>false</InProject>
 	  <Visible>false</Visible>
