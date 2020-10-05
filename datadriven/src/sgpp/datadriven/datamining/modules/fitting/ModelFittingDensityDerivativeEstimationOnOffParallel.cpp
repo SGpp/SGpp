@@ -290,11 +290,10 @@ double ModelFittingDensityDerivativeEstimationOnOffParallel::computeResidual(
   rMatrix.mult(alphaDistributed, bValidation, false, 1.0, -1.0);
 
   DataVector result = bValidation.toLocalDataVectorBroadcast();
+  return result.l2Norm();
 #else
   throw base::not_implemented_exception("built without ScaLAPACK");
 #endif /* USE_SCALAPACK */
-
-  return result.l2Norm();
 }
 
 void ModelFittingDensityDerivativeEstimationOnOffParallel::updateRegularization(double lambda) {
