@@ -21,8 +21,8 @@
 #include <vector>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -158,21 +158,14 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    *
    * @returns the residual score
    */
-  double computeResidual(DataMatrix& validationData) const override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::computeResidual() is not implemented!");
-  }
+  double computeResidual(DataMatrix& validationData) const override;
 
   /**
    * Updates the regularization parameter lambda of the underlying model.
    *
    * @param lambda the new lambda parameter
    */
-  void updateRegularization(double lambda) override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() is not "
-        "implemented!");
-  }
+  void updateRegularization(double lambda) override;
 
   /**
    * Resets any trained representations of the model, but does not reset the entire state.

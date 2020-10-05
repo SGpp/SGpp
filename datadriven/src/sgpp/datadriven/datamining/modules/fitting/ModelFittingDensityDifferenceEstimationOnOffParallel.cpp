@@ -217,6 +217,43 @@ void ModelFittingDensityDifferenceEstimationOnOffParallel::update(DataMatrix& ne
   }
 }
 
+double ModelFittingDensityDifferenceEstimationOnOffParallel::computeResidual(
+    DataMatrix& validationData) const {
+  DataVectorDistributed bValidation = online->computeWeightedDerivativeBFromBatchParallel(
+      validationData, *grid, this->config->getDensityEstimationConfig(),
+      this->config->getParallelConfig(), this->processGrid, true);
+
+  DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed(
+      this->processGrid, this->config->getParallelConfig());
+
+#ifdef USE_SCALAPACK
+  // R * alpha - b_val
+  rMatrix.mult(alphaDistributed, bValidation, false, 1.0, -1.0);
+
+  DataVector result = bValidation.toLocalDataVectorBroadcast();
+  return result.l2Norm();
+#else
+  throw base::not_implemented_exception("built without ScaLAPACK");
+#endif /* USE_SCALAPACK */
+}
+
+void ModelFittingDensityDifferenceEstimationOnOffParallel::updateRegularization(double lambda) {
+  if (grid != nullptr) {
+    auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
+    auto& parallelConfig = this->config->getParallelConfig();
+
+    this->online->getOfflineObject().updateRegularizationParallel(lambda, this->processGrid,
+                                                                  parallelConfig);
+
+    // in SMW decomposition type case, the inverse of the matrix needs to be
+    // computed explicitly
+    if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
+        densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
+      online->getOfflineObject().compute_inverse_parallel(processGrid, parallelConfig);
+    }
+  }
+}
+
 bool ModelFittingDensityDifferenceEstimationOnOffParallel::isRefinable() {
   if (grid != nullptr) {
     return online->getOfflineObject().isRefineable();
