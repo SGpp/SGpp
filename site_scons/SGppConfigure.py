@@ -560,7 +560,7 @@ def configureClangCompiler(config):
     "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
     "-Wno-global-constructors", "-Wno-missing-noreturn", "-Wno-missing-prototypes", "-Wno-padded",
     "-Wno-shadow", "-Wno-shadow-field", "-Wno-sign-conversion", "-Wno-undef",
-    "-Wno-unused-parameter", "-Wno-weak-vtables",
+    "-Wno-unused-parameter", "-Wno-weak-vtables", "-Wno-used-but-marked-unused",
   ]
   config.env.Append(CPPFLAGS=allWarnings)
 
