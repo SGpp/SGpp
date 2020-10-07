@@ -22,7 +22,6 @@ void OperationMultipleEvalModBsplineNaiveDistributed::multDistributed(
 
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
-  const size_t m = dataset.getNrows();
 
   result.setAll(0.0);
 
@@ -59,7 +58,6 @@ void OperationMultipleEvalModBsplineNaiveDistributed::multTransposeDistributed(
     return;
   }
 
-  const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = dataset.getNrows();
 

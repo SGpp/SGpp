@@ -48,6 +48,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach.
+   *
    * @param datasetP the first training dataset that is used to fit the model.
    * @param datasetQ the second training dataset that is used to fit the model.
    */
@@ -60,6 +61,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
    * approach. Requires only data samples and no targets (since those are irrelevant for the density
    * estimation whatsoever)
+   *
    * @param datasetP the first training dataset that is used to fit the model.
    * @param datasetQ the second training dataset that is used to fit the model.
    */
@@ -70,6 +72,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
 
   /**
    * Performs a refinement given the new grid size and the points to coarsened
+   *
    * @param newNoPoints the grid size after refinement and coarsening
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
@@ -84,6 +87,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
   /**
    * Updates the model based on new data samples (streaming, batch learning). Requires only the data
    * samples and no targets (since those are irrelevant for the density estimation whatsoever)
+   *
    * @param samplesP the new data samples for first dataset
    * @param samplesQ the new data samples for second dataset
    */
@@ -94,6 +98,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
+   *
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
@@ -101,6 +106,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
 
   /**
    * Evaluate the fitted density on a set of data points - requires a trained grid.
+   *
    * @param samples matrix where each row represents a sample and the columns contain the
    * coordinates in all dimensions of that sample.
    * @param results vector where each row will contain the evaluation of the respective sample on
@@ -110,8 +116,11 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
 
   /**
    * Computes the L2 approximate based on the learned density.
-   * It is computed as: $\alpha^T \cdot b$,
+   *
+   * It is computed as:
+   * \f$ \alpha^T \cdot b \f$,
    * i.e. average evaluations in p samples minus average evaluations in q samples
+   *
    * @param samplesP samples of first dataset to evaluate against
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
@@ -120,14 +129,20 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
 
   /**
    * Computes a data-independent L2 approximate based on the learned density.
-   * It is computed as: $\alpha^T \cdot A \cdot \alpha$
+   *
+   * It is computed as:
+   * \f$ \alpha^T \cdot A \cdot \alpha \f$
+   *
    * @return the L2 approximate
    */
   double L2ApproxDataIndep();
 
   /**
    * Computes a mixed L2 approximate based on the learned density.
-   * It is computed as: 2 * L2ApproxDataBased - L2ApproxDataIndep
+   *
+   * It is computed as:
+   * 2 * L2ApproxDataBased - L2ApproxDataIndep
+   *
    * @param samplesP samples of first dataset to evaluate against
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
@@ -178,6 +193,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
  private:
   /**
    * Creates the regularization operation matrix for the model settings.
+   *
    * @param grid the underlying sparse grid
    * @return the regularization matrix C
    */
@@ -206,6 +222,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
   /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement)
+   *
    * @return whether the model is refinable
    */
   bool isRefinable() override;

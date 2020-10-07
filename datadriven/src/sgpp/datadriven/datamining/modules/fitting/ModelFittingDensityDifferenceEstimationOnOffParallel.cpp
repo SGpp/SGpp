@@ -178,7 +178,6 @@ bool ModelFittingDensityDifferenceEstimationOnOffParallel::adapt(
         config->getRegularizationConfig().lambda_, processGrid, parallelConfig);
 #endif      /* USE_SCALAPACK */
   } else {  // every other decomposition type than SMW
-
     // Update online object: lhs, rhs and recompute the density function based on the b stored
     online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
                                             newNoPoints - oldNoPoints, deletedGridPoints,
