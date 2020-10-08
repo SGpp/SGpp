@@ -26,6 +26,8 @@ class Node {
 
   Node();
 
+  Node(const Node& right) = default;
+
   virtual ~Node() = default;
 
   virtual Node& operator=(const Node& right);
