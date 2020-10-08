@@ -163,11 +163,14 @@ sgpp::base::DataVector SplineResponseSurface::optimize() {
                     std::min_element(functionValues.getPointer(),
                                      functionValues.getPointer() + functionValues.getSize()));
   x0 = gridStorage.getCoordinates(gridStorage[x0Index]);
-  sgpp::optimization::optimizer::GradientDescent gradientDescent(*interpolant,
-                                                                 *interpolantGradient);
-  gradientDescent.setStartingPoint(x0);
-  gradientDescent.optimize();
-  const sgpp::base::DataVector& unitXOpt = gradientDescent.getOptimalPoint();
+
+  sgpp::optimization::optimizer::GradientDescent optimizer(*interpolant, *interpolantGradient);
+  // sgpp::optimization::optimizer::AdaptiveGradientDescent optimizer(*interpolant,
+  //                                                                  *interpolantGradient);
+
+  optimizer.setStartingPoint(x0);
+  optimizer.optimize();
+  const sgpp::base::DataVector& unitXOpt = optimizer.getOptimalPoint();
   sgpp::base::DataVector xOpt(unitXOpt);
   transformPoint(xOpt, unitLBounds, unitUBounds, lb, ub);
   return xOpt;
