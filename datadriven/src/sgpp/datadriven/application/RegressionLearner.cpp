@@ -204,6 +204,7 @@ std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSyste
     case RegularizationType::GroupLasso:
     case RegularizationType::Lasso:
     case RegularizationType::ElasticNet:
+    default:
       throw base::application_exception(
           "RegressionLearner::createDMSystem: An unsupported regularization type was chosen!");
   }

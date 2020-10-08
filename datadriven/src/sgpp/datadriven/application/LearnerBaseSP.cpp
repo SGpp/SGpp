@@ -66,11 +66,6 @@ LearnerBaseSP::LearnerBaseSP(const LearnerBaseSP& copyMe)
   this->GByte_ = 0.0;
   this->execTime_ = 0.0;
 
-  // safety, should not happen
-  if (alpha_ != nullptr) delete alpha_;
-
-  if (grid_ != nullptr) delete grid_;
-
   // can be solved better with a grid copy constructor
   grid_ = sgpp::base::Grid::unserialize(copyMe.grid_->serialize());
   alpha_ = new sgpp::base::DataVectorSP(*(copyMe.alpha_));
