@@ -65,6 +65,12 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
         degree(degree) {
     this->lb = lb;
     this->ub = ub;
+    jacobianScaling.resize(numRes,numDim);
+    for (size_t j = 0; j < numDim; j++) {
+      // set all entries in j-th column to ub[j]-lb[j]
+    sgpp::base::DataVector auxFillVector(numRes,ub[j]-lb[j]);
+    jacobianScaling.setColumn(j,auxFillVector);
+    }
     // dummy values for mean and variance
     means.resize(numRes, 777);
     variances.resize(numRes, -1);
@@ -141,6 +147,12 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
     coefficients = sgpp::base::DataMatrix::fromFile(coeffFileName);
     this->lb = lb;
     this->ub = ub;
+    jacobianScaling.resize(numRes,numDim);
+    for (size_t j = 0; j < numDim; j++) {
+      // set all entries in j-th column to ub[j]-lb[j]
+    sgpp::base::DataVector auxFillVector(numRes,ub[j]-lb[j]);
+    jacobianScaling.setColumn(j,auxFillVector);
+    }
     // dummy values for mean and variance
     means.resize(numRes, 777);
     variances.resize(numRes, -1);
@@ -370,6 +382,10 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   bool computedCoefficientsFlag;
   sgpp::base::DataVector unitLBounds;
   sgpp::base::DataVector unitUBounds;
+  // used in evalGradient
+  sgpp::base::DataVector evaluations;
+  // used to scale gradient according to chain rule
+  sgpp::base::DataMatrix jacobianScaling;
 
   /**
    * summarizes the children of a grid point that will be refined

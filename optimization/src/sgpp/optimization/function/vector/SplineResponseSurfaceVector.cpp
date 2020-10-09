@@ -152,25 +152,26 @@ void SplineResponseSurfaceVector::nextDistributionAdaptiveGrid(size_t refinement
 
 sgpp::base::DataVector SplineResponseSurfaceVector::eval(sgpp::base::DataVector v) {
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
-  sgpp::base::DataVector evaluations(numRes);
+  // sgpp::base::DataVector evaluations(numRes);
   interpolants->eval(v, evaluations);
   return evaluations;
 }
 sgpp::base::DataVector SplineResponseSurfaceVector::evalJacobian(sgpp::base::DataVector v,
                                                                  sgpp::base::DataMatrix& jacobian) {
-  jacobian.resizeZero(numRes, numDim);
+  //jacobian.resizeZero(numRes, numDim); //unnecessary, subroutine already does this
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
-  sgpp::base::DataVector evaluations(numRes);
+  // sgpp::base::DataVector evaluations(numRes);
   interpolantGradients->eval(v, evaluations, jacobian);
   // scale gradient components according to the inner derivative of the chain rule when transforming
   // the interpolation point from the original coordinates to unit cube
-
-  for (size_t i = 0; i < numRes; i++) {
-    for (size_t j = 0; j < numDim; j++) {
-      double temp = jacobian.get(i, j) / (ub[j] - lb[j]);
-      jacobian.set(i, j, temp);
-    }
-  }
+  // for (size_t i = 0; i < numRes; i++) {
+  //   for (size_t j = 0; j < numDim; j++) {
+  //     double temp = jacobian.get(i, j) / (ub[j] - lb[j]);
+  //     jacobian.set(i, j, temp);
+  //   }
+  // }
+  // more efficient scaling
+  jacobian.componentwise_div(jacobianScaling);
   return evaluations;
 }
 
