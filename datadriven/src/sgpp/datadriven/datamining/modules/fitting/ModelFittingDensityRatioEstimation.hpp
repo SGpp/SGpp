@@ -83,12 +83,21 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
 
   /**
    * Computes an approximation of the least squares loss between true and estimated density ratio.
-   * Implemented as: 1 / M_q * Sum f(x_q)^2 - 2 / M_p * Sum f(x_p).
+   * Implemented as: 1 / M_q * Sum f(x_q)^2 - 2 / M_p * Sum f(x_p)
    * @param samplesP samples of first dataset to evaluate against
    * @param samplesQ samples of second dataset to evaluate against
    * @return LS loss approximation
    */
   double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+
+  /**
+   * Computes an approximation of the Kullback-Leibler divergence using the density ratio.
+   * Implemented as: 1 / M_p * Sum log f(x_p)
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return PE divergence approximation
+   */
+  double KLDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
 
   /**
    * Computes an approximation of the Pearson divergence using the density ratio.

@@ -287,6 +287,13 @@ class DataVector : public std::vector<double> {
   double sumsqr() const;
 
   /**
+   * Returns the sum of the logarithm of all elements
+   *
+   * @return The sum of the logarithm of all elements
+   */
+  double sumlog() const;
+
+  /**
    * calculates the vector's max norm
    *
    * @return the vector's max norm

@@ -284,6 +284,16 @@ double DataVector::sumsqr() const {
   return result;
 }
 
+double DataVector::sumlog() const {
+  double result = 0.0;
+
+  for (size_t i = 0; i < this->size(); ++i) {
+    result += std::log((*this)[i]);
+  }
+
+  return result;
+}
+
 double DataVector::maxNorm() const {
   double max = 0.0;
 

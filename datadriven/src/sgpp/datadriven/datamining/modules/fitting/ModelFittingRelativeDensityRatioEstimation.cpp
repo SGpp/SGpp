@@ -61,6 +61,27 @@ void ModelFittingRelativeDensityRatioEstimation::evaluate(DataMatrix &samples,
   opMultEval->eval(alpha, results);
 }
 
+double ModelFittingRelativeDensityRatioEstimation::relativeLeastSquaresLossApprox(
+    DataMatrix &samplesP, DataMatrix &samplesQ) {
+  double numP = static_cast<double>(samplesP.getNrows());
+  double numQ = static_cast<double>(samplesQ.getNrows());
+  DataVector fp(samplesP.getNrows());
+  DataVector fq(samplesQ.getNrows());
+  this->evaluate(samplesP, fp);
+  this->evaluate(samplesQ, fq);
+  double om = config->getDensityEstimationConfig().omega_;  // just to make it cleaner
+  return om * fp.sumsqr() / numP + (1. - om) * fq.sumsqr() / numQ - 2 * fp.sum() / numP;
+}
+
+double ModelFittingRelativeDensityRatioEstimation::relativeKLDivergenceApprox(
+    DataMatrix &samplesP, DataMatrix &samplesQ) {
+  // samplesQ not needed to compute this
+  double numP = static_cast<double>(samplesP.getNrows());
+  DataVector fp(samplesP.getNrows());
+  this->evaluate(samplesP, fp);
+  return fp.sumlog() / numP;
+}
+
 double ModelFittingRelativeDensityRatioEstimation::relativePEDivergenceApprox(
     DataMatrix &samplesP, DataMatrix &samplesQ) {
   double numP = static_cast<double>(samplesP.getNrows());
@@ -70,7 +91,8 @@ double ModelFittingRelativeDensityRatioEstimation::relativePEDivergenceApprox(
   this->evaluate(samplesP, fp);
   this->evaluate(samplesQ, fq);
   double om = config->getDensityEstimationConfig().omega_;  // just to make it cleaner
-  return -om / 2 * fp.sumsqr() / numP - (1 - om) / 2 * fq.sumsqr() / numQ + fp.sum() / numP - 1 / 2;
+  return -om / 2. * fp.sumsqr() / numP - (1. - om) / 2. * fq.sumsqr() / numQ + fp.sum() / numP -
+         1. / 2.;
 }
 
 void ModelFittingRelativeDensityRatioEstimation::fit(Dataset &newDatasetP, Dataset &newDatasetQ) {
