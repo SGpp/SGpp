@@ -20,6 +20,7 @@
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -129,6 +130,10 @@ class SplineResponseSurface : public ResponseSurface {
       grid = std::make_shared<sgpp::base::WeaklyFundamentalNakSplineBoundaryGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
       boundary = true;
+    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+      grid = std::make_shared<sgpp::base::ModWeaklyFundamentalNakSplineGrid>(numDim, degree);
+      basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
+      boundary = true;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
     }
@@ -199,6 +204,9 @@ class SplineResponseSurface : public ResponseSurface {
       boundary = false;
     } else if (gridType == sgpp::base::GridType::WeaklyFundamentalNakSplineBoundary) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
+      boundary = true;
+    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+      basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
       boundary = true;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
@@ -274,6 +282,9 @@ class SplineResponseSurface : public ResponseSurface {
       boundary = false;
     } else if (gridType == sgpp::base::GridType::WeaklyFundamentalNakSplineBoundary) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
+      boundary = true;
+    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+      basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
       boundary = true;
     } else {
       throw sgpp::base::generation_exception("SplineResponseSurface: gridType not supported.");
