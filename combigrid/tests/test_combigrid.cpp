@@ -503,6 +503,38 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
                                 downwardClosedSet.begin(), downwardClosedSet.end());
 }
 
+BOOST_AUTO_TEST_CASE(testWeightedRelevanceCalculator) {
+  auto weightedRelevanceCalculator = sgpp::combigrid::WeightedRelevanceCalculator();
+
+  BOOST_CHECK(weightedRelevanceCalculator.calculate(LevelVector(3, 1), 0.005) >
+              weightedRelevanceCalculator.calculate(LevelVector(3, 100), 0.005));
+
+  BOOST_CHECK_EQUAL(weightedRelevanceCalculator.calculate(LevelVector(5, 0), 0.5),
+              weightedRelevanceCalculator.calculate(LevelVector(5, 1), 0.5));
+
+  BOOST_CHECK(weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.8) >
+              weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.5));
+}
+
+BOOST_AUTO_TEST_CASE(testAveragingPriorityEstimator) {
+  auto averagingPriorityEstimator = sgpp::combigrid::AveragingPriorityEstimator();
+  std::map<LevelVector, double> deltasOfNonrelevantDownwardNeighbors = {
+      {{1, 1, 2}, 0.5}, {{1, 2, 1}, 0.5}, {{2, 1, 1}, 0.5}};
+  std::map<LevelVector, double> deltasOfRelevantDownwardNeighbors = {
+      {{1, 1, 2}, 0.8}, {{1, 2, 1}, 0.8}, {{2, 1, 1}, 0.8}};
+
+  BOOST_CHECK(averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
+                                                          deltasOfNonrelevantDownwardNeighbors) <
+              averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
+                                                          deltasOfRelevantDownwardNeighbors));
+
+  // level vector should be ignored
+  BOOST_CHECK_EQUAL(averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
+                                                          deltasOfNonrelevantDownwardNeighbors),
+              averagingPriorityEstimator.estimatePriority(LevelVector(5, 1),
+                                                          deltasOfNonrelevantDownwardNeighbors));
+}
+
 BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
   using sgpp::base::operator<<;
   for (bool hasBoundary : {true, false}) {

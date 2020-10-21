@@ -34,6 +34,8 @@ wrap_unique_ptr(PriorityEstimatorUniquePtr, sgpp::combigrid::PriorityEstimator);
 
 %include "combigrid/src/sgpp/combigrid/adaptive/PriorityEstimator.hpp"
 %include "combigrid/src/sgpp/combigrid/adaptive/AveragingPriorityEstimator.hpp"
+// an alias to use maps used for calculating priorities
+%template(map_levelvector_real) std::map<sgpp::combigrid::LevelVector, double>;
 %include "combigrid/src/sgpp/combigrid/adaptive/RelevanceCalculator.hpp"
 %include "combigrid/src/sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp"
 // this doesn't work due to insufficient unique_ptr support in SWIG

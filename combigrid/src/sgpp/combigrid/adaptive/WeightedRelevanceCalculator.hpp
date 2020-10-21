@@ -21,7 +21,7 @@ namespace combigrid {
 class WeightedRelevanceCalculator : public RelevanceCalculator {
  public:
   explicit WeightedRelevanceCalculator(
-      double weightDeltaInRelationToNumberOfPoints = 1.,
+      double weightDeltaInRelationToNumberOfPoints = 0.5,
       FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);
 
   double calculate(const LevelVector& levelVector, double delta) const override;
