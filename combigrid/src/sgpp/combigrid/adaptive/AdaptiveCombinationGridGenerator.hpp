@@ -16,6 +16,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <numeric>
 #include <utility>
 #include <vector>
 
@@ -65,12 +66,39 @@ class AdaptiveCombinationGridGenerator {
    *                                level's own delta)
    */
   AdaptiveCombinationGridGenerator(
-      const std::vector<LevelVector>& levelVectors,
-      std::function<double(double, double)> summationFunction = std::plus<double>(),
+      const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
+      std::function<double(double, double)> summationFunction,
       std::shared_ptr<RelevanceCalculator> relevanceCalculator =
           std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::shared_ptr<PriorityEstimator> priorityEstimator =
           std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+
+  /**
+   * like above, with default QoI values if they are not supplied
+   */
+  AdaptiveCombinationGridGenerator(
+      const std::vector<LevelVector>& levelVectors,
+      std::function<double(double, double)> summationFunction,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()))
+      : AdaptiveCombinationGridGenerator(
+            levelVectors,
+            std::vector<double>(levelVectors.size(), std::numeric_limits<double>::quiet_NaN()),
+            summationFunction, relevanceCalculator, priorityEstimator) {}
+
+  /**
+   * like above, but setting the summationFunction to std::plus<double>() by default
+   */
+  AdaptiveCombinationGridGenerator(
+      const std::vector<LevelVector>& levelVectors,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()))
+      : AdaptiveCombinationGridGenerator(levelVectors, std::plus<double>(), relevanceCalculator,
+                                         priorityEstimator) {}
 
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object

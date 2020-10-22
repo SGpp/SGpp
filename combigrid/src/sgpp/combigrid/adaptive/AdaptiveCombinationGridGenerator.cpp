@@ -25,7 +25,7 @@ namespace sgpp {
 namespace combigrid {
 
 AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
-    const std::vector<LevelVector>& levelVectors,
+    const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
     std::function<double(double, double)> summationFunction,
     std::shared_ptr<RelevanceCalculator> relevanceCalculator,
     std::shared_ptr<PriorityEstimator> priorityEstimator)
@@ -48,7 +48,15 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
       LevelVectorTools::makeDownwardClosed(minimumLevelVector, levelVectors);
 
   for (const LevelVector& level : downwardClosedLevelSet) {
-    subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
+    // if the level vector was in the input list, set the corresponding value
+    // otherwise, set default value
+    auto found = std::find(levelVectors.begin(), levelVectors.end(), level);
+    if (found != levelVectors.end()) {
+      auto index = distance(levelVectors.begin(), found);
+      subspacesAndQoI[level] = QoIValues[index];
+    } else {
+      subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
+    }
     activeSet.push_back(level);
     adaptLevel(level);
   }
