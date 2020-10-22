@@ -545,10 +545,8 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
 
     auto adaptiveCombinationGridGenerator = AdaptiveCombinationGridGenerator::fromCombinationGrid(
         combinationGrid, std::plus<double>(),
-        std::unique_ptr<sgpp::combigrid::RelevanceCalculator>(
-            new sgpp::combigrid::WeightedRelevanceCalculator()),
-        std::unique_ptr<sgpp::combigrid::PriorityEstimator>(
-            new sgpp::combigrid::AveragingPriorityEstimator()));
+        std::make_shared<sgpp::combigrid::WeightedRelevanceCalculator>(),
+        std::make_shared<sgpp::combigrid::AveragingPriorityEstimator>());
     if (hasBoundary) {
       BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getMinimumLevelVector(),
                         LevelVector(3, 0));

@@ -67,10 +67,10 @@ class AdaptiveCombinationGridGenerator {
   AdaptiveCombinationGridGenerator(
       const std::vector<LevelVector>& levelVectors,
       std::function<double(double, double)> summationFunction = std::plus<double>(),
-      std::unique_ptr<RelevanceCalculator> relevanceCalculator =
-          std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> priorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object
@@ -88,10 +88,10 @@ class AdaptiveCombinationGridGenerator {
   static AdaptiveCombinationGridGenerator fromCombinationGrid(
       const CombinationGrid& combinationGrid,
       std::function<double(double, double)> summationFunction = std::plus<double>(),
-      std::unique_ptr<RelevanceCalculator> relevanceCalculator =
-          std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> priorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
 
   /**
    * @brief Get the the currently valid combination grid consisting of the "old set"
@@ -217,12 +217,12 @@ class AdaptiveCombinationGridGenerator {
   std::list<LevelVector> activeSet;
 
   // the relevance calculator used to relate delta and level vector to an "error" / relevance
-  std::unique_ptr<RelevanceCalculator> relevanceCalculator;
+  std::shared_ptr<RelevanceCalculator> relevanceCalculator;
 
   // the priority estimator used to estimate the priority of a level whose result we don't yet
   // know (similar to relevanceCalculator, but based on the deltas of the downward neighbors
   // instead of the level's own delta)
-  std::unique_ptr<PriorityEstimator> priorityEstimator;  // averaging, weighted
+  std::shared_ptr<PriorityEstimator> priorityEstimator;  // averaging, weighted
 };
 }  // namespace combigrid
 }  // namespace sgpp

@@ -27,11 +27,11 @@ namespace combigrid {
 AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
     const std::vector<LevelVector>& levelVectors,
     std::function<double(double, double)> summationFunction,
-    std::unique_ptr<RelevanceCalculator> relevanceCalculator,
-    std::unique_ptr<PriorityEstimator> priorityEstimator)
+    std::shared_ptr<RelevanceCalculator> relevanceCalculator,
+    std::shared_ptr<PriorityEstimator> priorityEstimator)
     : summationFunction(summationFunction),
-      relevanceCalculator(std::move(relevanceCalculator)),
-      priorityEstimator(std::move(priorityEstimator)) {
+      relevanceCalculator(relevanceCalculator),
+      priorityEstimator(priorityEstimator) {
   assert(levelVectors.size() > 0);
 
   // set the minimum level vector
@@ -56,16 +56,16 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
 
 AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinationGrid(
     const CombinationGrid& combinationGrid, std::function<double(double, double)> summationFunction,
-    std::unique_ptr<RelevanceCalculator> relevanceCalculator,
-    std::unique_ptr<PriorityEstimator> priorityEstimator) {
+    std::shared_ptr<RelevanceCalculator> relevanceCalculator,
+    std::shared_ptr<PriorityEstimator> priorityEstimator) {
   std::vector<LevelVector> subspaces;
 
   for (const FullGrid& fullGrid : combinationGrid.getFullGrids()) {
     subspaces.push_back(fullGrid.getLevel());
   }
 
-  return AdaptiveCombinationGridGenerator(
-      subspaces, summationFunction, std::move(relevanceCalculator), std::move(priorityEstimator));
+  return AdaptiveCombinationGridGenerator(subspaces, summationFunction, relevanceCalculator,
+                                          priorityEstimator);
 }
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
@@ -103,6 +103,11 @@ bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
   } while (levelVectorAdded);
 
   return atLeastOneLevelVectorAdded;
+}
+
+double AdaptiveCombinationGridGenerator::getCurrentResult() const {
+  throw sgpp::base::not_implemented_exception("getCurrentResult not yet implemented!");
+  return 0.;
 }
 
 double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector) const {
@@ -172,8 +177,8 @@ bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) co
     if (level[d] > minimumLevelVector[d]) {
       LevelVector neighborLevel = level;
       neighborLevel[d] -= 1;
-      const bool isInOldSet = (std::find(oldSet.begin(), oldSet.end(), neighborLevel) !=
-                               oldSet.end());
+      const bool isInOldSet =
+          (std::find(oldSet.begin(), oldSet.end(), neighborLevel) != oldSet.end());
 
       if (!isInOldSet) {
         return false;
