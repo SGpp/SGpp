@@ -117,8 +117,18 @@ bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
 }
 
 double AdaptiveCombinationGridGenerator::getCurrentResult() const {
-  throw sgpp::base::not_implemented_exception("getCurrentResult not yet implemented!");
-  return 0.;
+  double result = 0.;
+  auto oldSet = getOldSet();
+  auto coefficients = sgpp::combigrid::getStandardCoefficientsFromLevelSet(oldSet);
+  // multiply coefficient with QoI and reduce
+  for (size_t i = 0; i < oldSet.size(); ++i) {
+    if (coefficients[i] != 0.) {
+      const auto& value = subspacesAndQoI.at(oldSet[i]);
+      assert(!std::isnan(value));
+      result = summationFunction(result, coefficients[i] * value);
+    }
+  }
+  return result;
 }
 
 std::vector<LevelVector> AdaptiveCombinationGridGenerator::getActiveSet() const {
