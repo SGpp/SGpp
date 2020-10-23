@@ -38,7 +38,6 @@
 %shared_ptr(sgpp::combigrid::RelevanceCalculator)
 %include "combigrid/src/sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp"
 %shared_ptr(sgpp::combigrid::WeightedRelevanceCalculator)
-// this doesn't work due to insufficient unique_ptr support in SWIG
 %include "combigrid/src/sgpp/combigrid/adaptive/AdaptiveCombinationGridGenerator.hpp"
 
 namespace std {

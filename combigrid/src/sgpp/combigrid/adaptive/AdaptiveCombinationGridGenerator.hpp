@@ -16,7 +16,7 @@
 #include <list>
 #include <map>
 #include <memory>
-#include <numeric>
+#include <limits>
 #include <utility>
 #include <vector>
 
@@ -57,6 +57,8 @@ class AdaptiveCombinationGridGenerator {
    * @brief Construct a new AdaptiveCombinationGridGenerator object
    *
    * @param levelVectors           start with these level vectors, cannot be empty
+   * @param QoIValues              the QoI values corresponding to levelVectors, same length as
+   *                                 levelVectors
    * @param summationFunction      the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
@@ -114,12 +116,28 @@ class AdaptiveCombinationGridGenerator {
    *                                level's own delta)
    */
   static AdaptiveCombinationGridGenerator fromCombinationGrid(
-      const CombinationGrid& combinationGrid,
+      const CombinationGrid& combinationGrid, const std::vector<double>&& QoIValues,
       std::function<double(double, double)> summationFunction = std::plus<double>(),
       std::shared_ptr<RelevanceCalculator> relevanceCalculator =
           std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::shared_ptr<PriorityEstimator> priorityEstimator =
           std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+
+  /**
+   * like above, with default QoI values if they are not supplied
+   */
+  static AdaptiveCombinationGridGenerator fromCombinationGrid(
+      const CombinationGrid& combinationGrid,
+      std::function<double(double, double)> summationFunction = std::plus<double>(),
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator())) {
+    return fromCombinationGrid(combinationGrid,
+                               std::vector<double>(combinationGrid.getFullGrids().size(),
+                                                   std::numeric_limits<double>::quiet_NaN()),
+                               summationFunction, relevanceCalculator, priorityEstimator);
+  }
 
   /**
    * @brief Get the the currently valid combination grid consisting of the "old set"
@@ -169,9 +187,16 @@ class AdaptiveCombinationGridGenerator {
   /**
    * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
    *
-   * @return std::list<LevelVector> the active set
+   * @return std::vector<LevelVector> the active set
    */
-  std::list<LevelVector> getActiveSet() const { return activeSet; }
+  std::vector<LevelVector> getActiveSet() const;
+
+  /**
+   * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
+   *
+   * @return std::vector<LevelVector> all levels (old and active)
+   */
+  std::vector<LevelVector> getLevels() const;
 
   /**
    * @brief Get the minimum Level Vector object
@@ -189,22 +214,29 @@ class AdaptiveCombinationGridGenerator {
   double getDelta(const LevelVector& levelVector) const;
 
   /**
-   * @brief get a priority queue of elements in the active set that don't have a result / QoI /
-   * delta yet //TODO(pollinta): implement
+   * @brief Get the deltas belonging to the list of supplied level vectors
+   *
+   * @return double  the delta value, NaN if result is unknown
    */
-  std::map<LevelVector, double> getPriorityQueue() const;
+  std::vector<double> getDeltas(const std::vector<LevelVector>& levelVectors) const;
+
+  /**
+   * @brief get the levels and priority of elements in the active set that don't have a result / QoI
+   * value / delta yet
+   */
+  std::map<LevelVector, double> getPriorities() const;
+
+  /**
+   * @brief get a priority queue of elements in the active set that don't have a result / QoI /
+   * delta yet
+   */
+  std::vector<LevelVector> getPriorityQueue() const;
 
   /**
    * @brief get exact value of relevance / "error" of those elements in the active set
    * that already have a QoI value
    */
   std::map<LevelVector, double> getRelevanceOfActiveSet() const;
-
-  /**
-   * @brief get an estimate or exact value of relevance or priority of all elements in the active
-   * set
-   */
-  std::map<LevelVector, double> getPrioritiesAndRelevanceOfActiveSet() const;
 
  private:
   /**

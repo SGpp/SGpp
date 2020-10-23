@@ -11,7 +11,6 @@
 ##
 ## First, we import the required modules.
 import pysgpp
-from pysgpp import *
 import numpy as np
 import sys
 
@@ -46,7 +45,6 @@ def plotFunction(opEval, surpluses, X):
     ax = fig.gca(projection="3d")
     ax.plot_surface(XX0, XX1, YY)
     ax.plot(X[:,0], X[:,1], "k.", zs=f(X[:,0], X[:,1]), ms=10)
-
 
 
 ## We define parameters and perform hierarchization just as in the combigrid example
@@ -100,18 +98,19 @@ plotFunction(opEval, surpluses, X)
 
 # we generate a relevance calculator (for known values) and a priority estimator (for unknown values)
 # and test them
-weightedRelevanceCalculator=WeightedRelevanceCalculator()
-relevance = weightedRelevanceCalculator.calculate(LevelVector([4,5,5]), 0.8)
+weightedRelevanceCalculator=pysgpp.WeightedRelevanceCalculator()
+relevance = weightedRelevanceCalculator.calculate(pysgpp.LevelVector([4,5,5]), 0.8)
 
 
-averagingPriorityEstimator=AveragingPriorityEstimator()
-priority=averagingPriorityEstimator.estimatePriority(LevelVector([5,5,5]), 
-                                            map_levelvector_real({LevelVector([5,4,5]): 0.8, 
-                                             LevelVector([4,5,5]): 0.8})
-                                           )
+averagingPriorityEstimator=pysgpp.AveragingPriorityEstimator()
+priority=averagingPriorityEstimator.estimatePriority(pysgpp.LevelVector([5,5,5]), 
+                                            pysgpp.map_levelvector_real({
+                                                pysgpp.LevelVector([5,4,5]): 0.8, 
+                                                pysgpp.LevelVector([4,5,5]): 0.8
+                                            }))
 
 # for each grid in our combination scheme, we calculate the value at point x
-subgridValuesAtX = pysgpp.DataVector(len(combiGrid.getFullGrids()), 0.)
+subgridValuesAtX = pysgpp.DoubleVector(len(combiGrid.getFullGrids()), 0.)
 for fullGridIndex in range(len(combiGrid.getFullGrids())):
     fullGrid = combiGrid.getFullGrids()[fullGridIndex]
     l = fullGrid.getLevel()
@@ -122,8 +121,6 @@ for fullGridIndex in range(len(combiGrid.getFullGrids())):
     y = opEval.eval(surpluses[fullGridIndex], xDv)
     print("Value of full grid interpolant at {}: {:.6g}".format(np.array(x), y))
     subgridValuesAtX[fullGridIndex] = y
-    
-
 
 # we start an AdaptiveCombinationGridGenerator from the full grids that are in the combiGrid we already have
 adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromCombinationGrid(combiGrid, subgridValuesAtX)
@@ -133,29 +130,49 @@ adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromC
 
 # all of the full grids so far should already be in the generator's 'old set', so this call here does not change anything:
 adaptiveCombinationGridGenerator.adaptAllKnown()
-adaptiveCombinationGridGenerator.getOldSet()
+oldSet = adaptiveCombinationGridGenerator.getOldSet()
+# for index in range(len(oldSet)):
+#     print(oldSet[index])
+
+# we can also have a look at the deltas in the current 'old set'
+levels = pysgpp.LevelVectorVector()
+for fullGridIndex in range(len(combiGrid.getFullGrids())):
+    fullGrid = combiGrid.getFullGrids()[fullGridIndex]
+    l = fullGrid.getLevel()
+    levels.push_back(l)
+adaptiveCombinationGridGenerator.getDeltas(levels)
 
 
 # looking at the 'active set', we see which full grid spaces could potentially be interesting next,
 # they are the upper neighbors of the old set
-adaptiveCombinationGridGenerator.getActiveSet()
+activeSet = adaptiveCombinationGridGenerator.getActiveSet()
+for index in range(len(activeSet)):
+    print(activeSet[index])
+
+# some of them are more interesting than others
+adaptiveCombinationGridGenerator.getPriorities()
 
 
 # we ask what the next most sensible subspaces to evaluate should be 
 queue = adaptiveCombinationGridGenerator.getPriorityQueue()
 
 # we calculate the value at x in the corresponding full grids
-##TODO
+for qu in queue:
+    print(qu)
+    q = pysgpp.LevelVector(qu)
+    
+    # create full grid, interpolate and hierarchize
+    fullGrid = pysgpp.FullGrid(q, basis)
+    #TODO
 
-# and add the results to the generator
-adaptiveCombinationGridGenerator.setQoIInformation(subspace, 1.)
+    # and add the results to the generator
+    adaptiveCombinationGridGenerator.setQoIInformation(q, y)
 
-# we can test how well the priority estimator had performed 
-# by looking at the relevance of the now known results
+## we can test how well the priority estimator had performed 
+## by looking at the relevance of the now known results
 relevances = adaptiveCombinationGridGenerator.getRelevanceOfActiveSet()
 
 queue, relevances
-
 
 
 # we adapt to all grids with known values
@@ -165,9 +182,8 @@ currentSet = adaptiveCombinationGridGenerator.getOldSet()
 # and get the new total result of the adapted combination
 adaptiveCombinationGridGenerator.getCurrentResult()
 
-
 # now, we can also update our combiGrid by adding the newly calculated subspaces
-coefficients = getStandardCoefficientsfromLevelSet()
+coefficients = pysgpp.getStandardCoefficientsfromLevelSet()
 newCombiGrid = adaptiveCombinationGridGenerator.getCombinationGrid()
 
 # and by inserting the new surplusses, we can see that the newly
@@ -185,4 +201,3 @@ opHier.apply(newSurpluses)
 opEval = pysgpp.OperationEvalCombinationGrid(newCombiGrid)
 y = opEval.eval(surpluses, xDv)
 print("Value of combined sparse grid interpolant at {}: {:.6g}".format(np.array(x), y))
-
