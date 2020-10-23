@@ -198,5 +198,7 @@ class CombinationGrid {
   base::DataVector coefficients;
 };
 
+base::DataVector getStandardCoefficientsFromLevelSet(const std::vector<LevelVector>& levelSet);
+
 }  // namespace combigrid
 }  // namespace sgpp
