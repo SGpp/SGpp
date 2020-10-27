@@ -13,10 +13,10 @@
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 
 #include <functional>
+#include <limits>
 #include <list>
 #include <map>
 #include <memory>
-#include <limits>
 #include <utility>
 #include <vector>
 

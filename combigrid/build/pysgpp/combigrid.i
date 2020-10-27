@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-%ignore sgpp::combigrid::IndexVectorRange::begin;
-%ignore sgpp::combigrid::IndexVectorRange::end;
 %ignore sgpp::combigrid::OperationPoleHierarchisationGeneral::HierarchisationGeneralSLE;
 %shared_ptr(sgpp::combigrid::OperationEvalFullGrid);
 
@@ -25,7 +23,8 @@
 %include "combigrid/src/sgpp/combigrid/operation/OperationUPFullGrid.hpp"
 %include "combigrid/src/sgpp/combigrid/operation/OperationUPCombinationGrid.hpp"
 
-%include "combigrid/src/sgpp/combigrid/tools/IndexVectorRange.hpp"
+%include "IndexVectorRange.i"
+
 %include "combigrid/src/sgpp/combigrid/tools/LevelVectorTools.hpp"
 
 %include "combigrid/src/sgpp/combigrid/adaptive/PriorityEstimator.hpp"

@@ -10,7 +10,9 @@
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/globaldef.hpp>
 
+#include <functional>
 #include <iterator>
+#include <numeric>
 #include <vector>
 
 namespace sgpp {
@@ -274,6 +276,13 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
     for (size_t d = 0; d < dim; d++) {
       coordinates.set(d, getStandardCoordinate(d, hasBoundary));
     }
+  }
+
+  /// check if iterator is at end of range -- needed for swig interface
+  bool isAtEnd() {
+    static size_t maximumSequenceNumber = std::accumulate(
+        numberOfIndexVectors.begin(), numberOfIndexVectors.end(), 1, std::multiplies<index_t>());
+    return (dim > 0) && (sequenceNumber == maximumSequenceNumber);
   }
 
  protected:
