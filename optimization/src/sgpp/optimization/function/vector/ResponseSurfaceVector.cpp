@@ -91,8 +91,10 @@ sgpp::base::DataVector ResponseSurfaceVector::averageNRMSE(
   double averageNRMSE = 0;
   for (size_t t = 0; t < numRes; t++) {
     componentwiseL2Errors[t] = sqrt(componentwiseL2Errors[t] / static_cast<double>(numMCPoints));
-    if ((maxEvaluations[t] - minEvaluations[t]) > 0) {
+    if ((maxEvaluations[t] - minEvaluations[t]) > 1e-14) {
       componentwiseNRMSE[t] = componentwiseL2Errors[t] / (maxEvaluations[t] - minEvaluations[t]);
+    }else{
+      componentwiseNRMSE[t] = componentwiseL2Errors[t];
     }
     averageL2Err += componentwiseL2Errors[t];
     averageNRMSE += componentwiseNRMSE[t];
