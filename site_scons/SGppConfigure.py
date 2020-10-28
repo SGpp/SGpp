@@ -409,6 +409,8 @@ def configureGNUCompiler(config):
     if "LINK" not in config.env.arguments: config.env["LINK"] = "mpicxx"
     if "CXX" not in config.env.arguments: config.env["CXX"] = "mpicxx"
     Helper.printInfo("Using openmpi.")
+    # openmpi specific fix according to: https://github.com/open-mpi/ompi/issues/5157
+    config.env["CPPDEFINES"]["OMPI_SKIP_MPICXX"] = "1"
   elif config.env["COMPILER"] == "mpich":
     if config.env["CC"]:
       config.env.Append(CFLAGS=["-cc=" + config.env["CC"]])
@@ -560,7 +562,7 @@ def configureClangCompiler(config):
     "-Wno-documentation-unknown-command", "-Wno-exit-time-destructors", "-Wno-float-equal",
     "-Wno-global-constructors", "-Wno-missing-noreturn", "-Wno-missing-prototypes", "-Wno-padded",
     "-Wno-shadow", "-Wno-shadow-field", "-Wno-sign-conversion", "-Wno-undef",
-    "-Wno-unused-parameter", "-Wno-weak-vtables",
+    "-Wno-unused-parameter", "-Wno-weak-vtables", "-Wno-used-but-marked-unused",
   ]
   config.env.Append(CPPFLAGS=allWarnings)
 
