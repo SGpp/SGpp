@@ -131,10 +131,10 @@ adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromC
 # all of the full grids so far should already be in the generator's 'old set', so this call here does not change anything:
 adaptiveCombinationGridGenerator.adaptAllKnown()
 oldSet = adaptiveCombinationGridGenerator.getOldSet()
-# for index in range(len(oldSet)):
-#     print(oldSet[index])
 
-# we can also have a look at the deltas in the current 'old set'
+# look at the current result of the combination -- same as the combigrid evaluation above
+adaptiveCombinationGridGenerator.getCurrentResult()
+
 levels = pysgpp.LevelVectorVector()
 for fullGridIndex in range(len(combiGrid.getFullGrids())):
     fullGrid = combiGrid.getFullGrids()[fullGridIndex]
@@ -146,34 +146,48 @@ adaptiveCombinationGridGenerator.getDeltas(levels)
 # looking at the 'active set', we see which full grid spaces could potentially be interesting next,
 # they are the upper neighbors of the old set
 activeSet = adaptiveCombinationGridGenerator.getActiveSet()
-for index in range(len(activeSet)):
-    print(activeSet[index])
 
 # some of them are more interesting than others
 adaptiveCombinationGridGenerator.getPriorities()
-
 
 # we ask what the next most sensible subspaces to evaluate should be 
 queue = adaptiveCombinationGridGenerator.getPriorityQueue()
 
 # we calculate the value at x in the corresponding full grids
+newValue = {}
 for qu in queue:
-    print(qu)
     q = pysgpp.LevelVector(qu)
-    
+
     # create full grid, interpolate and hierarchize
     fullGrid = pysgpp.FullGrid(q, basis)
-    #TODO
+    gridRange = pysgpp.IndexVectorRange(fullGrid)
+    value = pysgpp.DataVector(fullGrid.getNumberOfIndexVectors())
+
+    rangeIterator = gridRange.begin()
+    for r in gridRange:
+        z = pysgpp.DataVector(dim)
+        rangeIterator.getStandardCoordinates(z)
+        value[rangeIterator.getSequenceNumber()] = f(z[0], z[1])
+        rangeIterator.increment()
+
+    # store the interpolated values for later reuse
+    newValue[tuple(q)] = value
+    surplus = pysgpp.DataVector(value)
+    opHier = pysgpp.OperationUPFullGrid(fullGrid, opPole)
+    opHier.apply(surplus)
+
+    # create operation for evaluating and evaluate
+    opEval = pysgpp.OperationEvalFullGrid(fullGrid)
+    y = opEval.eval(surplus, xDv)
+    print("Value of full grid interpolant at {}: {:.6g}".format(np.array(x), y))
 
     # and add the results to the generator
     adaptiveCombinationGridGenerator.setQoIInformation(q, y)
 
-## we can test how well the priority estimator had performed 
-## by looking at the relevance of the now known results
+# we can test how well the priority estimator had performed
+# by looking at the relevance of the now known results
 relevances = adaptiveCombinationGridGenerator.getRelevanceOfActiveSet()
-
 queue, relevances
-
 
 # we adapt to all grids with known values
 adaptiveCombinationGridGenerator.adaptAllKnown()
@@ -183,21 +197,37 @@ currentSet = adaptiveCombinationGridGenerator.getOldSet()
 adaptiveCombinationGridGenerator.getCurrentResult()
 
 # now, we can also update our combiGrid by adding the newly calculated subspaces
-coefficients = pysgpp.getStandardCoefficientsfromLevelSet()
-newCombiGrid = adaptiveCombinationGridGenerator.getCombinationGrid()
+newCombiGrid = adaptiveCombinationGridGenerator.getCombinationGrid(basis)
+newCoefficients = pysgpp.getStandardCoefficientsFromLevelSet(levels)
 
-# and by inserting the new surplusses, we can see that the newly
-# interpolated sparse grid value is in fact closer to the solution
-# (hopefully)
+numberNewLevels = len(newCombiGrid.getFullGrids())
+newLevels = pysgpp.LevelVectorVector()
+for fullGridIndex in range(numberNewLevels):
+    fullGrid = newCombiGrid.getFullGrids()[fullGridIndex]
+    l = fullGrid.getLevel()
+    newLevels.push_back(l)
 
-newValues = pysgpp.DataVectorVector(values)
-#TODO insert new values and delete old ones
+# and by calculating the new surplusses...
+newValues = pysgpp.DataVectorVector()
+newValues.reserve(numberNewLevels)
+for newLevel in newLevels:
+    if newLevel in levels:
+        # if fg was already there in the old combiGrid, re-use the values
+#         i = levels.index(fg) # this does not currently work, manual "hack" below
+        i = 0
+        while levels[i] != newLevel and i < numberNewLevels:
+            i = i+1
+        newValues.push_back(values[i])
+    else:
+        # use the newly interpolated values
+        newValues.push_back(newValue[newLevel])
 
 newSurpluses = pysgpp.DataVectorVector(newValues)
-opHier = pysgpp.OperationUPCombinationGrid(newCombiGrid, opPole)
-opHier.apply(newSurpluses)
+newOpHier = pysgpp.OperationUPCombinationGrid(newCombiGrid, opPole)
+newOpHier.apply(newSurpluses)
 
-# create operation for evaluating and evaluate
+# we can see that the newly interpolated sparse grid value is in fact
+# closer to the analytical solution
 opEval = pysgpp.OperationEvalCombinationGrid(newCombiGrid)
-y = opEval.eval(surpluses, xDv)
+y = opEval.eval(newSurpluses, xDv)
 print("Value of combined sparse grid interpolant at {}: {:.6g}".format(np.array(x), y))
