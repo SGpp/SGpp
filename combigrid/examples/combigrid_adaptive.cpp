@@ -21,6 +21,11 @@
 #include <memory>
 #include <vector>
 
+namespace std {
+// needed for printing vectors
+using sgpp::base::operator<<;
+}  // namespace std
+
 /**
  * We define parameters and perform hierarchization exactly as in the combigrid example
  */
@@ -107,6 +112,11 @@ int main() {
     }
   }
 
+  // for (auto& l : adaptiveCombinationGridGenerator.getLevels()) {
+  //   std::cout << l << ", ";
+  // }
+  // std::cout << std::endl;
+
   // all of the full grids known so far should already be in the generator's 'old set', so this call
   // here would return false:
   bool adapted = adaptiveCombinationGridGenerator.adaptAllKnown();
@@ -141,33 +151,38 @@ int main() {
 
     sgpp::combigrid::OperationEvalFullGrid opEval(fullGrid);
     const double y = opEval.eval(fullGridSurpluses[0], x);
-    std::cout << "Value of full grid [" << levelVector[0] << " " << levelVector[1]
+    std::cout << "Value of new full grid [" << levelVector[0] << " " << levelVector[1]
               << "] interpolant at [" << x[0] << " " << x[1] << "]: " << y << "\n";
     adaptiveCombinationGridGenerator.setQoIInformation(levelVector, y);
   }
+
+  for (auto& l : adaptiveCombinationGridGenerator.getOldSet()) {
+    std::cout << l << ", ";
+  }
+  std::cout << std::endl;
 
   // now, we can adapt some grids
   adaptiveCombinationGridGenerator.adaptNextLevelVector();
   adaptiveCombinationGridGenerator.adaptNextLevelVector();
 
+  for (auto& l : adaptiveCombinationGridGenerator.getOldSet()) {
+    std::cout << l << ", ";
+  }
+  std::cout << std::endl;
+
   // if the computation would become expensive, e.g. for higher resolutions, we could get a priority
   // estimate which levels should be calculated first
-  // auto priorityQueue = adaptiveCombinationGridGenerator.getPriorityQueue();
+  auto priorityQueue = adaptiveCombinationGridGenerator.getPriorityQueue();
 
   // finally, we may adapt the generator to all calculated values
-  // (if you uncomment this, you will see by comparison that adding the two grids above
-  // already gave the biggest improvements)
-  // adaptiveCombinationGridGenerator.adaptAllKnown();
+  adaptiveCombinationGridGenerator.adaptAllKnown();
 
   /**
    * Now, we can generate a new combination grid that contains all the subspaces / full grids that
    * we have adapted to. We again interpolate the value at x and see whether it has become more
    * accurate.
    */
-  // get the set of grids we have adapted to and generate CombinationGrid
-  const auto oldSet = adaptiveCombinationGridGenerator.getOldSet();
-  sgpp::combigrid::CombinationGrid combiGridAdapted =
-      sgpp::combigrid::CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
+  auto combiGridAdapted = adaptiveCombinationGridGenerator.getCombinationGrid(basis, hasBoundary);
 
   // fill the combination grid with analytical values
   sgpp::base::HashGridStorage gridStorageAdapted(dim);
