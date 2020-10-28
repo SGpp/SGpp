@@ -247,8 +247,11 @@ for moduleName in moduleNames:
 prefix=""
 if not env["PREFIX"]: # use scons default prefix UNLESS somebody added the sgpp PREFIX flag 
     prefix = env["prefix"]
+    print("Using prefix parameter to set the installation path: " + prefix)
 else:
     prefix = env["PREFIX"]
+    print("Warning, PREFIX parameter is overwriting the default prefix parameter!")
+    print("Using PREFIX parameter to set the installation path: " + prefix)
 env["EPREFIX"] = env.get("EPREFIX", prefix)
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
 env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(prefix, "include"))
