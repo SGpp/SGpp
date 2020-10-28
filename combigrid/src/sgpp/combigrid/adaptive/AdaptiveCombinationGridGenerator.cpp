@@ -145,7 +145,7 @@ std::vector<LevelVector> AdaptiveCombinationGridGenerator::getActiveSet() const 
 }
 
 std::vector<LevelVector> AdaptiveCombinationGridGenerator::getLevels() const {
-  auto l = std::vector<LevelVector>(getOldSet().begin(), getOldSet().end());
+  auto l = std::vector<LevelVector>(getOldSet());
   auto active = getActiveSet();
   l.insert(l.end(), active.begin(), active.end());
   return l;

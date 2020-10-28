@@ -529,10 +529,10 @@ BOOST_AUTO_TEST_CASE(testAveragingPriorityEstimator) {
                                                           deltasOfRelevantDownwardNeighbors));
 
   // level vector should be ignored
-  BOOST_CHECK_EQUAL(averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
-                                                          deltasOfNonrelevantDownwardNeighbors),
-              averagingPriorityEstimator.estimatePriority(LevelVector(5, 1),
-                                                          deltasOfNonrelevantDownwardNeighbors));
+  BOOST_CHECK_EQUAL(averagingPriorityEstimator.estimatePriority(
+                        LevelVector(3, 2), deltasOfNonrelevantDownwardNeighbors),
+                    averagingPriorityEstimator.estimatePriority(
+                        LevelVector(5, 1), deltasOfNonrelevantDownwardNeighbors));
 }
 
 BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
@@ -553,6 +553,15 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
     } else {
       BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getMinimumLevelVector(),
                         LevelVector(3, 1));
+    }
+
+
+    auto notYetAdaptedLevels = adaptiveCombinationGridGenerator.getLevels();
+    // std::cout << notYetAdaptedLevels.size() << std::endl;
+    for (auto& fullGrid : combinationGrid.getFullGrids()) {
+      auto found = std::find(notYetAdaptedLevels.begin(), notYetAdaptedLevels.end(),
+                             fullGrid.getLevel()) != notYetAdaptedLevels.end();
+      BOOST_TEST(found);
     }
 
     // feed "known values" for the initial combinationGrid to the adaptiveCombinationGridGenerator
