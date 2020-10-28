@@ -21,7 +21,7 @@ SparseGridMinerCrossValidation::SparseGridMinerCrossValidation(
     : SparseGridMiner(fitter, scorer, visualizer), dataSource{dataSource} {}
 
 double SparseGridMinerCrossValidation::learn(bool verbose) {
-  // todo(fuchsgdk): see below
+// todo(fuchsgdk): see below
 
 #ifdef USE_SCALAPACK
   if (fitter->getFitterConfiguration().getParallelConfig().scalapackEnabled_) {
@@ -60,7 +60,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     // Reset the fitter
     fitter->reset();
 
-    for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
+    for (size_t epoch = 0; epoch < dataSource->getConfig().epochs_; epoch++) {
       if (verbose) {
         std::ostringstream out;
         out << "###############"
@@ -129,6 +129,7 @@ double SparseGridMinerCrossValidation::learn(bool verbose) {
     dataSource->reset();
     Dataset* validationData = dataSource->getValidationData();
     scores.push_back(scorer->test(*fitter, *validationData));
+    delete monitor;  // release memory
   }
 
   // Calculate mean score and std deviation

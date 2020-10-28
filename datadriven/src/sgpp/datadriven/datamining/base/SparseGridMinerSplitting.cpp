@@ -56,7 +56,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     }
   }
 
-  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
+  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs_; epoch++) {
     if (verbose) {
       std::ostringstream out;
       out << "###############"
@@ -108,6 +108,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       iteration++;
     }
   }
+  delete monitor;  // release memory
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
 
@@ -215,5 +216,6 @@ double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
 
   return scoreVal;
 }
+
 }  // namespace datadriven
 }  // namespace sgpp

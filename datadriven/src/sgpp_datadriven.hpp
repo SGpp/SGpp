@@ -3,14 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_HPP
-#define DATADRIVEN_HPP
+#pragma once
 
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostBase.hpp>
 #include <sgpp/datadriven/algorithm/AlgorithmAdaBoostIdentity.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrixDRE.hpp>
 #include <sgpp/datadriven/algorithm/DMWeightMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DensitySystemMatrix.hpp>
+#include <sgpp/datadriven/algorithm/DensityDifferenceSystemMatrix.hpp>
 #include <sgpp/datadriven/algorithm/test_dataset.hpp>
 
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
@@ -125,10 +126,13 @@
 #include <sgpp/datadriven/configuration/CrossvalidationConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DatabaseConfiguration.hpp>
 #include <sgpp/datadriven/configuration/DensityEstimationConfiguration.hpp>
+#include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
+#include <sgpp/datadriven/configuration/GeometryConfigurationParser.hpp>
+#include <sgpp/datadriven/configuration/LearnerConfiguration.hpp>
+#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/ParallelConfiguration.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
-#include <sgpp/datadriven/configuration/DensityEstimationTypeParser.hpp>
-#include <sgpp/datadriven/configuration/MatrixDecompositionTypeParser.hpp>
 #include <sgpp/datadriven/configuration/RegularizationTypeParser.hpp>
 
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -138,11 +142,14 @@
  * ************************/
 #include <sgpp/datadriven/datamining/base/SparseGridMiner.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
+#include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 
 #include <sgpp/datadriven/datamining/builder/ClassificationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/DensityEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/LeastSquaresRegressionMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/MinerFactory.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
@@ -184,6 +191,9 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOffParallel.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationCG.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityDifferenceEstimationOnOff.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationGeneralConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizationParameters.hpp>
@@ -200,5 +210,3 @@
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerConfig.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/ScorerMetricTypeParser.hpp>
-
-#endif /* DATADRIVEN_HPP */

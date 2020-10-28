@@ -30,17 +30,18 @@ ModelFittingBase* LeastSquaresRegressionMinerFactory::createFitter(
   return new ModelFittingLeastSquares(config);
 }
 
-FitterFactory *LeastSquaresRegressionMinerFactory::createFitterFactory(
-    const DataMiningConfigParser &parser) const {
+FitterFactory* LeastSquaresRegressionMinerFactory::createFitterFactory(
+    const DataMiningConfigParser& parser) const {
   return new LeastSquaresRegressionFitterFactory(parser);
 }
 
 Visualizer* LeastSquaresRegressionMinerFactory::createVisualizer(
-  const DataMiningConfigParser& parser) const {
+    const DataMiningConfigParser& parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
   return new VisualizerDummy();
 }
+
 } /* namespace datadriven */
 } /* namespace sgpp */

@@ -11,7 +11,7 @@ namespace datadriven {
 
 DataTransformation *DataTransformationBuilder::buildTransformation(
     DataTransformationConfig config) {
-  if (config.type == DataTransformationType::ROSENBLATT) {
+  if (config.type_ == DataTransformationType::ROSENBLATT) {
     RosenblattTransformation *rosenblattTransformation = new RosenblattTransformation;
     return static_cast<DataTransformation *>(rosenblattTransformation);
   } else {

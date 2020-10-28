@@ -189,7 +189,8 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
 std::unique_ptr<datadriven::DMSystemMatrixBase> RegressionLearner::createDMSystem(
     base::DataMatrix& trainDataset) {
   using datadriven::RegularizationType;
-  base::OperationMatrix* opMatrix;
+  // initializing this is sadly neccesary to resolve a face-off between gcc and clang warnings
+  base::OperationMatrix* opMatrix = sgpp::op_factory::createOperationIdentity(*grid);
   switch (regularizationConfig.type_) {
     case RegularizationType::Identity:
       opMatrix = sgpp::op_factory::createOperationIdentity(*grid);

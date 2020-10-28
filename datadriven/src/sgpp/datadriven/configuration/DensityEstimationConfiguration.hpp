@@ -8,8 +8,8 @@
 #include <sgpp/globaldef.hpp>
 
 /**
- * Struct that stores all the configuration information
- * for an offline object for matrix based density estimation
+ * Struct that stores all the configuration information for an offline object for matrix based
+ * density estimation
  */
 
 namespace sgpp {
@@ -27,7 +27,7 @@ struct DensityEstimationConfiguration {
   /**
    * Defines whether offline permutation should be used if decomposition allows it.
    */
-  bool useOfflinePermutation = true;
+  bool useOfflinePermutation_ = true;
 
   // flag for normalization in DBMatOnlineDE
   bool normalize_ = false;

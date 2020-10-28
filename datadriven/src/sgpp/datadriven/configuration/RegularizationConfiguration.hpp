@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef REGULARIZATIONCONFIGURATION_HPP_
-#define REGULARIZATIONCONFIGURATION_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -34,5 +33,3 @@ struct RegularizationConfiguration {
 };
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* REGULARIZATIONCONFIGURATION_HPP_ */

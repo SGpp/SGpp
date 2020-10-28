@@ -21,6 +21,7 @@
 #include <vector>
 
 const auto datasetPath = "datadriven/tests/pipeline/config_configParser.json";
+const auto multiDatasetPath = "datadriven/tests/pipeline/config_multiDatasetConfigParser.json";
 
 BOOST_AUTO_TEST_SUITE(dataMiningConfigParserTest)
 
@@ -59,21 +60,21 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   DataSourceConfig defaults;
-  defaults.filePath = "something/false";
-  defaults.fileType = DataSourceFileType::NONE;
-  defaults.isCompressed = true;
-  defaults.numBatches = 2;
-  defaults.batchSize = 10;
-  defaults.epochs = 1;
-  defaults.shuffling = DataSourceShufflingType::sequential;
-  defaults.validationPortion = 0.1;
-  defaults.randomSeed = 1337;
+  defaults.filePath_ = "something/false";
+  defaults.fileType_ = DataSourceFileType::NONE;
+  defaults.isCompressed_ = true;
+  defaults.numBatches_ = 2;
+  defaults.batchSize_ = 10;
+  defaults.epochs_ = 1;
+  defaults.shuffling_ = DataSourceShufflingType::sequential;
+  defaults.validationPortion_ = 0.1;
+  defaults.randomSeed_ = 1337;
 
-  defaults.testFilePath = "something/testFalse";
-  defaults.testFileType = DataSourceFileType::NONE;
-  defaults.testNumBatches = 1;
-  defaults.testBatchSize = 4;
-  defaults.testIsCompressed = true;
+  defaults.testFilePath_ = "something/testFalse";
+  defaults.testFileType_ = DataSourceFileType::NONE;
+  defaults.testNumBatches_ = 1;
+  defaults.testBatchSize_ = 4;
+  defaults.testIsCompressed_ = true;
 
   DataSourceConfig config;
   bool hasConfig;
@@ -84,37 +85,89 @@ BOOST_AUTO_TEST_CASE(testDataSourceConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
-  BOOST_CHECK_EQUAL(std::strcmp(config.filePath.c_str(), "/path/to/some/file.arff"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.fileType), static_cast<int>(DataSourceFileType::ARFF));
-  BOOST_CHECK_EQUAL(config.numBatches, 1);
-  BOOST_CHECK_EQUAL(config.batchSize, 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig.type),
+  BOOST_CHECK_EQUAL(std::strcmp(config.filePath_.c_str(), "/path/to/some/file.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.fileType_), static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config.numBatches_, 1);
+  BOOST_CHECK_EQUAL(config.batchSize_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.dataTransformationConfig_.type_),
                     static_cast<int>(DataTransformationType::ROSENBLATT));
-  BOOST_CHECK_EQUAL(config.dataTransformationConfig.rosenblattConfig.solverMaxIterations, 1000);
-  BOOST_CHECK_EQUAL(config.validationPortion, 0.634);
-  BOOST_CHECK_EQUAL(config.epochs, 12);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling),
+  BOOST_CHECK_EQUAL(config.dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_, 1000);
+  BOOST_CHECK_EQUAL(config.validationPortion_, 0.634);
+  BOOST_CHECK_EQUAL(config.epochs_, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.shuffling_),
                     static_cast<int>(DataSourceShufflingType::random));
-  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath.c_str(), "/path/to/some/testFile.arff"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType),
+  BOOST_CHECK_EQUAL(std::strcmp(config.testFilePath_.c_str(), "/path/to/some/testFile.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.testFileType_),
                     static_cast<int>(DataSourceFileType::ARFF));
-  BOOST_CHECK_EQUAL(config.testNumBatches, 2);
-  BOOST_CHECK_EQUAL(config.testBatchSize, 16);
-  BOOST_CHECK_EQUAL(config.testIsCompressed, false);
+  BOOST_CHECK_EQUAL(config.testNumBatches_, 2);
+  BOOST_CHECK_EQUAL(config.testBatchSize_, 16);
+  BOOST_CHECK_EQUAL(config.testIsCompressed_, false);
+}
+
+BOOST_AUTO_TEST_CASE(testMultiDataSourceConfig) {
+  DataMiningConfigParser parser{multiDatasetPath};
+
+  std::vector<DataSourceConfig> defaults(2);
+  defaults[0].filePath_ = "something/false";
+  defaults[0].fileType_ = DataSourceFileType::NONE;
+  defaults[0].isCompressed_ = true;
+  defaults[0].numBatches_ = 2;
+  defaults[0].batchSize_ = 10;
+  defaults[0].epochs_ = 1;
+  defaults[0].shuffling_ = DataSourceShufflingType::sequential;
+  defaults[0].validationPortion_ = 0.1;
+  defaults[0].randomSeed_ = 1337;
+
+  std::vector<DataSourceConfig> config(2);
+  bool hasConfig;
+  bool hasDataTransformationConfig;
+
+  hasConfig = parser.getMultiDataSourceConfig(config, defaults);
+  hasDataTransformationConfig = parser.hasDataTransformationConfig();
+
+  BOOST_CHECK_EQUAL(hasConfig, true);
+  BOOST_CHECK_EQUAL(hasDataTransformationConfig, true);
+  BOOST_CHECK_EQUAL(std::strcmp(config[0].filePath_.c_str(), "/path/to/some/file1.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].fileType_),
+                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config[0].numBatches_, 1);
+  BOOST_CHECK_EQUAL(config[0].batchSize_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].dataTransformationConfig_.type_),
+                    static_cast<int>(DataTransformationType::ROSENBLATT));
+  BOOST_CHECK_EQUAL(config[0].dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_,
+                    1000);
+  BOOST_CHECK_EQUAL(config[0].validationPortion_, 0.634);
+  BOOST_CHECK_EQUAL(config[0].epochs_, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[0].shuffling_),
+                    static_cast<int>(DataSourceShufflingType::random));
+
+  BOOST_CHECK_EQUAL(std::strcmp(config[1].filePath_.c_str(), "/path/to/some/file2.arff"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].fileType_),
+                    static_cast<int>(DataSourceFileType::ARFF));
+  BOOST_CHECK_EQUAL(config[1].numBatches_, 1);
+  BOOST_CHECK_EQUAL(config[1].batchSize_, 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].dataTransformationConfig_.type_),
+                    static_cast<int>(DataTransformationType::ROSENBLATT));
+  BOOST_CHECK_EQUAL(config[1].dataTransformationConfig_.rosenblattConfig_.solverMaxIterations_,
+                    1000);
+  BOOST_CHECK_EQUAL(config[1].validationPortion_, 0.634);
+  BOOST_CHECK_EQUAL(config[1].epochs_, 12);
+  BOOST_CHECK_EQUAL(static_cast<int>(config[1].shuffling_),
+                    static_cast<int>(DataSourceShufflingType::random));
 }
 
 BOOST_AUTO_TEST_CASE(testScorerConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   ScorerConfiguration defaults;
-  defaults.metric = ScorerMetricType::nll;
+  defaults.metric_ = ScorerMetricType::nll;
   ScorerConfiguration config;
   bool hasConfig;
 
   hasConfig = parser.getScorerConfig(config, defaults);
 
   BOOST_CHECK_EQUAL(hasConfig, true);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.metric), static_cast<int>(ScorerMetricType::mse));
+  BOOST_CHECK_EQUAL(static_cast<int>(config.metric_), static_cast<int>(ScorerMetricType::mse));
 }
 
 BOOST_AUTO_TEST_CASE(testFitterTypeConfig) {
@@ -167,7 +220,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   defaults.numCoarseningPoints_ = 42;
   defaults.coarsenInitialPoints_ = true;
   defaults.percent_ = 0.42;
-  defaults.errorBasedRefinement = true;
+  defaults.errorBasedRefinement_ = true;
   AdaptivityConfiguration config;
   bool hasConfig;
   double tolerance = 1E-5;
@@ -185,7 +238,7 @@ BOOST_AUTO_TEST_CASE(testFitterAdaptivityConfig) {
   BOOST_CHECK_EQUAL(config.numCoarseningPoints_, 0);
   BOOST_CHECK_EQUAL(config.coarsenInitialPoints_, false);
   BOOST_CHECK_CLOSE(config.percent_, 0, tolerance);
-  BOOST_CHECK_EQUAL(config.errorBasedRefinement, false);
+  BOOST_CHECK_EQUAL(config.errorBasedRefinement_, false);
 }
 
 BOOST_AUTO_TEST_CASE(testFitterSolverRefineConfig) {
@@ -267,7 +320,7 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
   DataMiningConfigParser parser{datasetPath};
 
   sgpp::datadriven::GeometryConfiguration defaults;
-  defaults.dim = std::vector<std::vector<int64_t>>();
+  defaults.dim_ = std::vector<std::vector<int64_t>>();
   sgpp::datadriven::GeometryConfiguration config;
   bool hasConfig;
   std::vector<std::vector<int64_t>> dim = {{1, 2}, {3, 4}};
@@ -276,23 +329,23 @@ BOOST_AUTO_TEST_CASE(testFitterGeometryConfig) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
 
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(0).stencilType),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils_.at(0).stencilType_),
                     static_cast<int>(sgpp::datadriven::StencilType::DirectNeighbour));
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers.size(), 2);
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[0], 0);
-  BOOST_CHECK_EQUAL(config.stencils[0].applyOnLayers[1], 1);
-  BOOST_CHECK_EQUAL(config.stencils[0].colorIndex, 0);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_.size(), 2);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils_[0].applyOnLayers_[1], 1);
+  BOOST_CHECK_EQUAL(config.stencils_[0].colorIndex_, 0);
 
-  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils.at(1).stencilType),
+  BOOST_CHECK_EQUAL(static_cast<int>(config.stencils_.at(1).stencilType_),
                     static_cast<int>(sgpp::datadriven::StencilType::Block));
-  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers.size(), 1);
-  BOOST_CHECK_EQUAL(config.stencils[1].applyOnLayers[0], 0);
-  BOOST_CHECK_EQUAL(config.stencils[1].colorIndex, 1);
-  BOOST_CHECK_EQUAL(config.stencils[1].blockLenght, 2);
+  BOOST_CHECK_EQUAL(config.stencils_[1].applyOnLayers_.size(), 1);
+  BOOST_CHECK_EQUAL(config.stencils_[1].applyOnLayers_[0], 0);
+  BOOST_CHECK_EQUAL(config.stencils_[1].colorIndex_, 1);
+  BOOST_CHECK_EQUAL(config.stencils_[1].blockLenght_, 2);
 
-  BOOST_CHECK_EQUAL(config.dim.size(), dim.size());
-  for (size_t i = 0; i < config.dim.size(); i++) {
-    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim[i].begin(), config.dim[i].end(), dim[i].begin(),
+  BOOST_CHECK_EQUAL(config.dim_.size(), dim.size());
+  for (size_t i = 0; i < config.dim_.size(); i++) {
+    BOOST_CHECK_EQUAL_COLLECTIONS(config.dim_[i].begin(), config.dim_[i].end(), dim[i].begin(),
                                   dim[i].end());
   }
 }
@@ -324,11 +377,11 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationGeneralConfig defaults;
 
-  defaults.algorithm = std::vector<std::string>({"otherAlgorithm"});
-  defaults.targetDirectory = "./targetDirectory";
-  defaults.targetFileType = VisualizationFileType::json;
-  defaults.numBatches = 5;
-  defaults.crossValidation = false;
+  defaults.algorithm_ = std::vector<std::string>({"otherAlgorithm"});
+  defaults.targetDirectory_ = "./targetDirectory";
+  defaults.targetFileType_ = VisualizationFileType::json;
+  defaults.numBatches_ = 5;
+  defaults.crossValidation_ = false;
 
   VisualizationGeneralConfig config;
   bool hasConfig;
@@ -342,25 +395,25 @@ BOOST_AUTO_TEST_CASE(testVisualizationGeneralConfig) {
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasGeneralVisualizationConfig, true);
 
-  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm.begin(), config.algorithm.end(),
+  BOOST_CHECK_EQUAL_COLLECTIONS(config.algorithm_.begin(), config.algorithm_.end(),
                                 expectedAlgorithm.begin(), expectedAlgorithm.end());
-  BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory.c_str(), "./output"), 0);
-  BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType),
+  BOOST_CHECK_EQUAL(std::strcmp(config.targetDirectory_.c_str(), "./output"), 0);
+  BOOST_CHECK_EQUAL(static_cast<int>(config.targetFileType_),
                     static_cast<int>(VisualizationFileType::json));
-  BOOST_CHECK_EQUAL(defaults.numBatches, 5);
-  BOOST_CHECK_EQUAL(defaults.crossValidation, false);
+  BOOST_CHECK_EQUAL(defaults.numBatches_, 5);
+  BOOST_CHECK_EQUAL(defaults.crossValidation_, false);
 }
 
 BOOST_AUTO_TEST_CASE(testVisualizationParameters) {
   DataMiningConfigParser parser{datasetPath};
   VisualizationParameters defaults;
 
-  defaults.perplexity = 22;
-  defaults.theta = 0.1;
-  defaults.targetDimension = 2;
-  defaults.seed = 50;
-  defaults.numberCores = 3;
-  defaults.maxNumberIterations = 200;
+  defaults.perplexity_ = 22;
+  defaults.theta_ = 0.1;
+  defaults.targetDimension_ = 2;
+  defaults.seed_ = 50;
+  defaults.numberCores_ = 3;
+  defaults.maxNumberIterations_ = 200;
 
   VisualizationParameters config;
   bool hasVisualizationParameters;
@@ -371,12 +424,12 @@ BOOST_AUTO_TEST_CASE(testVisualizationParameters) {
 
   BOOST_CHECK_EQUAL(hasConfig, true);
   BOOST_CHECK_EQUAL(hasVisualizationParameters, true);
-  BOOST_CHECK_EQUAL(config.perplexity, 30);
-  BOOST_CHECK_EQUAL(config.theta, 0.5);
-  BOOST_CHECK_EQUAL(config.targetDimension, 2);
-  BOOST_CHECK_EQUAL(config.seed, 150);
-  BOOST_CHECK_EQUAL(config.numberCores, 3);
-  BOOST_CHECK_EQUAL(config.maxNumberIterations, 500);
+  BOOST_CHECK_EQUAL(config.perplexity_, 30);
+  BOOST_CHECK_EQUAL(config.theta_, 0.5);
+  BOOST_CHECK_EQUAL(config.targetDimension_, 2);
+  BOOST_CHECK_EQUAL(config.seed_, 150);
+  BOOST_CHECK_EQUAL(config.numberCores_, 3);
+  BOOST_CHECK_EQUAL(config.maxNumberIterations_, 500);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

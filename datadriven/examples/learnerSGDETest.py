@@ -51,17 +51,17 @@ def main():
     
     # Config grid
     print("create grid config... ", end=' ')
-    grid = sg.RegularGridConfiguration()
-    grid.dim_ = 10
-    grid.level_ = 3
-    grid.type_ = sg.GridType_Linear
+    gridConfig = sg.RegularGridConfiguration()
+    gridConfig.dim_ = 10
+    gridConfig.level_ = 3
+    gridConfig.type_ = sg.GridType_Linear
     print("Done")
 
     # Config adaptivity
     print("create adaptive refinement config... ", end=' ')
-    adapt = sg.AdaptivityConfiguration()
-    adapt.numRefinements_ = 0
-    adapt.numRefinementPoints_ = 10
+    adaptivityConfig = sg.AdaptivityConfiguration()
+    adaptivityConfig.numRefinements_ = 0
+    adaptivityConfig.numRefinementPoints_ = 10
     print("Done")
     
     # Config solver
@@ -75,31 +75,31 @@ def main():
 
     # Config regularization
     print("create regularization config... ", end=' ')
-    regular = sg.RegularizationConfiguration()
-    regular.regType_ = sg.RegularizationType_Laplace  
+    regularizationConfig = sg.RegularizationConfiguration()
+    regularizationConfig.regType_ = sg.RegularizationType_Laplace  
     print("Done")
 
     # Config cross validation for learner
     print("create learner config... ", end=' ')
-    #crossValid = sg.CrossvalidationConfiguration()
-    crossValid = sg.CrossvalidationConfiguration()
-    crossValid.enable_ = False
-    crossValid.kfold_ = 3
-    crossValid.lambda_ = 3.16228e-06
-    crossValid.lambdaStart_ = 1e-1
-    crossValid.lambdaEnd_ = 1e-10
-    crossValid.lambdaSteps_ = 3
-    crossValid.logScale_ = True
-    crossValid.shuffle_ = True
-    crossValid.seed_ = 1234567
-    crossValid.silent_ = False
+    #crossValidationConfig = sg.CrossvalidationConfiguration()
+    crossValidationConfig = sg.CrossvalidationConfiguration()
+    crossValidationConfig.enable_ = False
+    crossValidationConfig.kfold_ = 3
+    crossValidationConfig.lambda_ = 3.16228e-06
+    crossValidationConfig.lambdaStart_ = 1e-1
+    crossValidationConfig.lambdaEnd_ = 1e-10
+    crossValidationConfig.lambdaSteps_ = 3
+    crossValidationConfig.logScale_ = True
+    crossValidationConfig.shuffle_ = True
+    crossValidationConfig.seed_ = 1234567
+    crossValidationConfig.silent_ = False
     print("Done")
 
     #
     # Create the learner with the given configuration
     #
     print("create the learner... ")
-    learner = sg.LearnerSGDE(grid, adapt, solv, regular, crossValid)
+    learner = sg.LearnerSGDE(gridConfig, adaptivityConfig, solv, regularizationConfig, crossValidationConfig)
     learner.initialize(data_tr)
     
     # Train the learner
@@ -122,7 +122,7 @@ def main():
     print("var_SGDE = ", learner.variance(), " ~ ", kde.variance(), " = var_KDE")
     
     # Print the covariances
-    C = sg.DataMatrix(grid.dim_, grid.dim_)
+    C = sg.DataMatrix(gridConfig.dim_, gridConfig.dim_)
     print("----------------------- Cov_SGDE -----------------------")
     learner.cov(C)
     print(C)
@@ -138,7 +138,7 @@ def main():
     #
     print("-----------------------------------------------")
     opInvRos = sg.createOperationInverseRosenblattTransformation(learner.getGrid())
-    points = sg.DataMatrix(randu_mat(12, grid.dim_))
+    points = sg.DataMatrix(randu_mat(12, gridConfig.dim_))
     print(points)
     
     pointsCdf = sg.DataMatrix(points.getNrows(), points.getNcols())

@@ -20,7 +20,6 @@
 #include <string>
 #include <vector>
 
-
 namespace sgpp {
 namespace datadriven {
 

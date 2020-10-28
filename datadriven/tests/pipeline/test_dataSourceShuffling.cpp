@@ -51,9 +51,9 @@ BOOST_AUTO_TEST_CASE(TestShufflingRandom) {
 
 BOOST_AUTO_TEST_CASE(TestShufflingCrossValidation) {
   DataShufflingFunctorSequential seqShuffling;
-  CrossvalidationConfiguration cvConfig;
-  cvConfig.kfold_ = 3;
-  DataShufflingFunctorCrossValidation cvShuffling(cvConfig, &seqShuffling);
+  CrossvalidationConfiguration crossValidationConfig;
+  crossValidationConfig.kfold_ = 3;
+  DataShufflingFunctorCrossValidation cvShuffling(crossValidationConfig, &seqShuffling);
 
   // Test for fold = 0
   cvShuffling.setFold(0);

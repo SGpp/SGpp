@@ -10,7 +10,6 @@
 #include <iostream>
 #include <string>
 
-
 int main(int argc, char** argv) {
   //  int maxLevel = 9;
   int maxLevel = 12;
@@ -25,7 +24,7 @@ int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
   // setup grid
   gridConfig.dim_ = 0;  // dim is inferred from the data
@@ -33,11 +32,11 @@ int main(int argc, char** argv) {
   gridConfig.type_ = sgpp::base::GridType::Linear;
 
   // Set Adaptivity
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.numRefinementPoints_ = 80;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.refinementThreshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   // Set solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -52,15 +51,15 @@ int main(int argc, char** argv) {
   SLESolverConfigFinal.type_ = sgpp::solver::SLESolverType::CG;
 
   std::string metaInformation =
-      "refine: " + std::to_string(adaptConfig.numRefinements_) +
-      " points: " + std::to_string(adaptConfig.numRefinementPoints_) +
-      " iterations: " + std::to_string(SLESolverConfigRefine.maxIterations_);
+      "refine: " + std::to_string(adaptivityConfig.numRefinements_) + " points: " +
+      std::to_string(adaptivityConfig.numRefinementPoints_) + " iterations: " +
+      std::to_string(SLESolverConfigRefine.maxIterations_);
 
   double lambda = 0.000001;
 
   bool verbose = true;
   sgpp::datadriven::MetaLearner learner(gridConfig, SLESolverConfigRefine, SLESolverConfigFinal,
-                                        adaptConfig, lambda, verbose);
+                                        adaptivityConfig, lambda, verbose);
 
   // learner.learn(kernelType, fileName);
   // learner.learnReference(fileName);

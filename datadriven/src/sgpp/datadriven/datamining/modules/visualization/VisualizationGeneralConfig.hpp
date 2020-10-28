@@ -17,35 +17,35 @@ struct VisualizationGeneralConfig {
   /**
    * Variable to determine if its executes visualization Module or not
    */
-  bool execute = false;
+  bool execute_ = false;
 
   /**
   * The list of algorithms to use in the visualization Module
   */
-  std::vector<std::string> algorithm = std::vector<std::string>();
+  std::vector<std::string> algorithm_ = std::vector<std::string>();
 
   /**
   * The filetype in which to store the output of the visualization module
   */
-  VisualizationFileType targetFileType =  VisualizationFileType::json;
+  VisualizationFileType targetFileType_ =  VisualizationFileType::json;
 
   /**
   * Number of batches after which to execute the visualization Module
   * a 1 means every batch
   */
-  size_t numBatches =  1;
+  size_t numBatches_ =  1;
 
   /**
   *  Flag that tells if cross validation is enabled. Depends on
   *  fitter[crossValidation][enabled]
   */
-  bool crossValidation = false;
+  bool crossValidation_ = false;
 
   /**
   * The path to the file which will store the output of the visualization
   * module
   */
-  std::string targetDirectory = "";
+  std::string targetDirectory_ = "";
 };
 }  // namespace datadriven
 }  // namespace sgpp

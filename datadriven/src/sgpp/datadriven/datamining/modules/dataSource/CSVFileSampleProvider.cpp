@@ -18,7 +18,7 @@ namespace sgpp {
 
 namespace datadriven {
 
-CSVFileSampleProvider::CSVFileSampleProvider(DataShufflingFunctor *shuffling)
+CSVFileSampleProvider::CSVFileSampleProvider(DataShufflingFunctor* shuffling)
     : shuffling{shuffling}, dataset(Dataset{}), counter(0) {}
 
 SampleProvider* CSVFileSampleProvider::clone() const {
@@ -41,15 +41,13 @@ size_t CSVFileSampleProvider::getNumSamples() const {
   }
 }
 
-void CSVFileSampleProvider::readFile(const std::string& fileName,
-                                     bool hasTargets,
-                                     size_t readinCutoff,
-                                     std::vector<size_t> readinColumns,
+void CSVFileSampleProvider::readFile(const std::string& fileName, bool hasTargets,
+                                     size_t readinCutoff, std::vector<size_t> readinColumns,
                                      std::vector<double> readinClasses) {
   try {
     // call readCSV with skipfirstline set to true
-    dataset = CSVTools::readCSVFromFile(fileName, true, hasTargets, readinCutoff,
-        readinColumns, readinClasses);
+    dataset = CSVTools::readCSVFromFile(fileName, true, hasTargets, readinCutoff, readinColumns,
+                                        readinClasses);
   } catch (...) {
     // TODO(lettrich): catching all exceptions is bad design. Replace call to CSVTools with
     // exception safe implementation.
@@ -73,10 +71,8 @@ Dataset* CSVFileSampleProvider::getAllSamples() {
   }
 }
 
-void CSVFileSampleProvider::readString(const std::string& input,
-                                       bool hasTargets,
-                                       size_t readinCutoff,
-                                       std::vector<size_t> readinColumns,
+void CSVFileSampleProvider::readString(const std::string& input, bool hasTargets,
+                                       size_t readinCutoff, std::vector<size_t> readinColumns,
                                        std::vector<double> readinClasses) {
   // try {
   //   dataset = CSVTools::readCSVFromString(input);
@@ -114,9 +110,7 @@ Dataset* CSVFileSampleProvider::splitDataset(size_t howMany) {
   return tmpDataset.release();
 }
 
-void CSVFileSampleProvider::reset() {
-  counter = 0;
-}
+void CSVFileSampleProvider::reset() { counter = 0; }
 
 } /* namespace datadriven */
 } /* namespace sgpp */

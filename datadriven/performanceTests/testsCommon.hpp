@@ -13,8 +13,8 @@
 
 std::string uncompressFile(std::string fileName);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);
 
-void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                           sgpp::base::GridGenerator& gridGen);
+void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                           sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);

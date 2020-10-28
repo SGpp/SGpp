@@ -17,6 +17,8 @@
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
+#include <sgpp/base/exception/application_exception.hpp>
+
 #include <memory>
 #include <set>
 #include <vector>
@@ -35,9 +37,9 @@ namespace datadriven {
 /**
  * Base class for arbitrary machine learning models based on adaptive sparse grids. A model tries to
  * generalize high dimensional training data by using sparse grids. An underlying model can be
- * trained using training data, its accuracy can be improved by using the adaptivity of sparse
- * grids and the underlying grid(s) of a model can be retrained on other data. Once a model is
- * trained it can be evaluated on unseen data.
+ * trained using training data, its accuracy can be improved by using the adaptivity of sparse grids
+ * and the underlying grid(s) of a model can be retrained on other data. Once a model is trained it
+ * can be evaluated on unseen data.
  */
 class ModelFittingBase {
  public:
@@ -85,18 +87,17 @@ class ModelFittingBase {
    * @return deep copy of this object. New object is owned by caller.
    */
   // virtual ModelFittingBase* clone() const = 0;
-
   // TODO(lettrich): dataset should be const.
   /**
-   * Fit the grid to the dataset by determinig the weights of an initial grid
+   * Fit the grid to the dataset by determining the weights of an initial grid
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void fit(Dataset &dataset) = 0;
+  virtual void fit(Dataset &datasetP, Dataset &datasetQ) = 0;
 
   /**
-   * Improve accuracy of the model on the given training data by adaptive refinement or coarsening
-   * of the grid.
-   * @return true if refinement or coarsening was performed, else false.
+   * Improve accuracy of the model on the given training data by adaptive refinement of the grid.
+   * @return true if refinement was performed, else false.
    */
   virtual bool adapt() = 0;
 
@@ -106,6 +107,7 @@ class ModelFittingBase {
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void update(Dataset &dataset) = 0;
+  virtual void update(Dataset &datasetP, Dataset &datasetQ) = 0;
 
   /**
    * Evaluate the fitted model at a single data point.
@@ -114,7 +116,8 @@ class ModelFittingBase {
    */
   virtual double evaluate(const DataVector &sample) = 0;
 
-  // TODO(lettrich): this should be a const operation as well as the samples matrix as soon
+  // TODO(lettrich): this should be a const operation as well as the samples
+  // matrix as soon
   // operation multiple eval has been taken care of.
   /**
    * Evaluate the fitted model on a set of data points
@@ -125,6 +128,21 @@ class ModelFittingBase {
    */
   virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
 
+  /**
+   * Return the learned grid. Has to be rewritten to modify default behavior. Only available for
+   * single grid models. Otherwise, an error message is shown.
+   */
+  virtual Grid &getGrid() {
+    throw base::application_exception("This model does not support grid retrieval");
+  }
+
+  /**
+   * Return the learned hierarchical surpluses
+   */
+  virtual DataVector &getSurpluses() {
+    throw base::application_exception(
+        "This model does not support hierarchical surpluses retrieval");
+  }
   /**
    * Should compute some kind of Residual to evaluate the fit of the model.
    *
@@ -240,6 +258,7 @@ class ModelFittingBase {
    * overwritten once either fit() or update() introduce a new dataset.
    */
   Dataset *dataset;
+  Dataset *extraDataset;  // used for models that require a second dataset input
 
   /**
    * Solver for the learning problem
