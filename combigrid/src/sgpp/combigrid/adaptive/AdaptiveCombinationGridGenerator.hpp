@@ -143,7 +143,8 @@ class AdaptiveCombinationGridGenerator {
    * @brief Get the the currently valid combination grid consisting of the "old set"
    * (the combination grid only holds the full grid vectors with non-zero coefficients)
    */
-  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis) const;
+  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis,
+                                     bool hasBoundary = true) const;
 
   /**
    * @brief Get the subspacesAndQoIs object

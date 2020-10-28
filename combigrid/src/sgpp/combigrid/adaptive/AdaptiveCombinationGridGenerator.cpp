@@ -80,10 +80,19 @@ AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinati
 }
 
 CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
-    const HeterogeneousBasis& basis) const {
-  const bool hasBoundary = std::find(minimumLevelVector.begin(), minimumLevelVector.end(), 0) !=
-                           minimumLevelVector.end();
-  return CombinationGrid::fromSubspaces(oldSet, basis, hasBoundary);
+    const HeterogeneousBasis& basis, bool hasBoundary) const {
+  auto oldSet = getOldSet();
+  auto coefficients = sgpp::combigrid::getStandardCoefficientsFromLevelSet(oldSet);
+
+  std::vector<LevelVector> oldSetNonzero{};
+  // copy only if coefficient is nonzero
+  for (size_t i = 0; i < oldSet.size(); ++i) {
+    if (coefficients[i] != 0) {
+      oldSetNonzero.emplace_back(oldSet[i]);
+    }
+  }
+
+  return CombinationGrid::fromSubspaces(oldSetNonzero, basis, hasBoundary);
 }
 
 bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {

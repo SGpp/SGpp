@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(testWeightedRelevanceCalculator) {
               weightedRelevanceCalculator.calculate(LevelVector(3, 100), 0.005));
 
   BOOST_CHECK_EQUAL(weightedRelevanceCalculator.calculate(LevelVector(5, 0), 0.5),
-              weightedRelevanceCalculator.calculate(LevelVector(5, 1), 0.5));
+                    weightedRelevanceCalculator.calculate(LevelVector(5, 1), 0.5));
 
   BOOST_CHECK(weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.8) >
               weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.5));
@@ -601,5 +601,9 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
 
     BOOST_CHECK_EQUAL_COLLECTIONS(adaptedSubspaces.begin(), adaptedSubspaces.end(),
                                   largerSubspaces.begin(), largerSubspaces.end());
+
+    for (auto& c : adaptedCombinationGrid.getCoefficients()) {
+      BOOST_CHECK(c != 0);
+    }
   }
 }
