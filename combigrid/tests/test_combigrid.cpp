@@ -562,7 +562,7 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
     for (auto& fullGrid : combinationGrid.getFullGrids()) {
       auto found = std::find(notYetAdaptedLevels.begin(), notYetAdaptedLevels.end(),
                              fullGrid.getLevel()) != notYetAdaptedLevels.end();
-      BOOST_TEST(found);
+      BOOST_CHECK(found);
     }
 
     // feed "known values" for the initial combinationGrid to the adaptiveCombinationGridGenerator
