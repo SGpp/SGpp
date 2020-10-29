@@ -14,6 +14,17 @@ class StopIterator {};
 }
 %}
 
+// remove SWIG warnings
+%ignore sgpp::combigrid::IndexVectorIterator::operator=;
+%ignore sgpp::combigrid::IndexVectorIterator::operator[];
+%ignore sgpp::combigrid::IndexVectorIterator::operator++;
+%ignore sgpp::combigrid::IndexVectorIterator::operator--;
+%ignore sgpp::combigrid::IndexVectorIterator::operator+(size_t lhs, const sgpp::combigrid::IndexVectorIterator& rhs);
+
+%include <std/std_container.i>
+%make_const_iterator( IndexVectorIterator, IndexVectorRange );
+%ignore sgpp::combigrid::LevelVectorTools::Hash;
+
 %{
 #include <sgpp/combigrid/tools/IndexVectorIterator.hpp>
 #include <sgpp/combigrid/tools/IndexVectorRange.hpp>

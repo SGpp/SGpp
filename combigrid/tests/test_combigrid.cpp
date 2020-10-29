@@ -31,6 +31,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <vector>
