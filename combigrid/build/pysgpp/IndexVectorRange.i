@@ -19,11 +19,21 @@ class StopIterator {};
 %ignore sgpp::combigrid::IndexVectorIterator::operator[];
 %ignore sgpp::combigrid::IndexVectorIterator::operator++;
 %ignore sgpp::combigrid::IndexVectorIterator::operator--;
-%ignore sgpp::combigrid::IndexVectorIterator::operator+(size_t lhs, const sgpp::combigrid::IndexVectorIterator& rhs);
-
-%include <std/std_container.i>
-%make_const_iterator( IndexVectorIterator, IndexVectorRange );
+%ignore sgpp::combigrid::IndexVectorIterator::operator+;
 %ignore sgpp::combigrid::LevelVectorTools::Hash;
+
+// get rid of warning 503
+// %ignore sgpp::combigrid::operator+;
+
+// get rid of warning 401
+// why does none of this work?!?!
+// %include <std/std_container.i>
+// %ignore std::iterator< std::random_access_iterator_tag,sgpp::combigrid::IndexVector,size_t,sgpp::combigrid::IndexVector *,sgpp::combigrid::IndexVector & >;
+// %template(IndexVectorIterator_base) std::iterator< std::random_access_iterator_tag,sgpp::combigrid::IndexVector,size_t,sgpp::combigrid::IndexVector *,sgpp::combigrid::IndexVector & >;
+
+%warnfilter(401, 503) sgpp::combigrid::IndexVectorIterator;
+
+%make_const_iterator( IndexVectorIterator, IndexVectorRange );
 
 %{
 #include <sgpp/combigrid/tools/IndexVectorIterator.hpp>
