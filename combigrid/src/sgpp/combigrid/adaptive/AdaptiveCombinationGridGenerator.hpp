@@ -50,7 +50,7 @@ namespace combigrid {
  * tensor–product quadrature. Computing, 71(1), pp.65-87.
  */
 class AdaptiveCombinationGridGenerator {
-  using MapPairType = std::pair<const std::vector<unsigned int>, double>;
+  typedef std::pair<const std::vector<unsigned int>, double> MapPairType;
 
  public:
   /**

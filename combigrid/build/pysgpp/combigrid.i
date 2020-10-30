@@ -37,10 +37,7 @@
 %shared_ptr(sgpp::combigrid::RelevanceCalculator)
 %include "combigrid/src/sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp"
 %shared_ptr(sgpp::combigrid::WeightedRelevanceCalculator)
-// remove SWIG warning
-// %ignore sgpp::combigrid::AdaptiveCombinationGridGenerator::MapPairType;
 %include "combigrid/src/sgpp/combigrid/adaptive/AdaptiveCombinationGridGenerator.hpp"
-%warnfilter(341) sgpp::combigrid::AdaptiveCombinationGridGenerator;
 
 namespace std {
   %template(BasisVector) vector<sgpp::base::Basis<sgpp::combigrid::level_t, sgpp::combigrid::index_t>*>;
