@@ -744,16 +744,12 @@ class Grid {
   virtual Stretching& getStretching();
 
   /**
-   * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
-   *
-   * @return pointer to the GridStorage's BoundingsBox object
+   * sets the GridStorage's BoundingsBox
    */
   virtual void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
-   *
-   * @return pointer to the GridStorage's Stretching object
    */
   virtual void setStretching(Stretching& stretching);
 

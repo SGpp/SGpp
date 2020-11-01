@@ -36,10 +36,10 @@ class OCLManager {
   ~OCLManager();
 
   /**
-   * @brief buildKernel builds the program that is represented by @a program_src
-   * and creates @a num_devices kernel objects
+   * @brief buildKernel builds the program that is represented by program_src
+   * and creates num_devices kernel objects
    * that are stored into the array @a kernel (must be already allocated with at
-   * least @a num_devices )
+   * least num_devices )
    *
    * @param program_src the source of the program to compile
    * @param kernel_name name of the kernel function (in program_src) to create
@@ -50,7 +50,6 @@ class OCLManager {
    * info
    * @param kernel already allocated array: the resulting kernels are put into
    * this array, one for each device (=> at least num_devices entries)
-   * @return
    */
   void buildKernel(const std::string& program_src, const char* kernel_name,
                    cl_context context, size_t num_devices,

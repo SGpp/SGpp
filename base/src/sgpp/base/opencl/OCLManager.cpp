@@ -329,22 +329,6 @@ OCLManager::~OCLManager() {
   delete[] this->command_queue;
 }
 
-/**
- * @brief buildKernel builds the program that is represented by @a program_src
- * and creates @a num_devices kernel objects
- * that are stored into the array @a kernel (must be already allocated with at
- * least @a num_devices )
- *
- * @param program_src the source of the program to compile
- * @param kernel_name name of the kernel function (in program_src) to create the
- * kernel for
- * @param context OpenCL context
- * @param num_devices number of OpenCL devices
- * @param device_ids array with device ids, necessary for displaying build info
- * @param kernel already allocated array: the resulting kernels are put into
- * this array, one for each device (=> at least num_devices entries)
- * @return
- */
 void OCLManager::buildKernel(const std::string& program_src, const char* kernel_name,
                              cl_context context, size_t num_devices, cl_device_id* device_ids,
                              cl_kernel* kernel) {
