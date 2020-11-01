@@ -130,7 +130,6 @@ class SimpleQueue {
    * @param commsize Size of the communictor
    * @param verbose Verbosity on or off
    * @param prefetching Activates package prefetching if this parameter is true
-   * @return
    */
   SimpleQueue(size_t startindex, size_t workitem_count, size_t node_packagesize, MPI_Comm &comm,
               int commsize, bool verbose = false, bool prefetching = false) :
