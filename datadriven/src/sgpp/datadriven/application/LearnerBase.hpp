@@ -174,8 +174,6 @@ class LearnerBase {
    *
    * @param testDataset dataset that is evaluated with the current learner
    * @param classesComputed result of the evaluation of the data set
-   *
-   * @return regression values of testDataset
    */
   virtual void predict(sgpp::base::DataMatrix& testDataset,
                        sgpp::base::DataVector& classesComputed);

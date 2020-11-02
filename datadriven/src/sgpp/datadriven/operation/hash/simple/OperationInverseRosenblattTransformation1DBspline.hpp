@@ -35,7 +35,6 @@ class OperationInverseRosenblattTransformation1DBspline : public OperationTransf
   /**
    * this function computes the CDF (i.e. the patch areas)
    * and saves it into the vectors of this object
-   * @return void
    */
   void init(base::DataVector* alpha1d);
 

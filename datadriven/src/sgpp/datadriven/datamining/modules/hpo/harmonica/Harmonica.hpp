@@ -34,7 +34,6 @@ class Harmonica {
    * @param fitters container to store fitters for evaluation outside the class
    * @param seed for random sampling
    * @param configStrings container to store information about the configurations in string form
-   * @return
    */
   void prepareConfigs(std::vector<ModelFittingBase*> &fitters,
                       int seed,
@@ -65,7 +64,6 @@ class Harmonica {
   void transformScores(const DataVector &source, DataVector &target);
   /**
    * resolves constraints, fixing free and dependent bits
-   * @return whether bits were fixed or just given values
    */
   void fixConfigBits(bool resetFree);
   /**

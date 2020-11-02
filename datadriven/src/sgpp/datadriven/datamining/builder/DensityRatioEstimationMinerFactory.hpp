@@ -47,15 +47,6 @@ class DensityRatioEstimationMinerFactory : public MinerFactory {
       const DataMiningConfigParser& parser) const override;
 
   /**
-   * Factory method to build a cross validation data source, i.e. a data source that can separate
-   * one fold from the data as validation set and use the rest for training
-   * @param parser the datamining configuration parser instance to create the data source from
-   * @return the data source instances (2 instances)
-   */
-  //  std::vector<DataSourceCrossValidation*>
-  //  createDataSourceCrossValidationTwoDatasets(
-  //      const DataMiningConfigParser& parser) const;
-  /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
    * configuration file.
    * @param parser parser object that provides methods to query the configuration file.
