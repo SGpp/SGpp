@@ -14,6 +14,7 @@
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 #include <sgpp/combigrid/operation/OperationPole.hpp>
 
+#include <memory>
 #include <vector>
 
 namespace sgpp {
