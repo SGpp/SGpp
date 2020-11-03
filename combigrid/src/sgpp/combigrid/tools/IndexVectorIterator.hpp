@@ -252,7 +252,8 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
    * hypercube) and no stretching (i.e., the points have the standard locations \f$i \cdot
    * 2^{-\ell}\f$).
    *
-   * @param d the dimension in which the coordinate should be calculated
+   * @param d             the dimension in which the coordinate should be calculated
+   * @param hasBoundary   whether the grid has boundary points
    *
    * @return the coordinate in the given dimension
    */
@@ -269,7 +270,8 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
    * hypercube) and no stretching (i.e., the points have the standard locations \f$i \cdot
    * 2^{-\ell}\f$).
    *
-   * @param coordinates the DataVector that should be overwritten with the coordinates
+   * @param coordinates   the DataVector that should be overwritten with the coordinates
+   * @param hasBoundary   whether the grid has boundary points
    */
   void getStandardCoordinates(sgpp::base::DataVector& coordinates, bool hasBoundary = true) {
     coordinates.resize(dim);

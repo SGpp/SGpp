@@ -6,7 +6,7 @@
 
 ## \page example_combigrid_adaptive_py Combigrid Example Dimensional Adaptivity (Python)
 ##
-## In this example, we use the combigrid module 
+## In this example, we use the combigrid module for dimensional adaptivity
 ##
 ##
 ## First, we import the required modules.
@@ -148,7 +148,7 @@ adaptiveCombinationGridGenerator.getDeltas(levels)
 activeSet = adaptiveCombinationGridGenerator.getActiveSet()
 
 # some of them are more interesting than others
-adaptiveCombinationGridGenerator.getPriorities()
+priorities = adaptiveCombinationGridGenerator.getPriorities()
 
 # we ask what the next most sensible subspaces to evaluate should be 
 queue = adaptiveCombinationGridGenerator.getPriorityQueue()
@@ -164,11 +164,15 @@ for qu in queue:
     value = pysgpp.DataVector(fullGrid.getNumberOfIndexVectors())
 
     rangeIterator = gridRange.begin()
-    for r in gridRange:
+    while rangeIterator != gridRange.end():
+#         print(*rangeIterator.__deref__())
         z = pysgpp.DataVector(dim)
         rangeIterator.getStandardCoordinates(z)
         value[rangeIterator.getSequenceNumber()] = f(z[0], z[1])
-        rangeIterator.increment()
+        try:
+            rangeIterator.__next__()
+        except StopIteration:
+            break
 
     # store the interpolated values for later reuse
     newValue[tuple(q)] = value
@@ -187,7 +191,7 @@ for qu in queue:
 # we can test how well the priority estimator had performed
 # by looking at the relevance of the now known results
 relevances = adaptiveCombinationGridGenerator.getRelevanceOfActiveSet()
-queue, relevances
+priorities, relevances
 
 # we adapt to all grids with known values
 adaptiveCombinationGridGenerator.adaptAllKnown()
@@ -198,7 +202,6 @@ adaptiveCombinationGridGenerator.getCurrentResult()
 
 # now, we can also update our combiGrid by adding the newly calculated subspaces
 newCombiGrid = adaptiveCombinationGridGenerator.getCombinationGrid(basis)
-newCoefficients = pysgpp.getStandardCoefficientsFromLevelSet(levels)
 
 numberNewLevels = len(newCombiGrid.getFullGrids())
 newLevels = pysgpp.LevelVectorVector()
@@ -206,6 +209,8 @@ for fullGridIndex in range(numberNewLevels):
     fullGrid = newCombiGrid.getFullGrids()[fullGridIndex]
     l = fullGrid.getLevel()
     newLevels.push_back(l)
+
+newCoefficients = pysgpp.getStandardCoefficientsFromLevelSet(newLevels)
 
 # and by calculating the new surplusses...
 newValues = pysgpp.DataVectorVector()

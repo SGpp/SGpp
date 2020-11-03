@@ -50,7 +50,7 @@ namespace combigrid {
  * tensor–product quadrature. Computing, 71(1), pp.65-87.
  */
 class AdaptiveCombinationGridGenerator {
-  using MapPairType = std::pair<const std::vector<unsigned int>, double>;
+  typedef std::pair<const std::vector<unsigned int>, double> MapPairType;
 
  public:
   /**
@@ -107,7 +107,9 @@ class AdaptiveCombinationGridGenerator {
    *
    * @param combinationGrid     start with the subspaces contained in combinationGrid (must be at
    *                            least one)
-   * @param summationFunction      the summation function by which results are combined
+   * @param QoIValues           the QoI values corresponding to levelVectors, same length as
+   *                              the number of FullGrids in combinationGrid
+   * @param summationFunction   the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
