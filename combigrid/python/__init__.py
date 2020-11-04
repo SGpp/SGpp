@@ -4,10 +4,10 @@
 # sgpp.sparsegrids.org
 
 ##############################################################################
-                                    #
+#
 #############################################################################
 
 import pysgpp.extensions.combigrid.plotDeltas3d
 
 __all__ = ['plotDeltas3D',
-            'adaptiveGeneratorToDataframe']
+           'adaptiveGeneratorToDataframe']
