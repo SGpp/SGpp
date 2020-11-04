@@ -50,7 +50,6 @@ class OCLManagerMultiPlatform {
    * @param kernel_name name of the kernel function (in program_src) to create
    * the kernel for
    * @param kernels the resulting kernels are put into this map, one for each platform
-   * @return
    */
   void buildKernel(const std::string &program_src, const std::string &kernel_name,
                    std::map<cl_platform_id, std::vector<cl_kernel>> &kernels);

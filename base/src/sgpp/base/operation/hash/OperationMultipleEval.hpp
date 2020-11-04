@@ -66,7 +66,6 @@ class OperationMultipleEval {
    * @param result the result vector of the matrix vector multiplication
    * @param startIndexData begin of the fragment of the dataset to be evaluated
    * @param endIndexData end of the fragment of the dataset to be evaluated
-   * @return The results of the evaluation for the specified range of the dataset
    */
   virtual void mult(DataVector& alpha, DataVector& result, size_t startIndexData,
                     size_t endIndexData) {
@@ -94,7 +93,6 @@ class OperationMultipleEval {
    * @param result the result vector of the matrix vector multiplication
    * @param startIndexGrid begin of the fragment of the grid to apply the operator to
    * @param endIndexGrid end of the fragment of the grid to be apply the operator to
-   * @return The results of the evaluation for the specified range of the dataset
    */
   virtual void multTranspose(DataVector& source, DataVector& result, size_t startIndexGrid,
                              size_t endIndexGrid) {
