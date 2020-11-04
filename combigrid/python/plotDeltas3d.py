@@ -139,7 +139,7 @@ try:
         show()
 
 
-except ModuleNotFoundError as e:
+except ImportError as e:
     print(e)
     print("Cannot use pysgpp 3D delta visualization")
     pass
