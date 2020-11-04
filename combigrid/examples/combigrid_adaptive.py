@@ -18,6 +18,7 @@ import sys
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
+    from pysgpp.extensions.combigrid.plotDeltas3d import plotDeltas3D
     doPlot = True
 except ImportError:
     doPlot = False
@@ -48,7 +49,7 @@ def plotFunction(opEval, surpluses, X):
 
 
 ## We define parameters and perform hierarchization just as in the combigrid example
-dim = 2
+dim = 3
 n = 4
 p = 3
 hasBoundary = True
@@ -236,3 +237,10 @@ newOpHier.apply(newSurpluses)
 opEval = pysgpp.OperationEvalCombinationGrid(newCombiGrid)
 y = opEval.eval(newSurpluses, xDv)
 print("Value of combined sparse grid interpolant at {}: {:.6g}".format(np.array(x), y))
+
+# and looking at the delta increments contributed by each of the grids,
+# we can see which grid resolutions had the biggest impact:
+if doPlot:
+    plotDeltas3D(adaptiveCombinationGridGenerator, ['l_0','l_1'])
+    # when you change the dimension in the example to 3 or more, you can see the 3-d visualization of the deltas:
+    # plotDeltas3d.plotDeltas3D(adaptiveCombinationGridGenerator)
