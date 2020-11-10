@@ -81,13 +81,6 @@ class ModelFittingBase {
    */
   virtual ~ModelFittingBase() = default;
 
-  // TODO(lettrich): fix this as soon as all member variables are copyable.
-  /**
-   * Polymorphic clone pattern
-   * @return deep copy of this object. New object is owned by caller.
-   */
-  // virtual ModelFittingBase* clone() const = 0;
-  // TODO(lettrich): dataset should be const.
   /**
    * Fit the grid to the dataset by determining the weights of an initial grid
    * @param dataset the training dataset that is used to fit the model.
