@@ -4,12 +4,12 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-# \page example_combigrid_adaptive_py Combigrid Example Dimensional Adaptivity (Python)
+## \page example_combigrid_adaptive_py Combigrid Example Dimensional Adaptivity (Python)
 ##
-# In this example, we use the combigrid module for dimensional adaptivity
+## In this example, we use the combigrid module for dimensional adaptivity
 ##
 ##
-# First, we import the required modules.
+## First, we import the required modules.
 import pysgpp
 import numpy as np
 import sys
