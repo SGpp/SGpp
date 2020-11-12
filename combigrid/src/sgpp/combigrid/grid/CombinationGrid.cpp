@@ -34,6 +34,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
                                                             const HeterogeneousBasis& basis,
                                                             bool hasBoundary) {
   assert(truncationLevel.size() == dim);
+
   std::vector<size_t> binomialCoefficients((dim + 1) / 2);
   binomialCoefficients[0] = 1.0;
 
@@ -50,22 +51,25 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
       (hasBoundary ? levelSumDistance : static_cast<level_t>(levelSumDistance + dim - 1));
 
   for (size_t q = 0; q < dim; q++) {
-    std::vector<LevelVector> levels =
-        (hasBoundary ? LevelVectorTools::generateDiagonalWithBoundary(
-                           dim, maxLevelDifference - static_cast<level_t>(q))
-                     : LevelVectorTools::generateDiagonalWithoutBoundary(
-                           dim, maxLevelDifference - static_cast<level_t>(q)));
-    const double coefficient =
-        ((q % 2 == 0) ? 1.0 : -1.0) *
-        static_cast<double>(binomialCoefficients[((q < (dim + 1) / 2) ? q : (dim - q - 1))]);
+    if (q <= maxLevelDifference) {
+      std::vector<LevelVector> levels =
+          (hasBoundary ? LevelVectorTools::generateDiagonalWithBoundary(
+                             dim, maxLevelDifference - static_cast<level_t>(q))
+                       : LevelVectorTools::generateDiagonalWithoutBoundary(
+                             dim, maxLevelDifference - static_cast<level_t>(q)));
+      const double coefficient =
+          ((q % 2 == 0) ? 1.0 : -1.0) *
+          static_cast<double>(binomialCoefficients[((q < (dim + 1) / 2) ? q : (dim - q - 1))]);
 
-    for (LevelVector& level : levels) {
-      // difference between truncated and regular combination technique: offset by the minimum level
-      for (size_t d = 0; d < dim; ++d) {
-        level[d] += truncationLevel[d];
+      for (LevelVector& level : levels) {
+        // difference between truncated and regular combination technique: offset by the minimum
+        // level
+        for (size_t d = 0; d < dim; ++d) {
+          level[d] += truncationLevel[d];
+        }
+        fullGrids.emplace_back(level, basis, hasBoundary);
+        coefficients.push_back(coefficient);
       }
-      fullGrids.emplace_back(level, basis, hasBoundary);
-      coefficients.push_back(coefficient);
     }
   }
 
