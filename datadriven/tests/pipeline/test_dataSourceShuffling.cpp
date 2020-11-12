@@ -3,7 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <boost/test/unit_test_suite.hpp>
+#define BOOST_TEST_DYN_LINK
+#include <boost/test/unit_test.hpp>
 #include <boost/test/test_tools.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctor.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/shuffling/DataShufflingFunctorRandom.hpp>
@@ -50,9 +51,9 @@ BOOST_AUTO_TEST_CASE(TestShufflingRandom) {
 
 BOOST_AUTO_TEST_CASE(TestShufflingCrossValidation) {
   DataShufflingFunctorSequential seqShuffling;
-  CrossvalidationConfiguration cvConfig;
-  cvConfig.kfold_ = 3;
-  DataShufflingFunctorCrossValidation cvShuffling(cvConfig, &seqShuffling);
+  CrossvalidationConfiguration crossValidationConfig;
+  crossValidationConfig.kfold_ = 3;
+  DataShufflingFunctorCrossValidation cvShuffling(crossValidationConfig, &seqShuffling);
 
   // Test for fold = 0
   cvShuffling.setFold(0);

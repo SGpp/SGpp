@@ -19,22 +19,26 @@
         },
         "adaptivityConfig": {
             "numRefinements": 100,
-            "noPoints": 10,
+            "numRefinementPoints": 10,
+            "numCoarseningPoints": 10,
             "refinementIndicator": "classification",
             "penalizeLevels": true,
             "errorBasedRefinement": true,
             "errorMinInterval": 1,
             "errorBufferSize": 2,
-            "errorConvergenceThreshold": 0.001
+            "errorConvergenceThreshold": 0.001,
+            "thresholdType": "relative",
+            "coarseningThreshold": 0.3,
+            "coarsenInitialPoints": false
         },
         "regularizationConfig": {
             "lambda": 1e-1
         },
         "densityEstimationConfig": {
             "densityEstimationType": "decomposition",
-            "matrixDecompositionType": "chol"
+            "matrixDecompositionType": "orthoadapt"
         },
-        "learner": {
+        "learnerConfig": {
             "usePrior": true,
             "beta": 1.0
         }

@@ -5,25 +5,24 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
-
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnline.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDE.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimation.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <list>
+#include <vector>
 
 using sgpp::base::DataMatrix;
-using sgpp::base::Grid;
 using sgpp::base::DataVector;
+using sgpp::base::Grid;
 
 namespace sgpp {
 namespace datadriven {
@@ -46,37 +45,48 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   explicit ModelFittingDensityEstimationCG(const FitterConfigurationDensityEstimation& config);
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial grid by the
-   * SGDE approach.
+   * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
+   * approach.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial grid by the
-   * SGDE approach. Requires only data samples and no targets (since those are irrelevant for the
-   * density estimation whatsoever)
+   * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
+   * approach. Requires only data samples and no targets (since those are irrelevant for the density
+   * estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
+  void fit(DataMatrix& datasetP, DataMatrix& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Performs a refinement given the new grid size and the points to coarsened
+   * Performs refinement and coarsening given the new grid size and the points to coarsened
    * @param newNoPoints the grid size after refinement and coarsening
    * @param deletedGridPoints a list of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool refine(size_t newNoPoints, std::list<size_t>* deletedGridPoints) override;
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
+  void update(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only
-   * the data samples and no targets (since those are irrelevant for the density estimation
-   * whatsoever)
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
+   * samples and no targets (since those are irrelevant for the density estimation whatsoever)
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;
+  void update(DataMatrix& samplesP, DataMatrix& samplesQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Evaluate the fitted density at a single data point - requires a trained grid.
@@ -108,21 +118,22 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
   }
 
   /**
-    * Should compute some kind of Residual to evaluate the fit of the model.
-    *
-    * In the case of density estimation, this is
-    * || R * alpha_lambda - b_val ||_2
-    *
-    * This is useful for unsupervised learning models, where normal evaluation cannot be used as
-    * there are no targets.
-    *
-    * @param validationData Matrix for validation data
-    *
-    * @returns the residual score
-    */
+   * Should compute some kind of Residual to evaluate the fit of the model.
+   *
+   * In the case of density estimation, this is
+   * || R * alpha_lambda - b_val ||_2
+   *
+   * This is useful for unsupervised learning models, where normal evaluation cannot be used as
+   * there are no targets.
+   *
+   * @param validationData Matrix for validation data
+   *
+   * @returns the residual score
+   */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationCG::computeResidual() is not implemented!");
+        "ModelFittingDensityEstimationCG::computeResidual() is not "
+        "implemented!");
   }
 
   /**
@@ -132,7 +143,8 @@ class ModelFittingDensityEstimationCG : public ModelFittingDensityEstimation {
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityEstimationCG::updateRegularization() is not implemented!");
+        "ModelFittingDensityEstimationCG::updateRegularization() is not "
+        "implemented!");
   }
 
  private:

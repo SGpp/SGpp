@@ -5,23 +5,23 @@
 
 /**
  * \page example_learnerClassificationTest_cpp Learner Classification Test
- * 
+ *
  * This represents a small example how to use sparse grids for classification
  * problems. It uses the artificial Ripley dataset.
  */
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/base/grid/Grid.hpp>
+#include <sgpp/datadriven/application/ClassificationLearner.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 
-#include <string>
-#include <vector>
 #include <exception>
 #include <limits>
 #include <ostream>
+#include <string>
+#include <vector>
 
 /**
  * @brief getLearner creates a sparse grid classification learner.
@@ -35,7 +35,8 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
   gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
   auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
-  adaptivityConfig.noPoints_ = 0;
+  adaptivityConfig.numRefinementPoints_ = 0;
+  adaptivityConfig.numCoarseningPoints_ = 0;
   adaptivityConfig.numRefinements_ = 0;
 
   auto solverConfig = sgpp::solver::SLESolverConfiguration();
@@ -54,12 +55,13 @@ sgpp::datadriven::ClassificationLearner getLearner(size_t dimension) {
 
 /**
  * @brief main
-   Creates a sparse grid classification learner and prints the training accuracy for the ripley dataset.
+   Creates a sparse grid classification learner and prints the training accuracy
+ for the ripley
+ dataset.
  * @return
  */
 int main(int argc, char** argv) {
-  const auto filenameTrain =
-      std::string("../datasets/ripley/ripleyGarcke.train.arff");
+  const auto filenameTrain = std::string("../datasets/ripley/ripleyGarcke.train.arff");
 
   auto dataTrain = sgpp::datadriven::ARFFTools::readARFFFromFile(filenameTrain);
   std::cout << "Read file " << filenameTrain << "." << std::endl;

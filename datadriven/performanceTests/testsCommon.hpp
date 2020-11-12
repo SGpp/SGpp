@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include <string>
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/globaldef.hpp>
 
-#include "sgpp/base/datatypes/DataMatrix.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/globaldef.hpp"
+#include <string>
 
 std::string uncompressFile(std::string fileName);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);
 
-void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                           sgpp::base::GridGenerator& gridGen);
+void doDirectedRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                           sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);

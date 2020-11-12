@@ -20,7 +20,6 @@ namespace datadriven {
  * ArffFileSampleProvider allows reading data in ARFF format into a #sgpp::datadriven::Dataset
  * object. Data can currently be either be a string formatted in ARFF or a file containing ARFF
  * data.
- *
  */
 class ArffFileSampleProvider : public FileSampleProvider {
  public:
@@ -54,9 +53,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param readinColumns see FileSampleProvider.hpp
    * @param readinClasses see FileSampleProvider.hpp
    */
-  void readFile(const std::string &filePath,
-                bool hasTargets,
-                size_t readinCutoff = -1,
+  void readFile(const std::string &filePath, bool hasTargets, size_t readinCutoff = -1,
                 std::vector<size_t> readinColumns = std::vector<size_t>(),
                 std::vector<double> readinClasses = std::vector<double>()) override;
 
@@ -69,9 +66,7 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * @param readinColumns see FileSampleProvider.hpp
    * @param readinClasses see FileSampleProvider.hpp
    */
-  void readString(const std::string &input,
-                  bool hasTargets,
-                  size_t readinCutoff = -1,
+  void readString(const std::string &input, bool hasTargets, size_t readinCutoff = -1,
                   std::vector<size_t> readinColumns = std::vector<size_t>(),
                   std::vector<double> readinClasses = std::vector<double>()) override;
 
@@ -79,6 +74,14 @@ class ArffFileSampleProvider : public FileSampleProvider {
    * Resets the state of the sample provider (e.g. to start a new epoch)
    */
   void reset() override;
+
+  /**
+   * Explicit destructor to avoid memory leaks
+   */
+  ~ArffFileSampleProvider() override {
+    if (shuffling != nullptr)
+      delete shuffling;
+  }
 
  private:
   /**
@@ -93,8 +96,8 @@ class ArffFileSampleProvider : public FileSampleProvider {
 
   /**
    * Indicates the index in dataset where #getNextSamples will start grabbing new samples in its
-   * next call. After each call of #getNextSamples, the counter is set to the amount of min(counter
-   * + requestedSamplesSize, dataset.getSize()).
+   * next call. After each call of #getNextSamples, the counter is set to the amount of
+   * min(counter + requestedSamplesSize, dataset.getSize()).
    */
   size_t counter;
 

@@ -3,13 +3,14 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/datadriven/algorithm/CombiScheme.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityEstimation.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCG.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationCombi.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityEstimationOnOff.hpp>
 
 #include <iostream>
@@ -34,8 +35,8 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
   // If no object store is passed but the offline permutation is configured and the decomposition
-  // type allows offline permutation, an object store is instanciated
-  if (config.getDensityEstimationConfig().useOfflinePermutation &&
+  // type allows offline permutation, an object store is instantiated
+  if (config.getDensityEstimationConfig().useOfflinePermutation_ &&
       DBMatOfflinePermutable::PermutableDecompositions.find(
           config.getDensityEstimationConfig().decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end()) {
@@ -50,7 +51,6 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
     const FitterConfigurationDensityEstimation& config,
     std::shared_ptr<DBMatObjectStore> objectStore)
     : ModelFittingDensityEstimationCombi(config) {
-
   this->hasObjectStore = true;
   this->objectStore = objectStore;
 }
@@ -144,10 +144,10 @@ double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
 
 void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVector& results) {
   auto temp = sgpp::base::DataVector(results.size(), 0);
-  results.setAll(0);
+  results.setAll(0.);
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
-      temp.setAll(0);
+      temp.setAll(0.);
       components.at(i)->evaluate(samples, temp);
       temp.mult(static_cast<double>(componentConfigs.at(i).second));
       results.add(temp);
@@ -155,7 +155,7 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVecto
   }
 }
 
-bool ModelFittingDensityEstimationCombi::refine() {
+bool ModelFittingDensityEstimationCombi::adapt() {
   if (componentConfigs.size() != components.size()) {
     throw base::application_exception("componentsConfig.size() != components.size()");
   }
@@ -168,7 +168,7 @@ bool ModelFittingDensityEstimationCombi::refine() {
 
     /*
      * Finding the sub grid with the greatest error.
-     * \TODO Add different kinds of error estimation
+     * TODO: Add different kinds of error estimation
      */
     double max = 0;
     size_t ind = 0;
@@ -225,11 +225,11 @@ bool ModelFittingDensityEstimationCombi::refine() {
   return false;
 }
 
-bool ModelFittingDensityEstimationCombi::refine(size_t newNoPoints,
-                                                std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationCombi::adapt(size_t newNoPoints,
+                                               std::vector<size_t>& deletedGridPoints) {
   throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::list<size_t>* "
-      "deletedGridPoints): not ready yet\n");
+      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::vector<size_t>& "
+      "deletedGridPoints): not implemented yet\n");
 }
 
 void ModelFittingDensityEstimationCombi::reset() {
@@ -282,7 +282,7 @@ void ModelFittingDensityEstimationCombi::removeModel(const size_t ind) {
 
 bool ModelFittingDensityEstimationCombi::isRefinable() {
   throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::isRefinable(): not ready jet\n");
+      "ModelFittingDensityEstimationCombiGrid::isRefinable(): not implemented yet\n");
 }
 
 }  // namespace datadriven

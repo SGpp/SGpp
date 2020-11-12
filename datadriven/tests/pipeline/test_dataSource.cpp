@@ -59,7 +59,7 @@ BOOST_FIXTURE_TEST_SUITE(dataSourceGetNextSamplesAllTest, State)
 BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
   SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
   DataSourceConfig config;
-  config.filePath = path;
+  config.filePath_ = path;
 
   DataSource* dataSource = new DataSourceSplitting(config, sampleProvider);
   auto dataset = std::unique_ptr<Dataset>(dataSource->getNextSamples());
@@ -94,7 +94,7 @@ BOOST_AUTO_TEST_CASE(dataSourcegetNextSamplesAllSamplesTest) {
 BOOST_AUTO_TEST_CASE(dataSourceGetAllIteratorTest) {
   SampleProvider* sampleProvider = new GzipFileSampleDecorator(new ArffFileSampleProvider());
   DataSourceConfig config;
-  config.filePath = path;
+  config.filePath_ = path;
 
   DataSource* dataSource = new DataSourceSplitting(config, sampleProvider);
 

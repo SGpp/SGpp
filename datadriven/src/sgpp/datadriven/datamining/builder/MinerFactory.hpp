@@ -12,6 +12,7 @@
 #include <sgpp/datadriven/datamining/modules/visualization/Visualizer.hpp>
 
 #include <string>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -38,20 +39,25 @@ class MinerFactory {
    */
   virtual SparseGridMiner* buildMiner(const std::string& path) const;
 
-  virtual sgpp::datadriven::HyperparameterOptimizer *buildHPO(const std::string &path) const;
+  virtual sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const;
 
  protected:
   /**
-   * Factory method to build a splitting based data source, i.e. a data source that splits
-   * data into validation and training data.
+   * Factory method to build a splitting based data source, i.e. a data source that splits data into
+   * validation and training data.
    * @param parser the datamining configuration parser instance to create the data source from
    * @return the data source instance
    */
   virtual DataSourceSplitting* createDataSourceSplitting(
       const DataMiningConfigParser& parser) const;
 
+  virtual std::vector<DataSourceSplitting*> createDataSourceSplittingTwoDatasets(
+      const DataMiningConfigParser& parser) const {
+    throw base::application_exception("This miner only allows a single dataSource instance");
+  }
+
   /**
-   * Factory method to build a cross validation data source, i.e. a data source that can seperate
+   * Factory method to build a cross validation data source, i.e. a data source that can separate
    * one fold from the data as validation set and use the rest for training
    * @param parser the datamining configuration parser instance to create the data source from
    * @return the data source instance
@@ -61,12 +67,10 @@ class MinerFactory {
 
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
-   * configuration
-   * file.
+   * configuration file.
    * @param parser parser object that provides methods to query the configuration file.
    * @return Fully configured fitter (instance of a #sgpp::datadriven::ModelFittingBase object) as
-   * specified in the
-   * configuration file.
+   * specified in the configuration file.
    */
   virtual ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const = 0;
 

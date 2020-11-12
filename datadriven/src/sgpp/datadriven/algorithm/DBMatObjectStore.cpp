@@ -51,7 +51,7 @@ const DBMatOffline* DBMatObjectStore::getObject(
     const sgpp::datadriven::DensityEstimationConfiguration& densityEstimationConfig) {
   // Search for suitable offline object
   size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
-                                            regularizationConfig, densityEstimationConfig);
+                                               regularizationConfig, densityEstimationConfig);
   // If no suitable object is found, return nullptr
   if (index == SIZE_MAX) {
     return nullptr;
@@ -69,7 +69,7 @@ const DBMatOfflinePermutable* DBMatObjectStore::getBaseObject(
     sgpp::base::GeneralGridConfiguration& baseGridConfig) {
   // Search for suitable base offline object
   size_t index = this->getObjectContainerIndex(gridConfig, geometryConfig, adaptivityConfig,
-                                            regularizationConfig, densityEstimationConfig, true);
+                                               regularizationConfig, densityEstimationConfig, true);
   // If no suitable base object is found, return nullptr
   if (index == SIZE_MAX) {
     return nullptr;
@@ -149,21 +149,23 @@ bool DBMatObjectStore::ObjectContainer::configMatches(
   return configMatch && gridConfig.boundaryLevel_ == this->gridConfig.boundaryLevel_ &&
          gridConfig.type_ == this->gridConfig.type_ && gridConfig.type_ == this->gridConfig.type_ &&
          // adaptivity config
-         adaptivityConfig.errorBasedRefinement == this->adaptivityConfig.errorBasedRefinement &&
-         adaptivityConfig.errorBufferSize == this->adaptivityConfig.errorBufferSize &&
-         adaptivityConfig.errorConvergenceThreshold ==
-             this->adaptivityConfig.errorConvergenceThreshold &&
-         adaptivityConfig.errorMinInterval == this->adaptivityConfig.errorMinInterval &&
-         adaptivityConfig.levelPenalize == this->adaptivityConfig.levelPenalize &&
+         adaptivityConfig.errorBasedRefinement_ == this->adaptivityConfig.errorBasedRefinement_ &&
+         adaptivityConfig.errorBufferSize_ == this->adaptivityConfig.errorBufferSize_ &&
+         adaptivityConfig.errorConvergenceThreshold_ ==
+             this->adaptivityConfig.errorConvergenceThreshold_ &&
+         adaptivityConfig.errorMinInterval_ == this->adaptivityConfig.errorMinInterval_ &&
+         adaptivityConfig.levelPenalize_ == this->adaptivityConfig.levelPenalize_ &&
          adaptivityConfig.maxLevelType_ == this->adaptivityConfig.maxLevelType_ &&
-         adaptivityConfig.noPoints_ == this->adaptivityConfig.noPoints_ &&
+         adaptivityConfig.numRefinementPoints_ == this->adaptivityConfig.numRefinementPoints_ &&
          adaptivityConfig.numRefinements_ == this->adaptivityConfig.numRefinements_ &&
          adaptivityConfig.percent_ == this->adaptivityConfig.percent_ &&
-         adaptivityConfig.precomputeEvaluations == this->adaptivityConfig.precomputeEvaluations &&
-         adaptivityConfig.refinementFunctorType == this->adaptivityConfig.refinementFunctorType &&
-         adaptivityConfig.refinementPeriod == this->adaptivityConfig.refinementPeriod &&
-         adaptivityConfig.scalingCoefficients == this->adaptivityConfig.scalingCoefficients &&
-         adaptivityConfig.threshold_ == this->adaptivityConfig.threshold_ &&
+         adaptivityConfig.precomputeEvaluations_ == this->adaptivityConfig.precomputeEvaluations_ &&
+         adaptivityConfig.refinementFunctorType_ == this->adaptivityConfig.refinementFunctorType_ &&
+         adaptivityConfig.refinementPeriod_ == this->adaptivityConfig.refinementPeriod_ &&
+         adaptivityConfig.scalingCoefficients_ == this->adaptivityConfig.scalingCoefficients_ &&
+         adaptivityConfig.refinementThreshold_ == this->adaptivityConfig.refinementThreshold_ &&
+         adaptivityConfig.coarseningThreshold_ == this->adaptivityConfig.coarseningThreshold_ &&
+         adaptivityConfig.coarseningFunctorType_ == this->adaptivityConfig.coarseningFunctorType_ &&
          // remaining regularization config
          regularizationConfig.exponentBase_ == this->regularizationConfig.exponentBase_ &&
          regularizationConfig.l1Ratio_ == this->regularizationConfig.l1Ratio_ &&

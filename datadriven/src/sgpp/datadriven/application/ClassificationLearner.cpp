@@ -36,8 +36,7 @@ ClassificationLearner::ClassificationLearner(
       solverConfig(solverConfig),
       finalSolverConfig(finalSolverConfig),
       regularizationConfig(regularizationConfig),
-      terms() {
-}
+      terms() {}
 
 void ClassificationLearner::train(sgpp::base::DataMatrix& trainDataset,
                                   sgpp::base::DataVector& classes) {

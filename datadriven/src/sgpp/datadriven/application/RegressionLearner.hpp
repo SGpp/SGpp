@@ -31,10 +31,10 @@ namespace datadriven {
  */
 class RegressionLearner {
  public:
-  // Fista and (Bi)-CG do not share a common interace.
-  // This is why we need this slightly dirty solution.
-  // Excluded from SWIG.
-  #ifndef SWIG
+// Fista and (Bi)-CG do not share a common interace.
+// This is why we need this slightly dirty solution.
+// Excluded from SWIG.
+#ifndef SWIG
   class Solver {
    public:
     enum class solverCategory { cg, fista, none } type = solverCategory::none;
@@ -113,7 +113,7 @@ class RegressionLearner {
       std::unique_ptr<sgpp::solver::FistaBase> solverFista;
     };
   };
-  #endif  // end inner class
+#endif  // end inner class
 
   /**
    * @brief RegressionLearner
@@ -202,7 +202,7 @@ class RegressionLearner {
   /// the grid's coefficients
   sgpp::base::DataVector weights;
 
-  void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
+  void initializeGrid(sgpp::base::RegularGridConfiguration gridConfig);
   std::unique_ptr<datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset);
   Solver createSolver(size_t n_rows);

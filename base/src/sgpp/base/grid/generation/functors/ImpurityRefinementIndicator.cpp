@@ -37,7 +37,6 @@ double ImpurityRefinementIndicator::operator()(GridPoint& point) const {
   size_t numClasses = 2;  // ToDo: pass number of classes/labels as parameter
 
   DataVector fractions(numClasses);
-  fractions.setAll(0);
 
   // go through the whole dataset.
   for (size_t row = 0; row < dataset.getNrows(); ++row) {

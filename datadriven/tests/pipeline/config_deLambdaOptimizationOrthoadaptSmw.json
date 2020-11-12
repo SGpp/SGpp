@@ -23,7 +23,7 @@
       "densityEstimationType": "decomposition",
       "matrixDecompositionType": "SMW_ortho"
     },
-    "learner": {
+    "learnerConfig": {
       "usePrior": true,
       "beta": 1.0
     }

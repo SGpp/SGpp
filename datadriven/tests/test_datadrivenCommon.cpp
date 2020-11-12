@@ -7,16 +7,16 @@
 
 #include "test_datadrivenCommon.hpp"
 
-#include <zlib.h>
-#include <boost/lexical_cast.hpp>
-#include <boost/test/unit_test.hpp>
-
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/datadriven/DatadrivenOpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalDistributed.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataVectorDistributed.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
+
+#include <zlib.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <fstream>
 #include <iostream>
@@ -114,15 +114,16 @@ DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage, std::string fi
   return m;
 }
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha) {
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen,
+                         sgpp::base::DataVector& alpha) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(alpha, adaptivityConfig.numRefinementPoints_,
+                                                      adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alpha.getSize();
     alpha.resize(grid.getSize());
@@ -133,8 +134,8 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
   }
 }
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen) {
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen) {
   std::random_device rd;
   std::mt19937 mt(rd());
   std::uniform_real_distribution<double> dist(1, 100);
@@ -145,9 +146,9 @@ void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp:
     alphaRefine[i] = dist(mt);
   }
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(
+        alphaRefine, adaptivityConfig.numRefinementPoints_, adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -203,12 +204,12 @@ void compareDatasets(const std::vector<std::tuple<std::string, double>>& fileNam
 
 double compareToReference(sgpp::base::GridType gridType, const std::string& fileName, size_t level,
                           sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -243,10 +244,9 @@ double compareToReference(sgpp::base::GridType gridType, const std::string& file
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, gridGen, alpha);
+  doRandomRefinements(adaptivityConfig, *grid, gridGen, alpha);
 
   sgpp::base::DataVector dataSizeVectorResult(dataset.getNumberInstances());
-  dataSizeVectorResult.setAll(0);
 
   eval->prepare();
 
@@ -256,7 +256,6 @@ double compareToReference(sgpp::base::GridType gridType, const std::string& file
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
@@ -281,12 +280,12 @@ void compareDatasetsTranspose(const std::vector<std::tuple<std::string, double>>
 double compareToReferenceTranspose(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -322,7 +321,7 @@ double compareToReferenceTranspose(
 
   eval->prepare();
 
-  doRandomRefinements(adaptConfig, *grid, gridGen);
+  doRandomRefinements(adaptivityConfig, *grid, gridGen);
 
   sgpp::base::DataVector alphaResult(gridStorage.getSize());
 
@@ -334,7 +333,6 @@ double compareToReferenceTranspose(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
-  alphaResultCompare.setAll(0.0);
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 
@@ -361,12 +359,12 @@ double compareToReferenceDistributed(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
     std::shared_ptr<BlacsProcessGrid> processGrid) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -413,7 +411,6 @@ double compareToReferenceDistributed(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-  dataSizeVectorResultCompare.setAll(0.0);
 
   evalCompare->mult(alpha, dataSizeVectorResultCompare);
 
@@ -447,12 +444,13 @@ double compareToReferenceTransposeDistributed(
     sgpp::base::GridType gridType, const std::string& fileName, size_t level,
     sgpp::datadriven::OperationMultipleEvalConfiguration configuration,
     std::shared_ptr<BlacsProcessGrid> processGrid) {
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 1;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numCoarseningPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 1;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   std::string content = uncompressFile(fileName);
 
@@ -499,7 +497,6 @@ double compareToReferenceTransposeDistributed(
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
   sgpp::base::DataVector alphaResultCompare(gridStorage.getSize());
-  alphaResultCompare.setAll(0.0);
 
   evalCompare->multTranspose(dataSizeVector, alphaResultCompare);
 

@@ -39,6 +39,7 @@ ModelFittingBase::ModelFittingBase()
       interactions{nullptr},
       config{nullptr},
       dataset{nullptr},
+      extraDataset{nullptr},
       solver{nullptr} {}
 
 const FitterConfiguration &ModelFittingBase::getFitterConfiguration() const { return *config; }
@@ -58,7 +59,7 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
   GridFactory gridFactory;
 
   // a regular sparse grid is created, if no geometryConfig is defined,
-  if (geometryConfig.stencils.empty()) {
+  if (geometryConfig.stencils_.empty()) {
     // interaction with size 0
     std::set<std::set<size_t>> interactions;
     return gridFactory.createGrid(gridConfig, interactions);
@@ -70,7 +71,7 @@ Grid *ModelFittingBase::buildGrid(const sgpp::base::GeneralGridConfiguration &gr
 std::set<std::set<size_t>> ModelFittingBase::getInteractions(
     const GeometryConfiguration &geometryConfig) {
   if (!interactions) {
-    if (geometryConfig.stencils.empty()) {
+    if (geometryConfig.stencils_.empty()) {
       // interaction with size 0
       interactions = std::make_unique<std::set<std::set<size_t>>>();
     } else {

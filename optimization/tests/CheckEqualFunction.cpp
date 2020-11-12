@@ -3,12 +3,15 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#define BOOST_TEST_DYN_LINK
+#include "CheckEqualFunction.hpp"
+
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 
 #include <boost/test/unit_test.hpp>
+
 #include <vector>
 
-#include "CheckEqualFunction.hpp"
 
 void checkEqualFunction(sgpp::base::ScalarFunction& f, sgpp::base::ScalarFunction& g) {
   sgpp::base::RandomNumberGenerator::getInstance().setSeed(42);

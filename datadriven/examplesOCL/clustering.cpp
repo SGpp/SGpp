@@ -11,6 +11,7 @@
 #include <sgpp/datadriven/operation/hash/OperationCreateGraphOCL/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationDensityOCLMultiPlatform/OpFactory.hpp>
 #include <sgpp/datadriven/operation/hash/OperationPruneGraphOCL/OpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 
@@ -20,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
 
 int main() {
   size_t dimension = 10, tiefe = 5, k = 12;  // tiefe 6 for testing
@@ -45,9 +45,8 @@ int main() {
   size_t gridsize = grid->getStorage().getSize();
   std::cerr << "Grid created! Number of grid points:     " << gridsize << std::endl;
 
-  sgpp::base::DataVector alpha(gridsize);
+  sgpp::base::DataVector alpha(gridsize, 1.0);
   sgpp::base::DataVector result(gridsize);
-  alpha.setAll(1.0);
 
   sgpp::solver::ConjugateGradients* solver = new sgpp::solver::ConjugateGradients(1000, 0.0001);
   sgpp::datadriven::DensityOCLMultiPlatform::OperationDensity* operation_mult =

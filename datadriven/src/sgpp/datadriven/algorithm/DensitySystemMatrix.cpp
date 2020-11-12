@@ -49,12 +49,17 @@ void DensitySystemMatrix::mult(sgpp::base::DataVector& alpha, sgpp::base::DataVe
 
 // Matrix-Multiplikation verwenden
 void DensitySystemMatrix::generateb(sgpp::base::DataVector& rhs) {
+  computeUnweightedRhs(rhs);
+
+  // 1 / M * Bt * 1
+  rhs.mult(1. / static_cast<double>(numSamples));
+}
+
+void DensitySystemMatrix::computeUnweightedRhs(sgpp::base::DataVector& b) {
   sgpp::base::DataVector y(numSamples);
   y.setAll(1.0);
   // Bt * 1
-  B->multTranspose(y, rhs);
-  // 1 / M * Bt * 1
-  rhs.mult(1. / static_cast<double>(numSamples));
+  B->multTranspose(y, b);
 }
 
 }  // namespace datadriven

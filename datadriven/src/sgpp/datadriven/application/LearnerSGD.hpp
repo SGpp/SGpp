@@ -42,15 +42,11 @@ class LearnerSGD {
    *        for all error computations
    */
   LearnerSGD(base::RegularGridConfiguration& gridConfig,
-             base::AdaptivityConfiguration& adaptivityConfig,
-             base::DataMatrix& pTrainData,
-             base::DataVector& pTrainLabels,
-             base::DataMatrix& pTestData,
-             base::DataVector& pTestLabels,
-             base::DataMatrix* pValData,
-             base::DataVector* pValLabels,
-             double lambda, double gamma,
-             size_t batchSize, bool useValidData);
+             base::AdaptivityConfiguration& adaptivityConfig, base::DataMatrix& pTrainData,
+             base::DataVector& pTrainLabels, base::DataMatrix& pTestData,
+             base::DataVector& pTestLabels, base::DataMatrix* pValData,
+             base::DataVector* pValLabels, double lambda, double gamma, size_t batchSize,
+             bool useValidData);
 
   /**
    * Destructor.
@@ -80,9 +76,8 @@ class LearnerSGD {
    * convergence-based refinement
    *        is chosen)
    */
-  void train(size_t maxDataPasses, std::string refType, std::string refMonitor,
-             size_t refPeriod, double errorDeclineThreshold,
-             size_t errorDeclineBufferSize, size_t minRefInterval);
+  void train(size_t maxDataPasses, std::string refType, std::string refMonitor, size_t refPeriod,
+             double errorDeclineThreshold, size_t errorDeclineBufferSize, size_t minRefInterval);
 
   /**
    * Computes the classification accuracy on the given dataset.
@@ -93,8 +88,8 @@ class LearnerSGD {
    * threshold = 0)
    * @return The resulting accuracy
    */
-  double getAccuracy(sgpp::base::DataMatrix& testData,
-                     sgpp::base::DataVector& testLabels, double threshold);
+  double getAccuracy(sgpp::base::DataMatrix& testData, sgpp::base::DataVector& testLabels,
+                     double threshold);
 
   /**
    * Stores classified data, grids and function evaluations to csv files.
@@ -134,8 +129,7 @@ class LearnerSGD {
    * @param data The data points
    * @param labels The corresponding class labels
    */
-  void getBatchError(sgpp::base::DataMatrix& data,
-                     const sgpp::base::DataVector& labels);
+  void getBatchError(sgpp::base::DataMatrix& data, const sgpp::base::DataVector& labels);
 
   /**
    * Computes the classification accuracy.
@@ -155,8 +149,7 @@ class LearnerSGD {
    * @param testData The data for which class labels should be predicted
    * @param predictedLabels The predicted class labels
    */
-  void predict(base::DataMatrix& testData,
-               base::DataVector& predictedLabels);
+  void predict(base::DataMatrix& testData, base::DataVector& predictedLabels);
 
   /**
    * Stores the last 'batchSize' processed data points

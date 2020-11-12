@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/datadriven/application/LearnerScenario.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
 
 #include <string>
 #include <vector>
@@ -24,7 +24,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdaptivityConfiguration adaptConfig)
+                                 base::AdaptivityConfiguration adaptivityConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
   this->setLambda(lambda);
@@ -32,7 +32,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setGridConfig(gridConfig);
   this->setSolverConfigurationRefine(SLESolverConfigRefine);
   this->setSolverConfigurationFinal(SLESolverConfigFinal);
-  this->setAdaptivityConfiguration(adaptConfig);
+  this->setAdaptivityConfiguration(adaptivityConfig);
   (*this).addDictAttr("testset").addIDAttr("hasTestDataset", false);
 }
 
@@ -41,7 +41,7 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
                                  base::RegularGridConfiguration gridConfig,
                                  solver::SLESolverConfiguration SLESolverConfigRefine,
                                  solver::SLESolverConfiguration SLESolverConfigFinal,
-                                 base::AdaptivityConfiguration adaptConfig,
+                                 base::AdaptivityConfiguration adaptivityConfig,
                                  datadriven::TestsetConfiguration testsetConfig)
     : initialized(true) {
   this->setDatasetFileName(datasetFileName);
@@ -50,13 +50,11 @@ LearnerScenario::LearnerScenario(std::string datasetFileName, double lambda,
   this->setGridConfig(gridConfig);
   this->setSolverConfigurationRefine(SLESolverConfigRefine);
   this->setSolverConfigurationFinal(SLESolverConfigFinal);
-  this->setAdaptivityConfiguration(adaptConfig);
+  this->setAdaptivityConfiguration(adaptivityConfig);
   this->setTestsetConfiguration(testsetConfig);
 }
 
-bool LearnerScenario::isInitialized() const {
-  return initialized;
-}
+bool LearnerScenario::isInitialized() const { return initialized; }
 
 void LearnerScenario::setDatasetFileName(std::string datasetFileName) {
   (*this).replaceTextAttr("datasetFileName", datasetFileName);
@@ -192,25 +190,25 @@ solver::SLESolverConfiguration LearnerScenario::getSolverConfigurationFinal() {
   return solverConfigFinal;
 }
 
-void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptConfig) {
+void LearnerScenario::setAdaptivityConfiguration(base::AdaptivityConfiguration& adaptivityConfig) {
   (*this).replaceDictAttr("adaptivity");
-  (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptConfig.maxLevelType_);
+  (*this)["adaptivity"].replaceIDAttr("maxLevelType", adaptivityConfig.maxLevelType_);
   (*this)["adaptivity"].replaceIDAttr("noPoints",
-                                      static_cast<uint64_t>(adaptConfig.noPoints_));
+                                      static_cast<uint64_t>(adaptivityConfig.numRefinementPoints_));
   (*this)["adaptivity"].replaceIDAttr("numRefinements",
-                                      static_cast<uint64_t>(adaptConfig.numRefinements_));
-  (*this)["adaptivity"].replaceIDAttr("percent", adaptConfig.percent_);
-  (*this)["adaptivity"].replaceIDAttr("threshold", adaptConfig.threshold_);
+                                      static_cast<uint64_t>(adaptivityConfig.numRefinements_));
+  (*this)["adaptivity"].replaceIDAttr("percent", adaptivityConfig.percent_);
+  (*this)["adaptivity"].replaceIDAttr("threshold", adaptivityConfig.refinementThreshold_);
 }
 
 base::AdaptivityConfiguration LearnerScenario::getAdaptivityConfiguration() {
-  base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
-  adaptConfig.noPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
-  adaptConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
-  adaptConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
-  adaptConfig.threshold_ = (*this)["adaptivity"]["threshold"].getDouble();
-  return adaptConfig;
+  base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = (*this)["adaptivity"]["maxLevelType"].getBool();
+  adaptivityConfig.numRefinementPoints_ = (*this)["adaptivity"]["noPoints"].getUInt();
+  adaptivityConfig.numRefinements_ = (*this)["adaptivity"]["numRefinements"].getUInt();
+  adaptivityConfig.percent_ = (*this)["adaptivity"]["percent"].getDouble();
+  adaptivityConfig.refinementThreshold_ = (*this)["adaptivity"]["threshold"].getDouble();
+  return adaptivityConfig;
 }
 
 template <class T>

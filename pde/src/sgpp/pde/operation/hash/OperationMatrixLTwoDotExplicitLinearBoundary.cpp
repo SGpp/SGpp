@@ -38,7 +38,6 @@ void OperationMatrixLTwoDotExplicitLinearBoundary::buildMatrix(sgpp::base::Grid*
 
   size_t size = grid->getSize();
   sgpp::base::DataVector unit(size);
-  unit.setAll(0.0);
   sgpp::base::DataVector result(size);
 
   for (size_t i = 0; i < size; i++) {

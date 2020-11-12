@@ -30,7 +30,6 @@ double OperationEvalHessianFundamentalNakSplineNaive::evalHessian(const DataVect
   gradient.setAll(0.0);
 
   hessian = DataMatrix(d, d);
-  hessian.setAll(0.0);
 
   DataVector curGradient(d);
   DataMatrix curHessian(d, d);

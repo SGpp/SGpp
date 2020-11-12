@@ -3,17 +3,17 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <random>
 #include <string>
 
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-
-void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
+void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig, sgpp::base::Grid& grid,
                       sgpp::base::GridGenerator& gridGen, std::mt19937 mt,
                       std::uniform_real_distribution<double>& dist) {
   sgpp::base::DataVector alphaRefine(grid.getSize());
@@ -22,9 +22,9 @@ void doAllRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::ba
     alphaRefine[i] = dist(mt);
   }
 
-  for (size_t i = 0; i < adaptConfig.numRefinements_; i++) {
-    sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaRefine, adaptConfig.noPoints_,
-                                                      adaptConfig.threshold_);
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_; i++) {
+    sgpp::base::SurplusRefinementFunctor myRefineFunc(
+        alphaRefine, adaptivityConfig.numRefinementPoints_, adaptivityConfig.refinementThreshold_);
     gridGen.refine(myRefineFunc);
     size_t oldSize = alphaRefine.getSize();
     alphaRefine.resize(grid.getSize());
@@ -45,12 +45,12 @@ int main(int argc, char** argv) {
 
   uint32_t level = 10;
 
-  sgpp::base::AdaptivityConfiguration adaptConfig;
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::OperationMultipleEvalConfiguration configuration(
       sgpp::datadriven::OperationMultipleEvalType::STREAMING,
@@ -85,7 +85,7 @@ int main(int argc, char** argv) {
   std::unique_ptr<sgpp::base::OperationMultipleEval> eval =
       sgpp::op_factory::createOperationMultipleEval(*grid, trainingData, configuration);
 
-  doAllRefinements(adaptConfig, *grid, gridGen, mt, dist);
+  doAllRefinements(adaptivityConfig, *grid, gridGen, mt, dist);
 
   std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;

@@ -42,7 +42,7 @@ class GridFactory {
   std::set<std::set<size_t>> getInteractions(sgpp::datadriven::GeometryConfiguration config) const;
 
   void getBlockInteractions(std::set<std::set<size_t>>& interactions,
-                            sgpp::datadriven::GeometryConfiguration& geoConf,
+                            sgpp::datadriven::GeometryConfiguration& geometryConfig,
                             sgpp::datadriven::StencilConfiguration& stencilConf) const;
 
   /*
@@ -53,7 +53,7 @@ class GridFactory {
    * @return all hierachical interactions of all pixels in a vector
    */
   void getHierarchicalParents(std::set<std::set<size_t>>& interactions,
-                              sgpp::datadriven::GeometryConfiguration& geometryConf,
+                              sgpp::datadriven::GeometryConfiguration& geometryConfig,
                               sgpp::datadriven::StencilConfiguration& stencilConf) const;
 
   /*
@@ -62,7 +62,7 @@ class GridFactory {
    * @return all direct neighbour interactions of all pixels in a vector
    */
   void getDirectNeighbours(std::set<std::set<size_t>>& interactions,
-                           sgpp::datadriven::GeometryConfiguration& geometryConf,
+                           sgpp::datadriven::GeometryConfiguration& geometryConfig,
                            sgpp::datadriven::StencilConfiguration& stencilConf) const;
 
  private:

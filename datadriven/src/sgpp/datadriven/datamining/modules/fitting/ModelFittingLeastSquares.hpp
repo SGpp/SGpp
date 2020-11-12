@@ -47,6 +47,9 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset &dataset) override;
+  void fit(Dataset &, Dataset &) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Improve accuracy of the fit on the given training data by adaptive refinement of the grid and
@@ -54,9 +57,12 @@ class ModelFittingLeastSquares : public ModelFittingBaseSingleGrid {
    * @return true if refinement could be performed based on the refinement configuration, else
    * false.
    */
-  bool refine() override;
+  bool adapt() override;
 
   void update(Dataset &dataset) override;
+  void update(Dataset &, Dataset &) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Evaluate the fitted regression model at a single data point - requires a trained grid.

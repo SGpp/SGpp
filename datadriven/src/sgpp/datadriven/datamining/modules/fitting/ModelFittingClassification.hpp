@@ -5,10 +5,8 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
-
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DBMatObjectStore.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationClassification.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
@@ -17,6 +15,7 @@
 #include <sgpp/datadriven/functors/MultiGridRefinementFunctor.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <map>
 #include <memory>
@@ -56,19 +55,26 @@ class ModelFittingClassification : public ModelFittingBase {
    * @param dataset the training dataset that is used to fit the models
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Improve the accuracy of the classification by refining the grids of each class
-   * @return true if refinement could be performed for any grid based on the refinement
+   * Improve the accuracy of the classification by refining or coarsening the grids of each class.
+   * Coarsening is currently only implemented for RefinementFunctorType::Classification
+   *  @return true if refinement could be performed for any grid based on the refinement
    * configuration, else false.
    */
-  bool refine() override;
+  bool adapt() override;
 
   /**
    * Updates the models for each class based on new data (streaming or batch learning)
    * @param dataset the new data
    */
   void update(Dataset& dataset) override;
+  void update(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
    * Predict the class of a data sample based on the density of the sample for each model
@@ -159,8 +165,8 @@ class ModelFittingClassification : public ModelFittingBase {
   bool hasObjectStore;
 
   /**
-   * Translates a class label to an index for the models vector. If the class is not present
-   * it will create a new index for this class
+   * Translates a class label to an index for the models vector. If the class is not present it will
+   * create a new index for this class
    * @param label the label the translate
    * @return the index of this class label
    */
@@ -191,6 +197,11 @@ class ModelFittingClassification : public ModelFittingBase {
    * Count the amount of refinement operations performed on the current dataset.
    */
   size_t refinementsPerformed;
+
+  /**
+   * Initial size of the grids.
+   */
+  size_t initialGridSize;
 
   /**
    * Models for each class

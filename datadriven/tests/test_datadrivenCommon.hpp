@@ -10,17 +10,16 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
+#include <sgpp/globaldef.hpp>
+
+#if USE_OCL == 1
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+using sgpp::base::OCLOperationConfiguration;
+#endif
 
 #include <string>
 #include <tuple>
 #include <vector>
-
-#if USE_OCL == 1
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-using sgpp::base::OCLOperationConfiguration;
-#endif
-
-#include "sgpp/globaldef.hpp"
 
 using sgpp::datadriven::BlacsProcessGrid;
 
@@ -28,11 +27,12 @@ std::string uncompressFile(std::string fileName);
 
 sgpp::base::DataMatrix* readReferenceMatrix(sgpp::base::GridStorage& storage, std::string fileName);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen, sgpp::base::DataVector& alpha);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen,
+                         sgpp::base::DataVector& alpha);
 
-void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptConfig, sgpp::base::Grid& grid,
-                         sgpp::base::GridGenerator& gridGen);
+void doRandomRefinements(sgpp::base::AdaptivityConfiguration& adaptivityConfig,
+                         sgpp::base::Grid& grid, sgpp::base::GridGenerator& gridGen);
 
 double compareVectors(sgpp::base::DataVector& results, sgpp::base::DataVector& resultsCompare);
 

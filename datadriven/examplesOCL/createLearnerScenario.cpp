@@ -3,27 +3,27 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/application/LearnerScenario.hpp>
+#include <sgpp/datadriven/application/MetaLearner.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <iostream>
 #include <string>
 
-#include "sgpp/globaldef.hpp"
-#include "sgpp/datadriven/application/LearnerScenario.hpp"
-#include "sgpp/datadriven/application/MetaLearner.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-
-using sgpp::datadriven::OperationMultipleEvalType;
-using sgpp::datadriven::OperationMultipleEvalSubType;
 using sgpp::base::OCLOperationConfiguration;
+using sgpp::datadriven::OperationMultipleEvalSubType;
+using sgpp::datadriven::OperationMultipleEvalType;
 
 int main(int argc, char** argv) {
   sgpp::base::RegularGridConfiguration gridConfig;
   sgpp::solver::SLESolverConfiguration SLESolverConfigRefine;
   sgpp::solver::SLESolverConfiguration SLESolverConfigFinal;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   sgpp::datadriven::TestsetConfiguration testsetConfig;
 
   ///////////////////////////////// Configuration start ////////////////////////////////////
@@ -47,11 +47,11 @@ int main(int argc, char** argv) {
   gridConfig.maxDegree_ = 30;
 
   // Set Adaptivity
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   // Set solver during refinement
   SLESolverConfigRefine.eps_ = 0;
@@ -123,7 +123,7 @@ int main(int argc, char** argv) {
   // final scenario configuration
   sgpp::datadriven::LearnerScenario scenario(datasetFileName, lambda, internalPrecision, gridConfig,
                                              SLESolverConfigRefine, SLESolverConfigFinal,
-                                             adaptConfig);
+                                             adaptivityConfig);
 
   sgpp::datadriven::MetaLearner metaLearner(
       scenario.getGridConfig(), scenario.getSolverConfigurationRefine(),
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
 
   //  sgpp::datadriven::MetaLearner metaLearner(gridConfig, SLESolverConfigRefine,
   //  SLESolverConfigFinal,
-  //                                            adaptConfig, lambda, true);
+  //                                            adaptivityConfig, lambda, true);
 
   OCLOperationConfiguration parameters(parameterFileName);
 
@@ -157,7 +157,7 @@ int main(int argc, char** argv) {
 
   sgpp::datadriven::LearnerScenario scenarioWithTest(
       datasetFileName, lambda, internalPrecision, gridConfig, SLESolverConfigRefine,
-      SLESolverConfigFinal, adaptConfig, testsetConfig);
+      SLESolverConfigFinal, adaptivityConfig, testsetConfig);
 
   scenarioWithTest.serialize(scenarioFileName);
 

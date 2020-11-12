@@ -3,7 +3,7 @@
 
 # Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
-# use, please see the copyright notice provided with SG++ or at 
+# use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
 import unittest
@@ -27,7 +27,7 @@ class Test_HashRefinementInconsistent(unittest.TestCase):
         for i in [9, 10, 11, 12]:
             alpha[i] = 0.0
         coarseningFunctor = SurplusCoarseningFunctor(alpha, 4, 0.5)
-        self.grid.getGenerator().coarsen(coarseningFunctor, alpha)
+        self.grid.getGenerator().coarsen(coarseningFunctor)
         
 
 

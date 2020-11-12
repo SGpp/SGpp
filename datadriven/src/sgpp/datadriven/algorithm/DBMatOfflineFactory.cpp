@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/algorithm/DBMatOfflineEigen.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineLU.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineOrthoAdapt.hpp>
-#include <sgpp/datadriven/datamining/base/StringTokenizer.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 
 #include <string>
 #include <vector>
@@ -81,7 +81,7 @@ DBMatOffline* DBMatOfflineFactory::buildFromFile(const std::string& fileName) {
 
   std::cout << str;
   std::vector<std::string> tokens;
-  StringTokenizer::tokenize(str, ",", tokens);
+  sgpp::base::StringTokenizer::tokenize(str, ",", tokens);
   std::cout << "tokens: ";
   for (auto& item : tokens) {
     std::cout << item << ",";

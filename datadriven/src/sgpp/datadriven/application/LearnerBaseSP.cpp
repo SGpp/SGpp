@@ -3,24 +3,24 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
-#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
-#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/datatypes/DataMatrix.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/tools/PrecisionConverter.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
+#include <sgpp/base/tools/PrecisionConverter.hpp>
 
-#include <sgpp/solver/sle/ConjugateGradientsSP.hpp>
 #include <sgpp/solver/sle/BiCGStabSP.hpp>
+#include <sgpp/solver/sle/ConjugateGradientsSP.hpp>
 
 #include <sgpp/datadriven/application/LearnerBaseSP.hpp>
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
 #include <iostream>
 #include <string>
@@ -83,13 +83,13 @@ LearnerBaseSP::~LearnerBaseSP() {
   if (grid_ != nullptr) delete grid_;
 }
 
-void LearnerBaseSP::InitializeGrid(const sgpp::base::RegularGridConfiguration& GridConfig) {
-  if (GridConfig.type_ == sgpp::base::GridType::LinearBoundary) {
-    grid_ = new sgpp::base::LinearBoundaryGrid(GridConfig.dim_);
-  } else if (GridConfig.type_ == sgpp::base::GridType::ModLinear) {
-    grid_ = new sgpp::base::ModLinearGrid(GridConfig.dim_);
-  } else if (GridConfig.type_ == sgpp::base::GridType::Linear) {
-    grid_ = new sgpp::base::LinearGrid(GridConfig.dim_);
+void LearnerBaseSP::InitializeGrid(const sgpp::base::RegularGridConfiguration& gridConfig) {
+  if (gridConfig.type_ == sgpp::base::GridType::LinearBoundary) {
+    grid_ = new sgpp::base::LinearBoundaryGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == sgpp::base::GridType::ModLinear) {
+    grid_ = new sgpp::base::ModLinearGrid(gridConfig.dim_);
+  } else if (gridConfig.type_ == sgpp::base::GridType::Linear) {
+    grid_ = new sgpp::base::LinearGrid(gridConfig.dim_);
   } else {
     grid_ = nullptr;
     throw base::application_exception(
@@ -98,7 +98,7 @@ void LearnerBaseSP::InitializeGrid(const sgpp::base::RegularGridConfiguration& G
   }
 
   // Generate regular Grid with LEVELS Levels
-  grid_->getGenerator().regular(GridConfig.level_);
+  grid_->getGenerator().regular(gridConfig.level_);
 
   // Create alpha
   alpha_ = new sgpp::base::DataVectorSP(grid_->getSize());
@@ -119,10 +119,10 @@ void LearnerBaseSP::postProcessing(const sgpp::base::DataMatrixSP& trainDataset,
 
 LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    sgpp::base::DataVectorSP& classes,
-                                   const sgpp::base::RegularGridConfiguration& GridConfig,
+                                   const sgpp::base::RegularGridConfiguration& gridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigRefine,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfigFinal,
-                                   const sgpp::base::AdaptivityConfiguration& AdaptConfig,
+                                   const sgpp::base::AdaptivityConfiguration& adaptivityConfig,
                                    const bool testAccDuringAdapt,
                                    const float lambdaRegularization) {
   LearnerTiming result;
@@ -155,7 +155,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
 
   if (isTrained_ == true) isTrained_ = false;
 
-  InitializeGrid(GridConfig);
+  InitializeGrid(gridConfig);
 
   // check if grid was created
   if (grid_ == nullptr) return result;
@@ -188,10 +188,8 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
   // execute adaptsteps
   sgpp::base::SGppStopwatch* myStopwatch = new sgpp::base::SGppStopwatch();
 
-  for (size_t i = 0; i < AdaptConfig.numRefinements_ + 1; i++) {
-    if (isVerbose_)
-      std::cout << std::endl
-                << "Doing refinement: " << i << std::endl;
+  for (size_t i = 0; i < adaptivityConfig.numRefinements_ + 1; i++) {
+    if (isVerbose_) std::cout << std::endl << "Doing refinement: " << i << std::endl;
 
     myStopwatch->start();
 
@@ -199,8 +197,8 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     if (i > 0) {
       sgpp::base::DataVector alphaDP(alpha_->getSize());
       sgpp::base::PrecisionConverter::convertDataVectorSPToDataVector(*alpha_, alphaDP);
-      sgpp::base::SurplusRefinementFunctor myRefineFunc(alphaDP, AdaptConfig.noPoints_,
-                                                        AdaptConfig.threshold_);
+      sgpp::base::SurplusRefinementFunctor myRefineFunc(
+          alphaDP, adaptivityConfig.numRefinementPoints_, adaptivityConfig.refinementThreshold_);
       grid_->getGenerator().refine(myRefineFunc);
       DMSystem->rebuildLevelAndIndex();
 
@@ -214,7 +212,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     sgpp::base::DataVectorSP b(alpha_->getSize());
     DMSystem->generateb(classes, b);
 
-    if (i == AdaptConfig.numRefinements_) {
+    if (i == adaptivityConfig.numRefinements_) {
       myCG->setMaxIterations(SolverConfigFinal.maxIterations_);
       myCG->setEpsilon(SolverConfigFinal.eps_);
     }
@@ -229,7 +227,7 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
     }
 
     // use post-processing to determine Flops and time
-    if (i < AdaptConfig.numRefinements_) {
+    if (i < adaptivityConfig.numRefinements_) {
       postProcessing(trainDataset, SolverConfigRefine.type_, myCG->getNumberIterations());
     } else {
       postProcessing(trainDataset, SolverConfigFinal.type_, myCG->getNumberIterations());
@@ -276,10 +274,8 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
   }
 
   if (isVerbose_) {
-    std::cout << "Finished Training!" << std::endl
-              << std::endl;
-    std::cout << "Training took: " << execTime_ << " seconds" << std::endl
-              << std::endl;
+    std::cout << "Finished Training!" << std::endl << std::endl;
+    std::cout << "Training took: " << execTime_ << " seconds" << std::endl << std::endl;
   }
 
   isTrained_ = true;
@@ -293,19 +289,19 @@ LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
 
 LearnerTiming LearnerBaseSP::train(sgpp::base::DataMatrixSP& trainDataset,
                                    sgpp::base::DataVectorSP& classes,
-                                   const sgpp::base::RegularGridConfiguration& GridConfig,
+                                   const sgpp::base::RegularGridConfiguration& gridConfig,
                                    const sgpp::solver::SLESolverSPConfiguration& SolverConfig,
                                    const float lambdaRegularization) {
-  sgpp::base::AdaptivityConfiguration AdaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
 
-  AdaptConfig.maxLevelType_ = false;
-  AdaptConfig.noPoints_ = 0;
-  AdaptConfig.numRefinements_ = 0;
-  AdaptConfig.percent_ = 0.0;
-  AdaptConfig.threshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 0;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 0.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
-  return train(trainDataset, classes, GridConfig, SolverConfig, SolverConfig, AdaptConfig, false,
-               lambdaRegularization);
+  return train(trainDataset, classes, gridConfig, SolverConfig, SolverConfig, adaptivityConfig,
+               false, lambdaRegularization);
 }
 
 sgpp::base::DataVectorSP LearnerBaseSP::predict(sgpp::base::DataMatrixSP& testDataset) {

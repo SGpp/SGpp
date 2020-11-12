@@ -29,4 +29,3 @@ class RefinementMonitorFactory {
 
 }  // namespace datadriven
 }  // namespace sgpp
-

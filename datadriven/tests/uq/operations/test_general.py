@@ -1,3 +1,8 @@
+# Copyright (C) 2008-today The SG++ project
+# This file is part of the SG++ project. For conditions of distribution and
+# use, please see the copyright notice provided with SG++ or at
+# sgpp.sparsegrids.org
+
 # test sparse grid operations
 from pysgpp.pysgpp_swig import HashGridPoint
 from pysgpp.extensions.datadriven.uq.operations.sparse_grid import getGridPointsOnBoundary, \

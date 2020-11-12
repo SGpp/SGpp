@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# Copyright (C) 2008-today The SG++ Project
+# Copyright (C) 2008-today The SG++ project
 # This file is part of the SG++ project. For conditions of distribution and
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
@@ -113,6 +113,7 @@ vars.Add("COMPILER", "Set the compiler, \"gnu\" means using gcc with standard co
                      "when using the Intel Compiler, version 11 or higher must be used", "gnu")
 vars.Add("CC", "Override the C compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
 vars.Add("CXX", "Override the C++ compiler, can be used to select a specific compiler version, otherwise use \"COMPILER\"", None)
+vars.Add("LINK", "Override the linker, can be used to select a specific linker version", None)
 vars.Add(BoolVariable("OPT", "Set compiler optimization on and off", True))
 vars.Add(BoolVariable("RUN_ON_HAZELHEN", "Add some special options on hazelhen", False))
 vars.Add(BoolVariable("RUN_PYTHON_TESTS", "Run Python unit tests", True))
@@ -285,7 +286,7 @@ Parameters are:
            for line in vars.GenerateHelpText(env).splitlines()]))
 
 # add trailing slashes were required and if not present
-BUILD_DIR = Dir(os.path.join("lib", "sgpp"))
+BUILD_DIR = Dir(os.path.join("lib"))
 Export("BUILD_DIR")
 PYSGPP_PACKAGE_PATH = Dir(os.path.join("lib"))
 Export("PYSGPP_PACKAGE_PATH")
@@ -303,7 +304,7 @@ Export("EXAMPLE_DIR")
 # for CXX or if the default ("g++" on Linux) has been used
 env.arguments = ARGUMENTS
 
-if not env.GetOption('clean'):
+if not ( env.GetOption('clean') or env.GetOption('help') ):
   SGppConfigure.doConfigure(env, moduleFolders, languageSupport)
 
 # fix for "command line too long" errors on MinGW
@@ -313,7 +314,7 @@ if env["PLATFORM"] == "win32":
 else:
   Helper.setSpawn(env)
 
-# add #/lib/sgpp to LIBPATH
+# add #/lib to LIBPATH
 # (to add corresponding -L... flags to linker calls)
 env.Append(LIBPATH=[BUILD_DIR])
 
@@ -502,7 +503,7 @@ if env["SG_PYTHON"]:
 if env["SG_JAVA"]:
   env.SConscript("#/jsgpp/SConscript", {"env": env, "moduleName": "jsgpp"})
 
-# compile jsgpp
+# compile matsgpp
 if env["SG_MATLAB"]:
   env.SConscript("#/matsgpp/SConscript", {"env": env, "moduleName": "matsgpp"})
 
@@ -578,7 +579,7 @@ if env["RUN_PYTHON_EXAMPLES"]:
 #########################################################################
 
 installLibSGpp = env.Alias("install-lib-sgpp",
-                           env.Install(os.path.join(env.get("LIBDIR"), "sgpp"),
+                           env.Install(os.path.join(env.get("LIBDIR")),
                                        libraryTargetList))
 
 headerFinalDestList = []
@@ -641,3 +642,8 @@ else:
 # occurs when cleaning, i.e., `scons -c`, while using Python 3.x for SCons
 if not hasattr(os.environ, "has_key"):
   os.environ.has_key = (lambda x: x in os.environ)
+
+# Save build variables to file
+@atexit.register
+def say_bye():
+  vars.Save("buildVars.out", env)

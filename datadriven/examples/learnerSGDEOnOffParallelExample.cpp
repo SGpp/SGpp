@@ -11,15 +11,14 @@
 #endif /* USE_GSL */
 
 #ifdef USE_MPI
-#include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/datadriven/tools/ARFFTools.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
-#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
-
 #include <omp.h>
 
+#include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/LearnerSGDEOnOffParallel.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/MPIMethods.hpp>
+#include <sgpp/datadriven/application/learnersgdeonoffparallel/RoundRobinScheduler.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
 #include <string>
 
 using sgpp::base::DataMatrix;
@@ -59,8 +58,7 @@ int main(int argc, char *argv[]) {
   if (argc != 5) {
     std::cout << "Usage:" << std::endl
               << "learnerSGDEOnOffParallelTest <trainDataFile> "
-              << "<testDataFile> <batchSize> <refPeriod>"
-              << std::endl;
+              << "<testDataFile> <batchSize> <refPeriod>" << std::endl;
     return -1;
   }
   /**
@@ -68,19 +66,19 @@ int main(int argc, char *argv[]) {
    * If only one specific example should be executed, set
    * totalSets=1.
    */
-//  size_t totalSets = 1;
-//  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
-//  double avgError = 0.0;
-//  double avgErrorFolds = 0.0;
-//  for (size_t numSets = 0; numSets < totalSets; numSets++) {
-//    /**
-//     * A vector to compute average classification error throughout
-//     * the learning process. The length of the vector determines
-//     * the total number of error observations.
-//     */
-//    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
-//
-//    for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
+  //  size_t totalSets = 1;
+  //  size_t totalFolds = 1;  // set to 5 to perform 5-fold cv
+  //  double avgError = 0.0;
+  //  double avgErrorFolds = 0.0;
+  //  for (size_t numSets = 0; numSets < totalSets; numSets++) {
+  //    /**
+  //     * A vector to compute average classification error throughout
+  //     * the learning process. The length of the vector determines
+  //     * the total number of error observations.
+  //     */
+  //    sgpp::base::DataVector avgErrorsFolds(51, 0.0);
+  //
+  //    for (size_t numFolds = 0; numFolds < totalFolds; numFolds++) {
   /**
    * Get the training, test and validation data
    */
@@ -183,14 +181,14 @@ int main(int argc, char *argv[]) {
   // select zero-crossings-based refinement
   refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   /**
    * Specify number of refinement steps and the max number
    * of grid points to refine each step.
    */
-  adaptConfig.numRefinements_ = 2;
-  adaptConfig.noPoints_ = 7;
-  adaptConfig.threshold_ = 0.0;  // only required for surplus refinement
+  adaptivityConfig.numRefinements_ = 2;
+  adaptivityConfig.numRefinementPoints_ = 7;
+  adaptivityConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
   // initial weighting factor
   double beta = 0.0;
@@ -209,19 +207,9 @@ int main(int argc, char *argv[]) {
    * Create the learner.
    */
   std::cout << "# create learner" << std::endl;
-  sgpp::datadriven::LearnerSGDEOnOffParallel learner(gridConfig,
-                                                     adaptConfig,
-                                                     regularizationConfig,
-                                                     densityEstimationConfig,
-                                                     trainDataset,
-                                                     testDataset,
-                                                     nullptr,
-                                                     classLabels,
-                                                     classNum,
-                                                     usePrior,
-                                                     beta,
-                                                     scheduler);
-
+  sgpp::datadriven::LearnerSGDEOnOffParallel learner(
+      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig, trainDataset,
+      testDataset, nullptr, classLabels, classNum, usePrior, beta, scheduler);
 
   // specify max number of passes over traininig data set
   size_t maxDataPasses = 1;
@@ -235,15 +223,14 @@ int main(int argc, char *argv[]) {
   std::cout << "# start to train the learner" << std::endl;
   sgpp::base::SGppStopwatch stopwatch;
 
-//    CALLGRIND_START_INSTRUMENTATION;
+  //    CALLGRIND_START_INSTRUMENTATION;
 
   stopwatch.start();
   learner.trainParallel(batchSize, maxDataPasses, refType, refMonitor, refPeriod,
-                        accDeclineThreshold,
-                        accDeclineBufferSize, minRefInterval);
+                        accDeclineThreshold, accDeclineBufferSize, minRefInterval);
   double deltaTime = stopwatch.stop();
 
-//    CALLGRIND_STOP_INSTRUMENTATION;
+  //    CALLGRIND_STOP_INSTRUMENTATION;
 
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -259,8 +246,8 @@ int main(int argc, char *argv[]) {
     std::cout << "# accuracy (client, test data): " << acc << std::endl;
     std::cout << "# delta time training (client): " << deltaTime << std::endl;
   }
-  // store results (classified data, grids, density functions)
-  // learner.storeResults();
+// store results (classified data, grids, density functions)
+// learner.storeResults();
 
 //        sgpp::base::DataVector tmp;
 //        avgErrorFolds += 1.0 - learner.getAccuracy();
@@ -279,23 +266,23 @@ int main(int argc, char *argv[]) {
 //    avgErrorFolds = 0.0;
 //    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
-  // write error evaluation to csv-file
-  /*std::ofstream output;
-  output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-  if (output.fail()) {
-    std::cout << "failed to create csv file!" << std::endl;
+// write error evaluation to csv-file
+/*std::ofstream output;
+output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+if (output.fail()) {
+  std::cout << "failed to create csv file!" << std::endl;
+}
+else {
+  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+    output << avgErrorsFolds.get(i) << ";" << std::endl;
   }
-  else {
-    for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-      output << avgErrorsFolds.get(i) << ";" << std::endl;
-    }
-    output.close();
-  }*/
+  output.close();
+}*/
 //  }
 #else
   std::cout << "GSL not enabled at compile time" << std::endl;
 #endif  // USE_GSL
-#endif /* USE_MPI */
+#endif  /* USE_MPI */
   ///
 }
 
@@ -303,8 +290,7 @@ int main(int argc, char *argv[]) {
 sgpp::datadriven::Dataset loadDataset(const std::string &filename) {
   // load test samples
   std::cout << "# loading file: " << filename << std::endl;
-  sgpp::datadriven::Dataset dataset =
-    sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
+  sgpp::datadriven::Dataset dataset = sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
 
   if (dataset.getDimension() <= 0) {
     std::cout << "# Failed to read dataset! " << filename << std::endl;

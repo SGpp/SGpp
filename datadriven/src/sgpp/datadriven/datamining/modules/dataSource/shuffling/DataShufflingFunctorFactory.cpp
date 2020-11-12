@@ -11,9 +11,9 @@ namespace sgpp {
 namespace datadriven {
 DataShufflingFunctor* DataShufflingFunctorFactory::buildDataShufflingFunctor(
     const DataSourceConfig& config) const {
-  switch (config.shuffling) {
+  switch (config.shuffling_) {
     case DataSourceShufflingType::random : {
-      return new DataShufflingFunctorRandom(config.randomSeed);
+      return new DataShufflingFunctorRandom(config.randomSeed_);
     }
     case DataSourceShufflingType::sequential : {
       return new DataShufflingFunctorSequential();

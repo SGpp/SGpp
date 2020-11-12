@@ -101,8 +101,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   DBMatOffline* offline = nullptr;
 
   // Intialize database if it is provided
-  if (!databaseConfig.filePath.empty()) {
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  if (!databaseConfig.filePath_.empty()) {
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
@@ -138,7 +138,8 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
       *offline, *grid, regularizationConfig.lambda_, 0, densityEstimationConfig.decomposition_)};
 #ifdef USE_SCALAPACK
   online->syncDistributedDecomposition(processGrid, parallelConfig);
-  // in case of SMW decomposition type, the inverse of the matrix needs to be computed also
+  // in case of SMW decomposition type, the inverse of the matrix needs to be
+  // computed also
   if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
       densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
     offline->compute_inverse_parallel(processGrid, parallelConfig);
@@ -148,7 +149,7 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
                                          this->config->getParallelConfig(), processGrid, true,
                                          this->config->getCrossvalidationConfig().enable_);
 #endif /* USE_SCALAPACK */
-  online->setBeta(this->config->getLearnerConfig().learningRate);
+  online->setBeta(this->config->getLearnerConfig().learningRate_);
 
   alpha = alphaDistributed.toLocalDataVectorBroadcast();
 
@@ -157,13 +158,12 @@ void ModelFittingDensityEstimationOnOffParallel::fit(DataMatrix& newDataset) {
   }
 }
 
-bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
-                                                        std::list<size_t>* deletedGridPoints) {
+bool ModelFittingDensityEstimationOnOffParallel::adapt(size_t newNoPoints,
+                                                       std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
-  if (deletedGridPoints != nullptr && deletedGridPoints->size() > 0) {
+  if (deletedGridPoints.size() > 0) {
     // Restructure alpha
-    std::vector<size_t> idxToDelete{std::begin(*deletedGridPoints), std::end(*deletedGridPoints)};
-    alpha.remove(idxToDelete);
+    alpha.remove(deletedGridPoints);
   }
 
   // oldNoPoint refers to the grid size after coarsening
@@ -189,13 +189,13 @@ bool ModelFittingDensityEstimationOnOffParallel::refine(size_t newNoPoints,
     sgpp::datadriven::DBMatOnlineDE_SMW* online_SMW_pointer;
     online_SMW_pointer = static_cast<sgpp::datadriven::DBMatOnlineDE_SMW*>(&*online);
     online_SMW_pointer->updateSystemMatrixDecompositionParallel(
-        config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, *deletedGridPoints,
+        config->getDensityEstimationConfig(), *grid, newNoPoints - oldNoPoints, deletedGridPoints,
         config->getRegularizationConfig().lambda_, processGrid, parallelConfig);
 #endif      /* USE_SCALAPACK */
   } else {  // every other decomposition type than SMW
     // Update online object: lhs, rhs and recompute the density function based on the b stored
     online->updateSystemMatrixDecomposition(config->getDensityEstimationConfig(), *grid,
-                                            newNoPoints - oldNoPoints, *deletedGridPoints,
+                                            newNoPoints - oldNoPoints, deletedGridPoints,
                                             config->getRegularizationConfig().lambda_);
   }
   online->updateRhs(newNoPoints, deletedGridPoints);
@@ -230,9 +230,9 @@ void ModelFittingDensityEstimationOnOffParallel::update(DataMatrix& newDataset) 
 
 double ModelFittingDensityEstimationOnOffParallel::computeResidual(
     DataMatrix& validationData) const {
-  DataVectorDistributed bValidation = online->computeBFromBatchParallel(
+  DataVectorDistributed bValidation = online->computeWeightedBFromBatchParallel(
       validationData, *grid, this->config->getDensityEstimationConfig(),
-      this->config->getParallelConfig(), this->processGrid);
+      this->config->getParallelConfig(), this->processGrid, true);
 
   DataMatrixDistributed rMatrix = online->getOfflineObject().getUnmodifiedRDistributed(
       this->processGrid, this->config->getParallelConfig());

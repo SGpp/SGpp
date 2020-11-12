@@ -36,7 +36,7 @@
         "densityEstimationConfig" : {
             "densityEstimationType" : "decomposition"
         },
-        "learner" : {
+        "learnerConfig" : {
             "usePrior" : true,
             "learningRate" : 1.0
         }

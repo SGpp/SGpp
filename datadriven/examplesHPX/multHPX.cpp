@@ -3,21 +3,20 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
+#include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
+#include <sgpp/base/opencl/OCLOperationConfiguration.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/datadriven/DatadrivenOpFactory.hpp>
+#include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
+#include <sgpp/datadriven/tools/ARFFTools.hpp>
+#include <sgpp/globaldef.hpp>
+
 #include <hpx/hpx_init.hpp>
 #include <hpx/include/actions.hpp>
 #include <hpx/include/util.hpp>
-
 #include <random>
 #include <string>
-
-#include "sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
-#include "sgpp/base/opencl/OCLOperationConfiguration.hpp"
-#include "sgpp/base/operation/BaseOpFactory.hpp"
-#include "sgpp/base/operation/hash/OperationMultipleEval.hpp"
-#include "sgpp/datadriven/DatadrivenOpFactory.hpp"
-#include "sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp"
-#include "sgpp/datadriven/tools/ARFFTools.hpp"
-#include "sgpp/globaldef.hpp"
 
 /*    sgpp::base::OCLOperationConfiguration parameters;
  parameters.readFromFile("StreamingOCL.cfg");
@@ -35,7 +34,7 @@ std::string fileName = "friedman2_4d_300000.arff";
 //  std::string fileName = "DR5_train.arff";
 //  std::string fileName = "debugging_small.arff";
 
-sgpp::base::AdaptivityConfiguration adaptConfig;
+sgpp::base::AdaptivityConfiguration adaptivityConfig;
 std::unique_ptr<sgpp::base::Grid> grid(nullptr);
 sgpp::base::DataMatrix trainingData;
 sgpp::base::DataVector alpha;
@@ -46,11 +45,11 @@ bool is_root_node = false;
 int hpx_main(boost::program_options::variables_map& vm) {
   is_root_node = hpx::find_here() == hpx::find_root_locality();
 
-  adaptConfig.maxLevelType_ = false;
-  adaptConfig.noPoints_ = 80;
-  adaptConfig.numRefinements_ = 0;
-  adaptConfig.percent_ = 200.0;
-  adaptConfig.threshold_ = 0.0;
+  adaptivityConfig.maxLevelType_ = false;
+  adaptivityConfig.numRefinementPoints_ = 80;
+  adaptivityConfig.numRefinements_ = 0;
+  adaptivityConfig.percent_ = 200.0;
+  adaptivityConfig.refinementThreshold_ = 0.0;
 
   sgpp::datadriven::ARFFTools arffTools;
   dataset = arffTools.readARFFFromFile(fileName);
@@ -82,7 +81,7 @@ int hpx_main(boost::program_options::variables_map& vm) {
     alpha[i] = static_cast<double>(i) + 1.0;
   }
 
-  //  doAllRefinements(adaptConfig, *grid, gridGen, alpha);
+  //  doAllRefinements(adaptivityConfig, *grid, gridGen, alpha);
 
   std::cout << "number of grid points after refinement: " << gridStorage.getSize() << std::endl;
   std::cout << "grid set up" << std::endl;
@@ -135,7 +134,6 @@ int main(int argc, char* argv[]) {
             sgpp::op_factory::createOperationMultipleEval(*grid, trainingData));
 
     sgpp::base::DataVector dataSizeVectorResultCompare(dataset.getNumberInstances());
-    dataSizeVectorResultCompare.setAll(0.0);
 
     evalCompare->mult(alpha, dataSizeVectorResultCompare);
 

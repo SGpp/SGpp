@@ -78,16 +78,14 @@ void LearnerLeastSquaresIdentity::multTranspose(sgpp::base::DataMatrix& dataset,
 }
 
 double LearnerLeastSquaresIdentity::testRegular(
-    const sgpp::base::RegularGridConfiguration& GridConfig, sgpp::base::DataMatrix& testDataset) {
-  InitializeGrid(GridConfig);
+    const sgpp::base::RegularGridConfiguration& gridConfig, sgpp::base::DataMatrix& testDataset) {
+  InitializeGrid(gridConfig);
 
   std::unique_ptr<sgpp::base::OperationMultipleEval> MultEval(
       sgpp::op_factory::createOperationMultipleEval(*(this->grid), testDataset,
                                                     this->implementationConfiguration));
 
   sgpp::base::DataVector classesComputed(testDataset.getNrows());
-
-  classesComputed.setAll(0.0);
 
   execTime = 0.0;
 

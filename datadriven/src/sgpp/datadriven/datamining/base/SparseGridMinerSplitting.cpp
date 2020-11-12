@@ -7,9 +7,9 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/algorithm/RefinementMonitorFactory.hpp>
+#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/tools/Dataset.hpp>
-#include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 
 #include <iostream>
 
@@ -56,7 +56,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
     }
   }
 
-  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs; epoch++) {
+  for (size_t epoch = 0; epoch < dataSource->getConfig().epochs_; epoch++) {
     if (verbose) {
       std::ostringstream out;
       out << "###############"
@@ -100,7 +100,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       monitor->pushToBuffer(numInstances, scoreVal, scoreTrain);
       size_t refinements = monitor->refinementsNecessary();
       while (refinements--) {
-        fitter->refine();
+        fitter->adapt();
       }
       if (verbose) {
         print("###############Iteration finished.");
@@ -108,6 +108,7 @@ double SparseGridMinerSplitting::learn(bool verbose) {
       iteration++;
     }
   }
+  delete monitor;  // release memory
   return scorer->test(*fitter, *(dataSource->getValidationData()));
 }
 
@@ -215,5 +216,6 @@ double SparseGridMinerSplitting::evaluateLambda(double lambda, bool verbose) {
 
   return scoreVal;
 }
+
 }  // namespace datadriven
 }  // namespace sgpp

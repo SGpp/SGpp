@@ -3,13 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
-
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/datadriven/application/LearnerSGD.hpp>
 #include <sgpp/datadriven/tools/ARFFTools.hpp>
-
+#include <sgpp/globaldef.hpp>
 #include <string>
 
 /**
@@ -57,7 +55,7 @@ int main() {
       // load training samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset trainDataset =
-        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
+          sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& trainData = trainDataset.getData();
       // extract train classes
       sgpp::base::DataVector& trainLabels = trainDataset.getTargets();
@@ -66,7 +64,7 @@ int main() {
       // load test samples
       std::cout << "# loading file: " << filename << std::endl;
       sgpp::datadriven::Dataset testDataset =
-        sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
+          sgpp::datadriven::ARFFTools::readARFFFromFile(filename);
       sgpp::base::DataMatrix& testData = testDataset.getData();
       // extract test classes
       sgpp::base::DataVector& testLabels = testDataset.getTargets();
@@ -126,14 +124,14 @@ int main() {
       // select impurity-based refinement
       refType = "impurity";
       std::cout << "Refinement type: " << refType << std::endl;
-      sgpp::base::AdaptivityConfiguration adaptConfig;
+      sgpp::base::AdaptivityConfiguration adaptivityConfig;
       /**
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 3;
-      adaptConfig.noPoints_ = 5;
-      adaptConfig.threshold_ = 0.0;
+      adaptivityConfig.numRefinements_ = 3;
+      adaptivityConfig.numRefinementPoints_ = 5;
+      adaptivityConfig.refinementThreshold_ = 0.0;
 
       // additional parameters:
 
@@ -155,7 +153,7 @@ int main() {
        * Create the learner.
        */
       std::cout << "# creating the learner" << std::endl;
-      sgpp::datadriven::LearnerSGD learner(gridConfig, adaptConfig, trainData, trainLabels,
+      sgpp::datadriven::LearnerSGD learner(gridConfig, adaptivityConfig, trainData, trainLabels,
                                            testData, testLabels, validData, validLabels, lambda,
                                            gamma, batchSize, useValidData);
 
