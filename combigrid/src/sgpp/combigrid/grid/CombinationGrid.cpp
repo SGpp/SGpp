@@ -33,6 +33,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
                                                             level_t levelSumDistance,
                                                             const HeterogeneousBasis& basis,
                                                             bool hasBoundary) {
+  assert(truncationLevel.size() == dim);
   std::vector<size_t> binomialCoefficients((dim + 1) / 2);
   binomialCoefficients[0] = 1.0;
 
