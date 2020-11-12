@@ -88,16 +88,15 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
    * @param samplesQ samples of second dataset to evaluate against
    * @return LS loss approximation
    */
-  double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
 
   /**
    * Computes an approximation of the Kullback-Leibler divergence using the density ratio.
    * Implemented as: 1 / M_p * Sum log f(x_p)
    * @param samplesP samples of first dataset to evaluate against
-   * @param samplesQ samples of second dataset to evaluate against
    * @return PE divergence approximation
    */
-  double KLDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double KLDivergenceApprox(DataMatrix &samplesP) override;
 
   /**
    * Computes an approximation of the Pearson divergence using the density ratio.
@@ -106,7 +105,7 @@ class ModelFittingDensityRatioEstimation : public ModelFittingBaseSingleGrid {
    * @param samplesQ samples of second dataset to evaluate against
    * @return PE divergence approximation
    */
-  double PEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double PEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
 
   /**
    * Resets the state of the entire model

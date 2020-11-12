@@ -70,8 +70,7 @@ double ModelFittingDensityRatioEstimation::LeastSquaresLossApprox(DataMatrix &sa
   return fq.sumsqr() / numQ - 2 * fp.sum() / numP;
 }
 
-double ModelFittingDensityRatioEstimation::KLDivergenceApprox(DataMatrix &samplesP,
-                                                              DataMatrix &samplesQ) {
+double ModelFittingDensityRatioEstimation::KLDivergenceApprox(DataMatrix &samplesP) {
   // samplesQ not needed to compute this
   double numP = static_cast<double>(samplesP.getNrows());
   DataVector fp(samplesP.getNrows());

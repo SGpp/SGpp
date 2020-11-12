@@ -93,16 +93,15 @@ class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingle
    * @param samplesQ samples of second dataset to evaluate against
    * @return LS loss approximation
    */
-  double relativeLeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double relativeLeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
 
   /**
    * Computes an approximation of the Kullback-Leibler divergence using the relative density ratio.
    * Implemented as: 1 / M_p * Sum log f(x_p)
    * @param samplesP samples of first dataset to evaluate against
-   * @param samplesQ samples of second dataset to evaluate against
    * @return PE divergence approximation
    */
-  double relativeKLDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double relativeKLDivergenceApprox(DataMatrix &samplesP) override;
 
   /**
    * Computes an approximation of the Pearson divergence using the relative density ratio.
@@ -114,7 +113,7 @@ class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingle
    * @param samplesQ samples of second dataset to evaluate against
    * @return omega-relative PE divergence approximation
    */
-  double relativePEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ);
+  double relativePEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ) override;
 
   /**
    * Resets the state of the entire model

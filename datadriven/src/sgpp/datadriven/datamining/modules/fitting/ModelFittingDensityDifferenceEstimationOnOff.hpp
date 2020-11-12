@@ -116,14 +116,14 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
    */
-  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ);
+  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ) override;
 
   /**
    * Computes a data-independent L2 approximate based on the learned density.
    * It is computed as: $\alpha^T \cdot A \cdot \alpha$
    * @return the L2 approximate
    */
-  double L2ApproxDataIndep();
+  double L2ApproxDataIndep() override;
 
   /**
    * Computes a mixed L2 approximate based on the learned density.
@@ -132,7 +132,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
    */
-  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ);
+  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ) override;
 
   /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not

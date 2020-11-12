@@ -125,7 +125,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
    */
-  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ);
+  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ) override;
 
   /**
    * Computes a data-independent L2 approximate based on the learned density.
@@ -135,7 +135,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    *
    * @return the L2 approximate
    */
-  double L2ApproxDataIndep();
+  double L2ApproxDataIndep() override;
 
   /**
    * Computes a mixed L2 approximate based on the learned density.
@@ -147,7 +147,7 @@ class ModelFittingDensityDifferenceEstimationCG : public ModelFittingDensityEsti
    * @param samplesQ samples of second dataset to evaluate against
    * @return the L2 approximate
    */
-  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ);
+  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ) override;
 
   /**
    * Resets the state of the entire model

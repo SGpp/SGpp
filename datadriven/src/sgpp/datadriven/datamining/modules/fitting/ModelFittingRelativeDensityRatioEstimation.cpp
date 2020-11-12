@@ -74,7 +74,7 @@ double ModelFittingRelativeDensityRatioEstimation::relativeLeastSquaresLossAppro
 }
 
 double ModelFittingRelativeDensityRatioEstimation::relativeKLDivergenceApprox(
-    DataMatrix &samplesP, DataMatrix &samplesQ) {
+    DataMatrix &samplesP) {
   // samplesQ not needed to compute this
   double numP = static_cast<double>(samplesP.getNrows());
   DataVector fp(samplesP.getNrows());
