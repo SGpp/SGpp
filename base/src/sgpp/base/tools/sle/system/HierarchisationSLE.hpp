@@ -954,7 +954,6 @@ class HierarchisationSLE : public CloneableSLE {
 
     return result;
   }
-
 };
 }  // namespace base
 }  // namespace sgpp

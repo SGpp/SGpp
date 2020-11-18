@@ -640,6 +640,7 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel the level of the boundary grid
    * @return grid
    */
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
