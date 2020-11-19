@@ -54,7 +54,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
       (hasBoundary ? levelSumDistance : static_cast<level_t>(levelSumDistance + dim - 1));
 
   for (size_t q = 0; q < dim; q++) {
-    // if (q <= maxLevelDifference) {
+    if (q <= maxLevelDifference) {
       std::vector<LevelVector> levels =
           (hasBoundary ? LevelVectorTools::generateDiagonalWithBoundary(
                              dim, maxLevelDifference - static_cast<level_t>(q))
@@ -73,7 +73,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
         fullGrids.emplace_back(level, basis, hasBoundary);
         coefficients.push_back(coefficient);
       }
-    // }
+    }
   }
 
   return CombinationGrid(fullGrids, coefficients);
