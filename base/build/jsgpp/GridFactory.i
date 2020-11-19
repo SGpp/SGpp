@@ -41,7 +41,6 @@
 %newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModNakBsplineGrid(size_t dim);
@@ -135,7 +134,6 @@ enum class GridType {
   LinearClenshawCurtis,                     // 28
   ModPolyClenshawCurtis,                    // 29
   ModLinearClenshawCurtis,                  // 30
-  NakBsplineBoundaryCombigrid,              // 31
   NaturalBsplineBoundary,                   // 32
   NakBsplineBoundary,                  // 33
   ModNakBspline,                       // 34
@@ -180,7 +178,6 @@ public:
   static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);

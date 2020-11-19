@@ -18,14 +18,16 @@ import sys
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
+    from pysgpp.extensions.combigrid.plotDeltas3d import plotDeltas3D
     doPlot = True
 except ImportError:
     doPlot = False
 
 
-## we define a helper function for plotting the resulting functions.
+# we define a helper function for plotting the resulting functions.
 def plotFunction(opEval, surpluses, X):
-    if not doPlot: return
+    if not doPlot:
+        return
 
     # generate a meshgrid for plotting
     xx0 = np.linspace(0, 1, 65)
@@ -44,23 +46,27 @@ def plotFunction(opEval, surpluses, X):
     fig = plt.figure(figsize=(6, 6))
     ax = fig.gca(projection="3d")
     ax.plot_surface(XX0, XX1, YY)
-    ax.plot(X[:,0], X[:,1], "k.", zs=f(X[:,0], X[:,1]), ms=10)
+    ax.plot(X[:, 0], X[:, 1], "k.", zs=f(X[:, 0], X[:, 1]), ms=10)
 
 
-## We define parameters and perform hierarchization just as in the combigrid example
+# We define parameters and perform hierarchization just as in the combigrid example
 dim = 2
 n = 4
 p = 3
 hasBoundary = True
 # test function
-f = lambda XX0, XX1: np.sin(7*XX0-3)*np.cos(5*XX1-5)
+
+
+def f(XX0, XX1): return np.sin(7*XX0-3)*np.cos(5*XX1-5)
+
 
 # disable log output
 pysgpp.Printer.getInstance().setVerbosity(-1)
 
 basis1d = pysgpp.SBsplineBase(p)
 basis = pysgpp.HeterogeneousBasis(dim, basis1d)
-combiGrid = pysgpp.CombinationGrid.fromRegularSparse(dim, n, basis, hasBoundary)
+combiGrid = pysgpp.CombinationGrid.fromRegularSparse(
+    dim, n, basis, hasBoundary)
 
 gridStorage = pysgpp.HashGridStorage(dim)
 combiGrid.combinePoints(gridStorage)
@@ -68,20 +74,21 @@ combiGrid.combinePoints(gridStorage)
 X = np.array([[gridStorage.getPoint(k).getStandardCoordinate(d) for d in range(dim)]
               for k in range(gridStorage.getSize())])
 
-fX = pysgpp.DataVector(f(X[:,0], X[:,1]))
+fX = pysgpp.DataVector(f(X[:, 0], X[:, 1]))
 
 values = pysgpp.DataVectorVector()
 combiGrid.distributeValuesToFullGrids(gridStorage, fX, values)
 
 surpluses = pysgpp.DataVectorVector(values)
 opPole = pysgpp.OperationPoleVector()
-pysgpp.OperationPoleHierarchisationGeneral.fromHeterogenerousBasis(basis, opPole)
+pysgpp.OperationPoleHierarchisationGeneral.fromHeterogenerousBasis(
+    basis, opPole)
 opHier = pysgpp.OperationUPCombinationGrid(combiGrid, opPole)
 opHier.apply(surpluses)
 
 
-# Let's assume that this time we are even more interested in the interpolated value 
-# at a given point x, so much so that we would like to extend the combination scheme 
+# Let's assume that this time we are even more interested in the interpolated value
+# at a given point x, so much so that we would like to extend the combination scheme
 # in a way that makes this value more accurate.
 # f(x) can be considered the quantity of interest or QoI.
 
@@ -98,23 +105,25 @@ plotFunction(opEval, surpluses, X)
 
 # we generate a relevance calculator (for known values) and a priority estimator (for unknown values)
 # and test them
-weightedRelevanceCalculator=pysgpp.WeightedRelevanceCalculator()
-relevance = weightedRelevanceCalculator.calculate(pysgpp.LevelVector([4,5,5]), 0.8)
+weightedRelevanceCalculator = pysgpp.WeightedRelevanceCalculator()
+relevance = weightedRelevanceCalculator.calculate(
+    pysgpp.LevelVector([4, 5, 5]), 0.8)
 
 
-averagingPriorityEstimator=pysgpp.AveragingPriorityEstimator()
-priority=averagingPriorityEstimator.estimatePriority(pysgpp.LevelVector([5,5,5]), 
-                                            pysgpp.map_levelvector_real({
-                                                pysgpp.LevelVector([5,4,5]): 0.8, 
-                                                pysgpp.LevelVector([4,5,5]): 0.8
-                                            }))
+averagingPriorityEstimator = pysgpp.AveragingPriorityEstimator()
+priority = averagingPriorityEstimator.estimatePriority(pysgpp.LevelVector([5, 5, 5]),
+                                                       pysgpp.map_levelvector_real({
+                                                           pysgpp.LevelVector([5, 4, 5]): 0.8,
+                                                           pysgpp.LevelVector([4, 5, 5]): 0.8
+                                                       }))
 
 # for each grid in our combination scheme, we calculate the value at point x
 subgridValuesAtX = pysgpp.DoubleVector(len(combiGrid.getFullGrids()), 0.)
 for fullGridIndex in range(len(combiGrid.getFullGrids())):
     fullGrid = combiGrid.getFullGrids()[fullGridIndex]
     l = fullGrid.getLevel()
-    print("Level of selected full grid with index {}: {}".format(fullGridIndex, np.array(l)))
+    print("Level of selected full grid with index {}: {}".format(
+        fullGridIndex, np.array(l)))
 
     # create operation for evaluating and evaluate
     opEval = pysgpp.OperationEvalFullGrid(fullGrid)
@@ -123,7 +132,8 @@ for fullGridIndex in range(len(combiGrid.getFullGrids())):
     subgridValuesAtX[fullGridIndex] = y
 
 # we start an AdaptiveCombinationGridGenerator from the full grids that are in the combiGrid we already have
-adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromCombinationGrid(combiGrid, subgridValuesAtX)
+adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromCombinationGrid(
+    combiGrid, subgridValuesAtX)
 # same as:
 # adaptiveCombinationGridGenerator = pysgpp.AdaptiveCombinationGridGenerator.fromCombinationGrid(combiGrid, subgridValuesAtX,
 #                                                                                               weightedRelevanceCalculator, averagingPriorityEstimator)
@@ -150,7 +160,7 @@ activeSet = adaptiveCombinationGridGenerator.getActiveSet()
 # some of them are more interesting than others
 priorities = adaptiveCombinationGridGenerator.getPriorities()
 
-# we ask what the next most sensible subspaces to evaluate should be 
+# we ask what the next most sensible subspaces to evaluate should be
 queue = adaptiveCombinationGridGenerator.getPriorityQueue()
 
 # we calculate the value at x in the corresponding full grids
@@ -165,7 +175,7 @@ for qu in queue:
 
     rangeIterator = gridRange.begin()
     while rangeIterator != gridRange.end():
-#         print(*rangeIterator.__deref__())
+        #         print(*rangeIterator.__deref__())
         z = pysgpp.DataVector(dim)
         rangeIterator.getStandardCoordinates(z)
         value[rangeIterator.getSequenceNumber()] = f(z[0], z[1])
@@ -218,7 +228,7 @@ newValues.reserve(numberNewLevels)
 for newLevel in newLevels:
     if newLevel in levels:
         # if fg was already there in the old combiGrid, re-use the values
-#         i = levels.index(fg) # this does not currently work, manual "hack" below
+        #         i = levels.index(fg) # this does not currently work, manual "hack" below
         i = 0
         while levels[i] != newLevel and i < numberNewLevels:
             i = i+1
@@ -236,3 +246,10 @@ newOpHier.apply(newSurpluses)
 opEval = pysgpp.OperationEvalCombinationGrid(newCombiGrid)
 y = opEval.eval(newSurpluses, xDv)
 print("Value of combined sparse grid interpolant at {}: {:.6g}".format(np.array(x), y))
+
+# and looking at the delta increments contributed by each of the grids,
+# we can see which grid resolutions had the biggest impact:
+if doPlot:
+    plotDeltas3D(adaptiveCombinationGridGenerator, ['l_0', 'l_1'])
+    # when you change the dimension in the example to 3 or more, you can see the 3-d visualization of the deltas:
+    # plotDeltas3d.plotDeltas3D(adaptiveCombinationGridGenerator)
