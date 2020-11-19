@@ -54,7 +54,7 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
       (hasBoundary ? levelSumDistance : static_cast<level_t>(levelSumDistance + dim - 1));
 
   for (size_t q = 0; q < dim; q++) {
-    if (q <= maxLevelDifference) {
+    // if (q <= maxLevelDifference) {
       std::vector<LevelVector> levels =
           (hasBoundary ? LevelVectorTools::generateDiagonalWithBoundary(
                              dim, maxLevelDifference - static_cast<level_t>(q))
@@ -66,14 +66,14 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
 
       for (LevelVector& level : levels) {
         // difference between truncated and regular combination technique: offset by the minimum
-        // level
+        // level / truncation level
         for (size_t d = 0; d < dim; ++d) {
           level[d] += truncationLevel[d];
         }
         fullGrids.emplace_back(level, basis, hasBoundary);
         coefficients.push_back(coefficient);
       }
-    }
+    // }
   }
 
   return CombinationGrid(fullGrids, coefficients);
@@ -83,13 +83,15 @@ CombinationGrid CombinationGrid::fromSubspaces(const std::vector<LevelVector>& s
                                                const HeterogeneousBasis& basis, bool hasBoundary) {
   std::vector<FullGrid> fullGrids;
   auto coefficients = getStandardCoefficientsFromLevelSet(subspaceLevels);
+  decltype(coefficients) coefficientsNonZero;
 
   for (size_t i = 0; i < subspaceLevels.size(); ++i) {
     if (coefficients[i] != 0.0) {
       fullGrids.emplace_back(subspaceLevels[i], basis, hasBoundary);
+      coefficientsNonZero.push_back(coefficients[i]);
     }
   }
-  return CombinationGrid(fullGrids, coefficients);
+  return CombinationGrid(fullGrids, coefficientsNonZero);
 }
 
 void CombinationGrid::combinePoints(base::GridStorage& gridStorage) const {
