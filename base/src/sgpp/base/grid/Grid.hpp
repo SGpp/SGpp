@@ -55,15 +55,14 @@ enum class GridType {
   LinearClenshawCurtis,                // 28
   ModPolyClenshawCurtis,               // 29
   ModLinearClenshawCurtis,             // 30
-  NakBsplineBoundaryCombigrid,         // 31
-  NaturalBsplineBoundary,              // 32
-  NakBsplineBoundary,                  // 33
-  ModNakBspline,                       // 34
-  WeaklyFundamentalSplineBoundary,     // 35
-  WeaklyFundamentalNakSplineBoundary,  // 36
-  ModWeaklyFundamentalNakSpline,       // 37
-  FundamentalSplineBoundary,           // 38
-  FundamentalNakSplineBoundary,        // 39
+  NaturalBsplineBoundary,              // 31
+  NakBsplineBoundary,                  // 32
+  ModNakBspline,                       // 33
+  WeaklyFundamentalSplineBoundary,     // 34
+  WeaklyFundamentalNakSplineBoundary,  // 35
+  ModWeaklyFundamentalNakSpline,       // 36
+  FundamentalSplineBoundary,           // 37
+  FundamentalNakSplineBoundary,        // 38
 };
 
 /**
@@ -641,10 +640,9 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel the level of the boundary grid
    * @return grid
    */
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
-
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
@@ -744,16 +742,12 @@ class Grid {
   virtual Stretching& getStretching();
 
   /**
-   * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
-   *
-   * @return pointer to the GridStorage's BoundingsBox object
+   * sets the GridStorage's BoundingsBox
    */
   virtual void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
-   *
-   * @return pointer to the GridStorage's Stretching object
    */
   virtual void setStretching(Stretching& stretching);
 

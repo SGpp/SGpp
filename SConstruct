@@ -135,8 +135,10 @@ for moduleName in moduleNames:
   vars.Add(BoolVariable(moduleName, "Build the module " + moduleName +
                                     " (default: value of SG_ALL)", None))
 
-vars.Add("PREFIX", "Set prefix of the paths where " +
+vars.Add("prefix", "Set prefix of the paths where " +
                    "architecture-independent files are installed", "/usr/local")
+vars.Add("PREFIX", "Set prefix of the paths where " +
+                   "architecture-independent files are installed. Overwrites the lower-case argument prefix.", "")
 vars.Add("EPREFIX", "Set prefix of the path where " +
                     "architecture-dependent files are installed (default: PREFIX)")
 vars.Add("LIBDIR", "Set path where the built libraries are installed " +
@@ -242,9 +244,17 @@ env["SG_MATLAB"] = env.get("SG_MATLAB",
 for moduleName in moduleNames:
   env[moduleName] = env.get(moduleName, env["SG_ALL"])
 
-env["EPREFIX"] = env.get("EPREFIX", env["PREFIX"])
+prefix=""
+if not env["PREFIX"]: # use scons default prefix UNLESS somebody added the sgpp PREFIX flag 
+    prefix = env["prefix"]
+    print("Using prefix parameter to set the installation path: " + prefix)
+else:
+    prefix = env["PREFIX"]
+    print("Warning, PREFIX parameter is overwriting the default prefix parameter!")
+    print("Using PREFIX parameter to set the installation path: " + prefix)
+env["EPREFIX"] = env.get("EPREFIX", prefix)
 env["LIBDIR"] = env.get("LIBDIR", os.path.join(env["EPREFIX"], "lib"))
-env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(env["PREFIX"], "include"))
+env["INCLUDEDIR"] = env.get("INCLUDEDIR", os.path.join(prefix, "include"))
 env["BOOST_LIBRARY_PATH"] = env.get("BOOST_LIBRARY_PATH", "/usr/lib/x86_64-linux-gnu"
                                     if env["PLATFORM"] not in ["darwin", "win32"]
                                     else "")
@@ -595,7 +605,7 @@ env.Alias("install", [installLibSGpp, installIncSGpp])
 #########################################################################
 
 doxygen = env.Command("doc/xml/index.xml", "Doxyfile", "doxygen $SOURCE")
-env.AddPostAction(doxygen, DoxygenHelper.patchNavtree)
+# env.AddPostAction(doxygen, DoxygenHelper.patchNavtree)
 env.Alias("doxygen", doxygen)
 # SCons doesn't know the *.doxy dependencies of the doxygen target
 # ==> always consider out-of-date with AlwaysBuild

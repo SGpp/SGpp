@@ -237,8 +237,6 @@ class HashGridStorage {
    *
    * @param index reference to the index that should be inserted
    * @param insertedPoints containing the indices of the new points
-   *
-   * @return
    */
   void insert(point_type& index, std::vector<size_t>& insertedPoints);
 

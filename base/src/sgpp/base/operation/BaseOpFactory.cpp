@@ -22,7 +22,6 @@
 #include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
@@ -179,7 +178,6 @@
 #include <sgpp/base/operation/hash/OperationEvalPolyNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalModPolyClenshawCurtisNaive.hpp>
-#include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryCombigridNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalWaveletBoundaryNaive.hpp>
@@ -663,9 +661,6 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new base::OperationEvalModPolyClenshawCurtisNaive(
         grid.getStorage(), dynamic_cast<base::ModPolyClenshawCurtisGrid*>(&grid)->getDegree());
-  } else if (grid.getType() == base::GridType::NakBsplineBoundaryCombigrid) {
-    return new base::OperationEvalNakBsplineBoundaryCombigridNaive(
-        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryCombigridGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::NaturalBsplineBoundary) {
     return new base::OperationEvalNaturalBsplineBoundaryNaive(
         grid.getStorage(), dynamic_cast<base::NaturalBsplineBoundaryGrid&>(grid).getDegree());

@@ -32,6 +32,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <map>
 #include <memory>
 #include <numeric>
 #include <vector>
@@ -590,6 +591,38 @@ BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
                                 downwardClosedSet.begin(), downwardClosedSet.end());
 }
 
+BOOST_AUTO_TEST_CASE(testWeightedRelevanceCalculator) {
+  auto weightedRelevanceCalculator = sgpp::combigrid::WeightedRelevanceCalculator();
+
+  BOOST_CHECK(weightedRelevanceCalculator.calculate(LevelVector(3, 1), 0.005) >
+              weightedRelevanceCalculator.calculate(LevelVector(3, 100), 0.005));
+
+  BOOST_CHECK_EQUAL(weightedRelevanceCalculator.calculate(LevelVector(5, 0), 0.5),
+                    weightedRelevanceCalculator.calculate(LevelVector(5, 1), 0.5));
+
+  BOOST_CHECK(weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.8) >
+              weightedRelevanceCalculator.calculate(LevelVector(4, 1), 0.5));
+}
+
+BOOST_AUTO_TEST_CASE(testAveragingPriorityEstimator) {
+  auto averagingPriorityEstimator = sgpp::combigrid::AveragingPriorityEstimator();
+  std::map<LevelVector, double> deltasOfNonrelevantDownwardNeighbors = {
+      {{1, 1, 2}, 0.5}, {{1, 2, 1}, 0.5}, {{2, 1, 1}, 0.5}};
+  std::map<LevelVector, double> deltasOfRelevantDownwardNeighbors = {
+      {{1, 1, 2}, 0.8}, {{1, 2, 1}, 0.8}, {{2, 1, 1}, 0.8}};
+
+  BOOST_CHECK(averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
+                                                          deltasOfNonrelevantDownwardNeighbors) <
+              averagingPriorityEstimator.estimatePriority(LevelVector(3, 2),
+                                                          deltasOfRelevantDownwardNeighbors));
+
+  // level vector should be ignored
+  BOOST_CHECK_EQUAL(averagingPriorityEstimator.estimatePriority(
+                        LevelVector(3, 2), deltasOfNonrelevantDownwardNeighbors),
+                    averagingPriorityEstimator.estimatePriority(
+                        LevelVector(5, 1), deltasOfNonrelevantDownwardNeighbors));
+}
+
 BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
   using sgpp::base::operator<<;
   for (bool hasBoundary : {true, false}) {
@@ -600,16 +633,23 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
 
     auto adaptiveCombinationGridGenerator = AdaptiveCombinationGridGenerator::fromCombinationGrid(
         combinationGrid, std::plus<double>(),
-        std::unique_ptr<sgpp::combigrid::RelevanceCalculator>(
-            new sgpp::combigrid::WeightedRelevanceCalculator()),
-        std::unique_ptr<sgpp::combigrid::PriorityEstimator>(
-            new sgpp::combigrid::AveragingPriorityEstimator()));
+        std::make_shared<sgpp::combigrid::WeightedRelevanceCalculator>(),
+        std::make_shared<sgpp::combigrid::AveragingPriorityEstimator>());
     if (hasBoundary) {
       BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getMinimumLevelVector(),
                         LevelVector(3, 0));
     } else {
       BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getMinimumLevelVector(),
                         LevelVector(3, 1));
+    }
+
+
+    auto notYetAdaptedLevels = adaptiveCombinationGridGenerator.getLevels();
+    // std::cout << notYetAdaptedLevels.size() << std::endl;
+    for (auto& fullGrid : combinationGrid.getFullGrids()) {
+      auto found = std::find(notYetAdaptedLevels.begin(), notYetAdaptedLevels.end(),
+                             fullGrid.getLevel()) != notYetAdaptedLevels.end();
+      BOOST_CHECK(found);
     }
 
     // feed "known values" for the initial combinationGrid to the adaptiveCombinationGridGenerator
@@ -658,5 +698,9 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
 
     BOOST_CHECK_EQUAL_COLLECTIONS(adaptedSubspaces.begin(), adaptedSubspaces.end(),
                                   largerSubspaces.begin(), largerSubspaces.end());
+
+    for (auto& c : adaptedCombinationGrid.getCoefficients()) {
+      BOOST_CHECK(c != 0);
+    }
   }
 }

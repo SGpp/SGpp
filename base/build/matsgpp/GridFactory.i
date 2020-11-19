@@ -139,7 +139,6 @@ public:
   static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);

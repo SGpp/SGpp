@@ -31,7 +31,6 @@
 #include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryCombigridGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
@@ -160,10 +159,6 @@ Grid* Grid::createModPolyGrid(size_t dim, size_t degree) { return new ModPolyGri
 
 Grid* Grid::createPeriodicGrid(size_t dim) { return new PeriodicGrid(dim); }
 
-Grid* Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree) {
-  return new NakBsplineBoundaryCombigridGrid(dim, degree);
-}
-
 Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new NaturalBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
@@ -273,8 +268,6 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createLinearStretchedGrid(gridConfig.dim_);
       case GridType::ModLinearStencil:
         return Grid::createModLinearGridStencil(gridConfig.dim_);
-      case GridType::NakBsplineBoundaryCombigrid:
-        return Grid::createNakBsplineBoundaryCombigridGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NaturalBsplineBoundary:
         return Grid::createNaturalBsplineBoundaryGrid(
             gridConfig.dim_, gridConfig.maxDegree_, gridConfig.boundaryLevel_);
@@ -446,9 +439,6 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<ModPolyClenshawCurtisGrid*>(this)->getDegree();
       newGrid = Grid::createModPolyClenshawCurtisGrid(numDims, degree);
       break;
-    case GridType::NakBsplineBoundaryCombigrid:
-      degree = dynamic_cast<NakBsplineBoundaryCombigridGrid*>(this)->getDegree();
-      return Grid::createNakBsplineBoundaryCombigridGrid(numDims, degree);
     case GridType::WeaklyFundamentalSplineBoundary:
       degree = dynamic_cast<WeaklyFundamentalSplineBoundaryGrid*>(this)->getDegree();
       boundaryLevel =
@@ -531,8 +521,6 @@ GridType Grid::getZeroBoundaryType() {
       return GridType::PolyClenshawCurtis;
     case GridType::BsplineClenshawCurtis:
       return GridType::BsplineClenshawCurtis;
-    case GridType::NakBsplineBoundaryCombigrid:
-      return GridType::NakBsplineBoundaryCombigrid;
     case GridType::NaturalBsplineBoundary:
       return GridType::NaturalBsplineBoundary;
     case GridType::NakBsplineBoundary:

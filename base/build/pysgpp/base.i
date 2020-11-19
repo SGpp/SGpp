@@ -193,7 +193,6 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
-%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -313,7 +312,6 @@ const bool UMFPACK_ENABLED;
 %template(SNakBsplineModifiedBaseDeriv1) sgpp::base::NakBsplineModifiedBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBaseDeriv2) sgpp::base::NakBsplineModifiedBasisDeriv2<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
-%template(SNakBsplineBoundaryCombigridBase) sgpp::base::NakBsplineBoundaryCombigridBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point };

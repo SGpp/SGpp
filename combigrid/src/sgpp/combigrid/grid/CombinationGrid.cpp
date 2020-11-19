@@ -23,6 +23,9 @@ CombinationGrid::CombinationGrid(const std::vector<FullGrid>& fullGrids,
                                  const base::DataVector& coefficients)
     : fullGrids(fullGrids), coefficients(coefficients) {}
 
+CombinationGrid::CombinationGrid(const FullGrid& fullGrid)
+    : fullGrids(std::vector<FullGrid>(1, fullGrid)), coefficients(base::DataVector(1, 1)) {}
+
 CombinationGrid CombinationGrid::fromRegularSparse(size_t dim, level_t n,
                                                    const HeterogeneousBasis& basis,
                                                    bool hasBoundary) {
@@ -78,36 +81,14 @@ CombinationGrid CombinationGrid::fromRegularSparseTruncated(size_t dim, LevelVec
 
 CombinationGrid CombinationGrid::fromSubspaces(const std::vector<LevelVector>& subspaceLevels,
                                                const HeterogeneousBasis& basis, bool hasBoundary) {
-  const size_t dim = basis.getDimension();
-  LevelVector offsetMinIndex(dim, 0);
-  LevelVector offsetMaxIndex(dim, 1);
-  LevelVector level(dim);
   std::vector<FullGrid> fullGrids;
-  base::DataVector coefficients;
+  auto coefficients = getStandardCoefficientsFromLevelSet(subspaceLevels);
 
-  for (const LevelVector& subspaceLevel : subspaceLevels) {
-    IndexVectorRange indexVectorRange(offsetMinIndex, offsetMaxIndex);
-    double coefficient = 0.0;
-
-    for (const IndexVector& offsetIndex : indexVectorRange) {
-      double sign = 1.0;
-
-      for (size_t d = 0; d < dim; d++) {
-        level[d] = subspaceLevel[d] + offsetIndex[d];
-        sign *= (1.0 - 2.0 * static_cast<double>(offsetIndex[d]));
-      }
-
-      if (std::find(subspaceLevels.begin(), subspaceLevels.end(), level) != subspaceLevels.end()) {
-        coefficient += sign;
-      }
-    }
-
-    if (coefficient != 0.0) {
-      fullGrids.emplace_back(subspaceLevel, basis, hasBoundary);
-      coefficients.push_back(coefficient);
+  for (size_t i = 0; i < subspaceLevels.size(); ++i) {
+    if (coefficients[i] != 0.0) {
+      fullGrids.emplace_back(subspaceLevels[i], basis, hasBoundary);
     }
   }
-
   return CombinationGrid(fullGrids, coefficients);
 }
 
@@ -251,6 +232,35 @@ void CombinationGrid::setFullGridsAndCoefficients(const std::vector<FullGrid>& f
                                                   const base::DataVector& coefficients) {
   this->fullGrids = fullGrids;
   this->coefficients = coefficients;
+}
+
+base::DataVector getStandardCoefficientsFromLevelSet(const std::vector<LevelVector>& levelSet) {
+  const size_t dim = levelSet[0].size();
+  LevelVector offsetMinIndex(dim, 0);
+  LevelVector offsetMaxIndex(dim, 1);
+  LevelVector tmp_level(dim);
+  base::DataVector coefficients;
+  coefficients.reserve(levelSet.size());
+
+  for (const LevelVector& level : levelSet) {
+    IndexVectorRange indexVectorRange(offsetMinIndex, offsetMaxIndex);
+    double coefficient = 0.0;
+
+    for (const IndexVector& offsetIndex : indexVectorRange) {
+      double sign = 1.0;
+
+      for (size_t d = 0; d < dim; d++) {
+        tmp_level[d] = level[d] + offsetIndex[d];
+        sign *= (1.0 - 2.0 * static_cast<double>(offsetIndex[d]));
+      }
+
+      if (std::find(levelSet.begin(), levelSet.end(), tmp_level) != levelSet.end()) {
+        coefficient += sign;
+      }
+    }
+    coefficients.push_back(coefficient);
+  }
+  return coefficients;
 }
 
 }  // namespace combigrid

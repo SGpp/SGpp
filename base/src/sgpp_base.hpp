@@ -37,7 +37,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp>

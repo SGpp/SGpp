@@ -8,6 +8,10 @@
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 
 #include <sgpp/combigrid/adaptive/AdaptiveCombinationGridGenerator.hpp>
+#include <sgpp/combigrid/adaptive/AveragingPriorityEstimator.hpp>
+#include <sgpp/combigrid/adaptive/PriorityEstimator.hpp>
+#include <sgpp/combigrid/adaptive/RelevanceCalculator.hpp>
+#include <sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp>
 
 #include <sgpp/combigrid/basis/HeterogeneousBasis.hpp>
 
