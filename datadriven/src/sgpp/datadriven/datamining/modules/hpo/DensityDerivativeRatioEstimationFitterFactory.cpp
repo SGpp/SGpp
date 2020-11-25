@@ -20,7 +20,7 @@ DensityDerivativeRatioEstimationFitterFactory::DensityDerivativeRatioEstimationF
 
 ModelFittingBase *DensityDerivativeRatioEstimationFitterFactory::buildFitter() {
   // build config
-  auto *config = new FitterConfigurationLeastSquares(baseConfig);
+  auto *config = new FitterConfigurationDensityLeastSquares(baseConfig);
 
   if (dispar.count("level")) {
     config->getGridConfig().level_ = dispar["level"].getValue();

@@ -23,7 +23,7 @@ namespace datadriven {
 
 ModelFittingBase* DensityDerivativeRatioEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
-  FitterConfigurationLeastSquares config{};
+  FitterConfigurationDensityLeastSquares config{};
   config.readParams(parser);
   // Sanity check: will throw before creating anything if existence conditions are not met
   sanityCheck(config);
@@ -31,7 +31,7 @@ ModelFittingBase* DensityDerivativeRatioEstimationMinerFactory::createFitter(
 }
 
 void DensityDerivativeRatioEstimationMinerFactory::sanityCheck(
-    const FitterConfigurationLeastSquares& config) const {
+    const FitterConfigurationDensityLeastSquares& config) const {
   // Sanity check: SGDDerivRE needs Bspline basis of order at least 3
   if (config.getGridConfig().maxDegree_ < 3 &&
       !(config.getGridConfig().type_ == base::GridType::Bspline ||

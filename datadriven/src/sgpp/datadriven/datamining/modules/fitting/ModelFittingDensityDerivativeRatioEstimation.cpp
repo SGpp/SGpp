@@ -40,10 +40,10 @@ namespace sgpp {
 namespace datadriven {
 
 ModelFittingDensityDerivativeRatioEstimation::ModelFittingDensityDerivativeRatioEstimation(
-    const FitterConfigurationLeastSquares &config)
+    const FitterConfigurationDensityLeastSquares &config)
     : ModelFittingBaseSingleGrid{}, refinementsPerformed{0}, initialGridSize{0} {
   this->config = std::unique_ptr<FitterConfiguration>(
-      std::make_unique<FitterConfigurationLeastSquares>(config));
+      std::make_unique<FitterConfigurationDensityLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
 }
 

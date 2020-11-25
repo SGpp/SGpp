@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityLeastSquares.hpp>
 
 #include <string>
 
@@ -48,7 +48,7 @@ class DensityDerivativeRatioEstimationMinerFactory : public MinerFactory {
    * Method that checks whether the parameters given allow for the fitter to be applicable. Will
    * throw if conditions are not met.
    */
-  void sanityCheck(const FitterConfigurationLeastSquares& config) const;
+  void sanityCheck(const FitterConfigurationDensityLeastSquares& config) const;
 
   /**
    * @return a fitter factory for hpo

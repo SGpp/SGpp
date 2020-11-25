@@ -83,7 +83,7 @@ ModelFittingBase *UniversalMinerFactory::createFitter(const DataMiningConfigPars
     config.readParams(parser);
     model = new ModelFittingRelativeDensityRatioEstimation(config);
   } else if (fType == FitterType::DensityDerivativeRatioEstimation) {
-    FitterConfigurationLeastSquares config{};
+    FitterConfigurationDensityLeastSquares config{};
     config.readParams(parser);
     model = new ModelFittingDensityDerivativeRatioEstimation(config);
   } else if (fType == FitterType::RegressionLeastSquares) {

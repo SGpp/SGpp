@@ -41,7 +41,7 @@ class DensityDerivativeRatioEstimationFitterFactory : public FitterFactory {
   /**
    * Configuration for all parameters that are not optimized
    */
-  FitterConfigurationLeastSquares baseConfig;
+  FitterConfigurationDensityLeastSquares baseConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

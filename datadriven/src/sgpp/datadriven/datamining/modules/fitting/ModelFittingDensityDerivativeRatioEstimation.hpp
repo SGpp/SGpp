@@ -12,7 +12,7 @@
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityLeastSquares.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
@@ -41,7 +41,7 @@ class ModelFittingDensityDerivativeRatioEstimation : public ModelFittingBaseSing
    * @param config configuration object that specifies grid, refinement, and regularization
    */
   explicit ModelFittingDensityDerivativeRatioEstimation(
-      const FitterConfigurationLeastSquares &config);
+      const FitterConfigurationDensityLeastSquares &config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by a least
