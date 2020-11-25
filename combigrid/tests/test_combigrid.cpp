@@ -18,6 +18,7 @@
 #include <sgpp/combigrid/grid/FullGrid.hpp>
 #include <sgpp/combigrid/operation/OperationEvalCombinationGrid.hpp>
 #include <sgpp/combigrid/operation/OperationPole.hpp>
+#include <sgpp/combigrid/operation/OperationPoleDehierarchisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationPoleHierarchisationGeneral.hpp>
 #include <sgpp/combigrid/operation/OperationPoleHierarchisationLinear.hpp>
 #include <sgpp/combigrid/operation/OperationPoleNodalisationBspline.hpp>
@@ -48,6 +49,7 @@ using sgpp::combigrid::LevelVector;
 using sgpp::combigrid::LevelVectorTools;
 using sgpp::combigrid::OperationEvalCombinationGrid;
 using sgpp::combigrid::OperationPole;
+using sgpp::combigrid::OperationPoleDehierarchisationLinear;
 using sgpp::combigrid::OperationPoleHierarchisationGeneral;
 using sgpp::combigrid::OperationPoleHierarchisationLinear;
 using sgpp::combigrid::OperationPoleNodalisationBspline;
@@ -72,6 +74,11 @@ std::string normalize_test_case_name(const_string name) {
 }  // namespace unit_test
 }  // namespace boost
 #endif
+
+namespace std {
+// needed for BOOST_CHECK_EQUAL_COLLECTIONS in some tests
+using sgpp::base::operator<<;
+}  // namespace std
 
 BOOST_AUTO_TEST_CASE(testFullGrid) {
   BOOST_CHECK_EQUAL(FullGrid().getDimension(), 0);
@@ -178,7 +185,8 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
 
     std::vector<CombinationGrid> combinationGrids = {
         CombinationGrid::fromRegularSparse(3, 5, basis, hasBoundary),
-        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary)};
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary),
+    };
 
     for (const CombinationGrid& combinationGrid : combinationGrids) {
       BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
@@ -310,6 +318,81 @@ BOOST_AUTO_TEST_CASE(testCombinationGrid) {
   }
 }
 
+BOOST_AUTO_TEST_CASE(testCombinationGridTruncated) {
+  BOOST_CHECK_EQUAL(LevelVectorTools::generateDiagonalWithBoundary(3, 0).size(), 1);
+  BOOST_CHECK_EQUAL(LevelVectorTools::generateDiagonalWithoutBoundary(3, 1).size(), 0);
+
+  sgpp::base::SBsplineBase basis1d;
+  HeterogeneousBasis basis(3, basis1d);
+
+  for (bool hasBoundary : {true, false}) {
+    std::vector<LevelVector> diagonalSubspaceLevels;
+    std::vector<LevelVector> subspaceLevels;
+
+    // like testCombinationGrid, but shifted by {0,1,3} => maximum level is {5,6,8}
+    LevelVector offset{0, 1, 3};
+    if (hasBoundary) {
+      diagonalSubspaceLevels = {{0, 1, 8}, {0, 2, 7}, {0, 3, 6}, {0, 4, 5}, {0, 5, 4}, {0, 6, 3},
+                                {1, 1, 7}, {1, 2, 6}, {1, 3, 5}, {1, 4, 4}, {1, 5, 3}, {2, 1, 6},
+                                {2, 2, 5}, {2, 3, 4}, {2, 4, 3}, {3, 1, 5}, {3, 2, 4}, {3, 3, 3},
+                                {4, 1, 4}, {4, 2, 3}, {5, 1, 3}};
+      subspaceLevels =
+          LevelVectorTools::makeDownwardClosed(LevelVector{0, 0, 0}, diagonalSubspaceLevels);
+
+    } else {
+      diagonalSubspaceLevels = {{1, 2, 8}, {1, 3, 7}, {1, 4, 6}, {1, 5, 5}, {1, 6, 4}, {2, 2, 7},
+                                {2, 3, 6}, {2, 4, 5}, {2, 5, 4}, {3, 2, 6}, {3, 3, 5}, {3, 4, 4},
+                                {4, 2, 5}, {4, 3, 4}, {5, 2, 4}, {1, 2, 7}, {1, 3, 6}, {1, 4, 5},
+                                {1, 5, 4}, {2, 2, 6}, {2, 3, 5}, {2, 4, 4}, {3, 2, 5}, {3, 3, 4},
+                                {4, 2, 4}, {1, 2, 6}, {1, 3, 5}, {1, 4, 4}, {2, 2, 5}, {2, 3, 4},
+                                {3, 2, 4}, {1, 2, 5}, {1, 3, 4}, {2, 2, 4}, {1, 2, 4}};
+      subspaceLevels =
+          LevelVectorTools::makeDownwardClosed(LevelVector{1, 1, 1}, diagonalSubspaceLevels);
+    }
+    // calculate the number of points that are supposed to be in the grid storage later on
+    std::vector<size_t> numDOFPerSubspace;
+    numDOFPerSubspace.resize(subspaceLevels.size());
+    std::transform(subspaceLevels.begin(), subspaceLevels.end(), numDOFPerSubspace.begin(),
+                   [](const LevelVector& lv) {
+                     size_t exponentSum = 0;
+                     for (size_t i = 0; i < 3; ++i) {
+                       exponentSum += (lv[i] == 0) ? 1 : lv[i] - 1;
+                     }
+                     return std::pow(2, exponentSum);
+                   });
+    auto numDOF = std::accumulate(numDOFPerSubspace.begin(), numDOFPerSubspace.end(), 0);
+
+    std::vector<CombinationGrid> combinationGrids = {
+        CombinationGrid::fromRegularSparseTruncated(3, offset, 5, basis, hasBoundary),
+        CombinationGrid::fromSubspaces(subspaceLevels, basis, hasBoundary),
+    };
+
+    for (const CombinationGrid& combinationGrid : combinationGrids) {
+      //   std::cout << combinationGrid.getFullGrids().size()<< std::endl;
+      // for (auto& fg : combinationGrid.getFullGrids()){
+      //   std::cout << fg.getLevel() << std::endl;
+      // }
+      BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(),
+                        (hasBoundary ? (21 + 15 + 10) : (15 + 10 + 6)));
+      sgpp::base::GridStorage gridStorage(3);
+      combinationGrid.combinePoints(gridStorage);
+      BOOST_CHECK_EQUAL(gridStorage.getSize(), numDOF);
+    }
+
+    const std::vector<FullGrid>& fullGrids0 = combinationGrids[0].getFullGrids();
+    const std::vector<FullGrid>& fullGrids1 = combinationGrids[1].getFullGrids();
+    const DataVector& coefficients0 = combinationGrids[0].getCoefficients();
+    const DataVector& coefficients1 = combinationGrids[1].getCoefficients();
+
+    for (size_t i = 0; i < fullGrids1.size(); i++) {
+      const FullGrid& fullGrid = fullGrids1[i];
+      auto it = std::find(fullGrids0.begin(), fullGrids0.end(), fullGrid);
+      BOOST_CHECK(it != fullGrids0.end());
+      BOOST_CHECK_EQUAL(coefficients0[it - fullGrids0.begin()], coefficients1[i]);
+    }
+  }
+}
+
 BOOST_AUTO_TEST_CASE(testIndexVectorRangeIterator) {
   sgpp::base::SBsplineBase basis1d;
   const HeterogeneousBasis basis(2, basis1d);
@@ -378,16 +461,25 @@ BOOST_AUTO_TEST_CASE(testOperationUPFullGridLinear) {
   sgpp::base::SLinearBase basis1d;
   const HeterogeneousBasis basis(2, basis1d);
   const FullGrid fullGrid({2, 1}, basis);
-  OperationPoleHierarchisationLinear operationPole;
-  OperationUPFullGrid operation(fullGrid, operationPole);
-  DataVector values{-0.5, 3.0, 0.25, 0.5,  -1.0, 1.0,  5.0, 2.5,
-                    -1.5, 0.0, 2.0,  -1.0, 1.0,  -2.0, -1.0};
-  operation.apply(values);
+  OperationPoleHierarchisationLinear operationPoleHierarchisation;
+  OperationUPFullGrid operationHierarchisation(fullGrid, operationPoleHierarchisation);
+  DataVector origValues{-0.5, 3.0, 0.25, 0.5,  -1.0, 1.0,  5.0, 2.5,
+                        -1.5, 0.0, 2.0,  -1.0, 1.0,  -2.0, -1.0};
+  DataVector curValues(origValues);
+  operationHierarchisation.apply(curValues);
   const DataVector correctSurpluses{-0.5,    3.125, 1.0, 0.875, -1.0, 0.25, 2.9375, 1.25,
                                     -2.1875, 1.0,   2.0, -2.5,  0.5,  -2.0, -1.0};
 
-  for (size_t i = 0; i < values.size(); i++) {
-    BOOST_CHECK_CLOSE(values[i], correctSurpluses[i], 1e-8);
+  for (size_t i = 0; i < curValues.size(); i++) {
+    BOOST_CHECK_CLOSE(curValues[i], correctSurpluses[i], 1e-8);
+  }
+
+  OperationPoleDehierarchisationLinear operationPoleDehierarchisation;
+  OperationUPFullGrid operationDehierarchisation(fullGrid, operationPoleDehierarchisation);
+  operationDehierarchisation.apply(curValues);
+
+  for (size_t i = 0; i < curValues.size(); i++) {
+    BOOST_CHECK_CLOSE(curValues[i], origValues[i], 1e-8);
   }
 }
 
@@ -482,11 +574,6 @@ BOOST_AUTO_TEST_CASE(testOperationUPCombinationGrid) {
     BOOST_CHECK_EQUAL(values[2][3], 0.5);
   }
 }
-
-namespace std {
-// needed for BOOST_CHECK_EQUAL_COLLECTIONS in next test
-using sgpp::base::operator<<;
-}  // namespace std
 
 BOOST_AUTO_TEST_CASE(testMakeDownwardClosed) {
   std::vector<LevelVector> subspaces = {LevelVector{0, 0, 1}, LevelVector{0, 2, 1},
