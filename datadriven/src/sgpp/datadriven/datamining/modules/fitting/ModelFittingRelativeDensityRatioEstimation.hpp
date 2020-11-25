@@ -9,7 +9,7 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityLeastSquares.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBaseSingleGrid.hpp>
 #include <sgpp/datadriven/operation/hash/DatadrivenOperationCommon.hpp>
@@ -40,7 +40,7 @@ class ModelFittingRelativeDensityRatioEstimation : public ModelFittingBaseSingle
    * @param config configuration object that specifies grid, refinement, and regularization
    */
   explicit ModelFittingRelativeDensityRatioEstimation(
-      const FitterConfigurationLeastSquares &config);
+      const FitterConfigurationDensityLeastSquares &config);
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by a least

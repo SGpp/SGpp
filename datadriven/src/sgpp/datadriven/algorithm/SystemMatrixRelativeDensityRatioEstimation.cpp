@@ -76,7 +76,7 @@ void SystemMatrixRelativeDensityRatioEstimation::mult(base::DataVector& alpha,
   // ((1 - omega) * np * B_q * B_q^T + omega * nq * B_p * B_p^T + lambda * np * nq * I) * alpha
   result.axpy(
       static_cast<double>(this->instancesP) * static_cast<double>(this->instancesQ) * this->lambda_,
-      result);
+      alpha);
 }
 
 void SystemMatrixRelativeDensityRatioEstimation::generateb(base::DataVector& b) {

@@ -81,7 +81,7 @@ RelativeDensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets
 
 ModelFittingBase* RelativeDensityRatioEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
-  FitterConfigurationLeastSquares config{};
+  FitterConfigurationDensityLeastSquares config{};
   config.readParams(parser);
   return new ModelFittingRelativeDensityRatioEstimation(config);
 }

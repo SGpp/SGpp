@@ -11,7 +11,7 @@
 #include <sgpp/datadriven/datamining/modules/hpo/harmonica/ConfigurationBit.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/ContinuousParameter.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/parameters/DiscreteParameter.hpp>
-#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationLeastSquares.hpp>
+#include <sgpp/datadriven/datamining/modules/fitting/FitterConfigurationDensityLeastSquares.hpp>
 
 #include <vector>
 
@@ -41,7 +41,7 @@ class RelativeDensityRatioEstimationFitterFactory : public FitterFactory {
   /**
    * Configuration for all parameters that are not optimized
    */
-  FitterConfigurationLeastSquares baseConfig;
+  FitterConfigurationDensityLeastSquares baseConfig;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */
