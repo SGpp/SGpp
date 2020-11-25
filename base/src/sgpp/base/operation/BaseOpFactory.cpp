@@ -3,8 +3,6 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <cstring>
-#include <set>
 #include <sgpp/base/exception/factory_exception.hpp>
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
@@ -237,10 +235,12 @@
 #include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineModified.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedQuadratureNakPBspline.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
 #include <sgpp/globaldef.hpp>
 #include <vector>
+#include <cstring>
+#include <set>
 
-#include "hash/OperationWeightedSecondMomentNak.hpp"
 
 namespace sgpp {
 
