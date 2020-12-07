@@ -231,6 +231,7 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/OterSplineBoundaryBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -353,6 +354,7 @@ const bool UMFPACK_ENABLED;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
 %template(SNakPBsplineBase) sgpp::base::NakPBsplineBasis<unsigned int, unsigned int>;
+%template(SOterSplineBoundaryBase) sgpp::base::OterSplineBoundaryBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv1) sgpp::base::NakBsplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv2) sgpp::base::NakBsplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;

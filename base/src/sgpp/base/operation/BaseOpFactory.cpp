@@ -21,6 +21,7 @@
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
+#include <sgpp/base/grid/type/OterSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
@@ -93,6 +94,7 @@
 #include <sgpp/base/operation/hash/OperationEvalModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModWeaklyFundamentalNakSplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalOterSplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineExtendedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalNakPBsplineNaive.hpp>
@@ -766,6 +768,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::NakPBspline) {
     return new base::OperationEvalNakPBsplineNaive(
         grid.getStorage(), dynamic_cast<base::NakPBsplineGrid&>(grid).getDegree());
+  }else if (grid.getType() == base::GridType::OterSplineBoundary) {
+    return new base::OperationEvalOterSplineBoundaryNaive(
+        grid.getStorage(), dynamic_cast<base::OterSplineBoundaryGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEval and/or createOperationEvalNaive is not implemented for this grid "

@@ -32,6 +32,7 @@
 #include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/OterSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
@@ -211,6 +212,10 @@ Grid* Grid::createNakPBsplineGrid(size_t dim, size_t degree) {
   return new NakPBsplineGrid(dim, degree);
 }
 
+Grid* Grid::createOterSplineBoundaryGrid(size_t dim, size_t degree) {
+  return new OterSplineBoundaryGrid(dim, degree);
+}
+
 Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
   if (gridConfig.filename_.length() > 0) {
     std::ifstream ifs(gridConfig.filename_);
@@ -314,6 +319,8 @@ Grid* Grid::createGrid(RegularGridConfiguration gridConfig) {
         return Grid::createNakBsplineExtendedGrid(gridConfig.dim_, gridConfig.maxDegree_);
       case GridType::NakPBspline:
         return Grid::createNakPBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+      case GridType::OterSplineBoundary:
+        return Grid::createOterSplineBoundaryGrid(gridConfig.dim_, gridConfig.maxDegree_);
     }
   }
 
@@ -502,6 +509,10 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       degree = dynamic_cast<NakPBsplineGrid*>(this)->getDegree();
       newGrid = Grid::createNakPBsplineGrid(numDims, degree);
       break;
+    case GridType::OterSplineBoundary:
+      degree = dynamic_cast<OterSplineBoundaryGrid*>(this)->getDegree();
+      newGrid = Grid::createOterSplineBoundaryGrid(numDims, degree);
+      break;
 
     default:
       throw generation_exception("Grid::clone - grid type not known");
@@ -565,6 +576,7 @@ GridType Grid::getZeroBoundaryType() {
     case GridType::NakBsplineBoundary:
     case GridType::NakBsplineExtended:
     case GridType::NakPBspline:
+    case GridType::OterSplineBoundary:
     case GridType::ModNakBspline:
       return GridType::NakBsplineBoundary;
     case GridType::WeaklyFundamentalSplineBoundary:
@@ -702,6 +714,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        NakBsplineExtendedGrid::unserialize));
     tMap->insert(
         std::pair<std::string, Grid::Factory>("nakPBspline", NakPBsplineGrid::unserialize));
+    tMap->insert(
+        std::pair<std::string, Grid::Factory>("oterSplineBoundary", OterSplineBoundaryGrid::unserialize));
 #else
     tMap->insert(std::make_pair("nullptr", Grid::nullFactory));
     tMap->insert(std::make_pair("linear", LinearGrid::unserialize));
@@ -755,6 +769,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                 FundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("nakBsplineExtended", NakBsplineExtendedGrid::unserialize));
     tMap->insert(std::make_pair("nakPBspline", NakPBsplineGrid::unserialize));
+    tMap->insert(std::make_pair("oterSplineBoundary", OterSplineBoundaryGrid::unserialize));
 #endif
   }
 
@@ -847,6 +862,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
                                                                     "nakBsplineExtended"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::NakPBspline, "nakPBspline"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::OterSplineBoundary, "oterSplineBoundary"));
 #else
     verboseMap->insert(std::make_pair(GridType::Linear, "linear"));
     verboseMap->insert(std::make_pair(GridType::LinearStretched, "linearStretched"));
@@ -903,6 +920,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::make_pair(GridType::FundamentalNakSplineBoundary, "fundamentalNakSplineBoundary"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineExtended, "nakBsplineExtended"));
     verboseMap->insert(std::make_pair(GridType::NakPBspline, "nakPBspline"));
+    verboseMap->insert(std::make_pair(GridType::OterSplineBoundary, "oterSplineBoundary"));
 #endif
   }
 
@@ -1077,6 +1095,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::NakBsplineExtended;
   } else if (gridType.compare("nakPBspline") == 0) {
     return sgpp::base::GridType::NakPBspline;
+  }else if (gridType.compare("oterSplineBoundary") == 0) {
+    return sgpp::base::GridType::OterSplineBoundary;
   } else {
     std::stringstream errorString;
     errorString << "grid type '" << gridType << "' is unknown" << std::endl;

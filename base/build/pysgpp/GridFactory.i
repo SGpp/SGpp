@@ -55,6 +55,7 @@
 %newobject sgpp::base::Grid::createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNakPBsplineGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createOterSplineBoundaryGrid(size_t dim, size_t degree);
 
                              
 %newobject sgpp::base::Grid::unserializeFromFile(std::string filename);
@@ -150,7 +151,8 @@ enum class GridType {
   ModWeaklyFundamentalNakSpline,            // 36
   FundamentalSplineBoundary,                // 37
   FundamentalNakSplineBoundary,             // 38
-  NakBsplineExtended                        // 39
+  NakBsplineExtended,                        // 39
+  OterSplineBoundary                        // 40
 };
 
 class Grid
@@ -194,7 +196,8 @@ public:
   static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+  static Grid* createOterSplineBoundaryGrid(size_t dim, size_t degree);
 
   static Grid* unserializeFromFile(std::string filename);
   static Grid* unserialize(const std::string& istr);
