@@ -57,15 +57,15 @@ enum class GridType {
   ModPolyClenshawCurtis,               // 29
   ModLinearClenshawCurtis,             // 30
   NaturalBsplineBoundary,              // 31
-  NakBsplineBoundary,                  // 32
-  ModNakBspline,                       // 33
-  WeaklyFundamentalSplineBoundary,     // 34
-  WeaklyFundamentalNakSplineBoundary,  // 35
-  ModWeaklyFundamentalNakSpline,       // 36
-  FundamentalSplineBoundary,           // 37
-  FundamentalNakSplineBoundary,        // 38
-  NakBsplineExtended,                  // 39
-  NakBspline,                          // 40
+  NakBspline,                          // 32
+  NakBsplineBoundary,                  // 33
+  ModNakBspline,                       // 34
+  WeaklyFundamentalSplineBoundary,     // 35
+  WeaklyFundamentalNakSplineBoundary,  // 36
+  ModWeaklyFundamentalNakSpline,       // 37
+  FundamentalSplineBoundary,           // 38
+  FundamentalNakSplineBoundary,        // 39
+  NakBsplineExtended,                  // 40
   NakPBspline,                         // 41
 };
 
@@ -709,10 +709,8 @@ class Grid {
    */
   static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 
-  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
-                                                level_t boundaryLevel = 1);
-  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree,
-                                            level_t boundaryLevel = 1);
+  static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,level_t boundaryLevel = 1);
+  static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree,level_t boundaryLevel = 1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);
   static Grid* createWeaklyFundamentalSplineBoundaryGrid(
       size_t dim, size_t degree, level_t boundaryLevel = 1);

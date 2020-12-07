@@ -30,6 +30,7 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
@@ -166,13 +167,14 @@ Grid* Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, level_t 
   return new NaturalBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
+Grid* Grid::createNakBsplineGrid(size_t dim, size_t degree) {
+  return new NakBsplineGrid(dim, degree);
+}
+
 Grid* Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel) {
   return new NakBsplineBoundaryGrid(dim, degree, boundaryLevel);
 }
 
-Grid* Grid::createNakBsplineGrid(size_t dim, size_t degree) {
-  return new NakBsplineGrid(dim, degree);
-}
 
 Grid* Grid::createModNakBsplineGrid(size_t dim, size_t degree) {
   return new ModNakBsplineGrid(dim, degree);
@@ -680,6 +682,8 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("naturalBsplineBoundary",
                                                        NaturalBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakBspline",
+                                                       NakBsplineGrid::unserialize));   
     tMap->insert(std::pair<std::string, Grid::Factory>("nakBsplineBoundary",
                                                        NakBsplineBoundaryGrid::unserialize));
     tMap->insert(
@@ -736,6 +740,7 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("naturalBsplineBoundary", NaturalBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("nakBspline", NakBsplineGrid::unserialize));
     tMap->insert(std::make_pair("nakBsplineBoundary", NakBsplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modNakBspline", ModNakBsplineGrid::unserialize));
     tMap->insert(std::make_pair("weaklyFundamentalSplineBoundary",
@@ -822,6 +827,8 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBspline,
+                                                                    "nakBspline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineBoundary,
                                                                     "nakBsplineBoundary"));
     verboseMap->insert(
@@ -881,6 +888,7 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::NakBspline, "nakBspline"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakBsplineBoundary"));
     verboseMap->insert(std::make_pair(GridType::ModNakBspline, "modNakBspline"));
     verboseMap->insert(std::make_pair(GridType::WeaklyFundamentalSplineBoundary,
@@ -1049,6 +1057,8 @@ GridType Grid::stringToGridType(const std::string& gridType) {
     return sgpp::base::GridType::ModLinearStencil;
   } else if (gridType.compare("naturalBsplineBoundary") == 0) {
     return sgpp::base::GridType::NaturalBsplineBoundary;
+  } else if (gridType.compare("nakBspline") == 0) {
+    return sgpp::base::GridType::NakBspline;
   } else if (gridType.compare("nakBsplineBoundary") == 0) {
     return sgpp::base::GridType::NakBsplineBoundary;
   } else if (gridType.compare("modNakBspline") == 0) {

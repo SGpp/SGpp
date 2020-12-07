@@ -22,7 +22,9 @@ class DistributionLogNormal : public Distribution {
    * Constructor
    */
   DistributionLogNormal(double mean, double stddev)
-      : Distribution(), mean(mean), stddev(stddev), dist(mean, stddev) {}
+      : Distribution(), mean(mean), stddev(stddev), dist(mean, stddev) {
+        // std::cout << "DistributionLogNormal: Overwritten Bounds!\n";
+      }
 
   /**
    * Destructor
