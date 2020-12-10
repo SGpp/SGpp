@@ -17,6 +17,7 @@ namespace combigrid {
  * Computing, 71(1), pp.65-87.
  * <- here, it is called "Error Estimation"
  */
+template <typename T>
 class RelevanceCalculator {
  public:
   /**
@@ -27,7 +28,7 @@ class RelevanceCalculator {
   /**
    * @brief get a relevance for the subspace of LevelVector levelVector and Delta delta
    */
-  virtual double calculate(const LevelVector& levelVector, double delta) const = 0;
+  virtual double calculate(const LevelVector& levelVector, T delta) const = 0;
 };
 
 }  // namespace combigrid

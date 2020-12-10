@@ -19,7 +19,7 @@ namespace combigrid {
  * The priority returned is the average of delta divided by the number of grid points (as a measure
  * for work intensity) over all the predecessor grids.
  */
-class AveragingPriorityEstimator : public PriorityEstimator {
+class AveragingPriorityEstimator : public PriorityEstimator<double> {
  public:
   AveragingPriorityEstimator(
       FullGrid::LevelOccupancy levelOccupancy = FullGrid::LevelOccupancy::TwoToThePowerOfL);

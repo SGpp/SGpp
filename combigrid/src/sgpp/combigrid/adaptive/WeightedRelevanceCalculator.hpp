@@ -18,7 +18,7 @@ namespace combigrid {
  * [0] Gerstner, T. and Griebel, M., 2003. Dimension–adaptive tensor–product quadrature.
  * Computing, 71(1), pp.65-87.
  */
-class WeightedRelevanceCalculator : public RelevanceCalculator {
+class WeightedRelevanceCalculator : public RelevanceCalculator<double> {
  public:
   explicit WeightedRelevanceCalculator(
       double weightDeltaInRelationToNumberOfPoints = 0.5,

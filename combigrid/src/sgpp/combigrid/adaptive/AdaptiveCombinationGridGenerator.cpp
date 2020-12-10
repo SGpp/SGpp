@@ -24,12 +24,12 @@
 
 namespace sgpp {
 namespace combigrid {
-
-AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
-    const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
-    std::function<double(double, double)> summationFunction,
-    std::shared_ptr<RelevanceCalculator> relevanceCalculator,
-    std::shared_ptr<PriorityEstimator> priorityEstimator)
+template <typename T>
+AdaptiveGenerator<T>::AdaptiveGenerator(const std::vector<LevelVector>& levelVectors,
+                                        const std::vector<T>&& QoIValues,
+                                        std::function<T(T, T)> summationFunction,
+                                        std::shared_ptr<RelevanceCalculator<T>> relevanceCalculator,
+                                        std::shared_ptr<PriorityEstimator<T>> priorityEstimator)
     : summationFunction(summationFunction),
       relevanceCalculator(relevanceCalculator),
       priorityEstimator(priorityEstimator) {
@@ -56,31 +56,33 @@ AdaptiveCombinationGridGenerator::AdaptiveCombinationGridGenerator(
       auto index = distance(levelVectors.begin(), found);
       subspacesAndQoI[level] = QoIValues[index];
     } else {
-      subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
+      // subspacesAndQoI[level] = std::numeric_limits<double>::quiet_NaN();
+      setQuietNan(subspacesAndQoI[level]);
     }
     activeSet.push_back(level);
     adaptLevel(level);
   }
 }
 
-AdaptiveCombinationGridGenerator AdaptiveCombinationGridGenerator::fromCombinationGrid(
-    const CombinationGrid& combinationGrid, const std::vector<double>&& QoIValues,
-    std::function<double(double, double)> summationFunction,
-    std::shared_ptr<RelevanceCalculator> relevanceCalculator,
-    std::shared_ptr<PriorityEstimator> priorityEstimator) {
+template <typename T>
+AdaptiveGenerator<T> AdaptiveGenerator<T>::fromCombinationGrid(
+    const CombinationGrid& combinationGrid, const std::vector<T>&& QoIValues,
+    std::function<T(T, T)> summationFunction,
+    std::shared_ptr<RelevanceCalculator<T>> relevanceCalculator,
+    std::shared_ptr<PriorityEstimator<T>> priorityEstimator) {
   std::vector<LevelVector> levels;
 
   for (const FullGrid& fullGrid : combinationGrid.getFullGrids()) {
     levels.push_back(fullGrid.getLevel());
   }
 
-  return AdaptiveCombinationGridGenerator(
-      levels, std::forward<const std::vector<double>>(QoIValues), summationFunction,
-      relevanceCalculator, priorityEstimator);
+  return AdaptiveGenerator<T>(levels, std::forward<const std::vector<T>>(QoIValues),
+                              summationFunction, relevanceCalculator, priorityEstimator);
 }
 
-CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
-    const HeterogeneousBasis& basis, bool hasBoundary) const {
+template <typename T>
+CombinationGrid AdaptiveGenerator<T>::getCombinationGrid(const HeterogeneousBasis& basis,
+                                                         bool hasBoundary) const {
   auto oldSet = getOldSet();
   auto coefficients = sgpp::combigrid::getStandardCoefficientsFromLevelSet(oldSet);
 
@@ -95,7 +97,8 @@ CombinationGrid AdaptiveCombinationGridGenerator::getCombinationGrid(
   return CombinationGrid::fromSubspaces(oldSetNonzero, basis, hasBoundary);
 }
 
-bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
+template <typename T>
+bool AdaptiveGenerator<T>::adaptNextLevelVector(bool regular) {
   if (regular) {
     throw sgpp::base::not_implemented_exception("Parameter regular not yet implemented!");
   }
@@ -113,7 +116,8 @@ bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
   }
 }
 
-bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
+template <typename T>
+bool AdaptiveGenerator<T>::adaptAllKnown() {
   bool atLeastOneLevelVectorAdded = false;
   bool levelVectorAdded = false;
 
@@ -125,38 +129,46 @@ bool AdaptiveCombinationGridGenerator::adaptAllKnown() {
   return atLeastOneLevelVectorAdded;
 }
 
-double AdaptiveCombinationGridGenerator::getCurrentResult() const {
-  double result = 0.;
+template <typename T>
+T AdaptiveGenerator<T>::getCurrentResult() const {
+  T result;
+  setZero(result);
   auto oldSet = getOldSet();
   auto coefficients = sgpp::combigrid::getStandardCoefficientsFromLevelSet(oldSet);
   // multiply coefficient with QoI and reduce
   for (size_t i = 0; i < oldSet.size(); ++i) {
     if (coefficients[i] != 0.) {
       const auto& value = subspacesAndQoI.at(oldSet[i]);
-      assert(!std::isnan(value));
+      assert(!isNan(value));
       result = summationFunction(result, coefficients[i] * value);
     }
   }
   return result;
 }
 
-std::vector<LevelVector> AdaptiveCombinationGridGenerator::getActiveSet() const {
+template <typename T>
+std::vector<LevelVector> AdaptiveGenerator<T>::getActiveSet() const {
   return std::vector<LevelVector>(activeSet.begin(), activeSet.end());
 }
 
-std::vector<LevelVector> AdaptiveCombinationGridGenerator::getLevels() const {
+template <typename T>
+std::vector<LevelVector> AdaptiveGenerator<T>::getLevels() const {
   auto l = std::vector<LevelVector>(getOldSet());
   auto active = getActiveSet();
   l.insert(l.end(), active.begin(), active.end());
   return l;
 }
 
-double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector) const {
+template <typename T>
+T AdaptiveGenerator<T>::getDelta(const LevelVector& levelVector) const {
   if (subspacesAndQoI.find(levelVector) == subspacesAndQoI.end()) {
-    return std::numeric_limits<double>::quiet_NaN();
+    T result;
+    setQuietNan(result);
+    return result;
+    // return T(std::numeric_limits<double>::quiet_NaN());
   }
 
-  double neighborStencilSum = 0.;
+  auto neighborStencilSum = getZero<T>();
   LevelVector levelVectorMinusOne = levelVector;
 
   for (size_t d = 0; d < levelVectorMinusOne.size(); ++d) {
@@ -173,26 +185,26 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   for (size_t i = 0; i < lowerHypercube.size(); ++i) {
     const auto hypercubeElement = subspacesAndQoI.find(lowerHypercube[i]);
     assert(hypercubeElement != subspacesAndQoI.end());
-    if (!std::isnan(subspacesAndQoI.at(lowerHypercube[i]))) {
+    if (!isNan(subspacesAndQoI.at(lowerHypercube[i]))) {
       level_t hammingDistance = 0;
 
       for (size_t d = 0; d < levelVector.size(); ++d) {
         hammingDistance += levelVector[d] - lowerHypercube[i][d];
       }
-      auto contributionByI = static_cast<double>(subspacesAndQoI.at(lowerHypercube[i]) *
-                                                 std::pow(-1, hammingDistance));
+      auto contributionByI = static_cast<double>(std::pow(-1, hammingDistance)) *
+                                                 subspacesAndQoI.at(lowerHypercube[i]);
 
       neighborStencilSum = summationFunction(neighborStencilSum, contributionByI);
     }
   }
-  assert(!std::isnan(neighborStencilSum));
+  assert(!isNan(neighborStencilSum));
 
   return subspacesAndQoI.at(levelVector) - neighborStencilSum;
 }
 
-std::vector<double> AdaptiveCombinationGridGenerator::getDeltas(
-    const std::vector<LevelVector>& levelVectors) const {
-  auto deltas = std::vector<double>();
+template <typename T>
+std::vector<T> AdaptiveGenerator<T>::getDeltas(const std::vector<LevelVector>& levelVectors) const {
+  auto deltas = std::vector<T>();
   deltas.reserve(levelVectors.size());
   for (auto& levelVector : levelVectors) {
     auto delta = getDelta(levelVector);
@@ -201,10 +213,11 @@ std::vector<double> AdaptiveCombinationGridGenerator::getDeltas(
   return deltas;
 }
 
-std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorities() const {
+template <typename T>
+std::map<LevelVector, double> AdaptiveGenerator<T>::getPriorities() const {
   std::map<LevelVector, double> priority;
   for (const auto& levelVector : activeSet) {
-    std::map<LevelVector, double> deltasOfLowerNeighbors;
+    std::map<LevelVector, T> deltasOfLowerNeighbors;
 
     for (size_t d = 0; d < levelVector.size(); ++d) {
       auto neighborLevel = levelVector;
@@ -218,7 +231,7 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorities() 
       }
     }
 
-    if (std::isnan(getDelta(levelVector))) {
+    if (isNan(getDelta(levelVector))) {
       priority[levelVector] =
           priorityEstimator->estimatePriority(levelVector, deltasOfLowerNeighbors);
     }
@@ -226,7 +239,8 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getPriorities() 
   return priority;
 }
 
-std::vector<LevelVector> AdaptiveCombinationGridGenerator::getPriorityQueue() const {
+template <typename T>
+std::vector<LevelVector> AdaptiveGenerator<T>::getPriorityQueue() const {
   auto priorities = getPriorities();
   auto comparator = [](std::pair<LevelVector, double> elem1, std::pair<LevelVector, double> elem2) {
     return std::abs(elem1.second) > std::abs(elem2.second);
@@ -242,13 +256,14 @@ std::vector<LevelVector> AdaptiveCombinationGridGenerator::getPriorityQueue() co
   return queue;
 }
 
-std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getRelevanceOfActiveSet() const {
+template <typename T>
+std::map<LevelVector, double> AdaptiveGenerator<T>::getRelevanceOfActiveSet() const {
   std::map<LevelVector, double> relevance;
 
   for (const LevelVector& levelVector : activeSet) {
-    const double delta = getDelta(levelVector);
+    const T delta = getDelta(levelVector);
 
-    if (!std::isnan(delta)) {
+    if (!isNan(delta)) {
       relevance[levelVector] = relevanceCalculator->calculate(levelVector, delta);
     }
   }
@@ -256,7 +271,8 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getRelevanceOfAc
   return relevance;
 }
 
-bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) const {
+template <typename T>
+bool AdaptiveGenerator<T>::isAdmissible(const LevelVector& level) const {
   for (size_t d = 0; d < minimumLevelVector.size(); ++d) {
     if (level[d] > minimumLevelVector[d]) {
       LevelVector neighborLevel = level;
@@ -273,7 +289,8 @@ bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) co
   return true;
 }
 
-void AdaptiveCombinationGridGenerator::addNeighborsToActiveSet(const LevelVector& level) {
+template <typename T>
+void AdaptiveGenerator<T>::addNeighborsToActiveSet(const LevelVector& level) {
   for (size_t d = 0; d < level.size(); ++d) {
     LevelVector neighborLevel = level;
     neighborLevel[d] += 1;
@@ -284,7 +301,8 @@ void AdaptiveCombinationGridGenerator::addNeighborsToActiveSet(const LevelVector
   }
 }
 
-void AdaptiveCombinationGridGenerator::adaptLevel(const LevelVector& level) {
+template <typename T>
+void AdaptiveGenerator<T>::adaptLevel(const LevelVector& level) {
   assert(std::find(oldSet.begin(), oldSet.end(), level) == oldSet.end());
   assert(std::find(activeSet.begin(), activeSet.end(), level) != activeSet.end());
 
@@ -292,6 +310,11 @@ void AdaptiveCombinationGridGenerator::adaptLevel(const LevelVector& level) {
   activeSet.remove(level);
   addNeighborsToActiveSet(level);
 }
+
+// have explicit class instantiations for commonly used types T
+template class AdaptiveGenerator<double>;
+template class AdaptiveGenerator<std::array<double, 2>>;
+template class AdaptiveGenerator<std::vector<double>>;
 
 }  // namespace combigrid
 }  // namespace sgpp

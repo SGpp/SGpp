@@ -16,6 +16,7 @@ namespace combigrid {
  * @brief a generic priority estimator for level vectors that don't have a definite result / QoI
  * yet
  */
+template <typename T>
 class PriorityEstimator {
  public:
   /**
@@ -33,7 +34,7 @@ class PriorityEstimator {
    */
   virtual double estimatePriority(
       const LevelVector& levelVector,
-      const std::map<LevelVector, double>& deltasOfDownwardNeighbors) const = 0;
+      const std::map<LevelVector, T>& deltasOfDownwardNeighbors) const = 0;
 };
 
 }  // namespace combigrid
