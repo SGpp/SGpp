@@ -49,16 +49,16 @@ ModelFittingDensityDerivativeRatioEstimation::ModelFittingDensityDerivativeRatio
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityDerivativeRatioEstimation::evaluate(const DataVector &sample) {
-  auto opEval = std::unique_ptr<base::OperationEval>{op_factory::createOperationEval(*grid)};
+  // For density derivative we use b-splines, so we need the EvalNaive instead!
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEvalNaive(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 void ModelFittingDensityDerivativeRatioEstimation::evaluate(DataMatrix &samples,
                                                             DataVector &results) {
-  auto opMultEval = std::unique_ptr<base::OperationMultipleEval>{
-      op_factory::createOperationMultipleEval(*grid, samples, config->getMultipleEvalConfig())};
-  opMultEval->eval(alpha, results);
+  // For density derivative we use b-splines, so we need the EvalNaive instead!
+  sgpp::op_factory::createOperationMultipleEvalNaive(*grid, samples)->eval(alpha, results);
 }
 
 void ModelFittingDensityDerivativeRatioEstimation::fit(Dataset &newDataset) {
