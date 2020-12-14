@@ -39,6 +39,8 @@ sgpp::base::Grid* GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
     tmpGrid = Grid::createBsplineBoundaryGrid(
         gridConfig.dim_, gridConfig.maxDegree_,
         static_cast<base::GridPoint::level_type>(gridConfig.boundaryLevel_));
+  } else if (gridConfig.type_ == GridType::ModBspline) {
+    tmpGrid = Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
   } else {
     throw algorithm_exception("GridFactory::createGrid: An unsupported grid type was chosen!");
   }
