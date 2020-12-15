@@ -40,6 +40,11 @@
 %shared_ptr(sgpp::combigrid::WeightedRelevanceCalculator)
 %include "combigrid/src/sgpp/combigrid/adaptive/AdaptiveCombinationGridGenerator.hpp"
 
+// TODO figure out how to do this
+namespace sgpp::combigrid {
+ %template(AdaptiveCombinationGridGenerator) AdaptiveGenerator<double>;
+}
+
 namespace std {
   %template(BasisVector) vector<sgpp::base::Basis<sgpp::combigrid::level_t, sgpp::combigrid::index_t>*>;
   %template(FullGridVector) vector<sgpp::combigrid::FullGrid>;

@@ -292,7 +292,11 @@ class AdaptiveGenerator {
   std::shared_ptr<PriorityEstimator<T>> priorityEstimator;  // averaging, weighted
 };
 
-typedef AdaptiveGenerator<double> ScalarAdaptiveGenerator;
-typedef ScalarAdaptiveGenerator AdaptiveCombinationGridGenerator;
+// typedefs don't work for swig, trying classes
+class AdaptiveCombinationGridGenerator : public AdaptiveGenerator<double> {
+  using AdaptiveGenerator<double>::AdaptiveGenerator;
+  // also for swig:
+  AdaptiveCombinationGridGenerator() = default;
+};
 }  // namespace combigrid
 }  // namespace sgpp
