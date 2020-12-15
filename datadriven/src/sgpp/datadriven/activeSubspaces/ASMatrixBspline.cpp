@@ -24,6 +24,9 @@ void ASMatrixBspline::initialize(sgpp::base::GridType gridType) {
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     grid = std::make_shared<sgpp::base::NakBsplineExtendedGrid>(numDim, degree);
     basis = std::make_unique<sgpp::base::SNakBsplineExtendedBase>(degree);
+  }else if (gridType == sgpp::base::GridType::NakPBspline) {
+    grid = std::make_shared<sgpp::base::NakPBsplineGrid>(numDim, degree);
+    basis = std::make_unique<sgpp::base::SNakPBsplineBase>(degree);
   } else {
     throw sgpp::base::generation_exception("ASMatrixNakBspline: gridType not supported.");
   }

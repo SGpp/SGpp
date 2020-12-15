@@ -17,6 +17,8 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
 #include <sgpp/base/tools/sle/solver/Armadillo.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>

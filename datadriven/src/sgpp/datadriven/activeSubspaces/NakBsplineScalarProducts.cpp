@@ -20,6 +20,8 @@ std::shared_ptr<sgpp::base::SBasis> NakBsplineScalarProducts::initializeBasis(
     return std::make_shared<sgpp::base::SNakBsplineModifiedBase>(degree);
   } else if (gridType == sgpp::base::GridType::NakBsplineExtended) {
     return std::make_shared<sgpp::base::SNakBsplineExtendedBase>(degree);
+  }else if (gridType == sgpp::base::GridType::NakPBspline) {
+    return std::make_shared<sgpp::base::SNakPBsplineBase>(degree);
   } else {
     throw sgpp::base::generation_exception("NakBsplineScalarProducts: gridType not supported.");
   }
