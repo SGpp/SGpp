@@ -9,6 +9,7 @@
 #include <sgpp/combigrid/adaptive/AveragingPriorityEstimator.hpp>
 #include <sgpp/combigrid/adaptive/PriorityEstimator.hpp>
 #include <sgpp/combigrid/adaptive/RelevanceCalculator.hpp>
+#include <sgpp/combigrid/adaptive/Summation.hpp>
 #include <sgpp/combigrid/adaptive/WeightedRelevanceCalculator.hpp>
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 
@@ -53,6 +54,7 @@ class AdaptiveCombinationGridGenerator {
   typedef std::pair<const std::vector<unsigned int>, double> MapPairType;
 
  public:
+  typedef double (*PtrSummationType)(double, double);
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object
    *
@@ -69,7 +71,7 @@ class AdaptiveCombinationGridGenerator {
    */
   AdaptiveCombinationGridGenerator(
       const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
-      std::function<double(double, double)> summationFunction,
+      std::function<double(double, double)> summationFunction = std::plus<double>(),
       std::shared_ptr<RelevanceCalculator> relevanceCalculator =
           std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
       std::shared_ptr<PriorityEstimator> priorityEstimator =
@@ -142,6 +144,24 @@ class AdaptiveCombinationGridGenerator {
   }
 
   /**
+   * @brief for SWIG compatibility: the standard constructor but called with a function pointer
+   * instead of std::function
+   * TODO(pollinta): how could this be more generic?
+   */
+
+  static AdaptiveCombinationGridGenerator fromFunctionPointer(
+      const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
+      PtrSummationType summationFunction,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator())) {
+    return AdaptiveCombinationGridGenerator(
+        levelVectors, std::forward<const std::vector<double>>(QoIValues), summationFunction,
+        relevanceCalculator, priorityEstimator);
+  }
+
+  /**
    * @brief Get the the currently valid combination grid consisting of the "old set"
    * (the combination grid only holds the full grid vectors with non-zero coefficients)
    */
@@ -157,6 +177,16 @@ class AdaptiveCombinationGridGenerator {
    * @brief set QoI information / a result for LevelVector level
    */
   void setQoIInformation(const LevelVector& level, double qoi) { subspacesAndQoI[level] = qoi; }
+
+  /**
+   * @brief get QoI information / the stored result for LevelVector level
+   */
+  double getQoIInformation(const LevelVector& level) { return subspacesAndQoI[level]; }
+
+  /**
+   * @brief is Qoi information stored for LevelVector level?
+   */
+  bool hasQoIInformation(const LevelVector& level) { return !std::isnan(subspacesAndQoI[level]); }
 
   /**
    * @brief add the next most important subspace of known result to the old set
@@ -241,6 +271,17 @@ class AdaptiveCombinationGridGenerator {
    */
   std::map<LevelVector, double> getRelevanceOfActiveSet() const;
 
+  /**
+   * @brief get exact value of relevance / "error" of those elements in the active set
+   * that already have a QoI value
+   */
+  LevelVector getMostRelevant() const;
+
+  /**
+   * @brief adapt to level vector \c level = move from active to old set
+   */
+  void adaptLevel(const LevelVector& level);
+
  private:
   /**
    * @brief a level vector is admissible, if all potential lower neighbors are already in the old
@@ -252,11 +293,6 @@ class AdaptiveCombinationGridGenerator {
    * @brief add forward neighbors of \c level to active set, if admissible
    */
   void addNeighborsToActiveSet(const LevelVector& level);
-
-  /**
-   * @brief adapt to level vector \c level = move from active to old set
-   */
-  void adaptLevel(const LevelVector& level);
 
   // a map that holds all the levels / results
   // key: the downward-closed set of all level vectors / subspaces considered so far
