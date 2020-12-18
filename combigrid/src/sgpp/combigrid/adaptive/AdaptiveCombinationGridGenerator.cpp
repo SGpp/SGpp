@@ -187,7 +187,7 @@ double AdaptiveCombinationGridGenerator::getDelta(const LevelVector& levelVector
   }
   assert(!std::isnan(neighborStencilSum));
 
-  return subspacesAndQoI.at(levelVector) - neighborStencilSum;
+  return subspacesAndQoI.at(levelVector) + neighborStencilSum;
 }
 
 std::vector<double> AdaptiveCombinationGridGenerator::getDeltas(
