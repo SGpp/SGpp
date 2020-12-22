@@ -9,6 +9,7 @@
 #include <cmath>
 #include <cstddef>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv1.hpp>
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
@@ -34,7 +35,8 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
    *                  (if it's even, degree - 1 is used)
    */
   explicit NakBsplineModifiedBasis(size_t degree)
-      : nakBsplineBasis(NakBsplineBasis<LT, IT>(degree)) {
+      : nakBsplineBasis(NakBsplineBasis<LT, IT>(degree)),
+      nakBsplineModifiedBasisDeriv1(NakBsplineModifiedBasisDeriv1<LT,IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -268,9 +270,8 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
    * @return      value of derivative of wavelet basis function
    */
   inline double evalDx(LT l, IT i, double x) {
-    std::cerr
-        << "NakBsplineModifiedBasis::evalDx not implemented. Use NakBsplineModifiedBasisDeriv1\n";
-    return 0;
+    // std::cerr<< "NakBsplineModifiedBasis::evalDx not implemented. Use NakBsplineModifiedBasisDeriv1\n";
+    return nakBsplineModifiedBasisDeriv1.eval(l,i,x);
   }
 
   inline double getIntegral(LT level, IT index) override { return -1.0; }
@@ -365,6 +366,8 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
  protected:
   /// B-spline basis for B-spline evaluation
   NakBsplineBasis<LT, IT> nakBsplineBasis;
+  /// NakBsplineMOdifiedBAsisDeriv1 for derivative evaluations
+  NakBsplineModifiedBasisDeriv1<LT,IT> nakBsplineModifiedBasisDeriv1;
 };
 
 // default type-def (unsigned int for level and index)
