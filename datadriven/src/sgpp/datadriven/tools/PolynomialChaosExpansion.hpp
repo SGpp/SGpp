@@ -47,7 +47,6 @@ class PolynomialChaosExpansion {
   base::DataVector alpha;
   base::DataVector beta;
   base::DataVector coefficients;
-  int last_n;
 
  private:
   double evalLegendre(int n, double x);
