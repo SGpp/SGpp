@@ -5,11 +5,6 @@
 
 #pragma once
 
-#include <functional>
-#include <map>
-#include <sgpp/base/datatypes/DataVector.hpp>
-#include <sgpp/base/tools/DistributionsVector.hpp>
-//#include <sgpp/globaldef.hpp>
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -27,6 +22,7 @@
 #include <sgpp/base/tools/DistributionTruncExponential.hpp>
 #include <sgpp/base/tools/DistributionTruncGamma.hpp>
 #include <sgpp/base/tools/DistributionUniform.hpp>
+#include <sgpp/base/tools/DistributionsVector.hpp>
 #include <sgpp/base/tools/GridPrinter.hpp>
 #include <sgpp/base/tools/sle/solver/Eigen.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
@@ -93,13 +89,16 @@ class PolynomialChaosExpansion {
    */
   base::DataVector getCoefficients();
 
+  /*
+   * deletes the stored coefficients
+   */
   void clearCoefficients();
   /*
    * evaluates the PCE at the given point
    */
   double evalExpansion(const base::DataVector& xi, int n, bool use_adaptive);
   /*
-   * retrns the mean of the expansion
+   * returns the mean of the expansion
    */
   double getMean(int n, bool use_adaptive);
   /*
@@ -107,7 +106,8 @@ class PolynomialChaosExpansion {
    */
   double getVariance(int n, bool use_adaptive);
   /*
-   * returns the L2 approximation error of the expansion
+   * returns the L2 approximation error of the expansion(calculated wrt the underlying
+   * distributions)
    */
   double getL2Error(int n, bool use_adaptive);
 };

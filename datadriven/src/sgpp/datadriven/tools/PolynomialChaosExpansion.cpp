@@ -69,6 +69,9 @@ PolynomialChaosExpansion::PolynomialChaosExpansion(std::function<double(const ba
     }
   }
 
+  /*
+   * normalization
+   */
   func = [f, this](const base::DataVector& vec) {
     base::DataVector temp(types.size());
     for (std::vector<distributionType>::size_type i = 0; i < types.size(); ++i) {
@@ -386,11 +389,10 @@ base::DataVector PolynomialChaosExpansion::calculateCoefficients(int n, bool use
   for (std::vector<std::vector<int>>::size_type j = 0; j < index.size(); ++j) {
     auto numfunc = [this, &index, &j](const base::DataVector& vec) {
       double prd = 1;
-      double weightprd = 1;
       for (base::DataVector::size_type i = 0; i < vec.getSize(); ++i) {
         prd *= evals[static_cast<int>(types[i])](index[j][i], vec[i], i);
       }
-      return prd * weightprd;
+      return prd;
     };
     auto intfunc = [this, &numfunc](const base::DataVector& vec) {
       return numfunc(vec) * func(vec);
@@ -457,19 +459,8 @@ double PolynomialChaosExpansion::evalExpansion(const base::DataVector& xi, int n
 
 double PolynomialChaosExpansion::getL2Error(int n, bool use_adaptive) {
   auto dim = distributions.getSize();
-  std::vector<std::uniform_real_distribution<double>> dists(dim);
-  std::random_device dev;
-  std::mt19937_64 mersenne{dev()};
-  for (int i = 0; i < dim; ++i) {
-    dists[i] = std::uniform_real_distribution<double>{-.9, .9};
-  }
-  auto gen = [this, &n, &dists, &mersenne, &use_adaptive]() {
-    // base::DataVector randvec = distributions.sample();
-    base::DataVector randvec(dists.size());
-    for (std::vector<std::uniform_real_distribution<double>>::size_type i = 0; i < dists.size();
-         ++i) {
-      randvec[i] = dists[i](mersenne);
-    }
+  auto gen = [this, &n, &use_adaptive]() {
+    base::DataVector randvec = distributions.sample();
     base::DataVector transvec(randvec.getSize());
     for (std::vector<distributionType>::size_type i = 0; i < types.size(); ++i) {
       auto characteristics = this->distributions.get(i)->getCharacteristics();
