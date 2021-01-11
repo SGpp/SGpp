@@ -19,10 +19,13 @@ namespace base {
  *
  */
 enum class DistributionType {
-  Uniform,     //  0
-  Normal,      //  1
-  Lognormal,   //  2
-  TruncNormal  // 3
+  Uniform,      //  0
+  Normal,       //  1
+  Lognormal,    //  2
+  TruncNormal,  // 3
+  Beta,
+  TruncExponential,
+  TruncGamma
 };
 
 /**
