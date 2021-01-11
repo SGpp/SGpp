@@ -26,8 +26,9 @@
  */
 
 // include all SG++ base headers
-#include <iostream>
 #include <sgpp_base.hpp>
+
+#include <iostream>
 
 using sgpp::base::OperationHierarchisation;
 
@@ -79,8 +80,8 @@ int main() {
       ->doHierarchisation(alpha);
 
   /**
-   * Now we compute and compare the quadrature using four different methods available in SG++.
-   */
+     * Now we compute and compare the quadrature using four different methods available in SG++.
+     */
 
   // direct quadrature
   std::unique_ptr<sgpp::base::OperationQuadrature> opQ(
