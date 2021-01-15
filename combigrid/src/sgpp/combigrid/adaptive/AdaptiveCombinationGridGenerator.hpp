@@ -186,7 +186,13 @@ class AdaptiveCombinationGridGenerator {
   /**
    * @brief is Qoi information stored for LevelVector level?
    */
-  bool hasQoIInformation(const LevelVector& level) { return !std::isnan(subspacesAndQoI[level]); }
+  bool hasQoIInformation(const LevelVector& level) { 
+    try{
+        return !std::isnan(subspacesAndQoI.at(level));
+    } catch (std::out_of_range& e) {
+        return false;
+    }
+  }
 
   /**
    * @brief add the next most important subspace of known result to the old set
