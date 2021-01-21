@@ -118,7 +118,7 @@ base::OperationMatrix* ModelFittingDensityDerivativeEstimationCG::computeRegular
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
-        "ModelFittingDensityEstimationCG : unsupported regularization type");
+        "ModelFittingDensityDerivativeEstimationCG : unsupported regularization type");
   }
   return C;
 }

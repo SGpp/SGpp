@@ -35,10 +35,11 @@ void DensityDerivativeRatioEstimationMinerFactory::sanityCheck(
   // Sanity check: SGDDerivRE needs Bspline basis of order at least 3
   if (config.getGridConfig().maxDegree_ < 3 &&
       !(config.getGridConfig().type_ == base::GridType::Bspline ||
-        config.getGridConfig().type_ == base::GridType::BsplineBoundary))
+        config.getGridConfig().type_ == base::GridType::BsplineBoundary ||
+        config.getGridConfig().type_ == base::GridType::ModBspline))
     throw base::algorithm_exception(
         "DensityDerivativeRatioEstimationMinerFactory: Method requires Bspline basis functions of "
-        "order at least 3!");
+        "degree at least 3!");
 }
 
 HyperparameterOptimizer* DensityDerivativeRatioEstimationMinerFactory::buildHPO(

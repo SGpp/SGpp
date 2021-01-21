@@ -15,6 +15,8 @@
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusAbsValueCoarseningFunctor.hpp>
+#include <sgpp/base/grid/generation/functors/SurplusAbsValueRefinementFunctor.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 
 #include <string>
@@ -31,6 +33,8 @@ using sgpp::base::SurplusCoarseningFunctor;
 using sgpp::base::SurplusRefinementFunctor;
 using sgpp::base::SurplusVolumeCoarseningFunctor;
 using sgpp::base::SurplusVolumeRefinementFunctor;
+using sgpp::base::SurplusAbsValueCoarseningFunctor;
+using sgpp::base::SurplusAbsValueRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -45,8 +49,7 @@ ModelFittingRelativeDensityRatioEstimation::ModelFittingRelativeDensityRatioEsti
   this->config = std::unique_ptr<FitterConfiguration>(
       std::make_unique<FitterConfigurationDensityLeastSquares>(config));
   solver = std::unique_ptr<SLESolver>{buildSolver(this->config->getSolverFinalConfig())};
-
-  std::cout << "~~~~~~~~ " << this->config->getDensityEstimationConfig().omega_ << std::endl;
+  std::cout << "omega: " << this->config->getDensityEstimationConfig().omega_ << std::endl;
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
@@ -127,6 +130,11 @@ ModelFittingRelativeDensityRatioEstimation::getRefinementFunctor() {
           alpha, config->getRefinementConfig().numRefinementPoints_,
           config->getRefinementConfig().refinementThreshold_);
     }
+    case RefinementFunctorType::SurplusAbsoluteValue: {
+      return std::make_unique<SurplusAbsValueRefinementFunctor>(
+          *grid, alpha, config->getRefinementConfig().numRefinementPoints_,
+          config->getRefinementConfig().refinementThreshold_);
+    }
     case RefinementFunctorType::DataBased: {
       std::string errorMessage =
           "Unsupported refinement functor type DataBased "
@@ -175,6 +183,11 @@ ModelFittingRelativeDensityRatioEstimation::getCoarseningFunctor() {
           alpha, config->getRefinementConfig().numCoarseningPoints_,
           config->getRefinementConfig().coarseningThreshold_);
     }
+    case CoarseningFunctorType::SurplusAbsoluteValue: {
+      return std::make_unique<SurplusAbsValueCoarseningFunctor>(
+          *grid, alpha, config->getRefinementConfig().numCoarseningPoints_,
+          config->getRefinementConfig().coarseningThreshold_);
+    }
     case CoarseningFunctorType::Classification: {
       std::string errorMessage =
           "Unsupported coarsening functor type Classification "
@@ -192,15 +205,14 @@ bool ModelFittingRelativeDensityRatioEstimation::adapt() {
     }
 
     if (refinementsPerformed < config->getRefinementConfig().numRefinements_) {
-      // create refinement and coarsening functors
-      std::unique_ptr<RefinementFunctor> refinementFunc = getRefinementFunctor();
       auto oldNoPoints = grid->getSize();
-
-      std::unique_ptr<CoarseningFunctor> coarseningFunc = getCoarseningFunctor();
       std::vector<size_t> deletedGridPoints;
 
       // do coarsening before refinement to prevent refined grid points from being coarsened
       // immediately
+
+      // create coarsening functor
+      std::unique_ptr<CoarseningFunctor> coarseningFunc = getCoarseningFunctor();
 
       if (coarseningFunc) {
         // coarsen grid
@@ -216,6 +228,9 @@ bool ModelFittingRelativeDensityRatioEstimation::adapt() {
             "ModelFittingRelativeDensityRatioEstimation: No coarsening functor could be "
             "created!");
       }
+
+      // create refinemwnt functor (to get updated/coarsened grid!!!)
+      std::unique_ptr<RefinementFunctor> refinementFunc = getRefinementFunctor();
 
       if (refinementFunc) {
         // refine grid

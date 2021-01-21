@@ -566,7 +566,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
       if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
 #ifdef USE_CUDA
-        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), false);
+        return new datadriven::OperationMultiEvalCuda(
+            grid, dataset, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), false);
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with CUDA support");
@@ -575,7 +576,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
     } else if (configuration.getType() == datadriven::OperationMultipleEvalType::MORTONORDER) {
       if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
 #ifdef USE_CUDA
-        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), true);
+        return new datadriven::OperationMultiEvalCuda(
+            grid, dataset, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), true);
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with CUDA support");
