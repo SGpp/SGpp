@@ -13,6 +13,7 @@ namespace base {
 enum class RefinementFunctorType {
   Surplus,
   SurplusVolume,
+  SurplusAbsoluteValue,
   DataBased,
   ZeroCrossing,
   GridPointBased,

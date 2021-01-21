@@ -14,15 +14,15 @@ namespace base {
 
 using sgpp::base::data_exception;
 
-CoarseningFunctorType CoarseningFunctorTypeParser::parse(
-    const std::string& input) {
+CoarseningFunctorType CoarseningFunctorTypeParser::parse(const std::string& input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
-                 ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
   if (inputLower == "surplus") {
     return CoarseningFunctorType::Surplus;
   } else if (inputLower == "surplusvolume") {
     return CoarseningFunctorType::SurplusVolume;
+  } else if (inputLower == "surplusabsolutevalue") {
+    return CoarseningFunctorType::SurplusAbsoluteValue;
   } else if (inputLower == "classification") {
     return CoarseningFunctorType::Classification;
   } else {
@@ -33,8 +33,7 @@ CoarseningFunctorType CoarseningFunctorTypeParser::parse(
   }
 }
 
-const std::string& CoarseningFunctorTypeParser::toString(
-    CoarseningFunctorType type) {
+const std::string& CoarseningFunctorTypeParser::toString(CoarseningFunctorType type) {
   return coarseningFunctorTypeMap.at(type);
 }
 
@@ -43,8 +42,8 @@ const CoarseningFunctorTypeParser::CoarseningFunctorTypeMap_t
       return CoarseningFunctorTypeMap_t{
           std::make_pair(CoarseningFunctorType::Surplus, "Surplus"),
           std::make_pair(CoarseningFunctorType::SurplusVolume, "SurplusVolume"),
-          std::make_pair(CoarseningFunctorType::Classification,
-                         "Classification")};
+          std::make_pair(CoarseningFunctorType::SurplusAbsoluteValue, "SurplusAbsoluteValue"),
+          std::make_pair(CoarseningFunctorType::Classification, "Classification")};
     }();
 
 } /* namespace base */
