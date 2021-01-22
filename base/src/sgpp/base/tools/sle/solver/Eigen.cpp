@@ -9,6 +9,9 @@
 #include <sgpp/globaldef.hpp>
 
 #ifdef USE_EIGEN
+#ifdef _WIN32
+#include <Eigen/Dense>
+#else
 #include <eigen3/Eigen/Dense>
 #endif /* USE_EIGEN */
 

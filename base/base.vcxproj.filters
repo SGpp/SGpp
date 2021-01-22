@@ -1,0 +1,2517 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\sgpp\base\algorithm\AlgorithmDGEMV.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\AlgorithmEvaluation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\AlgorithmEvaluationTransposed.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\AlgorithmMultipleEvaluation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\BreadthFirstSearch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\GetAffectedBasisFunctions.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\algorithm\sweep.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\application\ScreenOutput.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\datatypes\DataMatrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\datatypes\DataMatrixSP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\datatypes\DataVector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\datatypes\DataVectorSP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\algorithm_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\application_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\data_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\factory_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\file_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\generation_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\not_implemented_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\operation_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\solver_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\exception\tool_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ComponentScalarFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ComponentScalarFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ComponentScalarFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\InterpolantScalarFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\InterpolantScalarFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\InterpolantScalarFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScalarFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScalarFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScalarFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScaledScalarFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScaledScalarFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\ScaledScalarFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\WrapperScalarFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\WrapperScalarFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\scalar\WrapperScalarFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\EmptyVectorFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\EmptyVectorFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\InterpolantVectorFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\InterpolantVectorFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\InterpolantVectorFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\VectorFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\VectorFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\VectorFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\WrapperVectorFunction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\WrapperVectorFunctionGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\function\vector\WrapperVectorFunctionHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\BoundingBox.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\DirichletGridConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\DirichletUpdateVector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\IndexInSubspaceGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\Stretching.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\common\SubspaceGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\CoarseningFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\ForwardSelectorRefinementIndicator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\ImpurityRefinementIndicator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\PredictiveRefinementIndicator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\RefinementFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\SurplusCoarseningFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\SurplusRefinementFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\SurplusVolumeCoarseningFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\functors\SurplusVolumeRefinementFunctor.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\AbstractRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\ANOVAHashRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashCoarsening.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashRefinementBoundaries.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashRefinementBoundariesMaxLevel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashRefinementInconsistent.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\hashmap\HashRefinementInteraction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\ForwardSelectorRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\ImpurityRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\MultipleClassRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\PredictiveRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\RefinementDecorator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\refinement_strategy\SubspaceRefinement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\BoundaryGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\GeneralizedBoundaryGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\GridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\L0BoundaryGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\PeriodicGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\PrewaveletGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\SquareRootGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\StandardGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\generation\StretchedBoundaryGridGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\storage\hashmap\HashGridIterator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\storage\hashmap\HashGridPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\storage\hashmap\HashGridStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\storage\hashmap\SerializationVersion.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\BsplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\BsplineClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\BsplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\FundamentalNakSplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\FundamentalSplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\FundamentalSplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\GridStencil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearClenshawCurtisBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearGridStencil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearL0BoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearStretchedBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearStretchedGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\LinearTruncatedBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModBsplineClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModBsplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModFundamentalSplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModLinearClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModLinearGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModLinearGridStencil.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModNakBsplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModPolyClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModPolyGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModWaveletGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\NaturalBsplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PeriodicGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PolyBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PolyClenshawCurtisBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PolyClenshawCurtisGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PolyGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\PrewaveletGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\SquareRootGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\WaveletBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\WaveletGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\WeaklyFundamentalNakSplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\type\WeaklyFundamentalSplineBoundaryGrid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\AdaptivityThresholdTypeParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\CoarseningConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\CoarseningFunctorTypeParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\GeneralGridTypeParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\Grid.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\GridDataBase.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\GridStorage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\GridTypeParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\LevelIndexTypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\RefinementConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\grid\RefinementFunctorTypeParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalNakSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationModFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalNakSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationModFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\ConvertLinearToPrewavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\ConvertPrewaveletToLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearStretched.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearStretchedBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearStretched.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearStretchedBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilDehierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilDehierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilHierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilHierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\Basis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\BsplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\BsplineBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\BsplineClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\BsplineModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\BsplineModifiedClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\FundamentalNakSplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\FundamentalSplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\FundamentalSplineModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearClenshawCurtisBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearModifiedClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearPeriodicBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearStretchedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\LinearStretchedBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineBasisDeriv1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineBasisDeriv2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineBoundaryCombigridBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineModifiedBasisDeriv1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NakBsplineModifiedBasisDeriv2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\NaturalBsplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyClenshawCurtisBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PolyModifiedClenshawCurtisBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\PrewaveletBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WaveletBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WaveletBoundaryBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WaveletModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineBasisDeriv1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineBasisDeriv2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineModifiedBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineModifiedBasisDeriv1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalNakSplineModifiedBasisDeriv2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalSplineBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalSplineBasisDeriv1.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\common\basis\WeaklyFundamentalSplineBasisDeriv2.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationArbitraryBoundaryHierarchisation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationConvert.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationConvertPrewavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationDiagonal.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEval.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradient.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModNakBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientModWeaklyFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientNakBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientWaveletBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessian.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModNakBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianModWeaklyFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianNakBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianWaveletBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalHessianWeaklyFundamentalSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearClenshawCurtisBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearStretched.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalLinearStretchedBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModLinearClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModLinearNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModNakBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModPolyClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModPolyNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNaturalBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivative.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModFundamentalSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModNakBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeNakBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWaveletBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWeaklyFundamentalNakSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPeriodic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPolyBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPolyClenshawCurtisBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPolyClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPolyNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPrewavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalWaveletBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalWaveletNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalWeaklyFundamentalNakSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalWeaklyFundamentalSplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMoment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentBsplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentModBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentModBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalNakSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalSplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearStretched.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearStretchedBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationModWavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationHierarchisationPrewavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationIdentity.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMatrix.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMatrixSP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEval.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalInterModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearStretched.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearStretchedBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModBsplineClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModBsplineNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModLinearClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalModPolyClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPeriodic.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyClenshawCurtisNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyNaive.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationMultipleEvalPrewavelet.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadrature.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureBsplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureLinearClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModFundamentalSpline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModLinearClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadratureModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadraturePoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadraturePolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadraturePolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationQuadraturePolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMoment.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentBsplineBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentLinearBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentModBspline.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentModBsplineClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentModPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentModPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentPoly.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyClenshawCurtis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyClenshawCurtisBoundary.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationStencilHierarchisation.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationStencilHierarchisationLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\hash\OperationStencilHierarchisationModLinear.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\operation\BaseOpFactory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\DictNode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\IDNode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\JSON.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\json_exception.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\ListNode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\Node.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\TextNode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\json\Token.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\Armadillo.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\Auto.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\BiCGStab.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\Eigen.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\GaussianElimination.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\Gmmpp.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\SLESolver.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\solver\UMFPACK.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\system\CloneableSLE.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\system\FullSLE.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\system\HierarchisationSLE.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\sle\system\SLE.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\ClenshawCurtisTable.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\ConfigurationParameters.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\EvalCuboidGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\EvalCuboidGeneratorForStretching.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\GridPrinter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\GridPrinterForStretching.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\HermiteBasis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\MultipleClassPoint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\MutexType.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\OperationConfiguration.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\OperationQuadratureMC.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\PrecisionConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\Printer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\QueueLoadBalancerMutex.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\QueueLoadBalancerOpenMP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\RandomNumberGenerator.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\ScopedLock.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\SGppStopwatch.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\StdNormalDistribution.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\StringTokenizer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\globaldef.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp_base.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\GaussHermiteQuadRule1D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sgpp\base\tools\QuadRule1D.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\sgpp\base\application\ScreenOutput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\datatypes\DataMatrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\datatypes\DataMatrixSP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\datatypes\DataVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\datatypes\DataVectorSP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\function\vector\EmptyVectorFunction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\function\vector\EmptyVectorFunctionGradient.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\BoundingBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\DirichletGridConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\DirichletUpdateVector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\IndexInSubspaceGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\Stretching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\common\SubspaceGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\ForwardSelectorRefinementIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\ImpurityRefinementIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\PredictiveRefinementIndicator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\SurplusCoarseningFunctor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\SurplusRefinementFunctor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\SurplusVolumeCoarseningFunctor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\functors\SurplusVolumeRefinementFunctor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\AbstractRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\ANOVAHashRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashCoarsening.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashRefinementBoundaries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashRefinementBoundariesMaxLevel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashRefinementInconsistent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\hashmap\HashRefinementInteraction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\ForwardSelectorRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\ImpurityRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\MultipleClassRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\PredictiveRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\RefinementDecorator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\refinement_strategy\SubspaceRefinement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\BoundaryGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\GeneralizedBoundaryGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\L0BoundaryGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\PeriodicGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\PrewaveletGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\SquareRootGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\StandardGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\generation\StretchedBoundaryGridGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\storage\hashmap\HashGridIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\storage\hashmap\HashGridPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\storage\hashmap\HashGridStorage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\BsplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\BsplineClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\BsplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\FundamentalNakSplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\FundamentalSplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\FundamentalSplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\GridStencil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearClenshawCurtisBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearGridStencil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearL0BoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearStretchedBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearStretchedGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\LinearTruncatedBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModBsplineClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModBsplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModFundamentalSplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModLinearClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModLinearGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModLinearGridStencil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModNakBsplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModPolyClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModPolyGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModWaveletGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\NaturalBsplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PeriodicGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PolyBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PolyClenshawCurtisBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PolyClenshawCurtisGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PolyGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\PrewaveletGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\SquareRootGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\WaveletBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\WaveletGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\WeaklyFundamentalNakSplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\type\WeaklyFundamentalSplineBoundaryGrid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\AdaptivityThresholdTypeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\CoarseningFunctorTypeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\GeneralGridTypeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\GridDataBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\GridTypeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\grid\RefinementFunctorTypeParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalNakSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationFundamentalSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\DehierarchisationModFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalNakSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationFundamentalSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_bfs\HierarchisationModFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\ConvertLinearToPrewavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\ConvertPrewaveletToLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearStretched.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationLinearStretchedBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\DehierarchisationPolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearStretched.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationLinearStretchedBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\HierarchisationPolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilDehierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilDehierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilHierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\common\algorithm_sweep\StencilHierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationArbitraryBoundaryHierarchisation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationConvertPrewavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModNakBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientModWeaklyFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientNakBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientWaveletBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientWeaklyFundamentalNakSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalGradientWeaklyFundamentalSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModNakBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianModWeaklyFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianNakBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianWaveletBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianWeaklyFundamentalNakSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalHessianWeaklyFundamentalSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearClenshawCurtisBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearStretched.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalLinearStretchedBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModLinearClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModLinearNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModNakBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModPolyClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModPolyNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNaturalBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModFundamentalSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModNakBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeModWeaklyFundamentalNakSplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeNakBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWaveletBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWeaklyFundamentalNakSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeWeaklyFundamentalSplineBoundarayNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPeriodic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPolyBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPolyClenshawCurtisBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPolyClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPolyNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPrewavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalWaveletBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalWaveletNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalWeaklyFundamentalNakSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalWeaklyFundamentalSplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentBsplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentModBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentModBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationFirstMomentPolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalNakSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationFundamentalSplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearStretched.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationLinearStretchedBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationModWavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationPolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationHierarchisationPrewavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalInterModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearClenshawCurtisBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearStretched.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalLinearStretchedBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModBsplineClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModBsplineNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModLinearClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalModPolyClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPeriodic.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyClenshawCurtisNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPolyNaive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationMultipleEvalPrewavelet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureBsplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureLinearClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModFundamentalSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModLinearClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadratureModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadraturePoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadraturePolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadraturePolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationQuadraturePolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentBsplineBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentLinearBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentModBspline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentModBsplineClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentModPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentModPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentPoly.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyClenshawCurtis.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationSecondMomentPolyClenshawCurtisBoundary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationStencilHierarchisationLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\hash\OperationStencilHierarchisationModLinear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\operation\BaseOpFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\DictNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\IDNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\JSON.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\json_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\ListNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\Node.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\json\TextNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\Armadillo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\Auto.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\BiCGStab.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\Eigen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\GaussianElimination.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\Gmmpp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\sle\solver\UMFPACK.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\ClenshawCurtisTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\ConfigurationParameters.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\EvalCuboidGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\EvalCuboidGeneratorForStretching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\GridPrinter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\GridPrinterForStretching.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\MultipleClassPoint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\OperationConfiguration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\OperationQuadratureMC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\PrecisionConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\Printer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\RandomNumberGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\SGppStopwatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\StdNormalDistribution.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\GaussHermiteQuadRule1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\tools\QuadRule1D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sgpp\base\exception\data_exception.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
