@@ -1,0 +1,65 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+
+<Import Project="$(ProjectDir)\module.props" />
+
+<ItemGroup>
+	<_WildCardExamples Include="$(ProjectDir)examples\*.cpp" />
+	<_WildCardTests Include="$(ProjectDir)tests\*.cpp" />
+</ItemGroup>
+
+<ItemGroup>
+	<ClCompile Include="@(_WildCardExamples)" >
+		<ObjectFileName>$(IntDir)examples\</ObjectFileName>
+	</ClCompile>
+	<ClCompile Include="@(_WildCardTests)" >
+		<ObjectFileName>$(IntDir)tests\</ObjectFileName>
+	</ClCompile>
+</ItemGroup>
+
+<PropertyGroup>
+	<ExampleObjs>@(_WildCardExamples->'$(IntDir)examples\%(Filename).obj')</ExampleObjs>
+	<TestObjs>@(_WildCardTests->'$(IntDir)tests\%(Filename).obj')</TestObjs>
+</PropertyGroup>
+
+<PropertyGroup>
+	<TestInput>@(_WildCardTests->'$(ProjectDir)$(IntDir)tests\%(Filename).obj', ' ')</TestInput>
+</PropertyGroup>
+
+<PropertyGroup>
+	<ModuleIncludeDirs>@(ModuleDependencies->'$(SolutionDir)%(Filename)\src\')</ModuleIncludeDirs>
+</PropertyGroup>
+
+<PropertyGroup>
+	<ModuleLibraries>@(ModuleDependencies->'$(SolutionDir)lib\$(Configuration)\libsgpp%(Filename).lib', ' ')</ModuleLibraries>
+</PropertyGroup>
+
+<ItemDefinitionGroup>
+	<ClCompile>
+	  <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+	  <WarningLevel>Level3</WarningLevel>
+	  <SDLCheck>true</SDLCheck>
+	  <PreprocessorDefinitions>USE_EIGEN;NOMINMAX;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	  <ConformanceMode>true</ConformanceMode>
+	  <PrecompiledHeader>NotUsing</PrecompiledHeader>
+	  <PrecompiledHeaderFile>
+	  </PrecompiledHeaderFile>
+	  <LanguageStandard>stdcpp14</LanguageStandard>
+	</ClCompile>
+	<Lib>
+	  <AdditionalDependencies>$(ModuleDependencies)</AdditionalDependencies>
+	</Lib>
+	<PostBuildEvent>
+		<Command>
+		cd $(OutDir)
+		dumpbin.exe /LINKERMEMBER $(TargetPath) > $(TargetName).dump
+		$(SolutionDir)tools\dump2def.exe "@$(TargetName)@sgpp@" "$(SolutionDir)tools\demumble.exe" "$(TargetName).dump" "libsgpp$(TargetName).def"
+		link.exe /DEBUG /MACHINE:X64 /DLL /DEF:libsgpp$(TargetName).def $(TargetName).lib $(ModuleLibraries) /out:$(SolutionDir)lib\$(Configuration)\libsgpp$(TargetName).dll
+		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\"
+		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests\"
+		for %%i in ($(ProjectDir)$(IntDir)\examples\*.obj) do cmd /c "link.exe /OUT:"$(SolutionDir)bin\$(TargetName)\$(Configuration)\%%~ni.exe" libsgpp$(TargetName).lib $(ModuleLibraries) /DEBUG /PDB:$(SolutionDir)bin\$(TargetName)\$(Configuration)\%%~ni.pdb /MACHINE:X64 $(ProjectDir)$(IntDir)\examples\%%~ni.obj"
+		link.exe /SUBSYSTEM:CONSOLE /OUT:"$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests.exe" "$(SolutionDir)packages\boost_unit_test_framework-vc142.1.72.0.0\lib\native\boost_unit_test_framework-vc142-mt-gd-x64-1_72.lib" libsgpp$(TargetName).lib $(ModuleLibraries) /DEBUG /PDB:$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests.pdb $(TestInput)
+		</Command>
+	</PostBuildEvent>
+</ItemDefinitionGroup>
+</Project>

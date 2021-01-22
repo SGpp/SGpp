@@ -122,3 +122,7 @@ GTAGS
 custom.py
 gmon.out
 /buildVars.out
+
+# msvc winsgpp
+!windows/tools/dump2def.exe
+!windows/tools/demumble.exe
