@@ -259,10 +259,10 @@
     <IntDir>out\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)tools\windows_dll.targets" />
+  <Import Project="$(SolutionDir)windows\windows_dll.targets" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Lib>
-      <RemoveObjects>$(ExampleObjs)</RemoveObjects>
+      <RemoveObjects>$(ExampleObjs);$(TestObjs)</RemoveObjects>
     </Lib>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ModuleIncludeDirs);$(ProjectDir)src\</AdditionalIncludeDirectories>

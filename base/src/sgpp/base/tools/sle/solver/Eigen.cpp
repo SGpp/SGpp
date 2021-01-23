@@ -13,6 +13,7 @@
 #include <Eigen/Dense>
 #else
 #include <eigen3/Eigen/Dense>
+#endif
 #endif /* USE_EIGEN */
 
 #include <cstddef>

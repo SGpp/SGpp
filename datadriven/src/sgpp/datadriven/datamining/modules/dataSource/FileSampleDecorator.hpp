@@ -9,6 +9,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {

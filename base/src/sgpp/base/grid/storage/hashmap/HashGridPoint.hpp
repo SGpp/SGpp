@@ -417,6 +417,11 @@ class HashGridPoint {
    */
   inline void setAsHierarchicalGridPoint(size_t dim, level_type level, index_type index) {
     static_assert(sizeof(index_type) == 4, "this implementation is limited to 32bit indices");
+
+    static std::vector<base::HashGridPoint::level_type> multiplyDeBruijnBitPosition = {
+        0,  1,  28, 2,  29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4,  8,
+        31, 27, 13, 23, 21, 19, 16, 7, 26, 12, 18, 6,  11, 5,  10, 9};
+
     level_type n =
         multiplyDeBruijnBitPosition[(static_cast<level_type>((index & -index) * 0x077CB531U)) >>
                                     27];

@@ -369,9 +369,6 @@
     <ClInclude Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -895,9 +892,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.hpp">
@@ -1664,9 +1658,6 @@
     <ClCompile Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -2028,9 +2019,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.cpp">
@@ -2505,9 +2493,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\sgpp\base\tools\QuadRule1D.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\sgpp\base\exception\data_exception.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

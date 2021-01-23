@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionGradient) {
   const size_t d = 3;
   ScalarTestGradient f1(d);
   WrapperScalarFunctionGradient f2(
-      d, [](const DataVector& x, DataVector& gradient) {
+      d, [=](const DataVector& x, DataVector& gradient) {
         for (size_t t = 0; t < d; t++) {
           gradient[t] = static_cast<double>(t) * x[t];
         }
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperScalarFunctionHessian) {
   const size_t d = 3;
   ScalarTestHessian f1(d);
   WrapperScalarFunctionHessian f2(
-      d, [](const DataVector& x, DataVector& gradient, DataMatrix& hessian) {
+      d, [=](const DataVector& x, DataVector& gradient, DataMatrix& hessian) {
         for (size_t t = 0; t < d; t++) {
           gradient[t] = static_cast<double>(t) * x[t];
 
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunction) {
   const size_t m = 4;
   DataVector value1(m), value2(m);
   VectorTestFunction f1(d, m);
-  WrapperVectorFunction f2(d, m, [](const DataVector& x, DataVector& value) {
+  WrapperVectorFunction f2(d, m, [=](const DataVector& x, DataVector& value) {
     for (size_t i = 0; i < m; i++) {
       value[i] = static_cast<double>(i) * x.sum();
     }
@@ -393,7 +393,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionGradient) {
   const size_t m = 4;
   VectorTestGradient f1(d, m);
   WrapperVectorFunctionGradient f2(
-      d, m, [](const DataVector& x, DataVector& value, DataMatrix& gradient) {
+      d, m, [=](const DataVector& x, DataVector& value, DataMatrix& gradient) {
         for (size_t i = 0; i < m; i++) {
           value[i] = static_cast<double>(i) * x.sum();
 
@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(TestWrapperVectorFunctionHessian) {
   const size_t d = 3;
   const size_t m = 4;
   VectorTestHessian f1(d, m);
-  WrapperVectorFunctionHessian f2(d, m, [](const DataVector& x,
+  WrapperVectorFunctionHessian f2(d, m, [=](const DataVector& x,
                                            DataVector& value,
                                            DataMatrix& gradient,
                                            std::vector<DataMatrix>& hessian) {

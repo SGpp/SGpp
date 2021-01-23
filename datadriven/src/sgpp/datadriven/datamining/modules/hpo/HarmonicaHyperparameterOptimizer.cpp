@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <ctime>
 
 namespace sgpp {
 namespace datadriven {
@@ -34,8 +35,7 @@ double HarmonicaHyperparameterOptimizer::run(bool writeToFile) {
 
   if (writeToFile) {
     time_t now = time(nullptr);
-    tm tmobj{};
-    tm *ltm = localtime_r(&now, &tmobj);
+    tm *ltm = std::localtime(&now);
     fn << "Harmonica_" << (ltm->tm_year + 1900) << "_" << (ltm->tm_mon + 1) << "_" << ltm->tm_mday
        << "_"
        << ltm->tm_hour << "_" << ltm->tm_min;

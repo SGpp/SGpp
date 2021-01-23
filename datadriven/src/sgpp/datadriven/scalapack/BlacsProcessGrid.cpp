@@ -12,7 +12,6 @@
 #ifdef USE_SCALAPACK
 #include <mpi.h>
 #endif /* USE_SCALAPACK */
-#include <unistd.h>
 #include <cmath>
 #include <iostream>
 #include <string>

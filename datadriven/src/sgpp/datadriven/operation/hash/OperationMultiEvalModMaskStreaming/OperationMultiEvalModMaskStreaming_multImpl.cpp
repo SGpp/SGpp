@@ -617,7 +617,7 @@ void OperationMultiEvalModMaskStreaming::multImpl(
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
-#warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming_mult"
+#pragma warning "warning: using fallback implementation for OperationMultiEvalModMaskStreaming_mult"
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>((size_t)getChunkDataPoints(), (end_index_data - c))) {
