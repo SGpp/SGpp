@@ -140,7 +140,6 @@
     <ClInclude Include="src\sgpp\base\grid\type\ModPolyGrid.hpp" />
     <ClInclude Include="src\sgpp\base\grid\type\ModWaveletGrid.hpp" />
     <ClInclude Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.hpp" />
-    <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.hpp" />
     <ClInclude Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.hpp" />
     <ClInclude Include="src\sgpp\base\grid\type\NaturalBsplineBoundaryGrid.hpp" />
     <ClInclude Include="src\sgpp\base\grid\type\PeriodicGrid.hpp" />
@@ -306,7 +305,6 @@
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModPolyNaive.hpp" />
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModWaveletNaive.hpp" />
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.hpp" />
-    <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.hpp" />
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.hpp" />
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalNaturalBsplineBoundaryNaive.hpp" />
     <ClInclude Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivative.hpp" />
@@ -495,7 +493,6 @@
     <ClCompile Include="src\sgpp\base\datatypes\DataMatrixSP.cpp" />
     <ClCompile Include="src\sgpp\base\datatypes\DataVector.cpp" />
     <ClCompile Include="src\sgpp\base\datatypes\DataVectorSP.cpp" />
-    <ClCompile Include="src\sgpp\base\exception\data_exception.cpp" />
     <ClCompile Include="src\sgpp\base\function\vector\EmptyVectorFunction.cpp" />
     <ClCompile Include="src\sgpp\base\function\vector\EmptyVectorFunctionGradient.cpp" />
     <ClCompile Include="src\sgpp\base\grid\AdaptivityThresholdTypeParser.cpp" />
@@ -570,7 +567,6 @@
     <ClCompile Include="src\sgpp\base\grid\type\ModPolyGrid.cpp" />
     <ClCompile Include="src\sgpp\base\grid\type\ModWaveletGrid.cpp" />
     <ClCompile Include="src\sgpp\base\grid\type\ModWeaklyFundamentalNakSplineGrid.cpp" />
-    <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryCombigridGrid.cpp" />
     <ClCompile Include="src\sgpp\base\grid\type\NakBsplineBoundaryGrid.cpp" />
     <ClCompile Include="src\sgpp\base\grid\type\NaturalBsplineBoundaryGrid.cpp" />
     <ClCompile Include="src\sgpp\base\grid\type\PeriodicGrid.cpp" />
@@ -686,7 +682,6 @@
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModPolyNaive.cpp" />
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModWaveletNaive.cpp" />
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalModWeaklyFundamentalNakSplineNaive.cpp" />
-    <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryCombigridNaive.cpp" />
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNakBsplineBoundaryNaive.cpp" />
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalNaturalBsplineBoundaryNaive.cpp" />
     <ClCompile Include="src\sgpp\base\operation\hash\OperationEvalPartialDerivativeBsplineBoundaryNaive.cpp" />
@@ -818,7 +813,9 @@
     <ClCompile Include="src\sgpp\base\tools\EvalCuboidGenerator.cpp" />
     <ClCompile Include="src\sgpp\base\tools\EvalCuboidGeneratorForStretching.cpp" />
     <ClCompile Include="src\sgpp\base\tools\GaussHermiteQuadRule1D.cpp" />
-    <ClCompile Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp" />
+    <ClCompile Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="src\sgpp\base\tools\GridPrinter.cpp" />
     <ClCompile Include="src\sgpp\base\tools\GridPrinterForStretching.cpp" />
     <ClCompile Include="src\sgpp\base\tools\json\DictNode.cpp" />
@@ -882,10 +879,11 @@
     <IntDir>out\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)tools\windows_dll.targets" />
+  <Import Project="$(SolutionDir)windows\windows_dll.targets" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>$(ModuleIncludeDirs);$(ProjectDir)src\</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
     <Lib>
       <RemoveObjects>$(ExampleObjs);$(TestObjs)</RemoveObjects>

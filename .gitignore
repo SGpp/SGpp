@@ -124,5 +124,9 @@ gmon.out
 /buildVars.out
 
 # msvc winsgpp
+.vs/
 !windows/tools/dump2def.exe
 !windows/tools/demumble.exe
+out/
+packages/
+bin/

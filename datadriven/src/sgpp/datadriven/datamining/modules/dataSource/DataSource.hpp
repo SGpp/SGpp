@@ -12,6 +12,7 @@
 #include <sgpp/datadriven/tools/Dataset.hpp>
 
 #include <string>
+#include <memory>
 
 namespace sgpp {
 namespace datadriven {
