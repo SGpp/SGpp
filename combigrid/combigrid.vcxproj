@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>16.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{fe985757-0aef-4889-a138-58be4d82fe4d}</ProjectGuid>
+    <RootNamespace>combigrid</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\sgpp\combigrid\adaptive\AdaptiveCombinationGridGenerator.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\adaptive\AveragingPriorityEstimator.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\adaptive\WeightedRelevanceCalculator.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\grid\CombinationGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\grid\FullGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationEvalCombinationGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationEvalFullGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleDehierarchisationLinear.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationGeneral.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationLinear.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleNodalisationBspline.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleNodalisationLinear.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationUPCombinationGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\operation\OperationUPFullGrid.cpp" />
+    <ClCompile Include="src\sgpp\combigrid\tools\LevelVectorTools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\sgpp\combigrid\adaptive\AdaptiveCombinationGridGenerator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\adaptive\AveragingPriorityEstimator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\adaptive\PriorityEstimator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\adaptive\RelevanceCalculator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\adaptive\WeightedRelevanceCalculator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\basis\HeterogeneousBasis.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\grid\CombinationGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\grid\FullGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\LevelIndexTypes.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationEvalCombinationGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationEvalFullGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPole.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleDehierarchisationLinear.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationGeneral.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationLinear.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleNodalisationBspline.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleNodalisationLinear.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationUPCombinationGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\operation\OperationUPFullGrid.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\tools\IndexVectorIterator.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\tools\IndexVectorRange.hpp" />
+    <ClInclude Include="src\sgpp\combigrid\tools\LevelVectorTools.hpp" />
+    <ClInclude Include="src\sgpp_combigrid.hpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v142</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <IntDir>out\$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)windows\windows_dll.targets" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Lib>
+      <RemoveObjects>$(ExampleObjs);$(TestObjs)</RemoveObjects>
+    </Lib>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ModuleIncludeDirs);$(ProjectDir)src\</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\boost.1.72.0.0\build\boost.targets" Condition="Exists('..\packages\boost.1.72.0.0\build\boost.targets')" />
+    <Import Project="..\packages\boost_unit_test_framework-vc142.1.72.0.0\build\boost_unit_test_framework-vc142.targets" Condition="Exists('..\packages\boost_unit_test_framework-vc142.1.72.0.0\build\boost_unit_test_framework-vc142.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\boost.1.72.0.0\build\boost.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost.1.72.0.0\build\boost.targets'))" />
+    <Error Condition="!Exists('..\packages\boost_unit_test_framework-vc142.1.72.0.0\build\boost_unit_test_framework-vc142.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_unit_test_framework-vc142.1.72.0.0\build\boost_unit_test_framework-vc142.targets'))" />
+  </Target>
+</Project>
