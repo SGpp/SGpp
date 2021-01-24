@@ -4,8 +4,8 @@
 <Import Project="$(ProjectDir)\module.props" />
 
 <ItemGroup>
-	<_WildCardExamples Include="$(ProjectDir)examples\*.cpp" />
-	<_WildCardTests Include="$(ProjectDir)tests\*.cpp" />
+	<_WildCardExamples Include="$(ProjectDir)examples\**\*.cpp" />
+	<_WildCardTests Include="$(ProjectDir)tests\**\*.cpp" />
 </ItemGroup>
 
 <ItemGroup>
