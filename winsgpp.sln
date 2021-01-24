@@ -228,7 +228,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\datadriven\Deb
 		PortSupplier = 00000000-0000-0000-0000-000000000000
 		Executable = C:\Projects\sgpp_dev\winsgpp\bin\datadriven\Debug\tests.exe
 		RemoteMachine = MILCH-PC
-		StartingDirectory = C:\Projects\sgpp_dev\winsgpp\bin\datadriven\Debug
+		StartingDirectory = C:\Projects\sgpp_dev\winsgpp\
 		Arguments = --log_level=unit_scope --log_sink=tests.log
 		Environment = Default
 		LaunchingEngine = 00000000-0000-0000-0000-000000000000

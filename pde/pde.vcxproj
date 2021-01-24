@@ -260,6 +260,7 @@
     </Lib>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ModuleIncludeDirs);$(ProjectDir)src\</AdditionalIncludeDirectories>
+      <SDLCheck>false</SDLCheck>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
