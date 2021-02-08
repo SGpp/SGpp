@@ -130,3 +130,4 @@ gmon.out
 out/
 packages/
 bin/
+windows/test_results/

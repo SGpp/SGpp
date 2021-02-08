@@ -6,8 +6,17 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "base", "base\base.vcxproj", "{82C41D73-2181-47A5-80F1-5CAE79F88B39}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "datadriven", "datadriven\datadriven.vcxproj", "{989A28C1-E972-468C-B977-26DD574960E6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A5A95900-F063-4231-B681-0306E3030039} = {A5A95900-F063-4231-B681-0306E3030039}
+		{EDABAA2F-7E9C-468E-BEA4-B7702D1CAC12} = {EDABAA2F-7E9C-468E-BEA4-B7702D1CAC12}
+		{82C41D73-2181-47A5-80F1-5CAE79F88B39} = {82C41D73-2181-47A5-80F1-5CAE79F88B39}
+		{2EC862D9-D7B8-4927-B904-31CD5F2A9DB5} = {2EC862D9-D7B8-4927-B904-31CD5F2A9DB5}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "solver", "solver\solver.vcxproj", "{A5A95900-F063-4231-B681-0306E3030039}"
+	ProjectSection(ProjectDependencies) = postProject
+		{82C41D73-2181-47A5-80F1-5CAE79F88B39} = {82C41D73-2181-47A5-80F1-5CAE79F88B39}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pde", "pde\pde.vcxproj", "{EDABAA2F-7E9C-468E-BEA4-B7702D1CAC12}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -16,6 +25,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pde", "pde\pde.vcxproj", "{
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "optimization", "optimization\optimization.vcxproj", "{2EC862D9-D7B8-4927-B904-31CD5F2A9DB5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{82C41D73-2181-47A5-80F1-5CAE79F88B39} = {82C41D73-2181-47A5-80F1-5CAE79F88B39}
+	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "quadrature", "bin\base\Debug\quadrature.exe", "{7026CD73-499A-40A9-8A47-E51C3FEBCD9A}"
 	ProjectSection(DebuggerProjectSystem) = preProject
@@ -240,6 +252,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "combigrid module", "combigrid module", "{55EAB3F5-462C-448A-A852-03B970429293}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "combigrid", "combigrid\combigrid.vcxproj", "{FE985757-0AEF-4889-A138-58BE4D82FE4D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{82C41D73-2181-47A5-80F1-5CAE79F88B39} = {82C41D73-2181-47A5-80F1-5CAE79F88B39}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{89CA007B-26F3-4A88-B925-F9D690059AE4}"
 EndProject
@@ -288,6 +303,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{BE22AFDE-22CE-4C2D-B6EE-771B45DCF714}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quadrature", "quadrature\quadrature.vcxproj", "{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{82C41D73-2181-47A5-80F1-5CAE79F88B39} = {82C41D73-2181-47A5-80F1-5CAE79F88B39}
+	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\quadrature\Debug\tests.exe", "{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}"
 	ProjectSection(DebuggerProjectSystem) = preProject

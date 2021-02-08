@@ -57,6 +57,7 @@
 		link.exe /DEBUG /MACHINE:X64 /DLL /DEF:libsgpp$(TargetName).def $(TargetName).lib $(ModuleLibraries) /out:$(SolutionDir)lib\$(Configuration)\libsgpp$(TargetName).dll
 		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\"
 		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests\"
+		copy "$(SolutionDir)packages\boost_unit_test_framework-vc142.1.72.0.0\lib\native\boost_unit_test_framework-vc142-mt-gd-x64-1_72.dll" "$(SolutionDir)lib\$(Configuration)\boost_unit_test_framework-vc142-mt-gd-x64-1_72.dll"
 		for %%i in ($(ProjectDir)$(IntDir)\examples\*.obj) do cmd /c "link.exe /OUT:"$(SolutionDir)bin\$(TargetName)\$(Configuration)\%%~ni.exe" libsgpp$(TargetName).lib $(ModuleLibraries) /DEBUG /PDB:$(SolutionDir)bin\$(TargetName)\$(Configuration)\%%~ni.pdb /MACHINE:X64 $(ProjectDir)$(IntDir)\examples\%%~ni.obj"
 		link.exe /STACK:4194304 /SUBSYSTEM:CONSOLE /OUT:"$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests.exe" "$(SolutionDir)packages\boost_unit_test_framework-vc142.1.72.0.0\lib\native\boost_unit_test_framework-vc142-mt-gd-x64-1_72.lib" libsgpp$(TargetName).lib $(ModuleLibraries) /DEBUG /PDB:$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests.pdb $(TestInput)
 		</Command>
