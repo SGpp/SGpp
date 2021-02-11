@@ -169,7 +169,7 @@ class AdaptiveCombinationGridGenerator {
   bool hasQoIInformation(const LevelVector& level) {
     try {
       return !std::isnan(subspacesAndQoI.at(level));
-    } catch (std::out_of_range& e) {
+    } catch (std::out_of_range&) {
       return false;
     }
   }
