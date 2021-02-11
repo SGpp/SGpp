@@ -92,7 +92,7 @@ try:
         df = df.dropna()
         return df
 
-    def plotDeltas3D(dataframe, dim=['l_0', 'l_1', 'l_2']):
+    def plotDeltas3D(dataframe, dim=['l_0', 'l_1', 'l_2'], filename=None):
         """print 3d cube representation of adaptive scheme"""
         """expects a pandas dataframe with column 'delta' and level indices 'l_*'"""
         canvas = figure()
@@ -136,7 +136,10 @@ try:
 
         cbar = canvas.colorbar(scalarMap)
 
-        show()
+        if filename:
+            plt.savefig(filename)
+        else:
+            show()
 
 
 except ImportError as e:
