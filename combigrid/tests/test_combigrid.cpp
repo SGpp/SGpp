@@ -623,6 +623,32 @@ BOOST_AUTO_TEST_CASE(testAveragingPriorityEstimator) {
                         LevelVector(5, 1), deltasOfNonrelevantDownwardNeighbors));
 }
 
+BOOST_AUTO_TEST_CASE(testAdaptiveDelta) {
+  using sgpp::base::operator<<;
+  sgpp::base::SBsplineBase basis1d;
+  HeterogeneousBasis basis(1, basis1d);
+
+  auto combinationGrid = CombinationGrid::fromRegularSparse(3, 0, basis, true);
+
+  BOOST_CHECK_EQUAL(combinationGrid.getFullGrids().size(), 1);
+
+  auto adaptiveCombinationGridGenerator = AdaptiveCombinationGridGenerator::fromCombinationGrid(
+      combinationGrid, std::vector<double>(1, 1.0));
+
+  adaptiveCombinationGridGenerator.setQoIInformation({0, 0, 1}, 3.0);
+  BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getDelta({0, 0, 1}), 2.0);
+
+  adaptiveCombinationGridGenerator.adaptAllKnown();
+  BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getCurrentResult(), 3.0);
+
+  adaptiveCombinationGridGenerator.setQoIInformation({0, 1, 0}, -0.5);
+  BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getDelta({0, 1, 0}), -1.5);
+
+  adaptiveCombinationGridGenerator.adaptAllKnown();
+  std::cout << adaptiveCombinationGridGenerator.getCurrentResult() << std::endl;
+  BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getCurrentResult(), 1.5);
+}
+
 BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
   using sgpp::base::operator<<;
   for (bool hasBoundary : {true, false}) {
@@ -642,7 +668,6 @@ BOOST_AUTO_TEST_CASE(testAdaptiveCombinationGridGenerator) {
       BOOST_CHECK_EQUAL(adaptiveCombinationGridGenerator.getMinimumLevelVector(),
                         LevelVector(3, 1));
     }
-
 
     auto notYetAdaptedLevels = adaptiveCombinationGridGenerator.getLevels();
     // std::cout << notYetAdaptedLevels.size() << std::endl;

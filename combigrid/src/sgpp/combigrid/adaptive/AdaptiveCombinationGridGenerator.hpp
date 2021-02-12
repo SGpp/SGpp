@@ -159,6 +159,22 @@ class AdaptiveCombinationGridGenerator {
   void setQoIInformation(const LevelVector& level, double qoi) { subspacesAndQoI[level] = qoi; }
 
   /**
+   * @brief get QoI information / the stored result for LevelVector level
+   */
+  double getQoIInformation(const LevelVector& level) { return subspacesAndQoI[level]; }
+
+  /**
+   * @brief is Qoi information stored for LevelVector level?
+   */
+  bool hasQoIInformation(const LevelVector& level) {
+    try {
+      return !std::isnan(subspacesAndQoI.at(level));
+    } catch (std::out_of_range&) {
+      return false;
+    }
+  }
+
+  /**
    * @brief add the next most important subspace of known result to the old set
    *
    * @param regular   add only subspaces of the next regular level, or none
