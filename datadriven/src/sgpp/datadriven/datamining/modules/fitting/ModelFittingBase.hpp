@@ -121,6 +121,42 @@ class ModelFittingBase {
    */
   virtual void evaluate(DataMatrix &samples, DataVector &results) = 0;
 
+  virtual double L2ApproxDataBased(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("L2 approximation not supported in this fitter");
+  }
+
+  virtual double L2ApproxDataIndep() {
+    throw base::application_exception("L2 approximation not supported in this fitter");
+  }
+
+  virtual double L2ApproxMixed(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("L2 approximation not supported in this fitter");
+  }
+
+  virtual double LeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("Loss approximation not supported in this fitter");
+  }
+
+  virtual double KLDivergenceApprox(DataMatrix &samplesP) {
+    throw base::application_exception("Divergence approximation not supported in this fitter");
+  }
+
+  virtual double PEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("Divergence approximation not supported in this fitter");
+  }
+
+  virtual double relativeLeastSquaresLossApprox(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("Loss approximation not supported in this fitter");
+  }
+
+  virtual double relativeKLDivergenceApprox(DataMatrix &samplesP) {
+    throw base::application_exception("Divergence approximation not supported in this fitter");
+  }
+
+  virtual double relativePEDivergenceApprox(DataMatrix &samplesP, DataMatrix &samplesQ) {
+    throw base::application_exception("Divergence approximation not supported in this fitter");
+  }
+
   /**
    * Return the learned grid. Has to be rewritten to modify default behavior. Only available for
    * single grid models. Otherwise, an error message is shown.

@@ -7,6 +7,7 @@
 #include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatDatabase.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOfflineFactory.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOnlineDEFactory.hpp>
@@ -15,13 +16,13 @@
 #include <string>
 #include <vector>
 
-using sgpp::base::Grid;
 using sgpp::base::DataMatrix;
 using sgpp::base::DataVector;
-using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::Grid;
 using sgpp::base::RefinementFunctor;
-using sgpp::base::SurplusVolumeRefinementFunctor;
 using sgpp::base::RefinementFunctorType;
+using sgpp::base::SurplusRefinementFunctor;
+using sgpp::base::SurplusVolumeRefinementFunctor;
 
 using sgpp::base::application_exception;
 
@@ -44,6 +45,29 @@ double ModelFittingDensityDifferenceEstimationOnOff::evaluate(const DataVector& 
 void ModelFittingDensityDifferenceEstimationOnOff::evaluate(DataMatrix& samples,
                                                             DataVector& results) {
   online->eval(alpha, samples, results, *grid);
+}
+
+double ModelFittingDensityDifferenceEstimationOnOff::L2ApproxDataBased(DataMatrix& samplesP,
+                                                                       DataMatrix& samplesQ) {
+  double numP = static_cast<double>(samplesP.getNrows());
+  double numQ = static_cast<double>(samplesQ.getNrows());
+  DataVector fp(samplesP.getNrows());
+  DataVector fq(samplesQ.getNrows());
+  this->evaluate(samplesP, fp);
+  this->evaluate(samplesQ, fq);
+  return fp.sum() / numP - fq.sum() / numQ;
+}
+
+double ModelFittingDensityDifferenceEstimationOnOff::L2ApproxDataIndep() {
+  DataVector res(alpha.size());
+  std::unique_ptr<base::OperationMatrix> A(op_factory::createOperationLTwoDotProduct(*grid));
+  A->mult(alpha, res);
+  return res.dotProduct(alpha);
+}
+
+double ModelFittingDensityDifferenceEstimationOnOff::L2ApproxMixed(DataMatrix& samplesP,
+                                                                   DataMatrix& samplesQ) {
+  return 2 * L2ApproxDataBased(samplesP, samplesQ) - L2ApproxDataIndep();
 }
 
 void ModelFittingDensityDifferenceEstimationOnOff::fit(Dataset& newDatasetP, Dataset& newDatasetQ) {
@@ -73,7 +97,7 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   // build surplus vector
   alpha = DataVector(grid->getSize());
 
-  // Intialize database if it is provided
+  // Initialize database if it is provided
   if (!databaseConfig.filePath_.empty()) {
     datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
@@ -106,7 +130,7 @@ void ModelFittingDensityDifferenceEstimationOnOff::fit(DataMatrix& newDatasetP,
   online->computeDensityDifferenceFunction(alpha, newDatasetP, newDatasetQ, *grid,
                                            this->config->getDensityEstimationConfig(), true,
                                            this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate_);
+  online->setBeta(this->config->getLearnerConfig().forgetRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
@@ -171,6 +195,13 @@ void ModelFittingDensityDifferenceEstimationOnOff::reset() {
   grid.reset();
   online.reset();
   refinementsPerformed = 0;
+}
+
+void ModelFittingDensityDifferenceEstimationOnOff::resetTraining() {
+  if (grid != nullptr) {
+    alpha = DataVector(grid->getSize());
+    this->online->resetTraining();
+  }
 }
 
 }  // namespace datadriven

@@ -12,15 +12,15 @@
 namespace sgpp {
 namespace base {
 
-RefinementFunctorType RefinementFunctorTypeParser::parse(
-    const std::string& input) {
+RefinementFunctorType RefinementFunctorTypeParser::parse(const std::string& input) {
   auto inputLower = input;
-  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(),
-                 ::tolower);
+  std::transform(inputLower.begin(), inputLower.end(), inputLower.begin(), ::tolower);
   if (inputLower == "surplus") {
     return RefinementFunctorType::Surplus;
   } else if (inputLower == "surplusvolume") {
     return RefinementFunctorType::SurplusVolume;
+  } else if (inputLower == "surplusabsolutevalue") {
+    return RefinementFunctorType::SurplusAbsoluteValue;
   } else if (inputLower == "zerocrossing") {
     return RefinementFunctorType::ZeroCrossing;
   } else if (inputLower == "databased") {
@@ -39,8 +39,7 @@ RefinementFunctorType RefinementFunctorTypeParser::parse(
   }
 }
 
-const std::string& RefinementFunctorTypeParser::toString(
-    RefinementFunctorType type) {
+const std::string& RefinementFunctorTypeParser::toString(RefinementFunctorType type) {
   return refinementFunctorTypeMap.at(type);
 }
 
@@ -49,13 +48,12 @@ const RefinementFunctorTypeParser::RefinementFunctorTypeMap_t
       return RefinementFunctorTypeMap_t{
           std::make_pair(RefinementFunctorType::Surplus, "Surplus"),
           std::make_pair(RefinementFunctorType::SurplusVolume, "SurplusVolume"),
+          std::make_pair(RefinementFunctorType::SurplusAbsoluteValue, "SurplusAbsoluteValue"),
           std::make_pair(RefinementFunctorType::ZeroCrossing, "ZeroCrossing"),
           std::make_pair(RefinementFunctorType::DataBased, "DataBased"),
-          std::make_pair(RefinementFunctorType::GridPointBased,
-                         "GridPointBased"),
+          std::make_pair(RefinementFunctorType::GridPointBased, "GridPointBased"),
           std::make_pair(RefinementFunctorType::MultipleClass, "MultipleClass"),
-          std::make_pair(RefinementFunctorType::Classification,
-                         "Classification")};
+          std::make_pair(RefinementFunctorType::Classification, "Classification")};
     }();
 
 } /* namespace base */

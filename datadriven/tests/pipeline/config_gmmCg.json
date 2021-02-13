@@ -36,7 +36,7 @@
         },
         "learnerConfig": {
             "usePrior": true,
-            "learningRate": 1.0
+            "forgetRate": 1.0
         }
     }
 }

@@ -15,7 +15,10 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
 #include <sgpp/base/tools/StringTokenizer.hpp>
 
 #ifdef USE_GSL
@@ -48,8 +51,7 @@ using sgpp::base::OperationMatrix;
 using sgpp::base::RegularGridConfiguration;
 
 DBMatOffline::DBMatOffline()
-     : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse(), interactions() {
-}
+    : lhsMatrix(), isConstructed(false), isDecomposed(false), lhsInverse(), interactions() {}
 
 DBMatOffline::DBMatOffline(const DBMatOffline& rhs)
     : lhsMatrix(rhs.lhsMatrix),
@@ -248,14 +250,20 @@ void DBMatOffline::compute_L2_refine_vectors(DataMatrix* mat_refine, Grid* grid,
   } else if (grid->getType() == sgpp::base::GridType::ModLinear) {
     auto opLTwoModLin = new sgpp::pde::OperationMatrixLTwoDotExplicitModLinear();
     opLTwoModLin->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else if (grid->getType() == sgpp::base::GridType::Bspline) {
+    auto opLTwoBspline = new sgpp::pde::OperationMatrixLTwoDotExplicitBspline();
+    opLTwoBspline->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
+  } else if (grid->getType() == sgpp::base::GridType::ModBspline) {
+    auto opLTwoModBspline = new sgpp::pde::OperationMatrixLTwoDotExplicitModBspline();
+    opLTwoModBspline->buildMatrixWithBounds(mat_refine, grid, 0, 0, j_start, 0);
   } else {
     throw algorithm_exception(
         "in DBMatOffline::compute_L2_refine_vectors, gridType is not supported.");
   }
 }
 
-void sgpp::datadriven::DBMatOffline::parseInter(
-    const std::string& fileName, std::set<std::set<size_t>>& interactions) const {
+void sgpp::datadriven::DBMatOffline::parseInter(const std::string& fileName,
+                                                std::set<std::set<size_t>>& interactions) const {
   std::ifstream file(fileName, std::istream::in);
   // Read configuration
   if (!file) {

@@ -13,9 +13,9 @@ namespace datadriven {
  */
 struct LearnerConfiguration {
   /**
-  * Weigting factor for older batches
-  */
-  double learningRate_ = 1.0;
+   * Weigting factor for older batches
+   */
+  double forgetRate_ = 1.0;
 
   /**
    * Determine if the relative frequency of instances of a class should be used as prior

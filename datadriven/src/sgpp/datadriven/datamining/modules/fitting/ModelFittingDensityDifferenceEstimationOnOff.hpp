@@ -109,6 +109,32 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
   void evaluate(DataMatrix& samples, DataVector& results) override;
 
   /**
+   * Computes the L2 approximate based on the learned density.
+   * It is computed as: $\alpha^T \cdot b$,
+   * i.e. average evaluations in p samples minus average evaluations in q samples
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return the L2 approximate
+   */
+  double L2ApproxDataBased(DataMatrix& samplesP, DataMatrix& samplesQ) override;
+
+  /**
+   * Computes a data-independent L2 approximate based on the learned density.
+   * It is computed as: $\alpha^T \cdot A \cdot \alpha$
+   * @return the L2 approximate
+   */
+  double L2ApproxDataIndep() override;
+
+  /**
+   * Computes a mixed L2 approximate based on the learned density.
+   * It is computed as: 2 * L2ApproxDataBased - L2ApproxDataIndep
+   * @param samplesP samples of first dataset to evaluate against
+   * @param samplesQ samples of second dataset to evaluate against
+   * @return the L2 approximate
+   */
+  double L2ApproxMixed(DataMatrix& samplesP, DataMatrix& samplesQ) override;
+
+  /**
    * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement) @return whether the model is refinable
    */
@@ -134,8 +160,7 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   double computeResidual(DataMatrix& validationData) const override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::computeResidual() is "
-        "not implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::computeResidual() is not implemented!");
   }
 
   /**
@@ -145,18 +170,14 @@ class ModelFittingDensityDifferenceEstimationOnOff : public ModelFittingDensityE
    */
   void updateRegularization(double lambda) override {
     throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() "
-        "is not implemented!");
+        "ModelFittingDensityDifferenceEstimationOnOff::updateRegularization() is not "
+        "implemented!");
   }
 
   /**
    * Resets any trained representations of the model, but does not reset the entire state.
    */
-  void resetTraining() override {
-    throw sgpp::base::not_implemented_exception(
-        "ModelFittingDensityDifferenceEstimationOnOff::resetTraining() is not "
-        "implemented!");
-  }
+  void resetTraining() override;
 
  private:
   // The online object

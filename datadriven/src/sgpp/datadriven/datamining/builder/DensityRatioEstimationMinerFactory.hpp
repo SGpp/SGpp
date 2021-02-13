@@ -36,6 +36,11 @@ class DensityRatioEstimationMinerFactory : public MinerFactory {
    */
   SparseGridMiner* buildMiner(const std::string& path) const override;
 
+  /**
+   * @return a hyperparameter optimizer for this miner
+   */
+  sgpp::datadriven::HyperparameterOptimizer* buildHPO(const std::string& path) const override;
+
  private:
   /**
    * Factory method to build a splitting based data source, i.e. a data source that splits data into
@@ -55,9 +60,10 @@ class DensityRatioEstimationMinerFactory : public MinerFactory {
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
-  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override {
-    throw base::application_exception("HPO is not enabled for this model");
-  }
+  /**
+   * @return a fitter factory for hpo
+   */
+  FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;
 
   /**
    * Factory method to build a visualizer instance base on a configuration file.

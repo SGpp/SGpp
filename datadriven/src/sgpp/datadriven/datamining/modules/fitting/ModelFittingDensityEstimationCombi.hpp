@@ -212,7 +212,7 @@ class ModelFittingDensityEstimationCombi : public ModelFittingDensityEstimation 
    * @param densityEstimationConfig configuration for the density estimation
    * @return a new density estimation model
    */
-  std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
+  virtual std::unique_ptr<ModelFittingDensityEstimation> createNewModel(
       sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig);
 
   void addNewModel(const std::pair<std::vector<size_t>, int> combiconfig);

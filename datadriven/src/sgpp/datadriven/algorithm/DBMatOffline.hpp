@@ -11,8 +11,6 @@
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
 #include <sgpp/datadriven/scalapack/BlacsProcessGrid.hpp>
 #include <sgpp/datadriven/scalapack/DataMatrixDistributed.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModifiedLinear.hpp>
 
 #include <list>
 #include <memory>

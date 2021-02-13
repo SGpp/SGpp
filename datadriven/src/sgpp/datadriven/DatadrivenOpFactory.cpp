@@ -7,6 +7,8 @@
 
 #include <sgpp/base/exception/factory_exception.hpp>
 
+#include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/BsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/PolyGrid.hpp>
@@ -123,6 +125,12 @@
 #ifdef USE_SCALAPACK
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModBsplineNaiveDistributed.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -140,16 +148,16 @@ datadriven::OperationTest* createOperationTest(base::Grid& grid) {
              grid.getType() == base::GridType::LinearBoundary) {
     return new datadriven::OperationTestLinearBoundary(&grid.getStorage());
   } else if (grid.getType() == base::GridType::ModBspline) {
-    return new datadriven::OperationTestModBspline(&grid.getStorage(),
-        dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
+    return new datadriven::OperationTestModBspline(
+        &grid.getStorage(), dynamic_cast<base::ModBsplineGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new datadriven::OperationTestModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Poly) {
     return new datadriven::OperationTestPoly(&grid.getStorage(),
-        dynamic_cast<base::PolyGrid&>(grid).getDegree());
+                                             dynamic_cast<base::PolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModPoly) {
     return new datadriven::OperationTestModPoly(&grid.getStorage(),
-        dynamic_cast<base::ModPolyGrid&>(grid).getDegree());
+                                                dynamic_cast<base::ModPolyGrid&>(grid).getDegree());
   } else if (grid.getType() == base::GridType::ModWavelet) {
     return new datadriven::OperationTestModWavelet(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
@@ -433,7 +441,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
 
   // can now assume that MPI type is NONE
   if (configuration.getType() == sgpp::datadriven::OperationMultipleEvalType::DEFAULT) {
-    return createOperationMultipleEval(grid, dataset);
+    return createOperationMultipleEvalDefault(grid, dataset);
   }
 
   if (grid.getType() == base::GridType::Linear) {
@@ -525,12 +533,41 @@ base::OperationMultipleEval* createOperationMultipleEval(
             "Error creating function: the library wasn't compiled with OpenCL support");
 #endif
       }
+    } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else if (grid.getType() == base::GridType::BsplineBoundary) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalBsplineBoundaryNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else if (grid.getType() == base::GridType::ModBspline) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalModBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
     }
   } else if (grid.getType() == base::GridType::Poly) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
       if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
 #ifdef USE_CUDA
-        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), false);
+        return new datadriven::OperationMultiEvalCuda(
+            grid, dataset, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), false);
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with CUDA support");
@@ -539,7 +576,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
     } else if (configuration.getType() == datadriven::OperationMultipleEvalType::MORTONORDER) {
       if (configuration.getSubType() == sgpp::datadriven::OperationMultipleEvalSubType::CUDA) {
 #ifdef USE_CUDA
-        return new datadriven::OperationMultiEvalCuda(grid, dataset, grid.getDegree(), true);
+        return new datadriven::OperationMultiEvalCuda(
+            grid, dataset, dynamic_cast<base::PolyGrid*>(&grid)->getDegree(), true);
 #else
         throw base::factory_exception(
             "Error creating function: the library wasn't compiled with CUDA support");
@@ -549,6 +587,37 @@ base::OperationMultipleEval* createOperationMultipleEval(
   }
 
   throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
+}
+
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+    base::Grid& grid, base::DataMatrix& dataset, size_t derivDim,
+    sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
+  if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
+    return createOperationMultipleEvalPartialDerivativeNaive(grid, dataset, derivDim);
+  } else if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+    if (grid.getType() == base::GridType::Bspline) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed(
+          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else if (grid.getType() == base::GridType::BsplineBoundary) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed(
+          grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else if (grid.getType() == base::GridType::ModBspline) {
+      return new datadriven::OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed(
+          grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else {
+      throw base::factory_exception(
+          "createOperationMultipleEvalPartialDerivativeNaive is not implemented for this grid "
+          "type.");
+    }
+#else
+    throw base::factory_exception(
+        "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif  // USE_SCALAPACK
+  } else {
+    throw base::factory_exception(
+        "createOperationMultipleEvalPartialDerivativeNaive: invalid configuration");
+  }
 }
 
 datadriven::OperationMakePositive* createOperationMakePositive(

@@ -32,8 +32,8 @@ namespace datadriven {
  * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
  * regularization.
  *
- * Allows usage of different grids, different solvers and different regularization techniques based
- * on the provided configuration objects.
+ * Allows usage of different grids, different solvers and different regularization techniques
+ * based on the provided configuration objects.
  */
 class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation {
  public:
@@ -65,8 +65,8 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
 
   /**
    * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
-   * approach. Requires only data samples and no targets (since those are irrelevant for the density
-   * estimation whatsoever)
+   * approach. Requires only data samples and no targets (since those are irrelevant for the
+   * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
@@ -88,8 +88,9 @@ class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation 
   }
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
-   * samples and no targets (since those are irrelevant for the density estimation whatsoever)
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the
+   * data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever)
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;

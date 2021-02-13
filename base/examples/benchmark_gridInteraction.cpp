@@ -36,9 +36,9 @@ void genAllInteractions(std::set<std::set<size_t>> &inter, size_t d) {
 }
 
 int main() {
-  std::vector<size_t> dims = {1, 2, 3};
-  size_t lvl_start = 3;
-  size_t lvl_end = 5;
+  std::vector<size_t> dims = {1, 2};
+  size_t lvl_start = 2;
+  size_t lvl_end = 4;
 
   for (auto const &d : dims) {
     std::set<std::set<size_t>> interactions;

@@ -12,8 +12,10 @@
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityRatioEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 #include <vector>
@@ -43,8 +45,8 @@ DensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets(
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
 
   // Batching is not currently supported
-  configs[0].batchSize_ = configs[1].batchSize_ = 0;
-  configs[0].numBatches_ = configs[1].numBatches_ = 1;
+  // configs[0].batchSize_ = configs[1].batchSize_ = 0;
+  // configs[0].numBatches_ = configs[1].numBatches_ = 1;
 
   std::vector<DataSourceSplitting*> dataSources(2);
 
@@ -87,20 +89,29 @@ ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
   return new ModelFittingDensityRatioEstimation(config);
 }
 
-/*
- FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser& parser) const {
- return new DensityRatioEstimationMinerFactory(parser);
- }
- */
+HyperparameterOptimizer* DensityRatioEstimationMinerFactory::buildHPO(
+    const std::string& path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser), parser);
+  } else {
+    return new BoHyperparameterOptimizer(buildMiner(path),
+                                         new DensityRatioEstimationFitterFactory(parser), parser);
+  }
+}
+
+FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser& parser) const {
+  return new DensityRatioEstimationFitterFactory(parser);
+}
 
 Visualizer* DensityRatioEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser& parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  // TODO(spc90): implement visualization for this model
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */

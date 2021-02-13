@@ -19,7 +19,7 @@ namespace datadriven {
  * Abstract class that defines the virtual class base::OperationMatrix for the density ratio
  * estimation problem
  */
-class DMSystemMatrixDRE : public base::OperationMatrix {
+class DMSystemMatrixTwoDatasets : public base::OperationMatrix {
  protected:
   /// the datasets
   base::DataMatrix datasetP_;
@@ -45,12 +45,13 @@ class DMSystemMatrixDRE : public base::OperationMatrix {
    * @param trainDataQ matrix with training data for second density
    * @param lambda the lambda, the regression parameter
    */
-  DMSystemMatrixDRE(base::DataMatrix& trainDataP, base::DataMatrix& trainDataQ, double lambda);
+  DMSystemMatrixTwoDatasets(base::DataMatrix& trainDataP, base::DataMatrix& trainDataQ,
+                            double lambda);
 
   /**
    * Std-Destructor
    */
-  virtual ~DMSystemMatrixDRE();
+  virtual ~DMSystemMatrixTwoDatasets();
 
   virtual void mult(base::DataVector& alpha, base::DataVector& result) = 0;
 

@@ -83,7 +83,7 @@ class OperationMatrixLTwoDotExplicitModLinear : public sgpp::base::OperationMatr
     for (size_t i = i_start; i < i_end; i++) {
       j_start = j_start == 0 ? i : j_start;
       j_end = j_end == 0 ? gridSize : j_end;
-
+#pragma omp parallel for schedule(guided)
       for (size_t j = j_start; j < j_end; j++) {
         double res = 1;
 

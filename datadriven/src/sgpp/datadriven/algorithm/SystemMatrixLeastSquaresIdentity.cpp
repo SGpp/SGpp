@@ -62,6 +62,8 @@ void SystemMatrixLeastSquaresIdentity::setImplementation(
   this->implementationConfiguration = operationConfiguration;
   this->B.reset(op_factory::createOperationMultipleEval(this->grid, this->dataset_,
                                                         this->implementationConfiguration));
+  // padded during Operator construction, fetch new size
+  this->paddedInstances = this->dataset_.getNrows();
 }
 
 }  // namespace datadriven
