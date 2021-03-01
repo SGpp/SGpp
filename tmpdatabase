@@ -1,0 +1,16 @@
+{
+   "database": [{
+         "gridConfiguration": {
+            "type": "regular",
+            "dimension": 5,
+            "level": 3
+         },
+         "regularizationConfiguration": {
+            "lambda": 0.01
+         },
+         "densityEstimationConfiguration": {
+            "decomposition": "OrthoAdapt"
+         },
+         "filepath": "newpathGetMatrix"
+      }]
+}
