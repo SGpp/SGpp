@@ -327,7 +327,7 @@ class NakPBsplineBasis : public Basis<LT, IT> {
           return 0.0;
         } else if ((i > 1) && (i < hInv - 1)) {
           // l >=2, 1 < i < 2^l - 1
-          return bsplineBasis.eval(l, i, x);
+          return bsplineBasis.evalDx(l, i, x);
         } else {
           if (i > hInv / 2) {
             i = hInv - i;
@@ -416,7 +416,7 @@ class NakPBsplineBasis : public Basis<LT, IT> {
           }
         } else if ((i > 5) && (i < hInv - 5)) {
           // l >= 4, 5 < i < 2^l - 5
-          return bsplineBasis.eval(l, i, x);
+          return bsplineBasis.evalDx(l, i, x);
         } else {
           if (i > hInv / 2) {
             i = hInv - i;
