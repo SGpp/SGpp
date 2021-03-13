@@ -321,6 +321,8 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\quadrature\Deb
 		AttachLaunchAction = No
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pysgpp", "pysgpp\pysgpp.vcxproj", "{03E32082-9522-498A-9D3A-694E5A4CB2ED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -451,6 +453,14 @@ Global
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Debug|x86.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Release|x64.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Release|x86.ActiveCfg = Release|x64
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x64.ActiveCfg = Debug|x64
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x64.Build.0 = Debug|x64
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x86.ActiveCfg = Debug|Win32
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x86.Build.0 = Debug|Win32
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x64.ActiveCfg = Release|x64
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x64.Build.0 = Release|x64
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x86.ActiveCfg = Release|Win32
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
