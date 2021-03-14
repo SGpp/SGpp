@@ -1,0 +1,21 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+<ItemGroup>
+<ModuleNames Include="base" />
+<ModuleNames Include="optimization" />
+<ModuleNames Include="solver" />
+<ModuleNames Include="pde" />
+<ModuleNames Include="quadrature" />
+<ModuleNames Include="combigrid" />
+<ModuleNames Include="datadriven" />
+</ItemGroup>
+
+<PropertyGroup>
+	<ModuleStaticLibs>@(ModuleNames->'$(SolutionDir)lib\$(Configuration)\libsgpp%(Filename).lib')</ModuleStaticLibs>
+</PropertyGroup>
+
+<PropertyGroup>
+	<ModuleSources>@(ModuleNames->'$(SolutionDir)%(Filename)\src\', ';')</ModuleSources>
+</PropertyGroup>
+
+</Project>

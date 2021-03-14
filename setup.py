@@ -25,8 +25,9 @@ try:
 except ImportError:
     bdist_wheel = None
 
+sgpplibpath = os.path.join("lib", "Debug")
 # path to pysgpp lib
-libpath = os.path.join("lib", "pysgpp")
+libpath = os.path.join(sgpplibpath, "pysgpp")
 extensionspath = os.path.join(libpath, "extensions")
 
 # list of all available modules -> all folders in the root directory
@@ -110,8 +111,8 @@ dllLibs = [filename for filename in os.listdir(libpath)
 
 for dllLib in dllLibs:
     pydLib = "%s.pyd" % os.path.splitext(dllLib)[0]
-    shutil.copy2(os.path.join('lib', 'pysgpp', dllLib),
-                 os.path.join('lib', 'pysgpp', pydLib))
+    shutil.copy2(os.path.join(libpath, dllLib),
+                 os.path.join(libpath, pydLib))
 
 # setup pysgpp
 setup(name='pysgpp',
@@ -130,8 +131,8 @@ setup(name='pysgpp',
       license='BSD-style license',
       long_description="README",
       zip_safe=False,
-      package_dir={'': 'lib'},
-      packages=find_packages(where='lib', include=['pysgpp', 'pysgpp.extensions*']),
+      package_dir={'': sgpplibpath},
+      packages=find_packages(where=sgpplibpath, include=['pysgpp', 'pysgpp.extensions*']),
       package_data={'pysgpp': ['_pysgpp_swig.so', '*.lib', '*.pyd']},
       )
 

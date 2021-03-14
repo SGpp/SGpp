@@ -5,6 +5,7 @@
 
 <ItemGroup>
 	<_WildCardExamples Include="$(ProjectDir)examples\**\*.cpp" />
+	<_WildCardExamples Include="$(ProjectDir)examples\**\*.py" />
 	<_WildCardTests Include="$(ProjectDir)tests\**\*.cpp" />
 </ItemGroup>
 
