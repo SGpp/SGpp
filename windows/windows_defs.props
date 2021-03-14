@@ -11,11 +11,19 @@
 </ItemGroup>
 
 <PropertyGroup>
+	<UsedPreprocessorDefs>_WINDOWS;WIN32;_WIN32;USE_EIGEN;NOMINMAX</UsedPreprocessorDefs>
+</PropertyGroup>
+
+<PropertyGroup>
 	<ModuleStaticLibs>@(ModuleNames->'$(SolutionDir)lib\$(Configuration)\libsgpp%(Filename).lib')</ModuleStaticLibs>
 </PropertyGroup>
 
 <PropertyGroup>
-	<ModuleSources>@(ModuleNames->'$(SolutionDir)%(Filename)\src\', ';')</ModuleSources>
+	<ModuleSourceDirs>@(ModuleNames->'$(SolutionDir)%(Filename)\src\')</ModuleSourceDirs>
+</PropertyGroup>
+
+<PropertyGroup>
+	<ModuleSingleHeaders>@(ModuleNames->'$(SolutionDir)%(Filename)\src\sgpp_%(Filename).hpp')</ModuleSingleHeaders>
 </PropertyGroup>
 
 </Project>

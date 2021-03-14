@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
@@ -26,23 +18,13 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Makefile</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
@@ -51,12 +33,6 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
@@ -64,51 +40,58 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <NMakePreprocessorDefinitions>_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>cd ..
-swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_COMBIGRID=1 -DSG_OPTIMIZATION=1 -DSG_PDE=1 -DSG_SOLVER=1 -DSG_DATADRIVEN=1 -DSG_QUADRATURE=1 -py3 pysgpp/pysgpp.i
-mkdir $(SolutionDir)lib\$(Configuration)\pysgpp
-copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py</NMakeBuildCommandLine>
+  
+  <PropertyGroup>
     <IntDir>out\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)lib\$(Configuration)\pysgpp\</OutDir>
-    <TargetName>pysgpp_swig</TargetName>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-  </PropertyGroup>
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <NMakePreprocessorDefinitions>NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <TargetName>_pysgpp_swig</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>_pysgpp_swig_d</TargetName>
+  </PropertyGroup>
+  
+  <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(PYTHON3_INSTALLATION)\Lib\site-packages\numpy\core\include\;$(SolutionDir);$(SolutionDir)datadriven\src\;$(SolutionDir)solver\src\;$(SolutionDir)base\src\;$(SolutionDir)quadrature\src\;$(SolutionDir)optimization\src\;$(SolutionDir)combigrid\src\;$(SolutionDir)pde\src\;$(PYTHON3_INSTALLATION)\include</AdditionalIncludeDirectories>
-      <ForcedIncludeFiles>sgpp_pde.hpp;sgpp_quadrature.hpp;sgpp_combigrid.hpp;sgpp_datadriven.hpp;sgpp_base.hpp;sgpp_solver.hpp;sgpp_optimization.hpp</ForcedIncludeFiles>
-      <PreprocessorDefinitions>USE_EIGEN;NOMINMAX;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(PYTHON3_INSTALLATION)\Lib\site-packages\numpy\core\include\;$(ModuleSourceDirs);$(PYTHON3_INSTALLATION)\include</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>$(ModuleSingleHeaders)</ForcedIncludeFiles>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <PreBuildEvent>
-      <Command>cd ..
+      <Command>
+cd $(SolutionDir)
 swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_COMBIGRID=1 -DSG_OPTIMIZATION=1 -DSG_PDE=1 -DSG_SOLVER=1 -DSG_DATADRIVEN=1 -DSG_QUADRATURE=1 -py3 pysgpp/pysgpp.i</Command>
     </PreBuildEvent>
     <Link>
       <AdditionalLibraryDirectories>$(PYTHON3_INSTALLATION)\libs\</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(ModuleStaticLibs);kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <OutputFile>
-      </OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py
-copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py</Command>
+      <Command>
+copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py
+copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py
+pip uninstall -y pysgpp
+cd $(SolutionDir)
+python $(SolutionDir)setup.py install</Command>
     </PostBuildEvent>
-    <ProjectReference>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-    </ProjectReference>
   </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_DEBUG;SWIGRUNTIME_DEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  
   <ItemGroup>
     <ClInclude Include="pysgpp_wrap.h" />
   </ItemGroup>
@@ -116,6 +99,7 @@ copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__
     <ClCompile Include="pysgpp_wrap.cc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="pysgpp.i" />
     <None Include="pysgpp_swig.py" />
     <None Include="__init__.py" />
   </ItemGroup>

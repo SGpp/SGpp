@@ -78,20 +78,6 @@ for f in extFiles:
         pass
     
 
-# write init file for pysgpp
-initFile = os.path.join(libpath, "__init__.py")
-with open(initFile, "w") as f:
-    f.write("""
-# add current directory to PYTHONPATH such that pysgpp_swig can be imported
-import os
-import sys
-sys.path.append(os.path.dirname(__file__))
-
-# import pysgpp_swig and extensions
-from .pysgpp_swig import *
-from . import extensions
-""")
-
 if len(moduleFolders) > 0:
     # create __init__.py file which imports all the extensions
     initFile = os.path.join("__init__.py")
@@ -133,7 +119,7 @@ setup(name='pysgpp',
       zip_safe=False,
       package_dir={'': sgpplibpath},
       packages=find_packages(where=sgpplibpath, include=['pysgpp', 'pysgpp.extensions*']),
-      package_data={'pysgpp': ['_pysgpp_swig.so', '*.lib', '*.pyd']},
+      package_data={'pysgpp': ['__init__.py', '_pysgpp_swig.so', '*.pyd']},
       )
 
 # cleanup

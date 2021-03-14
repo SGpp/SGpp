@@ -40,6 +40,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "quadrature", "bin\base\Debu
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solver module", "solver module", "{9C49467A-273C-449D-A80D-CC819DE1E6CA}"
@@ -57,6 +58,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "fistaExample", "bin\solver\
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "base module", "base module", "{2D2CAB20-DF43-4577-BB51-A3C1D23346ED}"
@@ -78,6 +80,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "fuzzy", "bin\optimization\D
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "datadriven module", "datadriven module", "{F38EFFF1-FE4F-49A8-BB00-35FCFE8BA315}"
@@ -99,6 +102,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tutorial", "bin\base\Debug\
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "gridInteractionExample", "bin\base\Debug\gridInteractionExample.exe", "{A21FF85D-E91A-4FA9-8B59-7631E2CF7B9D}"
@@ -112,6 +116,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "gridInteractionExample", "b
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "gridTypes", "bin\base\Debug\gridTypes.exe", "{C0165513-41F8-4992-AE8B-1E9C2C7A73DC}"
@@ -125,6 +130,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "gridTypes", "bin\base\Debug
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "constrainedOptimization", "bin\optimization\Debug\constrainedOptimization.exe", "{F0C2CCB2-C4C1-4F30-988F-C3CB9010F014}"
@@ -138,6 +144,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "constrainedOptimization", "
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "optimization", "bin\optimization\Debug\optimization.exe", "{FDD1D5EB-2745-419C-8959-D95569571046}"
@@ -151,6 +158,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "optimization", "bin\optimiz
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "learnerRegressionTest", "bin\datadriven\Debug\learnerRegressionTest.exe", "{D74E3B87-BE8F-4209-AFFF-040DB21F6825}"
@@ -164,6 +172,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "learnerRegressionTest", "bi
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "sparseGridDensityEstimationTest", "bin\datadriven\Debug\sparseGridDensityEstimationTest.exe", "{FC810561-5124-47D9-9191-B4835FE29F80}"
@@ -177,6 +186,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "sparseGridDensityEstimation
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\base\Debug\tests.exe", "{8127C672-F448-4416-8843-4E2D863880B7}"
@@ -191,6 +201,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\base\Debug\tes
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\optimization\Debug\tests.exe", "{0D056151-8278-4909-8C6D-91C0CD3B43DB}"
@@ -205,6 +216,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\optimization\D
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\pde\Debug\tests.exe", "{7136801E-813A-4A4C-BE77-22FE537C5F72}"
@@ -219,6 +231,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\pde\Debug\test
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\solver\Debug\tests.exe", "{932F18C6-B711-4840-8351-66F17F170FA2}"
@@ -233,6 +246,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\solver\Debug\t
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\datadriven\Debug\tests.exe", "{C3D00196-9479-4ABF-ABA8-5A97D7920189}"
@@ -247,6 +261,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\datadriven\Deb
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "combigrid module", "combigrid module", "{55EAB3F5-462C-448A-A852-03B970429293}"
@@ -270,6 +285,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\combigrid\Debu
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "combigrid", "bin\combigrid\Debug\combigrid.exe", "{E7424CFE-6808-44CA-9B3D-5E3E8F08B13A}"
@@ -283,6 +299,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "combigrid", "bin\combigrid\
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "combigrid_adaptive", "bin\combigrid\Debug\combigrid_adaptive.exe", "{C95D531A-9B28-40BE-875C-B448753E4D80}"
@@ -296,6 +313,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "combigrid_adaptive", "bin\c
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "quadrature", "quadrature", "{A116CBC4-824F-4240-BD5A-E9A713538B2C}"
@@ -319,6 +337,7 @@ Project("{911E67C6-3D85-4FCE-B560-20A9C3E3FF48}") = "tests", "bin\quadrature\Deb
 		UseLegacyDebugEngines = No
 		LaunchSQLEngine = No
 		AttachLaunchAction = No
+		IORedirection = Auto
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pysgpp", "pysgpp\pysgpp.vcxproj", "{03E32082-9522-498A-9D3A-694E5A4CB2ED}"
@@ -423,12 +442,10 @@ Global
 		{C3D00196-9479-4ABF-ABA8-5A97D7920189}.Release|x86.ActiveCfg = Release|x64
 		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Debug|x64.ActiveCfg = Debug|x64
 		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Debug|x64.Build.0 = Debug|x64
-		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Debug|x86.ActiveCfg = Debug|Win32
-		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Debug|x86.Build.0 = Debug|Win32
+		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Debug|x86.ActiveCfg = Debug|x64
 		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Release|x64.ActiveCfg = Release|x64
 		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Release|x64.Build.0 = Release|x64
-		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Release|x86.ActiveCfg = Release|Win32
-		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Release|x86.Build.0 = Release|Win32
+		{FE985757-0AEF-4889-A138-58BE4D82FE4D}.Release|x86.ActiveCfg = Release|x64
 		{A3D88508-5E27-4396-9ABD-0072F7D88983}.Debug|x64.ActiveCfg = Release|x64
 		{A3D88508-5E27-4396-9ABD-0072F7D88983}.Debug|x86.ActiveCfg = Release|x64
 		{A3D88508-5E27-4396-9ABD-0072F7D88983}.Release|x64.ActiveCfg = Release|x64
@@ -443,24 +460,20 @@ Global
 		{C95D531A-9B28-40BE-875C-B448753E4D80}.Release|x86.ActiveCfg = Release|x64
 		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Debug|x64.ActiveCfg = Debug|x64
 		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Debug|x64.Build.0 = Debug|x64
-		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Debug|x86.ActiveCfg = Debug|Win32
-		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Debug|x86.Build.0 = Debug|Win32
+		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Debug|x86.ActiveCfg = Debug|x64
 		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Release|x64.ActiveCfg = Release|x64
 		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Release|x64.Build.0 = Release|x64
-		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Release|x86.ActiveCfg = Release|Win32
-		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Release|x86.Build.0 = Release|Win32
+		{1DA78738-6DE3-4B7B-A0F0-83C38598FDD5}.Release|x86.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Debug|x64.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Debug|x86.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Release|x64.ActiveCfg = Release|x64
 		{5CCA6EEC-E8D3-49AE-8C73-3531E4658C14}.Release|x86.ActiveCfg = Release|x64
 		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x64.ActiveCfg = Debug|x64
 		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x64.Build.0 = Debug|x64
-		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x86.ActiveCfg = Debug|Win32
-		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x86.Build.0 = Debug|Win32
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Debug|x86.ActiveCfg = Debug|x64
 		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x64.ActiveCfg = Release|x64
 		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x64.Build.0 = Release|x64
-		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x86.ActiveCfg = Release|Win32
-		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x86.Build.0 = Release|Win32
+		{03E32082-9522-498A-9D3A-694E5A4CB2ED}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

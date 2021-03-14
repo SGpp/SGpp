@@ -6,19 +6,8 @@
 // %feature("autodoc", "2");
 // %feature("docstring");
 
-// fix needed for MinGW: cmath has to be included before Python.h,
-// otherwise there are g++ errors like "Error: '::hypot' has not been declared"
-%begin %{
-    #include <cmath>
-%}
-
-%begin %{
-#define SWIG_PYTHON_2_UNICODE
-%}
-
 %include "base/src/sgpp/globaldef.hpp"
 
-//%include "std_string.i"
 %include "stl.i"
 %include "std_vector.i"
 %include "std_list.i"
