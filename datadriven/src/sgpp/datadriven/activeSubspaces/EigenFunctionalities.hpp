@@ -4,9 +4,9 @@
 // sgpp.sparsegrids.org
 
 #pragma once
-// #ifdef USE_EIGEN
-
+#ifdef USE_EIGEN
 #include <eigen3/Eigen/Dense>
+
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
@@ -71,4 +71,4 @@ sgpp::base::DataVector EigenRegression(std::shared_ptr<sgpp::base::Grid> grid, s
 }  // namespace datadriven
 }  // namespace sgpp
 
-// #endif /* USE_EIGEN */
+#endif /* USE_EIGEN */

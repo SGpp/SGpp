@@ -3,7 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-// #ifdef USE_EIGEN
+#ifdef USE_EIGEN
 
 #include <sgpp/datadriven/activeSubspaces/EigenFunctionalities.hpp>
 
@@ -136,4 +136,4 @@ sgpp::base::DataVector EigenRegression(std::shared_ptr<sgpp::base::Grid> grid, s
 }  // namespace datadriven
 }  // namespace sgpp
 
-// #endif /* USE_EIGEN */
+#endif /* USE_EIGEN */
