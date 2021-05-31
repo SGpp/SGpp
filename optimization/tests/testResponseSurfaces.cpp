@@ -106,6 +106,7 @@ std::vector<sgpp::base::GridType> getGridTypes() {
   return gridTypes;
 }
 
+#ifdef USE_EIGEN
 BOOST_AUTO_TEST_SUITE(TestResponseSurfaces)
 
 /**
@@ -115,7 +116,6 @@ BOOST_AUTO_TEST_SUITE(TestResponseSurfaces)
  */
 
 // create regular SplineResponseSurface and evaluate
-#ifdef USE_EIGEN
 BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
   // default values
   std::vector<double> epsilons{0.06, 1e-14, 1e-14};
@@ -148,7 +148,6 @@ BOOST_AUTO_TEST_CASE(testRegularSplineResponseSurfaceEval) {
     }
   }
 }
-#endif
 
 // create adaptive SplineResponseSurface and evaluate
 BOOST_AUTO_TEST_CASE(testSurplusAdaptiveSplineResponseSurfaceEval) {
@@ -751,3 +750,4 @@ BOOST_AUTO_TEST_CASE(testSplineResponseSurfaceVectorSerialize) {
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+#endif
