@@ -32,9 +32,9 @@ sgpp::datadriven::RegressionLearner getLearner(
   auto gridConfig = sgpp::base::RegularGridConfiguration();
   gridConfig.dim_ = dimension;
   gridConfig.level_ = 3;
-  //  gridConfig.type_ = sgpp::base::GridType::ModLinear;
+  gridConfig.type_ = sgpp::base::GridType::ModLinear;
 
-  gridConfig.type_ = sgpp::base::GridType::ModNakBspline;
+  // gridConfig.type_ = sgpp::base::GridType::ModNakBspline;
   gridConfig.maxDegree_ = 3;
 
   auto adaptivityConfig = sgpp::base::AdaptivityConfiguration();
