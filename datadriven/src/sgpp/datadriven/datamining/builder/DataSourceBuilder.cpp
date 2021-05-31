@@ -27,22 +27,22 @@ namespace datadriven {
 using sgpp::base::data_exception;
 
 DataSourceBuilder& DataSourceBuilder::withFileType(DataSourceFileType fileType) {
-  config.fileType = fileType;
+  config.fileType_ = fileType;
   return *this;
 }
 
 DataSourceBuilder& DataSourceBuilder::inBatches(size_t howMany) {
-  config.numBatches = howMany;
+  config.numBatches_ = howMany;
   return *this;
 }
 
 DataSourceBuilder& DataSourceBuilder::withBatchSize(size_t batchSize) {
-  config.batchSize = batchSize;
+  config.batchSize_ = batchSize;
   return *this;
 }
 
 DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
-  config.isCompressed = isCompressed;
+  config.isCompressed_ = isCompressed;
 
 #ifndef ZLIB
   if (isCompressed) {
@@ -55,8 +55,8 @@ DataSourceBuilder& DataSourceBuilder::withCompression(bool isCompressed) {
 }
 
 DataSourceBuilder& DataSourceBuilder::withPath(const std::string& filePath) {
-  config.filePath = filePath;
-  if (config.fileType == DataSourceFileType::NONE) {
+  config.filePath_ = filePath;
+  if (config.fileType_ == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
   }
   return *this;
@@ -69,15 +69,15 @@ DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
 
   SampleProvider* sampleProvider = nullptr;
 
-  if (config.fileType == DataSourceFileType::ARFF) {
+  if (config.fileType_ == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider(shuffling);
-  } else if (config.fileType == DataSourceFileType::CSV) {
+  } else if (config.fileType_ == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(shuffling);
   } else {
     throw data_exception("DataSourceBuilder::splittingAssemble() unknown file type");
   }
 
-  if (config.isCompressed) {
+  if (config.isCompressed_) {
 #ifndef ZLIB
     throw sgpp::base::application_exception{
         "sgpp has been built without zlib support. Reading compressed files is not possible"};
@@ -92,7 +92,7 @@ DataSourceSplitting* DataSourceBuilder::splittingAssemble() const {
 DataSourceSplitting* DataSourceBuilder::splittingFromConfig(const DataSourceConfig& config) {
   this->config = config;
 
-  if (config.fileType == DataSourceFileType::NONE) {
+  if (config.fileType_ == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
   }
   return splittingAssemble();
@@ -107,15 +107,15 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationAssemble() const {
 
   SampleProvider* sampleProvider = nullptr;
 
-  if (config.fileType == DataSourceFileType::ARFF) {
+  if (config.fileType_ == DataSourceFileType::ARFF) {
     sampleProvider = new ArffFileSampleProvider(crossValidationShuffling);
-  } else if (config.fileType == DataSourceFileType::CSV) {
+  } else if (config.fileType_ == DataSourceFileType::CSV) {
     sampleProvider = new CSVFileSampleProvider(crossValidationShuffling);
   } else {
     throw data_exception("DataSourceBuilder::crossValidationAssemble() unknown file type");
   }
 
-  if (config.isCompressed) {
+  if (config.isCompressed_) {
 #ifndef ZLIB
     throw sgpp::base::application_exception{
         "sgpp has been built without zlib support. Reading compressed files is not possible"};
@@ -133,7 +133,7 @@ DataSourceCrossValidation* DataSourceBuilder::crossValidationFromConfig(
   this->config = config;
   this->crossValidationConfig = crossValidationConfig;
 
-  if (config.fileType == DataSourceFileType::NONE) {
+  if (config.fileType_ == DataSourceFileType::NONE) {
     grabTypeInfoFromFilePath();
   }
   return crossValidationAssemble();
@@ -143,7 +143,7 @@ void DataSourceBuilder::grabTypeInfoFromFilePath() {
   // tokenize string
   std::vector<std::string> tokens;
   // split the string
-  sgpp::base::StringTokenizer::tokenize(config.filePath, ".", tokens);
+  sgpp::base::StringTokenizer::tokenize(config.filePath_, ".", tokens);
   // convert to lower case
   for (auto t : tokens) {
     // TODO(Michael Lettrich): test if this works with umlauts

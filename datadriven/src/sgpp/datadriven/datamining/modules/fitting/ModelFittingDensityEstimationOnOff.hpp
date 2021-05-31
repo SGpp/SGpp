@@ -29,94 +29,86 @@ namespace datadriven {
 
 // TODO(lettrich): allow different refinement techniques.
 /**
- * Fitter object that encapsulates the usage of sparse grid density estimation
- * with identity as
+ * Fitter object that encapsulates the usage of sparse grid density estimation with identity as
  * regularization.
  *
- * Allows usage of different grids, different solvers and different
- * regularization techniques based
+ * Allows usage of different grids, different solvers and different regularization techniques based
  * on the provided configuration objects.
  */
-class ModelFittingDensityEstimationOnOff
-    : public ModelFittingDensityEstimation {
+class ModelFittingDensityEstimationOnOff : public ModelFittingDensityEstimation {
  public:
   /**
    * Constructor
    *
-   * @param config configuration object that specifies grid, refinement, and
-   * regularization
+   * @param config configuration object that specifies grid, refinement, and regularization
    */
-  explicit ModelFittingDensityEstimationOnOff(
-      const FitterConfigurationDensityEstimation& config);
+  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config);
 
   /**
    * Constuctor with offline object store.
    *
-   * @param config Configuration object that specifies grid, refinement, and
-   * regularization.
+   * @param config Configuration object that specifies grid, refinement, and regularization.
    * @param objectStore Offline object store
    */
-  explicit ModelFittingDensityEstimationOnOff(
-      const FitterConfigurationDensityEstimation& config,
-      std::shared_ptr<DBMatObjectStore> objectStore);
+  explicit ModelFittingDensityEstimationOnOff(const FitterConfigurationDensityEstimation& config,
+                                              std::shared_ptr<DBMatObjectStore> objectStore);
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial
-   * grid by the
-   * SGDE approach.
+   * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
+   * approach.
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(Dataset& dataset) override;
+  void fit(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Fit the grid to the given dataset by determining the weights of the initial
-   * grid by the
-   * SGDE approach. Requires only data samples and no targets (since those are
-   * irrelevant for the
-   * density estimation whatsoever)
+   * Fit the grid to the given dataset by determining the weights of the initial grid by the SGDE
+   * approach. Requires only data samples and no targets (since those are irrelevant for the density
+   * estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
   void fit(DataMatrix& dataset) override;
+  void fit(DataMatrix& datasetP, DataMatrix& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Performs refinement and coarsening given the new grid size and the points
-   * to coarsened
+   * Performs refinement and coarsening given the new grid size and the points to coarsened
    * @param newNoPoints the grid size after refinement and coarsening
-   * @param deletedGridPoints a vector of indexes for grid points that will be
-   * removed
+   * @param deletedGridPoints a vector of indexes for grid points that will be removed
    * @return if the grid was refined (true)
    */
-  bool adapt(size_t newNoPoints,
-             std::vector<size_t>& deletedGridPoints) override;
+  bool adapt(size_t newNoPoints, std::vector<size_t>& deletedGridPoints) override;
 
   void update(Dataset& dataset) override;
+  void update(Dataset& datasetP, Dataset& datasetQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning).
-   * Requires only
-   * the data samples and no targets (since those are irrelevant for the density
-   * estimation
-   * whatsoever)
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
+   * samples and no targets (since those are irrelevant for the density estimation whatsoever)
    * @param samples the new data samples
    */
   void update(DataMatrix& samples) override;
+  void update(DataMatrix& samplesP, DataMatrix& samplesQ) override {
+    throw base::application_exception("This model requires a single input dataset");
+  }
 
   /**
-   * Evaluate the fitted density at a single data point - requires a trained
-   * grid.
+   * Evaluate the fitted density at a single data point - requires a trained grid.
    * @param sample vector with the coordinates in all dimensions of that sample.
    * @return evaluation of the trained grid.
    */
   double evaluate(const DataVector& sample) override;
 
   /**
-   * Evaluate the fitted density on a set of data points - requires a trained
-   * grid.
-   * @param samples matrix where each row represents a sample and the columns
-   * contain the
+   * Evaluate the fitted density on a set of data points - requires a trained grid.
+   * @param samples matrix where each row represents a sample and the columns contain the
    * coordinates in all dimensions of that sample.
-   * @param results vector where each row will contain the evaluation of the
-   * respective sample on
+   * @param results vector where each row will contain the evaluation of the respective sample on
    * the current model.
    */
   void evaluate(DataMatrix& samples, DataVector& results) override;
@@ -140,8 +132,7 @@ class ModelFittingDensityEstimationOnOff
   void updateRegularization(double lambda) override;
 
   /**
-   * Function that indicates whether a model is refinable at all (certain on/off
-   * settings do not
+   * Function that indicates whether a model is refinable at all (certain on/off settings do not
    * allow for refinement)
    * @return whether the model is refinable
    */
@@ -153,8 +144,7 @@ class ModelFittingDensityEstimationOnOff
   void reset() override;
 
   /**
-   * Resets any trained representations of the model, but does not reset the
-   * entire state.
+   * Resets any trained representations of the model, but does not reset the entire state.
    *
    * Does not reset the offline object and grid.
    */
@@ -175,6 +165,9 @@ class ModelFittingDensityEstimationOnOff
 
   // The online object
   std::unique_ptr<DBMatOnlineDE> online;
+
+  // The offline object
+  std::unique_ptr<DBMatOffline> offline;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

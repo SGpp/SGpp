@@ -20,7 +20,6 @@
 #include <sgpp/datadriven/datamining/modules/hpo/DensityEstimationFitterFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerConfiguration.hpp>
 
 #include <string>
 
@@ -66,14 +65,13 @@ FitterFactory *DensityEstimationMinerFactory::createFitterFactory(
   return new DensityEstimationFitterFactory(parser);
 }
 
-Visualizer* DensityEstimationMinerFactory::createVisualizer(const DataMiningConfigParser& parser)
-const {
+Visualizer *DensityEstimationMinerFactory::createVisualizer(
+    const DataMiningConfigParser &parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
   return new VisualizerDensityEstimation(config);
 }
-
 
 } /* namespace datadriven */
 } /* namespace sgpp */

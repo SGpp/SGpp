@@ -24,12 +24,16 @@ double AveragingPriorityEstimator::estimatePriority(
   for (const std::pair<const std::vector<unsigned int>, double>& mapEntry :
        deltasOfDownwardNeighbors) {
     // get the number of grid points, assuming grids have boundary points
+
     const index_t numberOfPoints =
         FullGrid::getNumberOfPointsFromLevel(mapEntry.first, levelOccupancy);
     sumOfNormDividedByNumberOfPoints += mapEntry.second / static_cast<double>(numberOfPoints);
   }
 
-  return sumOfNormDividedByNumberOfPoints / static_cast<double>(deltasOfDownwardNeighbors.size());
+  auto priority =
+      sumOfNormDividedByNumberOfPoints / static_cast<double>(deltasOfDownwardNeighbors.size());
+
+  return priority;
 }
 
 }  // namespace combigrid

@@ -181,14 +181,14 @@ int main(int argc, char *argv[]) {
   // select zero-crossings-based refinement
   refType = "zero";
   std::cout << "Refinement type: " << refType << std::endl;
-  sgpp::base::AdaptivityConfiguration adaptConfig;
+  sgpp::base::AdaptivityConfiguration adaptivityConfig;
   /**
    * Specify number of refinement steps and the max number
    * of grid points to refine each step.
    */
-  adaptConfig.numRefinements_ = 2;
-  adaptConfig.numRefinementPoints_ = 7;
-  adaptConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
+  adaptivityConfig.numRefinements_ = 2;
+  adaptivityConfig.numRefinementPoints_ = 7;
+  adaptivityConfig.refinementThreshold_ = 0.0;  // only required for surplus refinement
 
   // initial weighting factor
   double beta = 0.0;
@@ -208,7 +208,7 @@ int main(int argc, char *argv[]) {
    */
   std::cout << "# create learner" << std::endl;
   sgpp::datadriven::LearnerSGDEOnOffParallel learner(
-      gridConfig, adaptConfig, regularizationConfig, densityEstimationConfig, trainDataset,
+      gridConfig, adaptivityConfig, regularizationConfig, densityEstimationConfig, trainDataset,
       testDataset, nullptr, classLabels, classNum, usePrior, beta, scheduler);
 
   // specify max number of passes over traininig data set
@@ -246,38 +246,38 @@ int main(int argc, char *argv[]) {
     std::cout << "# accuracy (client, test data): " << acc << std::endl;
     std::cout << "# delta time training (client): " << deltaTime << std::endl;
   }
-  // store results (classified data, grids, density functions)
-  // learner.storeResults();
+// store results (classified data, grids, density functions)
+// learner.storeResults();
 
-  //        sgpp::base::DataVector tmp;
-  //        avgErrorFolds += 1.0 - learner.getAccuracy();
-  //        learner.getAvgErrors(tmp);
-  //        avgErrorsFolds.add(tmp);
-  //    }
-  //    avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
-  //    if ((totalSets > 1) && (totalFolds > 1)) {
-  //      /**
-  //       * Average accuracy on test data reagarding 5-fold cv.
-  //       */
-  //      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
-  //                << (1.0 - avgErrorFolds) << std::endl;
-  //    }
-  //    avgError += avgErrorFolds;
-  //    avgErrorFolds = 0.0;
-  //    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
+//        sgpp::base::DataVector tmp;
+//        avgErrorFolds += 1.0 - learner.getAccuracy();
+//        learner.getAvgErrors(tmp);
+//        avgErrorsFolds.add(tmp);
+//    }
+//    avgErrorFolds = avgErrorFolds / static_cast<double>(totalFolds);
+//    if ((totalSets > 1) && (totalFolds > 1)) {
+//      /**
+//       * Average accuracy on test data reagarding 5-fold cv.
+//       */
+//      std::cout << "Average accuracy on test data (set " + std::to_string(numSets + 1) + "): "
+//                << (1.0 - avgErrorFolds) << std::endl;
+//    }
+//    avgError += avgErrorFolds;
+//    avgErrorFolds = 0.0;
+//    avgErrorsFolds.mult(1.0 / static_cast<double>(totalFolds));
 
-  // write error evaluation to csv-file
-  /*std::ofstream output;
-  output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
-  if (output.fail()) {
-    std::cout << "failed to create csv file!" << std::endl;
+// write error evaluation to csv-file
+/*std::ofstream output;
+output.open("SGDEOnOff_avg_classification_error_"+std::to_string(numSets+1)+".csv");
+if (output.fail()) {
+  std::cout << "failed to create csv file!" << std::endl;
+}
+else {
+  for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
+    output << avgErrorsFolds.get(i) << ";" << std::endl;
   }
-  else {
-    for (size_t i = 0; i < avgErrorsFolds.getSize(); i++) {
-      output << avgErrorsFolds.get(i) << ";" << std::endl;
-    }
-    output.close();
-  }*/
+  output.close();
+}*/
 //  }
 #else
   std::cout << "GSL not enabled at compile time" << std::endl;

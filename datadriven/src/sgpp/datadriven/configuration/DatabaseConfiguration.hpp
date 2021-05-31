@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_DATABASECONFIGURATION_HPP_
-#define DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_DATABASECONFIGURATION_HPP_
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 #include <string>
@@ -19,11 +18,8 @@ struct DatabaseConfiguration {
   /**
    * Filepath to the database
    */
-  std::string filePath = "";
+  std::string filePath_ = "";
 };
+
 }  // namespace datadriven
 }  // namespace sgpp
-
-
-
-#endif /* DATADRIVEN_SRC_SGPP_DATADRIVEN_CONFIGURATION_DATABASECONFIGURATION_HPP_ */

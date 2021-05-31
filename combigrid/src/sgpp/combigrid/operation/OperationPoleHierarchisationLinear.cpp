@@ -25,7 +25,7 @@ void OperationPoleHierarchisationLinear::apply(base::DataVector& values, size_t 
 
     for (index_t i = 1; i < hInv; i += 2) {
       values[k] -= (values[k - step * h] + values[k + step * h]) / 2.0;
-      k += 2 * h;
+      k += 2 * step * h;
     }
 
     hInv /= 2;

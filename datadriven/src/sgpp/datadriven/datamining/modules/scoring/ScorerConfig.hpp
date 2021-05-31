@@ -23,7 +23,7 @@ struct ScorerConfiguration {
   /**
    * Type of metric that should be used to calculate the accuracy of the fit.
    */
-  ScorerMetricType metric = ScorerMetricType::accuracy;
+  ScorerMetricType metric_ = ScorerMetricType::accuracy;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

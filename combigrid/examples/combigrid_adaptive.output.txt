@@ -1,0 +1,20 @@
+Value of test function at [0.12 0.34]: 0.820974
+Value of combined sparse grid interpolant at [0.12 0.34]: 0.774666
+Value of full grid [4 0] interpolant at [0.12 0.34]: -0.489125
+Value of full grid [3 1] interpolant at [0.12 0.34]: 0.564036
+Value of full grid [2 2] interpolant at [0.12 0.34]: 0.670577
+Value of full grid [1 3] interpolant at [0.12 0.34]: -0.0557937
+Value of full grid [0 4] interpolant at [0.12 0.34]: 0.216
+Value of full grid [3 0] interpolant at [0.12 0.34]: -0.487013
+Value of full grid [2 1] interpolant at [0.12 0.34]: 0.458568
+Value of full grid [1 2] interpolant at [0.12 0.34]: -0.0563141
+Value of full grid [0 3] interpolant at [0.12 0.34]: 0.215787
+Value of new full grid [5 0] interpolant at [0.12 0.34]: -0.488799
+Value of new full grid [4 1] interpolant at [0.12 0.34]: 0.566482
+Value of new full grid [3 2] interpolant at [0.12 0.34]: 0.824806
+Value of new full grid [2 3] interpolant at [0.12 0.34]: 0.664381
+Value of new full grid [1 4] interpolant at [0.12 0.34]: -0.0558487
+Value of new full grid [0 5] interpolant at [0.12 0.34]: 0.216003
+[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2], [1, 2], [2, 2], [0, 3], [1, 3], [0, 4], 
+[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2], [1, 2], [2, 2], [0, 3], [1, 3], [0, 4], [3, 2], [2, 3], 
+Value of combined sparse grid interpolant at [0.12 0.34]: 0.82133

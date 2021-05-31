@@ -124,14 +124,14 @@ int main() {
       // select impurity-based refinement
       refType = "impurity";
       std::cout << "Refinement type: " << refType << std::endl;
-      sgpp::base::AdaptivityConfiguration adaptConfig;
+      sgpp::base::AdaptivityConfiguration adaptivityConfig;
       /**
        * Specify number of refinement steps and the max number
        * of grid points to refine each step.
        */
-      adaptConfig.numRefinements_ = 3;
-      adaptConfig.numRefinementPoints_ = 5;
-      adaptConfig.refinementThreshold_ = 0.0;
+      adaptivityConfig.numRefinements_ = 3;
+      adaptivityConfig.numRefinementPoints_ = 5;
+      adaptivityConfig.refinementThreshold_ = 0.0;
 
       // additional parameters:
 
@@ -153,7 +153,7 @@ int main() {
        * Create the learner.
        */
       std::cout << "# creating the learner" << std::endl;
-      sgpp::datadriven::LearnerSGD learner(gridConfig, adaptConfig, trainData, trainLabels,
+      sgpp::datadriven::LearnerSGD learner(gridConfig, adaptivityConfig, trainData, trainLabels,
                                            testData, testLabels, validData, validLabels, lambda,
                                            gamma, batchSize, useValidData);
 

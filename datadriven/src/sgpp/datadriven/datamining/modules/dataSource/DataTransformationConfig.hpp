@@ -21,9 +21,9 @@ struct DataTransformationConfig {
   /*
    * Type of data transformation
    */
-  DataTransformationType type = DataTransformationType::NONE;
+  DataTransformationType type_ = DataTransformationType::NONE;
 
-  RosenblattTransformationConfig rosenblattConfig;
+  RosenblattTransformationConfig rosenblattConfig_;
 };
 } /* namespace datadriven */
 } /* namespace sgpp */

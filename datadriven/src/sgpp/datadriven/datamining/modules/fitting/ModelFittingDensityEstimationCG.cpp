@@ -43,16 +43,13 @@ ModelFittingDensityEstimationCG::ModelFittingDensityEstimationCG(
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
 double ModelFittingDensityEstimationCG::evaluate(const DataVector& sample) {
-  std::unique_ptr<base::OperationEval> opEval(
-      op_factory::createOperationEval(*grid));
+  std::unique_ptr<base::OperationEval> opEval(op_factory::createOperationEval(*grid));
   return opEval->eval(alpha, sample);
 }
 
 // TODO(lettrich): exceptions have to be thrown if not valid.
-void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples,
-                                               DataVector& results) {
-  sgpp::op_factory::createOperationMultipleEval(*grid, samples)
-      ->eval(alpha, results);
+void ModelFittingDensityEstimationCG::evaluate(DataMatrix& samples, DataVector& results) {
+  sgpp::op_factory::createOperationMultipleEval(*grid, samples)->eval(alpha, results);
 }
 
 void ModelFittingDensityEstimationCG::fit(Dataset& newDataset) {
@@ -82,8 +79,8 @@ void ModelFittingDensityEstimationCG::fit(DataMatrix& newDataset) {
   update(newDataset);
 }
 
-bool ModelFittingDensityEstimationCG::adapt(
-    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityEstimationCG::adapt(size_t newNoPoints,
+                                            std::vector<size_t>& deletedGridPoints) {
   // Coarsening, remove idx from alpha
   if (deletedGridPoints.size() > 0) {
     // Restructure alpha and rhs b
@@ -109,14 +106,13 @@ void ModelFittingDensityEstimationCG::update(Dataset& newDataset) {
   update(newDataset.getData());
 }
 
-base::OperationMatrix*
-ModelFittingDensityEstimationCG::computeRegularizationMatrix(base::Grid& grid) {
+base::OperationMatrix* ModelFittingDensityEstimationCG::computeRegularizationMatrix(
+    base::Grid& grid) {
   base::OperationMatrix* C;
   auto& regularizationConfig = this->config->getRegularizationConfig();
   if (regularizationConfig.type_ == datadriven::RegularizationType::Identity) {
     C = op_factory::createOperationIdentity(grid);
-  } else if (regularizationConfig.type_ ==
-             datadriven::RegularizationType::Laplace) {
+  } else if (regularizationConfig.type_ == datadriven::RegularizationType::Laplace) {
     C = op_factory::createOperationLaplace(grid);
   } else {
     throw base::application_exception(
@@ -135,31 +131,36 @@ void ModelFittingDensityEstimationCG::update(DataMatrix& newDataset) {
     auto C = computeRegularizationMatrix(*grid);
 
     // Calculate the update for the rhs
+    // Online procedure: beta is a forgetRate
+    //    1 = forget all past batches
+    //    0 = equal weighting
+    // Old rhs is weighted by
+    //    (1 - beta) * M_old / (M_new + M_old)
+    // New contribution is weighted by
+    //    (M_new + beta * M_old) / (M_new + M_old)
+    // This creates a linear transition between the two edge cases.
     DataVector rhsUpdate(grid->getSize());
-    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C,
-                                            regularizationConfig.lambda_);
-    SMatrix.generateb(rhsUpdate);
-    double numInstances = static_cast<double>(newDataset.getNrows());
-    // Rescale the rhs such that it is not normalized by the number of instances
-    rhsUpdate.mult(static_cast<double>(numInstances));
-    // Weigh the current right hand side with learningRate (decay)
-    bNum.mult(this->config->getLearnerConfig().learningRate);
+    datadriven::DensitySystemMatrix SMatrix(*grid, newDataset, C, regularizationConfig.lambda_);
 
+    SMatrix.computeUnweightedRhs(rhsUpdate);
+
+    double numInstances = static_cast<double>(newDataset.getNrows());
+    double beta = this->config->getLearnerConfig().learningRate_;  // forgetRate
+    // Update numerator
+    bNum.mult(1. - beta);
     bNum.add(rhsUpdate);
-    // Update the denominator (dataset size) as well
+    // Update denominator
     rhsUpdate.setAll(numInstances);
+    bDenom.mult(1. - beta);
     bDenom.add(rhsUpdate);
-    // Compute the current rhs
-    rhsUpdate.setAll(0.0);
-    rhsUpdate.add(bNum);
+    // Compute final rhs
+    rhsUpdate = bNum;
     rhsUpdate.componentwise_div(bDenom);
 
     // Solve the system
     auto& solverConfig = this->config->getSolverRefineConfig();
-    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_,
-                                        solverConfig.eps_);
-    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_,
-                   solverConfig.threshold_);
+    solver::ConjugateGradients cgSolver(solverConfig.maxIterations_, solverConfig.eps_);
+    cgSolver.solve(SMatrix, alpha, rhsUpdate, true, solverConfig.verbose_, solverConfig.threshold_);
   }
 }
 

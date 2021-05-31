@@ -32,10 +32,10 @@ namespace sgpp {
 namespace datadriven {
 
 LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
-                       base::AdaptivityConfiguration& adaptConfig, base::DataMatrix& pTrainData,
-                       base::DataVector& pTrainLabels, base::DataMatrix& pTestData,
-                       base::DataVector& pTestLabels, base::DataMatrix* pValidData,
-                       base::DataVector* pValidLabels)
+                       base::AdaptivityConfiguration& adaptivityConfig,
+                       base::DataMatrix& pTrainData, base::DataVector& pTrainLabels,
+                       base::DataMatrix& pTestData, base::DataVector& pTestLabels,
+                       base::DataMatrix* pValidData, base::DataVector* pValidLabels)
     : grid(nullptr),
       trainData(pTrainData),
       trainLabels(pTrainLabels),
@@ -44,7 +44,7 @@ LearnerSVM::LearnerSVM(base::RegularGridConfiguration& gridConfig,
       validData(pValidData),
       validLabels(pValidLabels),
       gridConfig(gridConfig),
-      adaptivityConfig(adaptConfig) {}
+      adaptivityConfig(adaptivityConfig) {}
 
 LearnerSVM::~LearnerSVM() {}
 

@@ -206,7 +206,7 @@ class RegressionLearner {
   /// the grid's coefficients
   sgpp::base::DataVector weights;
 
-  void initializeGrid(sgpp::base::RegularGridConfiguration GridConfig);
+  void initializeGrid(sgpp::base::RegularGridConfiguration gridConfig);
   std::unique_ptr<datadriven::DMSystemMatrixBase> createDMSystem(
       sgpp::base::DataMatrix& trainDataset);
   Solver createSolver(size_t n_rows);

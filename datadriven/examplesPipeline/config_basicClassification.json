@@ -38,7 +38,7 @@
             "densityEstimationType": "decomposition",
             "matrixDecompositionType": "orthoadapt"
         },
-        "learner": {
+        "learnerConfig": {
             "usePrior": true,
             "beta": 1.0
         }

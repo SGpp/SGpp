@@ -34,10 +34,9 @@ ModelFittingDensityEstimationCombi::ModelFittingDensityEstimationCombi(
       std::make_unique<FitterConfigurationDensityEstimation>(config));
   components = vector<unique_ptr<ModelFittingDensityEstimation>>(0);
   fitted = vector<bool>(0);
-  // If no object store is passed but the offline permutation is configured and
-  // the decomposition
-  // type allows offline permutation, an object store is instanciated
-  if (config.getDensityEstimationConfig().useOfflinePermutation &&
+  // If no object store is passed but the offline permutation is configured and the decomposition
+  // type allows offline permutation, an object store is instantiated
+  if (config.getDensityEstimationConfig().useOfflinePermutation_ &&
       DBMatOfflinePermutable::PermutableDecompositions.find(
           config.getDensityEstimationConfig().decomposition_) !=
           DBMatOfflinePermutable::PermutableDecompositions.end()) {
@@ -64,8 +63,7 @@ void ModelFittingDensityEstimationCombi::fit(Dataset& newDataset) {
 void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
   scheme.initialize(newDataset.getNcols(), config->getGridConfig().level_);
   componentConfigs = scheme.getCombiScheme();
-  components = vector<unique_ptr<ModelFittingDensityEstimation>>(
-      componentConfigs.size());
+  components = vector<unique_ptr<ModelFittingDensityEstimation>>(componentConfigs.size());
   fitted = vector<bool>(componentConfigs.size());
 
   for (size_t i = 0; i < componentConfigs.size(); i++) {
@@ -73,14 +71,10 @@ void ModelFittingDensityEstimationCombi::fit(DataMatrix& newDataset) {
     newFitterConfig.setupDefaults();
     newFitterConfig.getRegularizationConfig().lambda_ =
         this->getFitterConfiguration().getRegularizationConfig().lambda_;
-    newFitterConfig.getGridConfig().generalType_ =
-        sgpp::base::GeneralGridType::ComponentGrid;
+    newFitterConfig.getGridConfig().generalType_ = sgpp::base::GeneralGridType::ComponentGrid;
     newFitterConfig.getDensityEstimationConfig().decomposition_ =
-        this->getFitterConfiguration()
-            .getDensityEstimationConfig()
-            .decomposition_;
-    newFitterConfig.getDensityEstimationConfig().type_ =
-        config->getDensityEstimationConfig().type_;
+        this->getFitterConfiguration().getDensityEstimationConfig().decomposition_;
+    newFitterConfig.getDensityEstimationConfig().type_ = config->getDensityEstimationConfig().type_;
     newFitterConfig.getRefinementConfig().numRefinements_ = 0;
     newFitterConfig.getGridConfig().levelVector_.clear();
     for (auto v : componentConfigs.at(i).first) {
@@ -111,8 +105,8 @@ void ModelFittingDensityEstimationCombi::update(Dataset& newDataset) {
   for (size_t i = 0; i < components.size(); i++) {
     gridpoints += components.at(i)->getGrid().getSize();
   }
-  std::cout << "Refinement: " << refinementsPerformed
-            << " Sum of Gridpoints: " << gridpoints << std::endl;
+  std::cout << "Refinement: " << refinementsPerformed << " Sum of Gridpoints: " << gridpoints
+            << std::endl;
   dataset = &newDataset;
 }
 
@@ -133,23 +127,22 @@ void ModelFittingDensityEstimationCombi::update(DataMatrix& newDataset) {
       gridpoints += components.at(i)->getGrid().getSize();
     }
   }
-  std::cout << "Refinement: " << refinementsPerformed
-            << "; Sum of Gridpoints: " << gridpoints << std::endl;
+  std::cout << "Refinement: " << refinementsPerformed << "; Sum of Gridpoints: " << gridpoints
+            << std::endl;
 }
 
 double ModelFittingDensityEstimationCombi::evaluate(const DataVector& sample) {
   double result = 0;
   for (size_t i = 0; i < components.size(); i++) {
     if (fitted.at(i)) {
-      result += components.at(i)->evaluate(sample) *
-                static_cast<double>(componentConfigs.at(i).second);
+      result +=
+          components.at(i)->evaluate(sample) * static_cast<double>(componentConfigs.at(i).second);
     }
   }
   return result;
 }
 
-void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples,
-                                                  DataVector& results) {
+void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples, DataVector& results) {
   auto temp = sgpp::base::DataVector(results.size(), 0);
   results.setAll(0.);
   for (size_t i = 0; i < components.size(); i++) {
@@ -164,8 +157,7 @@ void ModelFittingDensityEstimationCombi::evaluate(DataMatrix& samples,
 
 bool ModelFittingDensityEstimationCombi::adapt() {
   if (componentConfigs.size() != components.size()) {
-    throw base::application_exception(
-        "componentsConfig.size() != components.size()");
+    throw base::application_exception("componentsConfig.size() != components.size()");
   }
   if (components.size() == 0) {
     throw base::application_exception("components.size() == 0");
@@ -176,14 +168,13 @@ bool ModelFittingDensityEstimationCombi::adapt() {
 
     /*
      * Finding the sub grid with the greatest error.
-     * \TODO Add different kinds of error estimation
+     * TODO: Add different kinds of error estimation
      */
     double max = 0;
     size_t ind = 0;
     for (size_t i = 0; i < components.size(); i++) {
-      double now =
-          components.at(i)->getSurpluses().l2Norm() /
-          static_cast<double>(components.at(i)->getSurpluses().getSize());
+      double now = components.at(i)->getSurpluses().l2Norm() /
+                   static_cast<double>(components.at(i)->getSurpluses().getSize());
       if (now > max) {
         if (scheme.isRefinable(componentConfigs.at(i).first)) {
           max = now;
@@ -196,12 +187,10 @@ bool ModelFittingDensityEstimationCombi::adapt() {
      * Refining the chosen block
      */
     scheme.refineComponent(componentConfigs.at(ind).first);
-    std::vector<std::pair<std::vector<size_t>, int>> newConfigs =
-        scheme.getCombiScheme();
+    std::vector<std::pair<std::vector<size_t>, int>> newConfigs = scheme.getCombiScheme();
 
     /*
-     * Actualizing coefficients and finding newly-added and newly-removed
-     * components
+     * Actualizing coefficients and finding newly-added and newly-removed components
      */
     vector<bool> toAdd(newConfigs.size(), 1);
     vector<bool> toRemove(componentConfigs.size(), true);
@@ -236,12 +225,11 @@ bool ModelFittingDensityEstimationCombi::adapt() {
   return false;
 }
 
-bool ModelFittingDensityEstimationCombi::adapt(
-    size_t newNoPoints, std::vector<size_t>& deletedGridPoints) {
+bool ModelFittingDensityEstimationCombi::adapt(size_t newNoPoints,
+                                               std::vector<size_t>& deletedGridPoints) {
   throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, "
-      "std::vector<size_t>& "
-      "deletedGridPoints): not ready yet\n");
+      "ModelFittingDensityEstimationCombiGrid::refine(size_t newNoPoints, std::vector<size_t>& "
+      "deletedGridPoints): not implemented yet\n");
 }
 
 void ModelFittingDensityEstimationCombi::reset() {
@@ -249,22 +237,18 @@ void ModelFittingDensityEstimationCombi::reset() {
   refinementsPerformed = 0;
 }
 
-std::unique_ptr<ModelFittingDensityEstimation>
-ModelFittingDensityEstimationCombi::createNewModel(
-    sgpp::datadriven::FitterConfigurationDensityEstimation&
-        densityEstimationConfig) {
+std::unique_ptr<ModelFittingDensityEstimation> ModelFittingDensityEstimationCombi::createNewModel(
+    sgpp::datadriven::FitterConfigurationDensityEstimation& densityEstimationConfig) {
   switch (densityEstimationConfig.getDensityEstimationConfig().type_) {
     case DensityEstimationType::CG: {
-      return std::make_unique<ModelFittingDensityEstimationCG>(
-          densityEstimationConfig);
+      return std::make_unique<ModelFittingDensityEstimationCG>(densityEstimationConfig);
     }
     case DensityEstimationType::Decomposition: {
       if (this->hasObjectStore) {
-        return std::make_unique<ModelFittingDensityEstimationOnOff>(
-            densityEstimationConfig, objectStore);
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig,
+                                                                    objectStore);
       } else {
-        return std::make_unique<ModelFittingDensityEstimationOnOff>(
-            densityEstimationConfig);
+        return std::make_unique<ModelFittingDensityEstimationOnOff>(densityEstimationConfig);
       }
     }
   }
@@ -283,8 +267,7 @@ void ModelFittingDensityEstimationCombi::addNewModel(
   for (auto v : combiconfig.first) {
     newFitterConfig.getGridConfig().levelVector_.push_back(v);
   }
-  newFitterConfig.getGridConfig().generalType_ =
-      this->config->getGridConfig().generalType_;
+  newFitterConfig.getGridConfig().generalType_ = this->config->getGridConfig().generalType_;
 
   components.push_back(createNewModel(newFitterConfig));
   fitted.push_back(0);
@@ -299,7 +282,7 @@ void ModelFittingDensityEstimationCombi::removeModel(const size_t ind) {
 
 bool ModelFittingDensityEstimationCombi::isRefinable() {
   throw application_exception(
-      "ModelFittingDensityEstimationCombiGrid::isRefinable(): not ready jet\n");
+      "ModelFittingDensityEstimationCombiGrid::isRefinable(): not implemented yet\n");
 }
 
 }  // namespace datadriven

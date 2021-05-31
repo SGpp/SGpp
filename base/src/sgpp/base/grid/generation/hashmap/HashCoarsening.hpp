@@ -32,8 +32,8 @@ class HashCoarsening {
    * Here only the numFirstPoints are regarded for coarsening, later points
    * are skipped.
    *
-   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after
-   * coarsening since the seq numbers get recomputed after removal. Use @param removedPoints unless
+   * Note that seq numbers in removedSeq are invalid to use with the resulting grid after
+   * coarsening since the seq numbers get recomputed after removal. Use removedPoints unless
    * outdated seq numbers are explicitly required.
    *
    * @param storage hashmap that stores the grid points
@@ -59,8 +59,8 @@ class HashCoarsening {
    * This function calls free_coarsen_NFirstOnly with numFirstPoints equal
    * to the grid's size.
    *
-   * Note that seq numbers in @param removedSeq are invalid to use with the resulting grid after
-   * coarsening since the seq numbers get recomputed after removal. Use @param removedPoints unless
+   * Note that seq numbers in removedSeq are invalid to use with the resulting grid after
+   * coarsening since the seq numbers get recomputed after removal. Use removedPoints unless
    * outdated seq numbers are explicitly required.
    *
    * @param storage hashmap that stores the grid points

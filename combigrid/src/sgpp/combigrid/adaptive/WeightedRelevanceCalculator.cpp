@@ -17,12 +17,14 @@ WeightedRelevanceCalculator::WeightedRelevanceCalculator(
       levelOccupancy(levelOccupancy) {}
 
 double WeightedRelevanceCalculator::calculate(const LevelVector& levelVector, double delta) const {
-  // get the number of grid points, assuming grids have boundary points
+  // get the number of grid points, assuming grids do have boundary points
   const index_t numberOfPoints = FullGrid::getNumberOfPointsFromLevel(levelVector, levelOccupancy);
 
-  return std::max(
-      weightDeltaInRelationToNumberOfPoints * delta,
+  auto relevance = std::max(
+      weightDeltaInRelationToNumberOfPoints * std::abs(delta),
       (1. - weightDeltaInRelationToNumberOfPoints) / static_cast<double>(numberOfPoints));
+
+  return relevance;
 }
 
 }  // namespace combigrid

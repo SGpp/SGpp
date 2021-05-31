@@ -80,7 +80,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   auto& regularizationConfig = this->config->getRegularizationConfig();
   auto& densityEstimationConfig = this->config->getDensityEstimationConfig();
   auto& geometryConfig = this->config->getGeometryConfig();
-  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation;
+  bool useOfflinePermutation = this->config->getDensityEstimationConfig().useOfflinePermutation_;
 
   // clear model
   reset();
@@ -95,7 +95,6 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   alpha = DataVector(grid->getSize());
 
   // Build the offline instance first
-  DBMatOffline* offline = nullptr;
 
   // If the permutation and blow-up approach is applicable to the decomposition type, an object
   // store is given and the offline permutation method is configured, the offline object is obtained
@@ -106,7 +105,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
                                      regularizationConfig, densityEstimationConfig);
 
     if (objectFromStore != nullptr) {
-      offline = objectFromStore->clone();
+      offline = std::unique_ptr<DBMatOffline>{objectFromStore->clone()};
     }
   }
 
@@ -117,34 +116,35 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
     // Initialize the permutation factory. If a database path is specified, the path is pased to the
     // permutation factory
     DBMatPermutationFactory permutationFactory;
-    if (databaseConfig.filePath.empty()) {
+    if (databaseConfig.filePath_.empty()) {
       permutationFactory = DBMatPermutationFactory(this->objectStore);
     } else {
-      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath);
+      permutationFactory = DBMatPermutationFactory(this->objectStore, databaseConfig.filePath_);
     }
-    offline = permutationFactory.getPermutedObject(
+    offline = std::unique_ptr<DBMatOffline>{permutationFactory.getPermutedObject(
         config->getGridConfig(), config->getGeometryConfig(), config->getRefinementConfig(),
-        config->getRegularizationConfig(), config->getDensityEstimationConfig());
+        config->getRegularizationConfig(), config->getDensityEstimationConfig())};
     offline->interactions = getInteractions(geometryConfig);
-  } else if (!databaseConfig.filePath.empty()) {  // Intialize database if it is provided
-    datadriven::DBMatDatabase database(databaseConfig.filePath);
+  } else if (!databaseConfig.filePath_.empty()) {  // Intialize database if it is provided
+    datadriven::DBMatDatabase database(databaseConfig.filePath_);
     // Check if database holds a fitting lhs matrix decomposition
     if (database.hasDataMatrix(gridConfig, refinementConfig, regularizationConfig,
                                densityEstimationConfig)) {
       std::string offlineFilepath = database.getDataMatrix(
           gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
-      offline = DBMatOfflineFactory::buildFromFile(offlineFilepath);
+      offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildFromFile(offlineFilepath)};
     }
   }
 
   // Build and decompose offline object if not loaded from database
-  if (offline == nullptr) {
+  if (!offline) {
     // Build offline object by factory, build matrix and decompose
-    offline = DBMatOfflineFactory::buildOfflineObject(
-        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig);
+    offline = std::unique_ptr<DBMatOffline>{DBMatOfflineFactory::buildOfflineObject(
+        gridConfig, refinementConfig, regularizationConfig, densityEstimationConfig)};
     offline->buildMatrix(grid.get(), regularizationConfig);
     offline->decomposeMatrix(regularizationConfig, densityEstimationConfig);
     offline->interactions = getInteractions(geometryConfig);
+
     if (this->hasObjectStore) {
       this->objectStore->putObject(gridConfig, geometryConfig, refinementConfig,
                                    regularizationConfig, densityEstimationConfig, offline->clone());
@@ -163,7 +163,7 @@ void ModelFittingDensityEstimationOnOff::fit(DataMatrix& newDataset) {
   online->computeDensityFunction(alpha, newDataset, *grid,
                                  this->config->getDensityEstimationConfig(), true,
                                  this->config->getCrossvalidationConfig().enable_);
-  online->setBeta(this->config->getLearnerConfig().learningRate);
+  online->setBeta(this->config->getLearnerConfig().learningRate_);
 
   if (densityEstimationConfig.normalize_) {
     online->normalize(alpha, *grid);
@@ -204,6 +204,7 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
     fit(newDataset);
   } else {
     // Update the fit (streaming)
+
     online->computeDensityFunction(alpha, newDataset, *grid,
                                    this->config->getDensityEstimationConfig(), true,
                                    this->config->getCrossvalidationConfig().enable_);
@@ -215,8 +216,8 @@ void ModelFittingDensityEstimationOnOff::update(DataMatrix& newDataset) {
 }
 
 double ModelFittingDensityEstimationOnOff::computeResidual(DataMatrix& validationData) const {
-  DataVector bValidation =
-      online->computeBFromBatch(validationData, *grid, this->config->getDensityEstimationConfig());
+  DataVector bValidation = online->computeWeightedBFromBatch(
+      validationData, *grid, this->config->getDensityEstimationConfig(), true);
 
   DataMatrix rMatrix = online->getOfflineObject().getUnmodifiedR();
 
@@ -243,7 +244,8 @@ void ModelFittingDensityEstimationOnOff::updateRegularization(double lambda) {
 
     this->online->getOfflineObject().updateRegularization(lambda);
 
-    // in SMW decomposition type case, the inverse of the matrix needs to be computed explicitly
+    // in SMW decomposition type case, the inverse of the matrix needs to be
+    // computed explicitly
     if (densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_ortho ||
         densityEstimationConfig.decomposition_ == MatrixDecompositionType::SMW_chol) {
       online->getOfflineObject().compute_inverse();

@@ -38,6 +38,13 @@ class CombinationGrid {
   CombinationGrid(const std::vector<FullGrid>& fullGrids, const base::DataVector& coefficients);
 
   /**
+   * Constructor for a CombinationGrid consisting of only one FullGrid.
+   *
+   * @param fullGrid      the full grid
+   */
+  explicit CombinationGrid(const FullGrid& fullGrid);
+
+  /**
    * Factory method to create a CombinationGrid corresponding to the combination technique for
    * a regular sparse grid.
    *
@@ -50,6 +57,25 @@ class CombinationGrid {
    */
   static CombinationGrid fromRegularSparse(size_t dim, level_t n, const HeterogeneousBasis& basis,
                                            bool hasBoundary = true);
+
+  /**
+   * Factory method to create a CombinationGrid corresponding to the truncated combination technique
+   * for a regular sparse grid, given a truncation level
+   *
+   * @param dim           dimensionality
+   * @param truncationLevel minimum level for each full component grid
+   * @param levelSumDistance regular level in analogy to `fromRegularSparse`, the result is
+   *                      a regular sparse grid of level `n` with each level shifted by
+   *                      `truncationLevel`
+   * @param basis         basis of the sparse grid (will be the same for all full grids;
+   *                      this can be changed)
+   * @param hasBoundary   whether the sparse grid has points on the boundary
+   * @return CombinationGrid corresponding to the combination technique for the regular sparse grid
+   */
+  static CombinationGrid fromRegularSparseTruncated(size_t dim, LevelVector truncationLevel,
+                                                    level_t levelSumDistance,
+                                                    const HeterogeneousBasis& basis,
+                                                    bool hasBoundary = true);
 
   /**
    * Factory method to create a CombinationGrid corresponding to the combination technique for
@@ -190,6 +216,8 @@ class CombinationGrid {
   /// vector of coefficients, same size as \c fullGrids
   base::DataVector coefficients;
 };
+
+base::DataVector getStandardCoefficientsFromLevelSet(const std::vector<LevelVector>& levelSet);
 
 }  // namespace combigrid
 }  // namespace sgpp

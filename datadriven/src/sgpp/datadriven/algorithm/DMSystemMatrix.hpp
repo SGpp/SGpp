@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef DMSYSTEMMATRIX_HPP
-#define DMSYSTEMMATRIX_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
@@ -22,8 +21,8 @@ namespace sgpp {
 namespace datadriven {
 
 /**
- * Class that implements the virtual class base::OperationMatrix for the
- * application of classification for the Systemmatrix
+ * Class that implements the virtual class base::OperationMatrix for applications for the
+ * Systemmatrix
  */
 class DMSystemMatrix : public DMSystemMatrixBase {
  private:
@@ -64,5 +63,3 @@ class DMSystemMatrix : public DMSystemMatrixBase {
 
 }  // namespace datadriven
 }  // namespace sgpp
-
-#endif /* DMSYSTEMMATRIX_HPP */

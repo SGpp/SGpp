@@ -13,6 +13,7 @@
 #include <sgpp/combigrid/grid/CombinationGrid.hpp>
 
 #include <functional>
+#include <limits>
 #include <list>
 #include <map>
 #include <memory>
@@ -49,13 +50,15 @@ namespace combigrid {
  * tensor–product quadrature. Computing, 71(1), pp.65-87.
  */
 class AdaptiveCombinationGridGenerator {
-  using MapPairType = std::pair<const std::vector<unsigned int>, double>;
+  typedef std::pair<const std::vector<unsigned int>, double> MapPairType;
 
  public:
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object
    *
    * @param levelVectors           start with these level vectors, cannot be empty
+   * @param QoIValues              the QoI values corresponding to levelVectors, same length as
+   *                                 levelVectors
    * @param summationFunction      the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
@@ -65,19 +68,48 @@ class AdaptiveCombinationGridGenerator {
    *                                level's own delta)
    */
   AdaptiveCombinationGridGenerator(
+      const std::vector<LevelVector>& levelVectors, const std::vector<double>&& QoIValues,
+      std::function<double(double, double)> summationFunction,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+
+  /**
+   * like above, with default QoI values if they are not supplied
+   */
+  AdaptiveCombinationGridGenerator(
       const std::vector<LevelVector>& levelVectors,
-      std::function<double(double, double)> summationFunction = std::plus<double>(),
-      std::unique_ptr<RelevanceCalculator> relevanceCalculator =
-          std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> priorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+      std::function<double(double, double)> summationFunction,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()))
+      : AdaptiveCombinationGridGenerator(
+            levelVectors,
+            std::vector<double>(levelVectors.size(), std::numeric_limits<double>::quiet_NaN()),
+            summationFunction, relevanceCalculator, priorityEstimator) {}
+
+  /**
+   * like above, but setting the summationFunction to std::plus<double>() by default
+   */
+  AdaptiveCombinationGridGenerator(
+      const std::vector<LevelVector>& levelVectors,
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()))
+      : AdaptiveCombinationGridGenerator(levelVectors, std::plus<double>(), relevanceCalculator,
+                                         priorityEstimator) {}
 
   /**
    * @brief Construct a new AdaptiveCombinationGridGenerator object
    *
    * @param combinationGrid     start with the subspaces contained in combinationGrid (must be at
    *                            least one)
-   * @param summationFunction      the summation function by which results are combined
+   * @param QoIValues           the QoI values corresponding to levelVectors, same length as
+   *                              the number of FullGrids in combinationGrid
+   * @param summationFunction   the summation function by which results are combined
    * @param relevanceCalculator a relevance calculator relating deltas and level vectors to an
    *                                "error"/relevance estimate
    * @param priorityEstimator   a priority estimator to get the priority of a level / subspace whose
@@ -86,18 +118,35 @@ class AdaptiveCombinationGridGenerator {
    *                                level's own delta)
    */
   static AdaptiveCombinationGridGenerator fromCombinationGrid(
+      const CombinationGrid& combinationGrid, const std::vector<double>&& QoIValues,
+      std::function<double(double, double)> summationFunction = std::plus<double>(),
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+
+  /**
+   * like above, with default QoI values if they are not supplied
+   */
+  static AdaptiveCombinationGridGenerator fromCombinationGrid(
       const CombinationGrid& combinationGrid,
       std::function<double(double, double)> summationFunction = std::plus<double>(),
-      std::unique_ptr<RelevanceCalculator> relevanceCalculator =
-          std::unique_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
-      std::unique_ptr<PriorityEstimator> priorityEstimator =
-          std::unique_ptr<PriorityEstimator>(new AveragingPriorityEstimator()));
+      std::shared_ptr<RelevanceCalculator> relevanceCalculator =
+          std::shared_ptr<RelevanceCalculator>(new WeightedRelevanceCalculator()),
+      std::shared_ptr<PriorityEstimator> priorityEstimator =
+          std::shared_ptr<PriorityEstimator>(new AveragingPriorityEstimator())) {
+    return fromCombinationGrid(combinationGrid,
+                               std::vector<double>(combinationGrid.getFullGrids().size(),
+                                                   std::numeric_limits<double>::quiet_NaN()),
+                               summationFunction, relevanceCalculator, priorityEstimator);
+  }
 
   /**
    * @brief Get the the currently valid combination grid consisting of the "old set"
    * (the combination grid only holds the full grid vectors with non-zero coefficients)
    */
-  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis) const;
+  CombinationGrid getCombinationGrid(const HeterogeneousBasis& basis,
+                                     bool hasBoundary = true) const;
 
   /**
    * @brief Get the subspacesAndQoIs object
@@ -108,6 +157,22 @@ class AdaptiveCombinationGridGenerator {
    * @brief set QoI information / a result for LevelVector level
    */
   void setQoIInformation(const LevelVector& level, double qoi) { subspacesAndQoI[level] = qoi; }
+
+  /**
+   * @brief get QoI information / the stored result for LevelVector level
+   */
+  double getQoIInformation(const LevelVector& level) { return subspacesAndQoI[level]; }
+
+  /**
+   * @brief is Qoi information stored for LevelVector level?
+   */
+  bool hasQoIInformation(const LevelVector& level) {
+    try {
+      return !std::isnan(subspacesAndQoI.at(level));
+    } catch (std::out_of_range&) {
+      return false;
+    }
+  }
 
   /**
    * @brief add the next most important subspace of known result to the old set
@@ -141,9 +206,16 @@ class AdaptiveCombinationGridGenerator {
   /**
    * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
    *
-   * @return std::list<LevelVector> the active set
+   * @return std::vector<LevelVector> the active set
    */
-  std::list<LevelVector> getActiveSet() const { return activeSet; }
+  std::vector<LevelVector> getActiveSet() const;
+
+  /**
+   * @brief Get the level vectors of the active set (= admissible upward neighbors of the old set)
+   *
+   * @return std::vector<LevelVector> all levels (old and active)
+   */
+  std::vector<LevelVector> getLevels() const;
 
   /**
    * @brief Get the minimum Level Vector object
@@ -161,22 +233,29 @@ class AdaptiveCombinationGridGenerator {
   double getDelta(const LevelVector& levelVector) const;
 
   /**
-   * @brief get a priority queue of elements in the active set that don't have a result / QoI /
-   * delta yet //TODO(pollinta): implement
+   * @brief Get the deltas belonging to the list of supplied level vectors
+   *
+   * @return double  the delta value, NaN if result is unknown
    */
-  std::map<LevelVector, double> getPriorityQueue() const;
+  std::vector<double> getDeltas(const std::vector<LevelVector>& levelVectors) const;
+
+  /**
+   * @brief get the levels and priority of elements in the active set that don't have a result / QoI
+   * value / delta yet
+   */
+  std::map<LevelVector, double> getPriorities() const;
+
+  /**
+   * @brief get a priority queue of elements in the active set that don't have a result / QoI /
+   * delta yet
+   */
+  std::vector<LevelVector> getPriorityQueue() const;
 
   /**
    * @brief get exact value of relevance / "error" of those elements in the active set
    * that already have a QoI value
    */
   std::map<LevelVector, double> getRelevanceOfActiveSet() const;
-
-  /**
-   * @brief get an estimate or exact value of relevance or priority of all elements in the active
-   * set
-   */
-  std::map<LevelVector, double> getPrioritiesAndRelevanceOfActiveSet() const;
 
  private:
   /**
@@ -217,12 +296,12 @@ class AdaptiveCombinationGridGenerator {
   std::list<LevelVector> activeSet;
 
   // the relevance calculator used to relate delta and level vector to an "error" / relevance
-  std::unique_ptr<RelevanceCalculator> relevanceCalculator;
+  std::shared_ptr<RelevanceCalculator> relevanceCalculator;
 
   // the priority estimator used to estimate the priority of a level whose result we don't yet
   // know (similar to relevanceCalculator, but based on the deltas of the downward neighbors
   // instead of the level's own delta)
-  std::unique_ptr<PriorityEstimator> priorityEstimator;  // averaging, weighted
+  std::shared_ptr<PriorityEstimator> priorityEstimator;  // averaging, weighted
 };
 }  // namespace combigrid
 }  // namespace sgpp
