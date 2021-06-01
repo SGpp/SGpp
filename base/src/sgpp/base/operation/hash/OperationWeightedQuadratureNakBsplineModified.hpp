@@ -45,7 +45,6 @@ class OperationWeightedQuadratureNakBsplineModified : public OperationWeightedQu
    *
    * @param alpha   	Coefficient vector for current grid
    * @param pdfs			probability density functions
-   * @parm quadOrder	order for the gauss Legendre quadrature
    */
   double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs);
 

@@ -358,16 +358,6 @@ class SplineResponseSurface : public ResponseSurface {
                    bool verbose = false);
 
   /**
-   * creates a surplus adaptive sparse grid regression approximation
-   * @param level				sparse grid level
-   * @param evaluationPoints	data points
-   * @param functionValues		data values
-   * @param lambda				Tikhonov regularization parameter
-   */
-  // void regularData(size_t level, sgpp::base::DataMatrix evaluationPoints,
-  //                 sgpp::base::DataVector functionValues, double lambda = 1e-6);
-
-  /**
    * evaluates this response surface
    * @param v	point to evaluate in
    * @return	the evaluation

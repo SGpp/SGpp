@@ -39,7 +39,7 @@ class ResponseSurfaceVector {
    * evaluates the response surface
    *
    * @param v	point in which the response surface  shall be evaulated
-   * @teurn 	evaluation
+   * @return 	evaluation
    */
   virtual sgpp::base::DataVector eval(sgpp::base::DataVector v);
 

@@ -35,7 +35,6 @@ class OperationWeightedQuadrature {
    *
    * @param alpha   	Coefficient vector for current grid
    * @param pdfs			probability density functions
-   * @parm quadOrder	order for the Gauss Legendre quadrature
    */
   virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs) = 0;
 };
