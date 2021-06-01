@@ -74,8 +74,8 @@ class ResponseSurfaceVector {
    * and objective function at random points
    *
    * @param objectiveFunc	    the objectiveFunction
-   * @param componentwiseErrors   reference to return the NRMSE, l2, min and max for each individual
-   *                              of the numRes components
+   * @param componentwiseErrorData   reference to return the NRMSE, l2, min and max for each
+   * individual of the numRes components
    * @param numMCPoints			      number of Monte Carlo Points
    *
    * @return 				            	vector [average NRMSE, average l2 error, min
