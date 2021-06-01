@@ -47,7 +47,7 @@ class ResponseSurfaceVector {
    * evaluates the response surface and its gradients
    *
    * @param v			     point in which the response surface shall be evaluated
-   * @param gradient 	 reference to return the jacobian evaluated in v. Each row is one gradient
+   * @param jacobian 	 reference to return the jacobian evaluated in v. Each row is one gradient
    * @return 			     evaluation
    */
   virtual sgpp::base::DataVector evalJacobian(sgpp::base::DataVector v,
@@ -56,7 +56,7 @@ class ResponseSurfaceVector {
   /**
    * Calculates the average l2 error between interpolant and objective function
    *
-   * @param objectiveFunction	    the objectiveFunction
+   * @param objectiveFunc	    the objectiveFunction
    * @param componentwiseErrors   reference to return the l2 error in each individual of the numRes
    *                              components
    * @param numMCPoints			      number of Monte Carlo Points
@@ -73,7 +73,7 @@ class ResponseSurfaceVector {
    * Calculates the normalized root mean square error between interpolant
    * and objective function at random points
    *
-   * @param objectiveFunction	    the objectiveFunction
+   * @param objectiveFunc	    the objectiveFunction
    * @param componentwiseErrors   reference to return the NRMSE, l2, min and max for each individual
    *                              of the numRes components
    * @param numMCPoints			      number of Monte Carlo Points
@@ -104,7 +104,7 @@ class ResponseSurfaceVector {
    * evaluation value The stored set of test data can then later be used to calculate and compare
    * the approximation error
    *
-   * @param objectiveFunction		the objective function
+   * @param objectiveFunc		the objective function
    * @param numMCPoints				number of Monte carlo Points
    * @param	path					path specifying where to save the generated
    * data

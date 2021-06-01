@@ -65,11 +65,11 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
         degree(degree) {
     this->lb = lb;
     this->ub = ub;
-    jacobianScaling.resize(numRes,numDim);
+    jacobianScaling.resize(numRes, numDim);
     for (size_t j = 0; j < numDim; j++) {
       // set all entries in j-th column to ub[j]-lb[j]
-    sgpp::base::DataVector auxFillVector(numRes,ub[j]-lb[j]);
-    jacobianScaling.setColumn(j,auxFillVector);
+      sgpp::base::DataVector auxFillVector(numRes, ub[j] - lb[j]);
+      jacobianScaling.setColumn(j, auxFillVector);
     }
     // dummy values for mean and variance
     means.resize(numRes, 777);
@@ -133,6 +133,8 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
    * and coefficients
    * (gridFile must be created by Grid::serialize, coeff file by DataMatrix::ToFile)
    *
+   * @param numDim          input dimensionality
+   * @param numRes          output dimensionality
    * @param lb              lower parameter boundaries
    * @param ub              upper parameter boundaries
    * @param gridFilename		path to the file with stored grid data
@@ -147,11 +149,11 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
     coefficients = sgpp::base::DataMatrix::fromFile(coeffFileName);
     this->lb = lb;
     this->ub = ub;
-    jacobianScaling.resize(numRes,numDim);
+    jacobianScaling.resize(numRes, numDim);
     for (size_t j = 0; j < numDim; j++) {
       // set all entries in j-th column to ub[j]-lb[j]
-    sgpp::base::DataVector auxFillVector(numRes,ub[j]-lb[j]);
-    jacobianScaling.setColumn(j,auxFillVector);
+      sgpp::base::DataVector auxFillVector(numRes, ub[j] - lb[j]);
+      jacobianScaling.setColumn(j, auxFillVector);
     }
     // dummy values for mean and variance
     means.resize(numRes, 777);
@@ -284,7 +286,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   /**
    * return the mean of the response surface w.r.t. a probability density function
    *
-   * @param 	pdf			the probability density function
+   * @param 	pdfs			the probability density function
    * @param   quadOrder	order of the Gauss Legendre quadrature
    *
    * @return vector containing the means
@@ -294,7 +296,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   /**
    * return the variance of the response surface w.r.t. a probability density function
    *
-   * @param 	pdf			    the probability density function
+   * @param 	pdfs			    the probability density function
    * @param   quadOrder	  order of the Gauss Legendre quadrature
    * @param   means       reference to return the means used to calculate the variances
    * @param   meanSquares reference to return the meanSquares used to calculate the variances

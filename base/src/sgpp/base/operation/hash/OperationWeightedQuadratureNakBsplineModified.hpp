@@ -26,6 +26,7 @@ class OperationWeightedQuadratureNakBsplineModified : public OperationWeightedQu
    *
    * @param storage Pointer to the grid's GridStorage object
    * @param degree the B-spline degree
+   * @param quadOrder quadrature order
    */
   OperationWeightedQuadratureNakBsplineModified(GridStorage& storage, size_t degree,
                                                 size_t quadOrder)
@@ -43,7 +44,7 @@ class OperationWeightedQuadratureNakBsplineModified : public OperationWeightedQu
    * Quadrature for not a knot B-spline basis functions w.r.t. a probability density function
    *
    * @param alpha   	Coefficient vector for current grid
-   * @param pdf			probability density function
+   * @param pdfs			probability density functions
    * @parm quadOrder	order for the gauss Legendre quadrature
    */
   double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs);

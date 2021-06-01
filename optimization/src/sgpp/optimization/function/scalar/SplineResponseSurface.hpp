@@ -14,13 +14,13 @@
 #include <sgpp/base/grid/LevelIndexTypes.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
@@ -53,8 +53,11 @@ class SplineResponseSurface : public ResponseSurface {
    * Constructor
    *
    * @param objectiveFunc		objective Function
+   * @param lb  lower bounds
+   * @param ub upper bounds
    * @param gridType			type of the interpolants grid/basis
    * @param degree				degree of the interpolants basis
+   * @param boundaryLevel boundary level
    *
    * Note: Currently boundaryLevel is only available for gridType nakBsplineBoundary
    */
@@ -130,7 +133,7 @@ class SplineResponseSurface : public ResponseSurface {
       grid = std::make_shared<sgpp::base::WeaklyFundamentalNakSplineBoundaryGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
       boundary = true;
-    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+    } else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
       grid = std::make_shared<sgpp::base::ModWeaklyFundamentalNakSplineGrid>(numDim, degree);
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
       boundary = true;
@@ -143,7 +146,9 @@ class SplineResponseSurface : public ResponseSurface {
    * Constructor
    *
    * @param objectiveFunc		objective Function
-   * @param gridType			type of the interpolants grid/basis
+   * @param grid			grid
+   * @param lb  lower bounds
+   * @param ub upper bounds
    * @param degree				degree of the interpolants basis
    */
   SplineResponseSurface(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,
@@ -205,7 +210,7 @@ class SplineResponseSurface : public ResponseSurface {
     } else if (gridType == sgpp::base::GridType::WeaklyFundamentalNakSplineBoundary) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
       boundary = true;
-    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+    } else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
       boundary = true;
     } else {
@@ -221,8 +226,10 @@ class SplineResponseSurface : public ResponseSurface {
   /**
    * Constructor
    *
-   * @param objectiveFunc		objective Function
-   * @param gridType			type of the interpolants grid/basis
+   * @param grid  grid
+   * @param coefficients  coefficients matching the grid
+   * @param lb  lower bounds
+   * @param ub upper bounds
    * @param degree				degree of the interpolants basis
    */
   SplineResponseSurface(std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
@@ -283,7 +290,7 @@ class SplineResponseSurface : public ResponseSurface {
     } else if (gridType == sgpp::base::GridType::WeaklyFundamentalNakSplineBoundary) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineBase>(degree);
       boundary = true;
-    }else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
+    } else if (gridType == sgpp::base::GridType::ModWeaklyFundamentalNakSpline) {
       basis = std::make_unique<sgpp::base::SWeaklyFundamentalNakSplineModifiedBase>(degree);
       boundary = true;
     } else {
@@ -383,14 +390,14 @@ class SplineResponseSurface : public ResponseSurface {
   /**
    * return the mean of the response surface w.r.t. a probability density function
    *
-   * @param 	pdf			the probability density function
+   * @param 	pdfs			the probability density function
    * @param     quadOrder	order of the Gauss Legendre quadrature
    */
   double getMean(sgpp::base::DistributionsVector pdfs, size_t quadOrder);
   /**
    * return the variance of the response surface w.r.t. a probability density function
    *
-   * @param 	pdf			the probability density function
+   * @param 	pdfs			the probability density function
    * @param     quadOrder	order of the Gauss Legendre quadrature
    *
    * @return	vector [v,mS,m] containing the variance v and the meanSquare mS and mean m used to

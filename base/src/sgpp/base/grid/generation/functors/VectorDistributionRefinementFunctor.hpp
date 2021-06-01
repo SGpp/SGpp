@@ -23,7 +23,7 @@ class VectorDistributionRefinementFunctor : public RefinementFunctor {
   /**
    * Constructor.
    *
-   * @param alpha DataMatrix that is basis for refinement decisions. The [i,j]-th entry corresponds
+   * @param alphas DataMatrix that is basis for refinement decisions. The [i,j]-th entry corresponds
    * to the i-th grid point and the j-th result (<=> each column are coefficients for one output
    * dimension)
    * @param pdfs            the probability density functions 'distributions'

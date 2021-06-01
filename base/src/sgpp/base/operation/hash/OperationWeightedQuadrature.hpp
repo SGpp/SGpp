@@ -5,12 +5,12 @@
 
 #pragma once
 
+#include <iostream>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/tools/DistributionsVector.hpp>
 
 #include <sgpp/globaldef.hpp>
-
-#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -34,7 +34,7 @@ class OperationWeightedQuadrature {
    *Integrate the sparse grid function w.r.t. a probability density function
    *
    * @param alpha   	Coefficient vector for current grid
-   * @param pdf			probability density function
+   * @param pdfs			probability density functions
    * @parm quadOrder	order for the Gauss Legendre quadrature
    */
   virtual double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs) = 0;

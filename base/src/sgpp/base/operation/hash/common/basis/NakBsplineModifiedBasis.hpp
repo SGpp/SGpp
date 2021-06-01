@@ -10,9 +10,9 @@
 #include <cstddef>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv1.hpp>
-#include <sgpp/globaldef.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -36,7 +36,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
    */
   explicit NakBsplineModifiedBasis(size_t degree)
       : nakBsplineBasis(NakBsplineBasis<LT, IT>(degree)),
-      nakBsplineModifiedBasisDeriv1(NakBsplineModifiedBasisDeriv1<LT,IT>(degree)) {
+        nakBsplineModifiedBasisDeriv1(NakBsplineModifiedBasisDeriv1<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -270,8 +270,9 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
    * @return      value of derivative of wavelet basis function
    */
   inline double evalDx(LT l, IT i, double x) {
-    // std::cerr<< "NakBsplineModifiedBasis::evalDx not implemented. Use NakBsplineModifiedBasisDeriv1\n";
-    return nakBsplineModifiedBasisDeriv1.eval(l,i,x);
+    // std::cerr<< "NakBsplineModifiedBasis::evalDx not implemented. Use
+    // NakBsplineModifiedBasisDeriv1\n";
+    return nakBsplineModifiedBasisDeriv1.eval(l, i, x);
   }
 
   inline double getIntegral(LT level, IT index) override { return -1.0; }
@@ -282,8 +283,9 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
    *
    * @param l     		level of basis function
    * @param i     		index of basis function
-   * @param pdf   		probability density function
-   * @param quadOrder	order of the Gauss Legendre quadrature
+   * @param pdf   probability density function
+   * @param quadCoordinates coordinates of the quadrature rule to be used
+   * @param quadWeights weights of the quadrature rule to be used
    * @return      		mean of basis function
    */
   inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,
@@ -295,7 +297,6 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
           "NakBsplineModified: only B spline degrees 1, 3 and 5 are "
           "supported.");
     }
-
 
     const size_t pp1h = (degree + 1) >> 1;  //  =|_(p+1)/2_|
     const size_t hInv = 1 << l;             // = 2^lid
@@ -367,7 +368,7 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   /// B-spline basis for B-spline evaluation
   NakBsplineBasis<LT, IT> nakBsplineBasis;
   /// NakBsplineMOdifiedBAsisDeriv1 for derivative evaluations
-  NakBsplineModifiedBasisDeriv1<LT,IT> nakBsplineModifiedBasisDeriv1;
+  NakBsplineModifiedBasisDeriv1<LT, IT> nakBsplineModifiedBasisDeriv1;
 };
 
 // default type-def (unsigned int for level and index)

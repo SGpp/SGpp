@@ -41,7 +41,7 @@ class ResponseSurface {
    * example, the argument v must first be transformed to the active subspace]
    *
    * @param v	point in which the response surface  shall be evaulated
-   * @teurn 	evaluation
+   * @return 	evaluation
    */
   virtual double eval(sgpp::base::DataVector v);
 
@@ -57,7 +57,7 @@ class ResponseSurface {
   /**
    * Calculates the l2 error between interpolant and objective function
    *
-   * @param objectiveFunction	the objectiveFunction
+   * @param objectiveFunc	the objectiveFunction
    * @param numMCPoints			number of Monte Carlo Points
    *
    * @return 					l2 error
@@ -69,7 +69,7 @@ class ResponseSurface {
    * Calculates the normalized root mean square error between interpolant and objective function
    * in random points
    *
-   * @param objectiveFunction	the objectiveFunction
+   * @param objectiveFunc	the objectiveFunction
    * @param numMCPoints			number of Monte Carlo Points
    *
    * @return 					vector [NRMSE, l2 error, min, max]
@@ -96,9 +96,9 @@ class ResponseSurface {
    * evaluation value The stored set of test data can then later be used to calculate and compare
    * the approximation error
    *
-   * @param objectiveFunction		the objective function
+   * @param objectiveFunc		the objective function
    * @param numMCPoints				number of Monte carlo Points
-   * @param	path					path specifying where to save the generated
+   * @param	fileName					path specifying where to save the generated
    * data
    */
   void precalculateErrorTestData(std::shared_ptr<sgpp::base::ScalarFunction> objectiveFunc,

@@ -470,7 +470,8 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @param l     		level of basis function
    * @param i     		index of basis function
    * @param pdf   		probability density function
-   * @param quadOrder	order of the Gauss Legendre quadrature
+   * @param quadCoordinates coordinates of the quadrature rule to be used
+   * @param quadWeights weights of the quadrature rule to be used
    * @return      		mean of basis function
    */
   inline double getMean(LT l, IT i, std::shared_ptr<sgpp::base::Distribution> pdf,

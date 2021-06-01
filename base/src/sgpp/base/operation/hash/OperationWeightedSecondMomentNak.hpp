@@ -6,9 +6,11 @@
 #pragma once
 
 #include <omp.h>
-
 #include <functional>
 #include <map>
+#include <string>
+#include <tuple>
+
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/hash/OperationWeightedSecondMoment.hpp>
@@ -19,8 +21,6 @@
 #include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
 #include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
 #include <sgpp/globaldef.hpp>
-#include <string>
-#include <tuple>
 
 namespace sgpp {
 namespace base {
@@ -36,7 +36,9 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
    * Constructor of OperationQuadratureNakBsplineExtended
    *
    * @param storage Pointer to the grid's GridStorage object
+   * @param gridType grid type
    * @param degree the B-spline degree
+   * @param quadOrder quadrature order
    */
   OperationWeightedSecondMomentNak(GridStorage& storage, GridType gridType, size_t degree,
                                    size_t quadOrder)
