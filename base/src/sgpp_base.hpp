@@ -19,15 +19,6 @@
 #include <sgpp/base/operation/hash/common/basis/FundamentalNakSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/FundamentalSplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv1.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv2.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasisDeriv1.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasisDeriv2.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv1.hpp>
-#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearClenshawCurtisBasis.hpp>
@@ -37,7 +28,6 @@
 #include <sgpp/base/operation/hash/common/basis/LinearPeriodicBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/LinearStretchedBoundaryBasis.hpp>
-#include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv2.hpp>
@@ -46,6 +36,7 @@
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv1.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasisDeriv2.hpp>
 #include <sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NaturalBsplineBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/PolyClenshawCurtisBasis.hpp>
@@ -56,6 +47,15 @@
 #include <sgpp/base/operation/hash/common/basis/WaveletBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp>
 #include <sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalNakSplineModifiedBasisDeriv2.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv1.hpp>
+#include <sgpp/base/operation/hash/common/basis/WeaklyFundamentalSplineBasisDeriv2.hpp>
 
 #include <sgpp/base/algorithm/AlgorithmDGEMV.hpp>
 #include <sgpp/base/algorithm/AlgorithmEvaluation.hpp>
@@ -72,8 +72,8 @@
 #include <sgpp/base/grid/GridDataBase.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 
-#include <sgpp/base/grid/GridTypeParser.hpp>
 #include <sgpp/base/grid/GeneralGridTypeParser.hpp>
+#include <sgpp/base/grid/GridTypeParser.hpp>
 #include <sgpp/base/grid/RefinementConfiguration.hpp>
 #include <sgpp/base/grid/RefinementFunctorTypeParser.hpp>
 
@@ -109,18 +109,14 @@
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
-/*#include <sgpp/base/grid/generation/functors/WeightedErrorRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/ClassificationRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/PersistentErrorRefinementFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/PredictiveRefinementDimensionIndicator.hpp>*/
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
@@ -128,8 +124,6 @@
 #include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
 #include <sgpp/base/grid/type/GridStencil.hpp>
-#include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
@@ -149,9 +143,9 @@
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
 #include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PeriodicGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
@@ -161,6 +155,8 @@
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/tools/Distribution.hpp>
 #include <sgpp/base/tools/DistributionLogNormal.hpp>
 #include <sgpp/base/tools/DistributionNormal.hpp>
@@ -176,11 +172,11 @@
 #include <sgpp/base/tools/MultipleClassPoint.hpp>
 #include <sgpp/base/tools/MutexType.hpp>
 #include <sgpp/base/tools/OperationQuadratureMC.hpp>
-#include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/base/tools/Printer.hpp>
+#include <sgpp/base/tools/QuadRule1D.hpp>
 #include <sgpp/base/tools/RandomNumberGenerator.hpp>
-#include <sgpp/base/tools/ScopedLock.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
+#include <sgpp/base/tools/ScopedLock.hpp>
 #include <sgpp/base/tools/StdNormalDistribution.hpp>
 
 #include <sgpp/base/tools/sle/solver/Armadillo.hpp>
