@@ -786,7 +786,7 @@ class Grid {
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
    *
-   * @return pointer to the GridStorage's Stretching object
+   * @param stretching pointer to the GridStorage's Stretching object
    */
   virtual void setStretching(Stretching& stretching);
 

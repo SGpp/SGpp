@@ -253,16 +253,6 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
                                     bool verbose = false);
 
   /**
-   * creates an adaptive grid based on Ritter-Novak
-   * this is favourable for optimization
-   *
-   * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
-   * @param gamma 				Ritter Novak adaptivity parameter between 0 and 1
-   * @param verbose				print extra info
-   */
-  // void ritterNovak(size_t maxNumGridPoints, double gamma, bool verbose = false);
-
-  /**
    * evaluates this response surface
    * @param v	point to evaluate in
    * @return	the evaluation

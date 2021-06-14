@@ -27,8 +27,8 @@ namespace base {
 
 /**
  * This class provides the second moment of a sparse grid function f given as interpolant of any not
- * a knot B-spline basis w.r.t. a probability density function \rho, i.e. \int
- * f(x)^2 \rho (x) dx
+ * a knot B-spline basis w.r.t. a probability density function rho, i.e. int
+ * f(x)^2 rho (x) dx
  */
 class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
  public:

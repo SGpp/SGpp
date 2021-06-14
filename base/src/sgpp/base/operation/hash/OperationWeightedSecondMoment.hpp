@@ -15,8 +15,8 @@ namespace base {
 
 /**
  * This class provides the second moment of a sparse grid function f w.r.t. a probability density
- * function \rho, i.e.
- * \int f(x)^2 \rho (x) dx
+ * function rho, i.e.
+ * int f(x)^2 rho (x) dx
  */
 class OperationWeightedSecondMoment {
  public:

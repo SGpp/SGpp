@@ -278,8 +278,8 @@ class NakBsplineModifiedBasis : public Basis<LT, IT> {
   inline double getIntegral(LT level, IT index) override { return -1.0; }
 
   /**
-   * Calculates the mean \int b_i(x) \rho(x) dx of a basis function b_i w.r.t. the probability
-   * density function \rho
+   * Calculates the mean int b_i(x) rho(x) dx of a basis function b_i w.r.t. the probability
+   * density function rho
    *
    * @param l     		level of basis function
    * @param i     		index of basis function

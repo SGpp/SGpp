@@ -132,24 +132,6 @@ void SplineResponseSurfaceVector::nextDistributionAdaptiveGrid(size_t refinement
   computedCoefficientsFlag = false;
 }
 
-// void SplineResponseSurfaceVector::ritterNovak(size_t maxNumGridPoints, double gamma,
-//                                                          bool verbose) {
-//   // this uses the default values for Ritter Novaks initial Level, max level, powerMethod
-//   sgpp::optimization::IterativeGridGeneratorRitterNovak gridGen(*objectiveFunc, *grid,
-//                                                                 maxNumGridPoints, gamma);
-//   if (!gridGen.generate()) {
-//     std::cout << "Grid generation failed, exiting.\n";
-//   }
-//   calculateInterpolationCoefficients();
-//   interpolant =
-//       std::make_unique<sgpp::optimization::ASInterpolantScalarFunction>(*grid, coefficients);
-//   interpolantGradient =
-//   std::make_unique<sgpp::optimization::ASInterpolantScalarFunctionGradient>(
-//       *grid, coefficients);
-//   if (verbose) std::cout << "Refining. Calculated a grid with " << grid->getSize() << "
-//   points.\n";
-// }
-
 sgpp::base::DataVector SplineResponseSurfaceVector::eval(sgpp::base::DataVector v) {
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
   // sgpp::base::DataVector evaluations(numRes);
@@ -158,7 +140,7 @@ sgpp::base::DataVector SplineResponseSurfaceVector::eval(sgpp::base::DataVector 
 }
 sgpp::base::DataVector SplineResponseSurfaceVector::evalJacobian(sgpp::base::DataVector v,
                                                                  sgpp::base::DataMatrix& jacobian) {
-  //jacobian.resizeZero(numRes, numDim); //unnecessary, subroutine already does this
+  // jacobian.resizeZero(numRes, numDim); //unnecessary, subroutine already does this
   transformPoint(v, lb, ub, unitLBounds, unitUBounds);
   // sgpp::base::DataVector evaluations(numRes);
   interpolantGradients->eval(v, evaluations, jacobian);

@@ -34,7 +34,7 @@ namespace base {
  * Now the functions 1,x,...,x^degree are interpolated with the not a knot B-splines basis resulting
  * in coefficients a^1_i,...,a^{x^degree}_i, i=0,...,2^l
  * Then the coefficients a^1_j,...,a^{x^degree}_j are represented as a linear combination of the
- * coefficients of I(j) for j \in {0,2^l}.
+ * coefficients of I(j) for j in {0,2^l}.
  * The coefficients e_ij of these linear combinations are the extension coefficients
  *
  * We build a hierarchical basis from this by choosing Lagrange polynomials on levels 1 (and 2 for
@@ -464,8 +464,8 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   }
 
   /**
-   * Calculates the mean \int b_i(x) \rho(x) dx of a basis function b_i w.r.t. the probability
-   * density function \rho
+   * Calculates the mean int b_i(x) rho(x) dx of a basis function b_i w.r.t. the probability
+   * density function rho
    *
    * @param l     		level of basis function
    * @param i     		index of basis function
