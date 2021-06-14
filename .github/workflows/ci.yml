@@ -1,0 +1,47 @@
+name: sgpp-ci
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/setup-python@v2
+        with:
+          # Semantic version range syntax or exact version of a Python version
+          python-version: '3.7.7' 
+          # Optional - x64 or x86 architecture, defaults to x64
+          architecture: 'x64' 
+          # You can test your matrix by printing the current Python version
+      - name: Install boost
+        run: c:\msys64\usr\bin\pacman.exe -S --noconfirm mingw-w64-x86_64-boost
+      - name: Rename python and boost library
+        run: |
+         Copy-Item "C:\hostedtoolcache\windows\Python\3.7.7\x64\python.exe" -Destination "C:\hostedtoolcache\windows\Python\3.7.7\x64\python3.exe"
+         Copy-Item "c:\msys64\mingw64\bin\libboost_unit_test_framework-mt.dll" -Destination "c:\msys64\mingw64\bin\boost_unit_test_framework.dll"
+      - name: Install swig
+        run: |
+          Copy-Item -Path "C:\Program Files\Java\zulu-8-azure-jdk_8.40.0.25-8.0.222-win_x64" -Destination "d:\a\_temp\java" -Recurse
+          (New-Object System.Net.WebClient).DownloadFile("http://prdownloads.sourceforge.net/swig/swigwin-4.0.1.zip","d:\a\_temp\swigwin-4.0.1.zip");
+          Expand-Archive d:\a\_temp\swigwin-4.0.1.zip d:\a\_temp\;
+      - name: setup-enviroment
+        run: |
+         echo "::add-path::c:\msys64\mingw64\bin"
+         echo "::add-path::c:\hostedtoolcache\windows\Python\3.7.7\x64"
+         echo "::add-path::c:\hostedtoolcache\windows\Python\3.7.7\x64"
+         echo "::add-path::d:\a\_temp\swigwin-4.0.1"
+         echo "::set-env name=JAVA_HOME::d:\a\_temp\java"
+      - name: install python dependencies
+        run: python -m pip install scons pywin32 numpy scipy matplotlib
+      - uses: actions/checkout@v2
+      - name: build
+        run: scons -j2 PYDOC=0 CHECK_STYLE=0 COMPILER=gnu OPT=1 GSL_INCLUDE_PATH="" CPPDEFINES="_POSIX_C_SOURCE=1" CC="C:\msys64\mingw64\bin\gcc.exe" CXX="C:\msys64\mingw64\bin\g++.exe" LINK="C:\msys64\mingw64\bin\g++.exe" BOOST_INCLUDE_PATH="C:\msys64\mingw64\include" BOOST_LIBRARY_PATH="C:\msys64\mingw64\bin"
+  build_linux_base:
+    runs-on: ubuntu-latest
+    steps:
+      - name: install python dependencies
+        run: sudo apt install scons
+#        run: python -m pip install --user scons
+      - uses: actions/checkout@v2
+      - name: build
+        run: scons -j2 SG_ALL=0 SG_BASE=1
