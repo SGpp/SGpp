@@ -30,6 +30,8 @@
 #include <sgpp/base/tools/sle/solver/Armadillo.hpp>
 #include <sgpp/base/tools/sle/solver/Auto.hpp>
 #include <sgpp/base/tools/sle/solver/Eigen.hpp>
+#include <sgpp/base/tools/sle/solver/GaussianElimination.hpp>
+#include <sgpp/base/tools/sle/solver/SLESolver.hpp>
 #include <sgpp/base/tools/sle/system/HierarchisationSLE.hpp>
 #include <sgpp/optimization/function/scalar/ResponseSurface.hpp>
 #include <sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp>
