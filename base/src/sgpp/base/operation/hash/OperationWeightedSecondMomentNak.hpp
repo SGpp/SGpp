@@ -92,8 +92,8 @@ class OperationWeightedSecondMomentNak : public OperationWeightedSecondMoment {
   std::map<hashType, double> innerProducts;
 
   /**
-   * calculates the one dimensional integral \int f*g \rho dx where f and g are B-spline basis
-   * functions  and \rho is a probability  DensityFunction
+   * calculates the one dimensional integral int f*g rho dx where f and g are B-spline basis
+   * functions  and rho is a probability  DensityFunction
    *
    * @param level1 	level of the first B-spline
    * @param index1 	index of the first B-spline

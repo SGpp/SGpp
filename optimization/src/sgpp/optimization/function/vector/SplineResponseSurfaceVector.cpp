@@ -63,11 +63,6 @@ void SplineResponseSurfaceVector::refineSurplusAdaptive(size_t refinementsNum, b
   calculateInterpolationCoefficients(verbose);
 }
 
-/**
- * refines the grid surplus adaptive but does not recalculate interpolation coefficients
- *@param refinementsNum	number of grid points which should be refined
- *@param verbose        print information on the refine points
- */
 void SplineResponseSurfaceVector::nextSurplusAdaptiveGrid(size_t refinementsNum, bool verbose) {
   sgpp::base::VectorSurplusRefinementFunctor functor(coefficients, refinementsNum);
 
@@ -119,11 +114,6 @@ void SplineResponseSurfaceVector::refineDistributionAdaptive(size_t refinementsN
   calculateInterpolationCoefficients(verbose);
 }
 
-/**
- * refines the grid surplus adaptive but does not recalculate interpolation coefficients
- *@param refinementsNum	number of grid points which should be refined
- *@param verbose        print information on the refine points
- */
 void SplineResponseSurfaceVector::nextDistributionAdaptiveGrid(size_t refinementsNum,
                                                                sgpp::base::DistributionsVector pdfs,
                                                                bool verbose) {

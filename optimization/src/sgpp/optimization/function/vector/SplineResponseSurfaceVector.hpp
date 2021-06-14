@@ -237,7 +237,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   /**
    *refines the grid distribution adaptive and recalculates the interpoaltion coefficients
    *@param refinementsNum	number of grid points which should be refined
-   * @param pdfs            the probability density functions 'distributions'
+   *@param pdfs            the probability density functions 'distributions'
    *@param verbose        print information on the refine points
    */
   void refineDistributionAdaptive(size_t refinementsNum, sgpp::base::DistributionsVector pdfs,
@@ -246,7 +246,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   /**
    * refines the grid distribution adaptive but does not recalculate interpolation coefficients
    *@param refinementsNum	number of grid points which should be refined
-   * @param pdfs            the probability density functions 'distributions'
+   *@param pdfs            the probability density functions 'distributions'
    *@param verbose        print information on the refine points
    */
   void nextDistributionAdaptiveGrid(size_t refinementsNum, sgpp::base::DistributionsVector pdfs,

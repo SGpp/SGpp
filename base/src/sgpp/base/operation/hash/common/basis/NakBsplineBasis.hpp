@@ -1785,7 +1785,6 @@ class NakBsplineBasis : public Basis<LT, IT> {
    * @param stop			index for the supports last segment (usually degree)
    * @param offset			left point of the support
    * @param hik       grid width
-   * @param scaling			size of one support segment
    * @param quadCoordinates	the quadrature points
    * @param quadWeights		the quadrature weights
    * @param pdf probability density function
