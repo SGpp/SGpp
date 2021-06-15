@@ -18,7 +18,7 @@ from pysgpp import RegularGridConfiguration, GridType_PolyBoundary, \
     GridType_ModPolyClenshawCurtis, GridType_ModLinearClenshawCurtis, \
     GridType_ModLinear, GridType_ModPoly, GridType_LinearBoundary
 from pysgpp.pysgpp_swig import GridType_Poly, GridType_Linear, GridType_Bspline, \
-    GridType_BsplineBoundary, GridType_BsplineClenshawCurtis, \
+    GridType_BsplineBoundary, GridType_BsplineClenshawCurtis, GridType_NakBsplineBoundary, \
     GridType_ModBsplineClenshawCurtis, GridType_ModBspline
 
 
@@ -152,6 +152,7 @@ class GridDescriptor(object):
                                        GridType_Bspline,
                                        GridType_ModBspline,
                                        GridType_BsplineBoundary,
+                                       GridType_NakBsplineBoundary,
                                        GridType_BsplineClenshawCurtis,
                                        GridType_ModBsplineClenshawCurtis]:
                 print( "Warning: grid type not fully supported" )

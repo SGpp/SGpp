@@ -22,6 +22,9 @@
 #include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
@@ -71,6 +74,14 @@
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMomentPolyClenshawCurtisBoundary.hpp>
 
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBspline.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineExtended.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakBsplineModified.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadratureNakPBspline.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedSecondMomentNak.hpp>
+
 #include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBspline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureBsplineBoundary.hpp>
@@ -87,6 +98,10 @@
 #include <sgpp/base/operation/hash/OperationQuadratureModLinearClenshawCurtis.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModPoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadratureModPolyClenshawCurtis.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakBsplineBoundary.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakBsplineExtended.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakBsplineModified.hpp>
+#include <sgpp/base/operation/hash/OperationQuadratureNakPBspline.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePoly.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationQuadraturePolyClenshawCurtis.hpp>
@@ -115,6 +130,9 @@
 #include <sgpp/base/operation/hash/OperationEvalLinearStretchedBoundary.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModLinear.hpp>
 #include <sgpp/base/operation/hash/OperationEvalModPoly.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalNakPBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPeriodic.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPoly.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPolyBoundary.hpp>
@@ -144,6 +162,9 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalModBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModLinearClenshawCurtisNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalModPolyClenshawCurtisNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalNakBsplineModifiedNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPolyClenshawCurtisNaive.hpp>
@@ -197,6 +218,9 @@
 #include <sgpp/base/operation/hash/OperationEvalGradientModNakBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientModWaveletNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationEvalGradientNakPBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradientWaveletNaive.hpp>
 
@@ -376,9 +400,46 @@ base::OperationQuadrature* createOperationQuadrature(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModFundamentalSpline) {
     return new base::OperationQuadratureModFundamentalSpline(
         grid.getStorage(), dynamic_cast<base::ModFundamentalSplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationQuadratureNakBsplineBoundary(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationQuadratureNakBsplineExtended(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new base::OperationQuadratureNakBsplineModified(
+        grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree());
+  } else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationQuadratureNakPBspline(
+        grid.getStorage(), dynamic_cast<base::NakPBsplineGrid*>(&grid)->getDegree());
   } else {
     throw base::factory_exception(
         "createOperationQuadrature is not implemented for this grid type.");
+  }
+}
+
+base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid,
+                                                                     size_t quadOrder) {
+  if (grid.getType() == base::GridType::NakBspline) {
+    return new base::OperationWeightedQuadratureNakBspline(
+        grid.getStorage(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree(), quadOrder);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new base::OperationWeightedQuadratureNakBsplineModified(
+        grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), quadOrder);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationWeightedQuadratureNakBsplineExtended(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(),
+        quadOrder);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationWeightedQuadratureNakBsplineBoundary(
+        grid.getStorage(), dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(),
+        quadOrder);
+  } else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationWeightedQuadratureNakPBspline(
+        grid.getStorage(), dynamic_cast<base::NakPBsplineGrid*>(&grid)->getDegree(), quadOrder);
+  } else {
+    throw base::factory_exception(
+        "createOperationWeightedQuadrature is not implemented for this grid type.");
   }
 }
 
@@ -453,6 +514,34 @@ base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid) {
   } else {
     throw base::factory_exception(
         "createOperationSecondMoment is not implemented for this grid type.");
+  }
+}
+
+base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid,
+                                                                         size_t quadOrder) {
+  if (grid.getType() == base::GridType::NakBspline) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(), dynamic_cast<base::NakBsplineGrid*>(&grid)->getDegree(),
+        quadOrder);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), quadOrder);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), quadOrder);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(),
+        dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), quadOrder);
+  } else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationWeightedSecondMomentNak(
+        grid.getStorage(), grid.getType(), dynamic_cast<base::NakPBsplineGrid*>(&grid)->getDegree(),
+        quadOrder);
+  } else {
+    throw base::factory_exception(
+        "createOperationWeightedSecondMoment is not implemented for this grid type.");
   }
 }
 
@@ -553,6 +642,15 @@ base::OperationMultipleEval* createOperationMultipleEvalNaive(base::Grid& grid,
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     return new base::OperationMultipleEvalBsplineBoundaryNaive(
         grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationMultipleEvalNakBsplineBoundaryNaive(
+        grid, dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new base::OperationMultipleEvalNakBsplineModifiedNaive(
+        grid, dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), dataset);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationMultipleEvalNakBsplineExtendedNaive(
+        grid, dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), dataset);
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
@@ -682,6 +780,15 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid) {
     return new base::OperationEvalModWeaklyFundamentalNakSplineNaive(
         grid.getStorage(), dynamic_cast<base::ModWeaklyFundamentalNakSplineGrid&>(grid).
         getDegree());
+  } else if (grid.getType() == base::GridType::NakBspline) {
+    return new base::OperationEvalNakBsplineNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationEvalNakBsplineExtendedNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationEvalNakPBsplineNaive(
+        grid.getStorage(), dynamic_cast<base::NakPBsplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEval and/or createOperationEvalNaive is not implemented for this grid "
@@ -743,6 +850,15 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid) 
   } else if (grid.getType() == base::GridType::ModNakBspline) {
     return new base::OperationEvalGradientModNakBsplineNaive(
         grid.getStorage(), dynamic_cast<base::ModNakBsplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBspline) {
+    return new base::OperationEvalGradientNakBsplineNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationEvalGradientNakBsplineExtendedNaive(
+        grid.getStorage(), dynamic_cast<base::NakBsplineExtendedGrid&>(grid).getDegree());
+  } else if (grid.getType() == base::GridType::NakPBspline) {
+    return new base::OperationEvalGradientNakPBsplineNaive(
+        grid.getStorage(), dynamic_cast<base::NakPBsplineGrid&>(grid).getDegree());
   } else {
     throw base::factory_exception(
         "createOperationEvalGradient is not implemented for this grid type.");

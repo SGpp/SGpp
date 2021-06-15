@@ -56,6 +56,10 @@ void createSupportedGrids(
       sgpp::base::Grid::createWaveletBoundaryGrid(d)));
   grids.push_back(std::unique_ptr<sgpp::base::Grid>(
       sgpp::base::Grid::createModWaveletGrid(d)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+     sgpp::base::Grid::createNakBsplineGrid(d, p)));
+  grids.push_back(std::unique_ptr<sgpp::base::Grid>(
+      sgpp::base::Grid::createNakBsplineExtendedGrid(d, p)));
 }
 
 void createSampleGrid(sgpp::base::Grid& grid, size_t l,

@@ -102,13 +102,13 @@ def writeDataARFF(data, merge=False):
                     fout.write("@ATTRIBUTE x%d NUMERIC\n" % i)
                 else:
                     fout.write("@ATTRIBUTE %s NUMERIC\n" % dataset['names'][i])
-                fstring = fstring + "%s,"
+                fstring = fstring + "%.16f,"
 
             hasclass = False
             if 'classes' in dataset:
                 hasclass = True
                 fout.write("@ATTRIBUTE class NUMERIC\n")
-                fstring = fstring + "%s"
+                fstring = fstring + "%.16f"
             else:
                 fstring = fstring.strip(',')
 

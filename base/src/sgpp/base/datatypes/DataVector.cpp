@@ -158,6 +158,10 @@ size_t DataVector::append(double value) {
   return this->size() - 1;
 }
 
+void DataVector::append(DataVector::iterator first, DataVector::iterator last) {
+  this->insert(this->end(), first, last);
+}
+
 void DataVector::insert(size_t index, double value) {
   if (index > this->size()) {
     throw sgpp::base::data_exception(

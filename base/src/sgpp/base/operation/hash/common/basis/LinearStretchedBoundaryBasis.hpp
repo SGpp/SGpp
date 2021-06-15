@@ -120,6 +120,11 @@ class LinearStretchedBoundaryBasis : public LinearBoundaryBasis<LT, IT> {
     return (p - pos0) / (pos1 - pos0);
   }
 
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearStretchedBoundaryBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
   inline size_t getDegree() const override { return 1; }
 
   inline double getIntegral(LT level, IT index) override { return -1.0; }

@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,13 +21,12 @@ namespace base {
  * weakly fundamental spline basis (2nd derivative).
  */
 template <class LT, class IT>
-class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
+class WeaklyFundamentalSplineBasisDeriv2 : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalSplineBasisDeriv2() : degree(0) {
-  }
+  WeaklyFundamentalSplineBasisDeriv2() : degree(0) {}
 
   /**
    * Constructor.
@@ -50,8 +49,7 @@ class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalSplineBasisDeriv2() override {
-  }
+  ~WeaklyFundamentalSplineBasisDeriv2() override {}
 
   /**
    * @param l     level of basis function
@@ -312,14 +310,20 @@ class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalSplineBasisDeriv2: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalSplineBasisDeriv2: getIntegral not implemented" << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      Spline degree
    */
-  inline size_t getDegree() const override {
-    return degree;
-  }
+  inline size_t getDegree() const override { return degree; }
 
  protected:
   /// degree of the spline
@@ -328,7 +332,7 @@ class WeaklyFundamentalSplineBasisDeriv2: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef WeaklyFundamentalSplineBasisDeriv2<unsigned int, unsigned int>
-SWeaklyFundamentalSplineBaseDeriv2;
+    SWeaklyFundamentalSplineBaseDeriv2;
 
 }  // namespace base
 }  // namespace sgpp

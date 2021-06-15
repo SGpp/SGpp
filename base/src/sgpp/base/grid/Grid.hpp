@@ -56,13 +56,16 @@ enum class GridType {
   ModPolyClenshawCurtis,               // 29
   ModLinearClenshawCurtis,             // 30
   NaturalBsplineBoundary,              // 31
-  NakBsplineBoundary,                  // 32
-  ModNakBspline,                       // 33
-  WeaklyFundamentalSplineBoundary,     // 34
-  WeaklyFundamentalNakSplineBoundary,  // 35
-  ModWeaklyFundamentalNakSpline,       // 36
-  FundamentalSplineBoundary,           // 37
-  FundamentalNakSplineBoundary,        // 38
+  NakBspline,                          // 32
+  NakBsplineBoundary,                  // 33
+  ModNakBspline,                       // 34
+  WeaklyFundamentalSplineBoundary,     // 35
+  WeaklyFundamentalNakSplineBoundary,  // 36
+  ModWeaklyFundamentalNakSpline,       // 37
+  FundamentalSplineBoundary,           // 38
+  FundamentalNakSplineBoundary,        // 39
+  NakBsplineExtended,                  // 40
+  NakPBspline,                         // 41
 };
 
 /**
@@ -658,6 +661,40 @@ class Grid {
                                                       level_t boundaryLevel = 1);
 
   /**
+   * creates a not a knot B-Spline grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot polynomial B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakPBsplineGrid(size_t dim, size_t degree);
+
+  /**
+   * opens a file given by name and reads a grid out of the stored string
+   * @ param filename   name of the file
+   * @return  grid
+   */
+  static Grid* unserializeFromFile(std::string filename);
+
+  /**
    * reads a grid out of a string
    *
    * @param istr string that contains the grid information
@@ -748,6 +785,8 @@ class Grid {
 
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
+   *
+   * @param stretching pointer to the GridStorage's Stretching object
    */
   virtual void setStretching(Stretching& stretching);
 

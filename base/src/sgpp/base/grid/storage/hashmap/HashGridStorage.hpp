@@ -223,6 +223,32 @@ class HashGridStorage {
    */
   inline HashGridPoint& getPoint(size_t seq) const { return *list[seq]; }
 
+  inline bool hasBoundingBoxOrStretching() {
+    return ((boundingBox == nullptr) && (stretching == nullptr));
+  }
+
+  /**
+   * gets level <i>l</i> in dimension <i>d</i> of a point given by its sequence number
+   *
+   * @param seq the sequence number of the index
+   * @param d the dimension in which the ansatz function should be read
+   * @return level
+   */
+  inline HashGridPoint::level_type getPointLevel(size_t seq, size_t d) const {
+    return (*list[seq]).getLevel(d);
+  }
+
+  /**
+   * gets index <i>l</i> in dimension <i>d</i> of a point given by its sequence number
+   *
+   * @param seq the sequence number of the index
+   * @param d the dimension in which the ansatz function should be read
+   * @return level
+   */
+  inline HashGridPoint::index_type getPointIndex(size_t seq, size_t d) const {
+    return (*list[seq]).getIndex(d);
+  }
+
   /**
    * insert a new index into map
    *
@@ -450,6 +476,56 @@ class HashGridStorage {
    */
   void getLevelIndexMaskArraysForModEval(DataMatrixSP& level, DataMatrixSP& index,
                                          DataMatrixSP& mask, DataMatrixSP& offset);
+
+  /**
+   * Calculates the coordinate of a given grid point in specific dimension.
+   *
+   * @param seq   the sequence number of the index
+   * @param d     dimension
+   * @return      coordinate of the point in dimension d
+   */
+  inline double getPointCoordinate(size_t seq, size_t d) {
+    HashGridPoint::level_type level = (*list[seq]).getLevel(d);
+    HashGridPoint::index_type index = (*list[seq]).getIndex(d);
+    return static_cast<double>(index) / static_cast<double>(static_cast<uint32_t>(1) << level);
+  }
+
+  /**
+   * Calculates the coordinate of a given grid point
+   *
+   * @param seq	the sequence number of the index
+   *
+   * @return 	coordinates of the point
+   */
+  inline DataVector getPointCoordinates(size_t seq) {
+    DataVector coordinates(dimension, 0.0);
+    for (size_t d = 0; d < dimension; d++) {
+      coordinates[d] = getPointCoordinate(seq, d);
+    }
+    return coordinates;
+  }
+
+  /**
+   * Calculates the coordinate of a given grid point in specific dimension taking into account
+   * the BoundingBox and Stretching.
+   *
+   * @param seq   the sequence number of the index
+   * @param d     dimension
+   * @return      coordinate of the point in dimension d
+   */
+  inline double getUnitPointCoordinate(size_t seq, size_t d) {
+    if ((boundingBox == nullptr) && (stretching == nullptr)) {
+      return getPointCoordinate(seq, d);
+    } else {
+      HashGridPoint& gp = getPoint(seq);
+      double bbox_point = getCoordinate(gp, d);
+      if (bUseStretching) {
+        return stretching->transformPointToUnitCube(d, bbox_point);
+      } else {
+        return boundingBox->transformPointToUnitCube(d, bbox_point);
+      }
+    }
+  }
 
   /**
    * Calculates the coordinate of a given grid point in specific dimension.

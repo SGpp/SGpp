@@ -9,7 +9,33 @@
 // These 3 shared_ptr calls break the SWIG directors !!!
 //%shared_ptr(sgpp::base::DataVector)
 //%shared_ptr(sgpp::base::DataMatrix)
-//%shared_ptr(sgpp::base::Grid)
+%shared_ptr(sgpp::base::Grid)
+
+%shared_ptr(sgpp::base::ScalarFunction)
+%shared_ptr(sgpp::base::ScalarFunctionGradient)
+%shared_ptr(sgpp::base::ScalarFunctionHessian)
+%shared_ptr(sgpp::base::InterpolantScalarFunction)
+%shared_ptr(sgpp::base::InterpolantScalarFunctionGradient)
+%shared_ptr(sgpp::base::InterpolantScalarFunctionHessian)
+%shared_ptr(sgpp::base::ComponentScalarFunction)
+%shared_ptr(sgpp::base::ComponentScalarFunctionGradient)
+%shared_ptr(sgpp::base::ComponentScalarFunctionHessian)
+%shared_ptr(sgpp::base::WrapperScalarFunction)
+%shared_ptr(sgpp::base::WrapperScalarFunctionGradient)
+%shared_ptr(sgpp::base::WrapperScalarFunctionHessian)
+
+%shared_ptr(sgpp::base::VectorFunction)
+%shared_ptr(sgpp::base::VectorFunctionGradient)
+%shared_ptr(sgpp::base::VectorFunctionHessian)
+%shared_ptr(sgpp::base::InterpolantVectorFunction)
+%shared_ptr(sgpp::base::InterpolantVectorFunctionGradient)
+%shared_ptr(sgpp::base::InterpolantVectorFunctionHessian)
+%shared_ptr(sgpp::base::ComponentVectorFunction)
+%shared_ptr(sgpp::base::ComponentVectorFunctionGradient)
+%shared_ptr(sgpp::base::ComponentVectorFunctionHessian)
+%shared_ptr(sgpp::base::WrapperVectorFunction)
+%shared_ptr(sgpp::base::WrapperVectorFunctionGradient)
+%shared_ptr(sgpp::base::WrapperVectorFunctionHessian)
 
 %shared_ptr(sgpp::base::OperationMatrix)
 %shared_ptr(sgpp::base::OperationIdentity)
@@ -23,6 +49,11 @@
 %shared_ptr(sgpp::base::OperationQuadratureMC)
 %shared_ptr(sgpp::base::OperationEvalPeriodic)
 %shared_ptr(sgpp::base::OperationEvalPeriodic)
+%shared_ptr(sgpp::base::Distribution)
+%shared_ptr(sgpp::base::DistributionUniform)
+%shared_ptr(sgpp::base::DistributionNormal)
+%shared_ptr(sgpp::base::DistributionTruncNormal)
+%shared_ptr(sgpp::base::DistributionLogNormal)
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemDirichlet)
 %shared_ptr(sgpp::parallel::HeatEquationParabolicPDESolverSystem)
 %shared_ptr(sgpp::parallel::OperationParabolicPDESolverSystemFreeBoundaries)
@@ -94,6 +125,9 @@ namespace std {
 %include "base/src/sgpp/base/grid/generation/functors/RefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp"
 %include "base/src/sgpp/base/grid/generation/functors/CoarseningFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp"
+%include "base/src/sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp"
+
 %include "base/src/sgpp/base/grid/generation/GridGenerator.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEval.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMatrix.hpp"
@@ -193,6 +227,10 @@ namespace std {
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletBoundaryBasis.hpp"
 %include "base/src/sgpp/base/operation/hash/common/basis/WaveletModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineModifiedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp"
+%include "base/src/sgpp/base/operation/hash/common/basis/NakPBsplineBasis.hpp"
 
 %include "base/src/sgpp/base/operation/hash/OperationEvalPeriodic.hpp"
 %include "base/src/sgpp/base/operation/hash/OperationMultipleEvalPeriodic.hpp"
@@ -270,6 +308,14 @@ const bool UMFPACK_ENABLED;
 %include "base/src/sgpp/base/tools/MutexType.hpp"
 %include "base/src/sgpp/base/tools/Printer.hpp"
 
+//UQ
+%include "base/src/sgpp/base/tools/Distribution.hpp"
+%include "base/src/sgpp/base/tools/DistributionsVector.hpp"
+%include "base/src/sgpp/base/tools/DistributionUniform.hpp"
+%include "base/src/sgpp/base/tools/DistributionNormal.hpp"
+%include "base/src/sgpp/base/tools/DistributionTruncNormal.hpp"
+%include "base/src/sgpp/base/tools/DistributionLogNormal.hpp"
+
 // and the rest
 %apply std::string *INPUT { std::string& istr };
 
@@ -306,12 +352,15 @@ const bool UMFPACK_ENABLED;
 %template(SWeaklyFundamentalNakSplineBaseDeriv2) sgpp::base::WeaklyFundamentalNakSplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNaturalBsplineBase) sgpp::base::NaturalBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBase) sgpp::base::NakBsplineBasis<unsigned int, unsigned int>;
+%template(SNakPBsplineBase) sgpp::base::NakPBsplineBasis<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv1) sgpp::base::NakBsplineBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineBaseDeriv2) sgpp::base::NakBsplineBasisDeriv2<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBase) sgpp::base::NakBsplineModifiedBasis<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBaseDeriv1) sgpp::base::NakBsplineModifiedBasisDeriv1<unsigned int, unsigned int>;
 %template(SNakBsplineModifiedBaseDeriv2) sgpp::base::NakBsplineModifiedBasisDeriv2<unsigned int, unsigned int>;
 %template(SPrewaveletBase) sgpp::base::PrewaveletBasis<unsigned int, unsigned int>;
+%template(SNakBsplineBoundaryBase) sgpp::base::NakBsplineBoundaryBasis<unsigned int, unsigned int>;
+%template(SNakBsplineExtendedBase) sgpp::base::NakBsplineExtendedBasis<unsigned int, unsigned int>;
 
 %apply std::vector<std::pair<size_t, double> > *OUTPUT { std::vector<std::pair<size_t, double> >& result };
 %apply std::vector<double> *INPUT { std::vector<double>& point };
