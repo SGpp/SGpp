@@ -5,7 +5,9 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <algorithm>
+#include <memory>
+#include <set>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
@@ -13,15 +15,12 @@
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixBase.hpp>
 #include <sgpp/datadriven/configuration/RegularizationConfiguration.hpp>
+#include <sgpp/globaldef.hpp>
 #include <sgpp/solver/SLESolver.hpp>
 #include <sgpp/solver/TypesSolver.hpp>
 #include <sgpp/solver/sle/fista/FistaBase.hpp>
-
-#include <algorithm>
-#include <memory>
-#include <set>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace sgpp {
 namespace datadriven {
@@ -170,6 +169,11 @@ class RegressionLearner {
    */
   sgpp::base::Grid& getGrid();
   /**
+   * @brief getGridPtr
+   * @return shared pointer to the grid
+   */
+  std::shared_ptr<sgpp::base::Grid> getGridPtr();
+  /**
    * @brief getMSE
    * @param data is the design matrix
    * @param y is the target
@@ -198,7 +202,7 @@ class RegressionLearner {
   std::unique_ptr<datadriven::DMSystemMatrixBase> systemMatrix;
 
   /// sparse grid object
-  std::unique_ptr<sgpp::base::Grid> grid;
+  std::shared_ptr<sgpp::base::Grid> grid;
   /// the grid's coefficients
   sgpp::base::DataVector weights;
 

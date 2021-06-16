@@ -501,8 +501,8 @@ class ASGCAnalysis(Analysis):
             for iteration in iterations:
                 size = self.__knowledge.getGrid(qoi=self._qoi,
                                                 iteration=iteration).getSize()
-                mean = self.mean(ts=[t], iterations=[iteration])
-                var = self.var(ts=[t], iterations=[iteration])
+                mean = self.mean(ts=[t], iterations=[iteration],totalNumIterations=len(iterations))
+                var = self.var(ts=[t], iterations=[iteration],totalNumIterations=len(iterations))
 
                 v.setAll(0.0)
                 v[0] = t

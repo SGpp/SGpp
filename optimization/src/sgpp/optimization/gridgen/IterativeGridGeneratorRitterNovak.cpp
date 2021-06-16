@@ -252,7 +252,6 @@ bool IterativeGridGeneratorRitterNovak::generate() {
     refinementAlpha[iBest] = 1.0;
     base::SurplusRefinementFunctor refineFunc(refinementAlpha, 1);
     refinement.free_refine(gridStorage, refineFunc);
-
     // new grid size
     const size_t newN = gridStorage.getSize();
 

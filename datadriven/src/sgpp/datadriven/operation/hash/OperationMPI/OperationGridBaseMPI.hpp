@@ -31,20 +31,21 @@ class MPIWorkerGridBase : virtual public MPIWorkerBase {
 
     // Receive grid dimensions
     MPI_Probe(0, 1, MPIEnviroment::get_input_communicator(), &stat);
+
     MPI_Recv(&grid_dimensions, 1, MPI_INT, stat.MPI_SOURCE, stat.MPI_TAG,
              MPIEnviroment::get_input_communicator(), &stat);
     gridsize = complete_gridsize / (2 * grid_dimensions);
     if (verbose) {
-      std::cout << "Node " << MPIEnviroment::get_node_rank()
-                << ":  Recevied grid with "<< complete_gridsize / (grid_dimensions *2)
-                << " integers and " << grid_dimensions << " dimensions " << std::endl;
+      std::cout << "Node " << MPIEnviroment::get_node_rank() << ":  Recevied grid with "
+                << complete_gridsize / (grid_dimensions * 2) << " integers and " << grid_dimensions
+                << " dimensions " << std::endl;
     }
   }
   void send_grid(void) {
     // Send grid to slaves
     for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
-      MPI_Send(gridpoints, static_cast<int>(complete_gridsize), MPI_INT,
-               i, 1, MPIEnviroment::get_communicator());
+      MPI_Send(gridpoints, static_cast<int>(complete_gridsize), MPI_INT, i, 1,
+               MPIEnviroment::get_communicator());
     }
     // Send grid dimension to slaves
     for (int i = 1; i < MPIEnviroment::get_sub_worker_count() + 1; i++) {
@@ -61,11 +62,11 @@ class MPIWorkerGridBase : virtual public MPIWorkerBase {
     receive_grid();
     send_grid();
   }
-  MPIWorkerGridBase(std::string operationName, base::Grid &grid)
-      : MPIWorkerBase(operationName) {
+  MPIWorkerGridBase(std::string operationName, base::Grid &grid) : MPIWorkerBase(operationName) {
     // Store grid in integer array
-    std::cout << "IN GridWorker cstr" << "\n";
-    sgpp::base::GridStorage& gridStorage = grid.getStorage();
+    std::cout << "IN GridWorker cstr"
+              << "\n";
+    sgpp::base::GridStorage &gridStorage = grid.getStorage();
     gridsize = static_cast<int>(gridStorage.getSize());
     int dimensions = static_cast<int>(gridStorage.getDimension());
     gridpoints = new int[gridsize * 2 * dimensions];
@@ -85,11 +86,8 @@ class MPIWorkerGridBase : virtual public MPIWorkerBase {
   }
 
  public:
-  virtual ~MPIWorkerGridBase() {
-    delete [] gridpoints;
-  }
+  virtual ~MPIWorkerGridBase() { delete[] gridpoints; }
 };
-
 
 }  // namespace clusteringmpi
 }  // namespace datadriven

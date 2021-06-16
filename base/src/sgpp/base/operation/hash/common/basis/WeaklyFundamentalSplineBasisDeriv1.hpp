@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,13 +21,12 @@ namespace base {
  * weakly fundamental spline basis (1st derivative).
  */
 template <class LT, class IT>
-class WeaklyFundamentalSplineBasisDeriv1: public Basis<LT, IT> {
+class WeaklyFundamentalSplineBasisDeriv1 : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalSplineBasisDeriv1() : degree(0) {
-  }
+  WeaklyFundamentalSplineBasisDeriv1() : degree(0) {}
 
   /**
    * Constructor.
@@ -50,8 +49,7 @@ class WeaklyFundamentalSplineBasisDeriv1: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalSplineBasisDeriv1() override {
-  }
+  ~WeaklyFundamentalSplineBasisDeriv1() override {}
 
   /**
    * @param l     level of basis function
@@ -89,30 +87,30 @@ class WeaklyFundamentalSplineBasisDeriv1: public Basis<LT, IT> {
           double result = 8.7500000000000000e-01;
           result = -2.5000000000000000e-01 + result * t;
           result = -1.2500000000000000e-01 + result * t;
-          return innerDeriv *result;
+          return innerDeriv * result;
         } else if (t < 0.0) {
           t += 1.0;
           double result = -2.0;
           result = 1.5000000000000000e+00 + result * t;
           result = 5.0000000000000000e-01 + result * t;
-          return innerDeriv *result;
+          return innerDeriv * result;
         } else if (t < 1.0) {
           double result = 2.0;
           result = -2.5000000000000000e+00 + result * t;
           result *= t;
-          return innerDeriv *result;
+          return innerDeriv * result;
         } else if (t < 2.0) {
           t -= 1.0;
           double result = -8.7500000000000000e-01;
           result = 1.5000000000000000e+00 + result * t;
           result = -5.0000000000000000e-01 + result * t;
-          return innerDeriv *result;
+          return innerDeriv * result;
         } else {
           t -= 2.0;
           double result = 1.2500000000000000e-01;
           result = -2.5000000000000000e-01 + result * t;
           result = 1.2500000000000000e-01 + result * t;
-          return innerDeriv *result;
+          return innerDeriv * result;
         }
 
       case 5:
@@ -348,14 +346,20 @@ class WeaklyFundamentalSplineBasisDeriv1: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalSplineBasisDeriv1: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalSplineBasisDeriv1: getIntegral not implemented" << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      Spline degree
    */
-  inline size_t getDegree() const override {
-    return degree;
-  }
+  inline size_t getDegree() const override { return degree; }
 
  protected:
   /// degree of the spline
@@ -364,7 +368,7 @@ class WeaklyFundamentalSplineBasisDeriv1: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef WeaklyFundamentalSplineBasisDeriv1<unsigned int, unsigned int>
-SWeaklyFundamentalSplineBaseDeriv1;
+    SWeaklyFundamentalSplineBaseDeriv1;
 
 }  // namespace base
 }  // namespace sgpp

@@ -81,7 +81,8 @@ fprintf('Hierarchizing...\n\n');
 functionValues = gridGen.getFunctionValues();
 coeffs = sgpp.DataVector(functionValues.getSize());
 hierSLE = sgpp.HierarchisationSLE(grid);
-sleSolver = sgpp.AutoSLESolver();
+%sleSolver = sgpp.AutoSLESolver();
+sleSolver = sgpp.Eigen();
 
 % solve linear system
 if ~sleSolver.solve(hierSLE, functionValues, coeffs)

@@ -7,8 +7,8 @@
 #define BSPLINEGRID_HPP
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 #include <sgpp/base/grid/generation/StandardGridGenerator.hpp>
+#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 

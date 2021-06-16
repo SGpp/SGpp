@@ -6,9 +6,11 @@
 from pysgpp.extensions.datadriven.uq.analysis import KnowledgeTypes
 from pysgpp.extensions.datadriven.uq.quadrature import getIntegral
 from pysgpp.extensions.datadriven.uq.operations import (estimateConvergence,
-                               estimateSurplus)
+                                                        estimateSurplus)
 from pysgpp import DataVector, DataMatrix, createOperationEvalNaive
 import numpy as np
+import os
+import pickle
 from pysgpp.extensions.datadriven.uq.dists import J
 from pysgpp.extensions.datadriven.uq.plot.plot2d import plotDensity2d
 import matplotlib.pyplot as plt
@@ -97,6 +99,7 @@ class SquaredSurplusRanking(Ranking):
             return np.abs(v[ix])
         else:
             raise AttributeError("SquaredSurplusRanking - update: the grid point does not exist in the current grid")
+
 
 class SurplusRatioRanking(Ranking):
 
@@ -277,7 +280,6 @@ class VarianceOptRanking(Ranking):
                                                                                self.W, self.D)
         return A_var[0, 0] - mean_phii ** 2
 
-
     def update(self, grid, v, gpi, params, *args, **kws):
         """
         Compute ranking for variance estimation
@@ -402,6 +404,7 @@ class MeanSquaredOptRanking(Ranking):
         ix = gs.getSequenceNumber(gpi)
         return np.abs(v[ix] * (2 * np.dot(A, v) - v[ix] * A[0, ix]))
 
+
 class AnchoredMeanSquaredOptRanking(Ranking):
 
     def __init__(self):
@@ -434,6 +437,7 @@ class AnchoredMeanSquaredOptRanking(Ranking):
         # update the ranking
         return np.abs(v[ix] * fx)
 
+
 # ------------------------------------------------------------------------------
 # Add new collocation nodes
 # ------------------------------------------------------------------------------
@@ -446,6 +450,7 @@ class SquaredSurplusBFRanking(Ranking):
 
     def rank(self, grid, gp, alphas, params, *args, **kws):
         return np.abs(estimateSurplus(grid, gp, alphas))
+
 
 class WeightedSurplusBFRanking(Ranking):
 

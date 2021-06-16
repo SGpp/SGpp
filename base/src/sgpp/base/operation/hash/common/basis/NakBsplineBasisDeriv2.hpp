@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,13 +21,12 @@ namespace base {
  * Not-a-knot B-spline basis.
  */
 template <class LT, class IT>
-class NakBsplineBasisDeriv2: public Basis<LT, IT> {
+class NakBsplineBasisDeriv2 : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  NakBsplineBasisDeriv2() : bsplineBasis(BsplineBasis<LT, IT>()) {
-  }
+  NakBsplineBasisDeriv2() : bsplineBasis(BsplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,8 +34,7 @@ class NakBsplineBasisDeriv2: public Basis<LT, IT> {
    * @param degree    B-spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit NakBsplineBasisDeriv2(size_t degree) :
-        bsplineBasis(BsplineBasis<LT, IT>(degree)) {
+  explicit NakBsplineBasisDeriv2(size_t degree) : bsplineBasis(BsplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported B-spline degree.");
     }
@@ -45,8 +43,7 @@ class NakBsplineBasisDeriv2: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~NakBsplineBasisDeriv2() override {
-  }
+  ~NakBsplineBasisDeriv2() override {}
 
   /**
    * @param l     level of basis function
@@ -211,21 +208,21 @@ class NakBsplineBasisDeriv2: public Basis<LT, IT> {
 
           if ((l == 2) && (i == 0)) {
             // l = 2, i = 0
-            double result = 1.0/2.0;
-            result = -5.0/2.0 + result * t;
-            result = 35.0/12.0 + result * t;
+            double result = 1.0 / 2.0;
+            result = -5.0 / 2.0 + result * t;
+            result = 35.0 / 12.0 + result * t;
             return innerDeriv * result;
           } else if ((l == 2) && (i == 1)) {
             // l = 2, i = 1
             double result = -2.0;
             result = 5.0 + result * t;
-            result = -5.0/3.0 + result * t;
+            result = -5.0 / 3.0 + result * t;
             return innerDeriv * result;
           } else if ((l == 2) && (i == 2)) {
             // l = 2, i = 2
             double result = 3.0;
             result *= t;
-            result = -5.0/2.0 + result * t;
+            result = -5.0 / 2.0 + result * t;
             return innerDeriv * result;
           } else if ((l == 3) && (i == 3)) {
             // l = 3, i = 3
@@ -486,7 +483,7 @@ class NakBsplineBasisDeriv2: public Basis<LT, IT> {
             // l = 2, i = 1
             double result = -2.0;
             result = 5.0 + result * t;
-            result = -5.0/3.0 + result * t;
+            result = -5.0 / 3.0 + result * t;
             return innerDeriv * result;
           } else if ((l == 3) && (i == 1)) {
             // l = 3, i = 1
@@ -740,14 +737,20 @@ class NakBsplineBasisDeriv2: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "NakBsplineBasisDeriv2: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "NakBsplineBasisDeriv2: getIntegral not implemented" << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const override {
-    return bsplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation

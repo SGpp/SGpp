@@ -226,6 +226,11 @@ void omp_set_num_threads(int num_threads);
 // includes
 %include "optimization/src/sgpp/optimization/fuzzy/FuzzyInterval.hpp"
 
+%include "optimization/src/sgpp/optimization/function/scalar/ResponseSurface.hpp"
+%include "optimization/src/sgpp/optimization/function/scalar/SplineResponseSurface.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/ResponseSurfaceVector.hpp"
+%include "optimization/src/sgpp/optimization/function/vector/SplineResponseSurfaceVector.hpp"
+
 %include "optimization/src/sgpp/optimization/gridgen/HashRefinementMultiple.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGenerator.hpp"
 %include "optimization/src/sgpp/optimization/gridgen/IterativeGridGeneratorRitterNovak.hpp"
