@@ -59,7 +59,6 @@ print("number of grid points: {}".format(gridStorage.getSize()))
 ## grid points to obtain the nodal values. Then we use
 ## hierarchization to obtain the surplus value.
 
-size = gridStorage.getSize();
 # create coefficient vector
 alpha = pysgpp.DataVector(gridStorage.getSize())
 for i in range(gridStorage.getSize()):

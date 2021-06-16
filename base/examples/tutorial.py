@@ -76,9 +76,7 @@ print("number of grid points:  {}".format(gridStorage.getSize()))
 ## freshly created \c DataVector are not initialized, we set them to
 ## 0.0. (This is superfluous here as we initialize them in the
 ## next few lines anyway.)
-size = gridStorage.getSize()
-alpha = pysgpp.DataVector(size)
-alpha.resize(size)
+alpha = pysgpp.DataVector(gridStorage.getSize())
 alpha.setAll(0.0)
 print("length of alpha vector: {}".format(len(alpha)))
 

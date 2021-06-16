@@ -56,7 +56,7 @@
   
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(PYTHON3_INSTALLATION)\Lib\site-packages\numpy\core\include\;$(ModuleSourceDirs);$(PYTHON3_INSTALLATION)\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(WINSGPP_PYTHON3)\Lib\site-packages\numpy\core\include\;$(ModuleSourceDirs);$(WINSGPP_PYTHON3)\include</AdditionalIncludeDirectories>
       <ForcedIncludeFiles>$(ModuleSingleHeaders)</ForcedIncludeFiles>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
@@ -66,7 +66,7 @@ cd $(SolutionDir)
 swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_COMBIGRID=1 -DSG_OPTIMIZATION=1 -DSG_PDE=1 -DSG_SOLVER=1 -DSG_DATADRIVEN=1 -DSG_QUADRATURE=1 -py3 pysgpp/pysgpp.i</Command>
     </PreBuildEvent>
     <Link>
-      <AdditionalLibraryDirectories>$(PYTHON3_INSTALLATION)\libs\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(WINSGPP_PYTHON3)\libs\</AdditionalLibraryDirectories>
       <AdditionalDependencies>$(ModuleStaticLibs);kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
@@ -74,9 +74,9 @@ swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_C
       <Command>
 copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py
 copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py
-"$(PYTHON3_INSTALLATION)\python.exe" -m pip uninstall -y pysgpp
+"$(WINSGPP_PYTHON3)\python.exe" -m pip uninstall -y pysgpp
 cd $(SolutionDir)
-"$(PYTHON3_INSTALLATION)\python.exe" $(SolutionDir)setup.py install</Command>
+"$(WINSGPP_PYTHON3)\python.exe" $(SolutionDir)setup.py install</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   
