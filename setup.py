@@ -124,7 +124,7 @@ setup(name='pysgpp',
       zip_safe=False,
       package_dir={'': sgpplibpath},
       packages=find_packages(where=sgpplibpath, include=['pysgpp', 'pysgpp.extensions*']),
-      package_data={'pysgpp': ['__init__.py', 'pysgpp_swig.py', '*.pyd']},
+      package_data={'pysgpp': ['pysgpp_swig.py', '_pysgpp_swig.pyd']},
       )
 
 # cleanup

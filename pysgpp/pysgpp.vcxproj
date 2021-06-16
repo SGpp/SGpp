@@ -76,7 +76,7 @@ copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgp
 copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py
 "$(WINSGPP_PYTHON3)\python.exe" -m pip uninstall -y pysgpp
 cd $(SolutionDir)
-"$(WINSGPP_PYTHON3)\python.exe" $(SolutionDir)setup.py install</Command>
+"$(WINSGPP_PYTHON3)\python.exe" $(SolutionDir)setup.py clean --all install</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   
