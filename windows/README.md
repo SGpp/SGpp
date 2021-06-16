@@ -16,13 +16,18 @@ For that, you have to perform the following steps:
 - Download [NuGet](https://www.nuget.org/downloads) and put `nuget.exe` either into the `PATH` or put it in the `SGpp/windows` directory
 - Execute the scripts `build_msbuild.bat` to first build the library and then `run_tests.bat` to run the tests
 
+## Compiling and running pysgpp on Windows
+
+- Build the SGpp release configuration build as described in the previous section
+- Define the environment variable `WINSGPP_PYTHON3` that points to the Python3 installation you want to use with pysgpp
+- Build the project `pysgpp\pysgpp.vcxproj`
+
 ## TODO
 
 - Change how source files are included. Use wildcards and wildcard exclusions
   of directories to make the build process easier when new source files are added
 - Check all working directories of examples/tests, since all file read operations are using
   relative paths and executing them in the wrong working directory leads to errors
-- Implement Release build as well (Currently only debug DLLs are built)
 - Eliminate compiler warnings
 - Fix failing tests
 
