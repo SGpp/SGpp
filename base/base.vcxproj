@@ -814,7 +814,7 @@
     <ClCompile Include="src\sgpp\base\tools\EvalCuboidGeneratorForStretching.cpp" />
     <ClCompile Include="src\sgpp\base\tools\GaussHermiteQuadRule1D.cpp" />
     <ClCompile Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <ClCompile Include="src\sgpp\base\tools\GridPrinter.cpp" />
     <ClCompile Include="src\sgpp\base\tools\GridPrinterForStretching.cpp" />
@@ -855,9 +855,11 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <IntDir>out\$(Configuration)\</IntDir>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -870,17 +872,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IntDir>out\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
-    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)</LibraryPath>
+    <UseDebugLibraries>true</UseDebugLibraries>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IntDir>out\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)lib\$(Configuration)\</OutDir>
+    <UseDebugLibraries>false</UseDebugLibraries>
   </PropertyGroup>
   <Import Project="$(SolutionDir)windows\windows_dll.targets" />
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ModuleIncludeDirs);$(ProjectDir)src\</AdditionalIncludeDirectories>
       <SDLCheck>false</SDLCheck>

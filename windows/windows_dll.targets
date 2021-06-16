@@ -5,11 +5,13 @@
 
 <ItemGroup>
 	<_WildCardExamples Include="$(ProjectDir)examples\**\*.cpp" />
-	<_WildCardExamples Include="$(ProjectDir)examples\**\*.py" />
+	<_WildCardPyExamples Include="$(ProjectDir)examples\**\*.py" />
 	<_WildCardTests Include="$(ProjectDir)tests\**\*.cpp" />
 </ItemGroup>
 
 <ItemGroup>
+	<None Include="@(_WildCardPyExamples)" >
+	</None>
 	<ClCompile Include="@(_WildCardExamples)" >
 		<ObjectFileName>$(IntDir)examples\</ObjectFileName>
 	</ClCompile>
@@ -55,6 +57,7 @@
 		cd $(OutDir)
 		dumpbin.exe /LINKERMEMBER $(TargetPath) > $(TargetName).dump
 		$(SolutionDir)windows\tools\dump2def.exe "@$(TargetName)@sgpp@" "$(SolutionDir)windows\tools\demumble.exe" "$(TargetName).dump" "libsgpp$(TargetName).def"
+		set LIB=%LIB%;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64)
 		link.exe /DEBUG /MACHINE:X64 /DLL /DEF:libsgpp$(TargetName).def $(TargetName).lib $(ModuleLibraries) /out:$(SolutionDir)lib\$(Configuration)\libsgpp$(TargetName).dll
 		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\"
 		mkdir "$(SolutionDir)bin\$(TargetName)\$(Configuration)\tests\"

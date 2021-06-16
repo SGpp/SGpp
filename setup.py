@@ -12,6 +12,7 @@
 # pysgpp.extensions
 
 import os
+import sys
 import shutil
 from setuptools import setup, find_packages
 
@@ -25,7 +26,11 @@ try:
 except ImportError:
     bdist_wheel = None
 
-sgpplibpath = os.path.join("lib", "Debug")
+sgpplibpath = os.path.join("lib")
+is_windows = sys.platform.startswith('win')
+if is_windows:
+    sgpplibpath = os.path.join(sgpplibpath, "Release")
+
 # path to pysgpp lib
 libpath = os.path.join(sgpplibpath, "pysgpp")
 extensionspath = os.path.join(libpath, "extensions")
@@ -119,7 +124,7 @@ setup(name='pysgpp',
       zip_safe=False,
       package_dir={'': sgpplibpath},
       packages=find_packages(where=sgpplibpath, include=['pysgpp', 'pysgpp.extensions*']),
-      package_data={'pysgpp': ['__init__.py', '_pysgpp_swig.so', '*.pyd']},
+      package_data={'pysgpp': ['__init__.py', 'pysgpp_swig.py', '*.pyd']},
       )
 
 # cleanup

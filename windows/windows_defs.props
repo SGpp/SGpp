@@ -11,7 +11,7 @@
 </ItemGroup>
 
 <PropertyGroup>
-	<UsedPreprocessorDefs>_WINDOWS;WIN32;_WIN32;USE_EIGEN;NOMINMAX</UsedPreprocessorDefs>
+	<UsedPreprocessorDefs>USE_EIGEN</UsedPreprocessorDefs>
 </PropertyGroup>
 
 <PropertyGroup>

@@ -74,15 +74,15 @@ swig -o pysgpp/pysgpp_wrap.cc -c++ -python -fvirtual -threads -DSG_BASE=1 -DSG_C
       <Command>
 copy $(ProjectDir)pysgpp_swig.py $(SolutionDir)lib\$(Configuration)\pysgpp\pysgpp_swig.py
 copy $(ProjectDir)__init__.py $(SolutionDir)lib\$(Configuration)\pysgpp\__init__.py
-pip uninstall -y pysgpp
+"$(PYTHON3_INSTALLATION)\python.exe" -m pip uninstall -y pysgpp
 cd $(SolutionDir)
-python $(SolutionDir)setup.py install</Command>
+"$(PYTHON3_INSTALLATION)\python.exe" $(SolutionDir)setup.py install</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_DEBUG;SWIGRUNTIME_DEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>$(UsedPreprocessorDefs);_DEBUG;SWIGRUNTIME_DEBUG;SWIG_PYTHON_INTERPRETER_NO_DEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
   
