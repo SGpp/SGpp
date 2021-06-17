@@ -847,13 +847,13 @@ void halton_timestamp()
 #define TIME_SIZE 40
 
   static char time_buffer[TIME_SIZE];
-  const struct std::tm *tm_ptr;
-  std::time_t now;
+  // const struct std::tm *tm_ptr;
+  // std::time_t now;
 
   now = std::time(nullptr);
   tm_ptr = std::localtime(&now);
 
-  size_t len = std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
+  // size_t len = std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
 
   if (len == 0) {
     throw std::runtime_error("'count' was reached before the entire string could be stored!");

@@ -176,7 +176,7 @@ class SplineResponseSurfaceVector : public ResponseSurfaceVector {
   /**
    * Destructor
    */
-  ~SplineResponseSurfaceVector() {}
+  ~SplineResponseSurfaceVector() override {}
 
   /**
    * creates a regualar sparse grid interpolant

@@ -61,8 +61,8 @@ sgpp::base::DataVector ResponseSurfaceVector::averageNRMSE(
     sgpp::base::DataMatrix& componentwiseErrorData, size_t numMCPoints) {
   sgpp::base::DataVector componentwiseL2Errors(numRes);
   sgpp::base::DataVector componentwiseNRMSE(numRes);
-  sgpp::base::DataVector minEvaluations(numRes, std::numeric_limits<float>::max());
-  sgpp::base::DataVector maxEvaluations(numRes, -std::numeric_limits<float>::max());
+  sgpp::base::DataVector minEvaluations(numRes, 9999999);
+  sgpp::base::DataVector maxEvaluations(numRes, -9999999);
   sgpp::base::DataVector randomVector(numDim);
   for (size_t i = 0; i < numMCPoints; i++) {
     for (size_t d = 0; d < numDim; d++) {
@@ -93,7 +93,7 @@ sgpp::base::DataVector ResponseSurfaceVector::averageNRMSE(
     componentwiseL2Errors[t] = sqrt(componentwiseL2Errors[t] / static_cast<double>(numMCPoints));
     if ((maxEvaluations[t] - minEvaluations[t]) > 1e-14) {
       componentwiseNRMSE[t] = componentwiseL2Errors[t] / (maxEvaluations[t] - minEvaluations[t]);
-    }else{
+    } else {
       componentwiseNRMSE[t] = componentwiseL2Errors[t];
     }
     averageL2Err += componentwiseL2Errors[t];

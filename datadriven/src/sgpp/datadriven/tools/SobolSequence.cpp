@@ -328,7 +328,7 @@ void i4_sobol(int dim_num, int *seed, float quasi[])
   int j;
   int j2;
   int k;
-  int l;
+  int l = 0;
   static int lastq[DIM_MAX2];
   int m;
   static int maxcol;
@@ -13762,7 +13762,7 @@ void i4_sobol(int dim_num, int *seed, float quasi[])
     //
     //  RECIPD is 1/(common denominator of the elements in V).
     //
-    recipd = 1.0E+00 / ((float)(2 * l));
+    recipd = (float)(1.0 / ((float)(2 * l)));
   }
 
   if (*seed < 0) {
@@ -13957,11 +13957,11 @@ int i4_uniform(int a, int b, int *seed)
     *seed = *seed + 2147483647;
   }
 
-  r = (float)(*seed) * 4.656612875E-10;
+  r = (float)(*seed) * (float)4.656612875E-10;
   //
   //  Scale R to lie between A-0.5 and B+0.5.
   //
-  r = (1.0 - r) * ((float)(i4_min(a, b)) - 0.5) + r * ((float)(i4_max(a, b)) + 0.5);
+  r = (float)((1.0 - r) * ((float)(i4_min(a, b)) - 0.5) + r * ((float)(i4_max(a, b)) + 0.5));
   //
   //  Use rounding to convert R to an integer between A and B.
   //
@@ -14221,7 +14221,7 @@ void i8_sobol(int dim_num, long long int *seed, double quasi[])
   long long int j;
   long long int j2;
   long long int k;
-  long long int l;
+  long long int l = 0;
   static long long int lastq[DIM_MAX2];
   long long int m;
   static long long int maxcol;
@@ -27916,7 +27916,7 @@ long long int i8_uniform(long long int a, long long int b, int *seed)
 
   k = *seed / 127773;
 
-  *seed = 16807 * (*seed - k * 127773) - k * 2836;
+  *seed = 16807 * (*seed - (int)k * 127773) - (int)k * 2836;
 
   if (*seed < 0) {
     *seed = *seed + 2147483647;
@@ -28122,7 +28122,7 @@ float r4_uniform_01(int *seed)
   //  Although SEED can be represented exactly as a 32 bit integer,
   //  it generally cannot be represented exactly as a 32 bit real number!
   //
-  r = (float)(*seed) * 4.656612875E-10;
+  r = (float)(*seed) * (float)4.656612875E-10;
 
   return r;
 }
@@ -28509,14 +28509,14 @@ void sobol_timestamp()
 #define TIME_SIZE 40
 
   static char time_buffer[TIME_SIZE];
-  const struct tm *tm;
-  size_t len;
-  time_t now;
+  // const struct tm *tm;
+  // size_t len;
+  // time_t now;
 
-  now = time(NULL);
-  tm = localtime(&now);
+  // now = time(NULL);
+  // tm = localtime(&now);
 
-  len = strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm);
+  // len = strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm);
 
   cout << time_buffer << "\n";
 
