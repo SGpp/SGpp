@@ -2,9 +2,9 @@
 
 #include <omp.h>
 
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/tools/SGppStopwatch.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
 
@@ -33,7 +33,7 @@ class OperationMultiEvalStreamingBSpline : public base::OperationMultipleEval {
  public:
   OperationMultiEvalStreamingBSpline(base::Grid& grid, base::DataMatrix& dataset);
 
-  ~OperationMultiEvalStreamingBSpline();
+  ~OperationMultiEvalStreamingBSpline() override;
 
   size_t getChunkGridPoints();
 
@@ -70,6 +70,5 @@ class OperationMultiEvalStreamingBSpline : public base::OperationMultipleEval {
 
   void recalculateLevelAndIndex();
 };
-}
-}
-
+}  // namespace datadriven
+}  // namespace sgpp
