@@ -17,7 +17,7 @@ VectorDistributionRefinementFunctor::VectorDistributionRefinementFunctor(
   sampleVector = pdfs.sample();
   // map sampleVector to uni intervals to make it comparable with the grid points
   for (size_t d = 0; d < pdfs.getSize(); d++) {
-    sampleVector[d] = (sampleVector[d] - bounds[d, 0]) / (bounds[d, 1] - bounds[d, 0]);
+    sampleVector[d] = (sampleVector[d] - bounds.get(d, 0)) / (bounds.get(d, 1) - bounds.get(d, 0));
   }
 }
 
