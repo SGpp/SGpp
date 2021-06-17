@@ -1,6 +1,9 @@
 name: windowsCI
 
-on: [push]
+on: 
+  push:
+    branches-ignore:
+      - testing # Jenkings test branch
 
 jobs:
   windows:
