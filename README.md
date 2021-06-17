@@ -1,7 +1,7 @@
 # Welcome to SG⁺⁺
 
 ![Jenkins build status](https://simsgs.informatik.uni-stuttgart.de/jenkins/buildStatus/icon?job=SGpp-meta-master&subject=Jenkins)
-![Github Actions build status](https://github.com/SGpp/SGpp/workflows/windowsCI/badge.svg)
+![windowsCI](https://github.com/SGpp/SGpp/workflows/ci.yml/badge.svg)
 [![Mailing list subscribe](https://img.shields.io/badge/mailing%20list-subscribe-blue.svg)](https://mailman.informatik.uni-stuttgart.de/mailman/listinfo/SGpp)
 
 ![SG⁺⁺](base/doc/doxygen/images/sgpp_logo_small.png)
