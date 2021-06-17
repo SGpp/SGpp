@@ -79,11 +79,11 @@ jobs:
           sudo apt install -y fakeroot swig python3-pip python3-dev libgomp1 doxygen openjdk-11-jdk javahelper
       - uses: actions/checkout@v2
       - name: prepare packaging
-        run: bash $GITHUB_WORKSPACE/tools/travis_scripts/install_pip_packaging_tools.sh
+        run: bash $GITHUB_WORKSPACE/tools/ci_scripts/install_pip_packaging_tools.sh
       - name: test deb packaging
-        run: bash $GITHUB_WORKSPACE/tools/travis_scripts/create_deb_install_deb_and_test.sh
+        run: bash $GITHUB_WORKSPACE/tools/ci_scripts/create_deb_install_deb_and_test.sh
       - name: test python packaging
-        run: bash $GITHUB_WORKSPACE/tools/travis_scripts/create_and_patch_python_wheel.sh
+        run: bash $GITHUB_WORKSPACE/tools/ci_scripts/create_and_patch_python_wheel.sh
   
   
   
