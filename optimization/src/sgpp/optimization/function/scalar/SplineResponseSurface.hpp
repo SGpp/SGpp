@@ -307,10 +307,10 @@ class SplineResponseSurface : public ResponseSurface {
   /**
    * Destructor
    */
-  ~SplineResponseSurface() {}
+  ~SplineResponseSurface() override {}
 
   /**
-   * creates a regualar sparse grid interpolant
+   * creates a regular sparse grid interpolant
    * @param level	level of the regular sparse grid
    */
   void regular(size_t level);
@@ -324,7 +324,7 @@ class SplineResponseSurface : public ResponseSurface {
   void regularByPoints(size_t numPoints, bool verbose = false);
 
   /**
-   * creates a surplus adaptive sparse grid inteprolant
+   * creates a surplus adaptive sparse grid interpolant
    * @param maxNumGridPoints	maximum number of grid points of the interpolants grid
    * @param initialLevel		first a regular grid of initialLevel is created.
    * @param refinementsNum		max number of grid points, added in each refinement step
@@ -372,7 +372,7 @@ class SplineResponseSurface : public ResponseSurface {
    * @param gradient	reference to return the repsonse surfaces gradient evaluted in v
    * @return 			the evaluation
    */
-  double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient);
+  double evalGradient(sgpp::base::DataVector v, sgpp::base::DataVector& gradient) override;
 
   /**
    * return the integral of the response surface
@@ -435,14 +435,14 @@ class SplineResponseSurface : public ResponseSurface {
   // type of grid/basis
   sgpp::base::GridType gridType;
   // degree of the basis
-  size_t degree;
+  // size_t degree;
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
   std::shared_ptr<sgpp::base::SBasis> basis;
   // the interpolation coefficients
   sgpp::base::DataVector coefficients;
-  // function vlaues in the grid points
+  // function values in the grid points
   sgpp::base::DataVector functionValues;
   // whether or not the grid includes the boundary
   bool boundary;

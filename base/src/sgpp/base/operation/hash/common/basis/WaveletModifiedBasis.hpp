@@ -70,7 +70,7 @@ class WaveletModifiedBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of modified wavelet basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     if (l == 1) {
       // first level
       return 0.0;

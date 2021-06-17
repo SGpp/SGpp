@@ -51,7 +51,7 @@ class WaveletBoundaryBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of boundary wavelet basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const double hinv = static_cast<double>(1 << l);
     const double t = x * hinv - static_cast<double>(i);
 

@@ -1769,7 +1769,7 @@ class NakBsplineBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() override const { return bsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation

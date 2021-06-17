@@ -258,7 +258,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() override const { return nakBsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return nakBsplineBasis.getDegree(); }
 
  protected:
   /// not a knot B-spline basis

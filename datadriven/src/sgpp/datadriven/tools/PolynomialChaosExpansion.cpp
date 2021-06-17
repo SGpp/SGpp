@@ -187,14 +187,14 @@ double PolynomialChaosExpansion::evalJacobi(int n, double x, size_t i) {
     double next = 0.0;
     double last = 1.0;
     double curr = (alpha[i] + 1.0) + (alpha[i] + beta[i] + 2.0) * ((x - 1.0) / 2.0);
-    for (int i = 2; i <= n; ++i) {
-      double q1 = ((2.0 * i + alpha[i] + beta[i] - 1.0) *
-                   ((2.0 * i + alpha[i] + beta[i]) * (2.0 * i + alpha[i] + beta[i] - 2.0) * x +
+    for (size_t i = 2; i <= n; ++i) {
+      double q1 = ((2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 1.0) *
+                   ((2.0 * static_cast<double>(i) + alpha[i] + beta[i]) * (2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 2.0) * x +
                     std::pow(alpha[i], 2) - std::pow(beta[i], 2))) /
-                  (2.0 * i * (i + alpha[i] + beta[i]) * (2.0 * i + alpha[i] + beta[i] - 2.0));
+                  (2.0 * static_cast<double>(i) * (static_cast<double>(i) + alpha[i] + beta[i]) * (2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 2.0));
       double q2 =
-          (2.0 * (i + alpha[i] - 1.0) * (i + beta[i] - 1.0) * (2.0 * i + alpha[i] + beta[i])) /
-          (2.0 * i * (i + alpha[i] + beta[i]) * (2.0 * i + alpha[i] + beta[i] - 2.0));
+          (2.0 * (static_cast<double>(i) + alpha[i] - 1.0) * (static_cast<double>(i) + beta[i] - 1.0) * (2.0 * static_cast<double>(i) + alpha[i] + beta[i])) /
+          (2.0 * static_cast<double>(i) * (static_cast<double>(i) + alpha[i] + beta[i]) * (2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 2.0));
       next = q1 * curr - q2 * last;
       last = curr;
       curr = next;
@@ -212,8 +212,8 @@ double PolynomialChaosExpansion::evalGenLaguerre(int n, double x, size_t i) {
     double next = 0.0;
     double last = 1.0;
     double curr = 1.0 + alpha[i] - x;
-    for (int i = 1; i < n; ++i) {
-      next = ((2.0 * i + 1.0 + alpha[i] - x) * curr - (i + alpha[i]) * last) / (i + 1.0);
+    for (size_t i = 1; i < n; ++i) {
+      next = ((2.0 * static_cast<double>(i) + 1.0 + alpha[i] - x) * curr - (static_cast<double>(i) + alpha[i]) * last) / (static_cast<double>(i) + 1.0);
       last = curr;
       curr = next;
     }
@@ -234,7 +234,7 @@ double PolynomialChaosExpansion::sparseGridQuadrature(
   std::unique_ptr<sgpp::base::Grid> grid(sgpp::base::Grid::createNakBsplineExtendedGrid(dim, 3));
   sgpp::base::GridStorage& gridStorage = grid->getStorage();
   int i = 0;
-  while (gridStorage.getSize() < (size_t)n) {
+  while (gridStorage.getSize() < static_cast<size_t>(n)) {
     gridStorage.clear();
     grid->getGenerator().regular(i);
     ++i;
