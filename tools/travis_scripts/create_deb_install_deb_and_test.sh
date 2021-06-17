@@ -66,6 +66,7 @@ declare -a python_examples_to_test=(
                                     "base/examples/subspaceRefinement.py"
                                     "optimization/examples/optimization.py"
                                     "optimization/examples/fuzzy.py"
+                                    "optimization/examples/splineResponseSurface_example.py"
                                     "combigrid/examples/combigrid.py"
                                     "pde/examples/LTwoDotTest.py"
                                 )
