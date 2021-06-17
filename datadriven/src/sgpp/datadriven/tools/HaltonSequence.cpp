@@ -853,7 +853,7 @@ void halton_timestamp()
   now = std::time(NULL);
   tm_ptr = std::localtime(&now);
 
-  size_t len = std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
+  // size_t len = std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
 
   std::cout << time_buffer << "\n";
 
