@@ -10,6 +10,7 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -73,7 +74,7 @@ double *halton(int i, int m)
   //  Carry out the computation.
   //
   for (j = 0; j < m; j++) {
-    prime_inv[j] = 1.0 / (double)(prime(j + 1));
+    prime_inv[j] = 1.0 / static_cast<double>(prime(j + 1));
   }
 
   for (j = 0; j < m; j++) {
@@ -83,8 +84,8 @@ double *halton(int i, int m)
   while (0 < i4vec_sum(m, t)) {
     for (j = 0; j < m; j++) {
       d = (t[j] % prime(j + 1));
-      r[j] = r[j] + (double)(d)*prime_inv[j];
-      prime_inv[j] = prime_inv[j] / (double)(prime(j + 1));
+      r[j] = r[j] + static_cast<double>(d)*prime_inv[j];
+      prime_inv[j] = prime_inv[j] / static_cast<double>(prime(j + 1));
       t[j] = (t[j] / prime(j + 1));
     }
   }
@@ -153,7 +154,7 @@ double *halton_base(int i, int m, int b[])
   //  Carry out the computation.
   //
   for (j = 0; j < m; j++) {
-    b_inv[j] = 1.0 / (double)(b[j]);
+    b_inv[j] = 1.0 / static_cast<double>(b[j]);
   }
 
   for (j = 0; j < m; j++) {
@@ -163,8 +164,8 @@ double *halton_base(int i, int m, int b[])
   while (0 < i4vec_sum(m, t)) {
     for (j = 0; j < m; j++) {
       d = (t[j] % b[j]);
-      r[j] = r[j] + (double)(d)*b_inv[j];
-      b_inv[j] = b_inv[j] / (double)(b[j]);
+      r[j] = r[j] + static_cast<double>(d)*b_inv[j];
+      b_inv[j] = b_inv[j] / static_cast<double>(b[j]);
       t[j] = (t[j] / b[j]);
     }
   }
@@ -230,7 +231,7 @@ int halton_inverse(double r[], int m)
 
   while (t != 0.0) {
     t = t * 2.0;
-    d = (int)(t);
+    d = static_cast<int>(t);
     i = i + d * p;
     p = p * 2;
     t = r8_mod(t, 1.0);
@@ -318,14 +319,14 @@ double *halton_sequence(int i1, int i2, int m)
     //  Carry out the computation.
     //
     for (j = 0; j < m; j++) {
-      prime_inv[j] = 1.0 / (double)(prime(j + 1));
+      prime_inv[j] = 1.0 / static_cast<double>(prime(j + 1));
     }
 
     while (0 < i4vec_sum(m, t)) {
       for (j = 0; j < m; j++) {
         d = (t[j] % prime(j + 1));
-        r[j + k * m] = r[j + k * m] + (double)(d)*prime_inv[j];
-        prime_inv[j] = prime_inv[j] / (double)(prime(j + 1));
+        r[j + k * m] = r[j + k * m] + static_cast<double>(d)*prime_inv[j];
+        prime_inv[j] = prime_inv[j] / static_cast<double>(prime(j + 1));
         t[j] = (t[j] / prime(j + 1));
       }
     }
@@ -585,7 +586,6 @@ int prime(int n)
     exit(1);
   }
 
-  return 0;
 #undef PRIME_MAX
 }
 // ****************************************************************************80
@@ -646,7 +646,7 @@ double r8_mod(double x, double y)
     exit(1);
   }
 
-  value = x - ((double)((int)(x / y))) * y;
+  value = x - (static_cast<double>(static_cast<int>(x / y))) * y;
 
   if (x < 0.0 && 0.0 < value) {
     value = value - fabs(y);
@@ -850,10 +850,14 @@ void halton_timestamp()
   const struct std::tm *tm_ptr;
   std::time_t now;
 
-  now = std::time(NULL);
+  now = std::time(nullptr);
   tm_ptr = std::localtime(&now);
 
   size_t len = std::strftime(time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr);
+
+  if (len == 0) {
+    throw std::runtime_error("'count' was reached before the entire string could be stored!");
+  }
 
   std::cout << time_buffer << "\n";
 

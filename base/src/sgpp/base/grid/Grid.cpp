@@ -501,8 +501,8 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       newGrid = Grid::createNakPBsplineGrid(numDims, degree);
       break;
 
-    default:
-      throw generation_exception("Grid::clone - grid type not known");
+    //default:
+    //  throw generation_exception("Grid::clone - grid type not known");
   }
   return newGrid;
 }

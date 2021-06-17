@@ -14,7 +14,8 @@ import re
 
 def processFile(path):
   path = os.path.abspath(path)
-  if os.path.splitext(path)[1] not in [".cpp", ".hpp"]: return True
+  if os.path.splitext(path)[1] not in [".cpp", ".hpp"]: 
+    return True
   with open(path, "r") as f: source = f.read()
 
   COPYRIGHT_BANNER = r"""// Copyright (C) 2008-today The SG++ project
@@ -40,7 +41,8 @@ def processFile(path):
 
 def processFilePy(path):
   path = os.path.abspath(path)
-  if os.path.splitext(path)[1] not in [".py"]: return True
+  if os.path.splitext(path)[1] not in [".py"]: 
+    return True
   with open(path, "r") as f: source = f.read()
 
   # Difference to C++ copyright banner: check requires regular expression. 
