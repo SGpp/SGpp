@@ -12,12 +12,12 @@ namespace base {
 VectorDistributionRefinementFunctor::VectorDistributionRefinementFunctor(
     DataMatrix& alphas, sgpp::base::DistributionsVector pdfs, size_t refinements_num,
     double threshold)
-    : alphas(alphas), refinements_num(refinements_num), pdfs(pdfs), threshold(threshold) {
+    : alphas(alphas), pdfs(pdfs), refinements_num(refinements_num), threshold(threshold) {
   sgpp::base::DataMatrix bounds = pdfs.getBounds();
   sampleVector = pdfs.sample();
   // map sampleVector to uni intervals to make it comparable with the grid points
   for (size_t d = 0; d < pdfs.getSize(); d++) {
-    sampleVector[d] = (sampleVector[d] - bounds[d, 0]) / (bounds[d, 1] - bounds[d, 0]);
+    sampleVector[d] = (sampleVector[d] - bounds.get(d, 0)) / (bounds.get(d, 1) - bounds.get(d, 0));
   }
 }
 

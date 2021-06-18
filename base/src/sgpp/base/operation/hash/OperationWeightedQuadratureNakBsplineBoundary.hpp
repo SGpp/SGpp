@@ -45,7 +45,7 @@ class OperationWeightedQuadratureNakBsplineBoundary : public OperationWeightedQu
    * @param alpha   	Coefficient vector for current grid
    * @param pdfs			probability density functions
    */
-  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs);
+  double doWeightedQuadrature(DataVector& alpha, sgpp::base::DistributionsVector pdfs) override;
 
  protected:
   // Pointer to the grid's GridStorage object

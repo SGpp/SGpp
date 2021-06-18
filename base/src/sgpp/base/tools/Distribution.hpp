@@ -39,12 +39,12 @@ class Distribution {
    * @param seed  if a seed should be set, ii.e. for precalculating and reusing grids set one here,
    * otherwise a pseudo random seed is set automatically
    */
-  Distribution(long int seed = 777) {
+  Distribution(typename std::chrono::system_clock::duration::rep seed = 777) {
     // set seed
     if (seed == 777) {
       seed = std::chrono::system_clock::now().time_since_epoch().count();
     }
-    gen.seed(seed);
+    gen.seed(static_cast<decltype(gen)::result_type>(seed));
   }
 
   /**

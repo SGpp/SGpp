@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <ctime>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
@@ -23,7 +24,7 @@ DataShufflingFunctorRandom::DataShufflingFunctorRandom(int64_t seed) :
 void DataShufflingFunctorRandom::reinitialize(size_t newNumSamples) {
   if (newNumSamples != numSamples && newNumSamples != 0) {
     numSamples = newNumSamples;
-    std::mt19937 generator(seed);
+    std::mt19937 generator(static_cast<std::mt19937::result_type>(seed));
     size_t max = numSamples - 1;
 
     // Calculate the number of bits needed to store max minus 1

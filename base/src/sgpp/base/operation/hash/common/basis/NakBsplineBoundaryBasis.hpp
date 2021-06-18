@@ -132,7 +132,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     switch (getDegree()) {
       case 1:
         return nakBsplineBasis.evalDx(l, i, x);
@@ -197,7 +197,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
    * @param i     index of basis function
    * @return      integral of basis function
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getIntegral(LT l, IT i) override {
     size_t quadOrder = getDegree() + 1;
     auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
     base::DataVector temp_quadCoordinates, temp_quadWeights;
@@ -258,7 +258,7 @@ class NakBsplineBoundaryBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return nakBsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return nakBsplineBasis.getDegree(); }
 
  protected:
   /// not a knot B-spline basis

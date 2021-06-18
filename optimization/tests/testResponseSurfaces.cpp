@@ -47,7 +47,7 @@ class scalarTestFunction : public ScalarFunction {
     return gradient;
   }
 
-  virtual void clone(std::unique_ptr<sgpp::base::ScalarFunction>& clone) const {
+  virtual void clone(std::unique_ptr<sgpp::base::ScalarFunction>& clone) const override {
     clone = std::unique_ptr<sgpp::base::ScalarFunction>(new scalarTestFunction(*this));
   }
   DataVector getLowerBounds() { return DataVector(d, -2.0); }

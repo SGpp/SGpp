@@ -259,7 +259,7 @@ class NakBsplineModifiedBasisDeriv1 : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of wavelet basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     std::cerr << "NakBsplineMOdifiedBasisDeriv1::evalDx not implemented\n";
     return 0;
   }
