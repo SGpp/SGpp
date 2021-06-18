@@ -10,9 +10,11 @@
 #include <sgpp/base/grid/type/BsplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/BsplineClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/BsplineGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/FundamentalSplineGrid.hpp>
-#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/LinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/LinearGridStencil.hpp>
 #include <sgpp/base/grid/type/LinearL0BoundaryGrid.hpp>
@@ -23,36 +25,34 @@
 #include <sgpp/base/grid/type/ModLinearClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGridStencil.hpp>
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
 #include <sgpp/base/grid/type/ModPolyGrid.hpp>
 #include <sgpp/base/grid/type/ModWaveletGrid.hpp>
-#include <sgpp/base/grid/type/PeriodicGrid.hpp>
-#include <sgpp/base/grid/type/PolyGrid.hpp>
-#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModPolyClenshawCurtisGrid.hpp>
-#include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
-#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/ModWeaklyFundamentalNakSplineGrid.hpp>
-#include <sgpp/base/grid/type/FundamentalSplineBoundaryGrid.hpp>
-#include <sgpp/base/grid/type/FundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NaturalBsplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PeriodicGrid.hpp>
+#include <sgpp/base/grid/type/PolyBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/PolyClenshawCurtisGrid.hpp>
+#include <sgpp/base/grid/type/PolyGrid.hpp>
 #include <sgpp/base/grid/type/PrewaveletGrid.hpp>
 #include <sgpp/base/grid/type/SquareRootGrid.hpp>
 #include <sgpp/base/grid/type/WaveletBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/WaveletGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineGrid.hpp>
-#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
-#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalNakSplineBoundaryGrid.hpp>
+#include <sgpp/base/grid/type/WeaklyFundamentalSplineBoundaryGrid.hpp>
 
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/exception/application_exception.hpp>
+#include <sgpp/base/exception/generation_exception.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearStretchedBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearTruncatedBoundaryGrid.hpp>
@@ -501,8 +501,8 @@ Grid* Grid::createGridOfEquivalentType(size_t numDims) {
       newGrid = Grid::createNakPBsplineGrid(numDims, degree);
       break;
 
-    default:
-      throw generation_exception("Grid::clone - grid type not known");
+      // default:
+      //   throw generation_exception("Grid::clone - grid type not known");
   }
   return newGrid;
 }
@@ -680,24 +680,21 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
                                                        LinearTruncatedBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("naturalBsplineBoundary",
                                                        NaturalBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("nakBspline",
-                                                       NakBsplineGrid::unserialize));   
+    tMap->insert(std::pair<std::string, Grid::Factory>("nakBspline", NakBsplineGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("nakBsplineBoundary",
                                                        NakBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("modNakBspline",
-                                                       ModNakBsplineGrid::unserialize));
-    tMap->insert(std::pair<std::string, Grid::Factory>("weaklyFundamentalSplineBoundary",
-        WeaklyFundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(
+        std::pair<std::string, Grid::Factory>("modNakBspline", ModNakBsplineGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "weaklyFundamentalSplineBoundary", WeaklyFundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
         "weaklyFundamentalNakSplineBoundary", WeaklyFundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>(
         "modWeaklyFundamentalNakSpline", ModWeaklyFundamentalNakSplineGrid::unserialize));
-    tMap->insert(
-        std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
-        FundamentalSplineBoundaryGrid::unserialize));
-    tMap->insert(
-        std::pair<std::string, Grid::Factory>("fundamentalNakSplineBoundary",
-        FundamentalNakSplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>("fundamentalSplineBoundary",
+                                                       FundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(std::pair<std::string, Grid::Factory>(
+        "fundamentalNakSplineBoundary", FundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::pair<std::string, Grid::Factory>("nakBsplineExtended",
                                                        NakBsplineExtendedGrid::unserialize));
     tMap->insert(
@@ -739,20 +736,17 @@ std::map<std::string, Grid::Factory>& Grid::typeMap() {
     tMap->insert(std::make_pair("periodic", PeriodicGrid::unserialize));
     tMap->insert(
         std::make_pair("linearTruncatedBoundary", LinearTruncatedBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("naturalBsplineBoundary",
-                                NaturalBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("nakBsplineBoundary",
-                                NakBsplineBoundaryGrid::unserialize));
-    tMap->insert(std::make_pair("modNakBspline",
-                                ModNakBsplineGrid::unserialize));
+    tMap->insert(std::make_pair("naturalBsplineBoundary", NaturalBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("nakBsplineBoundary", NakBsplineBoundaryGrid::unserialize));
+    tMap->insert(std::make_pair("modNakBspline", ModNakBsplineGrid::unserialize));
     tMap->insert(std::make_pair("weaklyFundamentalSplineBoundary",
                                 WeaklyFundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("weaklyFundamentalNakSplineBoundary",
                                 WeaklyFundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("modWeaklyFundamentalNakSpline",
                                 ModWeaklyFundamentalNakSplineGrid::unserialize));
-    tMap->insert(std::make_pair("fundamentalSplineBoundary",
-                                FundamentalSplineBoundaryGrid::unserialize));
+    tMap->insert(
+        std::make_pair("fundamentalSplineBoundary", FundamentalSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("fundamentalNakSplineBoundary",
                                 FundamentalNakSplineBoundaryGrid::unserialize));
     tMap->insert(std::make_pair("nakBsplineExtended", NakBsplineExtendedGrid::unserialize));
@@ -829,24 +823,22 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
         GridType::LinearTruncatedBoundary, "linearTruncatedBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBspline,
-                                                                    "nakBspline"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::NakBsplineBoundary, "nakBsplineBoundary"));
-    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
-        GridType::ModNakBspline, "modNakBspline"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::NakBspline, "nakBspline"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(GridType::NakBsplineBoundary,
+                                                                    "nakBsplineBoundary"));
+    verboseMap->insert(
+        std::pair<sgpp::base::GridType, std::string>(GridType::ModNakBspline, "modNakBspline"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::WeaklyFundamentalSplineBoundary, "weaklyFundamentalSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::WeaklyFundamentalNakSplineBoundary, "weaklyFundamentalNakSplineBoundary"));
     verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
         GridType::ModWeaklyFundamentalNakSpline, "modWeaklyFundamentalNakSpline"));
-    verboseMap->insert(
-        std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalSplineBoundary,
-        "fundamentalSplineBoundary"));
-    verboseMap->insert(
-        std::pair<sgpp::base::GridType, std::string>(GridType::FundamentalNakSplineBoundary,
-        "fundamentalNakSplineBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
+    verboseMap->insert(std::pair<sgpp::base::GridType, std::string>(
+        GridType::FundamentalNakSplineBoundary, "fundamentalNakSplineBoundary"));
     verboseMap->insert(
         std::pair<sgpp::base::GridType, std::string>(GridType::NakPBspline, "nakPBspline"));
 #else
@@ -889,26 +881,20 @@ std::map<sgpp::base::GridType, std::string>& Grid::typeVerboseMap() {
     verboseMap->insert(
         std::make_pair(GridType::ModLinearClenshawCurtis, "modLinearClenshawCurtis"));
     verboseMap->insert(std::make_pair(GridType::LinearClenshawCurtis, "linearClenshawCurtis"));
-    verboseMap->insert(
-        std::make_pair(GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::NaturalBsplineBoundary, "naturalBsplineBoundary"));
     verboseMap->insert(std::make_pair(GridType::NakBspline, "nakBspline"));
-    verboseMap->insert(
-        std::make_pair(GridType::NakBsplineBoundary, "nakBsplineBoundary"));
-    verboseMap->insert(
-        std::make_pair(GridType::ModNakBspline, "modNakBspline"));
-    verboseMap->insert(
-        std::make_pair(GridType::WeaklyFundamentalSplineBoundary,
-        "weaklyFundamentalSplineBoundary"));
-    verboseMap->insert(
-        std::make_pair(GridType::WeaklyFundamentalNakSplineBoundary,
-        "weaklyFundamentalNakSplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::NakBsplineBoundary, "nakBsplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::ModNakBspline, "modNakBspline"));
+    verboseMap->insert(std::make_pair(GridType::WeaklyFundamentalSplineBoundary,
+                                      "weaklyFundamentalSplineBoundary"));
+    verboseMap->insert(std::make_pair(GridType::WeaklyFundamentalNakSplineBoundary,
+                                      "weaklyFundamentalNakSplineBoundary"));
     verboseMap->insert(
         std::make_pair(GridType::ModWeaklyFundamentalNakSpline, "modWeaklyFundamentalNakSpline"));
     verboseMap->insert(
         std::make_pair(GridType::FundamentalSplineBoundary, "fundamentalSplineBoundary"));
     verboseMap->insert(
-        std::make_pair(GridType::FundamentalNakSplineBoundary,
-                       "fundamentalNakSplineBoundary"));
+        std::make_pair(GridType::FundamentalNakSplineBoundary, "fundamentalNakSplineBoundary"));
     verboseMap->insert(std::make_pair(GridType::NakBsplineExtended, "nakBsplineExtended"));
     verboseMap->insert(std::make_pair(GridType::NakPBspline, "nakPBspline"));
 #endif

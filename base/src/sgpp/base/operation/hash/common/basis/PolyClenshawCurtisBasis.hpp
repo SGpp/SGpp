@@ -87,7 +87,7 @@ class PolyClenshawCurtisBasis : public Basis<LT, IT> {
 
   size_t getDegree() const override { return degree; }
 
-  double evalDx(LT level, IT index, double x) {
+  double evalDx(LT level, IT index, double x) override {
     // uses the logarithmic derivative method from the second answer
     // http://math.stackexchange.com/questions/809927/first-derivative-of-lagrange-polynomial
 

@@ -307,7 +307,7 @@ class FundamentalSplineBasis : public Basis<LT, IT> {
    * @return      value of derivative of fundamental spline basis
    *              function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const size_t p = bsplineBasis.getDegree();
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
     const double t = x * hInv - static_cast<double>(i) + static_cast<double>(p + 1) / 2.0;

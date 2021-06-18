@@ -1177,7 +1177,7 @@ class BsplineModifiedBasis : public Basis<LT, IT> {
    * @return      value of derivative of modified
    *              B-spline basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     if (l == 1) {
       return 0.0;
     }

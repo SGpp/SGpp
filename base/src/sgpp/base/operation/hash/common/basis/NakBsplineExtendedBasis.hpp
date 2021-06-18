@@ -200,7 +200,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     switch (getDegree()) {
         // Extension coefficients are left =[2, -1], right =[-1,2]
@@ -327,7 +327,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
    * @param i     index of basis function
    * @return      integral of basis function
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getIntegral(LT l, IT i) override {
     size_t degree = getDegree();
     if ((degree != 1) && (degree != 3) && (degree != 5)) {
       throw std::runtime_error(
@@ -547,7 +547,7 @@ class NakBsplineExtendedBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return notAKnotBsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return notAKnotBsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation

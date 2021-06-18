@@ -315,7 +315,7 @@ class NakPBsplineBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of B-spline basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     const double hInvDbl = static_cast<double>(hInv);
     double innerDeriv = hInvDbl;
@@ -559,7 +559,7 @@ class NakPBsplineBasis : public Basis<LT, IT> {
    * @param i     index of basis function
    * @return      integral of basis function
    */
-  inline double getIntegral(LT l, IT i) {
+  inline double getIntegral(LT l, IT i) override {
     size_t quadOrder = getDegree() + 1;
     auto pdf_uniform = std::make_shared<sgpp::base::DistributionUniform>(0, 1);
     base::DataVector temp_quadCoordinates, temp_quadWeights;
@@ -627,7 +627,7 @@ class NakPBsplineBasis : public Basis<LT, IT> {
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const { return bsplineBasis.getDegree(); }
+  inline size_t getDegree() const override { return bsplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation

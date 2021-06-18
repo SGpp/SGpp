@@ -116,7 +116,7 @@ class PolyModifiedClenshawCurtisBasis : public Basis<LT, IT> {
 
   size_t getDegree() const override { return polyBasis.getDegree(); }
 
-  double evalDx(LT level, IT index, double x) {
+  double evalDx(LT level, IT index, double x) override {
     const IT hInv = static_cast<IT>(1) << level;
     if (level == 1) {
       // first level

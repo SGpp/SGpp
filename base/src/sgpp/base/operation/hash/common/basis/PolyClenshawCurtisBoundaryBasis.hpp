@@ -78,7 +78,7 @@ class PolyClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
 
   size_t getDegree() const override { return polyBasis.getDegree(); }
 
-  double evalDx(LT level, IT index, double x) {
+  double evalDx(LT level, IT index, double x) override {
     if ((level == 0) && (index == 0)) {
       return ((0.0 < x && x < 1.0) ? -1.0 : 0.0);
     } else if ((level == 0) && (index == 1)) {

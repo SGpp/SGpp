@@ -774,7 +774,7 @@ class FundamentalNakSplineBasis: public Basis<LT, IT> {
    * @return      value of derivative of fundamental not-a-knot spline basis
    *              function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const IT hInv = static_cast<IT>(1) << l;
     double innerDeriv = 1.0;
 

@@ -69,6 +69,8 @@ class VectorDistributionRefinementFunctor : public RefinementFunctor {
   /// pointer to the vector that stores the alpha values
   DataMatrix& alphas;
 
+  sgpp::base::DistributionsVector pdfs;
+
   /// number of grid points to refine
   size_t refinements_num;
 
@@ -77,7 +79,6 @@ class VectorDistributionRefinementFunctor : public RefinementFunctor {
    * refinement criterion (e.g. alpha or error) will be refined
    */
   double threshold;
-  sgpp::base::DistributionsVector pdfs;
   sgpp::base::DataVector sampleVector;
 };
 
