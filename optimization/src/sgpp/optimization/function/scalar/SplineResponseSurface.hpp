@@ -68,8 +68,9 @@ class SplineResponseSurface : public ResponseSurface {
                         sgpp::base::GridType gridType, size_t degree = 3, size_t boundaryLevel = 1)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
-        gridType(gridType),
-        degree(degree) {
+        gridType(gridType)
+        // degree(degree) 
+        {
     this->lb = lb;
     this->ub = ub;
     // dummy values for mean and variance
@@ -158,7 +159,7 @@ class SplineResponseSurface : public ResponseSurface {
                         sgpp::base::DataVector ub, size_t degree = 3)
       : ResponseSurface(objectiveFunc->getNumberOfParameters()),
         objectiveFunc(objectiveFunc),
-        degree(degree),
+        // degree(degree),
         grid(grid) {
     this->lb = lb;
     this->ub = ub;
@@ -237,7 +238,7 @@ class SplineResponseSurface : public ResponseSurface {
   SplineResponseSurface(std::shared_ptr<sgpp::base::Grid> grid, sgpp::base::DataVector coefficients,
                         sgpp::base::DataVector lb, sgpp::base::DataVector ub, size_t degree = 3)
       : ResponseSurface(grid->getDimension()),
-        degree(degree),
+        // degree(degree),
         grid(grid),
         coefficients(coefficients) {
     this->lb = lb;
@@ -435,7 +436,7 @@ class SplineResponseSurface : public ResponseSurface {
   // type of grid/basis
   sgpp::base::GridType gridType;
   // degree of the basis
-  size_t degree;
+  // size_t degree;
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis

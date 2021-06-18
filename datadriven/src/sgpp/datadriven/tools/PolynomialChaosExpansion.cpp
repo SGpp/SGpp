@@ -187,7 +187,7 @@ double PolynomialChaosExpansion::evalJacobi(int n, double x, size_t i) {
     double next = 0.0;
     double last = 1.0;
     double curr = (alpha[i] + 1.0) + (alpha[i] + beta[i] + 2.0) * ((x - 1.0) / 2.0);
-    for (size_t i = 2; i <= n; ++i) {
+    for (size_t i = 2; i <= static_cast<size_t>(n); ++i) {
       double q1 = ((2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 1.0) *
                    ((2.0 * static_cast<double>(i) + alpha[i] + beta[i]) * (2.0 * static_cast<double>(i) + alpha[i] + beta[i] - 2.0) * x +
                     std::pow(alpha[i], 2) - std::pow(beta[i], 2))) /
@@ -212,7 +212,7 @@ double PolynomialChaosExpansion::evalGenLaguerre(int n, double x, size_t i) {
     double next = 0.0;
     double last = 1.0;
     double curr = 1.0 + alpha[i] - x;
-    for (size_t i = 1; i < n; ++i) {
+    for (size_t i = 1; i < static_cast<size_t>(n); ++i) {
       next = ((2.0 * static_cast<double>(i) + 1.0 + alpha[i] - x) * curr - (static_cast<double>(i) + alpha[i]) * last) / (static_cast<double>(i) + 1.0);
       last = curr;
       curr = next;
