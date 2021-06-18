@@ -435,7 +435,7 @@ class SplineResponseSurface : public ResponseSurface {
   // type of grid/basis
   sgpp::base::GridType gridType;
   // degree of the basis
-  // size_t degree;
+  size_t degree;
   // the interpolation grid
   std::shared_ptr<sgpp::base::Grid> grid;
   // the interpolation basis
