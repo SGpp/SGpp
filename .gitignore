@@ -134,3 +134,4 @@ packages/
 bin/
 windows/test_results/
 tmpdatabase
+x64

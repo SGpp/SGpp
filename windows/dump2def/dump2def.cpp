@@ -79,6 +79,10 @@ int main(int argc, char* argv[])
                 continue;
             }
 
+            if (symbol.rfind("?_", 0) == 0 || symbol.rfind("??$_", 0) == 0 || symbol.find("@?$_") != std::string::npos) {
+              continue;
+            }
+
             // Demumble symbol
             std::string readable = exec((demumble + " \"" + symbol + "\"").c_str());
 

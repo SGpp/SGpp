@@ -40,20 +40,16 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  
   <PropertyGroup>
     <IntDir>out\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)lib\$(Configuration)\pysgpp\</OutDir>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>_pysgpp_swig</TargetName>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>_pysgpp_swig_d</TargetName>
   </PropertyGroup>
-  
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(WINSGPP_PYTHON3)\Lib\site-packages\numpy\core\include\;$(ModuleSourceDirs);$(WINSGPP_PYTHON3)\include</AdditionalIncludeDirectories>
@@ -79,19 +75,18 @@ cd $(SolutionDir)
 "$(WINSGPP_PYTHON3)\python.exe" $(SolutionDir)setup.py clean --all install</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <PreprocessorDefinitions>$(UsedPreprocessorDefs);_DEBUG;SWIGRUNTIME_DEBUG;SWIG_PYTHON_INTERPRETER_NO_DEBUG;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
   </ItemDefinitionGroup>
-  
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <PreprocessorDefinitions>$(UsedPreprocessorDefs);_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
   </ItemDefinitionGroup>
-  
   <ItemGroup>
     <ClInclude Include="pysgpp_wrap.h" />
   </ItemGroup>
