@@ -5,15 +5,15 @@
  * sgpp.sparsegrids.org
  */
 
-#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
-void OperationMultipleEvalPartialDerivativeBsplineNaive::mult(DataVector& alpha,
-                                                              DataVector& result) {
+void OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive::mult(DataVector& alpha,
+                                                                         DataVector& result) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = dataset.getNrows();
@@ -50,8 +50,8 @@ void OperationMultipleEvalPartialDerivativeBsplineNaive::mult(DataVector& alpha,
   }
 }
 
-void OperationMultipleEvalPartialDerivativeBsplineNaive::multTranspose(DataVector& alpha,
-                                                                       DataVector& result) {
+void OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive::multTranspose(
+    DataVector& alpha, DataVector& result) {
   const size_t n = storage.getSize();
   const size_t d = storage.getDimension();
   const size_t m = dataset.getNrows();
@@ -89,7 +89,7 @@ void OperationMultipleEvalPartialDerivativeBsplineNaive::multTranspose(DataVecto
   }
 }
 
-double OperationMultipleEvalPartialDerivativeBsplineNaive::getDuration() { return 0.0; }
+double OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive::getDuration() { return 0.0; }
 
 }  // namespace base
 }  // namespace sgpp

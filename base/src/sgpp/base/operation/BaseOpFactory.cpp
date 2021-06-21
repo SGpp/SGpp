@@ -172,6 +172,9 @@
 #include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeBsplineNaive.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeModBsplineNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeNakBsplineBoundaryNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaive.hpp>
+#include <sgpp/base/operation/hash/OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive.hpp>
 
 #include <sgpp/base/operation/hash/OperationEvalBsplineBoundaryNaive.hpp>
 #include <sgpp/base/operation/hash/OperationEvalBsplineClenshawCurtisNaive.hpp>

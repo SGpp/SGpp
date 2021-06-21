@@ -3,10 +3,6 @@
  * This file is part of the SG++ project. For conditions of distribution and
  * use, please see the copyright notice provided with SG++ or at
  * sgpp.sparsegrids.org
- *
- * OperationMultipleEvalPartialDerivativeModBsplineNaive.hpp
- *
- * Author: Paul Sarbu
  */
 
 #pragma once

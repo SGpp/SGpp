@@ -9,23 +9,23 @@
 
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineExtendedBasis.hpp>
 
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
 
-class OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive : public OperationMultipleEval {
+class OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaive : public OperationMultipleEval {
  public:
-  OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive(Grid& grid, size_t degree,
-                                                             DataMatrix& dataset, size_t derivD)
+  OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaive(Grid& grid, size_t degree,
+                                                                DataMatrix& dataset, size_t derivD)
       : OperationMultipleEval(grid, dataset),
         storage(grid.getStorage()),
         base(degree),
         derivDim(derivD) {}
 
-  ~OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive() override {}
+  ~OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaive() override {}
 
   void mult(DataVector& alpha, DataVector& result) override;
   void multTranspose(DataVector& source, DataVector& result) override;
@@ -36,7 +36,7 @@ class OperationMultipleEvalPartialDerivativeBsplineBoundaryNaive : public Operat
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D B-spline basis
-  SBsplineBase base;
+  SNakBsplineExtendedBase base;
   /// untransformed evaluation point (temporary vector)
   DataMatrix pointsInUnitCube;
   /// dimension of partial derivative
