@@ -45,6 +45,12 @@ class DensityDerivativeEstimationMinerFactory : public MinerFactory {
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 
   /**
+   * Method that checks whether the parameters given allow for the fitter to be applicable. Will
+   * throw if conditions are not met.
+   */
+  void sanityCheck(const FitterConfigurationDensityEstimation& config) const;
+
+  /**
    * @return a fitter factory for hpo
    */
   FitterFactory* createFitterFactory(const DataMiningConfigParser& parser) const override;

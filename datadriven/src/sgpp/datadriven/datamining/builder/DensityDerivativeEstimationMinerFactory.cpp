@@ -30,6 +30,8 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
     const DataMiningConfigParser &parser) const {
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
+  // Sanity check: will throw before creating anything if existence conditions are not met
+  sanityCheck(config);
 #ifdef USE_SCALAPACK
   if (parser.hasParallelConfig()) {
     return new ModelFittingDensityDerivativeEstimationOnOffParallel(config);
@@ -48,6 +50,18 @@ ModelFittingBase *DensityDerivativeEstimationMinerFactory::createFitter(
   }
 
   throw base::application_exception("Unknown density estimation type");
+}
+
+void DensityDerivativeEstimationMinerFactory::sanityCheck(
+    const FitterConfigurationDensityEstimation &config) const {
+  // Sanity check: SGDDerivRE needs Bspline basis of order at least 3
+  if (config.getGridConfig().maxDegree_ < 3 &&
+      !(config.getGridConfig().type_ == base::GridType::Bspline ||
+        config.getGridConfig().type_ == base::GridType::BsplineBoundary ||
+        config.getGridConfig().type_ == base::GridType::ModBspline))
+    throw base::algorithm_exception(
+        "DensityDerivativeEstimationMinerFactory: Method requires Bspline basis functions of "
+        "degree at least 3!");
 }
 
 HyperparameterOptimizer *DensityDerivativeEstimationMinerFactory::buildHPO(
