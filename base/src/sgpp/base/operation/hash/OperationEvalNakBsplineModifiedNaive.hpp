@@ -3,23 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALNAKBSPLINEBOUNDARYCOMBIGRIDNAIVE_HPP
-#define OPERATIONEVALNAKBSPLINEBOUNDARYCOMBIGRIDNAIVE_HPP
+#pragma once
 
 #include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/grid/GridStorage.hpp>
 #include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryCombigridBasis.hpp>
 #include <sgpp/globaldef.hpp>
+#include "common/basis/NakBsplineModifiedBasis.hpp"
 
 namespace sgpp {
 namespace base {
 
 /**
- * Operation for evaluating B-spline linear combinations on Boundary grids with not-a-knot
- * boundary conditions.
+ * Operation for evaluating modified B-spline linear combinations on Noboundary grids.
  */
-class OperationEvalNakBsplineBoundaryCombigridNaive : public OperationEval {
+class OperationEvalNakBsplineModifiedNaive : public OperationEval {
  public:
   /**
    * Constructor.
@@ -27,13 +25,13 @@ class OperationEvalNakBsplineBoundaryCombigridNaive : public OperationEval {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalNakBsplineBoundaryCombigridNaive(GridStorage& storage, size_t degree)
+  OperationEvalNakBsplineModifiedNaive(GridStorage& storage, size_t degree)
       : storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {}
 
   /**
    * Destructor.
    */
-  ~OperationEvalNakBsplineBoundaryCombigridNaive() override {}
+  ~OperationEvalNakBsplineModifiedNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -53,12 +51,10 @@ class OperationEvalNakBsplineBoundaryCombigridNaive : public OperationEval {
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D B-spline basis
-  SNakBsplineBoundaryCombigridBase base;
+  SNakBsplineModifiedBase base;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
 };
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONEVALNAKBSPLINEBOUNDARYNAIVE_HPP */

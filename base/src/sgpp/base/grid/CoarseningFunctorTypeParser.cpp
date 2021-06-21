@@ -33,7 +33,8 @@ CoarseningFunctorType CoarseningFunctorTypeParser::parse(const std::string& inpu
   }
 }
 
-const std::string& CoarseningFunctorTypeParser::toString(CoarseningFunctorType type) {
+const std::string& CoarseningFunctorTypeParser::toString(
+    CoarseningFunctorType type) {
   return coarseningFunctorTypeMap.at(type);
 }
 

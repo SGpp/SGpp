@@ -55,8 +55,8 @@ enum class GridType {
   LinearClenshawCurtis,                // 28
   ModPolyClenshawCurtis,               // 29
   ModLinearClenshawCurtis,             // 30
-  NakBsplineBoundaryCombigrid,         // 31
-  NaturalBsplineBoundary,              // 32
+  NaturalBsplineBoundary,              // 31
+  NakBspline,                          // 32
   NakBsplineBoundary,                  // 33
   ModNakBspline,                       // 34
   WeaklyFundamentalSplineBoundary,     // 35
@@ -64,6 +64,8 @@ enum class GridType {
   ModWeaklyFundamentalNakSpline,       // 37
   FundamentalSplineBoundary,           // 38
   FundamentalNakSplineBoundary,        // 39
+  NakBsplineExtended,                  // 40
+  NakPBspline,                         // 41
 };
 
 /**
@@ -641,10 +643,9 @@ class Grid {
    *
    * @param dim the grid's dimension
    * @param degree the B-spline degree
+   * @param boundaryLevel the level of the boundary grid
    * @return grid
    */
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
-
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree,
                                                 level_t boundaryLevel = 1);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel = 1);
@@ -658,6 +659,40 @@ class Grid {
                                                    level_t boundaryLevel = 1);
   static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree,
                                                       level_t boundaryLevel = 1);
+
+  /**
+   * creates a not a knot B-Spline grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+
+  /**
+   * creates a not a knot polynomial B-Spline extended grid
+   *
+   * @param dim the grid's dimension
+   * @param degree the B-spline degree
+   * @return grid
+   */
+  static Grid* createNakPBsplineGrid(size_t dim, size_t degree);
+
+  /**
+   * opens a file given by name and reads a grid out of the stored string
+   * @ param filename   name of the file
+   * @return  grid
+   */
+  static Grid* unserializeFromFile(std::string filename);
 
   /**
    * reads a grid out of a string
@@ -744,16 +779,14 @@ class Grid {
   virtual Stretching& getStretching();
 
   /**
-   * sets the GridStorage's BoundingsBox pointer to a BoundingBox object
-   *
-   * @return pointer to the GridStorage's BoundingsBox object
+   * sets the GridStorage's BoundingsBox
    */
   virtual void setBoundingBox(BoundingBox& boundingBox);
 
   /**
    * sets the GridStorage's Stretching pointer to a Stretching object
    *
-   * @return pointer to the GridStorage's Stretching object
+   * @param stretching pointer to the GridStorage's Stretching object
    */
   virtual void setStretching(Stretching& stretching);
 

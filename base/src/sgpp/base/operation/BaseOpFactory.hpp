@@ -8,20 +8,22 @@
 
 #include <sgpp/base/grid/Grid.hpp>
 
+#include <sgpp/base/operation/hash/OperationConvert.hpp>
+#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
 #include <sgpp/base/operation/hash/OperationEvalHessian.hpp>
 #include <sgpp/base/operation/hash/OperationEvalPartialDerivative.hpp>
-#include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
-#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
 #include <sgpp/base/operation/hash/OperationFirstMoment.hpp>
-#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
-#include <sgpp/base/operation/hash/OperationConvert.hpp>
+#include <sgpp/base/operation/hash/OperationHierarchisation.hpp>
 #include <sgpp/base/operation/hash/OperationIdentity.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
 #include <sgpp/base/operation/hash/OperationMultipleEval.hpp>
+#include <sgpp/base/operation/hash/OperationQuadrature.hpp>
+#include <sgpp/base/operation/hash/OperationSecondMoment.hpp>
 #include <sgpp/base/operation/hash/OperationStencilHierarchisation.hpp>
-#include <sgpp/base/operation/hash/OperationDiagonal.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedQuadrature.hpp>
+#include <sgpp/base/operation/hash/OperationWeightedSecondMoment.hpp>
 
 /*
  * This file contains factory methods for operations.
@@ -54,8 +56,8 @@ base::OperationMatrix* createOperationDiagonal(base::Grid& grid,
 base::OperationHierarchisation* createOperationHierarchisation(base::Grid& grid);
 /**
  * Factory method, returning an OperationArbitraryBoundaryHierarchisation for the grid at hand.
- * Note: object has to be freed after use. This operation should be used if the boundary level of
- * your grid is larger than 1.
+ * Note: object has to be freed after use. This operation should be used if the boundary level
+ * of your grid is larger than 1.
  *
  * @param grid Grid which is to be used for hierarchisation
  * @return Pointer to the new OperationArbitraryBoundaryHierarchisation object for the Grid grid
@@ -69,6 +71,16 @@ base::OperationHierarchisation* createOperationArbitraryBoundaryHierarchisation(
  * @return Pointer to the new OperationQuadrature for the Grid grid
  */
 base::OperationQuadrature* createOperationQuadrature(base::Grid& grid);
+/**
+ * Factory method, returning an OperationWeightedQuadrature for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used for quadrature
+ * @param quadOrder quadrature order
+ * @return Pointer to the new OperationWeightedQuadrature for the Grid grid
+ */
+base::OperationWeightedQuadrature* createOperationWeightedQuadrature(base::Grid& grid,
+                                                                     size_t quadOrder);
 /**
  * Factory method, returning an OperationFirstMoment for the grid at hand.
  * Note: object has to be freed after use.
@@ -86,6 +98,16 @@ base::OperationFirstMoment* createOperationFirstMoment(base::Grid& grid);
  */
 base::OperationSecondMoment* createOperationSecondMoment(base::Grid& grid);
 /**
+ * Factory method, returning an OperationWeightedSecondMoment for the grid at hand.
+ * Note: object has to be freed after use.
+ *
+ * @param grid Grid which is to be used for quadrature
+ * @param quadOrder quadrature order
+ * @return Pointer to the new OperationSecondMoment for the Grid grid
+ */
+base::OperationWeightedSecondMoment* createOperationWeightedSecondMoment(base::Grid& grid,
+                                                                         size_t quadOrder);
+/**
  * Factory method, returning an OperationConvert for the grid at hand.
  * Note: object has to be freed after use.
  *
@@ -96,7 +118,8 @@ base::OperationConvert* createOperationConvert(base::Grid& grid);
 /**
  * Factory method, returning an OperationIdentity for the grid at hand.
  * Note: object has to be freed after use.
- * Just calls OperationIdentity() independent of grid; factory method provided for uniform use.
+ * Just calls OperationIdentity() independent of grid; factory method
+ * provided for uniform use.
  *
  * @return Pointer to the new OperationIdentity object
  */
@@ -189,9 +212,9 @@ base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
 base::OperationEval* createOperationEvalNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalGradient for the grid at hand.
- * Implementations of OperationEvalGradientNaive returned by this function should use a "naive"
- * method for evaluating sparse grid function gradients, e.g. evaluate all basis functions by brute
- * force.
+ * Implementations of OperationEvalGradientNaive returned by this function should
+ * use a "naive" method for evaluating sparse grid function gradients, e.g. evaluate
+ * all basis functions by brute force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
@@ -201,9 +224,9 @@ base::OperationEval* createOperationEvalNaive(base::Grid& grid);
 base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalHessian for the grid at hand.
- * Implementations of OperationEvalHessianNaive returned by this function should use a "naive"
- * method for evaluating sparse grid function Hessians, e.g. evaluate all basis functions by brute
- * force.
+ * Implementations of OperationEvalHessianNaive returned by this function should
+ * use a "naive" method for evaluating sparse grid function Hessians, e.g. evaluate
+ * all basis functions by brute force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used
@@ -213,9 +236,9 @@ base::OperationEvalGradient* createOperationEvalGradientNaive(base::Grid& grid);
 base::OperationEvalHessian* createOperationEvalHessianNaive(base::Grid& grid);
 /**
  * Factory method, returning an OperationEvalPartialDerivative for the grid at hand.
- * Implementations of OperationEvalPartialDerivativeNaive returned by this function should use a
- * "naive" method for evaluating sparse grid function partial derivatives, e.g. evaluate all basis
- * functions by brute force.
+ * Implementations of OperationEvalPartialDerivativeNaive returned by this function should
+ * use a "naive" method for evaluating sparse grid function partial derivatives, e.g. evaluate
+ * all basis functions by brute force.
  * Note: object has to be freed after use.
  *
  * @param grid Grid which is to be used

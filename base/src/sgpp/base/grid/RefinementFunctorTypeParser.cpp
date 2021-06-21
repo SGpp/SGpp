@@ -39,7 +39,8 @@ RefinementFunctorType RefinementFunctorTypeParser::parse(const std::string& inpu
   }
 }
 
-const std::string& RefinementFunctorTypeParser::toString(RefinementFunctorType type) {
+const std::string& RefinementFunctorTypeParser::toString(
+    RefinementFunctorType type) {
   return refinementFunctorTypeMap.at(type);
 }
 

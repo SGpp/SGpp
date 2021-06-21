@@ -3,14 +3,13 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALNAKBSPLINEBOUNDARYNAIVE_HPP
-#define OPERATIONEVALNAKBSPLINEBOUNDARYNAIVE_HPP
+#pragma once
 
-#include <sgpp/globaldef.hpp>
-#include <sgpp/base/operation/hash/OperationEval.hpp>
-#include <sgpp/base/grid/GridStorage.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/datatypes/DataVector.hpp>
+#include <sgpp/base/grid/GridStorage.hpp>
+#include <sgpp/base/operation/hash/OperationEval.hpp>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -27,15 +26,13 @@ class OperationEvalNakBsplineBoundaryNaive : public OperationEval {
    * @param storage   storage of the sparse grid
    * @param degree    B-spline degree
    */
-  OperationEvalNakBsplineBoundaryNaive(GridStorage& storage, size_t degree) :
-    storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {
-  }
+  OperationEvalNakBsplineBoundaryNaive(GridStorage& storage, size_t degree)
+      : storage(storage), base(degree), pointInUnitCube(storage.getDimension()) {}
 
   /**
    * Destructor.
    */
-  ~OperationEvalNakBsplineBoundaryNaive() override {
-  }
+  ~OperationEvalNakBsplineBoundaryNaive() override {}
 
   /**
    * @param alpha     coefficient vector
@@ -49,19 +46,16 @@ class OperationEvalNakBsplineBoundaryNaive : public OperationEval {
    * @param      point  evaluation point
    * @param[out] value  values of linear combination
    */
-  void eval(const DataMatrix& alpha, const DataVector& point,
-            DataVector& value) override;
+  void eval(const DataMatrix& alpha, const DataVector& point, DataVector& value) override;
 
  protected:
   /// storage of the sparse grid
   GridStorage& storage;
   /// 1D B-spline basis
-  SNakBsplineBase base;
+  SNakBsplineBoundaryBase base;
   /// untransformed evaluation point (temporary vector)
   DataVector pointInUnitCube;
 };
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONEVALNAKBSPLINEBOUNDARYNAIVE_HPP */

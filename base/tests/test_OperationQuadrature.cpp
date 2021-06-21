@@ -16,6 +16,8 @@
 #include <sgpp/base/tools/OperationQuadratureMC.hpp>
 
 #include <sgpp/base/operation/hash/common/basis/BsplineBasis.hpp>
+#include <sgpp/base/tools/GaussLegendreQuadRule1D.hpp>
+#include <sgpp/base/tools/OperationQuadratureMC.hpp>
 
 #include <vector>
 

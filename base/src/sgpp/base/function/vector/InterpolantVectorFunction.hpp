@@ -69,7 +69,6 @@ class InterpolantVectorFunction : public VectorFunction {
         return;
       }
     }
-
     opEval->eval(alpha, x, value);
   }
 

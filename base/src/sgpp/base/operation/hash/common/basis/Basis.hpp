@@ -28,6 +28,16 @@ class Basis {
   virtual double eval(LT level, IT index, double x) = 0;
 
   /**
+   * Evaluate the basis functions derivative with given level and index.
+   *
+   * @param level   level of the basis function
+   * @param index   index of the basis function
+   * @param x       evaluation point
+   * @result        value of the basis functions derivative.
+   */
+  virtual double evalDx(LT level, IT index, double x) = 0;
+
+  /**
    * Returns the polynomial degree of the basis
    *
    * @return polynomial degree of the basis

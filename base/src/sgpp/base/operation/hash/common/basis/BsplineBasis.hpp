@@ -11,9 +11,11 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
+
+#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -1608,7 +1610,7 @@ class BsplineBasis : public Basis<LT, IT> {
    * @param x     evaluation point
    * @return      value of derivative of B-spline basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
     return hInv * uniformBSplineDx(x * hInv - static_cast<double>(i) +
@@ -1625,9 +1627,10 @@ class BsplineBasis : public Basis<LT, IT> {
   inline double evalDxDx(LT l, IT i, double x) {
     const double hInv = static_cast<double>(static_cast<IT>(1) << l);
 
-    return hInv * hInv * uniformBSplineDxDx(x * hInv - static_cast<double>(i) +
-                                                static_cast<double>(this->degree + 1) / 2.0,
-                                            this->degree);
+    return hInv * hInv *
+           uniformBSplineDxDx(
+               x * hInv - static_cast<double>(i) + static_cast<double>(this->degree + 1) / 2.0,
+               this->degree);
   }
 
   /**

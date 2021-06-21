@@ -41,7 +41,6 @@
 %newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-%newobject sgpp::base::Grid::createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
 %newobject sgpp::base::Grid::createNaturalBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t boundaryLevel);
 %newobject sgpp::base::Grid::createModNakBsplineGrid(size_t dim);
@@ -135,15 +134,14 @@ enum class GridType {
   LinearClenshawCurtis,                     // 28
   ModPolyClenshawCurtis,                    // 29
   ModLinearClenshawCurtis,                  // 30
-  NakBsplineBoundaryCombigrid,              // 31
-  NaturalBsplineBoundary,                   // 32
-  NakBsplineBoundary,                  // 33
-  ModNakBspline,                       // 34
-  WeaklyFundamentalSplineBoundary,          // 35
-  WeaklyFundamentalNakSplineBoundary,  // 36
-  ModWeaklyFundamentalNakSpline,       // 37
-  FundamentalSplineBoundary,                // 38
-  FundamentalNakSplineBoundary,        // 39
+  NaturalBsplineBoundary,                   // 31
+  NakBsplineBoundary,                  	    // 32
+  ModNakBspline,                            // 33
+  WeaklyFundamentalSplineBoundary,          // 34
+  WeaklyFundamentalNakSplineBoundary,       // 35
+  ModWeaklyFundamentalNakSpline,            // 36
+  FundamentalSplineBoundary,                // 37
+  FundamentalNakSplineBoundary,             // 38
 };
 
 class Grid
@@ -180,7 +178,6 @@ public:
   static Grid* createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createPolyClenshawCurtisGrid(size_t dim, size_t degree);
   static Grid* createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
-  static Grid* createNakBsplineBoundaryCombigridGrid(size_t dim, size_t degree);
   static Grid* createNaturalBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createNakBsplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createModNakBsplineGrid(size_t dim, size_t degree);

@@ -6,13 +6,11 @@
 #ifndef NAK_BSPLINE_MODIFIED_BASE_DERIV2_HPP
 #define NAK_BSPLINE_MODIFIED_BASE_DERIV2_HPP
 
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv2.hpp>
-
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv2.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -218,6 +216,17 @@ class NakBsplineModifiedBasisDeriv2 : public Basis<LT, IT> {
       default:
         return 0.0;
     }
+  }
+
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @param x     evaluation point
+   * @return      value of derivative of wavelet basis function
+   */
+  inline double evalDx(LT l, IT i, double x) override {
+    std::cerr << "NakBsplineMOdifiedBasisDeriv2::evalDx not implemented\n";
+    return 0;
   }
 
   inline double getIntegral(LT level, IT index) override { return -1.0; }

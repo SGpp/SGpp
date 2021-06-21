@@ -10,8 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -37,6 +38,11 @@ class LinearBasis : public Basis<LT, IT> {
     return std::max(
         1.0 - std::abs(static_cast<double>(static_cast<IT>(1) << l) * x - static_cast<double>(i)),
         0.0);
+  }
+
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearBasis: evalDx not implemented" << std::endl;
+    return -1;
   }
 
   double getIntegral(LT level, IT index) override {

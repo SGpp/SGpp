@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef OPERATIONEVALGRADIENTNAKSPLINEBOUNDARY_HPP
-#define OPERATIONEVALGRADIENTNAKSPLINEBOUNDARY_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 #include <sgpp/base/operation/hash/OperationEvalGradient.hpp>
@@ -79,5 +78,3 @@ class OperationEvalGradientNakBsplineBoundaryNaive : public
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* OPERATIONEVALGRADIENTNAKSPLINEBOUNDARY_HPP */

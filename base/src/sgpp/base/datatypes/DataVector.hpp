@@ -144,6 +144,13 @@ class DataVector : public std::vector<double> {
   size_t append(double value);
 
   /**
+   * Appends sequence of elements from another DataVector given by iterators
+   * @param first	iterator pointing to the first element of the sequence
+   * @param last 	iterator pointing to the last element of the sequence
+   */
+  void append(DataVector::iterator first, DataVector::iterator last);
+
+  /**
    * Inserts a new element at the given index.
    *
    * @param index Index of new element

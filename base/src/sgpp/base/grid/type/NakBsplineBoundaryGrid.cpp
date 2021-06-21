@@ -18,16 +18,15 @@ NakBsplineBoundaryGrid::NakBsplineBoundaryGrid(std::istream& istr)
     : Grid(istr), generator(storage), degree(1 << 16), boundaryLevel(0) {
   istr >> degree;
   istr >> boundaryLevel;
-  basis_.reset(new SNakBsplineBase(degree));
+  basis_.reset(new SNakBsplineBoundaryBase(degree));
   generator.setBoundaryLevel(boundaryLevel);
 }
 
-NakBsplineBoundaryGrid::NakBsplineBoundaryGrid(
-    size_t dim, size_t degree, level_t boundaryLevel)
+NakBsplineBoundaryGrid::NakBsplineBoundaryGrid(size_t dim, size_t degree, level_t boundaryLevel)
     : Grid(dim),
       generator(storage, boundaryLevel),
       degree(degree),
-      basis_(new SNakBsplineBase(degree)),
+      basis_(new SNakBsplineBoundaryBase(degree)),
       boundaryLevel(boundaryLevel) {}
 
 NakBsplineBoundaryGrid::~NakBsplineBoundaryGrid() {}
