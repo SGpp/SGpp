@@ -14,6 +14,7 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
 #include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/grid/type/NakPBsplineGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
 #include <sgpp/datadriven/application/RegressionLearner.hpp>
@@ -181,6 +182,8 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
     grid = std::make_shared<base::ModNakBsplineGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else if (gridConfig.type_ == GridType::NakBsplineExtended) {
     grid = std::make_shared<base::NakBsplineExtendedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::NakPBspline) {
+    grid = std::make_shared<base::NakPBsplineGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else {
     throw base::application_exception(
         "RegressionLearner::InitializeGrid: An unsupported grid type was chosen!");
