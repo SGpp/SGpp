@@ -533,6 +533,8 @@ def configureGNUCompiler(config):
     # mingw (6.3) and the python interface (see http://stackoverflow.com/questions/10660524/error-building-boost-1-49-0-with-gcc-4-7-0)
     # -> could be removed in the future hopefully
     config.env.Append(CPPFLAGS=["-Wno-switch-enum", "-Wno-deprecated-declarations", "-D_hypot=hypot"])
+    # disable warning which would cause the python include check to fail due to mingw declaring its own "round(double)" function
+    config.env.Append(CPPFLAGS=["-Wno-redundant-decls"])
     # also use "lib" prefix on MinGW for consistency with Linux (default is no prefix)
     config.env["SHLIBPREFIX"] = "lib"
 
