@@ -125,7 +125,7 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if False, the modules must be enabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
-vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", None))
+vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", False))
 vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
 vars.Add("SWIGFLAGS", "Set additional SWIG flags, they are compiler-dependent "
                       "(multiple flags separated by space: '-Wall -Wextra')", "",
@@ -236,10 +236,6 @@ if len(unknownVariables) > 0:
 # (which depend on the values of other variables)
 env["SG_PYTHON"] = env.get("SG_PYTHON",
                            env["SG_ALL"] and ("SG_PYTHON" in languageSupportNames))
-env["SG_JAVA"] = env.get("SG_JAVA",
-                         env["SG_ALL"] and ("SG_JAVA" in languageSupportNames))
-env["SG_MATLAB"] = env.get("SG_MATLAB",
-                           env["SG_ALL"] and ("SG_MATLAB" in languageSupportNames))
 
 for moduleName in moduleNames:
   env[moduleName] = env.get(moduleName, env["SG_ALL"])
