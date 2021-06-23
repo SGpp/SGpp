@@ -857,6 +857,15 @@ base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
   } else if (grid.getType() == base::GridType::ModBspline) {
     return new base::OperationMultipleEvalPartialDerivativeModBsplineNaive(
         grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new base::OperationMultipleEvalPartialDerivativeNakBsplineBoundaryNaive(
+        grid, dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new base::OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaive(
+        grid, dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new base::OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaive(
+        grid, dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), dataset, derivDim);
   } else {
     throw base::factory_exception(
         "createOperationMultipleEvalPartialDerivativeNaive is not implemented for this grid "

@@ -36,7 +36,10 @@ void DensityDerivativeRatioEstimationMinerFactory::sanityCheck(
   if (config.getGridConfig().maxDegree_ < 3 &&
       !(config.getGridConfig().type_ == base::GridType::Bspline ||
         config.getGridConfig().type_ == base::GridType::BsplineBoundary ||
-        config.getGridConfig().type_ == base::GridType::ModBspline))
+        config.getGridConfig().type_ == base::GridType::ModBspline ||
+        config.getGridConfig().type_ == base::GridType::NakBsplineBoundary ||
+        config.getGridConfig().type_ == base::GridType::NakBsplineExtended ||
+        config.getGridConfig().type_ == base::GridType::ModNakBspline))
     throw base::algorithm_exception(
         "DensityDerivativeRatioEstimationMinerFactory: Method requires Bspline basis functions of "
         "degree at least 3!");

@@ -6,7 +6,7 @@
 #include <sgpp/datadriven/datamining/builder/DensityDerivativeEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/application_exception.hpp>
-#include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/algorithm_exception.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplitting.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
@@ -58,7 +58,10 @@ void DensityDerivativeEstimationMinerFactory::sanityCheck(
   if (config.getGridConfig().maxDegree_ < 3 &&
       !(config.getGridConfig().type_ == base::GridType::Bspline ||
         config.getGridConfig().type_ == base::GridType::BsplineBoundary ||
-        config.getGridConfig().type_ == base::GridType::ModBspline))
+        config.getGridConfig().type_ == base::GridType::ModBspline ||
+        config.getGridConfig().type_ == base::GridType::NakBsplineBoundary ||
+        config.getGridConfig().type_ == base::GridType::NakBsplineExtended ||
+        config.getGridConfig().type_ == base::GridType::ModNakBspline))
     throw base::algorithm_exception(
         "DensityDerivativeEstimationMinerFactory: Method requires Bspline basis functions of "
         "degree at least 3!");
