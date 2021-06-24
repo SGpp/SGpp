@@ -894,7 +894,7 @@ DataVectorDistributed DBMatOnlineDE::computeWeightedDerivativeBFromBatchParallel
 
     std::unique_ptr<OperationMultipleEvalDistributed> B(
         static_cast<OperationMultipleEvalDistributed*>(
-            sgpp::op_factory::createOperationMultipleEvalPartialDerivativeNaive(
+            sgpp::op_factory::createOperationMultipleEvalPartialDerivative(
                 grid, m, densityEstimationConfig.derivDim_, opConfig)));
 
     // Bt * 1 * (-1)^|j|

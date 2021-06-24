@@ -197,7 +197,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
  * @param configuration configuration to be used
  * @return Pointer to the new OperationMultipleEval object for the Grid grid
  */
-base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivative(
     base::Grid& grid, base::DataMatrix& dataset, size_t derivDim,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration);
 

@@ -125,12 +125,18 @@
 #ifdef USE_SCALAPACK
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalLinearDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModLinearDistributed.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed.hpp>
-#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineBoundaryNaiveDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalBsplineNaiveDistributed.hpp>
 #include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalModBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalNakBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalNakBsplineExtendedNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalNakBsplineModifiedNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeNakBsplineBoundaryNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaiveDistributed.hpp>
+#include <sgpp/datadriven/operation/hash/OperationMultipleEvalScalapack/OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaiveDistributed.hpp>
 #endif
 
 #include <sgpp/base/operation/BaseOpFactory.hpp>
@@ -444,6 +450,7 @@ base::OperationMultipleEval* createOperationMultipleEval(
     return createOperationMultipleEvalDefault(grid, dataset);
   }
 
+  // test for non-default evaluation types (e.g. STREAMING, SCALAPACK, ...) per grid type
   if (grid.getType() == base::GridType::Linear) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT ||
         configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
@@ -483,6 +490,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");
 #endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
   } else if (grid.getType() == base::GridType::ModLinear) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
@@ -522,6 +531,8 @@ base::OperationMultipleEval* createOperationMultipleEval(
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");
 #endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
   } else if (grid.getType() == base::GridType::Bspline) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::STREAMING) {
@@ -541,26 +552,32 @@ base::OperationMultipleEval* createOperationMultipleEval(
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");
 #endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
   } else if (grid.getType() == base::GridType::BsplineBoundary) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
 #ifdef USE_SCALAPACK
       return new datadriven::OperationMultipleEvalBsplineBoundaryNaiveDistributed(
-          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+          grid, dynamic_cast<base::BsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
 #else
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");
 #endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
   } else if (grid.getType() == base::GridType::ModBspline) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
 #ifdef USE_SCALAPACK
       return new datadriven::OperationMultipleEvalModBsplineNaiveDistributed(
-          grid, dynamic_cast<base::BsplineGrid*>(&grid)->getDegree(), dataset);
+          grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset);
 #else
       throw base::factory_exception(
           "Error creating function: the library wasn't compiled with ScaLAPACK support");
 #endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
   } else if (grid.getType() == base::GridType::Poly) {
     if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
@@ -583,13 +600,51 @@ base::OperationMultipleEval* createOperationMultipleEval(
             "Error creating function: the library wasn't compiled with CUDA support");
 #endif
       }
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
     }
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalNakBsplineBoundaryNaiveDistributed(
+          grid, dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
+    }
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalNakBsplineExtendedNaiveDistributed(
+          grid, dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    } else {
+      throw base::factory_exception("createOperationMultipleEval: invalid configuration");
+    }
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    if (configuration.getType() == datadriven::OperationMultipleEvalType::SCALAPACK) {
+#ifdef USE_SCALAPACK
+      return new datadriven::OperationMultipleEvalNakBsplineModifiedNaiveDistributed(
+          grid, dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), dataset);
+#else
+      throw base::factory_exception(
+          "Error creating function: the library wasn't compiled with ScaLAPACK support");
+#endif
+    }
+  } else {
+    throw base::factory_exception("createOperationMultipleEval: invalid configuration");
   }
 
-  throw base::factory_exception("OperationMultiEval is not implemented for this grid type.");
+  throw base::factory_exception("createOperationMultiEval is not implemented for this grid type.");
 }
 
-base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
+base::OperationMultipleEval* createOperationMultipleEvalPartialDerivative(
     base::Grid& grid, base::DataMatrix& dataset, size_t derivDim,
     sgpp::datadriven::OperationMultipleEvalConfiguration& configuration) {
   if (configuration.getType() == datadriven::OperationMultipleEvalType::DEFAULT) {
@@ -605,9 +660,23 @@ base::OperationMultipleEval* createOperationMultipleEvalPartialDerivativeNaive(
     } else if (grid.getType() == base::GridType::ModBspline) {
       return new datadriven::OperationMultipleEvalPartialDerivativeModBsplineNaiveDistributed(
           grid, dynamic_cast<base::ModBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
+    } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+      return new datadriven::
+          OperationMultipleEvalPartialDerivativeNakBsplineBoundaryNaiveDistributed(
+              grid, dynamic_cast<base::NakBsplineBoundaryGrid*>(&grid)->getDegree(), dataset,
+              derivDim);
+    } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+      return new datadriven::
+          OperationMultipleEvalPartialDerivativeNakBsplineExtendedNaiveDistributed(
+              grid, dynamic_cast<base::NakBsplineExtendedGrid*>(&grid)->getDegree(), dataset,
+              derivDim);
+    } else if (grid.getType() == base::GridType::ModNakBspline) {
+      return new datadriven::
+          OperationMultipleEvalPartialDerivativeNakBsplineModifiedNaiveDistributed(
+              grid, dynamic_cast<base::ModNakBsplineGrid*>(&grid)->getDegree(), dataset, derivDim);
     } else {
       throw base::factory_exception(
-          "createOperationMultipleEvalPartialDerivativeNaive is not implemented for this grid "
+          "createOperationMultipleEvalPartialDerivative is not implemented for this grid "
           "type.");
     }
 #else
