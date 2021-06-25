@@ -139,7 +139,7 @@ except Exception as e:
     print((str(e)))
 
 # now create the python bindings package
-if len(sys.argv) >= 5:
+if len(sys.argv) >= 4:
     package_name = "libsgpp-python-test-package_" + major_version + "." + minor_version + "-" + package_revision
 else:
     package_name = "libsgpp-python_" + major_version + "." + minor_version + "-" + package_revision
