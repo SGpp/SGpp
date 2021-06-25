@@ -1,0 +1,27 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+	<_WildCardScalapack Include="$(ProjectDir)src\sgpp\datadriven\scalapack\**\*"  />
+	<_WildCardMPI Include="$(ProjectDir)src\sgpp\datadriven\application\learnersgdeonoffparallel\**\*"  />
+	<_WildCardOperations Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\**\*"  />
+	
+	<_WildCardOperationsSimpleInclude Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\simple\**\*.hpp"  />
+	<_WildCardOperationsSimpleCompile Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\simple\**\*.cpp"  />
+	<_WildCardOperationsSimpleInclude Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationMultiEvalStreaming\*.hpp"  />
+	<_WildCardOperationsSimpleCompile Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationMultiEvalStreaming\*.cpp"  />
+	<_WildCardOperationsSimpleInclude Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationMultiEvalModMaskStreaming\*.hpp"  />
+	<_WildCardOperationsSimpleCompile Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationMultiEvalModMaskStreaming\*.cpp"  />
+	<_WildCardOperationsSimpleInclude Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationPiecewiseConstantRegression\*.hpp"  />
+	<_WildCardOperationsSimpleCompile Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\OperationPiecewiseConstantRegression\*.cpp"  />
+	
+	<_WildCardOperationsSimpleInclude Include="$(ProjectDir)src\sgpp\datadriven\operation\hash\DatadrivenOperationCommon.hpp"  />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Remove="@(_WildCardOperations)" />
+    <ClCompile Remove="@(_WildCardOperations)" />
+    <ClInclude Remove="@(_WildCardMPI)" />
+    <ClCompile Remove="@(_WildCardMPI)" />
+    <ClInclude Include="@(_WildCardOperationsSimpleInclude)" />
+    <ClCompile Include="@(_WildCardOperationsSimpleCompile)" />
+  </ItemGroup>
+</Project>
