@@ -32,8 +32,15 @@
 %newobject sgpp::base::Grid::createSquareRootGrid(size_t dim);
 %newobject sgpp::base::Grid::createPrewaveletGrid(size_t dim);
 %newobject sgpp::base::Grid::createPeriodicGrid(size_t dim);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel);
+%newobject sgpp::base::Grid::createPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createModPolyClenshawCurtisGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineBoundaryGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineModifiedGrid(size_t dim, size_t degree);
+%newobject sgpp::base::Grid::createNakBsplineExtendedGrid(size_t dim, size_t degree);
 
-%newobject sgpp::base::Grid::unserialize(std::string& istr);
+%newobject sgpp::base::Grid::unserializeFromFile(std::string filename);
+%newobject sgpp::base::Grid::unserialize(const std::string& istr);
 %newobject sgpp::base::Grid::clone();
 
 %include "stl.i"
@@ -92,7 +99,7 @@ enum class GridType {
   Prewavelet,                   // 12
   SquareRoot,                   // 13
   Periodic,                     // 14
-  LinearClenshawCurtis,         // 15
+  LinearClenshawCurtisBoundary, // 15
   Bspline,                      // 16
   BsplineBoundary,              // 17
   BsplineClenshawCurtis,        // 18
@@ -102,7 +109,15 @@ enum class GridType {
   ModFundamentalSpline,         // 22
   ModBsplineClenshawCurtis,     // 23
   LinearStencil,                // 24
-  ModLinearStencil              // 25
+  ModLinearStencil,             // 25
+  PolyClenshawCurtisBoundary,   // 26
+  PolyClenshawCurtis,           // 27
+  LinearClenshawCurtis,         // 28
+  ModPolyClenshawCurtis,        // 29
+  ModLinearClenshawCurtis,      // 30
+  NakBsplineBoundary,           // 31
+  ModNakBspline,                // 32
+  NakBsplineExtended            // 33
 };
 
 class Grid
@@ -146,7 +161,9 @@ public:
   static Grid* createWeaklyFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createFundamentalSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
   static Grid* createFundamentalNakSplineBoundaryGrid(size_t dim, size_t degree, size_t boundaryLevel=1);
-
+  static Grid* createNakBsplineExtendedGrid(size_t dim, size_t degree);
+	
+  static Grid* unserializeFromFile(std::string filename);
   static Grid* unserialize(const std::string& istr);
 
   static sgpp::base::GridType stringToGridType(const std::string& gridType);
@@ -170,6 +187,8 @@ public:
   void refine(sgpp::base::DataVector& vector, int num);
   void insertPoint(size_t dim, unsigned int levels[], unsigned int indeces[], bool isLeaf);
   int getSize();
+
+  std::string getTypeAsString();
   
   Grid* clone();
 };

@@ -134,14 +134,14 @@ enum class GridType {
   LinearClenshawCurtis,                     // 28
   ModPolyClenshawCurtis,                    // 29
   ModLinearClenshawCurtis,                  // 30
-  NaturalBsplineBoundary,                   // 32
-  NakBsplineBoundary,                  // 33
-  ModNakBspline,                       // 34
-  WeaklyFundamentalSplineBoundary,          // 35
-  WeaklyFundamentalNakSplineBoundary,  // 36
-  ModWeaklyFundamentalNakSpline,       // 37
-  FundamentalSplineBoundary,                // 38
-  FundamentalNakSplineBoundary,        // 39
+  NaturalBsplineBoundary,                   // 31
+  NakBsplineBoundary,                  	    // 32
+  ModNakBspline,                            // 33
+  WeaklyFundamentalSplineBoundary,          // 34
+  WeaklyFundamentalNakSplineBoundary,       // 35
+  ModWeaklyFundamentalNakSpline,            // 36
+  FundamentalSplineBoundary,                // 37
+  FundamentalNakSplineBoundary,             // 38
 };
 
 class Grid

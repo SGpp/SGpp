@@ -4,18 +4,104 @@
 # sgpp.sparsegrids.org
 
 import numpy as np
+from math import floor
 
 from pysgpp.extensions.datadriven.uq.quadrature.bilinearform.BilinearQuadratureStrategy import BilinearQuadratureStrategy
 from pysgpp.extensions.datadriven.uq.operations import getBoundsOfSupport, bsplineGridTypes
 from pysgpp.extensions.datadriven.uq.dists.Uniform import Uniform
-
+from pysgpp import GridType_NakBsplineBoundary, GridType_NakBsplineModified
 
 class BilinearGaussQuadratureStrategy(BilinearQuadratureStrategy):
     """
     Use Gauss-Legendre for quadrature
     """
-
     def computeBilinearFormEntry(self, gs, gpi, basisi, gpj, basisj, d):
+        if self._gridType in bsplineGridTypes and basisi.getDegree() != 1:
+            return self.computeBilinearFormEntryForBsplines(gs, gpi, basisi, gpj, basisj, d)
+        else:
+            return self.computeBilinearFormEntryForTwoSegments(gs, gpi, basisi, gpj, basisj, d)
+        
+    # support for not a knot B spline basis: GridType_NakBsplineBoundary and GridType_NakBsplineModified]
+    def getBsplineSupport(self,degree,l,i):
+        pp1h = floor((degree+1)/2)
+        width = 1.0/2**l
+        
+        lindex = i - pp1h
+        rindex = i + pp1h
+        
+        if i == 1 or i == 3 or l <= 2:
+            lindex = 0
+        if i == 2**l-3 or i == 2**l -1 or l <=2:
+            rindex = 2**l
+            
+        if degree == 5: #everything above is for 3&5
+            if i == 5 or l == 3:
+                lindex = 0
+            if i == 2**l-5 or l == 3:
+                rindex = 2**l
+            
+        lindex = int(lindex)
+        rindex = int(rindex)
+        basisSupport = np.zeros(rindex - lindex+1)
+        for j,n in enumerate(range(lindex,rindex+1)):
+            basisSupport[j] = n*width
+        return basisSupport
+
+    def computeBilinearFormEntryForBsplines(self, gs, gpi, basisi, gpj, basisj, d):
+        val = 1
+        err = 0.
+
+        # get level index
+        lid, iid = gpi.getLevel(d), gpi.getIndex(d)
+        ljd, ijd = gpj.getLevel(d), gpj.getIndex(d)
+
+        if self._gridType in [GridType_NakBsplineBoundary,GridType_NakBsplineModified]:
+            bSid = self.getBsplineSupport(basisi.getDegree(), lid, iid)
+            bSjd = self.getBsplineSupport(basisj.getDegree(), ljd, ijd)            
+        else:
+            sys.exit("BiLinearGaussQuadratureStrategy: this basis function is currently not supported")
+
+        #if supports do not overlap
+        if bSjd[0] >= bSid[-1] or bSjd[-1] <= bSid[0]:
+            return 0,0
+        else:
+            if lid > ljd:   
+                commonSupport = bSid    
+            elif lid < ljd:
+                commonSupport = bSjd
+            else:
+                commonSupport = bSid    
+            # ----------------------------------------------------
+            # use scipy for integration
+            bounds = self._U[d].getBounds()
+            if self._U is None or (isinstance(self._U[d], Uniform) and \
+                                   np.abs(bounds[0]) < 1e-14 and \
+                                   np.abs(bounds[1] - 1.0) < 1e-14):
+                def f(p):
+                    return basisi.eval(lid, iid, p) * \
+                        basisj.eval(ljd, ijd, p)
+            else:
+                def f(p):
+                    q = self._T[d].unitToProbabilistic(p)
+                    return basisi.eval(lid, iid, p) * \
+                        basisj.eval(ljd, ijd, p) * \
+                        self._U[d].pdf(q)
+
+            # compute the piecewise continuous parts seperately
+            deg = 2 * (max(lid,ljd) + 1) + 1
+            basisIntegral = 0
+            integrationErr = 0
+            for i in range(len(commonSupport)-1):
+                segmentIntegral, segmentErr = self.quad(f, commonSupport[i], commonSupport[i+1], deg=deg)
+                basisIntegral += segmentIntegral
+                integrationErr += segmentErr
+    
+            val = val * basisIntegral
+            err += val * integrationErr
+
+        return val, err
+
+    def computeBilinearFormEntryForTwoSegments(self, gs, gpi, basisi, gpj, basisj, d):
         val = 1
         err = 0.
 

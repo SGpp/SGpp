@@ -211,7 +211,7 @@ class BsplineClenshawCurtisBasis : public Basis<LT, IT> {
    * @return      value of derivative of Clenshaw-Curtis
    *              B-spline basis function
    */
-  inline double evalDx(LT l, IT i, double x) {
+  inline double evalDx(LT l, IT i, double x) override {
     if (l == 0) {
       return bsplineBasis.uniformBSplineDx(
           x - static_cast<double>(i) + static_cast<double>(bsplineBasis.getDegree() + 1) / 2.0,

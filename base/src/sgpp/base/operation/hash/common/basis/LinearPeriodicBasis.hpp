@@ -63,6 +63,11 @@ class LinearPeriodicBasis : public Basis<LT, IT> {
     }
   }
 
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearPeriodicBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
   inline double getIntegral(LT level, IT index) override { return -1.0; }
 
   inline size_t getDegree() const override { return 1; }

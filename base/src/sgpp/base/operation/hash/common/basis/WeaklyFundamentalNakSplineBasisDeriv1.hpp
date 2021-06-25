@@ -20,14 +20,13 @@ namespace base {
  * weakly fundamental not-a-knot spline basis (1st derivative).
  */
 template <class LT, class IT>
-class WeaklyFundamentalNakSplineBasisDeriv1: public Basis<LT, IT> {
+class WeaklyFundamentalNakSplineBasisDeriv1 : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalNakSplineBasisDeriv1() :
-    weaklyFundamentalSplineBasisDeriv1(WeaklyFundamentalSplineBasisDeriv1<LT, IT>()) {
-  }
+  WeaklyFundamentalNakSplineBasisDeriv1()
+      : weaklyFundamentalSplineBasisDeriv1(WeaklyFundamentalSplineBasisDeriv1<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,8 +34,8 @@ class WeaklyFundamentalNakSplineBasisDeriv1: public Basis<LT, IT> {
    * @param degree    Spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit WeaklyFundamentalNakSplineBasisDeriv1(size_t degree) :
-        weaklyFundamentalSplineBasisDeriv1(WeaklyFundamentalSplineBasisDeriv1<LT, IT>(degree)) {
+  explicit WeaklyFundamentalNakSplineBasisDeriv1(size_t degree)
+      : weaklyFundamentalSplineBasisDeriv1(WeaklyFundamentalSplineBasisDeriv1<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported spline degree.");
     }
@@ -45,8 +44,7 @@ class WeaklyFundamentalNakSplineBasisDeriv1: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalNakSplineBasisDeriv1() override {
-  }
+  ~WeaklyFundamentalNakSplineBasisDeriv1() override {}
 
   /**
    * @param l     level of basis function
@@ -1088,7 +1086,15 @@ class WeaklyFundamentalNakSplineBasisDeriv1: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalNakSplineBasisDeriv1: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalNakSplineBasisDeriv1: getIntegral not implemented" << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      B-spline degree
@@ -1104,7 +1110,7 @@ class WeaklyFundamentalNakSplineBasisDeriv1: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef WeaklyFundamentalNakSplineBasisDeriv1<unsigned int, unsigned int>
-SWeaklyFundamentalNakSplineBaseDeriv1;
+    SWeaklyFundamentalNakSplineBaseDeriv1;
 
 }  // namespace base
 }  // namespace sgpp

@@ -23,7 +23,6 @@ and run the following commands in that folder:
 
       sudo apt install ./libsgpp_<ver>.deb
       sudo apt install ./libsgpp-python_<ver>.deb
-      sudo apt install ./libsgpp-java<ver>.deb
 
 Root rights are needed, and the user will be prompted to allow for installing the
 needed dependencies.

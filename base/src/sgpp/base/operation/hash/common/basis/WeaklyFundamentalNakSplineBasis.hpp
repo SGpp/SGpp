@@ -20,14 +20,13 @@ namespace base {
  * weakly fundamental not-a-knot spline basis.
  */
 template <class LT, class IT>
-class WeaklyFundamentalNakSplineBasis: public Basis<LT, IT> {
+class WeaklyFundamentalNakSplineBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalNakSplineBasis() : weaklyFundamentalSplineBasis(
-      WeaklyFundamentalSplineBasis<LT, IT>()) {
-  }
+  WeaklyFundamentalNakSplineBasis()
+      : weaklyFundamentalSplineBasis(WeaklyFundamentalSplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -35,8 +34,8 @@ class WeaklyFundamentalNakSplineBasis: public Basis<LT, IT> {
    * @param degree    Spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit WeaklyFundamentalNakSplineBasis(size_t degree) :
-        weaklyFundamentalSplineBasis(WeaklyFundamentalSplineBasis<LT, IT>(degree)) {
+  explicit WeaklyFundamentalNakSplineBasis(size_t degree)
+      : weaklyFundamentalSplineBasis(WeaklyFundamentalSplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported spline degree.");
     }
@@ -45,8 +44,7 @@ class WeaklyFundamentalNakSplineBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalNakSplineBasis() override {
-  }
+  ~WeaklyFundamentalNakSplineBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -1180,14 +1178,20 @@ class WeaklyFundamentalNakSplineBasis: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalNakSplineBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalNakSplineBasis: getIntegral not implemented" << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const override {
-    return weaklyFundamentalSplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return weaklyFundamentalSplineBasis.getDegree(); }
 
  protected:
   /// B-spline basis for B-spline evaluation

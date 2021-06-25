@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,14 +21,13 @@ namespace base {
  * weakly fundamental not-a-knot spline basis.
  */
 template <class LT, class IT>
-class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
+class WeaklyFundamentalNakSplineModifiedBasisDeriv1 : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalNakSplineModifiedBasisDeriv1() :
-    weaklyFundamentalNakSplineBasisDeriv1(WeaklyFundamentalNakSplineBasisDeriv1<LT, IT>()) {
-  }
+  WeaklyFundamentalNakSplineModifiedBasisDeriv1()
+      : weaklyFundamentalNakSplineBasisDeriv1(WeaklyFundamentalNakSplineBasisDeriv1<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -36,8 +35,9 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
    * @param degree    Spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit WeaklyFundamentalNakSplineModifiedBasisDeriv1(size_t degree) :
-    weaklyFundamentalNakSplineBasisDeriv1(WeaklyFundamentalNakSplineBasisDeriv1<LT, IT>(degree)) {
+  explicit WeaklyFundamentalNakSplineModifiedBasisDeriv1(size_t degree)
+      : weaklyFundamentalNakSplineBasisDeriv1(
+            WeaklyFundamentalNakSplineBasisDeriv1<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported spline degree.");
     }
@@ -46,8 +46,7 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalNakSplineModifiedBasisDeriv1() override {
-  }
+  ~WeaklyFundamentalNakSplineModifiedBasisDeriv1() override {}
 
   /**
    * @param l     level of basis function
@@ -138,10 +137,10 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1
-            double result = -6.0/35.0;
-            result = 19.0/70.0 + result * t;
-            result = 37.0/35.0 + result * t;
-            result = -331.0/210.0 + result * t;
+            double result = -6.0 / 35.0;
+            result = 19.0 / 70.0 + result * t;
+            result = 37.0 / 35.0 + result * t;
+            result = -331.0 / 210.0 + result * t;
             return innerDeriv * result;
           } else if (l == 3) {
             // l = 3, i = 1
@@ -236,10 +235,10 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1
-            double result = -6.0/35.0;
-            result = 19.0/70.0 + result * t;
-            result = 37.0/35.0 + result * t;
-            result = -331.0/210.0 + result * t;
+            double result = -6.0 / 35.0;
+            result = 19.0 / 70.0 + result * t;
+            result = 37.0 / 35.0 + result * t;
+            result = -331.0 / 210.0 + result * t;
             return innerDeriv * result;
           } else if (l == 3) {
             // l = 3, i = 1
@@ -329,7 +328,17 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalNakSplineModifiedBasisDeriv1: evalDx not implemented"
+              << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalNakSplineModifiedBasisDeriv1: getIntegral not implemented"
+              << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      B-spline degree
@@ -345,7 +354,7 @@ class WeaklyFundamentalNakSplineModifiedBasisDeriv1: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef WeaklyFundamentalNakSplineModifiedBasisDeriv1<unsigned int, unsigned int>
-SWeaklyFundamentalNakSplineModifiedBaseDeriv1;
+    SWeaklyFundamentalNakSplineModifiedBaseDeriv1;
 
 }  // namespace base
 }  // namespace sgpp

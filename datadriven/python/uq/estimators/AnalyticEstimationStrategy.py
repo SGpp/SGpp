@@ -217,7 +217,6 @@ class AnalyticEstimationStrategy(SparseGridEstimationStrategy):
         for i in range(gs.getSize()):
             gps[i] = gs.getPoint(i)
         basis = getBasis(grid)
-
         return self.computeSystemMatrixForVarianceList(gs,
                                                        gps, basis,
                                                        gps, basis,

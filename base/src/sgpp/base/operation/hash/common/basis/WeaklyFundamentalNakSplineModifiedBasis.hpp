@@ -10,9 +10,9 @@
 
 #include <sgpp/globaldef.hpp>
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
-#include <algorithm>
 
 namespace sgpp {
 namespace base {
@@ -21,14 +21,13 @@ namespace base {
  * Modified weakly fundamental not-a-knot spline basis.
  */
 template <class LT, class IT>
-class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
+class WeaklyFundamentalNakSplineModifiedBasis : public Basis<LT, IT> {
  public:
   /**
    * Default constructor.
    */
-  WeaklyFundamentalNakSplineModifiedBasis() :
-    weaklyFundamentalNakSplineBasis(WeaklyFundamentalNakSplineBasis<LT, IT>()) {
-  }
+  WeaklyFundamentalNakSplineModifiedBasis()
+      : weaklyFundamentalNakSplineBasis(WeaklyFundamentalNakSplineBasis<LT, IT>()) {}
 
   /**
    * Constructor.
@@ -36,8 +35,8 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
    * @param degree    Spline degree, must be odd
    *                  (if it's even, degree - 1 is used)
    */
-  explicit WeaklyFundamentalNakSplineModifiedBasis(size_t degree) :
-    weaklyFundamentalNakSplineBasis(WeaklyFundamentalNakSplineBasis<LT, IT>(degree)) {
+  explicit WeaklyFundamentalNakSplineModifiedBasis(size_t degree)
+      : weaklyFundamentalNakSplineBasis(WeaklyFundamentalNakSplineBasis<LT, IT>(degree)) {
     if (getDegree() > 7) {
       throw std::runtime_error("Unsupported spline degree.");
     }
@@ -46,8 +45,7 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
   /**
    * Destructor.
    */
-  ~WeaklyFundamentalNakSplineModifiedBasis() override {
-  }
+  ~WeaklyFundamentalNakSplineModifiedBasis() override {}
 
   /**
    * @param l     level of basis function
@@ -153,10 +151,10 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1
-            double result = -3.0/70.0;
-            result = 19.0/210.0 + result * t;
-            result = 37.0/70.0 + result * t;
-            result = -331.0/210.0 + result * t;
+            double result = -3.0 / 70.0;
+            result = 19.0 / 210.0 + result * t;
+            result = 37.0 / 70.0 + result * t;
+            result = -331.0 / 210.0 + result * t;
             result = 1.0 + result * t;
             return result;
           } else if (l == 3) {
@@ -259,10 +257,10 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
 
           if (l == 2) {
             // l = 2, i = 1
-            double result = -3.0/70.0;
-            result = 19.0/210.0 + result * t;
-            result = 37.0/70.0 + result * t;
-            result = -331.0/210.0 + result * t;
+            double result = -3.0 / 70.0;
+            result = 19.0 / 210.0 + result * t;
+            result = 37.0 / 70.0 + result * t;
+            result = -331.0 / 210.0 + result * t;
             result = 1.0 + result * t;
             return result;
           } else if (l == 3) {
@@ -360,14 +358,21 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
     }
   }
 
-  inline double getIntegral(LT level, IT index) override { return -1.0; }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "WeaklyFundamentalNakSplineModifiedBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
+
+  inline double getIntegral(LT level, IT index) override {
+    std::cerr << "WeaklyFundamentalNakSplineModifiedBasis: getIntegral not implemented"
+              << std::endl;
+    return -1.0;
+  }
 
   /**
    * @return      B-spline degree
    */
-  inline size_t getDegree() const override {
-    return weaklyFundamentalNakSplineBasis.getDegree();
-  }
+  inline size_t getDegree() const override { return weaklyFundamentalNakSplineBasis.getDegree(); }
 
  protected:
   /// Unmodified basis
@@ -376,7 +381,7 @@ class WeaklyFundamentalNakSplineModifiedBasis: public Basis<LT, IT> {
 
 // default type-def (unsigned int for level and index)
 typedef WeaklyFundamentalNakSplineModifiedBasis<unsigned int, unsigned int>
-SWeaklyFundamentalNakSplineModifiedBase;
+    SWeaklyFundamentalNakSplineModifiedBase;
 
 }  // namespace base
 }  // namespace sgpp

@@ -54,6 +54,10 @@ class LinearClenshawCurtisBoundaryBasis : public Basis<LT, IT> {
     // evaluation
     return eval(level, index, (p - offset) / width);
   }
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearClenshawCurtisBoundaryBasis: evalDx not implemented" << std::endl;
+    return -1;
+  }
 
   double getIntegral(LT level, IT index) override {
     // boundary points

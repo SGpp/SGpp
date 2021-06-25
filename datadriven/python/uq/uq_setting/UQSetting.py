@@ -151,6 +151,8 @@ class UQSetting(object):
         @param sample: tuple input parameter in [0, 1]^d
         @return: return input parameter for the simulation run
         """
+        
+        
         # get sample in unit space
         p = tuple(sample.getExpandedUnit())
         # get parameter in probabilistic space

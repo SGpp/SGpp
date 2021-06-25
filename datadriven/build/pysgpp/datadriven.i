@@ -10,6 +10,7 @@
 %shared_ptr(sgpp::datadriven::DensitySystemMatrix)
 %shared_ptr(sgpp::datadriven::DensityDifferenceSystemMatrix)
 %shared_ptr(sgpp::datadriven::OperationRegularizationDiagonal)
+%shared_ptr(sgpp::datadriven::KDEMaximumLikelihoodCrossValidation)
 
 %{
 #include <sgpp/solver/TypesSolver.hpp>
@@ -299,3 +300,5 @@ public:
 }
 
 //- end namespace datadriven ------------------------------------------
+
+

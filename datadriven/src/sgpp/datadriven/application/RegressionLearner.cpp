@@ -3,17 +3,21 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/base/operation/BaseOpFactory.hpp>
-#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
-#include <sgpp/datadriven/application/RegressionLearner.hpp>
-#include <sgpp/pde/operation/PdeOpFactory.hpp>
-
+#include <cassert>
+#include <limits>
+#include <random>
+#include <set>
 #include <sgpp/base/exception/application_exception.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/type/LinearBoundaryGrid.hpp>
 #include <sgpp/base/grid/type/LinearGrid.hpp>
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
-
+#include <sgpp/base/grid/type/ModNakBsplineGrid.hpp>
+#include <sgpp/base/grid/type/NakBsplineExtendedGrid.hpp>
+#include <sgpp/base/operation/BaseOpFactory.hpp>
+#include <sgpp/datadriven/algorithm/DMSystemMatrix.hpp>
+#include <sgpp/datadriven/application/RegressionLearner.hpp>
+#include <sgpp/pde/operation/PdeOpFactory.hpp>
 #include <sgpp/solver/sle/BiCGStab.hpp>
 #include <sgpp/solver/sle/ConjugateGradients.hpp>
 #include <sgpp/solver/sle/fista/ElasticNetFunction.hpp>
@@ -21,11 +25,6 @@
 #include <sgpp/solver/sle/fista/GroupLassoFunction.hpp>
 #include <sgpp/solver/sle/fista/LassoFunction.hpp>
 #include <sgpp/solver/sle/fista/RidgeFunction.hpp>
-
-#include <cassert>
-#include <limits>
-#include <random>
-#include <set>
 #include <vector>
 
 namespace sgpp {
@@ -150,6 +149,10 @@ void RegressionLearner::refine(base::DataMatrix& data, base::DataVector& classes
 
 base::Grid& RegressionLearner::getGrid() { return *grid; }
 
+std::shared_ptr<sgpp::base::Grid> RegressionLearner::getGridPtr() { return grid; }
+
+// std::shared_ptr<base::Grid> RegressionLearner::getGridPtr() { return grid; }
+
 size_t RegressionLearner::getGridSize() const { return grid->getSize(); }
 
 base::DataVector RegressionLearner::getWeights() const { return weights; }
@@ -167,11 +170,17 @@ void RegressionLearner::initializeGrid(const base::RegularGridConfiguration grid
   using base::GridType;
   // no switch used to avoid missing case warnings
   if (gridConfig.type_ == GridType::LinearBoundary) {
-    grid = std::make_unique<base::LinearBoundaryGrid>(gridConfig.dim_);
+    grid = std::make_shared<base::LinearBoundaryGrid>(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::ModLinear) {
-    grid = std::make_unique<base::ModLinearGrid>(gridConfig.dim_);
+    grid = std::make_shared<base::ModLinearGrid>(gridConfig.dim_);
   } else if (gridConfig.type_ == GridType::Linear) {
-    grid = std::make_unique<base::LinearGrid>(gridConfig.dim_);
+    grid = std::make_shared<base::LinearGrid>(gridConfig.dim_);
+  } else if (gridConfig.type_ == GridType::NakBsplineBoundary) {
+    grid = std::make_shared<base::NakBsplineBoundaryGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::ModNakBspline) {
+    grid = std::make_shared<base::ModNakBsplineGrid>(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::NakBsplineExtended) {
+    grid = std::make_shared<base::NakBsplineExtendedGrid>(gridConfig.dim_, gridConfig.maxDegree_);
   } else {
     throw base::application_exception(
         "RegressionLearner::InitializeGrid: An unsupported grid type was chosen!");

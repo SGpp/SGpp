@@ -3,13 +3,11 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef NAKBSPLINETRUNCATEDBOUNDARYGRID_HPP
-#define NAKBSPLINETRUNCATEDBOUNDARYGRID_HPP
+#pragma once
 
 #include <sgpp/base/grid/Grid.hpp>
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBasis.hpp>
 #include <sgpp/base/grid/generation/BoundaryGridGenerator.hpp>
-
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBoundaryBasis.hpp>
 #include <sgpp/globaldef.hpp>
 
 namespace sgpp {
@@ -88,12 +86,10 @@ class NakBsplineBoundaryGrid : public Grid {
   /// B-spline degree
   size_t degree;
   /// B-spline basis
-  std::unique_ptr<SNakBsplineBase> basis_;
+  std::unique_ptr<SNakBsplineBoundaryBase> basis_;
   /// 1 + how much levels the boundary is coarser than the main axes
   level_t boundaryLevel;
 };
 
 }  // namespace base
 }  // namespace sgpp
-
-#endif /* NAKBSPLINETRUNCATEDBOUNDARYGRID_HPP */

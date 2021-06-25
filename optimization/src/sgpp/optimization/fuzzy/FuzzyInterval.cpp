@@ -4,6 +4,7 @@
 // sgpp.sparsegrids.org
 
 #include <sgpp/globaldef.hpp>
+#include <stdexcept>
 
 #include <sgpp/optimization/fuzzy/FuzzyInterval.hpp>
 

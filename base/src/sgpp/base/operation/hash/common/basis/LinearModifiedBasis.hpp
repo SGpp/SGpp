@@ -7,11 +7,11 @@
 #define LINEAR_MODIFIED_BASE_HPP
 
 #include <sgpp/base/operation/hash/common/basis/Basis.hpp>
-
 #include <sgpp/globaldef.hpp>
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace sgpp {
 namespace base {
@@ -50,6 +50,11 @@ class LinearModifiedBasis : public Basis<LT, IT> {
       // interior basis function
       return std::max(1.0 - std::abs(hInvDbl * x - static_cast<double>(i)), 0.0);
     }
+  }
+
+  double evalDx(LT level, IT index, double x) override {
+    std::cerr << "LinearModifiedBasis: evalDx not implemented" << std::endl;
+    return -1;
   }
 
   inline size_t getDegree() const override { return 1; }

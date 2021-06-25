@@ -5,13 +5,11 @@
 
 #pragma once
 
-#include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp>
-
-#include <sgpp/globaldef.hpp>
-
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <sgpp/base/operation/hash/common/basis/NakBsplineBasisDeriv1.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace base {
@@ -253,6 +251,17 @@ class NakBsplineModifiedBasisDeriv1 : public Basis<LT, IT> {
       default:
         return 0.0;
     }
+  }
+
+  /**
+   * @param l     level of basis function
+   * @param i     index of basis function
+   * @param x     evaluation point
+   * @return      value of derivative of wavelet basis function
+   */
+  inline double evalDx(LT l, IT i, double x) override {
+    std::cerr << "NakBsplineMOdifiedBasisDeriv1::evalDx not implemented\n";
+    return 0;
   }
 
   inline double getIntegral(LT level, IT index) override {
