@@ -125,7 +125,7 @@ vars.Add(BoolVariable("SG_ALL", "Default value for the other SG_* variables; " +
                                 "if False, the modules must be enabled explicitly, e.g., " +
                                 "by setting SG_DATADRIVEN=1", True))
 vars.Add(BoolVariable("SG_PYTHON", "Build with Python support (default: value of SG_ALL)", None))
-vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: value of SG_ALL)", False))
+vars.Add(BoolVariable("SG_JAVA", "Build with Java support (default: False)", False))
 vars.Add(BoolVariable("SG_MATLAB", "Build with MATLAB support", False))
 vars.Add("SWIGFLAGS", "Set additional SWIG flags, they are compiler-dependent "
                       "(multiple flags separated by space: '-Wall -Wextra')", "",
