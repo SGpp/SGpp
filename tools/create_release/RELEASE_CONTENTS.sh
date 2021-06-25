@@ -15,7 +15,7 @@ Doxyfile_template
 INSTRUCTIONS
 INSTRUCTIONS_MAC
 INSTRUCTIONS_WINDOWS
-jsgpp
+#jsgpp
 #lib
 #misc
 moduleDoxy
