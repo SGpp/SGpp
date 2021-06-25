@@ -20,28 +20,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\sgpp\quadrature\operation\hash\OperationQuadratureMCAdvanced.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\QuadratureOpFactory.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\Random.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\sampling\HaltonSampleGenerator.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\sampling\LatinHypercubeSampleGenerator.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\sampling\NaiveSampleGenerator.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\sampling\SampleGenerator.cpp" />
-    <ClCompile Include="src\sgpp\quadrature\sampling\StratifiedSampleGenerator.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\sgpp\quadrature\operation\hash\OperationQuadratureMCAdvanced.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\QuadratureOpFactory.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\Random.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\HaltonSampleGenerator.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\LatinHypercubeSampleGenerator.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\NaiveSampleGenerator.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\SampleGenerator.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\SamplerTypes.hpp" />
-    <ClInclude Include="src\sgpp\quadrature\sampling\StratifiedSampleGenerator.hpp" />
-    <ClInclude Include="src\sgpp_quadrature.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup>
     <ConfigurationType>StaticLibrary</ConfigurationType>

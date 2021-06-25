@@ -4,6 +4,17 @@
 <Import Project="$(SolutionDir)windows\modules\$(TargetName).props" />
 
 <ItemGroup>
+	<_WildCardIncludes Include="$(ProjectDir)src\**\*.hpp"  />
+	<_WildCardCompile Include="$(ProjectDir)src\**\*.cpp" />
+</ItemGroup>
+
+<ItemGroup>
+	<ClInclude Include="@(_WildCardIncludes)" />
+	<ClCompile Include="@(_WildCardCompile)" />
+</ItemGroup>
+<Import Project="$(ProjectDir)module_config.props" />
+
+<ItemGroup>
 	<_WildCardExamples Include="$(ProjectDir)examples\**\*.cpp" />
 	<_WildCardPyExamples Include="$(ProjectDir)examples\**\*.py" />
 	<_WildCardTests Include="$(ProjectDir)tests\**\*.cpp" />

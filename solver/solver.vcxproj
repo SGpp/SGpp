@@ -11,55 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\sgpp\solver\ode\AdamsBashforth.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\CrankNicolson.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\Euler.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\StepsizeControl.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\StepsizeControlBDF.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\StepsizeControlEJ.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\StepsizeControlH.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\StepsizeControlMC.cpp" />
-    <ClCompile Include="src\sgpp\solver\ode\VarTimestep.cpp" />
-    <ClCompile Include="src\sgpp\solver\operation\hash\OperationParabolicPDESolverSystem.cpp" />
-    <ClCompile Include="src\sgpp\solver\SLESolverTypeParser.cpp" />
-    <ClCompile Include="src\sgpp\solver\sle\BiCGStab.cpp" />
-    <ClCompile Include="src\sgpp\solver\sle\BiCGStabSP.cpp" />
-    <ClCompile Include="src\sgpp\solver\sle\ConjugateGradients.cpp" />
-    <ClCompile Include="src\sgpp\solver\sle\ConjugateGradientsSP.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\sgpp\solver\ODESolver.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\AdamsBashforth.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\CrankNicolson.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\Euler.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\StepsizeControl.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\StepsizeControlBDF.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\StepsizeControlEJ.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\StepsizeControlH.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\StepsizeControlMC.hpp" />
-    <ClInclude Include="src\sgpp\solver\ode\VarTimestep.hpp" />
-    <ClInclude Include="src\sgpp\solver\operation\hash\OperationParabolicPDESolverSystem.hpp" />
-    <ClInclude Include="src\sgpp\solver\SGSolver.hpp" />
-    <ClInclude Include="src\sgpp\solver\SGSolverSP.hpp" />
-    <ClInclude Include="src\sgpp\solver\SLESolver.hpp" />
-    <ClInclude Include="src\sgpp\solver\SLESolverSP.hpp" />
-    <ClInclude Include="src\sgpp\solver\SLESolverTypeParser.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\BiCGStab.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\BiCGStabSP.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\ConjugateGradients.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\ConjugateGradientsSP.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\ElasticNetFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\Fista.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\FistaBase.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\GroupLassoFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\LassoFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\RegularizationFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\RidgeFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\sle\fista\ZeroFunction.hpp" />
-    <ClInclude Include="src\sgpp\solver\TypesSolver.hpp" />
-    <ClInclude Include="src\sgpp_solver.hpp" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

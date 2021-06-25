@@ -21,48 +21,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="src\sgpp\combigrid\adaptive\AdaptiveCombinationGridGenerator.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\adaptive\AveragingPriorityEstimator.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\adaptive\WeightedRelevanceCalculator.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\grid\CombinationGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\grid\FullGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationEvalCombinationGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationEvalFullGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleDehierarchisationLinear.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationGeneral.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationLinear.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleNodalisationBspline.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationPoleNodalisationLinear.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationUPCombinationGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\operation\OperationUPFullGrid.cpp" />
-    <ClCompile Include="src\sgpp\combigrid\tools\LevelVectorTools.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\sgpp\combigrid\adaptive\AdaptiveCombinationGridGenerator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\adaptive\AveragingPriorityEstimator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\adaptive\PriorityEstimator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\adaptive\RelevanceCalculator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\adaptive\WeightedRelevanceCalculator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\basis\HeterogeneousBasis.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\grid\CombinationGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\grid\FullGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\LevelIndexTypes.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationEvalCombinationGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationEvalFullGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPole.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleDehierarchisationLinear.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationGeneral.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleHierarchisationLinear.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleNodalisationBspline.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationPoleNodalisationLinear.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationUPCombinationGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\operation\OperationUPFullGrid.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\tools\IndexVectorIterator.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\tools\IndexVectorRange.hpp" />
-    <ClInclude Include="src\sgpp\combigrid\tools\LevelVectorTools.hpp" />
-    <ClInclude Include="src\sgpp_combigrid.hpp" />
-  </ItemGroup>
   <PropertyGroup>
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <IntDir>out\$(Configuration)\</IntDir>
