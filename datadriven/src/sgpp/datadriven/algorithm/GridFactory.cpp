@@ -41,6 +41,14 @@ sgpp::base::Grid* GridFactory::createGrid(const sgpp::base::GeneralGridConfigura
         static_cast<base::GridPoint::level_type>(gridConfig.boundaryLevel_));
   } else if (gridConfig.type_ == GridType::ModBspline) {
     tmpGrid = Grid::createModBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::NakBsplineBoundary) {
+    tmpGrid = Grid::createNakBsplineBoundaryGrid(
+        gridConfig.dim_, gridConfig.maxDegree_,
+        static_cast<base::GridPoint::level_type>(gridConfig.boundaryLevel_));
+  } else if (gridConfig.type_ == GridType::NakBsplineExtended) {
+    tmpGrid = Grid::createNakBsplineExtendedGrid(gridConfig.dim_, gridConfig.maxDegree_);
+  } else if (gridConfig.type_ == GridType::ModNakBspline) {
+    tmpGrid = Grid::createModNakBsplineGrid(gridConfig.dim_, gridConfig.maxDegree_);
   } else {
     throw algorithm_exception("GridFactory::createGrid: An unsupported grid type was chosen!");
   }
