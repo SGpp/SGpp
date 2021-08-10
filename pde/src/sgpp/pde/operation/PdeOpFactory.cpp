@@ -45,6 +45,9 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPolyClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModPolyClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitNakBsplineBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitNakBsplineExtended.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModNakBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPeriodic.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModLinear.hpp>
@@ -59,6 +62,9 @@
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPolyClenshawCurtis.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotPolyClenshawCurtisBoundary.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModPolyClenshawCurtis.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineBoundary.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotNakBsplineExtended.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotModNakBspline.hpp>
 
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinearBoundary.hpp>
@@ -85,8 +91,8 @@ base::OperationMatrix* createOperationLaplace(base::Grid& grid) {
   } else if (grid.getType() == base::GridType::ModLinear) {
     return new pde::OperationLaplaceModLinear(&grid.getStorage());
   } else if (grid.getType() == base::GridType::Prewavelet) {
-    return new pde::OperationLaplacePrewavelet(&grid.getStorage(),
-        &(dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage()));
+    return new pde::OperationLaplacePrewavelet(
+        &grid.getStorage(), &(dynamic_cast<base::PrewaveletGrid&>(grid).getShadowStorage()));
   } else if (grid.getType() == base::GridType::LinearStretched) {
     return new pde::OperationLaplaceLinearStretched(&grid.getStorage());
   } else if (grid.getType() == base::GridType::LinearStretchedBoundary) {
@@ -192,6 +198,12 @@ base::OperationMatrix* createOperationLTwoDotProduct(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotBsplineClenshawCurtis(&grid);
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     return new pde::OperationMatrixLTwoDotModBsplineClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new pde::OperationMatrixLTwoDotNakBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new pde::OperationMatrixLTwoDotNakBsplineExtended(&grid);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new pde::OperationMatrixLTwoDotModNakBspline(&grid);
   } else {
     throw base::factory_exception("OperationLTwoDotProduct is not implemented for this grid type.");
   }
@@ -229,6 +241,12 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::Grid& grid) {
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary(&grid);
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new pde::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(&grid);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new pde::OperationMatrixLTwoDotExplicitNakBsplineBoundary(&grid);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new pde::OperationMatrixLTwoDotExplicitNakBsplineExtended(&grid);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new pde::OperationMatrixLTwoDotExplicitModNakBspline(&grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
@@ -266,6 +284,12 @@ base::OperationMatrix* createOperationLTwoDotExplicit(base::DataMatrix* m, base:
     return new pde::OperationMatrixLTwoDotExplicitPolyClenshawCurtisBoundary(m, &grid);
   } else if (grid.getType() == base::GridType::ModPolyClenshawCurtis) {
     return new pde::OperationMatrixLTwoDotExplicitModPolyClenshawCurtis(m, &grid);
+  } else if (grid.getType() == base::GridType::NakBsplineBoundary) {
+    return new pde::OperationMatrixLTwoDotExplicitNakBsplineBoundary(m, &grid);
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    return new pde::OperationMatrixLTwoDotExplicitNakBsplineExtended(m, &grid);
+  } else if (grid.getType() == base::GridType::ModNakBspline) {
+    return new pde::OperationMatrixLTwoDotExplicitModNakBspline(m, &grid);
   } else {
     throw base::factory_exception(
         "OperationLTwoDotExplicit is not implemented for this grid type.");
