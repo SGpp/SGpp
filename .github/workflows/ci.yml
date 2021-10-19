@@ -4,6 +4,8 @@ on:
   push:
     branches-ignore:
       - testing # Jenkings test branch
+  pull_request: # build on PRs. Asks for maintainers approval before running for external PRs
+  workflow_dispatch: # allow to manually trigger the workflow
 
 jobs:
   windows:
