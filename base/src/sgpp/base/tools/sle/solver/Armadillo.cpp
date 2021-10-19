@@ -51,7 +51,7 @@ bool Armadillo::solve(SLE& system, DataMatrix& B, DataMatrix& X) const {
   A.zeros();
 
 // parallelize only if the system is cloneable
-#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz, rowsDone)  // default(none)
+#pragma omp parallel if (system.isCloneable()) shared(system, A, nnz, rowsDone, n)  // default(none)
 
   {
     SLE* system2 = &system;
