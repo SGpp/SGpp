@@ -72,7 +72,7 @@ try:
             else:
                 p = subcube_at((l[dim[0]], l[dim[1]], l[dim[2]]))
             subcubes.append(p)
-            color = scalarMap.to_rgba(l['delta'], alpha=0.3)
+            color = scalarMap.to_rgba(l['delta'], alpha=0.1)
             for i in range(6):
                 # add color for each side of the cube
                 colors.append(color)
@@ -92,7 +92,7 @@ try:
         df = df.dropna()
         return df
 
-    def plotDeltas3D(dataframe, dim=['l_0', 'l_1', 'l_2'], filename=None):
+    def plotDeltas3D(dataframe, dim=['l_0', 'l_1', 'l_2'], filename=None, logplot=False):
         """print 3d cube representation of adaptive scheme"""
         """expects a pandas dataframe with column 'delta' and level indices 'l_*'"""
         canvas = figure()
@@ -102,8 +102,13 @@ try:
             dataframe = adaptiveGeneratorToDataframe(dataframe)
 
         max_delta = dataframe['delta'].max()
-        cmap = plt.get_cmap('magma_r')
-        norm = colors.Normalize(vmin=0., vmax=max_delta)
+        if logplot:
+            min_delta = dataframe.loc[[dataframe.loc[dataframe.delta>0, 'delta'].idxmin()]]['delta'] 
+            cmap = plt.get_cmap('magma_r')
+            norm = colors.LogNorm(vmin=min_delta, vmax=max_delta)
+        else:
+            cmap = plt.get_cmap('magma_r')
+            norm = colors.Normalize(vmin=0., vmax=max_delta)
         scalarMap = cm.ScalarMappable(norm=norm, cmap=cmap)
         scalarMap.set_array(dataframe['delta'].values)
 
