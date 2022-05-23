@@ -10,7 +10,6 @@ cd tools/create_release/deb_package
 printf '\n\n\n~~~ Installing debian packages ~~~\n\n'
 sudo dpkg -i libsgpp-test-package_0.0-0.deb
 sudo dpkg -i libsgpp-python-test-package_0.0-0.deb
-sudo dpkg -i libsgpp-java-test-package_0.0-0.deb
 
 printf '\n\n\n~~~ Testing debian cpp package ~~~\n\n'
 cd ../../..
@@ -66,6 +65,7 @@ declare -a python_examples_to_test=(
                                     "base/examples/subspaceRefinement.py"
                                     "optimization/examples/optimization.py"
                                     "optimization/examples/fuzzy.py"
+                                    "optimization/examples/splineResponseSurface_example.py"
                                     "combigrid/examples/combigrid.py"
                                     "pde/examples/LTwoDotTest.py"
                                 )
@@ -88,51 +88,8 @@ do
   cd -
 done
 
-printf '\n\n\n~~~ Testing debian java package ~~~\n\n'
-mkdir -p "$HOME/testing_java_package"
-declare -a java_examples_to_test=(
-                                    "base/examples/tutorial.java"
-                                    "base/examples/refinement.java"
-                                )
-arraylength=${#java_examples_to_test[@]}
-for (( i=1; i<${arraylength}+1; i++ ));
-do
-  echo ""
-  echo "-------------------------------------------------------------"
-  echo "Java examples test" $i "of" ${arraylength} "(to be copied from " ${java_examples_to_test[$i-1]} "into test folder) : "
-  source_file=${java_examples_to_test[$i-1]}
-  file_name=$(basename $source_file)
-  target_file=$HOME/testing_java_package/${file_name}
-  echo "... copying $file_name from" $source_file " into $target_file "
-  cp ${source_file} ${target_file}
-  echo "... switching into java test folder"
-  cd "$HOME/testing_java_package"
-  exec_name=${file_name%.*}
-  echo "... building ${target_file} into $exec_name "
-  export CLASSPATH=/usr/share/java/jsgpp.jar:$(pwd)
-  javac ${file_name}
-  echo "... running java ${exec_name} "
-  java ${exec_name}
-  echo "... switching back into SGpp root directory"
-  cd -
-done
-echo ""
-echo "-------------------------------------------------------------"
-echo "Bonus java examples test (needs two files from optimzation/examples) : "
-echo "... copying optimization.java from optimization/examples/optimization.java into $HOME/testing_java_package/optimization.java"
-cp optimization/examples/optimization.java $HOME/testing_java_package/optimization.java
-echo "... copying ExampleFunction.java from optimization/examples/ExampleFunction.java into $HOME/testing_java_package/ExampleFunction.java"
-cp optimization/examples/ExampleFunction.java $HOME/testing_java_package/ExampleFunction.java
-echo "... switching into java test folder"
-cd "$HOME/testing_java_package"
-echo "... building optimization.java and ExampleFunction.java into optimization"
-export CLASSPATH=/usr/share/java/jsgpp.jar:$(pwd)
-javac optimization.java ExampleFunction.java
-echo "... running java optimization "
-java optimization
-echo "... switching back into SGpp root directory"
-cd -
+
 
 
 # Cleanup
-sudo dpkg --remove libsgpp libsgpp-python libsgpp-java
+sudo dpkg --remove libsgpp libsgpp-python

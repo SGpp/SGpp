@@ -60,8 +60,7 @@ libraryTargetList.append(installLibJava)
 # (see SConstruct_jsgpp_jar for more details)
 jar = javaEnv.Command(target="jsgpp.jar",
                       source=installLibJava,
-                      action="scons{} JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
-                          format(".bat" if env["PLATFORM"] == "win32" else "",
-                                 JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
+                      action="scons JSGPP_BUILD_PATH=\"{}\" -C \"{}\" -f \"{}\"".
+                          format(JSGPP_BUILD_PATH, moduleName, "SConstruct_jar"))
 javaEnv.AlwaysBuild(jar)
 libraryTargetList.append(jar)

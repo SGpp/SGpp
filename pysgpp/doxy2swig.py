@@ -163,7 +163,7 @@ class Doxy2SWIG(object):
         o = my_open_write(fname)
         #o.write(''.join(self.pieces))
         for piece in self.pieces:
-            o.write(piece.replace(r"\\", r"\\\\").encode("utf-8"))
+            o.write(piece.replace(r"\\", r"\\\\"))
         o.write('\n')
         o.close()
 
