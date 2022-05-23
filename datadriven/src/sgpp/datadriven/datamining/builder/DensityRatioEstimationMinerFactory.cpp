@@ -6,6 +6,7 @@
 #include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
@@ -23,17 +24,17 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(
+    const std::string& path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser),
-                                              createVisualizer(parser));
+    // TODO(spc90): implement cv, if it makes sense
+    throw base::not_implemented_exception(
+        "DensityRatioEstimation: cross-validation not yet supported!");
   } else {
-    return new SparseGridMinerSplittingTwoDatasets(createDataSourceSplittingTwoDatasets(parser),
-                                                   createFitter(parser), createScorer(parser),
-                                                   createVisualizer(parser));
+    return new SparseGridMinerSplittingTwoDatasets(
+        createDataSourceSplittingTwoDatasets(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   }
 }
 
@@ -61,27 +62,6 @@ DensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets(
   return dataSources;
 }
 
-/*
- std::vector<DataSourceCrossValidation*>
- DensityRatioEstimationMinerFactory::createDataSourceCrossValidationTwoDatasets(
- const DataMiningConfigParser& parser) const {
- DataSourceConfig config { };
-
- CrossvalidationConfiguration crossValidationconfig { };
- parser.getFitterCrossvalidationConfig(crossValidationconfig,
- crossValidationconfig);
-
- bool hasSource = parser.getDataSourceConfig(config, config);
-
- if (hasSource && config.filePath.compare("") != 0) {
- DataSourceBuilder builder;
- return builder.crossValidationFromConfig(config, crossValidationconfig);
- } else {
- throw base::data_exception("No file name provided for datasource.");
- }
- }
- */
-
 ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
@@ -94,10 +74,12 @@ HyperparameterOptimizer* DensityRatioEstimationMinerFactory::buildHPO(
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
     return new HarmonicaHyperparameterOptimizer(
-        buildMiner(path), new DensityRatioEstimationFitterFactory(parser), parser);
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser),
+        parser);
   } else {
-    return new BoHyperparameterOptimizer(buildMiner(path),
-                                         new DensityRatioEstimationFitterFactory(parser), parser);
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser),
+        parser);
   }
 }
 

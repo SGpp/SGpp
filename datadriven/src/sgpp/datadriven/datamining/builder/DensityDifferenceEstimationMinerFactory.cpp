@@ -6,6 +6,7 @@
 #include <sgpp/datadriven/datamining/builder/DensityDifferenceEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
@@ -30,14 +31,13 @@ SparseGridMiner *DensityDifferenceEstimationMinerFactory::buildMiner(
     const std::string &path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser),
-                                              createVisualizer(parser));
+    // TODO(spc90): implement cv, if it makes sense
+    throw base::not_implemented_exception(
+        "DensityDifferenceEstimation: cross-validation not yet supported!");
   } else {
-    return new SparseGridMinerSplittingTwoDatasets(createDataSourceSplittingTwoDatasets(parser),
-                                                   createFitter(parser), createScorer(parser),
-                                                   createVisualizer(parser));
+    return new SparseGridMinerSplittingTwoDatasets(
+        createDataSourceSplittingTwoDatasets(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   }
 }
 
@@ -70,7 +70,8 @@ ModelFittingBase *DensityDifferenceEstimationMinerFactory::createFitter(
   FitterConfigurationDensityEstimation config{};
   config.readParams(parser);
 
-  if (config.getGridConfig().generalType_ == base::GeneralGridType::ComponentGrid) {
+  if (config.getGridConfig().generalType_ ==
+      base::GeneralGridType::ComponentGrid) {
     return new ModelFittingDensityDifferenceEstimationCombi(config);
   }
   switch (config.getDensityEstimationConfig().type_) {
@@ -98,10 +99,12 @@ HyperparameterOptimizer *DensityDifferenceEstimationMinerFactory::buildHPO(
   DataMiningConfigParser parser(path);
   if (parser.getHPOMethod("bayesian") == "harmonica") {
     return new HarmonicaHyperparameterOptimizer(
-        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser),
+        parser);
   } else {
     return new BoHyperparameterOptimizer(
-        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser), parser);
+        buildMiner(path), new DensityDifferenceEstimationFitterFactory(parser),
+        parser);
   }
 }
 
