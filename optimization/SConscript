@@ -12,6 +12,8 @@ moduleDependencies = ["sgppbase"]
 additionalDependencies = []
 
 
+ 
+
 module = ModuleHelper.Module(moduleDependencies, additionalDependencies)
 
 module.scanSource()

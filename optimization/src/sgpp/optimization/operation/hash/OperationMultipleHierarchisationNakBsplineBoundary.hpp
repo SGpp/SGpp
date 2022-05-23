@@ -3,8 +3,7 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#ifndef SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERNAKBSPLINEBOUNDARY_HPP
-#define SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERNAKBSPLINEBOUNDARY_HPP
+#pragma once
 
 #include <sgpp/globaldef.hpp>
 
@@ -71,5 +70,3 @@ class OperationMultipleHierarchisationNakBsplineBoundary :
 };
 }  // namespace optimization
 }  // namespace sgpp
-
-#endif /* SGPP_OPTIMIZATION_OPERATION_HASH_OPMULTHIERNAKBSPLINEBOUNDARY_HPP */

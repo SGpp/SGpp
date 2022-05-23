@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <limits>
+#include <random>
 
 namespace sgpp {
 namespace datadriven {
@@ -58,7 +59,7 @@ double BoHyperparameterOptimizer::run(bool writeToFile) {
   // list/vector of configs, start setup
   std::vector<BOConfig> initialConfigs{};
   initialConfigs.reserve(static_cast<size_t>(config.getNRandom()));
-  std::mt19937 generator(static_cast<size_t>(config.getSeed()));
+  std::mt19937 generator(static_cast<std::mt19937::result_type>(config.getSeed()));
 
   // random warmup phase
   for (int i = 0; i < config.getNRandom(); ++i) {

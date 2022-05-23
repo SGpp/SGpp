@@ -35,6 +35,7 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(base::S
     : IterativeGridGenerator(f, grid, N), gamma(adaptivity), initialLevel(initialLevel) {
   if ((grid.getType() == base::GridType::Bspline) || (grid.getType() == base::GridType::Wavelet) ||
       (grid.getType() == base::GridType::Linear) ||
+      (grid.getType() == base::GridType::NakBspline) ||
       (grid.getType() == base::GridType::FundamentalSpline)) {
     linearGrid = std::unique_ptr<base::Grid>(new base::LinearGrid(f.getNumberOfParameters()));
   } else if ((grid.getType() == base::GridType::BsplineBoundary) ||
@@ -65,6 +66,9 @@ IterativeGridGeneratorLinearSurplus::IterativeGridGeneratorLinearSurplus(base::S
   } else if (grid.getType() == base::GridType::ModBsplineClenshawCurtis) {
     linearGrid = std::unique_ptr<base::Grid>(
         new base::ModBsplineClenshawCurtisGrid(f.getNumberOfParameters(), 1));
+  } else if (grid.getType() == base::GridType::NakBsplineExtended) {
+    linearGrid =
+        std::unique_ptr<base::Grid>(new base::NakBsplineExtendedGrid(f.getNumberOfParameters(), 1));
   } else {
     throw std::invalid_argument("Grid type not supported.");
   }

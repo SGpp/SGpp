@@ -109,14 +109,15 @@
 #include <sgpp/base/grid/generation/refinement_strategy/SubspaceRefinement.hpp>
 
 #include <sgpp/base/grid/generation/functors/CoarseningFunctor.hpp>
-#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/ForwardSelectorRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/ImpurityRefinementIndicator.hpp>
 #include <sgpp/base/grid/generation/functors/PredictiveRefinementIndicator.hpp>
+#include <sgpp/base/grid/generation/functors/RefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusRefinementFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusVolumeRefinementFunctor.hpp>
+
 #include <sgpp/base/grid/generation/functors/SurplusAbsValueCoarseningFunctor.hpp>
 #include <sgpp/base/grid/generation/functors/SurplusAbsValueRefinementFunctor.hpp>
 

@@ -73,7 +73,7 @@ void randu(DataVector& rvar, std::mt19937& generator) {
 
 void createSamples(DataMatrix& rvar, std::uint64_t seedValue = std::mt19937_64::default_seed) {
   size_t nsamples = rvar.getNrows(), ndim = rvar.getNcols();
-  std::mt19937 generator(seedValue);
+  std::mt19937 generator(static_cast<std::mt19937::result_type>(seedValue));
   DataVector sample(ndim);
   for (size_t i = 0; i < nsamples; ++i) {
     randu(sample, generator);

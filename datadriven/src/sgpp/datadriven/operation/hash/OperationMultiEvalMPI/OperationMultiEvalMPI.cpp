@@ -4,7 +4,6 @@
 // sgpp.sparsegrids.org
 
 #define MPICH_SKIP_MPICXX
-#define OMPI_SKIP_MPICXX
 #include <mpi.h>
 #include <omp.h>
 #include <algorithm>

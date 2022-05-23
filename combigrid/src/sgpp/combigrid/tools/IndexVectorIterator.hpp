@@ -5,11 +5,14 @@
 
 #pragma once
 
-#include <sgpp/globaldef.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/combigrid/LevelIndexTypes.hpp>
 #include <sgpp/combigrid/grid/FullGrid.hpp>
+#include <sgpp/globaldef.hpp>
 
+#include <functional>
 #include <iterator>
+#include <numeric>
 #include <vector>
 
 namespace sgpp {
@@ -241,6 +244,47 @@ class IndexVectorIterator : public std::iterator<std::random_access_iterator_tag
    */
   bool operator>=(const IndexVectorIterator& other) const {
     return (sequenceNumber >= other.sequenceNumber);
+  }
+
+  /**
+   * determines the coordinate of the current index in a given dimension
+   * "Standard" means no bounding box (i.e., the domain spanned by minIndex and maxIndex is the unit
+   * hypercube) and no stretching (i.e., the points have the standard locations \f$i \cdot
+   * 2^{-\ell}\f$).
+   *
+   * @param d             the dimension in which the coordinate should be calculated
+   * @param hasBoundary   whether the grid has boundary points
+   *
+   * @return the coordinate in the given dimension
+   */
+  // TODO(pollinta) is this the most sensible place for this functionality?
+  inline double getStandardCoordinate(size_t d, bool hasBoundary) {  // todo make const
+    auto hInv = hasBoundary ? (maxIndex[d] - minIndex[d]) : (maxIndex[d] - minIndex[d] + 2);
+    return static_cast<double>(hasBoundary ? (operator*()[d]) : (operator*()[d]) + 1) /
+           static_cast<double>(hInv);
+  }
+
+  /**
+   * Sets the entries of DataVector coordinates to the coordinates of the gridpoint
+   * "Standard" means no bounding box (i.e., the domain spanned by minIndex and maxIndex is the unit
+   * hypercube) and no stretching (i.e., the points have the standard locations \f$i \cdot
+   * 2^{-\ell}\f$).
+   *
+   * @param coordinates   the DataVector that should be overwritten with the coordinates
+   * @param hasBoundary   whether the grid has boundary points
+   */
+  void getStandardCoordinates(sgpp::base::DataVector& coordinates, bool hasBoundary = true) {
+    coordinates.resize(dim);
+    for (size_t d = 0; d < dim; d++) {
+      coordinates.set(d, getStandardCoordinate(d, hasBoundary));
+    }
+  }
+
+  /// check if iterator is at end of range -- needed for swig interface
+  bool isAtEnd() {
+    static size_t maximumSequenceNumber = std::accumulate(
+        numberOfIndexVectors.begin(), numberOfIndexVectors.end(), 1, std::multiplies<index_t>());
+    return (dim > 0) && (sequenceNumber == maximumSequenceNumber);
   }
 
  protected:
