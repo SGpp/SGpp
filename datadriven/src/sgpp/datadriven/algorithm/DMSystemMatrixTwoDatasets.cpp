@@ -3,8 +3,8 @@
 // use, please see the copyright notice provided with SG++ or at
 // sgpp.sparsegrids.org
 
-#include <sgpp/globaldef.hpp>
 #include <sgpp/datadriven/algorithm/DMSystemMatrixTwoDatasets.hpp>
+#include <sgpp/globaldef.hpp>
 
 namespace sgpp {
 namespace datadriven {
@@ -12,33 +12,33 @@ namespace datadriven {
 DMSystemMatrixTwoDatasets::DMSystemMatrixTwoDatasets(sgpp::base::DataMatrix& trainDataP,
                                                      sgpp::base::DataMatrix& trainDataQ,
                                                      double lambda)
-    : datasetP_(trainDataP),
-      datasetQ_(trainDataQ),
-      lambda_(lambda),
-      completeTimeMult_(0.0),
-      computeTimeMult_(0.0),
-      completeTimeMultTrans_(0.0),
-      computeTimeMultTrans_(0.0) {
-  myTimer_ = new sgpp::base::SGppStopwatch();
+    : datasetP(trainDataP),
+      datasetQ(trainDataQ),
+      lambda(lambda),
+      completeTimeMult(0.0),
+      computeTimeMult(0.0),
+      completeTimeMultTrans(0.0),
+      computeTimeMultTrans(0.0) {
+  myTimer = new sgpp::base::SGppStopwatch();
 }
 
-DMSystemMatrixTwoDatasets::~DMSystemMatrixTwoDatasets() { delete myTimer_; }
+DMSystemMatrixTwoDatasets::~DMSystemMatrixTwoDatasets() { delete myTimer; }
 
 void DMSystemMatrixTwoDatasets::prepareGrid() {}
 
 void DMSystemMatrixTwoDatasets::resetTimers() {
-  completeTimeMult_ = 0.0;
-  computeTimeMult_ = 0.0;
-  completeTimeMultTrans_ = 0.0;
-  computeTimeMultTrans_ = 0.0;
+  completeTimeMult = 0.0;
+  computeTimeMult = 0.0;
+  completeTimeMultTrans = 0.0;
+  computeTimeMultTrans = 0.0;
 }
 
 void DMSystemMatrixTwoDatasets::getTimers(double& timeMult, double& computeMult,
                                           double& timeMultTrans, double& computeMultTrans) {
-  timeMult = completeTimeMult_;
-  computeMult = computeTimeMult_;
-  timeMultTrans = completeTimeMultTrans_;
-  computeMultTrans = computeTimeMultTrans_;
+  timeMult = completeTimeMult;
+  computeMult = computeTimeMult;
+  timeMultTrans = completeTimeMultTrans;
+  computeMultTrans = computeTimeMultTrans;
 }
 
 }  // namespace datadriven

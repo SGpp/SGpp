@@ -5,13 +5,13 @@
 
 #include <sgpp/datadriven/algorithm/DensityDerivativeSystemMatrix.hpp>
 
+#include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/base/exception/operation_exception.hpp>
 #include <sgpp/pde/operation/hash/OperationLTwoDotProductLinear.hpp>
 
-#include <sgpp/base/datatypes/DataVector.hpp>
 #include <sgpp/base/datatypes/DataMatrix.hpp>
+#include <sgpp/base/datatypes/DataVector.hpp>
 
 #include <sgpp/globaldef.hpp>
 

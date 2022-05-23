@@ -13,13 +13,13 @@
 #include <sgpp/base/grid/type/ModLinearGrid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 #include <sgpp/base/operation/hash/OperationMatrix.hpp>
+#include <sgpp/base/tools/StringTokenizer.hpp>
 #include <sgpp/datadriven/algorithm/DBMatOffline.hpp>
 #include <sgpp/pde/operation/PdeOpFactory.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
-#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitBspline.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitLinear.hpp>
 #include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModBspline.hpp>
-#include <sgpp/base/tools/StringTokenizer.hpp>
+#include <sgpp/pde/operation/hash/OperationMatrixLTwoDotExplicitModLinear.hpp>
 
 #ifdef USE_GSL
 #include <gsl/gsl_matrix_double.h>
@@ -32,9 +32,9 @@
 #include <fstream>
 #include <iomanip>
 #include <list>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
 namespace sgpp {
 namespace datadriven {
