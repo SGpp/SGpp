@@ -26,6 +26,10 @@
 
 %include "IndexVectorRange.i"
 
+%callback("%s_cb");
+%include "combigrid/src/sgpp/combigrid/adaptive/Summation.hpp"
+%nocallback;
+
 %include "combigrid/src/sgpp/combigrid/tools/LevelVectorTools.hpp"
 
 %include "combigrid/src/sgpp/combigrid/adaptive/PriorityEstimator.hpp"

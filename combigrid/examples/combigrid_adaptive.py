@@ -12,7 +12,6 @@
 ## First, we import the required modules.
 import pysgpp
 import numpy as np
-import sys
 
 # skip plotting if Matplotlib cannot be imported (e.g., not installed or no GUI available)
 try:
