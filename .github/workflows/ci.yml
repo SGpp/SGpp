@@ -32,9 +32,10 @@ jobs:
           Expand-Archive d:\a\_temp\swigwin-4.0.1.zip d:\a\_temp\;
       - name: setup-enviroment
         run: |
-         echo "c:\msys64\mingw64\bin" >> $GITHUB_PATH
+         echo "/mingw64/bin" >> $GITHUB_PATH
          echo "c:\hostedtoolcache\windows\Python\3.7.9\x64" >> $GITHUB_PATH
          echo "d:\a\_temp\swigwin-4.0.1" >> $GITHUB_PATH
+         echo "$PATH"
       - name: install python dependencies
         run: python -m pip install scons pywin32 numpy scipy matplotlib
       - uses: actions/checkout@v2
