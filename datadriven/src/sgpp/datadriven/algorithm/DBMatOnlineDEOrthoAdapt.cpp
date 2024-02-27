@@ -96,13 +96,10 @@ void DBMatOnlineDEOrthoAdapt::solveSLE(
       static_cast<sgpp::datadriven::DBMatOfflineOrthoAdapt*>(
           &this->offlineObject);
   // create solver
-  sgpp::datadriven::DBMatDMSOrthoAdapt* solver =
-      new sgpp::datadriven::DBMatDMSOrthoAdapt();
+  auto solver = std::make_unique<sgpp::datadriven::DBMatDMSOrthoAdapt>();
   // solve the created system
   alpha.resizeZero(b.getSize());
   solver->solve(offline->getTinv(), offline->getQ(), this->getB(), b, alpha);
-
-  free(solver);
 }
 
 void DBMatOnlineDEOrthoAdapt::solveSLEParallel(
