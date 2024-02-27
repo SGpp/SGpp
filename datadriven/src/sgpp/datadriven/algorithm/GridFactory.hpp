@@ -8,6 +8,7 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/datadriven/configuration/GeometryConfiguration.hpp>
 
+#include <cstdint>
 #include <set>
 #include <string>
 #include <vector>
