@@ -158,7 +158,7 @@ void DBMatOnlineDE_SMW::solveSLE(
     DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   // create solver
-  auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();;
+  auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();
   // solve the created system
   alpha.resizeZero(b.getSize());
   solver->solve(this->offlineObject.getInverseMatrix(), this->getB(), b, alpha);
