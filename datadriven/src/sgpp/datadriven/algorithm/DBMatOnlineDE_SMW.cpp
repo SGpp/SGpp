@@ -170,7 +170,6 @@ void DBMatOnlineDE_SMW::solveSLEParallel(
 #ifdef USE_SCALAPACK
   // create solver
   auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();
-  sgpp::datadriven::DBMatDMS_SMW* solver = new sgpp::datadriven::DBMatDMS_SMW();
   // solve the created system
   alpha.resize(b.getGlobalRows());
   solver->solveParallel(this->offlineObject.getDecomposedInverseDistributed(),
