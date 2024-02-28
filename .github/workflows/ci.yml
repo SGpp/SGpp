@@ -9,7 +9,7 @@ on:
 
 jobs:
   windows:
-    runs-on: windows-latest
+    runs-on: windows-2019
     strategy:
       matrix:
         static: [0, 1]
@@ -32,14 +32,15 @@ jobs:
           Expand-Archive d:\a\_temp\swigwin-4.0.1.zip d:\a\_temp\;
       - name: setup-enviroment
         run: |
-         echo "c:\msys64\mingw64\bin" >> $GITHUB_PATH
+         echo "/mingw64/bin" >> $GITHUB_PATH
          echo "c:\hostedtoolcache\windows\Python\3.7.9\x64" >> $GITHUB_PATH
          echo "d:\a\_temp\swigwin-4.0.1" >> $GITHUB_PATH
+         echo "$PATH"
       - name: install python dependencies
         run: python -m pip install scons pywin32 numpy scipy matplotlib
       - uses: actions/checkout@v2
       - name: build
-        run: scons -j2 PYDOC=0 CHECK_STYLE=0 BUILD_STATICLIB=${{ matrix.static }} COMPILER=gnu OPT=1 GSL_INCLUDE_PATH="" CPPDEFINES="_POSIX_C_SOURCE=1" CC="C:\msys64\mingw64\bin\gcc.exe" CXX="C:\msys64\mingw64\bin\g++.exe" LINK="C:\msys64\mingw64\bin\g++.exe" BOOST_INCLUDE_PATH="C:\msys64\mingw64\include" BOOST_LIBRARY_PATH="C:\msys64\mingw64\bin" CPPFLAGS=-Werror
+        run: scons -j2 SG_PYTHON=0 PYDOC=0 CHECK_STYLE=0 BUILD_STATICLIB=${{ matrix.static }} COMPILER=gnu OPT=1 GSL_INCLUDE_PATH="" CPPDEFINES="_POSIX_C_SOURCE=1" BOOST_INCLUDE_PATH="C:\msys64\mingw64\include" BOOST_LIBRARY_PATH="C:\msys64\mingw64\bin" 
       - name: on failed
         if: ${{ failure() }}
         run: type config.log

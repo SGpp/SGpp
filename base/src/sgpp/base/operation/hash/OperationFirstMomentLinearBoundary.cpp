@@ -7,6 +7,7 @@
 #include <sgpp/base/exception/application_exception.hpp>
 
 #include <sgpp/globaldef.hpp>
+#include <cstdint>
 
 namespace sgpp {
 namespace base {
@@ -34,8 +35,8 @@ double OperationFirstMomentLinearBoundary::doQuadrature(const DataVector& alpha,
     tmpres = 1.;
 
     for (size_t dim = 0; dim < storage.getDimension(); dim++) {
-      std::uint32_t index = iter->first->getIndex(dim);
-      std::uint32_t level = iter->first->getLevel(dim);
+      auto index = iter->first->getIndex(dim);
+      auto level = iter->first->getLevel(dim);
       double index_d = static_cast<double>(index);
       double level_d = static_cast<double>(level);
 
