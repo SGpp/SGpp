@@ -158,7 +158,7 @@ void DBMatOnlineDE_SMW::solveSLE(
     DataVector& alpha, DataVector& b, Grid& grid,
     DensityEstimationConfiguration& densityEstimationConfig, bool do_cv) {
   // create solver
-  auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();;
+  auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();
   // solve the created system
   alpha.resizeZero(b.getSize());
   solver->solve(this->offlineObject.getInverseMatrix(), this->getB(), b, alpha);
@@ -170,7 +170,6 @@ void DBMatOnlineDE_SMW::solveSLEParallel(
 #ifdef USE_SCALAPACK
   // create solver
   auto solver = std::make_unique<sgpp::datadriven::DBMatDMS_SMW>();
-  sgpp::datadriven::DBMatDMS_SMW* solver = new sgpp::datadriven::DBMatDMS_SMW();
   // solve the created system
   alpha.resize(b.getGlobalRows());
   solver->solveParallel(this->offlineObject.getDecomposedInverseDistributed(),
