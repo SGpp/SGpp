@@ -3,9 +3,7 @@
 # use, please see the copyright notice provided with SG++ or at
 # sgpp.sparsegrids.org
 
-import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning) 
-import distutils.sysconfig
+import sysconfig
 import errno
 import os
 import re
@@ -312,10 +310,8 @@ def checkPython(config):
         raise Exception("Python 3 is required for SGpp python support!")
       
     pythonpath = getOutput(["python3", "-c",
-          "import warnings; "
-          "warnings.filterwarnings(\"ignore\", category=DeprecationWarning); " 
-          "import distutils.sysconfig; "
-          "print(distutils.sysconfig.get_python_inc())"])
+          "import sysconfig; "
+          "print(sysconfig.get_path(\"include\"))"])
     package = "python3-dev"
 
     config.env.AppendUnique(CPPPATH=[pythonpath])

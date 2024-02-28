@@ -76,8 +76,8 @@ if env["USE_ZLIB"]:
 
 if (env["PLATFORM"] == "win32") and (env["COMPILER"] == "gnu"):
   pyEnv.AppendUnique(CPPDEFINES=["MS_WIN64"])
-  pythonVersion = getOutput(["python3", "-c", "import distutils.sysconfig; "
-                             "print(distutils.sysconfig.get_config_var(\"VERSION\"))"])
+  pythonVersion = getOutput(["python3", "-c", "import sysconfig; "
+                             "print(sysconfig.get_config_var(\"VERSION\"))"])
   libs.append("python{}".format(pythonVersion))
   # GCC sometimes fails with internal compiler error on mingw-w64
   # (e.g., "in gt_ggc_m_S, at ggc-page.c:1474" or "segmentation fault").
