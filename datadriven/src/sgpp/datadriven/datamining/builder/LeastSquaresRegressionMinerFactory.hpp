@@ -10,7 +10,6 @@
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSource.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingBase.hpp>
 #include <sgpp/datadriven/datamining/modules/scoring/Scorer.hpp>
-#include <sgpp/datadriven/datamining/modules/hpo/HyperparameterOptimizer.hpp>
 #include <sgpp/datadriven/datamining/modules/dataSource/DataSourceSplitting.hpp>
 
 #include <string>
@@ -32,12 +31,10 @@ class LeastSquaresRegressionMinerFactory : public MinerFactory {
  private:
   /**
    * Build an instance of a #sgpp::datadriven::ModelFittingBase object as specified in the
-   * configuration
-   * file.
+   * configuration file.
    * @param parser parser object that provides methods to query the configuration file.
    * @return Fully configured fitter (instance of a #sgpp::datadriven::ModelFittingBase object) as
-   * specified in the
-   * configuration file.
+   * specified in the configuration file.
    */
   ModelFittingBase* createFitter(const DataMiningConfigParser& parser) const override;
 

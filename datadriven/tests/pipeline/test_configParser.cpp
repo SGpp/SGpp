@@ -118,6 +118,16 @@ BOOST_AUTO_TEST_CASE(testMultiDataSourceConfig) {
   defaults[0].validationPortion_ = 0.1;
   defaults[0].randomSeed_ = 1337;
 
+  defaults[1].filePath_ = "something/false";
+  defaults[1].fileType_ = DataSourceFileType::NONE;
+  defaults[1].isCompressed_ = true;
+  defaults[1].numBatches_ = 2;
+  defaults[1].batchSize_ = 10;
+  defaults[1].epochs_ = 1;
+  defaults[1].shuffling_ = DataSourceShufflingType::sequential;
+  defaults[1].validationPortion_ = 0.1;
+  defaults[1].randomSeed_ = 1337;
+
   std::vector<DataSourceConfig> config(2);
   bool hasConfig;
   bool hasDataTransformationConfig;

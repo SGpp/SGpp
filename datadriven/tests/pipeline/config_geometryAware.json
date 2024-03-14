@@ -9,29 +9,34 @@
             "level": "3"
         },
         "geometryConfig": {
-            "dim":[[1,1]],
+            "dim": [
+                [
+                    1,
+                    1
+                ]
+            ],
             "stencils": [
                 {
-                  "stencil": "DirectNeighbour"
+                    "stencil": "DirectNeighbour"
                 }
             ]
         },
-        "regularizationConfig":{
+        "regularizationConfig": {
             "regularizationType": "Identity",
             "lambda": "0.01"
         },
-        "densityEstimationConfig":{
+        "densityEstimationConfig": {
             "densityEstimationType": "decomposition",
             "matrixDecompositionType": "Chol"
         },
-        "adaptivityConfig":{
+        "adaptivityConfig": {
             "numRefinements": "10",
             "noPoints": "5",
             "threshold": "0.0"
         },
-        "learnerConfig" : {
-            "usePrior" : false,
-            "learningRate" : 0.0
+        "learnerConfig": {
+            "usePrior": false,
+            "forgetRate": 0.0
         }
     }
 }

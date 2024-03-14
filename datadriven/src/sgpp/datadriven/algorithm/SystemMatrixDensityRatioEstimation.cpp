@@ -16,57 +16,57 @@ SystemMatrixDensityRatioEstimation::SystemMatrixDensityRatioEstimation(base::Gri
                                                                        base::DataMatrix& trainDataP,
                                                                        base::DataMatrix& trainDataQ,
                                                                        double lambda)
-    : DMSystemMatrixDRE(trainDataP, trainDataQ, lambda),
+    : DMSystemMatrixTwoDatasets(trainDataP, trainDataQ, lambda),
       instancesP(0),
       paddedInstancesP(0),
       instancesQ(0),
       paddedInstancesQ(0),
       grid(grid) {
-  this->instancesP = this->datasetP_.getNrows();
-  this->instancesQ = this->datasetQ_.getNrows();
-  this->B_p.reset(op_factory::createOperationMultipleEval(grid, this->datasetP_,
+  this->instancesP = this->datasetP.getNrows();
+  this->instancesQ = this->datasetQ.getNrows();
+  this->B_p.reset(op_factory::createOperationMultipleEval(grid, this->datasetP,
                                                           this->implementationConfiguration));
-  this->B_q.reset(op_factory::createOperationMultipleEval(grid, this->datasetQ_,
+  this->B_q.reset(op_factory::createOperationMultipleEval(grid, this->datasetQ,
                                                           this->implementationConfiguration));
 
   // padded during Operator construction, fetch new size
-  this->paddedInstancesP = this->datasetP_.getNrows();
+  this->paddedInstancesP = this->datasetP.getNrows();
   // padded during Operator construction, fetch new size
-  this->paddedInstancesQ = this->datasetQ_.getNrows();
+  this->paddedInstancesQ = this->datasetQ.getNrows();
 }
 
 SystemMatrixDensityRatioEstimation::~SystemMatrixDensityRatioEstimation() {}
 
 void SystemMatrixDensityRatioEstimation::mult(base::DataVector& alpha, base::DataVector& result) {
-  base::DataVector tempQ(this->paddedInstancesP);
+  base::DataVector tempQ(this->paddedInstancesQ);
 
   // Compute (B_q^T * alpha)
-  this->myTimer_->start();
+  this->myTimer->start();
   this->B_q->mult(alpha, tempQ);
-  this->completeTimeMult_ += this->myTimer_->stop();
-  this->computeTimeMult_ += this->B_q->getDuration();
+  this->completeTimeMult += this->myTimer->stop();
+  this->computeTimeMult += this->B_q->getDuration();
 
   // Compute (B_q * B_q^T * alpha)
-  this->myTimer_->start();
+  this->myTimer->start();
   this->B_q->multTranspose(tempQ, result);
-  this->completeTimeMultTrans_ += this->myTimer_->stop();
-  this->computeTimeMultTrans_ += this->B_q->getDuration();
+  this->completeTimeMultTrans += this->myTimer->stop();
+  this->computeTimeMultTrans += this->B_q->getDuration();
 
   // Compute (B_q * B_q^T + lambda * nq * I) * alpha
-  result.axpy(static_cast<double>(this->instancesQ) * this->lambda_, alpha);
+  result.axpy(static_cast<double>(this->instancesQ) * this->lambda, alpha);
 
   // Compute (np * B_q * B_q^T + lambda * np * nq * I) * alpha
   result.mult(static_cast<double>(this->instancesP));
 }
 
 void SystemMatrixDensityRatioEstimation::generateb(base::DataVector& b) {
-  base::DataVector y(this->instancesP, static_cast<double>(this->instancesQ));
+  base::DataVector y(this->paddedInstancesP, static_cast<double>(this->instancesQ));
 
   // Compute nq * B_p * 1
-  this->myTimer_->start();
+  this->myTimer->start();
   this->B_p->multTranspose(y, b);
-  this->completeTimeMultTrans_ += this->myTimer_->stop();
-  this->computeTimeMultTrans_ += this->B_p->getDuration();
+  this->completeTimeMultTrans += this->myTimer->stop();
+  this->computeTimeMultTrans += this->B_p->getDuration();
 }
 
 void SystemMatrixDensityRatioEstimation::prepareGrid() {
@@ -77,10 +77,14 @@ void SystemMatrixDensityRatioEstimation::prepareGrid() {
 void SystemMatrixDensityRatioEstimation::setImplementation(
     datadriven::OperationMultipleEvalConfiguration operationConfiguration) {
   this->implementationConfiguration = operationConfiguration;
-  this->B_p.reset(op_factory::createOperationMultipleEval(this->grid, this->datasetP_,
+  this->B_p.reset(op_factory::createOperationMultipleEval(this->grid, this->datasetP,
                                                           this->implementationConfiguration));
-  this->B_q.reset(op_factory::createOperationMultipleEval(this->grid, this->datasetQ_,
+  this->B_q.reset(op_factory::createOperationMultipleEval(this->grid, this->datasetQ,
                                                           this->implementationConfiguration));
+  // padded during Operator construction, fetch new size
+  this->paddedInstancesP = this->datasetP.getNrows();
+  // padded during Operator construction, fetch new size
+  this->paddedInstancesQ = this->datasetQ.getNrows();
 }
 
 }  // namespace datadriven

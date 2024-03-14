@@ -10,7 +10,7 @@ namespace base {
 /**
  * Enumeration that defines different types of coarsening indicators / functors
  */
-enum class CoarseningFunctorType { Surplus, SurplusVolume, Classification };
+enum class CoarseningFunctorType { Surplus, SurplusVolume, SurplusAbsoluteValue, Classification };
 
 }  // namespace base
 }  // namespace sgpp

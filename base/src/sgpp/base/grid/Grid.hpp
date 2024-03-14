@@ -142,7 +142,7 @@ enum class AdaptivityThresholdType {
  */
 struct AdaptivityConfiguration {
   /// number of refinements
-  size_t numRefinements_ = 1;
+  size_t numRefinements_ = 0;
   /// threshold type
   AdaptivityThresholdType thresholdType_ = AdaptivityThresholdType::Absolute;
   /// refinement threshold for surpluses
@@ -151,12 +151,12 @@ struct AdaptivityConfiguration {
   double coarseningThreshold_ = 0.0;
   /// prevent coarsening of initial grid points, needed for some decompositions
   bool coarsenInitialPoints_ = false;
-  /// refinement type: false: classic, true: maxLevel
+  /// refinement type: false: classic, true: maxLevel; Currently unused
   bool maxLevelType_ = false;
   /// max. number of points to be refined
-  size_t numRefinementPoints_ = 5;
+  size_t numRefinementPoints_ = 0;
   /// max. number of points to be coarsened
-  size_t numCoarseningPoints_ = 5;
+  size_t numCoarseningPoints_ = 0;
   /// max. percent of points to be refined/coarsened
   double percent_ = 1.0;
   /// other refinement strategy, that is more expensive, but yields better results

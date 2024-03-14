@@ -6,14 +6,17 @@
 #include <sgpp/datadriven/datamining/builder/DensityRatioEstimationMinerFactory.hpp>
 
 #include <sgpp/base/exception/data_exception.hpp>
+#include <sgpp/base/exception/not_implemented_exception.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerSplittingTwoDatasets.hpp>
 #include <sgpp/datadriven/datamining/builder/DataSourceBuilder.hpp>
 #include <sgpp/datadriven/datamining/builder/ScorerFactory.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/FitterConfiguration.hpp>
 #include <sgpp/datadriven/datamining/modules/fitting/ModelFittingDensityRatioEstimation.hpp>
 #include <sgpp/datadriven/datamining/base/SparseGridMinerCrossValidation.hpp>
-
-#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDummy.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/DensityRatioEstimationFitterFactory.hpp>
+#include <sgpp/datadriven/datamining/modules/visualization/VisualizerDensityEstimation.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/HarmonicaHyperparameterOptimizer.hpp>
+#include <sgpp/datadriven/datamining/modules/hpo/BoHyperparameterOptimizer.hpp>
 
 #include <string>
 #include <vector>
@@ -21,17 +24,17 @@
 namespace sgpp {
 namespace datadriven {
 
-SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(const std::string& path) const {
+SparseGridMiner* DensityRatioEstimationMinerFactory::buildMiner(
+    const std::string& path) const {
   DataMiningConfigParser parser(path);
   if (parser.hasFitterConfigCrossValidation()) {
-    // TODO(fuchsgdk): implement the cv stuff
-    return new SparseGridMinerCrossValidation(createDataSourceCrossValidation(parser),
-                                              createFitter(parser), createScorer(parser),
-                                              createVisualizer(parser));
+    // TODO(spc90): implement cv, if it makes sense
+    throw base::not_implemented_exception(
+        "DensityRatioEstimation: cross-validation not yet supported!");
   } else {
-    return new SparseGridMinerSplittingTwoDatasets(createDataSourceSplittingTwoDatasets(parser),
-                                                   createFitter(parser), createScorer(parser),
-                                                   createVisualizer(parser));
+    return new SparseGridMinerSplittingTwoDatasets(
+        createDataSourceSplittingTwoDatasets(parser), createFitter(parser),
+        createScorer(parser), createVisualizer(parser));
   }
 }
 
@@ -43,8 +46,8 @@ DensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets(
   bool hasSource = parser.getMultiDataSourceConfig(configs, configs);
 
   // Batching is not currently supported
-  configs[0].batchSize_ = configs[1].batchSize_ = 0;
-  configs[0].numBatches_ = configs[1].numBatches_ = 1;
+  // configs[0].batchSize_ = configs[1].batchSize_ = 0;
+  // configs[0].numBatches_ = configs[1].numBatches_ = 1;
 
   std::vector<DataSourceSplitting*> dataSources(2);
 
@@ -59,27 +62,6 @@ DensityRatioEstimationMinerFactory::createDataSourceSplittingTwoDatasets(
   return dataSources;
 }
 
-/*
- std::vector<DataSourceCrossValidation*>
- DensityRatioEstimationMinerFactory::createDataSourceCrossValidationTwoDatasets(
- const DataMiningConfigParser& parser) const {
- DataSourceConfig config { };
-
- CrossvalidationConfiguration crossValidationconfig { };
- parser.getFitterCrossvalidationConfig(crossValidationconfig,
- crossValidationconfig);
-
- bool hasSource = parser.getDataSourceConfig(config, config);
-
- if (hasSource && config.filePath.compare("") != 0) {
- DataSourceBuilder builder;
- return builder.crossValidationFromConfig(config, crossValidationconfig);
- } else {
- throw base::data_exception("No file name provided for datasource.");
- }
- }
- */
-
 ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
     const DataMiningConfigParser& parser) const {
   FitterConfigurationLeastSquares config{};
@@ -87,20 +69,31 @@ ModelFittingBase* DensityRatioEstimationMinerFactory::createFitter(
   return new ModelFittingDensityRatioEstimation(config);
 }
 
-/*
- FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
- const DataMiningConfigParser& parser) const {
- return new DensityRatioEstimationMinerFactory(parser);
- }
- */
+HyperparameterOptimizer* DensityRatioEstimationMinerFactory::buildHPO(
+    const std::string& path) const {
+  DataMiningConfigParser parser(path);
+  if (parser.getHPOMethod("bayesian") == "harmonica") {
+    return new HarmonicaHyperparameterOptimizer(
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser),
+        parser);
+  } else {
+    return new BoHyperparameterOptimizer(
+        buildMiner(path), new DensityRatioEstimationFitterFactory(parser),
+        parser);
+  }
+}
+
+FitterFactory* DensityRatioEstimationMinerFactory::createFitterFactory(
+    const DataMiningConfigParser& parser) const {
+  return new DensityRatioEstimationFitterFactory(parser);
+}
 
 Visualizer* DensityRatioEstimationMinerFactory::createVisualizer(
     const DataMiningConfigParser& parser) const {
   VisualizerConfiguration config;
   config.readParams(parser);
 
-  // TODO(spc90): implement visualization for this model
-  return new VisualizerDummy();
+  return new VisualizerDensityEstimation(config);
 }
 
 } /* namespace datadriven */

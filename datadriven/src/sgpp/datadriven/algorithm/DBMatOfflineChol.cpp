@@ -32,12 +32,9 @@ using sgpp::base::DataVector;
 
 DBMatOfflineChol::DBMatOfflineChol() : DBMatOfflineGE() {}
 
-DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName)
-    : DBMatOfflineGE{fileName} {}
+DBMatOfflineChol::DBMatOfflineChol(const std::string& fileName) : DBMatOfflineGE{fileName} {}
 
-DBMatOffline* DBMatOfflineChol::clone() const {
-  return new DBMatOfflineChol{*this};
-}
+DBMatOffline* DBMatOfflineChol::clone() const { return new DBMatOfflineChol{*this}; }
 
 bool DBMatOfflineChol::isRefineable() { return true; }
 
@@ -53,9 +50,8 @@ void DBMatOfflineChol::decomposeMatrix(
       // auto begin = std::chrono::high_resolution_clock::now();
 
       size_t n = lhsMatrix.getNrows();
-      gsl_matrix_view m =
-          gsl_matrix_view_array(lhsMatrix.getPointer(), n,
-                                n);  // Create GSL matrix view for decomposition
+      gsl_matrix_view m = gsl_matrix_view_array(lhsMatrix.getPointer(), n,
+                                                n);  // Create GSL matrix view for decomposition
 
       // Perform Cholesky decomposition
       gsl_linalg_cholesky_decomp(&m.matrix);
@@ -76,8 +72,7 @@ void DBMatOfflineChol::decomposeMatrix(
       //          << "ms" << std::endl;
     }
   } else {
-    throw algorithm_exception(
-        "Matrix has to be constructed before it can be decomposed");
+    throw algorithm_exception("Matrix has to be constructed before it can be decomposed");
   }
 
 #else
@@ -88,8 +83,7 @@ void DBMatOfflineChol::decomposeMatrix(
 void DBMatOfflineChol::decomposeMatrixParallel(
     RegularizationConfiguration& regularizationConfig,
     DensityEstimationConfiguration& densityEstimationConfig,
-    std::shared_ptr<BlacsProcessGrid> processGrid,
-    const ParallelConfiguration& parallelConfig) {
+    std::shared_ptr<BlacsProcessGrid> processGrid, const ParallelConfiguration& parallelConfig) {
 #ifdef USE_SCALAPACK
 
   if (!isConstructed) {
@@ -102,8 +96,8 @@ void DBMatOfflineChol::decomposeMatrixParallel(
 
   // initialize lhs distributed matrix
   this->lhsDistributed = DataMatrixDistributed::fromSharedData(
-      this->lhsMatrix.getPointer(), processGrid, n, n,
-      parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
+      this->lhsMatrix.getPointer(), processGrid, n, n, parallelConfig.rowBlockSize_,
+      parallelConfig.columnBlockSize_);
 
   // cholesky decomposition
   int info;
@@ -130,15 +124,14 @@ void DBMatOfflineChol::compute_inverse() {
         "yet.\n");
   }
   // initialize lhsInverse
-  this->lhsInverse =
-      DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
 
   // copy, in order to not mess with internal lhsMatrix of offlineChol object
   this->lhsInverse.copyFrom(this->lhsMatrix);
 
   // create matrix view in style of decomposition, see ::decomposeMatrix
-  gsl_matrix_view m = gsl_matrix_view_array(
-      lhsInverse.getPointer(), lhsInverse.getNrows(), lhsInverse.getNcols());
+  gsl_matrix_view m =
+      gsl_matrix_view_array(lhsInverse.getPointer(), lhsInverse.getNrows(), lhsInverse.getNcols());
 
   // inverts matrix, and stores it inplace in lhsInverse
   gsl_linalg_cholesky_invert(&m.matrix);
@@ -148,9 +141,8 @@ void DBMatOfflineChol::compute_inverse() {
 #endif /*USE_GSL*/
 }
 
-void DBMatOfflineChol::compute_inverse_parallel(
-    std::shared_ptr<BlacsProcessGrid> processGrid,
-    const ParallelConfiguration& parallelConfig) {
+void DBMatOfflineChol::compute_inverse_parallel(std::shared_ptr<BlacsProcessGrid> processGrid,
+                                                const ParallelConfiguration& parallelConfig) {
 #ifdef USE_SCALAPACK
   if (!isDecomposed) {
     throw sgpp::base::algorithm_exception(
@@ -162,8 +154,7 @@ void DBMatOfflineChol::compute_inverse_parallel(
   // initializing distributed inverse matrix from lhs matrix
   this->lhsDistributedInverse = DataMatrixDistributed::fromSharedData(
       this->lhsMatrix.getPointer(), processGrid, this->lhsMatrix.getNrows(),
-      this->lhsMatrix.getNcols(), parallelConfig.rowBlockSize_,
-      parallelConfig.columnBlockSize_);
+      this->lhsMatrix.getNcols(), parallelConfig.rowBlockSize_, parallelConfig.columnBlockSize_);
 
   // transpose, because fortran column-major
   lhsDistributedInverse = lhsDistributedInverse.transpose();
@@ -185,17 +176,16 @@ void DBMatOfflineChol::compute_inverse_parallel(
   // symmetric
 
   // syncing non-distri and distri inverse matrices
-  this->lhsInverse =
-      DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
+  this->lhsInverse = DataMatrix(this->lhsMatrix.getNrows(), this->lhsMatrix.getNcols());
   this->lhsDistributedInverse.toLocalDataMatrix(this->lhsInverse);
 
   return;
 #endif /* USE_SCALAPACK */
 }
 
-void DBMatOfflineChol::choleskyModification(
-    Grid& grid, datadriven::DensityEstimationConfiguration&, size_t newPoints,
-    std::vector<size_t>& deletedPoints, double lambda) {
+void DBMatOfflineChol::choleskyModification(Grid& grid, datadriven::DensityEstimationConfiguration&,
+                                            size_t newPoints, std::vector<size_t>& deletedPoints,
+                                            double lambda) {
 #ifdef USE_GSL
 
   // Start coarsening
@@ -219,8 +209,12 @@ void DBMatOfflineChol::choleskyModification(
     // -> job = 2
     size_t coarseCount_2 = 0;
 
-    for (std::vector<size_t>::reverse_iterator it = deletedPoints.rbegin();
-         it != deletedPoints.rend(); it++) {
+    // we need to travel the indices from largest to smallest
+    std::vector<size_t> sortedDeletedPoints = deletedPoints;
+    std::sort(sortedDeletedPoints.begin(), sortedDeletedPoints.end());
+
+    for (std::vector<size_t>::reverse_iterator it = sortedDeletedPoints.rbegin();
+         it != sortedDeletedPoints.rend(); it++) {
       // Indicates current row/column to permute
       index_coarse = *it + 1 + coarseCount_1;
 
@@ -248,12 +242,11 @@ void DBMatOfflineChol::choleskyModification(
       update_matrix.copyFrom(lhsMatrix);
       // Resize copy of current Cholesky factor to
       // receive a matrix of rank one update vectors
-      update_matrix.resizeToSubMatrix(coarseCount_1 + 1, 1,
-                                      lhsMatrix.getNrows(), coarseCount_1);
+      update_matrix.resizeToSubMatrix(coarseCount_1 + 1, 1, lhsMatrix.getNrows(), coarseCount_1);
       // Resize current Cholesky factor to required submatrix
       // for necessary rank one updates
-      lhsMatrix.resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1,
-                                  lhsMatrix.getNrows(), lhsMatrix.getNrows());
+      lhsMatrix.resizeToSubMatrix(coarseCount_1 + 1, coarseCount_1 + 1, lhsMatrix.getNrows(),
+                                  lhsMatrix.getNrows());
       DataVector temp_col(update_matrix.getNrows());
 
       // 'coarseCount_1' many rank one updates based on the columns of
@@ -325,8 +318,7 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
   }
 
   // Create GSL matrix view for update procedures
-  gsl_matrix_view m_full =
-      gsl_matrix_view_array(mat.getPointer(), size_full, size_full);
+  gsl_matrix_view m_full = gsl_matrix_view_array(mat.getPointer(), size_full, size_full);
   // Access submatrx since mat_ has already expanded to save alocations
   // procedures
   gsl_matrix_view m = gsl_matrix_submatrix(&m_full.matrix, 0, 0, size, size);
@@ -349,8 +341,7 @@ void DBMatOfflineChol::choleskyAddPoint(DataVector& newCol, size_t size) {
   phi = last - phi;
   // Ensure 'phi' is larger 0
   if (phi <= 0) {
-    throw algorithm_exception(
-        "Resulting matrix is at least not numerical positive definite!");
+    throw algorithm_exception("Resulting matrix is at least not numerical positive definite!");
   } else {
     phi = sqrt(phi);
   }
@@ -384,8 +375,7 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
   if (k > l) {
     throw algorithm_exception("l needs to be larger than k");
   } else if (l > size) {
-    throw algorithm_exception(
-        "l needs to be smaller than the column size of the matrix");
+    throw algorithm_exception("l needs to be smaller than the column size of the matrix");
   } else if (l == k) {
     return;
   }
@@ -414,17 +404,15 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
     for (size_t j = 1; j <= count_perm; j++) {
       givens_zero = gsl_matrix_ptr(&m.matrix, k + j - 2, k + j - 1);
       // Givensrotation in (k+i-1,k+i)-Plane
-      gsl_blas_drotg(tbuff, givens_zero, cvec->data + j - 1,
-                     svec->data + j - 1);
+      gsl_blas_drotg(tbuff, givens_zero, cvec->data + j - 1, svec->data + j - 1);
       // Access columns to modify via Givens rotation
-      gsl_vector_view diag_sub = gsl_matrix_subcolumn(
-          &m.matrix, k + j - 2, k + j - 1, size - k - j + 1);
-      gsl_vector_view low_diag_sub = gsl_matrix_subcolumn(
-          &m.matrix, k + j - 1, k + j - 1, size - k - j + 1);
+      gsl_vector_view diag_sub =
+          gsl_matrix_subcolumn(&m.matrix, k + j - 2, k + j - 1, size - k - j + 1);
+      gsl_vector_view low_diag_sub =
+          gsl_matrix_subcolumn(&m.matrix, k + j - 1, k + j - 1, size - k - j + 1);
       gsl_matrix_set(&m.matrix, k + j - 2, k + j - 1, 0.0);
       // Apply Givens rotation
-      gsl_blas_drot(&diag_sub.vector, &low_diag_sub.vector, cvec->data[j - 1],
-                    svec->data[j - 1]);
+      gsl_blas_drot(&diag_sub.vector, &low_diag_sub.vector, cvec->data[j - 1], svec->data[j - 1]);
       tbuff += (size + 1);
     }
   } else if (job == 1) {
@@ -439,17 +427,13 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
     for (size_t j = 1; j <= count_perm; j++) {
       givens_zero = gsl_matrix_ptr(&m.matrix, k - 1, l - j);
       // Givensrotation in (l-i,l-i+1)-Plane
-      gsl_blas_drotg(tbuff, givens_zero, cvec->data + j - 1,
-                     svec->data + j - 1);
+      gsl_blas_drotg(tbuff, givens_zero, cvec->data + j - 1, svec->data + j - 1);
       // Access columns to modify via Givens rotation
-      gsl_vector_view diag_sub =
-          gsl_matrix_subcolumn(&m.matrix, l - j - 1, l - j, size - l + j);
-      gsl_vector_view low_diag_sub =
-          gsl_matrix_subcolumn(&m.matrix, l - j, l - j, size - l + j);
+      gsl_vector_view diag_sub = gsl_matrix_subcolumn(&m.matrix, l - j - 1, l - j, size - l + j);
+      gsl_vector_view low_diag_sub = gsl_matrix_subcolumn(&m.matrix, l - j, l - j, size - l + j);
       gsl_matrix_set(&m.matrix, k - 1, l - j, 0.0);
       // Apply Givens rotation
-      gsl_blas_drot(&diag_sub.vector, &low_diag_sub.vector, cvec->data[j - 1],
-                    svec->data[j - 1]);
+      gsl_blas_drot(&diag_sub.vector, &low_diag_sub.vector, cvec->data[j - 1], svec->data[j - 1]);
       tbuff -= 1;
     }
   }
@@ -461,8 +445,7 @@ void DBMatOfflineChol::choleskyPermutation(size_t k, size_t l, size_t job) {
 #endif /*USE_GSL*/
 }
 
-sgpp::datadriven::MatrixDecompositionType
-DBMatOfflineChol::getDecompositionType() {
+sgpp::datadriven::MatrixDecompositionType DBMatOfflineChol::getDecompositionType() {
   return sgpp::datadriven::MatrixDecompositionType::Chol;
 }
 }  // namespace datadriven

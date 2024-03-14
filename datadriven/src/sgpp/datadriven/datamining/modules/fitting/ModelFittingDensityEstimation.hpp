@@ -30,8 +30,8 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
 
   /**
    * Fit the grid to the given dataset by determining the surpluses of the initial grid by the SGDE
-   * approach. Requires only data samples and no targets (since those are irrelevant for the density
-   * estimation whatsoever)
+   * approach. Requires only data samples and no targets (since those are irrelevant for the
+   * density estimation whatsoever)
    * @param dataset the training dataset that is used to fit the model.
    */
   virtual void fit(DataMatrix& dataset) = 0;
@@ -41,8 +41,9 @@ class ModelFittingDensityEstimation : public ModelFittingBaseSingleGrid {
   void fit(Dataset& datasetP, Dataset& datasetQ) override = 0;
 
   /**
-   * Updates the model based on new data samples (streaming, batch learning). Requires only the data
-   * samples and no targets (since those are irrelevant for the density estimation whatsoever)
+   * Updates the model based on new data samples (streaming, batch learning). Requires only the
+   * data samples and no targets (since those are irrelevant for the density estimation
+   * whatsoever)
    * @param samples the new data samples
    */
   virtual void update(DataMatrix& samples) = 0;
