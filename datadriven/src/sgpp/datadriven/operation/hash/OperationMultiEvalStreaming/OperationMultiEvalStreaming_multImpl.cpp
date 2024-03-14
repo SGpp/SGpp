@@ -586,7 +586,7 @@ void OperationMultiEvalStreaming::multImpl(
   size_t result_size = result.getSize();
   size_t dims = dataset->getNrows();
 
-#warning "warning: using fallback implementation for OperationMultiEvalStreaming mult kernel"
+#pragma warning "warning: using fallback implementation for OperationMultiEvalStreaming mult kernel"
 
   for (size_t c = start_index_data; c < end_index_data;
        c += std::min<size_t>(getChunkDataPoints(), (end_index_data - c))) {

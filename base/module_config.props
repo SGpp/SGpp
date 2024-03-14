@@ -1,0 +1,15 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+	<_WildCardOCL Include="$(ProjectDir)src\sgpp\base\opencl\**\*"  />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Remove="@(_WildCardOCL)" />
+    <ClCompile Remove="@(_WildCardOCL)" />
+    <ClCompile Remove="src\sgpp\base\tools\AlignedMemory.cpp" />
+    <ClCompile Remove="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp" />
+    <ClCompile Include="src\sgpp\base\tools\GaussLegendreQuadRule1D.cpp">
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+</Project>

@@ -8,7 +8,6 @@
 #include <sgpp/base/grid/Grid.hpp>
 #include <sgpp/base/operation/BaseOpFactory.hpp>
 
-#include <bits/stdc++.h>
 #include <chrono>
 #include <set>
 #include <vector>

@@ -24,7 +24,7 @@ namespace datadriven {
  */
 struct HashGridPointCompare {
   bool operator()(const std::shared_ptr<base::HashGridPoint>& lhs,
-                  const std::shared_ptr<base::HashGridPoint>& rhs) {
+                  const std::shared_ptr<base::HashGridPoint>& rhs) const {
     return lhs->getHash() < rhs->getHash();
   }
 };

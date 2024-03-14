@@ -6,6 +6,12 @@
 #ifndef SGPP_GLOBALDEF_HPP_
 #define SGPP_GLOBALDEF_HPP_
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#endif
+
 /* Define math constants.
  * These seem not to be part of the C++ standard,
  * and they're missing, e.g., on MinGW-w64.

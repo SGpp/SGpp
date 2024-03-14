@@ -64,9 +64,8 @@ double OperationQuadratureMC::doQuadratureFunc(FUNC func, void* clientdata) {
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      /*p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);*/
-      p[d] = boundingBox.transformPointToBoundingBox(
-          d, static_cast<double>(this->simple_rand()) / RAND_MAX);
+      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
+      //p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(this->simple_rand()) / RAND_MAX);
     }
 
     res += func(static_cast<int>(dim), p, clientdata);
@@ -96,9 +95,8 @@ double OperationQuadratureMC::doQuadratureL2Error(FUNC func, void* clientdata, D
 
   for (size_t i = 0; i < mcPaths; i++) {
     for (size_t d = 0; d < dim; d++) {
-      /*p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);*/
-      p[d] = boundingBox.transformPointToBoundingBox(
-          d, static_cast<double>(this->simple_rand()) / RAND_MAX);
+      p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(rand()) / RAND_MAX);
+      //p[d] = boundingBox.transformPointToBoundingBox(d, static_cast<double>(this->simple_rand()) / RAND_MAX);
       point[d] = p[d];
     }
 
