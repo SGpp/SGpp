@@ -100,16 +100,13 @@ bool AdaptiveCombinationGridGenerator::adaptNextLevelVector(bool regular) {
     throw sgpp::base::not_implemented_exception("Parameter regular not yet implemented!");
   }
 
-  const std::map<LevelVector, double> relevance = getRelevanceOfActiveSet();
-  const auto pr = std::max_element(
-      relevance.begin(), relevance.end(),
-      [](const MapPairType& m1, const MapPairType& m2) { return m1.second < m2.second; });
+  auto mostRelevant = getMostRelevant();
 
-  if (pr != relevance.end()) {
-    adaptLevel(pr->first);
-    return true;
-  } else {
+  if (mostRelevant[0] == std::numeric_limits<level_t>::max()) {
     return false;
+  } else {
+    adaptLevel(mostRelevant);
+    return true;
   }
 }
 
@@ -254,6 +251,19 @@ std::map<LevelVector, double> AdaptiveCombinationGridGenerator::getRelevanceOfAc
   }
 
   return relevance;
+}
+
+LevelVector AdaptiveCombinationGridGenerator::getMostRelevant() const {
+  auto relevance = getRelevanceOfActiveSet();
+  const auto max = std::max_element(
+      relevance.begin(), relevance.end(),
+      [](const MapPairType& m1, const MapPairType& m2) { return m1.second < m2.second; });
+
+  if (max != relevance.end()) {
+    return max->first;
+  } else {
+    return LevelVector(1, std::numeric_limits<level_t>::max());
+  }
 }
 
 bool AdaptiveCombinationGridGenerator::isAdmissible(const LevelVector& level) const {
