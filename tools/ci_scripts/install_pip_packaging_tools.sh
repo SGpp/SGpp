@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+export PIP_BREAK_SYSTEM_PACKAGES=1
 # upgrade pip
 sudo -H pip3 install --upgrade pip
 # install setuptools/wheel
