@@ -53,8 +53,8 @@ int main() {
   gridsize = gridsize + 1024 - gridsize % 1024;
   std::cout << "Duration: " << elapsed_seconds.count() << "\n";
   std::cout << "GFLOPS: "
-            << (gridsize * gridsize * dimension * (0.30 * 17 + 1) +
-                gridsize * gridsize * 2) /
+            << (static_cast<double>(gridsize * gridsize * dimension) * (0.30 * 17 + 1) +
+                static_cast<double>(gridsize * gridsize * 2)) /
                    (elapsed_seconds.count() * 1000 * 1000 * 1000)
             << "\n";
   out_mult.close();
