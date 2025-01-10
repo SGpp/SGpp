@@ -62,6 +62,7 @@ class SparseGridDensityEstimatorConfiguration : public json::JSON {
  public:
   SparseGridDensityEstimatorConfiguration();
   explicit SparseGridDensityEstimatorConfiguration(const std::string& fileName);
+  using DictNode::operator=;
 
   SparseGridDensityEstimatorConfiguration* clone() override;
 
