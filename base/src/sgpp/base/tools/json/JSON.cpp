@@ -49,6 +49,12 @@ JSON::JSON(const std::string& fileName) : fileName(fileName) {
 
 JSON::JSON(const JSON& original) : DictNode(original) { this->fileName = original.fileName; }
 
+JSON& JSON::operator=(const JSON& original) {
+  DictNode::operator=(original);
+  this->fileName = original.fileName; 
+  return *this;
+}
+
 std::vector<Token> JSON::tokenize(const std::string& input) {
   std::vector<Token> stream;
 

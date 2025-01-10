@@ -29,6 +29,10 @@ class JSON : public DictNode {
 
   JSON(const JSON& original);
 
+  using DictNode::operator=;
+
+  JSON& operator=(const JSON& original);
+
   virtual JSON* clone();
 
   void clear();

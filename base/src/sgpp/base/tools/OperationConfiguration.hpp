@@ -19,6 +19,8 @@ class OperationConfiguration : public json::JSON {
  public:
   OperationConfiguration();
 
+  using DictNode::operator=;
+
   explicit OperationConfiguration(const std::string& fileName);
 
   virtual OperationConfiguration* clone();
