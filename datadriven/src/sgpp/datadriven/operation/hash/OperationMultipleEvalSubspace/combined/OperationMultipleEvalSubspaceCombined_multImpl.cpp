@@ -146,9 +146,9 @@ void OperationMultipleEvalSubspaceCombined::multImpl(sgpp::base::DataVector& sou
     }
   }  // end iterate data chunks
 
-  delete evalIndexValuesAll;
-  delete intermediatesAll;
-  delete listSubspace;
+  delete[] evalIndexValuesAll;
+  delete[] intermediatesAll;
+  delete[] listSubspace;
 }
 }  // namespace datadriven
 }  // namespace sgpp
