@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-# upgrade pip
-sudo -H pip3 install --upgrade pip
 # install setuptools/wheel
 sudo -H pip3 install setuptools wheel scipy numpy jinja2
 
