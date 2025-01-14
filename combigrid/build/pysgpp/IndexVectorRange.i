@@ -33,7 +33,15 @@ class StopIterator {};
 
 %warnfilter(401, 503) sgpp::combigrid::IndexVectorIterator;
 
-%make_const_iterator( IndexVectorIterator, IndexVectorRange );
+// TODO(daissgr) Test in Python if the make_const_iterator can safely be
+// removed without losing the iterator functionality. The problem with it: From
+// what I can see in the swig source code this functionality was never inteded
+// for python wrappers (mentions to %make_const_iterator only appear in the
+// ruby context). Swig 4.1 and newer accordingly call it an unknown directive
+// for the python wrappers (older swigs did not care but the statement probably
+// never did work). Comment out for now to re-enable sgpp with newer swig
+// versions and test them...
+/* %make_const_iterator( IndexVectorIterator, IndexVectorRange ); */
 
 %{
 #include <sgpp/combigrid/tools/IndexVectorIterator.hpp>
