@@ -29,9 +29,9 @@ class RandomFoldingPolicy(FoldingPolicy):
         else:
             self.seed = seed
         ## Random number generator
-        self.random = random.seed(self.seed)
+        self.random = random.Random(self.seed)
         self.seq = list(range(self.size))
-        random.shuffle(self.seq, self.random)
+        self.random.shuffle(self.seq)
         for step in range(self.level):
             validationIndeces = self.seq[ step * self.window : min((step+1) * self.window, self.size)]
             self.dataFold.append(self.createFoldsets(dataContainer, validationIndeces))
