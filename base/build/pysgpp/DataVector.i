@@ -130,7 +130,7 @@ $1 = PySequence_Check($input) ? 1 : 0;
       // since we need to DECREF DataVector object
       PyObject* base = PyCapsule_New((void*)vec, nullptr, free_array);
       PyCapsule_SetContext(base, (void*)datavector);
-      PyArray_BASE(arr) = base;
+      PyArray_SetBaseObject((PyArrayObject*) arr, base);
       
       // Increase the number of references to PyObject DataVector, after the object the variable is reinitialized or deleted the object
       // will still be on the heap, if the reference counter is positive.
