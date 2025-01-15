@@ -330,7 +330,7 @@ def checkPython(config):
                                "Hint: You might have to install the package " + package + ".")
 
     numpy_path=getOutput(["python3", "-c", "import numpy, os;"
-    "print(os.path.join(os.path.split(numpy.__file__)[0], \"core\", \"include\"))"]) 
+    "print(numpy.get_include())"]) 
     if numpy_path.startswith("Traceback"):
       Helper.printWarning("Warning: Numpy doesn't seem to be installed.")
       if config.env["RUN_PYTHON_TESTS"]:
