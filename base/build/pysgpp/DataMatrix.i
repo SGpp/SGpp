@@ -163,7 +163,9 @@ $1 = PySequence_Check($input) ? 1 : 0;
     // Create a ndarray view from the DataMatrix data
     // an alternative approach using ARGOUTVIEW will fail since it does not allow to do a proper memory management
     PyObject* __array(PyObject* datavector){
-        //Get the data and number of entries
+      // Get GIL, required by the PyArray_SimpleNewFromData
+      PyGILState_STATE gil = PyGILState_Ensure();
+      //Get the data and number of entries
       double *vec = $self->getPointer();
       int rows = $self->getNrows();
       int cols = $self->getNcols();
@@ -179,10 +181,14 @@ $1 = PySequence_Check($input) ? 1 : 0;
       PyCapsule_SetContext(base, (void*)datavector);
       // TODO(daissgr) Does this actually work as intended?
       PyArray_SetBaseObject((PyArrayObject*) arr, base);
+      /* PyArray_BASE(arr) = base; */
 
       // Increase the number of references to PyObject DataMatrix, after the object the variable is reinitialized or deleted the object
       // will still be on the heap, if the reference counter is positive.
       Py_INCREF(datavector);
+
+      // Release GIL
+      PyGILState_Release(gil);
 
       return arr;
     }
