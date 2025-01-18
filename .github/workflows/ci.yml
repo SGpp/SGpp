@@ -84,7 +84,7 @@ jobs:
       - name: install apt packages
         run: |
           sudo apt update -y
-          sudo apt install -y fakeroot swig python3-pip python3-dev libgomp1 doxygen
+          sudo apt install -y fakeroot swig python3-pip python3-dev libgomp1 doxygen build-essential
       - uses: actions/checkout@v2
       - name: prepare packaging
         run: bash $GITHUB_WORKSPACE/tools/ci_scripts/install_pip_packaging_tools.sh
