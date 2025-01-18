@@ -37,10 +37,10 @@ void OperationMultipleEvalSubspaceSimple::multImpl(sgpp::base::DataVector& sourc
 
   base::DataVector dataTuple(dim);
   double* dataTuplePtr = dataTuple.getPointer();
-  size_t* indexPtr = (size_t*)malloc(sizeof(size_t) * dim);
+  size_t* indexPtr = new size_t[dim];
   indexPtr[0] = 0;
 
-  double* evalIndexValues = (double*)malloc(sizeof(double) * (dim + 1));
+  double* evalIndexValues = new double[dim + 1];
   evalIndexValues[0] = 1.0;
 
   // double **flatLevels = this->flatLevels;
@@ -121,9 +121,9 @@ void OperationMultipleEvalSubspaceSimple::multImpl(sgpp::base::DataVector& sourc
     result.set(dataIndex, componentResult);
   }  // end iterate data points
 
-  delete indexPtr;
-  delete evalIndexValues;
-  delete intermediates;
+  delete[] indexPtr;
+  delete[] evalIndexValues;
+  delete[] intermediates;
 }
 }
 }
