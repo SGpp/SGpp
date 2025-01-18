@@ -299,9 +299,9 @@ BOOST_AUTO_TEST_CASE(TestFuzzyExtensionPrinciple) {
   principles.push_back(std::unique_ptr<FuzzyExtensionPrinciple>(
       new FuzzyExtensionPrincipleViaVertexMethod(f, 12)));
 
-  const TriangularFuzzyInterval xFuzzy1(0.625, 0.75, 0.25, 0.125);
-  const TriangularFuzzyInterval xFuzzy2(0.45, 0.55, 0.4, 0.4);
-  std::vector<const FuzzyInterval*> xFuzzy = {&xFuzzy1, &xFuzzy2};
+  TriangularFuzzyInterval xFuzzy1(0.625, 0.75, 0.25, 0.125);
+  TriangularFuzzyInterval xFuzzy2(0.45, 0.55, 0.4, 0.4);
+  std::vector<FuzzyInterval*> xFuzzy = {&xFuzzy1, &xFuzzy2};
 
   for (auto& principle : principles) {
     // test clone

@@ -44,7 +44,7 @@ inline double fastPow(double a, double b) {
 
 IterativeGridGeneratorFuzzyRitterNovak::IterativeGridGeneratorFuzzyRitterNovak(
     base::ScalarFunction& f, base::Grid& grid, size_t N,
-    const std::vector<const FuzzyInterval*>& xFuzzy, size_t numberOfAlphaSegments,
+    const std::vector<FuzzyInterval*>& xFuzzy, size_t numberOfAlphaSegments,
     double adaptivity, base::level_t initialLevel,
     base::level_t maxLevel, PowMethod powMethod)
     : IterativeGridGeneratorRitterNovak(f, grid, N, adaptivity, initialLevel, maxLevel, powMethod),
@@ -53,13 +53,13 @@ IterativeGridGeneratorFuzzyRitterNovak::IterativeGridGeneratorFuzzyRitterNovak(
 
 IterativeGridGeneratorFuzzyRitterNovak::~IterativeGridGeneratorFuzzyRitterNovak() {}
 
-const std::vector<const FuzzyInterval*>&
+const std::vector<FuzzyInterval*>&
 IterativeGridGeneratorFuzzyRitterNovak::getXFuzzy() const {
   return xFuzzy;
 }
 
 void IterativeGridGeneratorFuzzyRitterNovak::setXFuzzy(
-    const std::vector<const FuzzyInterval*>& xFuzzy) {
+    const std::vector<FuzzyInterval*>& xFuzzy) {
   this->xFuzzy = xFuzzy;
 }
 

@@ -53,7 +53,7 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
    */
   IterativeGridGeneratorFuzzyRitterNovak(
       base::ScalarFunction& f, base::Grid& grid, size_t N,
-      const std::vector<const FuzzyInterval*>& xFuzzy,
+      const std::vector<FuzzyInterval*>& xFuzzy,
       size_t numberOfAlphaSegments = DEFAULT_NUMBER_OF_ALPHA_SEGMENTS,
       double adaptivity = DEFAULT_ADAPTIVITY,
       base::level_t initialLevel = DEFAULT_INITIAL_LEVEL,
@@ -70,12 +70,12 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
   /**
    * @return  fuzzy input intervals
    */
-  const std::vector<const FuzzyInterval*>& getXFuzzy() const;
+  const std::vector<FuzzyInterval*>& getXFuzzy() const;
 
   /**
    * @param xFuzzy  fuzzy input intervals
    */
-  void setXFuzzy(const std::vector<const FuzzyInterval*>& xFuzzy);
+  void setXFuzzy(const std::vector<FuzzyInterval*>& xFuzzy);
 
   /**
    * @return  number of alpha segments (i.e., number of inner Ritter-Novak
@@ -91,7 +91,7 @@ class IterativeGridGeneratorFuzzyRitterNovak : public IterativeGridGeneratorRitt
 
  protected:
   /// fuzzy input intervals
-  std::vector<const FuzzyInterval*> xFuzzy;
+  std::vector<FuzzyInterval*> xFuzzy;
   /// number of alpha segments (i.e., number of inner Ritter-Novak generations)
   size_t numberOfAlphaSegments;
 };
