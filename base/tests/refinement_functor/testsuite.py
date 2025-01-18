@@ -13,8 +13,8 @@ import sys, os
 from refinement_functor.test_PersistentErrorRefinementFunctor import TestPersistentRefinementOperator
 from refinement_functor.test_WeightedRefinementOperator import TestWeightedRefinementOperator
 
-suite1 = unittest.makeSuite(TestPersistentRefinementOperator,'test')
-suite2 = unittest.makeSuite(TestWeightedRefinementOperator,'test')
+suite1 = unittest.defaultTestLoader.loadTestsFromTestCase(TestPersistentRefinementOperator)
+suite2 = unittest.defaultTestLoader.loadTestsFromTestCase(TestWeightedRefinementOperator)
 alltests = unittest.TestSuite(( suite1, suite2))
 
 if __name__ == "__main__":

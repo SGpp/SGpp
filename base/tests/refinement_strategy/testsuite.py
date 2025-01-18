@@ -13,8 +13,8 @@ import unittest
 from refinement_strategy.test_ANOVARefinement import TestANOVARefinement
 from refinement_strategy.test_SubspaceRefinement import TestSubspaceRefinement
 
-suite1 = unittest.makeSuite(TestANOVARefinement,'test')
-suite2 = unittest.makeSuite(TestSubspaceRefinement,'test')
+suite1 = unittest.defaultTestLoader.loadTestsFromTestCase(TestANOVARefinement)
+suite2 = unittest.defaultTestLoader.loadTestsFromTestCase(TestSubspaceRefinement)
 alltests = unittest.TestSuite(( suite1, suite2))
 
 if __name__ == "__main__":

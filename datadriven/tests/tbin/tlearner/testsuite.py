@@ -19,14 +19,14 @@ from tbin.tlearner.test_StratifiedFoldingPolicy import TestStratifiedFoldingPoli
 from tbin.tlearner.test_FilesFoldingPolicy import TestFilesFoldingPolicy
 from tbin.tlearner.test_LearnedKnowledgeFormatter import TestLearnedKnowledgeFormatter
 
-suite2 = unittest.makeSuite(TestClassifier,'test')
-suite3 = unittest.makeSuite(TestGridFormatter,'test')
-suite4 = unittest.makeSuite(TestLearnerBuilder,'test')
-suite5 = unittest.makeSuite(TestRandomFoldingPolicy,'test')
-suite6 = unittest.makeSuite(TestSequentialFoldingPolicy,'test')
-suite7 = unittest.makeSuite(TestStratifiedFoldingPolicy,'test')
-suite8 = unittest.makeSuite(TestFilesFoldingPolicy,'test')
-suite9 = unittest.makeSuite(TestLearnedKnowledgeFormatter,'test')
+suite2 = unittest.defaultTestLoader.loadTestsFromTestCase(TestClassifier)
+suite3 = unittest.defaultTestLoader.loadTestsFromTestCase(TestGridFormatter)
+suite4 = unittest.defaultTestLoader.loadTestsFromTestCase(TestLearnerBuilder)
+suite5 = unittest.defaultTestLoader.loadTestsFromTestCase(TestRandomFoldingPolicy)
+suite6 = unittest.defaultTestLoader.loadTestsFromTestCase(TestSequentialFoldingPolicy)
+suite7 = unittest.defaultTestLoader.loadTestsFromTestCase(TestStratifiedFoldingPolicy)
+suite8 = unittest.defaultTestLoader.loadTestsFromTestCase(TestFilesFoldingPolicy)
+suite9 = unittest.defaultTestLoader.loadTestsFromTestCase(TestLearnedKnowledgeFormatter)
 alltests = unittest.TestSuite(( suite2, suite3, suite4, suite5, suite6, suite7, suite8, suite9))
 
 if __name__ == "__main__":
